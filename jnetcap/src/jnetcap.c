@@ -39,10 +39,7 @@
 typedef struct {
     void* (*thread_func)(void* arg);
     void* arg;
-
-    /* Thread settings */
-    struct sched_param* param;
-} jnetcap_thread_t;
+} pthread_params_t;
 
 static struct {
     int netcap;
@@ -56,7 +53,6 @@ static struct {
     } java;
     
     int session_limit;
-
     int session_count;
 
     /* Used to guarantee that session_limit increases and decreases atomically */
@@ -93,8 +89,6 @@ static struct {
 
 static void*             _run_thread( void* arg );
 
-static jnetcap_thread_t* jnetcap_thread_malloc();
-
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _conntrack_hook( /* dhan FIXME args ? */ void* arg );
@@ -102,13 +96,14 @@ static void              _conntrack_hook( /* dhan FIXME args ? */ void* arg );
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
 
-static int               jnetcap_thread_init( jnetcap_thread_t* input, void* (*thread_func)(void*), void* arg, struct sched_param* param );
+static int _my_pthread_create ( pthread_t* thread, const pthread_attr_t* attr, void* (*func)(void*), void* arg);
 
-static jnetcap_thread_t* jnetcap_thread_create( void* (*thread_func)(void*), void* arg, struct sched_param* param );
-
-static void              jnetcap_thread_free    ( jnetcap_thread_t* input );
-static void              jnetcap_thread_destroy ( jnetcap_thread_t* input );
-static void              jnetcap_thread_raze    ( jnetcap_thread_t* input );
+static pthread_params_t* _pthread_params_malloc();
+static int               _pthread_params_init    ( pthread_params_t* input, void* (*thread_func)(void*), void* arg );
+static pthread_params_t* _pthread_params_create  ( void* (*thread_func)(void*), void* arg );
+static void              _pthread_params_free    ( pthread_params_t* input );
+static void              _pthread_params_destroy ( pthread_params_t* input );
+static void              _pthread_params_raze    ( pthread_params_t* input );
 
 static int _increment_session_count();
 static int _decrement_session_count();
@@ -140,8 +135,6 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
     
     if ( pthread_mutex_lock ( &_jnetcap.mutex ) < 0 ) return perrlog ( "pthread_mutex_lock" );
 
-//  mtrace();
-    
     do {
         /* JMVUTIL guarantees that it is only initialized once. */
         if ( jmvutil_init() < 0 ) {
@@ -242,8 +235,6 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
 #endif
     } while( 0 );
 
-    // muntrace();
-
     if ( pthread_mutex_unlock ( &_jnetcap.mutex ) < 0 )  perrlog ( "pthread_mutex_unlock" );    
 }
 
@@ -279,7 +270,6 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
   ( JNIEnv *env, jclass _class, jint num_threads )
 {
     pthread_t id;
-    jnetcap_thread_t* arg;
 
     _verify_netcap_initialized ();
 
@@ -287,13 +277,7 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
 
     /* Donate a few threads */
     for ( ; num_threads > 0 ; num_threads-- ) {
-        arg = jnetcap_thread_create( netcap_thread_donate, NULL, NULL );
-        
-        if ( arg == NULL ) {
-            return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
-        }
-                
-        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, arg )) {
+        if ( _my_pthread_create( &id, &uthread_attr.other.medium, netcap_thread_donate, NULL )) {
             perrlog( "pthread_create" );
             return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
         }
@@ -461,31 +445,6 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
     return (*env)->NewStringUTF(env, mac);
 }
 
-/*
- * Class:     com_untangle_jnetcap_Netcap
- * Method:    cTcpRedirectPorts
- * Signature: ()V;
- */
-JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
-    ( JNIEnv* env, jobject _this )
-{
-    int ports[2];
-    jintArray j_ports;
-
-    if ( netcap_tcp_redirect_ports( &ports[0], &ports[1] ) < 0 ) {
-        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_tcp_redirect_ports\n" );
-    }
-
-    /** Make an array to return the two values */
-    if (( j_ports = (*env)->NewIntArray( env, 2 )) == NULL ) {
-        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewByteArray\n" );
-    }
-    
-    (*env)->SetIntArrayRegion( env, j_ports, 0, 2, (jint*)ports );
-
-    return j_ports;
-}
-
 static void*             _tcp_run_thread( void* arg )
 {
     netcap_session_t* netcap_sess = arg;
@@ -514,8 +473,6 @@ static void*             _udp_run_thread( void* arg )
 
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    jnetcap_thread_t* thread_arg = NULL;
-    debug(10, "FLAG _udp_hook\n");
     if ( netcap_sess == NULL ) { 
         errlogargs();
         return;
@@ -524,10 +481,7 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     int _critical_section() {
         pthread_t id;
         
-        thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, NULL );
-        if ( thread_arg == NULL  ) return errlog( ERR_CRITICAL, "jnetcap_thread_create\n" );
-        
-        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+        if ( _my_pthread_create( &id, &uthread_attr.other.medium, _udp_run_thread, netcap_sess )) {
             return perrlog( "pthread_create" );
         }
 
@@ -541,8 +495,6 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 
     if ( _critical_section() < 0 ) {
-        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
-        thread_arg = NULL;
         errlog(ERR_WARNING, "Error occurred. Killing session (%"PRIu64").\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
@@ -581,8 +533,6 @@ static void              _conntrack_hook( void* arg )
 
 static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    jnetcap_thread_t* thread_arg = NULL;
-
     if ( netcap_sess == NULL ) { 
         errlogargs();
         return;
@@ -591,10 +541,7 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
     int _critical_section() {
         pthread_t id;
 
-        thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, NULL );
-        if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
-
-        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+        if ( _my_pthread_create( &id, &uthread_attr.other.medium, _tcp_run_thread, netcap_sess )) {
             return perrlog( "pthread_create" );
         }
 
@@ -608,8 +555,6 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 
     if ( _critical_section() < 0 ) {
-        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
-        thread_arg = NULL;
         errlog(ERR_WARNING, "Error occurred. Killing session (%"PRIu64").\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
@@ -737,90 +682,106 @@ static int               _unregister_conntrack_hook( JNIEnv* env )
     return 0;
 }
 
+/**
+ * This is a wrapper function that just attaches/deattaches before/after calling the specified funciton
+ */
 static void*             _run_thread( void* _arg )
 {
-    jnetcap_thread_t arg;
+    pthread_params_t arg;
     void* ret;
     JavaVM* jvm;
 
     if ( _arg == NULL ) return errlogargs_null();
 
-    if ( ((jnetcap_thread_t*)_arg)->thread_func == NULL ) return errlogargs_null();
+    if ( ((pthread_params_t*)_arg)->thread_func == NULL ) return errlogargs_null();
 
-    memcpy( &arg, _arg, sizeof( jnetcap_thread_t ));
+    memcpy( &arg, _arg, sizeof( pthread_params_t ));
     
-    jnetcap_thread_raze( _arg );
-
-    if (( jvm = jmvutil_get_java_vm()) == NULL ) return errlog_null( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
+    _pthread_params_raze( _arg );
 
     /* Attach the thread to the VM */
-    if ( jmvutil_get_java_env() == NULL ) {
-        return errlog_null( ERR_CRITICAL, "jmvutil_get_java_env\n" );
-    }
-    
+    if (( jvm = jmvutil_get_java_vm()) == NULL )
+        return errlog_null( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
+
     /* Run the required function */
     ret = arg.thread_func( arg.arg );
 
+    /* Detach the thread from the VM */
     _detach_thread( jvm );
 
-    jnetcap_thread_destroy( &arg );
+    _pthread_params_destroy( &arg );
 
     return ret;
 }
 
-static jnetcap_thread_t* jnetcap_thread_malloc()
+static int _my_pthread_create( pthread_t* thread, const pthread_attr_t* attr, void* (*func)(void*), void* argument)
 {
-    jnetcap_thread_t* jnetcap_thread;
-    if (( jnetcap_thread = calloc ( 1, sizeof( jnetcap_thread_t ))) == NULL ) return errlogmalloc_null();
+    pthread_params_t* arg = _pthread_params_create( func, argument );
+    int ret;
     
-    return jnetcap_thread;
+    if ( arg == NULL ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "pthread_params_create\n" );
+    }
+                
+    if ( (ret = pthread_create( thread, attr, _run_thread, arg ))) {
+        perrlog( "pthread_create" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
+    }
+
+    return ret;
 }
 
-static int               jnetcap_thread_init( jnetcap_thread_t* input, void* (*thread_func)(void*), void* arg, struct sched_param* param )
+static pthread_params_t* _pthread_params_malloc()
+{
+    pthread_params_t* pthread_params;
+    if (( pthread_params = calloc ( 1, sizeof( pthread_params_t ))) == NULL ) return errlogmalloc_null();
+    
+    return pthread_params;
+}
+
+static int               _pthread_params_init( pthread_params_t* input, void* (*thread_func)(void*), void* arg )
 {
     if ( input == NULL || thread_func == NULL ) return errlogargs();
     
-    
     input->thread_func = thread_func;
     input->arg = arg;
-    input->param  = param;
 
     return 0;
 }
 
-static jnetcap_thread_t* jnetcap_thread_create( void* (*thread_func)(void*), void* arg, struct sched_param* param )
+static pthread_params_t* _pthread_params_create( void* (*thread_func)(void*), void* arg )
 {
-    jnetcap_thread_t* jnetcap_thread;
+    pthread_params_t* pthread_params;
     
-    if (( jnetcap_thread = jnetcap_thread_malloc()) == NULL ) {
-        return errlog_null( ERR_CRITICAL, "jnetcap_thread_malloc\n" );
+    if (( pthread_params = _pthread_params_malloc()) == NULL ) {
+        return errlog_null( ERR_CRITICAL, "pthread_params_malloc\n" );
     }
         
-    if ( jnetcap_thread_init( jnetcap_thread, thread_func, arg, param ) < 0 ) {
-        return errlog_null( ERR_CRITICAL, "jnetcap_thread_init\n" );
+    if ( _pthread_params_init( pthread_params, thread_func, arg ) < 0 ) {
+        return errlog_null( ERR_CRITICAL, "pthread_params_init\n" );
     }
     
-    return jnetcap_thread;
+    return pthread_params;
 }
 
-static void              jnetcap_thread_free    ( jnetcap_thread_t* input )
+static void              _pthread_params_free    ( pthread_params_t* input )
 {
     if ( input == NULL ) return (void)errlogargs();
     
     free ( input );
 }
 
-static void              jnetcap_thread_destroy ( jnetcap_thread_t* input )
+static void              _pthread_params_destroy ( pthread_params_t* input )
 {
     if ( input == NULL ) return (void)errlogargs();
 }
 
-static void              jnetcap_thread_raze    ( jnetcap_thread_t* input )
+static void              _pthread_params_raze    ( pthread_params_t* input )
 {
     if ( input == NULL ) return (void)errlogargs();
 
-    jnetcap_thread_destroy(input);
-    jnetcap_thread_free(input);
+    _pthread_params_destroy(input);
+    _pthread_params_free(input);
 }
 
 static int _increment_session_count()

@@ -14,65 +14,32 @@ import org.apache.log4j.Logger;
 
 public final class Netcap
 {
+    protected static final Logger logger = Logger.getLogger( Netcap.class );
+
     public static final short IPPROTO_UDP  = 17;
     public static final short IPPROTO_TCP  = 6;
 
     private static final int JNETCAP_DEBUG = 1;
     private static final int NETCAP_DEBUG  = 2;
 
-    /* The maximum number of netcap threads you can create at a time */
-    public static final int MAX_THREADS    = 50;
-
-    /* The largest interface that netcap will return */
-    public static final int MAX_INTERFACE = 256;
-
-    /* The proc file containing the routing tables */
-    private static final String ROUTE_PROC_FILE = "/proc/net/route";
-
-    private static final String GATEWAY_PATTERN = "^[^\t]*\t00000000\t([^\t]*)\t.*";
-    private static final String GATEWAY_REPLACE = "$1";
-
-    /* Maximum number of lines to read from the routing table */
-    private static final int ROUTE_READ_LIM  = 50;
-
     private static final Netcap INSTANCE = new Netcap();
     
-    protected static final Logger logger = Logger.getLogger( Netcap.class );
-
     /* Singleton */
-    private Netcap()
-    {
-    }
+    private Netcap() {}
 
-    /*  Get the Redirect port range */
-    public PortRange tcpRedirectPortRange() throws JNetcapException {
-        PortRange portRange = null;
-
-        try {
-            int[] ports = cTcpRedirectPorts();
-            portRange = new PortRange( ports[0], ports[1] );
-        } catch ( Exception e ) {
-            throw new JNetcapException( e );
-        }
-        
-        return portRange;
-    }
-    
     /**
      * A common place for processing netcap errors
      * @param msg - The message associated with the error.
      */
-    static void error( String msg ) {
+    static void error( String msg )
+    {
         throw new IllegalStateException( "Netcap.error: " + msg );
     }
 
-    static void error() {
+    static void error()
+    {
         error( "" );
     }
-
-    public  static  native boolean isBridgeAlive();
-
-    private static native boolean isMulticast( long address );
 
     /**
      * Initialzie the JNetcap and Netcap library. </p>
@@ -92,45 +59,6 @@ public final class Netcap
         return init( level, level );
     }
     
-    /**
-     * Retrieve the gateway of the box.
-     */
-    public static InetAddress getGateway()
-    {
-        BufferedReader in = null;
-        InetAddress  addr = null;
-
-        /* Open up the default route file */
-        try { 
-            in = new BufferedReader(new FileReader( ROUTE_PROC_FILE ));
-            Pattern pattern = Pattern.compile( GATEWAY_PATTERN );
-
-            String str;
-
-            /* Limit the number of lines to read */
-            for ( int c = 0 ; (( str = in.readLine()) != null ) && c < ROUTE_READ_LIM ; c++ ) {
-                if ( str.matches( GATEWAY_PATTERN )) {
-                    str = pattern.matcher( str ).replaceAll( GATEWAY_REPLACE );
-                    addr = Inet4AddressConverter.getByHexAddress( str, true );
-                    break;
-                }
-            }
-        } catch ( Exception ex ) {
-            System.out.println( "Error reading file: " + ex );
-            logger.error( "Error reading file: ", ex );
-        }
-
-        try {
-            if ( in != null ) 
-                in.close();
-        } catch ( Exception ex ) {
-            System.out.println( "Unable to close file: " + ex );
-            logger.error( "Unable to close file", ex );
-        }
-
-        return addr;
-    }
-
     /**
      * Set the hardlimit on the number of sessions to process at a time
      */
@@ -266,10 +194,4 @@ public final class Netcap
     {
         return INSTANCE;
     }
-    
-    /**
-     * Function to retrieve the TCP redirect ports
-     */
-    private native int[] cTcpRedirectPorts();
-    
 }
