@@ -519,37 +519,36 @@ Ext.define('Ung.EditWindow', {
     initComponent: function() {
         if(this.bbar==null) {
             this.bbar=[];
-            if(this.helpSource) {
-                this.bbar.push('-', {
-                    name: 'Help',
-                    id: this.getId() + "_helpBtn",
-                    iconCls: 'icon-help',
-                    text: i18n._("Help"),
-                    handler: Ext.bind(function() {
-                        this.helpAction();
-                    }, this)
-                });
-            }
-            this.bbar.push(
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.defer(this.updateAction,1, this);
-                    }, this)
-                },'-');
         }
+            
+        if(this.helpSource) {
+            this.bbar.push('-', {
+                name: 'Help',
+                id: this.getId() + "_helpBtn",
+                iconCls: 'icon-help',
+                text: i18n._("Help"),
+                handler: Ext.bind(function() {
+                    this.helpAction();
+                }, this)
+            });
+        }
+        this.bbar.push( '->', {
+            name: "Cancel",
+            id: this.getId() + "_cancelBtn",
+            iconCls: 'cancel-icon',
+            text: i18n._('Cancel'),
+            handler: Ext.bind(function() {
+                this.cancelAction();
+            }, this)
+        },'-',{
+            name: "Done",
+            id: this.getId() + "_doneBtn",
+            iconCls: 'apply-icon',
+            text: i18n._('Done'),
+            handler: Ext.bind(function() {
+                Ext.defer(this.updateAction,1, this);
+            }, this)
+        },'-');
         this.callParent(arguments);
     },
     // the update actions

@@ -593,7 +593,7 @@ Ext.define('Webui.config.network', {
             }]
         });
         
-        this.winInterfaceStatus = Ext.create('Ung.EditWindow', {
+        this.winInterfaceStatus = Ext.create('Ung.tWindow', {
             helpSource: 'network_interface_status',
             breadcrumbs: [{
                 title: this.i18n._("Interface"),

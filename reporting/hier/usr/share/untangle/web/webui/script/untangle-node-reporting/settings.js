@@ -770,7 +770,11 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }, this), table);
             }
         }, this);
-
+        var chartTypes = [["TEXT", this.i18n._("Text")],["PIE_GRAPH", this.i18n._("Pie Graph")],["TIME_GRAPH", this.i18n._("Time Graph")]];
+        var chartTypeMap = Ung.Util.createStoreMap(chartTypes);
+        var chartTypeRenderer = function(value) {
+            return chartTypeMap[value]?chartTypeMap[value]:value;
+        };
         this.gridReportEntries= Ext.create('Ung.grid.Panel',{
             name: 'Manage Reports',
             settingsCmp: this,
@@ -809,7 +813,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }, {
                 header: this.i18n._("Type"),
                 width: 90,
-                dataIndex: 'type'
+                dataIndex: 'type',
+                renderer: chartTypeRenderer
             }, {
                 header: this.i18n._("Description"),
                 width: 200,
@@ -918,6 +923,37 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         
         this.gridReportEntries.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             rowEditorLabelWidth: 150,
+            bbar: [{
+                xtype: 'button',
+                text: this.i18n._('View Report'),
+                iconCls: 'icon-play',
+                handler: Ext.bind(function() {
+                    var rowEditor = this.gridReportEntries.rowEditor;
+                    if (rowEditor.validate()!==true) {
+                        return;
+                    }
+                    if (rowEditor.record !== null) {
+                        var data = Ext.clone(rowEditor.record.getData());
+                        rowEditor.updateActionRecursive(rowEditor.items, data, 0);
+                        this.viewReport(data);
+                    }
+                }, this)
+            }, {
+                xtype: 'button',
+                text: this.i18n._('Copy Report'),
+                iconCls: 'action-icon',
+                handler: Ext.bind(function() {
+                    var rowEditor = this.gridReportEntries.rowEditor;
+                    var data = Ext.clone(this.gridReportEntries.emptyRow);
+                    rowEditor.updateActionRecursive(rowEditor.items, data, 0);
+                    Ext.apply(data, {
+                        title: Ext.String.format("Copy of {0}", data.title)
+                    });
+                    rowEditor.closeWindow();
+                    this.gridReportEntries.addHandler(null, null, data);
+                    Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
+                }, this)
+            }],
             inputLines: [{
                 xtype: 'combo',
                 name: 'Category',
@@ -1005,7 +1041,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 fieldLabel: this.i18n._('Type'),
                 queryMode: 'local',
                 width: 350,
-                store: [["TEXT", this.i18n._("Text")],["PIE_GRAPH", this.i18n._("Pie Graph")],["TIME_GRAPH", this.i18n._("Time Graph")]],
+                store: chartTypes,
                 listeners: {
                     "select": {
                         fn: Ext.bind(function(combo, records, eOpts) {
@@ -1092,10 +1128,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 allowBlank: false,
                 width: 350,
                 store: [
-                        ["BAR", this.i18n._("Bar")],
-                        ["BAR_3D", this.i18n._("Bar 3D")],
-                        ["LINE", this.i18n._("Line")]
-                    ]
+                    ["LINE", this.i18n._("Line")],
+                    ["BAR_3D", this.i18n._("Bar 3D")],
+                    ["BAR_3D_OVERLAPPED", this.i18n._("Bar 3D Overlapped")],
+                    ["BAR", this.i18n._("Bar")],
+                    ["BAR_OVERLAPPED", this.i18n._("Bar Overlapped")]
+                ]
             }, {
                 xtype: 'combo',
                 name: 'timeDataInterval',
@@ -1220,43 +1258,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 xtype:'fieldset',
                 title: this.i18n._("Sql Conditions:"),
                 items:[this.gridSqlConditionsEditor]
-            },{
-                xtype: 'container',
-                layout: 'column',
-                //margin: '10 0 10 0',
-                items: [{
-                    xtype: 'button',
-                    margin: 10,
-                    text: this.i18n._('View Report'),
-                    iconCls: 'icon-play',
-                    handler: Ext.bind(function() {
-                        var rowEditor = this.gridReportEntries.rowEditor;
-                        if (rowEditor.validate()!==true) {
-                            return;
-                        }
-                        if (rowEditor.record !== null) {
-                            var data = Ext.clone(rowEditor.record.getData());
-                            rowEditor.updateActionRecursive(rowEditor.items, data, 0);
-                            this.viewReport(data);
-                        }
-                    }, this)
-                }, {
-                    xtype: 'button',
-                    margin: 10,
-                    text: this.i18n._('Copy Report'),
-                    iconCls: 'action-icon',
-                    handler: Ext.bind(function() {
-                        var rowEditor = this.gridReportEntries.rowEditor;
-                        var data = Ext.clone(this.gridReportEntries.emptyRow);
-                        rowEditor.updateActionRecursive(rowEditor.items, data, 0);
-                        Ext.apply(data, {
-                            title: Ext.String.format("Copy of {0}", data.title)
-                        });
-                        rowEditor.closeWindow();
-                        this.gridReportEntries.addHandler(null, null, data);
-                        Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
-                    }, this)
-                }]
             }],
             populate: function(record, addMode) {
                 getColumnsForTable(record.get("table"));

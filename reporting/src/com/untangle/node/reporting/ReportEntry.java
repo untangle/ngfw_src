@@ -47,7 +47,9 @@ public class ReportEntry implements Serializable, JSONString
 
     public static enum TimeStyle {
         BAR,
+        BAR_OVERLAPPED,
         BAR_3D,
+        BAR_3D_OVERLAPPED,
         LINE
     };
     

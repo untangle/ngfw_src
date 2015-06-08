@@ -449,7 +449,36 @@ Ext.define('Ung.panel.Reports', {
                     width: reportEntry.timeDataColumns.length>2 ? 60 : 90
                 });
             }
+            if(!this.reportEntry.timeStyle) {
+                this.reportEntry.timeStyle = "LINE";
+            }
+            if(this.reportEntry.timeStyle.indexOf('OVERLAPPED') != -1  && this.reportEntry.timeDataColumns.length <= 1){
+                this.reportEntry.timeStyle = this.reportEntry.timeStyle.replace("_OVERLAPPED", "");
+            }
+            var tbar = [], timeStyle, timeStyles = [
+                { name: 'LINE', iconCls: 'icon-line-chart', text: i18n._("Line"), tooltip: i18n._("Switch to Line Chart") },
+                { name: 'BAR_3D', iconCls: 'icon-bar3d-chart', text: i18n._("Bar 3D"), tooltip: i18n._("Switch to Bar 3D Chart") },
+                { name: 'BAR_3D_OVERLAPPED', iconCls: 'icon-bar3d-overlapped-chart', text: i18n._("Bar 3D Overlapped"), tooltip: i18n._("Switch to Bar 3D Overlapped Chart") },
+                { name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart") },
+                { name: 'BAR_OVERLAPPED', iconCls: 'icon-bar-overlapped-chart', text: i18n._("Bar Overlapped"), tooltip: i18n._("Switch to Bar Overlapped Chart") }
+            ];
             
+            for(i=0; i<timeStyles.length; i++) {
+                timeStyle = timeStyles[i];
+                tbar.push({
+                    xtype: 'button',
+                    pressed: this.reportEntry.timeStyle == timeStyle.name,
+                    hidden: (timeStyle.name.indexOf('OVERLAPPED') != -1 ) && (reportEntry.timeDataColumns.length <= 1),
+                    name: timeStyle.name,
+                    iconCls: timeStyle.iconCls,
+                    text: timeStyle.text,
+                    tooltip: timeStyle.tooltip,
+                    handler: Ext.bind(function(button) {
+                        this.reportEntry.timeStyle = button.name;
+                        this.loadReport(this.reportEntry);
+                    }, this)
+                });
+            }
             chart = {
                 xtype: 'cartesian',
                 name: "chart",
@@ -465,42 +494,12 @@ Ext.define('Ung.panel.Reports', {
                 legend: {
                     docked: 'bottom'
                 },
-                tbar: [{
-                    xtype: 'button',
-                    hidden: this.reportEntry.timeStyle == 'LINE',
-                    iconCls: 'icon-line-chart',
-                    text: i18n._("Line"),
-                    tooltip: i18n._("Switch to Line Chart"),
-                    handler: Ext.bind(function() {
-                        this.reportEntry.timeStyle = 'LINE';
-                        this.loadReport(this.reportEntry);
-                    }, this)
-                }, {
-                    xtype: 'button',
-                    hidden: this.reportEntry.timeStyle == 'BAR',
-                    iconCls: 'icon-bar-chart',
-                    text: i18n._("Bar"),
-                    tooltip: i18n._("Switch to Bar Chart"),
-                    handler: Ext.bind(function() {
-                        this.reportEntry.timeStyle = 'BAR';
-                        this.loadReport(this.reportEntry);
-                    }, this)
-                }, {
-                    xtype: 'button',
-                    hidden: this.reportEntry.timeStyle == 'BAR_3D',
-                    iconCls: 'icon-bar3d-chart',
-                    text: i18n._("Bar 3D"),
-                    tooltip: i18n._("Switch to Bar 3D Chart"),
-                    handler: Ext.bind(function() {
-                        this.reportEntry.timeStyle = 'BAR_3D';
-                        this.loadReport(this.reportEntry);
-                    }, this)
-                }, '->', {
+                tbar: tbar.concat(['->', {
                     xtype: 'button',
                     iconCls: 'icon-export',
                     text: i18n._("Download"),
                     handler: Ext.bind(this.downloadChart, this)
-                }],
+                }]),
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -518,7 +517,7 @@ Ext.define('Ung.panel.Reports', {
                 }],
                 interactions: ['itemhighlight'],
                 axes: [{
-                    type: (reportEntry.timeStyle == 'BAR_3D') ? 'numeric3d' : 'numeric',
+                    type: (reportEntry.timeStyle.indexOf('BAR_3D')!=-1) ? 'numeric3d' : 'numeric',
                     fields: axesFields,
                     position: 'left',
                     grid: true,
@@ -527,7 +526,7 @@ Ext.define('Ung.panel.Reports', {
                         return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
                     }
                 }, {
-                    type: (reportEntry.timeStyle == 'BAR_3D') ? 'category3d' : 'category',
+                    type: (reportEntry.timeStyle.indexOf('BAR_3D')!=-1) ? 'category3d' : 'category',
                     fields: 'time_trunc',
                     position: 'bottom',
                     grid: true,
@@ -543,52 +542,7 @@ Ext.define('Ung.panel.Reports', {
                 chart.colors = reportEntry.colors;
             }
             
-            if(reportEntry.timeStyle == 'BAR') {
-                chart.series = [{
-                    type: 'bar',
-                    axis: 'left',
-                    title: axesFields,
-                    xField: 'time_trunc',
-                    yField: axesFields,
-                    stacked: false,
-                    style: {
-                        opacity: 0.90,
-                        inGroupGapWidth: 1
-                    },
-                    highlight: true,
-                    tooltip: {
-                        trackMouse: true,
-                        style: 'background: #fff',
-                        renderer: function(storeItem, item) {
-                            var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                            this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units) + legendHint);
-                        }
-                    }
-                }];
-            } else if (reportEntry.timeStyle == 'BAR_3D') {
-                for(i=0; i<axesFields.length; i++) {
-                    series.push({
-                        type: 'bar3d',
-                        axis: 'left',
-                        title: axesFields[i],
-                        xField: 'time_trunc',
-                        yField: axesFields[i],
-                        style: {
-                            opacity: 0.70,
-                            lineWidth: 1+5*i
-                        },
-                        tooltip: {
-                            trackMouse: true,
-                            style: 'background: #fff',
-                            renderer: function(storeItem, item) {
-                                var title = item.series.getTitle();
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units) + legendHint);
-                            }
-                        }
-                    });
-                }
-                chart.series = series;
-            } else if (reportEntry.timeStyle == 'LINE') {
+            if (reportEntry.timeStyle == 'LINE') {
                 for(i=0; i<axesFields.length; i++) {
                     series.push({
                         type: 'line',
@@ -620,6 +574,48 @@ Ext.define('Ung.panel.Reports', {
                     });
                 }
                 chart.series = series;
+            } else if(reportEntry.timeStyle.indexOf('OVERLAPPED') != -1) {
+                for(i=0; i<axesFields.length; i++) {
+                    series.push({
+                        type: (reportEntry.timeStyle.indexOf('BAR_3D')!=-1)?'bar3d': 'bar',
+                        axis: 'left',
+                        title: axesFields[i],
+                        xField: 'time_trunc',
+                        yField: axesFields[i],
+                        style: (reportEntry.timeStyle.indexOf('BAR_3D') != -1)? { opacity: 0.70, lineWidth: 1+5*i } : {  opacity: 0.60,  maxBarWidth: Math.max(40-2*i, 2) },
+                        tooltip: {
+                            trackMouse: true,
+                            style: 'background: #fff',
+                            renderer: function(storeItem, item) {
+                                var title = item.series.getTitle();
+                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units) + legendHint);
+                            }
+                        }
+                    });
+                }
+                chart.series = series;
+            } else if((reportEntry.timeStyle.indexOf('BAR') != -1 )) {
+                chart.series = [{
+                    type: (reportEntry.timeStyle.indexOf('BAR_3D')!=-1)?'bar3d': 'bar',
+                    axis: 'left',
+                    title: axesFields,
+                    xField: 'time_trunc',
+                    yField: axesFields,
+                    stacked: false,
+                    style: {
+                        opacity: 0.90,
+                        inGroupGapWidth: 1
+                    },
+                    highlight: true,
+                    tooltip: {
+                        trackMouse: true,
+                        style: 'background: #fff',
+                        renderer: function(storeItem, item) {
+                            var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                            this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units) + legendHint);
+                        }
+                    }
+                }];
             }
             this.reportDataGrid.setColumns(reportDataColumns);
         }
