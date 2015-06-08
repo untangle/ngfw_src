@@ -341,8 +341,6 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
     pthread_t id;
     jnetcap_thread_t* arg;
 
-    errlog( ERR_CRITICAL, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" );
-    
     _verify_netcap_initialized ();
 
     // if (( num_threads < 0 ) || ( num_threads > JN_Netcap( MAX_THREADS ))) return errlogargs();
