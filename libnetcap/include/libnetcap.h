@@ -35,10 +35,6 @@ typedef enum {
 } netcap_callback_action_t;
 
 typedef enum {
-    NC_INTF_ERR = 0
-} netcap_intf_t;
-
-typedef enum {
     CONN_STATE_INCOMPLETE = 1,
     CONN_STATE_COMPLETE,
     CONN_STATE_NULL
@@ -51,6 +47,10 @@ enum {
     TCP_CLI_DEAD_ICMP,
     TCP_CLI_DEAD_NULL
 };
+
+typedef enum {
+    NC_INTF_ERR = 0
+} netcap_intf_t;
 
 typedef enum
 {
@@ -66,8 +66,7 @@ typedef struct
 } netcap_intf_string_t;
 
 /**
- * XXX
- * This should be changed to a sockaddr_in if possible.
+ * XXX This should be changed to a sockaddr_in if possible.
  */
 typedef struct netcap_endpoint_t {
     struct in_addr host;
@@ -94,9 +93,6 @@ typedef struct nat_info {
   netcap_ip_tuple original;
   netcap_ip_tuple reply;
 } nat_info_t;
-
-// random value to signal default
-#define IS_MARKED_FORCE_FLAG 0x00001200
 
 typedef struct netcap_pkt {
     /**
@@ -315,9 +311,9 @@ void  netcap_debug_set_level   (int lev);
 /**
  * Thread management
  */
-void* netcap_thread_donate   (void* arg);
-void* netcap_conntrack_listen( void* arg );
-int   netcap_thread_undonate (int thread_id);
+void* netcap_thread_donate    ( void* arg );
+void* netcap_conntrack_listen ( void* arg );
+int   netcap_thread_undonate  ( int thread_id );
 
 /**
  * Hook management
@@ -330,7 +326,7 @@ int   netcap_conntrack_hook_register   (netcap_conntrack_hook_t hook);
 int   netcap_conntrack_hook_unregister ();
 
 /**
- * Packet Sending (XXX include pkt_create?)
+ * Packet Sending
  */
 int   netcap_udp_send  (char* data, int data_len, netcap_pkt_t* pkt);
 int   netcap_icmp_send (char *data, int data_len, netcap_pkt_t* pkt);
@@ -357,21 +353,20 @@ int netcap_interface_dst_intf( netcap_session_t* session, char* intf_name );
 int netcap_tcp_redirect_ports( int* port_low, int* port_high );
 
 /**
- * Session table management
- */
-
-/**
  * Get a session given its ID
  */
 netcap_session_t* netcap_sesstable_get ( u_int64_t id );
+
 /**
  * Get the number of open sessions
  */
 int               netcap_sesstable_numsessions ( void );
+
 /**
  * get a list of all open sessions
  */
 list_t*           netcap_sesstable_get_all_sessions ( void ); 
+
 /**
  * Call the function kill_all_function on all of the sessions in the session table
  */
@@ -401,12 +396,6 @@ int  netcap_tcp_get_client_mark ( netcap_session_t* netcap_sess );
 int  netcap_tcp_set_client_mark ( netcap_session_t* netcap_sess , int nfmark );
 
 /**
- * netcap_sched_donate: Donate a thread to the scheduler.
- */
-void* netcap_sched_donate ( void* arg );
-
-
-/**
  * Printing utilities
  * all return static buffers
  */
@@ -423,7 +412,6 @@ char* netcap_session_cli_tuple_print ( netcap_session_t* sess );
  */
 char* netcap_session_srv_endp_print ( netcap_session_t* sess );
 char* netcap_session_cli_endp_print ( netcap_session_t* sess );
-
 char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
 
 /* Set the verdict on a packet */
@@ -433,6 +421,10 @@ int  netcap_set_verdict_mark      ( u_int32_t packet_id, int verdict, u_char* bu
 /* Conntrack manipulation functions */
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);
 
+/**
+ * Lookups up the MAC address for the provided IP in the ARP table
+ * The result (if found) is copied into the mac array
+ */
 int netcap_arp_lookup ( const char* ip, char* mac, int maclength );
 
 

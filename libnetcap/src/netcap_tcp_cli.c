@@ -447,7 +447,6 @@ static int  _send_icmp_response( netcap_session_t* netcap_sess, netcap_pkt_t* sy
         icmp_pkt->icmp_cksum = unet_in_cksum((u_int16_t*)icmp_pkt, len );
         
         /* Clear out any marks */
-        /* XXX Probably want a mark for the u-turns */
         syn->is_marked = 0;
         syn->nfmark = 0;
 

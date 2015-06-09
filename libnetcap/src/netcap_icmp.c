@@ -116,9 +116,6 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     u_int              nfmark = ( MARK_BYPASS | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  bypass + notrack + whatever packet marks are specified */
 
-    /* if the caller uses the force flag, then override the default bits of the mark */
-    if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
-
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));
     memcpy( &dst.sin_addr, &pkt->dst.host, sizeof(struct in_addr));

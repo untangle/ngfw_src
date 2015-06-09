@@ -234,9 +234,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
      */
     u_int              nfmark = ( MARK_BYPASS | ( pkt->is_marked ? pkt->nfmark : 0 )); 
     
-    /* if the caller uses the force flag, then override the default bits of the mark */
-    if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
-    
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));
     memcpy( &dst.sin_addr, &pkt->dst.host , sizeof(struct in_addr) );
