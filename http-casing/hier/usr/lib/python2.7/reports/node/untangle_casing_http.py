@@ -77,6 +77,13 @@ CREATE TABLE reports.http_events (
                                 ["session_id",
                                  "policy_id",
                                  "time_stamp",
+                                 "host",
+                                 "domain",
+                                 "username",
+                                 "hostname",
+                                 "c_client_addr",
+                                 "client_intf",
+                                 "server_intf",
                                  "web_filter_blocked",
                                  "web_filter_flagged",
                                  "web_filter_category",
@@ -85,14 +92,7 @@ CREATE TABLE reports.http_events (
                                  "web_filter_lite_category",
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
-                                 "ad_blocker_action",
-                                 "host",
-                                 "domain",
-                                 "username",
-                                 "hostname",
-                                 "c_client_addr",
-                                 "client_intf",
-                                 "server_intf"])
+                                 "ad_blocker_action"])
 
         sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
         sql_helper.drop_column('http_events','adblocker_blocked') # 11.2 - drop unused column
