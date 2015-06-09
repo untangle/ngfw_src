@@ -753,18 +753,23 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         }, this));
         
         var columnsStore = Ext.create('Ext.data.Store', {
-            sorters: "name",
-            fields: ["name"],
+            sorters: "displayName",
+            fields: ["name", "displayName"],
             data: []
         });
-
+        this.columnsHumanReadableNames = Ung.panel.Reports.getColumnsHumanReadableNames();
+        
         var getColumnsForTable = Ext.bind(function(table) {
             if(table != null && table.length > 2) {
                 Ung.Main.getReportingManagerNew().getColumnsForTable(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    var columns = [];
+                    var columns = [], readableName;
                     for (var i=0; i< result.length; i++) {
-                        columns.push({ name: result[i]});
+                        readableName = this.columnsHumanReadableNames[result[i]]
+                        columns.push({
+                            name: result[i],
+                            displayName: readableName!=null ? readableName:result[i]
+                        });
                     }
                     columnsStore.loadData(columns);
                 }, this), table);
@@ -884,7 +889,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     typeAhead:true,
                     allowBlank: false,
                     valueField: "name",
-                    displayField: "name",
+                    displayField: "displayName",
                     queryMode: 'local',
                     width: 350,
                     store: columnsStore
