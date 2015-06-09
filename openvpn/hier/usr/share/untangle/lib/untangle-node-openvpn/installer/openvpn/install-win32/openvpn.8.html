@@ -275,9 +275,9 @@ If
 <B>host</B>
 
 is a DNS name which resolves to multiple IP addresses,
-one will be randomly
-chosen, providing a sort of basic load-balancing and
-failover capability.
+the first address returned by the system getaddrinfo() function
+will be used (no DNS randomization inside OpenVPN 2.3.x, and
+it will not try multiple addresses).
 
 <DT><B>--remote-random-hostname</B>
 
@@ -787,7 +787,13 @@ peer on its new IP address.
 <DT><B>--port port</B>
 
 <DD>
-TCP/UDP port number for both local and remote.  The current
+TCP/UDP port number or port name for both local and remote (sets both
+<B>--lport</B>
+
+and
+<B>--rport</B>
+
+options to given port).  The current
 default of 1194 represents the official IANA port number
 assignment for OpenVPN and has been used since version 2.0-beta17.
 Previous versions used port 5000 as the default.
@@ -795,12 +801,21 @@ Previous versions used port 5000 as the default.
 <DT><B>--lport port</B>
 
 <DD>
-TCP/UDP port number for bind.
+Set local TCP/UDP port number or name.  Cannot be used together with
+<B>--nobind</B>
+
+option.
 
 <DT><B>--rport port</B>
 
 <DD>
-TCP/UDP port number for remote.
+Set TCP/UDP port number or name used by the
+<B>--remote</B>
+
+option. The port can also be set directly using the
+<B>--remote</B>
+
+option.
 
 <DT><B>--bind</B>
 
@@ -943,6 +958,14 @@ driver supports an
 command which sets a subnet instead of a remote endpoint IP address.
 <P>
 This option exists in OpenVPN 2.1 or higher.
+<P>
+Note: Using
+<B>--topology subnet</B>
+
+changes the interpretation of the arguments of
+<B>--ifconfig</B>
+
+to mean &quot;address netmask&quot;, no longer &quot;local remote&quot;.
 
 <DT><B>--tun-ipv6</B>
 
@@ -1023,18 +1046,26 @@ Set TUN/TAP adapter parameters.
 <B>l</B>
 
 is the IP address of the local VPN endpoint.
-For TUN devices,
+For TUN devices in point-to-point mode,
 <B>rn</B>
 
 is the IP address of the remote VPN endpoint.
-For TAP devices,
+For TAP devices, or TUN devices used with
+<B>--topology subnet,</B>
+
 <B>rn</B>
 
-is the subnet mask of the virtual ethernet segment
+is the subnet mask of the virtual network segment
 which is being created or connected to.
 <P>
 For TUN devices, which facilitate virtual
-point-to-point IP connections,
+point-to-point IP connections (when used in
+<B>--topology net30</B>
+
+or
+<B>p2p</B>
+
+mode),
 the proper usage of
 <B>--ifconfig</B>
 
@@ -1051,7 +1082,10 @@ you will be pinging across the VPN.
 <P>
 For TAP devices, which provide
 the ability to create virtual
-ethernet segments,
+ethernet segments, or TUN devices in
+<B>--topology subnet</B>
+
+mode (which create virtual &quot;multipoint networks&quot;),
 <B>--ifconfig</B>
 
 is used to set an IP address and
@@ -2193,6 +2227,12 @@ has been specified, the up script will be called with
 
 as the last parameter.
 <P>
+NOTE: on restart, OpenVPN will not pass the full set of environment
+variables to the script.  Namely, everything related to routing and
+gateways will not be passed, as nothing needs to be done anyway - all
+the routing setup is already in place.  Additionally, the up-restart
+script will run with the downgraded UID/GID settings (if configured).
+<P>
 The following standalone example shows how the
 <B>--up</B>
 
@@ -2426,6 +2466,11 @@ or
 
 As of OpenVPN v2.3, this flag is no longer accepted.  In most *nix environments the execve()
 approach has been used without any issues.
+<P>
+Some directives such as --up allow options to be passed to the external
+script. In these cases make sure the script name does not contain any spaces or
+the configuration parser will choke because it can't determine where the script
+name ends and script options start.
 <P>
 To run scripts in Windows in earlier OpenVPN
 versions you needed to either add a full path to the script interpreter which can parse the
@@ -4524,6 +4569,11 @@ in a round-robin fashion, spend no more than
 <B>n</B>
 
 seconds waiting for a response before trying the next server.
+As this only makes sense in client-to-server setups, it cannot
+be used in point-to-point setups using
+<B>--secret</B>
+
+symmetrical key mode.
 
 <DT><B>--explicit-exit-notify [n]</B>
 
@@ -4672,7 +4722,7 @@ For more information on HMAC see
 <DT><B>--cipher alg</B>
 
 <DD>
-Encrypt packets with cipher algorithm
+Encrypt data channel packets with cipher algorithm
 <B>alg.</B>
 
 The default is
@@ -5105,6 +5155,28 @@ they are distributed with OpenVPN, they are totally insecure.
 Directory containing trusted certificates (CAs and CRLs).
 Available with OpenSSL version &gt;= 0.9.7 dev.
 Not available with PolarSSL.
+<P>
+When using the
+<B>--capath</B>
+
+option, you are required to supply valid CRLs for the CAs too.  CAs in the
+capath directory are expected to be named &lt;hash&gt;.&lt;n&gt;.  CRLs are expected to
+be named &lt;hash&gt;.r&lt;n&gt;.  See the
+<B>-CApath</B>
+
+option of
+<B>openssl verify</B>
+
+, and the
+<B>-hash</B>
+
+option of
+<B>openssl x509</B>
+
+and
+<B>openssl crl</B>
+
+for more information.
 
 <DT><B>--dh file</B>
 
@@ -5199,7 +5271,7 @@ file.
 <DD>
 Local peer's private key in .pem format.  Use the private key which was generated
 when you built your peer's certificate (see
-<B>-cert file</B>
+<B>--cert file</B>
 
 above).
 
@@ -5213,17 +5285,21 @@ include &quot;1.0&quot;, &quot;1.1&quot;, or &quot;1.2&quot;.  If 'or-highest' i
 and version is not recognized, we will only accept the highest TLS
 version supported by the local SSL implementation.
 <P>
-If this options is not set, the code in OpenVPN 2.3.4 will default
-to using TLS 1.0 only, without any version negotiation.  This reverts
-the beaviour to what OpenVPN versions up to 2.3.2 did, as it turned
-out that TLS version negotiation can lead to handshake problems due
-to new signature algorithms in TLS 1.2.
+Also see
+<B>--tls-version-max</B>
+
+below, for information on compatibility.
 
 <DT><B>--tls-version-max version</B>
 
 <DD>
 Set the maximum TLS version we will use (default is the highest version
 supported).  Examples for version include &quot;1.0&quot;, &quot;1.1&quot;, or &quot;1.2&quot;.
+<P>
+If and only if this is set to 1.0, and OpenSSL is used (not PolarSSL),
+then OpenVPN will set up OpenSSL to use a fixed TLSv1 handshake. All
+other configurations will autonegotiate in the given limits, and the
+choice of handshake versions is left to the SSL implementation.
 
 <DT><B>--pkcs12 file</B>
 
@@ -5297,6 +5373,20 @@ This option can be used instead of
 and
 <B>--pkcs12.</B>
 
+<P>
+If p11-kit is present on the system, its
+<B>p11-kit-proxy.so</B>
+
+module will be loaded by default if either the
+<B>--pkcs11-id</B>
+
+or
+<B>--pkcs11-id-management</B>
+
+options are specified without
+<B>--pkcs11-provider</B>
+
+being given.
 
 <DT><B>--pkcs11-private-mode mode...</B>
 
@@ -5417,15 +5507,30 @@ A list
 <B>l</B>
 
 of allowable TLS ciphers delimited by a colon (&quot;:&quot;).
-If you require a high level of security,
-you may want to set this parameter manually, to prevent a
-version rollback attack where a man-in-the-middle attacker tries
-to force two peers to negotiate to the lowest level
-of security they both support.
+<P>
+This setting can be used to ensure that certain cipher suites are used (or
+not used) for the TLS connection.  OpenVPN uses TLS to secure the control
+channel, over which the keys that are used to protect the actual VPN traffic
+are exchanged.
+<P>
+The supplied list of ciphers is (after potential OpenSSL/IANA name translation)
+simply supplied to the crypto library.  Please see the OpenSSL and/or PolarSSL
+documentation for details on the cipher list interpretation.
+<P>
 Use
 <B>--show-tls</B>
 
-to see a list of supported TLS ciphers.
+to see a list of TLS ciphers supported by your crypto library.
+<P>
+Warning!
+<B>--tls-cipher</B>
+
+is an expert feature, which - if used correcly - can improve the security of
+your VPN connection.  But it is also easy to unwittingly use it to carefully
+align a gun with your foot, or just break your connection.  Use with care!
+<P>
+The default for --tls-cipher is to use PolarSSL's default cipher list
+when using PolarSSL or &quot;DEFAULT:!EXP:!PSK:!SRP:!kRSA&quot; when using OpenSSL.
 
 <DT><B>--tls-timeout n</B>
 
@@ -5571,7 +5676,7 @@ An OpenVPN static key file generated by
 
 parameter is used).
 <P>
-<B>(2)</B>
+<B>(2) DEPRECATED</B>
 
 A freeform passphrase file.  In this case the HMAC key will
 be derived by taking a secure hash of this file, similar to
@@ -5581,7 +5686,8 @@ the
 or
 <B><A HREF="/cgi-bin/man/man2html?1+sha1sum">sha1sum</A></B>(1)
 
-commands.
+commands. This option is deprecated and will stop working in OpenVPN 2.4 and
+newer releases.
 <P>
 OpenVPN will first try format (1), and if the file fails to parse as
 a static key file, format (2) will be used.
@@ -5709,6 +5815,9 @@ forget username/password inputs after they are used.  As a result,
 when OpenVPN needs a username/password, it will prompt for input
 from stdin, which may be multiple times during the duration of an
 OpenVPN session.
+<P>
+When using --auth-nocache in combination with a user/password file
+and --chroot or --daemon, make sure to use an absolute path.
 <P>
 This directive does not affect the
 <B>--http-proxy</B>
@@ -6094,6 +6203,12 @@ is a directory containing files named as revoked serial numbers
 requests a connection, where the client certificate serial number
 (decimal string) is the name of a file present in the directory,
 it will be rejected.
+<P>
+Note: As the crl file (or directory) is read every time a peer connects,
+if you are dropping root privileges with
+<B>--user,</B>
+
+make sure that this user has sufficient privileges to read the file.
 
 </DL>
 <A NAME="lbAL">&nbsp;</A>
@@ -6123,9 +6238,14 @@ option.
 
 <DD>
 (Standalone)
-Show all TLS ciphers (TLS used only as a control channel).  The TLS
-ciphers will be sorted from highest preference (most secure) to
-lowest.
+Show all TLS ciphers supported by the crypto library.  OpenVPN uses TLS to
+secure the control channel, over which the keys that are used to protect the
+actual VPN traffic are exchanged.  The TLS ciphers will be sorted from highest
+preference (most secure) to lowest.
+<P>
+Be aware that whether a cipher suite in this list can actually work depends on
+the specific setup of both peers (e.g. both peers must support the cipher, and
+an ECDSA cipher suite will not work if you are using an RSA certificate, etc.).
 
 <DT><B>--show-engines</B>
 
@@ -6658,12 +6778,20 @@ adapter list.
 
 
 <DL COMPACT>
-<DT><B>--show-pkcs11-ids provider [cert_private]</B>
+<DT><B>--show-pkcs11-ids [provider] [cert_private]</B>
 
 <DD>
 (Standalone)
 Show PKCS#11 token object list. Specify cert_private as 1
 if certificates are stored as private objects.
+<P>
+If p11-kit is present on the system, the
+<B>provider</B>
+
+argument is optional; if omitted the default
+<B>p11-kit-proxy.so</B>
+
+module will be queried.
 <P>
 <B>--verb</B>
 
@@ -8362,6 +8490,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 08:10:32 GMT, December 01, 2014
+Time: 06:43:19 GMT, June 08, 2015
 </BODY>
 </HTML>

@@ -1,3 +1,290 @@
+OpenVPN 2.3.7
+
+Alexander Pyhalov (1):
+      Default gateway can't be determined on illumos/Solaris platforms
+
+Arne Schwabe (1):
+      Warn that tls-auth with free form files is going to be removed from OpenVPN 2.4
+
+David Sommerseth (6):
+      autotools: Fix wrong ./configure help screen default values
+      down-root plugin: Replaced system() calls with execve()
+      down-root: Improve error messages
+      plugin, down-root: Fix compiler warnings
+      sockets: Remove the limitation of --tcp-nodelay to be server-only
+      plugins, down-root: Code style clean-up
+
+David Woodhouse (2):
+      pkcs11: Load p11-kit-proxy.so module by default
+      Make 'provider' option to --show-pkcs11-ids optional where p11-kit is present
+
+Felix Janda (1):
+      Use OPENVPN_ETH_P_* so that <netinet/if_ether.h> is unecessary
+
+Gert Doering (18):
+      New approach to handle peer-id related changes to link-mtu (2.3 version)
+      Fix incorrect use of get_ipv6_addr() for iroute options.
+      Print helpful error message on --mktun/--rmtun if not available.
+      explain effect of --topology subnet on --ifconfig
+      Add note about file permissions and --crl-verify to manpage.
+      repair --dev null breakage caused by db950be85d37
+      assume res_init() is always there.
+      Correct note about DNS randomization in openvpn.8
+      Disallow usage of --server-poll-timeout in --secret key mode.
+      slightly enhance documentation about --cipher
+      Enforce "serial-tests" behaviour for tests/Makefile
+      Revert "Enforce "serial-tests" behaviour for tests/Makefile"
+      On signal reception, return EAI_SYSTEM from openvpn_getaddrinfo().
+      Use configure.ac hack to apply serial_test AM option only if supported.
+      Use EAI_AGAIN instead of EAI_SYSTEM for openvpn_getaddrinfo().
+      Move res_init() call to inner openvpn_getaddrinfo() loop
+      Fix FreeBSD ifconfig for topology subnet tunnels.
+      Preparing for release v2.3.7 (ChangeLog, version.m4)
+
+Guy Yur (1):
+      Fix --redirect-private in --dev tap mode.
+
+Jan Just Keijser (1):
+      include ifconfig_ environment variables in --up-restart env set
+
+Jonathan K. Bullard (1):
+      Fix null pointer dereference in options.c
+
+Lev Stipakov (1):
+      Fix mssfix default value in connection_list context
+
+Matthias Andree (1):
+      Manual page update for Re-enabled TLS version negotiation.
+
+Mike Gilbert (1):
+      Include systemd units in the source tarball (make dist)
+
+Robert Fischer (1):
+      Updated manpage for --rport and --lport
+
+Samuli Sepp‰nen (2):
+      Properly escape dashes on the man-page
+      Improve documentation in --script-security section of the man-page
+
+Steffan Karger (14):
+      Really fix '--cipher none' regression
+      Update doxygen (a bit)
+      Set tls-version-max to 1.1 if cryptoapicert is used
+      Account for peer-id in frame size calculation
+      Disable SSL compression
+      Fix frame size calculation for non-CBC modes.
+      Allow for CN/username of 64 characters (fixes off-by-one)
+      Remove unneeded parameter 'first_time' from possibly_become_daemon()
+      Re-enable TLS version negotiation by default
+      Remove size limit for files inlined in config
+      Improve --tls-cipher and --show-tls man page description
+      Re-read auth-user-pass file on (re)connect if required
+      Clarify --capath option in manpage
+      Call daemon() before initializing crypto library
+OpenVPN 2.3.6
+
+David Sommerseth (1):
+      systemd: Reworked the systemd unit file to handle server and client configs better
+
+Gert Doering (2):
+      Add client-only support for peer-id.
+      Preparing for release v2.3.6 (ChangeLog, version.m4)
+
+Samuli Sepp‰nen (1):
+      Fix to --shaper documentation on the man-page
+
+Steffan Karger (4):
+      Fix assertion error when using --cipher none
+      Add --tls-version-max
+      Modernize sample keys and sample configs
+      Drop too-short control channel packets instead of asserting out.
+OpenVPN 2.3.5
+
+Andris Kalnozols (2):
+      Fix some typos in the man page.
+      Do not upcase x509-username-field for mixed-case arguments.
+
+Arne Schwabe (1):
+      Fix server routes not working in topology subnet with --server [v3]
+
+David Sommerseth (4):
+      Improve error reporting on file access to --client-config-dir and --ccd-exclusive
+      Don't let openvpn_popen() keep zombies around
+      Add systemd unit file for OpenVPN
+      systemd: Use systemd functions to consider systemd availability
+
+Gert Doering (4):
+      Drop incoming fe80:: packets silently now.
+      Fix t_lpback.sh platform-dependent failures
+      Call init script helpers with explicit path (./)
+      Preparing for release v2.3.5 (ChangeLog, version.m4)
+
+Heiko Hund (1):
+      refine assertion to allow other modes than CBC
+
+Hubert Kario (2):
+      ocsp_check - signature verification and cert staus results are separate
+      ocsp_check - double check if ocsp didn't report any errors in execution
+
+James Bekkema (1):
+      Fix socket-flag/TCP_NODELAY on Mac OS X
+
+James Yonan (6):
+      Fixed several instances of declarations after statements.
+      In socket.c, fixed issue where uninitialized value (err) is being passed to to gai_strerror.
+      Explicitly cast the third parameter of setsockopt to const void * to avoid warning.
+      MSVC 2008 doesn't support dimensioning an array with a const var nor using %z as a printf format specifier.
+      Define PATH_SEPARATOR for MSVC builds.
+      Fixed some compile issues with show_library_versions()
+
+Jann Horn (1):
+      Remove quadratic complexity from openvpn_base64_decode()
+
+Mike Gilbert (1):
+      Add configure check for the path to systemd-ask-password
+
+Philipp Hagemeister (2):
+      Add topology in sample server configuration file
+      Implement on-link route adding for iproute2
+
+Samuel Thibault (1):
+      Ensure that client-connect files are always deleted
+
+Steffan Karger (13):
+      Remove function without effect (cipher_ok() always returned true).
+      Remove unneeded wrapper functions in crypto_openssl.c
+      Fix bug that incorrectly refuses oid representation eku's in polar builds
+      Update README.polarssl
+      Rename ALLOW_NON_CBC_CIPHERS to ENABLE_OFB_CFB_MODE, and add to configure.
+      Add proper check for crypto modes (CBC or OFB/CFB)
+      Improve --show-ciphers to show if a cipher can be used in static key mode
+      Extend t_lpback tests to test all ciphers reported by --show-ciphers
+      Don't exit daemon if opening or parsing the CRL fails.
+      Fix typo in cipher_kt_mode_{cbc, ofb_cfb}() doxygen.
+      Fix regression with password protected private keys (polarssl)
+      ssl_polarssl.c: fix includes and make casts explicit
+      Remove unused variables from ssl_verify_openssl.c extract_x509_extension()
+
+TDivine (1):
+      Fix "code=995" bug with windows NDIS6 tap driver.
+OpenVPN 2.3.4
+
+Arne Schwabe (1):
+      Fix man page and OSCP script: tls_serial_{n} is decimal
+
+Dmitrij Tejblum (1):
+      Fix is_ipv6 in case of tap interface.
+
+Gert Doering (8):
+      IPv6 address/route delete fix for Win8
+      Add SSL library version reporting.
+      Minor t_client.sh cleanups
+      Repair --multihome on FreeBSD for IPv4 sockets.
+      Rewrite manpage section about --multihome
+      More IPv6-related updates to the openvpn man page.
+      Conditionalize calls to print_default_gateway on !ENABLE_SMALL
+      Preparing for release v2.3.4 (ChangeLog, version.m4)
+
+James Yonan (2):
+      Use native strtoull() with MSVC 2013.
+      When tls-version-min is unspecified, revert to original versioning approach.
+
+Steffan Karger (4):
+      Change signedness of hash in x509_get_sha1_hash(), fixes compiler warning.
+      Fix OCSP_check.sh to also use decimal for stdout verification.
+      Fix build system to accept non-system crypto library locations for plugins.
+      Make serial env exporting consistent amongst OpenSSL and PolarSSL builds.
+
+Yawning Angel (1):
+      Fix SOCKSv5 method selection
+
+kangsterizer (1):
+      Fix typo in sample build script to use LDFLAGS
+OpenVPN 2.3.3
+
+Alon Bar-Lev (1):
+      pkcs11: use generic evp key instead of rsa
+
+Arne Schwabe (8):
+      Add support of utun devices under Mac OS X
+      Add support to ignore specific options.
+      Add a note what setenv opt does for OpenVPN < 2.3.3
+      Add reporting of UI version to basic push-peer-info set.
+      Fix compile error in ssl_openssl introduced by polar external-management patch
+      Fix assertion when SIGUSR1 is received while getaddrinfo is successful
+      Add warning for using connection block variables after connection blocks
+      Introduce safety check for http proxy options
+
+David Sommerseth (5):
+      man page: Update man page about the tls_digest_{n} environment variable
+      Remove the --disable-eurephia configure option
+      plugin: Extend the plug-in v3 API to identify the SSL implementation used
+      autoconf: Fix typo
+      Fix file checks when --chroot is being used
+
+Davide Brini (1):
+      Document authfile for socks server
+
+Gert Doering (9):
+      Fix IPv6 examples in t_client.rc-sample
+      Fix slow memory drain on each client renegotiation.
+      t_client.sh: ignore fields from "ip -6 route show" output that distort results.
+      Make code and documentation for --remote-random-hostname consistent.
+      Reduce IV_OPENVPN_GUI_VERSION= to IV_GUI_VER=
+      Document issue with --chroot, /dev/urandom and PolarSSL.
+      Rename 'struct route' to 'struct route_ipv4'
+      Replace copied structure elements with including <net/route.h>
+      Workaround missing SSL_OP_NO_TICKET in earlier OpenSSL versions
+
+Heikki Hannikainen (1):
+      Always load intermediate certificates from a PKCS#12 file
+
+Heiko Hund (2):
+      Support non-ASCII TAP adapter names on Windows
+      Support non-ASCII characters in Windows tmp path
+
+James Yonan (3):
+
+      TLS version negotiation
+      Added "setenv opt" directive prefix.
+      Set SSL_OP_NO_TICKET flag in SSL context for OpenSSL builds, to disable TLS stateless session resumption.
+
+Jens Wagner (1):
+      Fix spurious ignoring of pushed config options (trac#349).
+
+Joachim Schipper (3):
+      Refactor tls_ctx_use_external_private_key()
+      --management-external-key for PolarSSL
+      external_pkcs1_sign: Support non-RSA_SIG_RAW hash_ids
+
+Josh Cepek (2):
+      Correct error text when no Windows TAP device is present
+      Require a 1.2.x PolarSSL version
+
+Klee Dienes (1):
+      tls_ctx_load_ca: Improve certificate error messages
+
+Max Muster (1):
+      Remove duplicate cipher entries from TLS translation table.
+
+Peter Sagerson (1):
+      Fix configure interaction with static OpenSSL libraries
+
+Steffan Karger (7):
+      Do not pass struct tls_session* as void* in key_state_ssl_init().
+      Require polarssl >= 1.2.10 for polarssl-builds, which fixes CVE-2013-5915.
+      Use RSA_generate_key_ex() instead of deprecated, RSA_generate_key()
+      Also update TLSv1_method() calls in support code to SSLv23_method() calls.
+      Update TLSv1 error messages to SSLv23 to reflect changes from commit 4b67f98
+      If --tls-cipher is supplied, make --show-tls parse the list.
+      Add openssl-specific common cipher list names to ssl.c.
+
+Tamas TEVESZ (1):
+      Add support for client-cert-not-required for PolarSSL.
+
+Thomas Veerman (1):
+      Fix "." in description of utun.
+
 OpenVPN 2.3.2 
 
 Arne Schwabe (3):
@@ -67,7 +354,7 @@ Josh Cepek (2):
 Matthias Andree (1):
       Enable TCP_NODELAY configuration on FreeBSD.
 
-Samuli Sepp√§nen (4):
+Samuli Sepp‰nen (4):
       Removed ChangeLog.IPv6
       Added cross-compilation information INSTALL-win32.txt
       Updated README
@@ -386,7 +673,7 @@ Jonathan K. Bullard (2):
       Fix file access checks on commands
       Clarified the docs and help screen about what a 'cmd' is
 
-Samuli Sepp√§nen (1):
+Samuli Sepp‰nen (1):
       Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win32.txt
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
@@ -837,7 +1124,7 @@ Robert Fischer (8):
       Update man page with info about --remote-random-hostname
       Added man page entry for --management-client
 
-Samuli Sepp√§nen (19):
+Samuli Sepp‰nen (19):
       Add man page entry for --redirect-private
       Change all CRLF linefeeds to LF linefeeds
       Fix a bug in devcon source code handling
