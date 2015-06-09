@@ -583,7 +583,8 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv += [ColumnDesc('client_addr', _('Client Ip')),
                ColumnDesc('login', _('Login')),
-               ColumnDesc('succeeded', _('Success'))]
+               ColumnDesc('succeeded', _('Success')),
+               ColumnDesc('reason', _('Reason'))]
 
         return rv
     
