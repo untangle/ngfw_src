@@ -997,7 +997,7 @@ Ext.define("Ung.panel.ExtraConditions", {
                 if(Ung.Util.handleException(exception)) return;
                 var columns = [], readableName;
                 for (var i=0; i< result.length; i++) {
-                    readableName = this.columnsHumanReadableNames[result[i]]
+                    readableName = this.columnsHumanReadableNames[result[i]];
                     columns.push({
                         name: result[i],
                         displayName: readableName!=null ? readableName:result[i]
