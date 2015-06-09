@@ -163,7 +163,6 @@ CREATE TABLE reports.sessions (
         ssl_inspector_detail text)""", 
                                 ["session_id"],
                                 ["time_stamp",
-                                 "protocol",
                                  "hostname",
                                  "username",
                                  "policy_id",
@@ -171,14 +170,11 @@ CREATE TABLE reports.sessions (
                                  "s_server_addr",
                                  "client_intf",
                                  "server_intf",
-                                 "firewall_rule_index",
                                  "firewall_flagged",
                                  "firewall_blocked",
                                  "application_control_application",
-                                 "application_control_protochain",
                                  "application_control_blocked",
-                                 "application_control_flagged",
-                                 "bandwidth_control_priority"])
+                                 "application_control_flagged"])
 
         sql_helper.drop_column('sessions','event_id') # 11.2 - drop unused column
         sql_helper.drop_column('sessions','ips_blocked') # 11.2 - drop unused column
