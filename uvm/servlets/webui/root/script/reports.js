@@ -645,6 +645,7 @@ Ext.define('Ung.panel.Reports', {
                 }),
                 theme: 'green-gradients',
                 border: false,
+                animation: false,
                 width: '100%',
                 height: '100%',
                 insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
