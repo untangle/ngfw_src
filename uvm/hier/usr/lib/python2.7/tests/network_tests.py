@@ -827,19 +827,23 @@ class NetworkTests(unittest2.TestCase):
         
     # Test dynamic hostname
     def test_100_DynamicDns(self):
-        raise unittest2.SkipTest('FIXME there are no asserts in this test')
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # Set DynDNS info
         setDynDNS()
         time.sleep(60) # wait a max of 1 minute for dyndns to update.
-        outsideIP = remote_control.runCommand("wget -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        outsideIP = remote_control.runCommand("wget --timeout=4 -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
+        outsideIP2 = remote_control.runCommand("wget --timeout=4 -4 -q -O - \"$@\" 10.112.56.44/cgi-bin/myipaddress.py",stdout=True)
         result = remote_control.runCommand("host testuntangle.dyndns-pics.com", stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         dynIP = (match.group()).replace('address ','')
-        print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
+        print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
+        dynIpFound = False
+        if outsideIP == dynIP or outsideIP2 == dynIP:
+            dynIpFound = True
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # assert(outsideIP == dynIP)
+        assert(dynIpFound)
 
     # Test VRRP is active
     def test_110_VRRP(self):
