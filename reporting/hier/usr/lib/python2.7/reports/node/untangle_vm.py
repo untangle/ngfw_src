@@ -581,7 +581,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv += [ColumnDesc('client_addr', _('Client Ip')),
+        rv += [ColumnDesc('client_addr', _('Client IP')),
                ColumnDesc('login', _('Login')),
                ColumnDesc('succeeded', _('Success')),
                ColumnDesc('reason', _('Reason'))]
@@ -596,7 +596,7 @@ class AdministrativeLoginsDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, host(client_addr) as client_addr, login, succeeded::text
+SELECT time_stamp, host(client_addr) as client_addr, login, succeeded::text, reason 
 FROM reports.admin_logins
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
