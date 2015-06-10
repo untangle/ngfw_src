@@ -19,8 +19,9 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class SessionStatsEvent extends LogEvent
 {
+    private long sessionId;
     private SessionEvent sessionEvent;
-
+    
     private long c2pBytes = 0;
     private long p2sBytes = 0;
     private long s2pBytes = 0;
@@ -37,11 +38,17 @@ public class SessionStatsEvent extends LogEvent
 
     public SessionStatsEvent() { }
 
-    public SessionStatsEvent( SessionEvent pe )
+    public SessionStatsEvent( long sessionId )
     {
-        this.sessionEvent = pe;
+        this.sessionId = sessionId;
     }
 
+    public SessionStatsEvent( SessionEvent sessionEvent )
+    {
+        this.sessionEvent = sessionEvent;
+        this.sessionId = sessionEvent.getSessionId();
+    }
+    
     // accessors --------------------------------------------------------------
 
     /**
@@ -92,11 +99,8 @@ public class SessionStatsEvent extends LogEvent
     public long getP2sChunks() { return p2sChunks; }
     public void setP2sChunks( long p2sChunks ) { this.p2sChunks = p2sChunks; }
 
-    public Long getSessionId() { return sessionEvent.getSessionId(); }
-    public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
-
-    public SessionEvent getSessionEvent() { return sessionEvent; }
-    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
+    public Long getSessionId() { return sessionId; }
+    public void setSessionId( Long sessionId ) { this.sessionId = sessionId; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
@@ -105,7 +109,7 @@ public class SessionStatsEvent extends LogEvent
         if ( c2pBytes == 0 && p2sBytes == 0 && s2pBytes == 0 && p2cBytes == 0 )
             return null;
 
-        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+        String sql = "UPDATE reports.sessions" + getPostfix() + " " +
             "SET " +
             " c2p_bytes = ?, " +
             " s2p_bytes = ?, " +
@@ -128,7 +132,6 @@ public class SessionStatsEvent extends LogEvent
         return pstmt;
     }
 
-
     @Override
     public String toSummaryString()
     {
@@ -139,5 +142,13 @@ public class SessionStatsEvent extends LogEvent
             I18nUtil.marktr("server-side") + "-" + I18nUtil.marktr("to-server bytes") + ": " + getP2sBytes();
 
         return summary;
+    }
+
+    private String getPostfix()
+    {
+        if ( sessionEvent == null )
+            return "";
+        else
+            return sessionEvent.getPartitionTablePostfix();
     }
 }
