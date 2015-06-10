@@ -7,8 +7,11 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
 public class Inet4AddressConverter
 {
+    private static final Logger logger = Logger.getLogger( Inet4AddressConverter.class );
     
     static final int INADDRSZ = 4;
     
@@ -26,14 +29,14 @@ public class Inet4AddressConverter
         String tmp[] = dotNotation.split( "\\.", INADDRSZ + 1 );
 
         if ( tmp.length != INADDRSZ ) {
-            Netcap.logError( "UnknownHostException: Invalid dot notation - " + dotNotation );
+            logger.error( "UnknownHostException: Invalid dot notation - " + dotNotation );
             return null;
         }
 
         for ( int c = 0 ; c < tmp.length ; c++ ) {
             input[c] = Integer.parseInt( tmp[c] );
             if ( input[c] < 0 || input[c] > 255 ) {
-                Netcap.logError( "UnknownHostException: Invalid dot notation - " + dotNotation );
+                logger.error( "UnknownHostException: Invalid dot notation - " + dotNotation );
                 return null;
             }
         }
@@ -66,7 +69,7 @@ public class Inet4AddressConverter
         InetAddress address = null;
 
         if ( input.length != INADDRSZ ) {
-            Netcap.error( "Invalid input length" );
+            logger.error( "Invalid input length" );
             return null;
         }
         
@@ -78,7 +81,7 @@ public class Inet4AddressConverter
             address = Inet4Address.getByAddress( byteArray );
         } catch ( UnknownHostException e ) {
             /* ??? This should never happen */
-            Netcap.logError( "UnknownHostException: " + e.getMessage());
+            logger.error( "UnknownHostException: " + e.getMessage());
         }
         
         return address;
@@ -112,7 +115,7 @@ public class Inet4AddressConverter
             address = Inet4Address.getByAddress ( valArray );
         } catch ( UnknownHostException e ) {
             /* ??? This should never happen */
-            Netcap.logError( "UnknownHostException: " + e.getMessage());
+            logger.error( "UnknownHostException: " + e.getMessage());
         }
 
         return address;

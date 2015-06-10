@@ -5,11 +5,15 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 /**
  * Represents the attributes of the side (client side or server side) of a UDP session
  */
 public class UDPAttributes
 {
+    protected static final Logger logger = Logger.getLogger( UDPAttributes.class );
+
     /**
      * The items with this bit are lockable, meaning once the lock flag is set
      * you are no longer able to modify these values
@@ -186,7 +190,7 @@ public class UDPAttributes
     public void send( byte[] data )
     {
         if ( send( pointer.value(), data ) < 0 )
-            Netcap.error();
+            logger.error("send()");
     }
     
     public void send( String data )
@@ -208,26 +212,26 @@ public class UDPAttributes
     protected int    getIntValue          ( int req )
     {
         int temp = getIntValue( pointer.value(), req );
-        if ( temp < 0 ) Netcap.error( "getIntValue: " + req );
+        if ( temp < 0 ) logger.error( "getIntValue: " + req );
         return temp;
     }
 
     protected void setLongValue ( int req, long value ) 
     {
         checkLock( req );
-        if ( setLongValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setLongValue: " + req );
+        if ( setLongValue( pointer.value(), req, value ) < 0 ) logger.error( "setLongValue: " + req );
     }
 
     protected void setIntValue ( int req, int value ) 
     {
         checkLock( req );
-        if ( setIntValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setIntValue: " + req );
+        if ( setIntValue( pointer.value(), req, value ) < 0 ) logger.error( "setIntValue: " + req );
     }
 
     protected void checkLock( int req )
     {
         if ( locked && (( req & LOCKABLE_MASK ) == LOCKABLE_MASK )) {
-            Netcap.error( "Attempt to modify a locked value" );
+            logger.error( "Attempt to modify a locked value" );
         }
     }
 

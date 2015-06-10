@@ -5,9 +5,13 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 @SuppressWarnings("unused") //JNI
 public class NetcapTCPSession extends NetcapSession
 {
+    private static final Logger logger = Logger.getLogger( NetcapTCPSession.class );
+
     private static final int FLAG_FD                    = 32;
 
     public NetcapTCPSession( long id )
@@ -92,9 +96,8 @@ public class NetcapTCPSession extends NetcapSession
         if ( serverAddress == null ) serverAddress = serverSide.server().host();
         if ( serverPort    == 0    ) serverPort    = serverSide.server().port();
         
-        if ( setServerEndpoint( pointer.value(), Inet4AddressConverter.toLong( clientAddress ), clientPort,
-                                Inet4AddressConverter.toLong( serverAddress ), serverPort, intf ) < 0 ) {
-            Netcap.error( "Unable to modify the server endpoint" + pointer.value());
+        if ( setServerEndpoint( pointer.value(), Inet4AddressConverter.toLong( clientAddress ), clientPort, Inet4AddressConverter.toLong( serverAddress ), serverPort, intf ) < 0 ) {
+            logger.error( "Unable to modify the server endpoint" + pointer.value());
         }
 
         /* XXX If the destination is local, then you have to remap the connection, this
