@@ -64,8 +64,8 @@ public class NetcapConntrackHook implements NetcapCallback
         //     statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks); // FIXME packets server sent
         //     statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes); // FIXME bytes server sent
         //     statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes); // FIXME bytes client sent
-        //     statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks); // FIXME bytes client sent
-        //     statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+        //     statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks); // FIXME chunks server sent
+        //     statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks); // FIXME chunks client sent
         //     UvmContextFactory.context().logEvent( statEvent );
         // }
             
