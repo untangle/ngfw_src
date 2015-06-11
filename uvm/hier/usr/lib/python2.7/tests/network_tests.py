@@ -22,6 +22,7 @@ iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
 ftp_file_name = ""
 ftp_client_external = "10.111.56.32"
+dyn_hostname = "atstest.dnsalias.com"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -389,7 +390,8 @@ def nukeDNSRules():
 def setDynDNS():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dynamicDnsServiceEnabled'] = True
-    netsettings['dynamicDnsServiceHostnames'] = "testuntangle.dyndns-pics.com"
+    # netsettings['dynamicDnsServiceHostnames'] = "testuntangle.dyndns-pics.com"
+    netsettings['dynamicDnsServiceHostnames'] = dyn_hostname
     netsettings['dynamicDnsServiceName'] = "dyndns"
     netsettings['dynamicDnsServicePassword'] = "untangledyn"
     netsettings['dynamicDnsServiceUsername'] = "testuntangle"
@@ -832,10 +834,14 @@ class NetworkTests(unittest2.TestCase):
         # Set DynDNS info
         setDynDNS()
         time.sleep(60) # wait a max of 1 minute for dyndns to update.
-        outsideIP = remote_control.runCommand("wget --timeout=4 -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+
+        outsideIP =  subprocess.check_output(["wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py"],shell=True)
+        outsideIP = outsideIP.rstrip()  # strip return character
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        outsideIP2 = remote_control.runCommand("wget --timeout=4 -4 -q -O - \"$@\" 10.112.56.44/cgi-bin/myipaddress.py",stdout=True)
-        result = remote_control.runCommand("host testuntangle.dyndns-pics.com", stdout=True)
+        outsideIP2 =  subprocess.check_output(["wget -4 -q -O - \"$@\" 10.112.56.44/cgi-bin/myipaddress.py"],shell=True)
+        outsideIP2 = outsideIP2.rstrip()  # strip return character
+
+        result = remote_control.runCommand("host " + dyn_hostname, stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         dynIP = (match.group()).replace('address ','')
         print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
