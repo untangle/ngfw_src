@@ -1,13 +1,14 @@
 ; ****************************************************************************
 ; * Copyright (C) 2002-2010 OpenVPN Technologies, Inc.                       *
-; * Copyright (C)      2012 Alon Bar-Lev <alon.barlev@gmail.com>             *
+; * Copyright (C) 2012 Alon Bar-Lev <alon.barlev@gmail.com>                  *
+; * Copyright (C) 2014 Björn Gustavsson <bjorn@gustavsson.it>                *
 ; *  This program is free software; you can redistribute it and/or modify    *
 ; *  it under the terms of the GNU General Public License version 2          *
 ; *  as published by the Free Software Foundation.                           *
 ; ****************************************************************************
 
 ; OpenVPN install script for Windows, using NSIS
-; WebFooL whas here ;-)
+; WebFooL whas here ;-) (once more 8-) )
 
 SetCompressor lzma
 
@@ -19,6 +20,8 @@ SetCompressor lzma
 ; the installer to global directories (e.g. Start menu, desktop, etc.)
 !define MULTIUSER_EXECUTIONLEVEL Admin
 !include "MultiUser.nsh"
+;!include "GetWindowsVersion.nsi"
+;!include "setpath.nsi"
 !include "x64.nsh"
 
 ; EnvVarUpdate.nsh is needed to update the PATH environment variable
@@ -34,7 +37,7 @@ SetCompressor lzma
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.3.7"
+!define OPENVPN_VERSION "2.3.6"
 !define GUI_VERSION "5.0.0"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
@@ -66,7 +69,7 @@ InstallDirRegKey HKLM "SOFTWARE\${PACKAGE_NAME}" ""
 ;Modern UI Configuration
 
 ; Compile-time constants which we'll need during install
-!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PACKAGE_NAME} ${OPENVPN_VERSION}, an Open Source VPN package by James Yonan.$\r$\n$\r$\nNote that the Windows version of ${PACKAGE_NAME} will only run on Windows XP, or higher.$\r$\n$\r$\n$\r$\n"
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PACKAGE_NAME} ${OPENVPN_VERSION}, an Open Source VPN package by James Yonan. \n\nNote that the Windows version of ${PACKAGE_NAME} will only run on Windows Vista, or later.$\r$\n$\r$\n$\r$\n"
 
 !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade.  Stop any ${PACKAGE_NAME} processes or the ${PACKAGE_NAME} service if it is running.  All DLLs are installed locally."
 
@@ -575,8 +578,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\doc\INSTALL-win32.txt"
 	Delete "$INSTDIR\doc\openvpn.8.html"
 	Delete "$INSTDIR\icon.ico"
+       Delete "$INSTDIR\openvpn.ico"
 	Delete "$INSTDIR\Uninstall.exe"
-
 
 
 	RMDir "$INSTDIR\bin"
@@ -586,7 +589,7 @@ Section "Uninstall"
 	RMDir "$INSTDIR"
 	RMDir /r "$SMPROGRAMS\${PACKAGE_NAME}"
 
-        !insertmacro DelRegKeyIfUnchanged HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
+       !insertmacro DelRegKeyIfUnchanged HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
 	!insertmacro DelRegKeyIfUnchanged HKCR ".${OPENVPN_CONFIG_EXT}" "${PACKAGE_NAME}File"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
