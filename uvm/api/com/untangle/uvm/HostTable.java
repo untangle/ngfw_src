@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Hashtable;
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 
 /**
  * The Host Table is responsible for storing known information about hosts.
@@ -88,7 +88,7 @@ public interface HostTable
     /**
      * Return the event log query for penalty box events
      */
-    EventLogQuery[] getPenaltyBoxEventQueries();
+    EventLogEntry[] getPenaltyBoxEventQueries();
 
     /**
      * Give an address a quota
@@ -134,7 +134,7 @@ public interface HostTable
     /**
      * Get the event log query for quota events
      */
-    EventLogQuery[] getQuotaEventQueries();
+    EventLogEntry[] getQuotaEventQueries();
 
     /**
      * Clear the entire table (used by tests)

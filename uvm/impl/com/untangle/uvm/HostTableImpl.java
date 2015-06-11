@@ -20,7 +20,7 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
 
@@ -44,9 +44,9 @@ public class HostTableImpl implements HostTable
 
     private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
-    private EventLogQuery penaltyBoxEventQuery;
-    private EventLogQuery hostTableEventQuery;
-    private EventLogQuery quotaEventQuery;
+    private EventLogEntry penaltyBoxEventQuery;
+    private EventLogEntry hostTableEventQuery;
+    private EventLogEntry quotaEventQuery;
 
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
@@ -61,9 +61,9 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
 
-        this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "penaltybox", new SqlCondition[]{});
-        this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "host_table_updates", new SqlCondition[]{}); 
-        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "quotas", new SqlCondition[]{}); 
+        this.penaltyBoxEventQuery = new EventLogEntry(I18nUtil.marktr("PenaltyBox Events"), "penaltybox", new SqlCondition[]{});
+        this.hostTableEventQuery = new EventLogEntry(I18nUtil.marktr("Host Table Events"), "host_table_updates", new SqlCondition[]{}); 
+        this.quotaEventQuery = new EventLogEntry(I18nUtil.marktr("Quota Events"), "quotas", new SqlCondition[]{}); 
         initializeMacVendorTable();
         
         UvmContextFactory.context().newThread(this.cleaner).start();
@@ -436,14 +436,14 @@ public class HostTableImpl implements HostTable
         this.listeners.remove( listener );
     }
 
-    public EventLogQuery[] getPenaltyBoxEventQueries()
+    public EventLogEntry[] getPenaltyBoxEventQueries()
     {
-        return new EventLogQuery[] { this.penaltyBoxEventQuery };
+        return new EventLogEntry[] { this.penaltyBoxEventQuery };
     }
 
-    public EventLogQuery[] getQuotaEventQueries()
+    public EventLogEntry[] getQuotaEventQueries()
     {
-        return new EventLogQuery[] { this.quotaEventQuery };
+        return new EventLogEntry[] { this.quotaEventQuery };
     }
 
     public int getCurrentSize()

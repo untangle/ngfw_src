@@ -39,7 +39,7 @@ import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.NodeManager;
@@ -62,8 +62,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IdpsEventMonitor idpsEventMonitor;    
 
-    private EventLogQuery allEventQuery;
-    private EventLogQuery blockedEventQuery;
+    private EventLogEntry allEventQuery;
+    private EventLogEntry blockedEventQuery;
 
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
@@ -92,8 +92,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "intrusion_prevention_events", new SqlCondition[]{});
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "intrusion_prevention_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
+        this.allEventQuery = new EventLogEntry(I18nUtil.marktr("All Events"), "intrusion_prevention_events", new SqlCondition[]{});
+        this.blockedEventQuery = new EventLogEntry(I18nUtil.marktr("Blocked Events"), "intrusion_prevention_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }
@@ -104,9 +104,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         return this.connectors;
     }
 
-    public EventLogQuery[] getEventQueries()
+    public EventLogEntry[] getEventQueries()
     {
-        return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
+        return new EventLogEntry[] { this.allEventQuery, this.blockedEventQuery };
     }
 
     protected void postInit()

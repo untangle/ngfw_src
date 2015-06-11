@@ -9,14 +9,14 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 
 public interface OpenVpnNode extends Node
 {
     public void setSettings( OpenVpnSettings settings );
     public OpenVpnSettings getSettings();
 
-    public EventLogQuery[] getStatusEventsQueries();
+    public EventLogEntry[] getStatusEventsQueries();
 
     public String getClientDistributionDownloadLink( String clientName, String format );
 

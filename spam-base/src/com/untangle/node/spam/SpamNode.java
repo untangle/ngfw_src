@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 
 public interface SpamNode extends Node
 {
@@ -20,8 +20,8 @@ public interface SpamNode extends Node
 
     void updateScannerInfo();
 
-    EventLogQuery[] getEventQueries();
-    EventLogQuery[] getTarpitEventQueries();
+    EventLogEntry[] getEventQueries();
+    EventLogEntry[] getTarpitEventQueries();
 
     Date getLastUpdate();
     void setLastUpdate(Date newValue);

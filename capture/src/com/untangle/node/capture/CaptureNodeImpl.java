@@ -28,7 +28,7 @@ import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Subscription;
@@ -78,17 +78,17 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private CaptureTimer captureTimer;
     private Timer timer;
 
-    private EventLogQuery userEventQuery;
-    private EventLogQuery userSuccessQuery;
-    private EventLogQuery userFailureQuery;
-    private EventLogQuery userTimeoutQuery;
-    private EventLogQuery userInactiveQuery;
-    private EventLogQuery userLogoutQuery;
-    private EventLogQuery adminLogoutQuery;
+    private EventLogEntry userEventQuery;
+    private EventLogEntry userSuccessQuery;
+    private EventLogEntry userFailureQuery;
+    private EventLogEntry userTimeoutQuery;
+    private EventLogEntry userInactiveQuery;
+    private EventLogEntry userLogoutQuery;
+    private EventLogEntry adminLogoutQuery;
 
-    private EventLogQuery allEventQuery;
-    private EventLogQuery passEventQuery;
-    private EventLogQuery captureEventQuery;
+    private EventLogEntry allEventQuery;
+    private EventLogEntry passEventQuery;
+    private EventLogEntry captureEventQuery;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -109,25 +109,25 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
         this.connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
         
-        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),"capture_user_events",
+        this.userEventQuery = new EventLogEntry(I18nUtil.marktr("All Events"),"capture_user_events",
                                                 new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId") });
-        this.userSuccessQuery = new EventLogQuery(I18nUtil.marktr("Login Success"),"capture_user_events",
+        this.userSuccessQuery = new EventLogEntry(I18nUtil.marktr("Login Success"),"capture_user_events",
                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'LOGIN'") });
-        this.userFailureQuery = new EventLogQuery(I18nUtil.marktr("Login Failure"),"capture_user_events",
+        this.userFailureQuery = new EventLogEntry(I18nUtil.marktr("Login Failure"),"capture_user_events",
                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'FAILED'") });
-        this.userTimeoutQuery = new EventLogQuery(I18nUtil.marktr("Session Timeout"),"capture_user_events",
+        this.userTimeoutQuery = new EventLogEntry(I18nUtil.marktr("Session Timeout"),"capture_user_events",
                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'TIMEOUT'") });
-        this.userInactiveQuery = new EventLogQuery(I18nUtil.marktr("Idle Timeout"),"capture_user_events",
+        this.userInactiveQuery = new EventLogEntry(I18nUtil.marktr("Idle Timeout"),"capture_user_events",
                                                    new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'INACTIVE'") });
-        this.userLogoutQuery = new EventLogQuery(I18nUtil.marktr("User Logout"),"capture_user_events",
+        this.userLogoutQuery = new EventLogEntry(I18nUtil.marktr("User Logout"),"capture_user_events",
                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'USER_LOGOUT'") });
-        this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),"capture_user_events",
+        this.adminLogoutQuery = new EventLogEntry(I18nUtil.marktr("Admin Logout"),"capture_user_events",
                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'ADMIN_LOGOUT'") });
-        this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),"sessions",
+        this.captureEventQuery = new EventLogEntry(I18nUtil.marktr("Capture Events"),"sessions",
                                                    new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","TRUE") });
-        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),"sessions",
+        this.passEventQuery = new EventLogEntry(I18nUtil.marktr("Pass Events"),"sessions",
                                                 new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","FALSE") });
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),"sessions",
+        this.allEventQuery = new EventLogEntry(I18nUtil.marktr("All Events"),"sessions",
                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","NOT NULL") });
     }
 
@@ -180,15 +180,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    public EventLogQuery[] getUserEventQueries()
+    public EventLogEntry[] getUserEventQueries()
     {
-        return new EventLogQuery[] { this.userEventQuery, this.userSuccessQuery, this.userFailureQuery, this.userTimeoutQuery, this.userInactiveQuery, this.userLogoutQuery, this.adminLogoutQuery };
+        return new EventLogEntry[] { this.userEventQuery, this.userSuccessQuery, this.userFailureQuery, this.userTimeoutQuery, this.userInactiveQuery, this.userLogoutQuery, this.adminLogoutQuery };
     }
 
     @Override
-    public EventLogQuery[] getRuleEventQueries()
+    public EventLogEntry[] getRuleEventQueries()
     {
-        return new EventLogQuery[] { this.captureEventQuery, this.passEventQuery, this.allEventQuery };
+        return new EventLogEntry[] { this.captureEventQuery, this.passEventQuery, this.allEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta)

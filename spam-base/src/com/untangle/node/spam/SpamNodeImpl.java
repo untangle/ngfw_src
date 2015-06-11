@@ -22,7 +22,7 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.EventLogEntry;
 import com.untangle.uvm.node.NodeMetric;
 
 public class SpamNodeImpl extends NodeBase implements SpamNode
@@ -46,10 +46,10 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
 
     protected volatile SpamSettings spamSettings;
 
-    private EventLogQuery allEventQuery;
-    private EventLogQuery spamEventQuery;
-    private EventLogQuery quarantinedEventQuery;
-    private EventLogQuery tarpitEventQuery;
+    private EventLogEntry allEventQuery;
+    private EventLogEntry spamEventQuery;
+    private EventLogEntry quarantinedEventQuery;
+    private EventLogEntry tarpitEventQuery;
     
     private String signatureVersion;
     private Date lastUpdate = new Date();
@@ -95,19 +95,19 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
         this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
         
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"), "mail_addrs",
+        this.allEventQuery = new EventLogEntry(I18nUtil.marktr("All Email Events"), "mail_addrs",
                                                new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
                                                                    new SqlCondition(vendorTag + "_action","is","NOT NULL"),
                                                                    new SqlCondition("policy_id","=",":policyId") });
-        this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"), "mail_addrs",
+        this.spamEventQuery = new EventLogEntry(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"), "mail_addrs",
                                                 new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
                                                                     new SqlCondition(vendorTag + "_is_spam","is","TRUE"),
                                                                     new SqlCondition("policy_id","=",":policyId") });
-        this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"), "mail_addrs",
+        this.quarantinedEventQuery = new EventLogEntry(I18nUtil.marktr("Quarantined Events"), "mail_addrs",
                                                        new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
                                                                            new SqlCondition(vendorTag + "_action","=","'Q'"),
                                                                            new SqlCondition("policy_id","=",":policyId") });
-        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"), "smtp_tarpit_events",
+        this.tarpitEventQuery = new EventLogEntry(I18nUtil.marktr("Tarpit Events"), "smtp_tarpit_events",
                                                   new SqlCondition[]{ new SqlCondition("vendor_name","=","'"+vendorTag+"'"),
                                                                       new SqlCondition("policy_id","=",":policyId") });
         loadGreyList();
@@ -120,14 +120,14 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         }
     }
 
-    public EventLogQuery[] getEventQueries()
+    public EventLogEntry[] getEventQueries()
     {
-        return new EventLogQuery[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
+        return new EventLogEntry[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
     }
     
-    public EventLogQuery[] getTarpitEventQueries()
+    public EventLogEntry[] getTarpitEventQueries()
     {
-        return new EventLogQuery[] { this.tarpitEventQuery };
+        return new EventLogEntry[] { this.tarpitEventQuery };
     }
 
     /**
