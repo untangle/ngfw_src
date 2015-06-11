@@ -322,6 +322,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
          * Report updates
          */
         ReportingManagerNewImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+        ReportingManagerNewImpl.getInstance().updateSystemEventEntries( settings.getEventEntries(), true );
         
         /* intialize schema (if necessary) */
         this.createSchemas();

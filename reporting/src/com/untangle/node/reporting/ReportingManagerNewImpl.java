@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SqlCondition;
+import com.untangle.uvm.node.EventLogEntry;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -102,6 +103,20 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         node.setSettings( settings );
     }
 
+    public void setEventEntries( List<EventLogEntry> newEntries )
+    {
+        if ( node == null ) {
+            throw new RuntimeException("Reporting node not found");
+        }
+
+        LinkedList<EventLogEntry> newEventEntries = new LinkedList<EventLogEntry>(newEntries);
+        updateSystemEventEntries( newEventEntries, false );
+
+        ReportingSettings settings = node.getSettings();
+        settings.setEventEntries( newEventEntries );
+        node.setSettings( settings );
+    }
+    
     public void saveReportEntry( ReportEntry entry )
     {
         String uniqueId = entry.getUniqueId();
@@ -302,6 +317,66 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return;
     }
 
+    protected void updateSystemEventEntries( List<EventLogEntry> existingEntries, boolean saveIfChanged )
+    {
+        boolean updates = false;
+        if ( existingEntries == null )
+            existingEntries = new LinkedList<EventLogEntry>();
+        
+        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/events/*.js' -print";
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+        if (result.getResult() != 0) {
+            logger.warn("Failed to find event entries: \"" + cmd + "\" -> "  + result.getResult());
+            return;
+        }
+        try {
+            List<String> seenUniqueIds = new LinkedList<String>();
+            boolean added = false;
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("Creating Schema: ");
+            for ( String line : lines ) {
+                logger.info("Reading file: " + line);
+                try {
+                    EventLogEntry newEntry = UvmContextFactory.context().settingsManager().load( EventLogEntry.class, line );
+
+                    /* do some error checking around unique ID */
+                    if ( newEntry.getUniqueId() == null ) {
+                        logger.error("System Event Entry missing uniqueId: " + line);
+                    }
+                    if ( seenUniqueIds.contains( newEntry.getUniqueId() ) ) {
+                        logger.error("System Event Entry duplicate uniqueId: " + line);
+                    } else {
+                        seenUniqueIds.add( newEntry.getUniqueId() );
+                    }
+                    
+                    EventLogEntry oldEntry = findEventEntry( existingEntries, newEntry.getUniqueId() );
+                    if ( oldEntry == null ) {
+                        logger.info( "Event Entries Update: Adding  \"" + newEntry.getName() + "\"");
+                        existingEntries.add( newEntry );
+                        updates = true;
+                    } else {
+                        boolean changed = updateEventEntry( existingEntries, newEntry, oldEntry );
+                        if ( changed ) {
+                            updates = true;
+                            logger.info( "event Entries Update: Updated \"" + newEntry.getName() + "\"");
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn( "Failed to read event entry from: " + line, e );
+                }
+            }
+        } catch (Exception e) {
+            logger.warn( "Failed to check for new entries.", e );
+        }
+
+        if ( updates && saveIfChanged ) {
+            setEventEntries( existingEntries );
+        }
+        
+        return;
+    }
+
+    
     private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
@@ -316,6 +391,20 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return null;
     }
 
+    private EventLogEntry findEventEntry( List<EventLogEntry> entries, String uniqueId )
+    {
+        if ( entries == null || uniqueId == null ) {
+            logger.warn("Invalid arguments: " + uniqueId, new Exception());
+            return null;
+        }
+        
+        for ( EventLogEntry entry : entries ) {
+            if (uniqueId.equals( entry.getUniqueId() ) )
+                return entry;
+        }
+        return null;
+    }
+    
     private boolean updateReportEntry( List<ReportEntry> entries, ReportEntry newEntry, ReportEntry oldEntry )
     {
         String newEntryStr = newEntry.toJSONString();
@@ -338,6 +427,28 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return true;
     }
 
+    private boolean updateEventEntry( List<EventLogEntry> entries, EventLogEntry newEntry, EventLogEntry oldEntry )
+    {
+        String newEntryStr = newEntry.toJSONString();
+        String oldEntryStr = oldEntry.toJSONString();
+
+        // no changed are needed if two are identical
+        if ( oldEntryStr.equals( newEntryStr ) )
+            return false;
+
+        // remove old entry
+        if ( ! entries.remove( oldEntry ) ) {
+            logger.warn("Failed to update event entry: " + newEntry.getUniqueId());
+            return false;
+        }
+
+        // copy "changeable" attributes from old settings, replace old entry with new
+        //newEntry.setEnabled( oldEntry.getEnabled() );
+        entries.add( newEntry );
+
+        return true;
+    }
+    
     private ResultSet getColumnMetaData( String tableName )
     {
         try {
