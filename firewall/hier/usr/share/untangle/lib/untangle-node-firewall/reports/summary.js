@@ -5,7 +5,6 @@
     "displayOrder": 10,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
-    "preCompileResults": false,
     "textColumns": [
         "count(*) as scanned",
         "sum(firewall_flagged::int) as flagged",

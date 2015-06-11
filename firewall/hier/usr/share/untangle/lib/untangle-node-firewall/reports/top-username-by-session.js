@@ -10,7 +10,6 @@
     "units": "hits",
     "pieGroupColumn": "username",
     "pieSumColumn": "count(*)",
-    "preCompileResults": false,
     "conditions": [
         {
             "javaClass": "com.untangle.uvm.node.SqlCondition",

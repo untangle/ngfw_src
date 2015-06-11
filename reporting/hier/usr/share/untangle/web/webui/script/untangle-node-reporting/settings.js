@@ -797,13 +797,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 "enabled": true,
                 "readOnly": false,
                 "displayOrder": 500,
-                "preCompileResults": false,
                 "type": "PIE_GRAPH"
             },
             dataProperty: "reportEntries",
             sortField: 'displayOrder',
             columnsDefaultSortable: false,
-            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'preCompileResults', 'table', 'conditions', 
+            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions', 
                      'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
             columns: [{
                 header: this.i18n._("Title"),

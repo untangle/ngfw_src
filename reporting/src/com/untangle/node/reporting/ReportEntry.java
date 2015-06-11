@@ -67,7 +67,6 @@ public class ReportEntry implements Serializable, JSONString
     private String units;
     private String[] colors; /* The colors of the columns/lines/pie slices */
     
-    private boolean preCompileResults = false; /* if the results should be pre-compiled each night */
     private String table; /* table to query data from */
     private SqlCondition[] conditions;
     
@@ -132,9 +131,6 @@ public class ReportEntry implements Serializable, JSONString
 
     public String getUnits() { return this.units; }
     public void setUnits( String newValue ) { this.units = newValue; }
-    
-    public boolean getPreCompileResults() { return this.preCompileResults; }
-    public void setPreCompileResults( boolean newValue ) { this.preCompileResults = newValue; }
     
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }

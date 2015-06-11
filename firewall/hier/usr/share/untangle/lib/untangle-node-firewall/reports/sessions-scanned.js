@@ -7,7 +7,6 @@
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderDesc": false,
     "units": "hits",
-    "preCompileResults": false,
     "readOnly": true,
     "table": "sessions",
     "conditions": [
