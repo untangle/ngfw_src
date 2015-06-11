@@ -1,160 +1,179 @@
 Ext.define('Ung.panel.Reports', {
     extend: 'Ext.panel.Panel',
     statics: {
-        getColumnsHumanReadableNames: function() {
-            return {
-                action: i18n._('Action'),
-                ad_blocker_action: 'Ad Blocker ' + i18n._('Action'),
-                ad_blocker_cookie_ident: 'Ad Blocker ' + i18n._('Cookie'),
-                addr: i18n._('Address'),
-                addr_kind: i18n._('Address Kind'),
-                addr_name: i18n._('Address Name'),
-                address: i18n._('Address'),
-                application_control_application: 'Application Control ' + i18n._('Application'),
-                application_control_blocked: 'Application Control ' + i18n._('Blocked'),
-                application_control_confidence: 'Application Control ' + i18n._('Confidence'),
-                application_control_detail: 'Application Control ' + i18n._('Detail'),
-                application_control_flagged: 'Application Control ' + i18n._('Flagged'),
-                application_control_lite_blocked: 'Application Control Lite ' + i18n._('Blocked'),
-                application_control_lite_protocol: 'Application Control Lite ' + i18n._('Protocol'),
-                application_control_protochain: 'Application Control ' + i18n._('Protochain'),
-                application_control_ruleid: 'Application Control ' + i18n._('Rule ID'),
-                auth_type: i18n._('Authorization Type'),
-                bandwidth_control_priority: 'Bandwidth Control ' + i18n._('Priority'),
-                bandwidth_control_rule: 'Bandwidth Control ' + i18n._('Rule ID'),
-                blocked: i18n._('Blocked'),
-                bypasses: i18n._('Bypasses'),
-                c2p_bytes: i18n._('From-Client Bytes'),
-                c2s_content_length: i18n._('Client-to-server Content Length'),
-                c_client_addr: i18n._('Client-side Client Address'),
-                c_client_port: i18n._('Client-side Client Port'),
-                c_server_addr: i18n._('Client-side Server Address'),
-                c_server_port: i18n._('Client-side Server Port'),
-                captive_portal_blocked: 'Captive Portal ' + i18n._('Blocked'),
-                captive_portal_rule_index: 'Captive Portal ' + i18n._('Rule ID'),
-                category: i18n._('Category'),
-                class_id: i18n._('Classtype ID'),
-                classtype: i18n._('Classtype'),
-                client_addr: i18n._('Client Address'),
-                client_address: i18n._('Client Address'),
-                client_intf: i18n._('Client Interface'),
-                client_name: i18n._('Client Name'),
-                client_protocol: i18n._('Client Protocol'),
-                client_username: i18n._('Client Username'),
-                connect_stamp: i18n._('Connect Time'),
-                cpu_system: i18n._('CPU System Utilization'),
-                cpu_user: i18n._('CPU User Utilization'),
-                description: i18n._('Text detail of the event'),
-                dest_addr: i18n._('Destination Address'),
-                dest_port: i18n._('Destination Port'),
-                disk_free: i18n._('Disk Free'),
-                disk_total: i18n._('Disk Size'),
-                domain: i18n._('Domain'),
-                elapsed_time: i18n._('Elapsed Time'),
-                end_time: i18n._('End Time'),
-                event_id: i18n._('Event ID'),
-                event_info: i18n._('Event Type'),
-                firewall_blocked: 'Firewall ' + i18n._('Blocked'),
-                firewall_flagged: 'Firewall ' + i18n._('Flagged'),
-                firewall_rule_index: 'Firewall ' + i18n._('Rule ID'),
-                gen_id: i18n._('Grouping ID'),
-                goodbye_stamp: i18n._('End Time'),
-                hit_bytes: i18n._('Hit Bytes'),
-                hits: i18n._('Hits'),
-                host: i18n._('Host'),
-                hostname: i18n._('Hostname'),
-                interface_id: i18n._('Interface ID'),
-                ipaddr: i18n._('Client Address'),
-                json: i18n._('JSON Text'),
-                key: i18n._('Key'),
-                load_1: i18n._('CPU load (1-min)'),
-                load_15: i18n._('CPU load (15-min)'),
-                load_5: i18n._('CPU load (5-min)'),
-                local: i18n._('Local'),
-                login: i18n._('Login'),
-                login_name: i18n._('Login Name'),
-                mem_buffers: i18n._('Memory Buffers'),
-                mem_cache: i18n._('Memory Cache'),
-                mem_free: i18n._('Memory Free'),
-                method: i18n._('Method'),
-                miss_bytes: i18n._('Miss Bytes'),
-                misses: i18n._('Misses'),
-                msg: i18n._('Message'),
-                msg_id: i18n._('Message ID'),
-                name: i18n._('Interface Name'),
-                net_interface: i18n._('Net Interface'),
-                net_process: i18n._('Net Process'),
-                os_name: i18n._('Interface O/S Name'),
-                p2c_bytes: i18n._('To-Client Bytes'),
-                p2s_bytes: i18n._('To-Server Bytes'),
-                phish_blocker_action: 'Phish Blocker ' + i18n._('Action'),
-                phish_blocker_is_spam: 'Phish Blocker ' + i18n._('Phish'),
-                phish_blocker_score: 'Phish Blocker ' + i18n._('Score'),
-                phish_blocker_tests_string: 'Phish Blocker ' + i18n._('Tests'),
-                policy_id: i18n._('Policy ID'),
-                pool_address: i18n._('Pool Address'),
-                protocol: i18n._('Protocol'),
-                reason: i18n._('Reason'),
-                receiver: i18n._('Receiver'),
-                remote_address: i18n._('Remote Address'),
-                remote_port: i18n._('Remote Port'),
-                request_id: i18n._('Request ID'),
-                rx_bytes: i18n._('Bytes Received'),
-                s2c_content_length: i18n._('Server-to-client Content Length'),
-                s2c_content_type: i18n._('Server-to-client Content Type'),
-                s2p_bytes: i18n._('From-Server Bytes'),
-                s_client_addr: i18n._('Server-side Client Address'),
-                s_client_port: i18n._('Server-side Client Port'),
-                s_server_addr: i18n._('Server-side Server Address'),
-                s_server_port: i18n._('Server-side Server Port'),
-                sender: i18n._('Sender'),
-                server_intf: i18n._('Server Interface'),
-                session_id: i18n._('Session ID'),
-                shield_blocked: 'Shield ' + i18n._('Blocked'),
-                sig_id: i18n._('Signature ID'),
-                size: i18n._('Size'),
-                source_addr: i18n._('Source Address'),
-                source_port: i18n._('Source Port'),
-                spam_blocker_action: 'Spam Blocker ' + i18n._('Action'),
-                spam_blocker_is_spam: 'Spam Blocker ' + i18n._('Spam'),
-                spam_blocker_lite_action: 'Spam Blocker Lite ' + i18n._('Action'),
-                spam_blocker_lite_is_spam: 'Spam Blocker Lite ' + i18n._('Spam'),
-                spam_blocker_lite_score: 'Spam Blocker Lite ' + i18n._('Score'),
-                spam_blocker_lite_tests_string: 'Spam Blocker Lite ' + i18n._('Tests'),
-                spam_blocker_score: 'Spam Blocker ' + i18n._('Score'),
-                spam_blocker_tests_string: 'Spam Blocker ' + i18n._('Tests'),
-                ssl_inspector_detail: 'HTTPS Inspector ' + i18n._('Detail'),
-                ssl_inspector_ruleid: 'HTTPS Inspector ' + i18n._('Rule ID'),
-                ssl_inspector_status: 'HTTPS Inspector ' + i18n._('Status'),
-                start_time: i18n._('Start Time'),
-                subject: i18n._('Subject'),
-                succeeded: i18n._('Succeeded'),
-                success: i18n._('Success'),
-                summary_text: i18n._('Summary Text'),
-                swap_free: i18n._('Swap Free'),
-                swap_total: i18n._('Swap Size'),
-                systems: i18n._('System bypasses'),
-                term: i18n._('Search Term'),
-                time_stamp: i18n._('Timestamp'),
-                tx_bytes: i18n._('Bytes Sent'),
-                type: i18n._('Type'),
-                uri: i18n._('URI'),
-                username: i18n._('Username'),
-                value: i18n._('Value'),
-                vendor_name: i18n._('Vendor Name'),
-                virus_blocker_clean: 'Virus Blocker ' + i18n._('Clean'),
-                virus_blocker_lite_clean: 'Virus Blocker Lite ' + i18n._('Clean'),
-                virus_blocker_lite_name: 'Virus Blocker Lite ' + i18n._('Name'),
-                virus_blocker_name: 'Virus Blocker ' + i18n._('Name'),
-                web_filter_blocked: 'Web Filter ' + i18n._('Blocked'),
-                web_filter_category: 'Web Filter ' + i18n._('Category'),
-                web_filter_flagged: 'Web Filter ' + i18n._('Flagged'),
-                web_filter_lite_blocked: 'Web Filter Lite ' + i18n._('Blocked'),
-                web_filter_lite_category: 'Web Filter Lite ' + i18n._('Category'),
-                web_filter_lite_flagged: 'Web Filter Lite ' + i18n._('Flagged'),
-                web_filter_lite_reason: 'Web Filter Lite ' + i18n._('Reason'),
-                web_filter_reason: 'Web Filter ' + i18n._('Reason')
-            };
+        getColumnHumanReadableName: function(columnName) {
+            if(!this.columnsHumanReadableNames) {
+                this.columnsHumanReadableNames = {
+                    action: i18n._('Action'),
+                    ad_blocker_action: 'Ad Blocker ' + i18n._('Action'),
+                    ad_blocker_cookie_ident: 'Ad Blocker ' + i18n._('Cookie'),
+                    addr: i18n._('Address'),
+                    addr_kind: i18n._('Address Kind'),
+                    addr_name: i18n._('Address Name'),
+                    address: i18n._('Address'),
+                    application_control_application: 'Application Control ' + i18n._('Application'),
+                    application_control_blocked: 'Application Control ' + i18n._('Blocked'),
+                    application_control_confidence: 'Application Control ' + i18n._('Confidence'),
+                    application_control_detail: 'Application Control ' + i18n._('Detail'),
+                    application_control_flagged: 'Application Control ' + i18n._('Flagged'),
+                    application_control_lite_blocked: 'Application Control Lite ' + i18n._('Blocked'),
+                    application_control_lite_protocol: 'Application Control Lite ' + i18n._('Protocol'),
+                    application_control_protochain: 'Application Control ' + i18n._('Protochain'),
+                    application_control_ruleid: 'Application Control ' + i18n._('Rule ID'),
+                    auth_type: i18n._('Authorization Type'),
+                    bandwidth_control_priority: 'Bandwidth Control ' + i18n._('Priority'),
+                    bandwidth_control_rule: 'Bandwidth Control ' + i18n._('Rule ID'),
+                    blocked: i18n._('Blocked'),
+                    bypasses: i18n._('Bypasses'),
+                    c2p_bytes: i18n._('From-Client Bytes'),
+                    c2s_content_length: i18n._('Client-to-server Content Length'),
+                    c_client_addr: i18n._('Client-side Client Address'),
+                    c_client_port: i18n._('Client-side Client Port'),
+                    c_server_addr: i18n._('Client-side Server Address'),
+                    c_server_port: i18n._('Client-side Server Port'),
+                    captive_portal_blocked: 'Captive Portal ' + i18n._('Blocked'),
+                    captive_portal_rule_index: 'Captive Portal ' + i18n._('Rule ID'),
+                    category: i18n._('Category'),
+                    class_id: i18n._('Classtype ID'),
+                    classtype: i18n._('Classtype'),
+                    client_addr: i18n._('Client Address'),
+                    client_address: i18n._('Client Address'),
+                    client_intf: i18n._('Client Interface'),
+                    client_name: i18n._('Client Name'),
+                    client_protocol: i18n._('Client Protocol'),
+                    client_username: i18n._('Client Username'),
+                    connect_stamp: i18n._('Connect Time'),
+                    cpu_system: i18n._('CPU System Utilization'),
+                    cpu_user: i18n._('CPU User Utilization'),
+                    description: i18n._('Text detail of the event'),
+                    dest_addr: i18n._('Destination Address'),
+                    dest_port: i18n._('Destination Port'),
+                    disk_free: i18n._('Disk Free'),
+                    disk_total: i18n._('Disk Size'),
+                    domain: i18n._('Domain'),
+                    elapsed_time: i18n._('Elapsed Time'),
+                    end_time: i18n._('End Time'),
+                    event_id: i18n._('Event ID'),
+                    event_info: i18n._('Event Type'),
+                    firewall_blocked: 'Firewall ' + i18n._('Blocked'),
+                    firewall_flagged: 'Firewall ' + i18n._('Flagged'),
+                    firewall_rule_index: 'Firewall ' + i18n._('Rule ID'),
+                    gen_id: i18n._('Grouping ID'),
+                    goodbye_stamp: i18n._('End Time'),
+                    hit_bytes: i18n._('Hit Bytes'),
+                    hits: i18n._('Hits'),
+                    host: i18n._('Host'),
+                    hostname: i18n._('Hostname'),
+                    interface_id: i18n._('Interface ID'),
+                    ipaddr: i18n._('Client Address'),
+                    json: i18n._('JSON Text'),
+                    key: i18n._('Key'),
+                    load_1: i18n._('CPU load (1-min)'),
+                    load_15: i18n._('CPU load (15-min)'),
+                    load_5: i18n._('CPU load (5-min)'),
+                    local: i18n._('Local'),
+                    login: i18n._('Login'),
+                    login_name: i18n._('Login Name'),
+                    mem_buffers: i18n._('Memory Buffers'),
+                    mem_cache: i18n._('Memory Cache'),
+                    mem_free: i18n._('Memory Free'),
+                    method: i18n._('Method'),
+                    miss_bytes: i18n._('Miss Bytes'),
+                    misses: i18n._('Misses'),
+                    msg: i18n._('Message'),
+                    msg_id: i18n._('Message ID'),
+                    name: i18n._('Interface Name'),
+                    net_interface: i18n._('Net Interface'),
+                    net_process: i18n._('Net Process'),
+                    os_name: i18n._('Interface O/S Name'),
+                    p2c_bytes: i18n._('To-Client Bytes'),
+                    p2s_bytes: i18n._('To-Server Bytes'),
+                    phish_blocker_action: 'Phish Blocker ' + i18n._('Action'),
+                    phish_blocker_is_spam: 'Phish Blocker ' + i18n._('Phish'),
+                    phish_blocker_score: 'Phish Blocker ' + i18n._('Score'),
+                    phish_blocker_tests_string: 'Phish Blocker ' + i18n._('Tests'),
+                    policy_id: i18n._('Policy ID'),
+                    pool_address: i18n._('Pool Address'),
+                    protocol: i18n._('Protocol'),
+                    reason: i18n._('Reason'),
+                    receiver: i18n._('Receiver'),
+                    remote_address: i18n._('Remote Address'),
+                    remote_port: i18n._('Remote Port'),
+                    request_id: i18n._('Request ID'),
+                    rx_bytes: i18n._('Bytes Received'),
+                    s2c_content_length: i18n._('Server-to-client Content Length'),
+                    s2c_content_type: i18n._('Server-to-client Content Type'),
+                    s2p_bytes: i18n._('From-Server Bytes'),
+                    s_client_addr: i18n._('Server-side Client Address'),
+                    s_client_port: i18n._('Server-side Client Port'),
+                    s_server_addr: i18n._('Server-side Server Address'),
+                    s_server_port: i18n._('Server-side Server Port'),
+                    sender: i18n._('Sender'),
+                    server_intf: i18n._('Server Interface'),
+                    session_id: i18n._('Session ID'),
+                    shield_blocked: 'Shield ' + i18n._('Blocked'),
+                    sig_id: i18n._('Signature ID'),
+                    size: i18n._('Size'),
+                    source_addr: i18n._('Source Address'),
+                    source_port: i18n._('Source Port'),
+                    spam_blocker_action: 'Spam Blocker ' + i18n._('Action'),
+                    spam_blocker_is_spam: 'Spam Blocker ' + i18n._('Spam'),
+                    spam_blocker_lite_action: 'Spam Blocker Lite ' + i18n._('Action'),
+                    spam_blocker_lite_is_spam: 'Spam Blocker Lite ' + i18n._('Spam'),
+                    spam_blocker_lite_score: 'Spam Blocker Lite ' + i18n._('Score'),
+                    spam_blocker_lite_tests_string: 'Spam Blocker Lite ' + i18n._('Tests'),
+                    spam_blocker_score: 'Spam Blocker ' + i18n._('Score'),
+                    spam_blocker_tests_string: 'Spam Blocker ' + i18n._('Tests'),
+                    ssl_inspector_detail: 'HTTPS Inspector ' + i18n._('Detail'),
+                    ssl_inspector_ruleid: 'HTTPS Inspector ' + i18n._('Rule ID'),
+                    ssl_inspector_status: 'HTTPS Inspector ' + i18n._('Status'),
+                    start_time: i18n._('Start Time'),
+                    subject: i18n._('Subject'),
+                    succeeded: i18n._('Succeeded'),
+                    success: i18n._('Success'),
+                    summary_text: i18n._('Summary Text'),
+                    swap_free: i18n._('Swap Free'),
+                    swap_total: i18n._('Swap Size'),
+                    systems: i18n._('System bypasses'),
+                    term: i18n._('Search Term'),
+                    time_stamp: i18n._('Timestamp'),
+                    tx_bytes: i18n._('Bytes Sent'),
+                    type: i18n._('Type'),
+                    uri: i18n._('URI'),
+                    username: i18n._('Username'),
+                    value: i18n._('Value'),
+                    vendor_name: i18n._('Vendor Name'),
+                    virus_blocker_clean: 'Virus Blocker ' + i18n._('Clean'),
+                    virus_blocker_lite_clean: 'Virus Blocker Lite ' + i18n._('Clean'),
+                    virus_blocker_lite_name: 'Virus Blocker Lite ' + i18n._('Name'),
+                    virus_blocker_name: 'Virus Blocker ' + i18n._('Name'),
+                    web_filter_blocked: 'Web Filter ' + i18n._('Blocked'),
+                    web_filter_category: 'Web Filter ' + i18n._('Category'),
+                    web_filter_flagged: 'Web Filter ' + i18n._('Flagged'),
+                    web_filter_lite_blocked: 'Web Filter Lite ' + i18n._('Blocked'),
+                    web_filter_lite_category: 'Web Filter Lite ' + i18n._('Category'),
+                    web_filter_lite_flagged: 'Web Filter Lite ' + i18n._('Flagged'),
+                    web_filter_lite_reason: 'Web Filter Lite ' + i18n._('Reason'),
+                    web_filter_reason: 'Web Filter ' + i18n._('Reason')
+                };
+            }
+            var readableName = this.columnsHumanReadableNames[columnName];
+            return readableName!=null ? readableName : columnName;
+        },
+        getColumnsForTable: function(table, store) {
+            if(table != null && table.length > 2) {
+                Ung.Main.getReportingManagerNew().getColumnsForTable(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var columns = [];
+                    for (var i=0; i< result.length; i++) {
+                        columns.push({
+                            name: result[i],
+                            displayName: Ung.panel.Reports.getColumnHumanReadableName(result[i])
+                        });
+                    }
+                    store.loadData(columns);
+                }, table);
+            }
         }
     },
     name: 'panelReports',
@@ -263,7 +282,7 @@ Ext.define('Ung.panel.Reports', {
                         tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
                         iconCls: 'icon-refresh',
                         handler:function () {
-                            this.refreshHandler(true);
+                            this.refreshHandler();
                         },
                         scope: this
                     }, {
@@ -281,6 +300,16 @@ Ext.define('Ung.panel.Reports', {
                                 this.stopAutoRefresh();
                             }
                         }, this)
+                    }, '->', {
+                        xtype: 'button',
+                        text: i18n._('Customize'),
+                        name: "edit",
+                        tooltip: i18n._('Advanced report customization'),
+                        iconCls: 'icon-edit',
+                        handler:function () {
+                            this.customizeReport();
+                        },
+                        scope: this
                     }]
                 }] 
             }, this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
@@ -290,7 +319,7 @@ Ext.define('Ung.panel.Reports', {
                     "expand": {
                         fn: Ext.bind(function() {
                             if(this.reportEntry) {
-                                this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
+                                Ung.panel.Reports.getColumnsForTable(this.reportEntry.table, this.extraConditionsPanel.columnsStore);
                             }
                         }, this)
                     }
@@ -529,6 +558,7 @@ Ext.define('Ung.panel.Reports', {
                 series: [{
                     type: 'pie',
                     angleField: 'value',
+                    rotation: 45,
                     label: {
                         field: "description",
                         calloutLine: {
@@ -784,10 +814,10 @@ Ext.define('Ung.panel.Reports', {
             this.loadReportData(result.list);
         }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
         if(!this.extraConditionsPanel.getCollapsed()) {
-            this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
+            Ung.panel.Reports.getColumnsForTable(this.reportEntry.table, this.extraConditionsPanel.columnsStore);
         }
     },
-    refreshHandler: function (forceFlush) {
+    refreshHandler: function () {
         if(!this.reportEntry || this.autoRefreshEnabled) {
             return;
         }
@@ -960,6 +990,33 @@ Ext.define('Ung.panel.Reports', {
             this.subCmps.push(this.windowAddCondition);
         }
     },
+    customizeReport: function() {
+        if(!this.reportEntry) {
+            return;
+        }
+        if(!this.winReportEditor) {
+            var me = this;
+            this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
+                sizeToComponent: this.chartContainer,
+                title: i18n._("Advanced report customization"),
+                forReportCustomization: true,
+                settingsCmp: this,
+                grid: {},
+                isDirty: function() {
+                    return false;
+                },
+                updateAction: function() {
+                    Ung.window.ReportEditor.prototype.updateAction.apply(this, arguments);
+                    me.reportEntry = this.record.getData();
+                    me.refreshHandler();
+                }
+            });
+            this.subCmps.push(this.winReportEditor);
+        }
+        var record = Ext.create('Ext.data.Model', this.reportEntry);
+        this.winReportEditor.populate(record);
+        this.winReportEditor.show();
+    },
     isDirty: function() {
         return false;
     },
@@ -992,29 +1049,12 @@ Ext.define("Ung.panel.ExtraConditions", {
     defaultCount: 1,
     autoScroll: true,
     layout: { type: 'vbox'},
-    getColumnsForTable: function(table) {
-        if(table != null && table.length > 2) {
-            Ung.Main.getReportingManagerNew().getColumnsForTable(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var columns = [], readableName;
-                for (var i=0; i< result.length; i++) {
-                    readableName = this.columnsHumanReadableNames[result[i]];
-                    columns.push({
-                        name: result[i],
-                        displayName: readableName!=null ? readableName:result[i]
-                    });
-                }
-                this.columnsStore.loadData(columns);
-            }, this), table);
-        }
-    },
     initComponent: function() {
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "displayName",
             fields: ["name", "displayName"],
             data: []
         });
-        this.columnsHumanReadableNames = Ung.panel.Reports.getColumnsHumanReadableNames();
         this.items = [];
         for(var i=0; i<this.defaultCount; i++) {
             this.items.push(this.generateRow());
@@ -1190,7 +1230,520 @@ Ext.define("Ung.panel.ExtraConditions", {
         this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
         this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
         if(!skipReload) {
-            this.parentPanel.refreshHandler(true);
+            this.parentPanel.refreshHandler();
         }
+    }
+});
+
+Ext.define("Ung.window.ReportEditor", {
+    extend: "Ung.RowEditorWindow",
+    rowEditorLabelWidth: 150,
+    settingsCmp: null,
+    initComponent: function() {
+        if(!this.forReportCustomization) {
+            this.tbar = [{
+                xtype: 'button',
+                text: i18n._('View Report'),
+                iconCls: 'icon-play',
+                handler: function() {
+                    if (this.validate()!==true) {
+                        return;
+                    }
+                    if (this.record !== null) {
+                        var data = Ext.clone(this.record.getData());
+                        this.updateActionRecursive(this.items, data, 0);
+                        this.settingsCmp.viewReport(data);
+                    }
+                },
+                scope: this
+            }, {
+                xtype: 'button',
+                text: i18n._('Copy Report'),
+                iconCls: 'action-icon',
+                handler: function() {
+                    var data = Ext.clone(this.grid.emptyRow);
+                    this.updateActionRecursive(this.items, data, 0);
+                    Ext.apply(data, {
+                        title: Ext.String.format("Copy of {0}", data.title)
+                    });
+                    this.closeWindow();
+                    this.grid.addHandler(null, null, data);
+                    Ext.MessageBox.alert(i18n._("Copy Report"), Ext.String.format(i18n._("You are now editing the copied report: '{0}'"), data.title));
+                },
+                scope: this
+            }];
+        } else {
+            
+        }
+        var categoryStore = Ext.create('Ext.data.Store', {
+            sorters: "displayName",
+            fields: ["displayName"],
+            data: []
+        });
+        rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var data=[{displayName: 'System'}];
+            var nodeProperties = result.list;
+            for (var i=0; i< nodeProperties.length; i++) {
+                if(!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {
+                    data.push(nodeProperties[i]);
+                }
+            }
+            categoryStore.loadData(data);
+        }, this));
+
+        var tablesStore = Ext.create('Ext.data.Store', {
+            sorters: "name",
+            fields: ["name"],
+            data: []
+        });
+        Ung.Main.getReportingManagerNew().getTables(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var tables = [];
+            for (var i=0; i< result.length; i++) {
+                tables.push({ name: result[i]});
+            }
+            tablesStore.loadData(tables);
+        }, this));
+        
+        this.columnsStore = Ext.create('Ext.data.Store', {
+            sorters: "displayName",
+            fields: ["name", "displayName"],
+            data: []
+        });
+        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")]];
+        
+        var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
+            name: 'Sql Conditions',
+            height: 180,
+            width: '100%',
+            settingsCmp: this,
+            addAtTop: false,
+            hasImportExport: false,
+            dataIndex: 'conditions',
+            columnsDefaultSortable: false,
+            recordJavaClass: "com.untangle.uvm.node.SqlCondition",
+            emptyRow: {
+                "column": "",
+                "operator": "=",
+                "value": ""
+                
+            },
+            fields: ["column", "value", "operator"],
+            columns: [{
+                header: i18n._("Column"),
+                dataIndex: 'column',
+                width: 200
+            }, {
+                header: i18n._("Operator"),
+                dataIndex: 'operator',
+                width: 100
+            }, {
+                header: i18n._("Value"),
+                dataIndex: 'value',
+                flex: 1,
+                width: 200
+            }],
+            rowEditorInputLines: [{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype: 'combo',
+                    emptyText: i18n._("[enter column]"),
+                    dataIndex: "column",
+                    fieldLabel: i18n._("Column"),
+                    typeAhead:true,
+                    allowBlank: false,
+                    valueField: "name",
+                    displayField: "displayName",
+                    queryMode: 'local',
+                    width: 350,
+                    store: this.columnsStore
+                }, {
+                    xtype: 'label',
+                    html: i18n._("(Columns list is loaded for the entered Table')"),
+                    cls: 'boxlabel'
+                }]
+            }, {
+                xtype: 'combo',
+                emptyText: i18n._("[select operator]"),
+                dataIndex: "operator",
+                fieldLabel: i18n._("Operator"),
+                editable: false,
+                allowBlank: false,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
+            }, {
+                xtype: 'textfield',
+                dataIndex: "value",
+                fieldLabel: i18n._("Value"),
+                emptyText: i18n._("[no value]"),
+                width: '90%'
+            }],
+            setValue: function (val) {
+                var data = val || [];
+                this.reload({data:data});
+            },
+            getValue: function () {
+                var val = this.getList();
+                return val.length == 0 ? null: val;
+            }
+        });
+        
+        this.inputLines = [{
+            xtype: 'combo',
+            name: 'Category',
+            dataIndex: "category",
+            allowBlank: false,
+            editable: false,
+            valueField: 'displayName',
+            displayField: 'displayName',
+            fieldLabel: i18n._('Category'),
+            emptyText: i18n._("[select category]"),
+            queryMode: 'local',
+            width: 500,
+            readOnly: this.forReportCustomization,
+            store: categoryStore
+        }, {
+            xtype:'textfield',
+            name: "Title",
+            dataIndex: "title",
+            allowBlank: false,
+            fieldLabel: i18n._("Title"),
+            emptyText: i18n._("[enter title]"),
+            width: '100%'
+        }, {
+            xtype:'textfield',
+            name: "Description",
+            dataIndex: "description",
+            fieldLabel: i18n._("Description"),
+            emptyText: i18n._("[no description]"),
+            width: '100%'
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '5 0 5 0',
+            items: [{
+                xtype:'checkbox',
+                name: "Enabled",
+                dataIndex: "enabled",
+                fieldLabel: i18n._("Enabled"),
+                labelWidth: 150
+            }, {
+                xtype: 'numberfield',
+                name: 'Display Order',
+                fieldLabel: i18n._('Display Order'),
+                dataIndex: "displayOrder",
+                allowDecimals: false,
+                minValue: 0,
+                maxValue: 100000,
+                allowBlank: false,
+                width: 282,
+                style: { marginLeft: '50px'}
+            }]
+        }, {
+            xtype:'textfield',
+            name: "Units",
+            dataIndex: "units",
+            fieldLabel: i18n._("Units"),
+            emptyText: i18n._("[no units]"),
+            width: 500
+        }, {
+            xtype: 'combo',
+            name: "Table",
+            dataIndex: "table",
+            allowBlank: false,
+            fieldLabel: i18n._("Table"),
+            emptyText: i18n._("[enter table]"),
+            valueField: "name",
+            displayField: "name",
+            queryMode: 'local',
+            width: 500,
+            store: tablesStore,
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, newValue) {
+                        Ung.panel.Reports.getColumnsForTable(newValue, this.columnsStore);
+                    }, this),
+                    buffer: 600
+                }
+            }
+        }, {
+            xtype: 'combo',
+            name: 'Type',
+            margin: '10 0 10 0',
+            dataIndex: "type",
+            allowBlank: false,
+            editable: false,
+            fieldLabel: i18n._('Type'),
+            queryMode: 'local',
+            width: 350,
+            store: chartTypes,
+            listeners: {
+                "select": {
+                    fn: Ext.bind(function(combo, records, eOpts) {
+                        this.syncComponents();
+                    }, this)
+                }
+            }
+        }, {
+            xtype: "container",
+            dataIndex: "textColumns",
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype:'textareafield',
+                name: "textColumns",
+                grow: true,
+                labelWidth: 150,
+                fieldLabel: i18n._("Text Columns"),
+                width: 500
+            }, {
+                xtype: 'label',
+                html: i18n._("(enter one column per row)"),
+                cls: 'boxlabel'
+            }],
+            setValue: function(value) {
+                var textColumns  = this.down('textfield[name="textColumns"]');
+                textColumns.setValue((value||[]).join("\n"));
+            },
+            getValue: function() {
+                var textColumns = [];
+                var val  = this.down('textfield[name="textColumns"]').getValue();
+                if(!Ext.isEmpty(val)) {
+                    var valArr = val.split("\n");
+                    var colVal;
+                    for(var i = 0; i< valArr.length; i++) {
+                        colVal = valArr[i].trim();
+                        if(!Ext.isEmpty(colVal)) {
+                            textColumns.push(colVal);
+                        }
+                    }
+                }
+                
+                return textColumns.length==0 ? null : textColumns;
+            },
+            setReadOnly: function(val) {
+                this.down('textfield[name="textColumns"]').setReadOnly(val);
+            }
+        }, {
+            xtype:'textfield',
+            name: "textString",
+            dataIndex: "textString",
+            alowBlank: false,
+            fieldLabel: i18n._("Text String"),
+            width: '100%'
+        }, {
+            xtype:'textfield',
+            name: "pieGroupColumn",
+            dataIndex: "pieGroupColumn",
+            fieldLabel: i18n._("Pie Group Column"),
+            width: 500
+        }, {
+            xtype:'textfield',
+            name: "pieSumColumn",
+            dataIndex: "pieSumColumn",
+            fieldLabel: i18n._("Pie Sum Column"),
+            width: 500
+        }, {
+            xtype: 'numberfield',
+            name: 'pieNumSlices',
+            fieldLabel: i18n._('Pie Slices Number'),
+            dataIndex: "pieNumSlices",
+            allowDecimals: false,
+            minValue: 0,
+            maxValue: 1000,
+            allowBlank: false,
+            width: 350
+        }, {
+            xtype: 'combo',
+            name: 'timeStyle',
+            dataIndex: "timeStyle",
+            editable: false,
+            fieldLabel: i18n._('Time Chart Style'),
+            queryMode: 'local',
+            allowBlank: false,
+            width: 350,
+            store: [
+                ["LINE", i18n._("Line")],
+                ["BAR_3D", i18n._("Bar 3D")],
+                ["BAR_3D_OVERLAPPED", i18n._("Bar 3D Overlapped")],
+                ["BAR", i18n._("Bar")],
+                ["BAR_OVERLAPPED", i18n._("Bar Overlapped")]
+            ]
+        }, {
+            xtype: 'combo',
+            name: 'timeDataInterval',
+            dataIndex: "timeDataInterval",
+            editable: false,
+            fieldLabel: i18n._('Time Data Interval'),
+            queryMode: 'local',
+            allowBlank: false,
+            width: 350,
+            store: [
+                ["AUTO", i18n._("Auto")],
+                ["SECOND", i18n._("Second")],
+                ["MINUTE", i18n._("Minute")],
+                ["HOUR", i18n._("Hour")],
+                ["DAY", i18n._("Day")],
+                ["WEEK", i18n._("Week")],
+                ["MONTH", i18n._("Month")]
+            ]
+        }, {
+            xtype: "container",
+            dataIndex: "timeDataColumns",
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype:'textareafield',
+                name: "timeDataColumns",
+                grow: true,
+                labelWidth: 150,
+                fieldLabel: i18n._("Time Data Columns"),
+                width: 500
+            }, {
+                xtype: 'label',
+                html: i18n._("(enter one column per row)"),
+                cls: 'boxlabel'
+            }],
+            setValue: function(value) {
+                var timeDataColumns  = this.down('textfield[name="timeDataColumns"]');
+                timeDataColumns.setValue((value||[]).join("\n"));
+            },
+            getValue: function() {
+                var timeDataColumns = [];
+                var val  = this.down('textfield[name="timeDataColumns"]').getValue();
+                if(!Ext.isEmpty(val)) {
+                    var valArr = val.split("\n");
+                    var colVal;
+                    for(var i = 0; i< valArr.length; i++) {
+                        colVal = valArr[i].trim();
+                        if(!Ext.isEmpty(colVal)) {
+                            timeDataColumns.push(colVal);
+                        }
+                    }
+                }
+                
+                return timeDataColumns.length==0 ? null : timeDataColumns;
+            },
+            setReadOnly: function(val) {
+                this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
+            }
+        }, {
+            xtype: "container",
+            dataIndex: "colors",
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype:'textareafield',
+                name: "colors",
+                grow: true,
+                labelWidth: 150,
+                fieldLabel: i18n._("Colors"),
+                width: 500
+            }, {
+                xtype: 'label',
+                html: i18n._("(enter one color per row)"),
+                cls: 'boxlabel'
+            }],
+            setValue: function(value) {
+                var timeDataColumns  = this.down('textfield[name="colors"]');
+                timeDataColumns.setValue((value||[]).join("\n"));
+            },
+            getValue: function() {
+                var colors = [];
+                var val  = this.down('textfield[name="colors"]').getValue();
+                if(!Ext.isEmpty(val)) {
+                    var valArr = val.split("\n");
+                    var colVal;
+                    for(var i = 0; i< valArr.length; i++) {
+                        colVal = valArr[i].trim();
+                        if(!Ext.isEmpty(colVal)) {
+                            colors.push(colVal);
+                        }
+                    }
+                }
+                
+                return colors.length==0 ? null : colors;
+            },
+            setReadOnly: function(val) {
+                this.down('textfield[name="colors"]').setReadOnly(val);
+            }
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '10 0 10 0',
+            items: [{
+                xtype:'textfield',
+                name: "orderByColumn",
+                dataIndex: "orderByColumn",
+                fieldLabel: i18n._("Order By Column"),
+                labelWidth: 150,
+                width: 350
+            },{
+                xtype: 'combo',
+                name: 'orderDesc',
+                dataIndex: "orderDesc",
+                editable: false,
+                fieldLabel: i18n._('Order Direction'),
+                queryMode: 'local',
+                width: 300,
+                style: { marginLeft: '10px'},
+                store: [[null, ""], [false, i18n._("Ascending")], [true, i18n._("Descending")]]
+            }]
+        }, {
+            xtype:'fieldset',
+            title: i18n._("Sql Conditions:"),
+            items:[gridSqlConditionsEditor]
+        }];
+        this.callParent(arguments);
+    },
+    populate: function(record, addMode) {
+        Ung.panel.Reports.getColumnsForTable(record.get("table"), this.columnsStore);
+        this.callParent(arguments);
+    },
+    syncComponents: function () {
+        var type=this.down('combo[dataIndex=type]').getValue();
+        var cmps = {
+            textColumns: this.down('[dataIndex=textColumns]'),
+            textString: this.down('[dataIndex=textString]'),
+            pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
+            pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
+            pieNumSlices: this.down('[dataIndex=pieNumSlices]'),
+            timeStyle: this.down('[dataIndex=timeStyle]'),
+            timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
+            timeDataColumns: this.down('[dataIndex=timeDataColumns]'),
+            colors: this.down('[dataIndex=colors]')
+        };
+        
+        cmps.textColumns.setVisible(type=="TEXT");
+        cmps.textColumns.setDisabled(type!="TEXT");
+
+        cmps.textString.setVisible(type=="TEXT");
+        cmps.textString.setDisabled(type!="TEXT");
+
+        cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
+        cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
+
+        cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
+        cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
+        
+        cmps.pieNumSlices.setVisible(type=="PIE_GRAPH");
+        cmps.pieNumSlices.setDisabled(type!="PIE_GRAPH");
+
+        cmps.timeStyle.setVisible(type=="TIME_GRAPH");
+        cmps.timeStyle.setDisabled(type!="TIME_GRAPH");
+
+        cmps.timeDataInterval.setVisible(type=="TIME_GRAPH");
+        cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH");
+        
+        cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
+        cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
+        
+        cmps.colors.setVisible(type!="TEXT");
+        cmps.colors.setDisabled(type=="TEXT");
     }
 });
