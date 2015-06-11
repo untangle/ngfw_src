@@ -359,7 +359,7 @@ public class AdminManagerImpl implements AdminManager
                 String pass = user.trans_getPassword();
                 if ( pass != null ) {
                     logger.info("Setting root password");
-                    String cmd = "sudo usermod -p `echo '" + pass + "' | openssl passwd -crypt -stdin -salt '$1'` root";
+                    String cmd = "echo 'root:" + pass + "' | sudo chpasswd";
                     
                     // turn down logging so we dont log password
                     UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
