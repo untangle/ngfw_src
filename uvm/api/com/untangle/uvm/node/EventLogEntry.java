@@ -26,6 +26,7 @@ public class EventLogEntry implements Serializable, JSONString
 
     private String name;
     private String table;
+    private String category;
     private SqlCondition[] conditions;
     private String[] defaultColumns;
 
@@ -47,6 +48,9 @@ public class EventLogEntry implements Serializable, JSONString
     public String getName() { return this.name; }
     public void setName( String newValue ) { this.name = newValue; }
 
+    public String getCategory() { return this.category; }
+    public void setCategory( String newValue ) { this.category = newValue; }
+    
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
     
