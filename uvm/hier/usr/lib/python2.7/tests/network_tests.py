@@ -275,11 +275,6 @@ def setFirstLevelRule(newRule,ruleGroup):
     netsettings[ruleGroup]['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def appendFirstLevelRule(newRule,ruleGroup):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings[ruleGroup]['list'].append(newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-
 def appendQoSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['qosSettings']['qosRules']['list'].append(newRule)
@@ -621,7 +616,7 @@ class NetworkTests(unittest2.TestCase):
         for wanIP in myWANs:
             nukeFirstLevelRule("natRules")
             # Create NAT rule for port 80
-            appendFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
+            setFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
             # Determine current outgoing IP
             result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             # print "result " + result + " wanIP " + myWANs[wanIP]
@@ -643,7 +638,7 @@ class NetworkTests(unittest2.TestCase):
         appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","80"))
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
-        appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
+        setFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
         result3 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
