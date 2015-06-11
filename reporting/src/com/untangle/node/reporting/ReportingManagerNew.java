@@ -22,6 +22,13 @@ public interface ReportingManagerNew
     
     void setReportEntries( List<ReportEntry> newEntries );
 
+    /**
+     * Save an individual report entry
+     * If an entry exists with the same uniqueId in the current entries, it will be overwritten.
+     * If an entry does not exist with the same uniqueId, it will be appended to the existing entries
+     */
+    void saveReportEntry( ReportEntry entry );
+
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );

@@ -102,6 +102,34 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         node.setSettings( settings );
     }
 
+    public void saveReportEntry( ReportEntry entry )
+    {
+        String uniqueId = entry.getUniqueId();
+        List<ReportEntry> reportEntries = getReportEntries();
+        boolean found = false;
+        int i = 0;
+
+        if ( uniqueId == null ) {
+            throw new RuntimeException("Invalid Entry unique ID: " + uniqueId );
+        }
+        
+        for ( ReportEntry e : reportEntries ) {
+            if ( uniqueId.equals( e.getUniqueId() ) ) {
+                found = true;
+                reportEntries.set( i, entry );
+                break;
+            }
+            i++;
+        }
+
+        if (!found)
+            reportEntries.add( entry );
+
+        setReportEntries( reportEntries );
+        return;
+    }
+
+    
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
         PreparedStatement sql = entry.toSql( getDbConnection(), startDate, endDate, extraConditions );
