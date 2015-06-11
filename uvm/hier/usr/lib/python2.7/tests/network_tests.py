@@ -619,6 +619,7 @@ class NetworkTests(unittest2.TestCase):
         if (len(myWANs) < 2):
             raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
         for wanIP in myWANs:
+            nukeFirstLevelRule("natRules")
             # Create NAT rule for port 80
             appendFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
             # Determine current outgoing IP
