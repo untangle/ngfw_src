@@ -1,14 +1,14 @@
 {
-    "uniqueId": "intrusion-prevention-qqyU6Nsv",
+    "uniqueId": "intrusion-prevention-nBogCEbx",
     "category": "Intrusion Prevention",
-    "description": "The number of intrusions blocked by destination IP address.",
-    "displayOrder": 702,
+    "description": "The number of intrusions blocked by protocol.",
+    "displayOrder": 902,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "dest_addr",
+    "pieGroupColumn": "protocol",
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",
@@ -18,6 +18,6 @@
     }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Top Destination IP Addresses (blocked)",
+    "title": "Top Protocols (blocked)",
     "type": "PIE_GRAPH"
 }

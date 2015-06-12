@@ -9,7 +9,13 @@
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "category",
-    "pieSumColumn": "sum(blocked::int)",
+    "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.uvm.node.SqlCondition",
+        "operator": "=",
+        "value": "true"
+    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Categories (blocked)",

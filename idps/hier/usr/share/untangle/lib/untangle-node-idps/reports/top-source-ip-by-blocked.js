@@ -9,7 +9,13 @@
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "source_addr",
-    "pieSumColumn": "sum(blocked::int)",
+    "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.uvm.node.SqlCondition",
+        "operator": "=",
+        "value": "true"
+    }],
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Source IP Addresses (blocked)",
