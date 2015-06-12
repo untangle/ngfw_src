@@ -16,6 +16,17 @@ iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
 
+def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
+    timeout = 4
+    result = ""
+    while result == "" and timeout > 0:
+        timeout -= 1
+        if localcall:
+            result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
+        else:
+            result = remote_control.runCommand("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
+    return result
+    
 def verifyIperf(wanIP):
     # https://iperf.fr/
     global iperfServer
