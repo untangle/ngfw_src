@@ -8,7 +8,7 @@ import java.util.Date;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 
 /**
  * Interface to the Virus Blocker nodes.
@@ -20,9 +20,9 @@ public interface VirusNode extends Node
 
     String getName();
     
-    EventLogEntry[] getWebEventQueries();
-    EventLogEntry[] getFtpEventQueries();
-    EventLogEntry[] getMailEventQueries();
+    EventEntry[] getWebEventQueries();
+    EventEntry[] getFtpEventQueries();
+    EventEntry[] getMailEventQueries();
 
     Date getLastSignatureUpdate();
 

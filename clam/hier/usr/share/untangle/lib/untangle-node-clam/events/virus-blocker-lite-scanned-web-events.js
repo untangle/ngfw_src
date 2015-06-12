@@ -16,7 +16,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocked_lite_clean","virus_blocker_lite_name","s_server_addr","s_server_port"],
     "displayOrder": 10,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "http_events",
     "title": "Scanned Web Events",
     "uniqueId": "virus-blocker-lite-XZ3QSNQ2NP"

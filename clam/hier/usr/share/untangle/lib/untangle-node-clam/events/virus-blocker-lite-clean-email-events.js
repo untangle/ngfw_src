@@ -22,7 +22,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","username","addr","sender","s_server_addr","s_server_port"],
     "displayOrder": 22,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "mail_addrs",
     "title": "Clean Email Events",
     "uniqueId": "virus-blocker-lite-F89NAEM9MF"

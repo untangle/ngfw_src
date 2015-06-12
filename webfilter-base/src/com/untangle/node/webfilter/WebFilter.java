@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 
 /**
  * Interface the the WebFilter Node.
@@ -44,5 +44,5 @@ public interface WebFilter extends Node
 
     String getName();
 
-    EventLogEntry[] getEventQueries();
+    EventEntry[] getEventQueries();
 }

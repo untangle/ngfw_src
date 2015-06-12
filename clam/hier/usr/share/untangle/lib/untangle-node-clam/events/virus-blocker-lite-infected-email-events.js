@@ -22,7 +22,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_lite_clean","virus_blocker_lite_name","s_server_addr","s_server_port"],
     "displayOrder": 21,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "mail_addrs",
     "title": "Infected Email Events",
     "uniqueId": "virus-blocker-lite-44TQDYOWVL"

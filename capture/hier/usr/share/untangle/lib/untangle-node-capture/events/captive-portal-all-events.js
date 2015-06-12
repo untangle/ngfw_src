@@ -16,7 +16,7 @@
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
     "displayOrder": 12,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "sessions",
     "title": "All User Events",
     "uniqueId": "captive-portal-CWKFK6AXDU"

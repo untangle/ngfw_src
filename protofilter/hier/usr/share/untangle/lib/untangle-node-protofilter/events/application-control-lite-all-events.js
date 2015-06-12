@@ -16,7 +16,7 @@
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","application_control_lite_protocol","application_control_lite_blocked"],
     "displayOrder": 10,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "sessions",
     "title": "All Events",
     "uniqueId": "application-control-lite-EKULKEVEKE"

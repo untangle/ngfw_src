@@ -22,7 +22,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
     "displayOrder": 10,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "mail_addrs",
     "title": "All Email Events",
     "uniqueId": "phish-blocker-H2833I40O7"

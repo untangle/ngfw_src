@@ -25,7 +25,7 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -48,7 +48,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     private final EventHandler handler;
     
-    private EventLogEntry allEventQuery;
+    private EventEntry allEventQuery;
 
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
@@ -73,7 +73,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.allEventQuery = new EventLogEntry(I18nUtil.marktr("Events"), "openvpn_events", new SqlCondition[]{});
+        this.allEventQuery = new EventEntry(I18nUtil.marktr("Events"), "openvpn_events", new SqlCondition[]{});
     }
 
     @Override
@@ -266,9 +266,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.incrementMetric(OpenVpnNodeImpl.STAT_CONNECT);
     }
 
-    public EventLogEntry[] getStatusEventsQueries()
+    public EventEntry[] getStatusEventsQueries()
     {
-        return new EventLogEntry[] { this.allEventQuery };
+        return new EventEntry[] { this.allEventQuery };
     }
 
     public List<OpenVpnStatusEvent> getActiveClients()

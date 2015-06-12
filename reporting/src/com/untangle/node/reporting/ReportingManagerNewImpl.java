@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SqlCondition;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -103,13 +103,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         node.setSettings( settings );
     }
 
-    public void setEventEntries( List<EventLogEntry> newEntries )
+    public void setEventEntries( List<EventEntry> newEntries )
     {
         if ( node == null ) {
             throw new RuntimeException("Reporting node not found");
         }
 
-        LinkedList<EventLogEntry> newEventEntries = new LinkedList<EventLogEntry>(newEntries);
+        LinkedList<EventEntry> newEventEntries = new LinkedList<EventEntry>(newEntries);
         updateSystemEventEntries( newEventEntries, false );
 
         ReportingSettings settings = node.getSettings();
@@ -243,6 +243,21 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return array;
     }
 
+    public ArrayList<org.json.JSONObject> getEvents(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    {
+        return ReportingNodeImpl.eventReader.getEvents( entry.getQuery(), policyId, extraConditions, limit, null, null );
+    }
+
+    public ResultSetReader getEventsResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    {
+        return getEventsForDateRangeResultSet( entry.getQuery(), policyId, extraConditions, limit, null, null );
+    }
+
+    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
+    {
+        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.getQuery(), policyId, extraConditions, limit, startDate, endDate );
+    }
+
     public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
         return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
@@ -317,11 +332,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return;
     }
 
-    protected void updateSystemEventEntries( List<EventLogEntry> existingEntries, boolean saveIfChanged )
+    protected void updateSystemEventEntries( List<EventEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
         if ( existingEntries == null )
-            existingEntries = new LinkedList<EventLogEntry>();
+            existingEntries = new LinkedList<EventEntry>();
         
         String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/events/*.js' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
@@ -337,7 +352,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             for ( String line : lines ) {
                 logger.info("Reading file: " + line);
                 try {
-                    EventLogEntry newEntry = UvmContextFactory.context().settingsManager().load( EventLogEntry.class, line );
+                    EventEntry newEntry = UvmContextFactory.context().settingsManager().load( EventEntry.class, line );
 
                     /* do some error checking around unique ID */
                     if ( newEntry.getUniqueId() == null ) {
@@ -349,7 +364,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                         seenUniqueIds.add( newEntry.getUniqueId() );
                     }
                     
-                    EventLogEntry oldEntry = findEventEntry( existingEntries, newEntry.getUniqueId() );
+                    EventEntry oldEntry = findEventEntry( existingEntries, newEntry.getUniqueId() );
                     if ( oldEntry == null ) {
                         logger.info( "Event Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
                         existingEntries.add( newEntry );
@@ -391,14 +406,14 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return null;
     }
 
-    private EventLogEntry findEventEntry( List<EventLogEntry> entries, String uniqueId )
+    private EventEntry findEventEntry( List<EventEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
             logger.warn("Invalid arguments: " + uniqueId, new Exception());
             return null;
         }
         
-        for ( EventLogEntry entry : entries ) {
+        for ( EventEntry entry : entries ) {
             if (uniqueId.equals( entry.getUniqueId() ) )
                 return entry;
         }
@@ -427,7 +442,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return true;
     }
 
-    private boolean updateEventEntry( List<EventLogEntry> entries, EventLogEntry newEntry, EventLogEntry oldEntry )
+    private boolean updateEventEntry( List<EventEntry> entries, EventEntry newEntry, EventEntry oldEntry )
     {
         String newEntryStr = newEntry.toJSONString();
         String oldEntryStr = oldEntry.toJSONString();

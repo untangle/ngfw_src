@@ -18,7 +18,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Affinity;
@@ -36,8 +36,8 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     private ShieldSettings settings;
 
-    private EventLogEntry scannedEventsQuery;
-    private EventLogEntry blockedEventsQuery;
+    private EventEntry scannedEventsQuery;
+    private EventEntry blockedEventsQuery;
 
     public ShieldNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -48,8 +48,8 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.scannedEventsQuery = new EventLogEntry(I18nUtil.marktr("Scanned Sessions"), "sessions", new SqlCondition[]{});
-        this.blockedEventsQuery = new EventLogEntry(I18nUtil.marktr("Blocked Sessions"), "sessions", new SqlCondition[]{ new SqlCondition("shield_blocked","is","true") });
+        this.scannedEventsQuery = new EventEntry(I18nUtil.marktr("Scanned Sessions"), "sessions", new SqlCondition[]{});
+        this.blockedEventsQuery = new EventEntry(I18nUtil.marktr("Blocked Sessions"), "sessions", new SqlCondition[]{ new SqlCondition("shield_blocked","is","true") });
     }
 
     public void setSettings(final ShieldSettings newSettings)
@@ -102,9 +102,9 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         setSettings( settings);
     }
 
-    public EventLogEntry[] getEventQueries()
+    public EventEntry[] getEventQueries()
     {
-        return new EventLogEntry[] { this.scannedEventsQuery, this.blockedEventsQuery };
+        return new EventEntry[] { this.scannedEventsQuery, this.blockedEventsQuery };
     }
 
     @Override

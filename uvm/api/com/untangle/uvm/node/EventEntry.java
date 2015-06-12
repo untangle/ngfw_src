@@ -17,7 +17,7 @@ import com.untangle.uvm.node.SqlCondition;
  * render and exec the query
  */
 @SuppressWarnings("serial")
-public class EventLogEntry implements Serializable, JSONString
+public class EventEntry implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -30,9 +30,9 @@ public class EventLogEntry implements Serializable, JSONString
     private SqlCondition[] conditions;
     private String[] defaultColumns;
 
-    public EventLogEntry() {}
+    public EventEntry() {}
     
-    public EventLogEntry( String title, String table, SqlCondition[] conditions )
+    public EventEntry( String title, String table, SqlCondition[] conditions )
     {
         this.title = title;
         this.table = table;

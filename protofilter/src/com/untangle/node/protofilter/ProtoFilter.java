@@ -3,7 +3,7 @@
  */
 package com.untangle.node.protofilter;
 
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.Node;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,5 +25,5 @@ public interface ProtoFilter extends Node
      */
     void reconfigure() throws Exception;
 
-    EventLogEntry[] getEventQueries();
+    EventEntry[] getEventQueries();
 }

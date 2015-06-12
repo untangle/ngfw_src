@@ -16,7 +16,7 @@
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
     "displayOrder": 23,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "capture_user_events",
     "title": "Session Timeout User Events",
     "uniqueId": "captive-portal-14EX9EL9NL"

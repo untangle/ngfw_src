@@ -22,7 +22,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_lite_is_spam","spam_blocker_lite_action","spam_blocker_lite_score"],
     "displayOrder": 10,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "mail_addrs",
     "title": "All Email Events",
     "uniqueId": "spam-blocker-lite-HEU9QMHY5S"

@@ -12,7 +12,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.node.EventLogEntry;
+import com.untangle.uvm.node.EventEntry;
 
 /**
  * Settings for the Reporting Node.
@@ -47,7 +47,7 @@ public class ReportingSettings implements Serializable, JSONString
     private String syslogProtocol = "UDP";
 
     private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
-    private LinkedList<EventLogEntry> eventEntries  = new LinkedList<EventLogEntry>();
+    private LinkedList<EventEntry> eventEntries  = new LinkedList<EventEntry>();
     
     public ReportingSettings() { }
 
@@ -93,8 +93,8 @@ public class ReportingSettings implements Serializable, JSONString
     public LinkedList<ReportEntry> getReportEntries() { return reportEntries; }
     public void setReportEntries( LinkedList<ReportEntry> newValue ) { this.reportEntries = newValue; }
 
-    public LinkedList<EventLogEntry> getEventEntries() { return eventEntries; }
-    public void setEventEntries( LinkedList<EventLogEntry> newValue ) { this.eventEntries = newValue; }
+    public LinkedList<EventEntry> getEventEntries() { return eventEntries; }
+    public void setEventEntries( LinkedList<EventEntry> newValue ) { this.eventEntries = newValue; }
     
 
     /**

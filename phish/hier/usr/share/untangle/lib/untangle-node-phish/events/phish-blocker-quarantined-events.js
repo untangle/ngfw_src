@@ -22,7 +22,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
     "displayOrder": 30,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "mail_addrs",
     "title": "Quarantined Events",
     "uniqueId": "phish-blocker-E0WZTCERV7"

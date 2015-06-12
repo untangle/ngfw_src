@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 
 import com.untangle.uvm.node.SqlCondition;
+import com.untangle.uvm.node.EventEntry;
 
 /**
  * The API for interacting/viewing/editing reports
@@ -29,22 +30,46 @@ public interface ReportingManagerNew
      */
     void saveReportEntry( ReportEntry entry );
 
+    /**
+     * Get the data for a specific report entry with the specified parameters
+     */
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 
+    /**
+     * Get the data for a specific report entry with the specified parameters
+     */
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
 
     /**
      * Query events in the reports database
      */
+    ArrayList<org.json.JSONObject> getEvents( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    
+    /**
+     * Query events in the reports database
+     */
+    ResultSetReader getEventsResultSet( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    
+    /**
+     * Query events in the reports database, within a given date range
+     */
+    ResultSetReader getEventsForDateRangeResultSet( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
+
+    /**
+     * Query events in the reports database
+     * REMOVEME - deprecated
+     */
     ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database
+     * REMOVEME - deprecated
      */
     ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database, within a given date range
+     * REMOVEME - deprecated
      */
     ResultSetReader getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 

@@ -16,7 +16,7 @@
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
     "displayOrder": 22,
-    "javaClass": "com.untangle.uvm.node.EventLogEntry",
+    "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "capture_user_events",
     "title": "Login Failure User Events",
     "uniqueId": "captive-portal-YQ42F59W9G"
