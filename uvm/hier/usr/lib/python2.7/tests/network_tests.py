@@ -606,7 +606,7 @@ class NetworkTests(unittest2.TestCase):
             if interface['isWan'] and interface['v4ConfigType'] == "STATIC" and interface['v4StaticAddress'] != None:
                 addr = interface['v4StaticAddress']
                 # Check if WAN address is recognized by test.untangle.com
-                detectedIP =  subprocess.check_output(["wget -4 -q --bind-address=" + addr + " -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py"],shell=True)
+                detectedIP = global_functions.getIpAddress(extra_options="--bind-address=" + addr,localcall=True)
                 detectedIP = detectedIP.rstrip()  # strip return character
                 if detectedIP not in detectedIPlist:
                     detectedIPlist.append(detectedIP)
@@ -618,7 +618,7 @@ class NetworkTests(unittest2.TestCase):
             # Create NAT rule for port 80
             setFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
             # Determine current outgoing IP
-            result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+            result = global_functions.getIpAddress()
             # print "result " + result + " wanIP " + myWANs[wanIP]
             assert (result == myWANs[wanIP])
 
@@ -831,10 +831,10 @@ class NetworkTests(unittest2.TestCase):
         setDynDNS()
         time.sleep(60) # wait a max of 1 minute for dyndns to update.
 
-        outsideIP =  subprocess.check_output(["wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py"],shell=True)
+        outsideIP =  global_functions.getIpAddress(localcall=True)
         outsideIP = outsideIP.rstrip()  # strip return character
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        outsideIP2 =  subprocess.check_output(["wget -4 -q -O - \"$@\" 10.112.56.44/cgi-bin/myipaddress.py"],shell=True)
+        outsideIP2 = global_functions.getIpAddress(base_URL="10.112.56.44",localcall=True)
         outsideIP2 = outsideIP2.rstrip()  # strip return character
 
         result = remote_control.runCommand("host " + dyn_hostname, stdout=True)
