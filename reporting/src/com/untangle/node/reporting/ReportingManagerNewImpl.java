@@ -351,14 +351,14 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                     
                     EventLogEntry oldEntry = findEventEntry( existingEntries, newEntry.getUniqueId() );
                     if ( oldEntry == null ) {
-                        logger.info( "Event Entries Update: Adding  \"" + newEntry.getName() + "\"");
+                        logger.info( "Event Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
                         existingEntries.add( newEntry );
                         updates = true;
                     } else {
                         boolean changed = updateEventEntry( existingEntries, newEntry, oldEntry );
                         if ( changed ) {
                             updates = true;
-                            logger.info( "event Entries Update: Updated \"" + newEntry.getName() + "\"");
+                            logger.info( "event Entries Update: Updated \"" + newEntry.getTitle() + "\"");
                         }
                     }
                 } catch (Exception e) {

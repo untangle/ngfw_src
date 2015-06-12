@@ -24,7 +24,7 @@ public class EventLogEntry implements Serializable, JSONString
     private String uniqueId = null;
     private int displayOrder = 9999; /* The order to display this report entry (relative to others) */
 
-    private String name;
+    private String title;
     private String table;
     private String category;
     private SqlCondition[] conditions;
@@ -32,9 +32,9 @@ public class EventLogEntry implements Serializable, JSONString
 
     public EventLogEntry() {}
     
-    public EventLogEntry( String name, String table, SqlCondition[] conditions )
+    public EventLogEntry( String title, String table, SqlCondition[] conditions )
     {
-        this.name = name;
+        this.title = title;
         this.table = table;
         this.conditions = conditions;
     }
@@ -45,8 +45,8 @@ public class EventLogEntry implements Serializable, JSONString
     public int getDisplayOrder() { return this.displayOrder; }
     public void setDisplayOrder( int newValue ) { this.displayOrder = newValue; }
     
-    public String getName() { return this.name; }
-    public void setName( String newValue ) { this.name = newValue; }
+    public String getTitle() { return this.title; }
+    public void setTitle( String newValue ) { this.title = newValue; }
 
     public String getCategory() { return this.category; }
     public void setCategory( String newValue ) { this.category = newValue; }
