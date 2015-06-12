@@ -3742,6 +3742,7 @@ Ext.define('Webui.config.network', {
             hasRefresh: true,
             title: this.i18n._("Current DHCP Leases"),
             dataFn: function(handler) {
+                var me = this;
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var lines = result.split("\n");
@@ -3759,6 +3760,7 @@ Ext.define('Webui.config.network', {
                         } );
                     }
                     handler({list: leases});
+                    me.setTitle(Ext.String.format(i18n._("Current DHCP Leases: {0}"), leases.length));
                 }, this),"cat /var/lib/misc/dnsmasq.leases");
 
             },
