@@ -129,7 +129,7 @@ class PhishTests(unittest2.TestCase):
         sendPhishMail("test021")
         sendPhishMail("test022")
 
-        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
+        events = global_functions.get_events('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -153,7 +153,7 @@ class PhishTests(unittest2.TestCase):
 
         sendPhishMail("test030")
 
-        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
+        events = global_functions.get_events('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -177,7 +177,7 @@ class PhishTests(unittest2.TestCase):
 
         sendPhishMail("test040")
 
-        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
+        events = global_functions.get_events('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,

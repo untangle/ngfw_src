@@ -111,7 +111,7 @@ class SpamTests(unittest2.TestCase):
 
         sendSpamMail()
 
-        events = global_functions.get_events_new(self.displayName(),'Quarantined Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',defaultRackId,None,1)
         assert( events != None )
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == test_untangle_IP)

@@ -186,7 +186,7 @@ class CaptureTests(unittest2.TestCase):
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
 
-        events = global_functions.get_events_new('Captive Portal','All Session Events',defaultRackId,None,100)
+        events = global_functions.get_events('Captive Portal','All Session Events',defaultRackId,None,100)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', test_untangle_com_ip,

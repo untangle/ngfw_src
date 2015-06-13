@@ -40,7 +40,7 @@ class ShieldTests(unittest2.TestCase):
         result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
 
-        events = global_functions.get_events_new('Shield','Blocked Sessions',defaultRackId,None,1)
+        events = global_functions.get_events('Shield','Blocked Sessions',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
