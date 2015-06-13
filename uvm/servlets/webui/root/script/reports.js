@@ -516,7 +516,7 @@ Ext.define('Ung.panel.Reports', {
                     fields: [{name: "description", convert: descriptionFn }, {name:'value'} ],
                     data: []
                 }),
-                theme: 'green-gradients',
+                theme: 'category2',
                 border: false,
                 width: '100%',
                 height: '100%',
@@ -673,7 +673,7 @@ Ext.define('Ung.panel.Reports', {
                     fields: storeFields,
                     data: []
                 }),
-                theme: 'green-gradients',
+                theme: 'category2',
                 border: false,
                 animation: false,
                 width: '100%',
