@@ -103,6 +103,21 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         node.setSettings( settings );
     }
 
+    public EventEntry getEventEntry( String category, String title )
+    {
+        LinkedList<EventEntry> entries = node.getSettings().getEventEntries();
+
+        if ( category == null || title == null )
+            return null;
+        
+        for ( EventEntry entry : entries ) {
+            if ( category.equals(entry.getCategory()) && title.equals(entry.getTitle()) )
+                return entry;
+        }
+
+        return null;
+    }
+    
     public void setEventEntries( List<EventEntry> newEntries )
     {
         if ( node == null ) {
@@ -245,23 +260,35 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     public ArrayList<org.json.JSONObject> getEvents(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
+        if (entry == null) {
+            logger.warn("Invalid arguments");
+            return null;
+        }
         return ReportingNodeImpl.eventReader.getEvents( entry.getQuery(), policyId, extraConditions, limit, null, null );
     }
 
     public ResultSetReader getEventsResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
+        if (entry == null) {
+            logger.warn("Invalid arguments"); 
+            return null;
+        }
         return getEventsForDateRangeResultSet( entry.getQuery(), policyId, extraConditions, limit, null, null );
     }
 
     public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
     {
+        if (entry == null) {
+            logger.warn("Invalid arguments");
+            return null;
+        }
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.getQuery(), policyId, extraConditions, limit, startDate, endDate );
     }
 
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
-    }
+    // public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    // {
+    //     return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
+    // }
 
     public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {

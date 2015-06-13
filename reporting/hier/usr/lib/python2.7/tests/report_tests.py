@@ -186,11 +186,6 @@ def createAlertRule(description, matcherField, value, matcherField2, value2,):
         }
 
     
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 class ReportTests(unittest2.TestCase):
 
     @staticmethod
@@ -419,13 +414,7 @@ class ReportTests(unittest2.TestCase):
         assert(emailFound)
         assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
 
-        # check events log
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,5)
+        events = global_functions.get_events_new('Reporting','All Events',defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
@@ -482,13 +471,11 @@ class ReportTests(unittest2.TestCase):
         node.setSettings(orig_settings)
 
         # Check event log for admin alert for WAN down.
-        time.sleep(10) # seems to be a delay in the alert event.
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,5)
+        global_functions.flushEvents()
+        time.sleep(10) # There is a delay in the alert event.
+        global_functions.flushEvents()
+
+        events = global_functions.get_events_new('Reporting','All Events',defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)

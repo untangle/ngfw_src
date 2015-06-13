@@ -55,11 +55,6 @@ def getLatestMailSender():
 def sendPhishMail(mailfrom="test"):
     results = remote_control.runCommand("python mailsender.py --from=" + mailfrom + "@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 class PhishTests(unittest2.TestCase):
 
     @staticmethod
@@ -89,7 +84,7 @@ class PhishTests(unittest2.TestCase):
             except Exception,e:
                 canRelay = False
             getLatestMailSender()
-            flushEvents()
+
             # flush quarantine.
             curQuarantine = nodeSP.getQuarantineMaintenenceView()
             curQuarantineList = curQuarantine.listInboxes()
@@ -134,12 +129,7 @@ class PhishTests(unittest2.TestCase):
         sendPhishMail("test021")
         sendPhishMail("test022")
 
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Phish Events': query = q                
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -162,12 +152,8 @@ class PhishTests(unittest2.TestCase):
         ip_address_testuntangle = match.group()
 
         sendPhishMail("test030")
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Phish Events': query = q                
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -190,12 +176,8 @@ class PhishTests(unittest2.TestCase):
         ip_address_testuntangle = match.group()
 
         sendPhishMail("test040")
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Phish Events': query = q                
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Phish Blocker','All Phish Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,

@@ -20,11 +20,6 @@ node = None
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
     rules = node.getPassSites()
@@ -46,6 +41,10 @@ class VirusTests(unittest2.TestCase):
     def shortName():
         return "untangle"
 
+    @staticmethod
+    def displayName():
+        return "Virus Blocker Lite"
+
     def setUp(self):
         global node,md5StdNum
         if node == None:
@@ -62,7 +61,6 @@ class VirusTests(unittest2.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            flushEvents()
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -132,12 +130,8 @@ class VirusTests(unittest2.TestCase):
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum != md5TestNum)
-        flushEvents()
-        query = None;
-        for q in node.getFtpEventQueries():
-            if q['name'] == 'Infected Ftp Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         found = global_functions.check_events( events.get('list'), 5, 
@@ -157,12 +151,8 @@ class VirusTests(unittest2.TestCase):
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum == md5TestNum)
-        flushEvents()
-        query = None;
-        for q in node.getFtpEventQueries():
-            if q['name'] == 'Infected Ftp Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
@@ -176,12 +166,8 @@ class VirusTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getWebEventQueries():
-            if q['name'] == 'Infected Web Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Infected Web Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -193,12 +179,8 @@ class VirusTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getWebEventQueries():
-            if q['name'] == 'Clean Web Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Clean Web Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -210,12 +192,8 @@ class VirusTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getFtpEventQueries():
-            if q['name'] == 'Infected Ftp Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "fedexvirus.zip",
@@ -226,12 +204,8 @@ class VirusTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getFtpEventQueries():
-            if q['name'] == 'Clean Ftp Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Clean Ftp Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "test.zip",
@@ -251,12 +225,8 @@ class VirusTests(unittest2.TestCase):
         # email the file
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getMailEventQueries():
-            if q['name'] == 'Infected Email Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Infected Email Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com", 
@@ -280,12 +250,8 @@ class VirusTests(unittest2.TestCase):
         # email the file
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (testsiteIP, fname, fname))
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getMailEventQueries():
-            if q['name'] == 'Clean Email Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Clean Email Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
@@ -311,12 +277,8 @@ class VirusTests(unittest2.TestCase):
         # email the file
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getMailEventQueries():
-            if q['name'] == 'Clean Email Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Clean Email Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 

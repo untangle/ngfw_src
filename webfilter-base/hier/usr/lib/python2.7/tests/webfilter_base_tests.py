@@ -59,11 +59,6 @@ def nukeBlockedExtensions():
     rules["list"] = []
     node.setBlockedExtensions(rules)
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -78,6 +73,10 @@ class WebFilterBaseTests(unittest2.TestCase):
     def eventNodeName():
         return "web_filter_lite"
 
+    @staticmethod
+    def displayName():
+        return "Web Filter Lite"
+
     def setUp(self):
         global node
         if node == None:
@@ -85,7 +84,6 @@ class WebFilterBaseTests(unittest2.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            flushEvents()
         self.node = node
 
     # verify client is online
@@ -362,12 +360,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         eventTime = datetime.datetime.now()
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'Blocked Web Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Blocked Web Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -383,12 +377,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         # specify an argument so it isn't confused with other events
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'Flagged Web Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'Flagged Web Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -403,11 +393,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         # specify an argument so it isn't confused with other events
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
-        flushEvents()
-        for q in node.getEventQueries():
-            if q['name'] == 'All Web Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new(self.displayName(),'All Web Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 

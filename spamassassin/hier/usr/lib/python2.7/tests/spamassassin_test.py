@@ -23,6 +23,10 @@ class SpamassassinTests(SpamTests):
     def shortName():
         return "spamassassin"
 
+    @staticmethod
+    def displayName():
+        return "Spam Blocker Lite"
+
     # verify daemon is running
     def test_009_IsRunning(self):
         result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")

@@ -37,11 +37,6 @@ vpnClientVpnIP = "10.111.56.32"
 
 tunnelUp = False
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 def setUpClient(vpn_enabled=True,vpn_export=False,vpn_exportNetwork="127.0.0.1",vpn_groupId=1,vpn_name=vpnClientName):
     return {
             "enabled": vpn_enabled, 
@@ -82,7 +77,7 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
-        result = subprocess.call(["ping","-c","1",vpnServerVpnLanIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        result = subprocess.call(["ping","-W","5","-c","1",vpnServerVpnLanIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (result == ping_result_expected):
             # target is reachable if succ
             ping_result = True
@@ -116,10 +111,13 @@ class OpenVpnTests(unittest2.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeWebName()
                 raise Exception('node %s already instantiated' % self.nodeWebName())
             nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
-            vpnHostResult = subprocess.call(["ping","-c","1",vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            vpnClientResult = subprocess.call(["ping","-c","1",vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            vpnHostResult = subprocess.call(["ping","-W","5","-c","1",vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            vpnClientResult = subprocess.call(["ping","-W","5","-c","1",vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             wanIP = uvmContext.networkManager().getFirstWanAddress()
-            vpnServerResult = remote_control.runCommand("ping -c 1 " + wanIP, host=vpnClientVpnIP)
+            if vpnClientResult == 0:
+                vpnServerResult = remote_control.runCommand("ping -W 5 -c 1 " + wanIP, host=vpnClientVpnIP)
+            else:
+                vpnServerResult = 1
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -230,13 +228,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result==0)
         assert(listOfClients['list'][0]['address'] == vpnClientVpnIP)
 
-        # check event log
-        flushEvents()
-        query = None;
-        for q in node.getStatusEventsQueries():
-            if q['name'] == 'Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events_new('OpenVPN','Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'remote_address', vpnClientVpnIP,
@@ -275,7 +267,7 @@ class OpenVpnTests(unittest2.TestCase):
 
         time.sleep(10) # wait for vpn tunnel to form 
 
-        flushEvents()
+        global_functions.flushEvents()
         listOfClients = node.getActiveClients()
         vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 

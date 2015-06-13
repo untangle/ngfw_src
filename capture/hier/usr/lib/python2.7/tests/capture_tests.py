@@ -29,12 +29,6 @@ localUserName = 'test20'
 adUserName = 'atsadmin'
 
 # pdb.set_trace()
-
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 def createCaptureInternalNicRule():
     faceValue = str(remote_control.interface)
     return {
@@ -192,13 +186,7 @@ class CaptureTests(unittest2.TestCase):
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
 
-        # check event log
-        flushEvents()
-        query = None;
-        for q in node.getRuleEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,100)
+        events = global_functions.get_events_new('Captive Portal','All Session Events',defaultRackId,None,100)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', test_untangle_com_ip,

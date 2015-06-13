@@ -44,6 +44,8 @@ public class EventEntry implements Serializable, JSONString
 
     public int getDisplayOrder() { return this.displayOrder; }
     public void setDisplayOrder( int newValue ) { this.displayOrder = newValue; }
+
+    public String getName() { return this.title; } /* REMOVEME deprecated */
     
     public String getTitle() { return this.title; }
     public void setTitle( String newValue ) { this.title = newValue; }

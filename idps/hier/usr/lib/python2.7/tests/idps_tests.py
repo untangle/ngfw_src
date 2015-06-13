@@ -162,12 +162,7 @@ class IdpsInterface:
         global node
 
         time.sleep(35)
-        flush_events()
-        query = None
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': 
-                query = q
-        events = global_functions.get_events(query['query'], default_rack_id, None, 1)
+        events = global_functions.get_events_new('Intrusion Prevention','All Events',default_rack_id,None,1)
 
         logged = False
         blocked = False

@@ -84,11 +84,6 @@ def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=Tru
             }
         };
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 def nukeRules():
     rules = node.getRules()
     rules["list"] = [];
@@ -675,12 +670,8 @@ class FirewallTests(unittest2.TestCase):
         appendRule(createSingleMatcherRule("DST_PORT","80"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'Blocked Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Firewall','Blocked Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -695,12 +686,8 @@ class FirewallTests(unittest2.TestCase):
         appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=True));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'Flagged Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Firewall','Flagged Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -715,12 +702,8 @@ class FirewallTests(unittest2.TestCase):
         appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=False));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Firewall','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,

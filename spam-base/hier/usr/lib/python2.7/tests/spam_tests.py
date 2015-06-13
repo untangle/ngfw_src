@@ -54,11 +54,6 @@ def getLatestMailSender():
 def sendSpamMail(host=smtpServerHost):
     remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 class SpamTests(unittest2.TestCase):
 
     @staticmethod
@@ -73,6 +68,9 @@ class SpamTests(unittest2.TestCase):
     def nodeNameSpamCase():
         return "untangle-casing-smtp"
 
+    @staticmethod
+    def displayName():
+        return "Spam Blocker Lite"
 
     def setUp(self):
         global node, nodeData, nodeSP, nodeDataSP, canRelay
@@ -89,7 +87,7 @@ class SpamTests(unittest2.TestCase):
             except Exception,e:
                 canRelay = False
             getLatestMailSender()
-            flushEvents()
+
             # flush quarantine.
             curQuarantine = nodeSP.getQuarantineMaintenenceView()
             curQuarantineList = curQuarantine.listInboxes()
@@ -112,13 +110,8 @@ class SpamTests(unittest2.TestCase):
         test_untangle_IP = socket.gethostbyname("test.untangle.com")
 
         sendSpamMail()
-        flushEvents()
 
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'Quarantined Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events_new(self.displayName(),'Quarantined Events',defaultRackId,None,1)
         assert( events != None )
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == test_untangle_IP)

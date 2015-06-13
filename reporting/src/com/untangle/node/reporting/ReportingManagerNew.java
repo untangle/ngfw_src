@@ -24,6 +24,12 @@ public interface ReportingManagerNew
     void setReportEntries( List<ReportEntry> newEntries );
 
     /**
+     * Get the event entry in the specified category with the specified title
+     * This is used in the ATS tests
+     */
+    EventEntry getEventEntry( String category, String title );
+    
+    /**
      * Save an individual report entry
      * If an entry exists with the same uniqueId in the current entries, it will be overwritten.
      * If an entry does not exist with the same uniqueId, it will be appended to the existing entries
@@ -59,7 +65,7 @@ public interface ReportingManagerNew
      * Query events in the reports database
      * REMOVEME - deprecated
      */
-    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    //ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database

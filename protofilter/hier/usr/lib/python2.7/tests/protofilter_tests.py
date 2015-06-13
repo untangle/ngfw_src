@@ -17,11 +17,6 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 
-def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
-    if (reports != None):
-        reports.flushEvents()
-
 def nukepatterns():
     settings = node.getSettings()
     patterns = settings["patterns"]
@@ -62,7 +57,6 @@ class ProtofilterTests(unittest2.TestCase):
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             node.start() # must be called since ips doesn't auto-start
-            flushEvents()
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -80,12 +74,8 @@ class ProtofilterTests(unittest2.TestCase):
         nukepatterns()
         assert (result == 0)
         time.sleep(3);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Application Control Lite','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -104,12 +94,8 @@ class ProtofilterTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(3);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Application Control Lite','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -128,12 +114,8 @@ class ProtofilterTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
         assert (result != 0)
         time.sleep(3);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Application Control Lite','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -152,12 +134,8 @@ class ProtofilterTests(unittest2.TestCase):
         result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result == 0)
         time.sleep(3);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Application Control Lite','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -176,12 +154,8 @@ class ProtofilterTests(unittest2.TestCase):
         result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result != 0)
         time.sleep(3);
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = global_functions.get_events(query['query'],defaultRackId,None,1)
+
+        events = global_functions.get_events_new('Application Control Lite','All Events',defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,

@@ -27,6 +27,10 @@ class WebFilterTests(WebFilterBaseTests):
         return "web_filter_lite"
 
     @staticmethod
+    def displayName():
+        return "Web Filter Lite"
+
+    @staticmethod
     def vendorName():
         return "untangle"
 

@@ -23,6 +23,10 @@ class ClamTests(VirusTests):
     def shortName():
         return "virus_blocker_lite"
 
+    @staticmethod
+    def displayName():
+        return "Virus Blocker Lite"
+
     # verify daemon is running
     def test_009_clamdIsRunning(self):
         # wait for freshclam to finish updating sigs
