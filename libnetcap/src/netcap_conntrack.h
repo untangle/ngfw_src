@@ -6,10 +6,9 @@
 
 #include "libnetcap.h"
 
-void* netcap_conntrack_listen( void* arg );
-
-void netcap_conntrack_null_hook    ( /* dhan FIXME args ? */ void *arg );
-void netcap_conntrack_cleanup_hook ( /* dhan FIXME args ? */ void *arg );
+void* netcap_conntrack_listen ( void* arg );
+void netcap_conntrack_null_hook    ( void );
+void netcap_conntrack_cleanup_hook ( void );
 
 #endif
 

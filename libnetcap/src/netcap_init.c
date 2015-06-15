@@ -153,6 +153,8 @@ static int _netcap_init()
         return perrlog("netcap_server_init");
     if (netcap_nfconntrack_init( nfconntrack_num_handles )<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
+    if (netcap_conntrack_init( )<0)
+        return errlog( ERR_CRITICAL, "netcap_conntrack_init\n" );
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
         return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
     
