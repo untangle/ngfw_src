@@ -414,13 +414,12 @@ class ReportTests(unittest2.TestCase):
         assert(emailFound)
         assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
 
-        events = global_functions.get_events('Reporting','All Events',defaultRackId,None,5)
+        events = global_functions.get_events('reports','All Events',defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
 
     def test_082_WAN_alerts(self):
-        raise unittest2.SkipTest("Review changes in test")
         # Just check the event log for the alert.
         settings = node.getSettings()
         # set email address and alert for downloads
@@ -471,9 +470,7 @@ class ReportTests(unittest2.TestCase):
         node.setSettings(orig_settings)
 
         # Check event log for admin alert for WAN down.
-        global_functions.flushEvents()
-        time.sleep(10) # There is a delay in the alert event.
-        global_functions.flushEvents()
+        time.sleep(15) # There is a delay in the alert event.
 
         events = global_functions.get_events('Reporting','All Events',defaultRackId,None,5)
         assert(events != None)
@@ -483,10 +480,8 @@ class ReportTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         global node, nodeFirewall, nodeFaild, nodeWeb
-        # no need to uninstall reports
-        # if node != None:
-        # uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node.setSettings(orig_settings)
+        if node != None:
+            node.setSettings(orig_settings)
         node = None
         if nodeFirewall != None:
             uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
