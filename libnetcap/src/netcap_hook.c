@@ -13,10 +13,10 @@
 #include "netcap_tcp.h"
 #include "netcap_conntrack.h"
 
-netcap_tcp_hook_t     global_tcp_hook         = netcap_tcp_null_hook;
-netcap_tcp_syn_hook_t global_tcp_syn_hook     = netcap_tcp_syn_null_hook;
-netcap_udp_hook_t     global_udp_hook         = netcap_udp_null_hook;
-netcap_conntrack_hook_t global_conntrack_hook = netcap_conntrack_null_hook;
+netcap_tcp_hook_t       global_tcp_hook         = netcap_tcp_null_hook;
+netcap_tcp_syn_hook_t   global_tcp_syn_hook     = netcap_tcp_syn_null_hook;
+netcap_udp_hook_t       global_udp_hook         = netcap_udp_null_hook;
+netcap_conntrack_hook_t global_conntrack_hook   = netcap_conntrack_null_hook;
 
 int  netcap_hooks_init           ( void )
 {

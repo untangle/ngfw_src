@@ -28,6 +28,7 @@
 #include "netcap_sesstable.h"
 #include "netcap_nfconntrack.h"
 #include "netcap_virtual_interface.h"
+#include "netcap_conntrack.h"
 
 #define NETCAP_TUN_DEVICE_NAME "utun"
 

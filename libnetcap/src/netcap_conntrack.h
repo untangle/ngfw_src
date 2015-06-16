@@ -6,9 +6,10 @@
 
 #include "libnetcap.h"
 
+int   netcap_conntrack_init();
 void* netcap_conntrack_listen ( void* arg );
-void netcap_conntrack_null_hook    ( void );
-void netcap_conntrack_cleanup_hook ( void );
+void  netcap_conntrack_null_hook    ( void* arg );
+void  netcap_conntrack_cleanup_hook ( void* arg );
 
 #endif
 

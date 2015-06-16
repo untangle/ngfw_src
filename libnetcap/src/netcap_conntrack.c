@@ -26,7 +26,6 @@
 #define BYPASS_MARK 0x1000000
 
 static struct nfct_handle *cth;
-void netcap_conntrack_print_ct_entry( void );
 
 struct netcap_ct_entry {
         uint32_t mark;
@@ -41,8 +40,9 @@ struct netcap_ct_entry {
         uint64_t r_counter_pkts, r_counter_bytes;
         uint64_t timestamp_start, timestamp_stop;
 };
-struct netcap_ct_entry netcap_ct;
 
+static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct );
+static int  _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data );
 
 #define GET_CT_ITEM(elem, attr, x)                              \
         do { n->elem = nfct_get_attr_u##x(ct,(attr)); } while (0)
@@ -78,36 +78,14 @@ static void ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct)
 
 }
 
-static int netcap_bypass_cb(enum nf_conntrack_msg_type type,
-                    struct nf_conntrack *ct,
-                    void *data)
-{
-        uint32_t mark = nfct_get_attr_u32(ct, ATTR_MARK);
-         
-        if( (mark & BYPASS_MARK) != BYPASS_MARK) {
-            return NFCT_CB_CONTINUE;
-        }
-
-        switch (type) {
-        /*Only take care of destory , as it includes whole session info*/
-        case NFCT_T_DESTROY:
-                ct_entry_copy(&netcap_ct, ct);
-                netcap_conntrack_print_ct_entry();
-                break;
-        default:
-                break;
-        }
-
-        return NFCT_CB_CONTINUE;
-}
-
 int  netcap_conntrack_init()
 {
         cth = nfct_open(CONNTRACK, NF_NETLINK_CONNTRACK_DESTROY);
 
         if (!cth)  return -1;
 
-        nfct_callback_register(cth, NFCT_T_ALL, netcap_bypass_cb, NULL);
+        nfct_callback_register(cth, NFCT_T_NEW | NFCT_T_DESTROY, _netcap_conntrack_callback, NULL);
+        //nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
 
         return 0;
 }
@@ -127,7 +105,7 @@ void netcap_conntrack_run ( void )
 void* netcap_conntrack_listen ( void* arg )
 {
     int res = 0;
-    debug( 1, "ConntrackD listening for conntrack updates..." );
+    debug( 1, "ConntrackD listening for conntrack updates...\n" );
 
     while (1)
     {
@@ -135,41 +113,71 @@ void* netcap_conntrack_listen ( void* arg )
         /*following two lines should be called in above function netcap_conntrack_run*/
         /*nfct_catch is a infinity while loop*/
         res = nfct_catch(cth);  
-        if (res == -1) return;
+        if (res == -1)
+            return NULL;
 
-        netcap_conntrack_print_ct_entry( );
-        global_conntrack_hook(  NULL );
+        errlog( ERR_WARNING,"nfct_catch() returned\n" );
+
         sleep(30);
     }
 
 }
 
-void netcap_conntrack_print_ct_entry( void )
-{
-
-    debug( 10,"ATTR_ID                  = %d\n",netcap_ct.ct_id);
-    debug( 10,"ATTR_ORIG_L3PROTO        = %d\n",netcap_ct.l3_proto );
-    debug( 10,"ATTR_ORIG_L4PROTO        = %d\n", netcap_ct.l4_proto );
-
-    debug( 10,"ATTR_ORIG_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct.ip4_src_addr));
-    debug( 10,"ATTR_ORIG_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct.ip4_dst_addr));
-    debug( 10,"ATTR_REPL_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct.r_ip4_src_addr));
-    debug( 10,"ATTR_REPL_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct.r_ip4_dst_addr));
-
-    debug( 10,"ATTR_ORIG_PORT_SRC        = %d\n",ntohs(netcap_ct.port_src));
-    debug( 10,"ATTR_ORIG_PORT_DST        = %d\n",ntohs(netcap_ct.port_dst));
-    debug( 10,"ATTR_REPL_PORT_SRC        = %d\n",ntohs(netcap_ct.r_port_src));
-    debug( 10,"ATTR_REPL_PORT_DST        = %d\n",ntohs(netcap_ct.r_port_dst));
-
-}
-
-void netcap_conntrack_cleanup_hook ( void )
+void netcap_conntrack_cleanup_hook ( void* arg )
 {
     nfct_close(cth);
 }
 
-void netcap_conntrack_null_hook ( void )
+void netcap_conntrack_null_hook ( void* arg )
 {
     errlog( ERR_WARNING, "netcap_conntrack_null_hook: No CONNTRACK hook registered\n" );
-    netcap_conntrack_cleanup_hook ( );
+    netcap_conntrack_cleanup_hook ( arg );
+}
+
+void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct )
+{
+
+    debug( level, "ATTR_ID                  = %u\n",netcap_ct->ct_id);
+    debug( level, "ATTR_ORIG_L3PROTO        = %d\n",netcap_ct->l3_proto );
+    debug( level, "ATTR_ORIG_L4PROTO        = %d\n", netcap_ct->l4_proto );
+
+    debug( level, "ATTR_ORIG_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_src_addr));
+    debug( level, "ATTR_ORIG_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_dst_addr));
+    debug( level, "ATTR_REPL_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_src_addr));
+    debug( level, "ATTR_REPL_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_dst_addr));
+
+    debug( level, "ATTR_ORIG_PORT_SRC        = %d\n",ntohs(netcap_ct->port_src));
+    debug( level, "ATTR_ORIG_PORT_DST        = %d\n",ntohs(netcap_ct->port_dst));
+    debug( level, "ATTR_REPL_PORT_SRC        = %d\n",ntohs(netcap_ct->r_port_src));
+    debug( level, "ATTR_REPL_PORT_DST        = %d\n",ntohs(netcap_ct->r_port_dst));
+
+}
+
+int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
+{
+        uint32_t mark = nfct_get_attr_u32(ct, ATTR_MARK);
+        struct netcap_ct_entry netcap_ct;
+
+        ct_entry_copy(&netcap_ct, ct);
+        //_netcap_conntrack_print_ct_entry(1, &netcap_ct);
+        errlog( ERR_WARNING,"conntrack_listen: callback() type=%i mark=0x%08x\n", type, mark);
+        
+        if( (mark & BYPASS_MARK) != BYPASS_MARK) {
+            return NFCT_CB_CONTINUE;
+        }
+
+        switch (type) {
+            /*Only take care of destory , as it includes whole session info*/
+        case NFCT_T_DESTROY:
+            ct_entry_copy(&netcap_ct, ct);
+            _netcap_conntrack_print_ct_entry(1, &netcap_ct);
+            break;
+        case NFCT_T_NEW:
+            _netcap_conntrack_print_ct_entry(1, &netcap_ct);
+            break;
+        default:
+            break;
+        }
+
+        return NFCT_CB_CONTINUE;
 }
