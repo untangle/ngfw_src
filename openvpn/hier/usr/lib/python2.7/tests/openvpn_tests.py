@@ -267,7 +267,6 @@ class OpenVpnTests(unittest2.TestCase):
 
         time.sleep(10) # wait for vpn tunnel to form 
 
-        global_functions.flushEvents()
         listOfClients = node.getActiveClients()
         vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 
