@@ -414,7 +414,7 @@ class ReportTests(unittest2.TestCase):
         assert(emailFound)
         assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
 
-        events = global_functions.get_events('Reporting','Alert Events',defaultRackId,None,5)
+        events = global_functions.get_events('Reports','Alert Events',defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
@@ -472,7 +472,7 @@ class ReportTests(unittest2.TestCase):
         # Check event log for admin alert for WAN down.
         time.sleep(15) # There is a delay in the alert event.
 
-        events = global_functions.get_events('Reporting','Alert Events',defaultRackId,None,5)
+        events = global_functions.get_events('Reports','Alert Events',defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)

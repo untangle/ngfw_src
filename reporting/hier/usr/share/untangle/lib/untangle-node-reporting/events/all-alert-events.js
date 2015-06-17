@@ -1,5 +1,5 @@
 {
-    "category": "Reporting",
+    "category": "Reports",
     "conditions": [],
     "defaultColumns": ["time_stamp","description","summary_text","json"],
     "displayOrder": 10,
