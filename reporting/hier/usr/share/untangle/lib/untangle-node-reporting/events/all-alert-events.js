@@ -5,6 +5,6 @@
     "displayOrder": 10,
     "javaClass": "com.untangle.uvm.node.EventEntry",
     "table": "alerts",
-    "title": "All Events",
+    "title": "Alert Events",
     "uniqueId": "reporting-8XL9cbqQa9"
 }
