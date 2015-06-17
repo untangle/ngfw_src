@@ -69,15 +69,13 @@ static void ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct)
         n->r_port_src = ntohs(n->r_port_src);
         n->r_port_dst = ntohs(n->r_port_dst);
 
-        /* FIXME - always returns 0? */
         GET_CT_ITEM(counter_pkts, ATTR_ORIG_COUNTER_PACKETS, 64);
         GET_CT_ITEM(counter_bytes, ATTR_ORIG_COUNTER_BYTES, 64);
 
-        /* FIXME - always returns 0? */
         GET_CT_ITEM(r_counter_pkts, ATTR_REPL_COUNTER_PACKETS, 64);
         GET_CT_ITEM(r_counter_bytes, ATTR_REPL_COUNTER_BYTES, 64);
 
-        /* FIXME - always returns 0? */
+        /* XXX - these always returns 0? */
         GET_CT_ITEM(timestamp_start, ATTR_TIMESTAMP_START, 64);
         GET_CT_ITEM(timestamp_stop, ATTR_TIMESTAMP_STOP, 64);
 
