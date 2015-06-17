@@ -399,7 +399,6 @@ JNIEXPORT jint JNICALL JF_Netcap( registerConntrackHook )
         return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
     }
 
-    errlog( ERR_CRITICAL, "XXX CALLING CONNTRACK HOOK \n");
     ret = netcap_conntrack_hook_register( _conntrack_hook ); 
     
     if ( ret < 0 ) {

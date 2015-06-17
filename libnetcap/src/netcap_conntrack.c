@@ -30,7 +30,6 @@ static struct nfct_handle *cth;
 
 struct netcap_ct_entry {
         uint32_t mark;
-        int type;
         uint32_t ct_id ;
         uint8_t  l3_proto, l4_proto;
         uint32_t ip4_src_addr, ip4_dst_addr;  /*original direction*/
