@@ -31,6 +31,7 @@ typedef struct {
 int netcap_sessions_init   ( void );
 int netcap_sessions_cleanup( void );
 int netcap_session_tls_init( session_tls_t* tls );
+u_int64_t netcap_session_next_id ( void );
 
 netcap_session_t* netcap_session_malloc ( void );
 int netcap_session_init                 ( netcap_session_t* netcap_sess, netcap_endpoints_t* cli_endpoints, netcap_endpoints_t* srv_endpoints, int if_mb );

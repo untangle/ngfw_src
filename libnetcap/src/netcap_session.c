@@ -30,8 +30,6 @@
 static u_int64_t session_index = 1;
 static lock_t session_index_lock;
 
-static u_int64_t netcap_session_next_id( void );
-
 static session_tls_t* _tls_get( void );
 
 int netcap_sessions_init ( void )

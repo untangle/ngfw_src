@@ -69,6 +69,6 @@ int  netcap_conntrack_hook_register    ( netcap_conntrack_hook_t hook )
 
 int  netcap_conntrack_hook_unregister  ( void )
 {
-    global_conntrack_hook = netcap_conntrack_cleanup_hook;
+    global_conntrack_hook = netcap_conntrack_null_hook;
     return 0;
 }

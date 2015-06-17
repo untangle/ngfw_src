@@ -32,6 +32,7 @@
 #define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapCallback )
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
+#define _CONNTRACK_HOOK_METHOD_DESC "(IJJJIIJJIIJJIIIIIIJJ)V"
 
 /* default session limit ( 0 means no limit ) */
 #define _SESSION_LIMIT_DEFAULT 0
@@ -46,7 +47,8 @@ static struct {
     pthread_mutex_t mutex;
     struct {
         jclass    hook_class;     /* Class ID for the hook */
-        jmethodID hook_method_id; /* Method identifier for the hook */
+        jmethodID event_method_id; /* Method identifier for the "event" hook */
+        jmethodID conntrack_event_method_id; /* Method identifier for the "event" hook with args */
         jobject   tcp_hook;       /* TCP Hook */
         jobject   udp_hook;       /* UDP hook */
         jobject   conntrack_hook; /* Conntrack Hook */
@@ -66,7 +68,8 @@ static struct {
     .mutex     = PTHREAD_MUTEX_INITIALIZER,
     .java = { 
         .hook_class     = NULL,
-        .hook_method_id = NULL,
+        .event_method_id = NULL,
+        .conntrack_event_method_id = NULL,
         .tcp_hook       = NULL,
         .udp_hook       = NULL
     },
@@ -91,7 +94,15 @@ static void*             _run_thread( void* arg );
 
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
-static void              _conntrack_hook( /* dhan FIXME args ? */ void* arg );
+static void              _conntrack_hook( int type, long mark, long conntrack_id, long session_id,
+                                          int l3_proto, int l4_proto,
+                                          long c_client_addr, long c_server_addr,
+                                          int  c_client_port, int c_server_port,
+                                          long s_client_addr, long s_server_addr,
+                                          int  s_client_port, int s_server_port,
+                                          int c2s_packets, int c2s_bytes,
+                                          int s2c_packets, int s2c_bytes,
+                                          long timestamp_start, long timestamp_stop );
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
@@ -169,14 +180,21 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
                 break;
             }
 
-            /* Set the method identifier */
-            _jnetcap.java.hook_method_id = (*env)->GetMethodID( env, _jnetcap.java.hook_class, _HOOK_METHOD_NAME, _HOOK_METHOD_DESC );
+            /* Set the method identifier(s) */
 
-            if ( _jnetcap.java.hook_method_id == NULL ) {
+            _jnetcap.java.event_method_id = (*env)->GetMethodID( env, _jnetcap.java.hook_class, _HOOK_METHOD_NAME, _HOOK_METHOD_DESC );
+            if ( _jnetcap.java.event_method_id == NULL ) {
                 ret = errlog( ERR_CRITICAL, "(*env)->GetMethodID" );
                 break;
             }
 
+            _jnetcap.java.conntrack_event_method_id = (*env)->GetMethodID( env, _jnetcap.java.hook_class, _HOOK_METHOD_NAME, _CONNTRACK_HOOK_METHOD_DESC );
+            if ( _jnetcap.java.conntrack_event_method_id == NULL ) {
+                ret = errlog( ERR_CRITICAL, "(*env)->GetMethodID" );
+                break;
+            }
+
+            
             _jnetcap.netcap = _INITIALIZED;
         }
     } while ( 0 );
@@ -380,7 +398,8 @@ JNIEXPORT jint JNICALL JF_Netcap( registerConntrackHook )
     if (( *global_hook = (*env)->NewGlobalRef( env, hook )) == NULL ) {
         return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
     }
-    
+
+    errlog( ERR_CRITICAL, "XXX CALLING CONNTRACK HOOK \n");
     ret = netcap_conntrack_hook_register( _conntrack_hook ); 
     
     if ( ret < 0 ) {
@@ -501,7 +520,15 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 }
 
-static void              _conntrack_hook( void* arg )
+static void              _conntrack_hook( int type, long mark, long conntrack_id, long session_id,
+                                          int l3_proto, int l4_proto,
+                                          long c_client_addr, long c_server_addr,
+                                          int  c_client_port, int c_server_port,
+                                          long s_client_addr, long s_server_addr,
+                                          int  s_client_port, int s_server_port,
+                                          int c2s_packets, int c2s_bytes,
+                                          int s2c_packets, int s2c_bytes,
+                                          long timestamp_start, long timestamp_stop )
 {
     JNIEnv* env = jmvutil_get_java_env();
     if ( env == NULL ) {
@@ -509,7 +536,9 @@ static void              _conntrack_hook( void* arg )
         return;
     }
 
-    if (( _jnetcap.netcap != _INITIALIZED ) || ( NULL == _jnetcap.java.hook_class ) || ( NULL == _jnetcap.java.hook_method_id )) { 
+    if (( _jnetcap.netcap != _INITIALIZED ) ||
+        ( _jnetcap.java.hook_class == NULL ) ||
+        ( _jnetcap.java.conntrack_event_method_id == NULL )) { 
         errlog( ERR_CRITICAL, "_hook: unintialized\n" );
         return;
     }
@@ -524,7 +553,15 @@ static void              _conntrack_hook( void* arg )
     debug( 10, "jnetcap: Calling hook\n" );
 
     /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.hook_method_id, 0 );
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, type, mark, conntrack_id, session_id,
+                            l3_proto, l4_proto,
+                            c_client_addr, c_server_addr,
+                            c_client_port, c_server_port,
+                            s_client_addr, s_server_addr,
+                            s_client_port, s_server_port,
+                            c2s_packets, c2s_bytes,
+                            s2c_packets, s2c_bytes,
+                            timestamp_start, timestamp_stop );
 
     debug( 10, "jnetcap: Exiting hook\n" );
 
@@ -573,8 +610,9 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
 
         if ( NULL == env ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
-        if (( _jnetcap.netcap != _INITIALIZED ) || ( NULL == _jnetcap.java.hook_class ) ||
-            ( NULL == _jnetcap.java.hook_method_id )) { 
+        if (( _jnetcap.netcap != _INITIALIZED ) ||
+            ( _jnetcap.java.hook_class == NULL ) ||
+            ( _jnetcap.java.event_method_id == NULL )) { 
             return errlog( ERR_CRITICAL, "_hook: unintialized\n" );
         }
         
@@ -593,7 +631,7 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
         session_id = netcap_sess->session_id;
         
         /* Call the global method */
-        (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.hook_method_id, netcap_sess->session_id );
+        (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.event_method_id, netcap_sess->session_id );
 
         debug( 10, "JNETCAP: Exiting hook\n" );
 

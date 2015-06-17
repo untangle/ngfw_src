@@ -18,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class SessionEvent extends LogEvent
 {
     private Long sessionId = -1L;
+    private boolean bypassed = false;
     private Short protocol;
     private Integer clientIntf;
     private Integer serverIntf;
@@ -44,6 +45,12 @@ public class SessionEvent extends LogEvent
     public Long getSessionId() { return sessionId; }
     public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
 
+    /**
+     * If the session is bypassed
+     */
+    public boolean getBypassed() { return bypassed; }
+    public void setBypassed(boolean newValue) { this.bypassed = newValue; }
+    
     /**
      * Protocol.  Currently always either 6 (TCP) or 17 (UDP).
      */
@@ -142,14 +149,15 @@ public class SessionEvent extends LogEvent
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, time_stamp, protocol, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, time_stamp, protocol, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
         pstmt.setLong(++i,getSessionId());
+        pstmt.setBoolean(++i,getBypassed());
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setInt(++i,getProtocol());
         pstmt.setTimestamp(++i,timeStampPlusSeconds(1)); // default end_time
