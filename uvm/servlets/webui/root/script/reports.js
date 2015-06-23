@@ -223,7 +223,7 @@ Ext.define('Ung.panel.Reports', {
             collapsible: true,
             collapsed: Ung.Main.viewport.getWidth()<1600,
             floatable: false,
-            name: 'reportDataGrid',
+            name: 'dataGrid',
             xtype: 'grid',
             store:  Ext.create('Ext.data.Store', {
                 fields: [],
@@ -328,30 +328,12 @@ Ext.define('Ung.panel.Reports', {
         }];
         
         if(this.category) {
-            var reportEntriesStore = Ext.create('Ext.data.Store', {
+            this.entriesStore = Ext.create('Ext.data.Store', {
                 fields: ["title"],
                 data: []
             });
+            this.loadReportEntries();
             
-            Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.reportEntries = [];
-                this.initialReportEntryIndex = null;
-                var reportEntry;
-                for(var i=0; i<result.list.length; i++) {
-                    reportEntry = result.list[i];
-                    if(reportEntry.enabled) {
-                        this.reportEntries.push(reportEntry);
-                        if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
-                            this.initialReportEntryIndex = i;
-                        }
-                    }
-                }
-                if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
-                    this.initialReportEntryIndex = 0;
-                }
-                reportEntriesStore.loadData(this.reportEntries);
-            }, this), this.category);
             this.items.push({
                 region: 'west',
                 title: i18n._("Select Report"),
@@ -360,10 +342,10 @@ Ext.define('Ung.panel.Reports', {
                 collapsible: true,
                 collapsed: false,
                 floatable: false,
-                name: 'reportEntriesGrid',
+                name: 'entriesGrid',
                 xtype: 'grid',
                 hideHeaders: true,
-                store:  reportEntriesStore,
+                store:  this.entriesStore,
                 columns: [{
                     dataIndex: 'title',
                     flex: 1,
@@ -386,7 +368,34 @@ Ext.define('Ung.panel.Reports', {
         
         this.callParent(arguments);
         this.chartContainer = this.down("panel[name=chartContainer]");
-        this.reportDataGrid = this.down("grid[name=reportDataGrid]");
+        this.dataGrid = this.down("grid[name=dataGrid]");
+    },
+    loadReportEntries: function(initialEntryId) {
+        Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.reportEntries = [];
+            this.initialReportEntryIndex = null;
+            var reportEntry;
+            for(var i=0; i<result.list.length; i++) {
+                reportEntry = result.list[i];
+                if(reportEntry.enabled) {
+                    this.reportEntries.push(reportEntry);
+                    if(initialEntryId && reportEntry.uniqueId == initialEntryId) {
+                        this.initialReportEntryIndex = i;
+                    }
+                    if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
+                        this.initialReportEntryIndex = i;
+                    }
+                }
+            }
+            if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
+                this.initialReportEntryIndex = 0;
+            }
+            this.entriesStore.loadData(this.reportEntries);
+            if(initialEntryId && this.initialReportEntryIndex) {
+                this.selectInitialReport();
+            }
+        }, this), this.category);
     },
     loadReportData: function(data) {
         var i, column;
@@ -412,7 +421,7 @@ Ext.define('Ung.panel.Reports', {
             var sprite = chart.getSurface().get("infos");
             sprite.setAttributes({text:Ext.String.format.apply(Ext.String.format, [i18n._(this.reportEntry.textString)].concat(infos))}, true);
             chart.renderFrame();
-            this.reportDataGrid.getStore().loadData(reportData);
+            this.dataGrid.getStore().loadData(reportData);
         } else if(this.reportEntry.type == 'PIE_GRAPH') {
             var topData = data;
             if(this.reportEntry.pieNumSlices && data.length>this.reportEntry.pieNumSlices) {
@@ -435,10 +444,10 @@ Ext.define('Ung.panel.Reports', {
             }
             chart.renderFrame();
             chart.getStore().loadData(topData);
-            this.reportDataGrid.getStore().loadData(data);
+            this.dataGrid.getStore().loadData(data);
         } else if(this.reportEntry.type == 'TIME_GRAPH') {
             chart.getStore().loadData(data);
-            this.reportDataGrid.getStore().loadData(data);
+            this.dataGrid.getStore().loadData(data);
         }
     },
     loadReport: function(reportEntry) {
@@ -455,7 +464,7 @@ Ext.define('Ung.panel.Reports', {
         var data = [];
 
         var chart, reportData=[];
-        this.reportDataGrid.getStore().loadData([]);
+        this.dataGrid.getStore().loadData([]);
         if(reportEntry.type == 'TEXT') {
             chart = {
                 xtype: 'draw',
@@ -492,7 +501,7 @@ Ext.define('Ung.panel.Reports', {
                     y: 80
                 }]
             };
-            this.reportDataGrid.setColumns([{
+            this.dataGrid.setColumns([{
                 dataIndex: 'data',
                 header: i18n._("data"),
                 width: 100,
@@ -583,7 +592,7 @@ Ext.define('Ung.panel.Reports', {
             if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
                 chart.colors = reportEntry.colors;
             }
-            this.reportDataGrid.setColumns([{
+            this.dataGrid.setColumns([{
                 dataIndex: reportEntry.pieGroupColumn,
                 header: reportEntry.pieGroupColumn,
                 width: 100,
@@ -805,7 +814,7 @@ Ext.define('Ung.panel.Reports', {
                     }
                 }];
             }
-            this.reportDataGrid.setColumns(reportDataColumns);
+            this.dataGrid.setColumns(reportDataColumns);
         }
         this.chartContainer.add(chart); 
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
@@ -878,8 +887,8 @@ Ext.define('Ung.panel.Reports', {
             return data.join(",") + '\r\n';
         };
 
-        var records = this.reportDataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
-        var gridColumns = this.reportDataGrid.getColumns();
+        var records = this.dataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
+        var gridColumns = this.dataGrid.getColumns();
         for(i=0; i<gridColumns.length;i++) {
             if(gridColumns[i].initialConfig.dataIndex) {
                 columns.push(gridColumns[i].initialConfig.dataIndex);
@@ -1000,7 +1009,7 @@ Ext.define('Ung.panel.Reports', {
                 sizeToComponent: this.chartContainer,
                 title: i18n._("Advanced report customization"),
                 forReportCustomization: true,
-                settingsCmp: this,
+                parentCmp: this,
                 grid: {},
                 isDirty: function() {
                     return false;
@@ -1008,7 +1017,7 @@ Ext.define('Ung.panel.Reports', {
                 updateAction: function() {
                     Ung.window.ReportEditor.prototype.updateAction.apply(this, arguments);
                     me.reportEntry = this.record.getData();
-                    me.refreshHandler();
+                    me.loadReport(me.reportEntry);
                 }
             });
             this.subCmps.push(this.winReportEditor);
@@ -1020,12 +1029,15 @@ Ext.define('Ung.panel.Reports', {
     isDirty: function() {
         return false;
     },
+    selectInitialReport: function() {
+        this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
+        this.loadReport(Ext.clone(this.reportEntries[this.initialReportEntryIndex]));
+    },
     listeners: {
         "activate": {
             fn: function() {
                 if(this.category && !this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
-                    this.down("grid[name=reportEntriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
-                    this.loadReport(Ext.clone(this.reportEntries[this.initialReportEntryIndex]));
+                    this.selectInitialReport();
                 }
             }
         },
@@ -1238,7 +1250,7 @@ Ext.define("Ung.panel.ExtraConditions", {
 Ext.define("Ung.window.ReportEditor", {
     extend: "Ung.RowEditorWindow",
     rowEditorLabelWidth: 150,
-    settingsCmp: null,
+    parentCmp: null,
     initComponent: function() {
         if(!this.forReportCustomization) {
             this.tbar = [{
@@ -1252,7 +1264,7 @@ Ext.define("Ung.window.ReportEditor", {
                     if (this.record !== null) {
                         var data = Ext.clone(this.record.getData());
                         this.updateActionRecursive(this.items, data, 0);
-                        this.settingsCmp.viewReport(data);
+                        this.parentCmp.viewReport(data);
                     }
                 },
                 scope: this
@@ -1264,6 +1276,7 @@ Ext.define("Ung.window.ReportEditor", {
                     var data = Ext.clone(this.grid.emptyRow);
                     this.updateActionRecursive(this.items, data, 0);
                     Ext.apply(data, {
+                        uniqueId: this.getUniqueId(),
                         title: Ext.String.format("Copy of {0}", data.title)
                     });
                     this.closeWindow();
@@ -1273,7 +1286,31 @@ Ext.define("Ung.window.ReportEditor", {
                 scope: this
             }];
         } else {
-            
+            this.tbar = [{
+                xtype: 'button',
+                text: i18n._('Save as New Report'),
+                iconCls: 'save-icon',
+                handler: function() {
+                    if (this.validate()!==true) {
+                        return false;
+                    }
+                    if (this.record !== null) {
+                        var data = {};
+                        this.updateActionRecursive(this.items, data, 0);
+                        this.record.set(data);
+                        this.record.set("readOnly", false);
+                        this.record.set("uniqueId", this.getUniqueId());
+                        var reportEntry = this.record.getData();
+                        
+                        Ung.Main.getReportingManagerNew().saveReportEntry(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.closeWindow();
+                            this.parentCmp.loadReportEntries(reportEntry.uniqueId);
+                        }, this), reportEntry);
+                    }
+                },
+                scope: this
+            }];
         }
         var categoryStore = Ext.create('Ext.data.Store', {
             sorters: "displayName",
@@ -1701,8 +1738,17 @@ Ext.define("Ung.window.ReportEditor", {
         }];
         this.callParent(arguments);
     },
+    getUniqueId: function() {
+        return "report-"+Math.random().toString(36).substr(2);
+    },
     populate: function(record, addMode) {
         Ung.panel.Reports.getColumnsForTable(record.get("table"), this.columnsStore);
+        if(!record.get("uniqueId")) {
+            record.set("uniqueId", this.getUniqueId());
+        }
+        if(this.forReportCustomization && record.get("title").indexOf(i18n._("Custom")) == -1) {
+            record.set("title", record.get("title") + " - " + i18n._("Custom"));
+        }
         this.callParent(arguments);
     },
     syncComponents: function () {

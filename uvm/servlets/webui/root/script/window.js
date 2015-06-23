@@ -156,6 +156,11 @@ Ext.define("Ung.SettingsWin", {
     },
     buildTabPanel: function(itemsArray) {
         Ext.get("racks").hide();
+        /*if(this.hasEventLogs) {
+            itemsArray.push(Ext.create('Ung.panel.EventLogs',{
+                category: this.displayName
+            }));
+        }*/
         if(this.hasReports) {
             itemsArray.push(Ext.create('Ung.panel.Reports',{
                 category: this.displayName
@@ -284,6 +289,7 @@ Ext.define("Ung.SettingsWin", {
 // Node Settings Window
 Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
+    hasEventLogs: true,
     hasReports: true,
     node: null,
     constructor: function(config) {

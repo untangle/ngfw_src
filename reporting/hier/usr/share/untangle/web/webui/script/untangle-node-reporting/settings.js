@@ -729,7 +729,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             settingsCmp: this,
             hasReadOnly: true,
             changableFields: ['enabled'],
-            addAtTop: false,
             title: this.i18n._("Manage Reports"),
             features: [{
                 ftype: 'grouping'
@@ -790,7 +789,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }]
         });
         this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
-            settingsCmp: this
+            parentCmp: this
         }));
     },
     viewReport: function(reportEntry) {
