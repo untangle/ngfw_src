@@ -313,10 +313,8 @@ public class ReportEntry implements Serializable, JSONString
                 int i = 0;
                 for ( SqlCondition condition : conditions ) {
                     
-                    // these operators are not supported with prepareStatement
-                    // as such there are hardcoded in the SQL query
-                    // skip to the next query
-                    if ("is".equalsIgnoreCase( condition.getOperator() )) {
+                    // these operators are not supported with Statement
+                    if (! condition.getAutoFormatValue() ) {
                         continue;
                     }
                     
@@ -410,17 +408,7 @@ public class ReportEntry implements Serializable, JSONString
                 continue;
             }
             
-            str += " and ";
-            // these operators are not supported with prepareStatement
-            // as such there are hardcoded in the SQL query
-            if ("is".equalsIgnoreCase( condition.getOperator() )) {
-                str += condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + " ";
-            }
-            // otherwise use the PreparedStatement '?'
-            else {
-                str += condition.getColumn() + " " + condition.getOperator() + " ? ";
-            }
-
+            str += " and " + condition.toSqlString();
         }
 
         return str;

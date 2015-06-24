@@ -95,6 +95,11 @@ public class EventReaderImpl
 
     public ResultSetReader getEventsResultSet( final PreparedStatement statement, final int limit )
     {
+        return getEventsResultSet( statement, null, limit );
+    }
+    
+    public ResultSetReader getEventsResultSet( final PreparedStatement statement, final SqlCondition[] conditions, final int limit )
+    {
         Connection dbConnection = null;
 
         try {
@@ -108,6 +113,10 @@ public class EventReaderImpl
             logger.warn("Unable to connect to DB.");
             throw new RuntimeException("Unable to connect to DB.");
         }
+
+        /**
+         * FIXME use conditions!!! XXXXXX
+         */
         
         try {
             return getEventsResultSet( dbConnection, statement, limit );
@@ -117,11 +126,6 @@ public class EventReaderImpl
             logger.warn("Failed to query database. query: " + statement, e );
             throw new RuntimeException( "Failed to query database. query: " + statement, e );
         } 
-    }
-    
-    public ResultSetReader getEventsResultSet( final PreparedStatement statement, final SqlCondition[] extraConditions, final int limit )
-    {
-        return getEventsResultSet( statement, null, limit );
     }
 
     public ResultSetReader getEventsResultSet( final String sql, final int limit )
@@ -152,8 +156,37 @@ public class EventReaderImpl
             throw new RuntimeException( "Failed to query database. query: " + sql, e );
         } 
     }
+
+    public ResultSetReader getEventsResultSet( final String sql, final SqlCondition[] conditions, final int limit )
+    {
+        Connection dbConnection = null;
+
+        try {
+            dbConnection = this.node.getDbConnection();
+        } catch (Exception e) {
+            logger.warn("Unable to create connection to DB",e);
+        }
+
+        if ( dbConnection == null) {
+            logger.warn("Unable to connect to DB.");
+            throw new RuntimeException("Unable to connect to DB.");
+        }
+        
+        try {
+            logger.debug("getEventsResultSet( sql: " + sql + " )");
+            
+            java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
+            statement.setFetchDirection( ResultSet.FETCH_FORWARD );
+            
+            return getEventsResultSet( statement, conditions, limit );
+        } catch ( Exception e ) {
+            try {dbConnection.close();} catch( Exception exc) {}
+            logger.warn("Failed to query database. query: " + sql, e );
+            throw new RuntimeException( "Failed to query database. query: " + sql, e );
+        } 
+    }
     
-    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate )
+    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
         if ( policyId == null || policyId == -1 ) {
@@ -185,9 +218,9 @@ public class EventReaderImpl
                 queryStr += " and time_stamp <= '" + dateFormatter.format(endDate)   + "' ";
             if ( startDate != null )
                 queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
-            if (extraConditions != null) {
-                for ( SqlCondition condition : extraConditions ) {
-                    queryStr += " and " + condition.getColumn() + " " + condition.getOperator() + " ? ";
+            if ( conditions != null ) {
+                for ( SqlCondition condition : conditions ) {
+                    queryStr += " and " + condition.toSqlString();
                 }
             }
             queryStr += queryPart2;
@@ -197,12 +230,12 @@ public class EventReaderImpl
 
         logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
 
-        return getEventsResultSet( queryStr, limit );
+        return getEventsResultSet( queryStr, conditions, limit );
     }
 
-    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
+    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate)
     {
-        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, extraConditions, limit, startDate, endDate);
+        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, conditions, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
     }
 

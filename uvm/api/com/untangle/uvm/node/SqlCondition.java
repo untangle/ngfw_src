@@ -18,7 +18,8 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
-
+    private Boolean autoFormatValue = null;
+    
     public SqlCondition() {}
     
     public SqlCondition( String column, String operator, String value )
@@ -57,10 +58,45 @@ public class SqlCondition implements Serializable, JSONString
         }
         this.operator = lowerValue;
     }
+
+    /**
+     * If true, then the "value" will be handled in the Sql Statement with a "?"
+     * If false, the value will be hardcoded verbatim inside the sql string.
+     * This is necessary because not all values/operators are correctly supported by Statement
+     */
+    public Boolean getAutoFormatValue()
+    {
+        /**
+         * The "is" operator always requires special handling
+         */
+        if ("is".equalsIgnoreCase( getOperator() )) {
+            return false;
+        }
+
+        return this.autoFormatValue;
+    }
+
+    public void setAutoFormatValue( Boolean newValue )
+    {
+        this.autoFormatValue = newValue;
+    }
     
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    public String toSqlString()
+    {
+        // these operators are not supported with prepareStatement
+        // as such there are hardcoded in the SQL query
+        if ( ! getAutoFormatValue() ) {
+            return getColumn() + " " + getOperator() + " " + getValue() + " ";
+        }
+        // otherwise use the PreparedStatement '?'
+        else {
+            return getColumn() + " " + getOperator() + " ? ";
+        }
     }
 }
