@@ -103,6 +103,18 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         node.setSettings( settings );
     }
 
+    public List<EventEntry> getEventEntries( String category )
+    {
+        List<EventEntry> allEventEntries = node.getSettings().getEventEntries();
+        LinkedList<EventEntry> entries = new LinkedList<EventEntry>();
+
+        for ( EventEntry entry: allEventEntries ) {
+            if ( category == null || category.equals( entry.getCategory() ) )
+                 entries.add( entry );
+        }
+        return entries;
+    }
+
     public EventEntry getEventEntry( String category, String title )
     {
         LinkedList<EventEntry> entries = node.getSettings().getEventEntries();

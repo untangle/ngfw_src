@@ -24,6 +24,11 @@ public interface ReportingManagerNew
     void setReportEntries( List<ReportEntry> newEntries );
 
     /**
+     * Get the event entries for a category 
+     */
+    List<EventEntry> getEventEntries( String category );
+
+    /**
      * Get the event entry in the specified category with the specified title
      * This is used in the ATS tests
      */

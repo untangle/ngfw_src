@@ -177,6 +177,7 @@ Ext.define('Ung.panel.Reports', {
         }
     },
     name: 'panelReports',
+    helpSource: 'reports',
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
@@ -374,25 +375,25 @@ Ext.define('Ung.panel.Reports', {
         Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.reportEntries = [];
-            this.initialReportEntryIndex = null;
+            this.initialEntryIndex = null;
             var reportEntry;
             for(var i=0; i<result.list.length; i++) {
                 reportEntry = result.list[i];
                 if(reportEntry.enabled) {
                     this.reportEntries.push(reportEntry);
                     if(initialEntryId && reportEntry.uniqueId == initialEntryId) {
-                        this.initialReportEntryIndex = i;
+                        this.initialEntryIndex = i;
                     }
-                    if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
-                        this.initialReportEntryIndex = i;
+                    if(this.initialEntryIndex==null && reportEntry.type!="TEXT") {
+                        this.initialEntryIndex = i;
                     }
                 }
             }
-            if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
-                this.initialReportEntryIndex = 0;
+            if(this.initialEntryIndex == null && this.reportEntries.length>0) {
+                this.initialEntryIndex = 0;
             }
             this.entriesStore.loadData(this.reportEntries);
-            if(initialEntryId && this.initialReportEntryIndex) {
+            if(initialEntryId && this.initialEntryIndex) {
                 this.selectInitialReport();
             }
         }, this), this.category);
@@ -1030,8 +1031,8 @@ Ext.define('Ung.panel.Reports', {
         return false;
     },
     selectInitialReport: function() {
-        this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
-        this.loadReport(Ext.clone(this.reportEntries[this.initialReportEntryIndex]));
+        this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialEntryIndex);
+        this.loadReport(Ext.clone(this.reportEntries[this.initialEntryIndex]));
     },
     listeners: {
         "activate": {
@@ -1791,5 +1792,341 @@ Ext.define("Ung.window.ReportEditor", {
         
         cmps.colors.setVisible(type!="TEXT");
         cmps.colors.setDisabled(type=="TEXT");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ext.define('Ung.panel.Events', {
+    extend: 'Ext.panel.Panel',
+    name: 'panelEventLogs',
+    helpSource: 'events',
+    autoRefreshInterval: 20, //In Seconds
+    layout: { type: 'border'},
+    extraConditions: null,
+    eventEntry: null,
+    beforeDestroy: function() {
+        Ext.destroy(this.subCmps);
+        this.callParent(arguments);
+    },
+    initComponent: function() {
+        this.subCmps = [];
+        if(this.category) {
+            if(!this.title) {
+                this.title = i18n._('Events');
+            }
+            if (!Ung.Main.isReportsAppInstalled()) {
+                this.items = [{
+                    region: 'center',
+                    xtype: 'panel',
+                    bodyPadding: 10,
+                    html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
+                }];
+                this.callParent(arguments);
+                return;
+            }
+        }
+        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('Start date and time'),
+            dateTimeEmptyText: i18n._('start date and time')
+        });
+        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('End date and time'),
+            dateTimeEmptyText: i18n._('end date and time')
+        });
+        this.subCmps.push(this.startDateWindow);
+        this.subCmps.push(this.endDateWindow);
+        
+        var policyStore = Ext.create('Ext.data.Store', {
+            fields: ["policyId", "name"],
+            data: [{policyId: -1, name: i18n._('All Racks')}].concat(rpc.policies)
+        });
+        var limitStore = Ext.create('Ext.data.Store', {
+            fields: ["value", "name"],
+            data: [{value: 1000, name: "1000 " + i18n._('Events')}, {value: 10000, name: "10000 " + i18n._('Events')}, {value: 50000, name: "50000 " + i18n._('Events')}]
+        });
+        this.items = [{
+            region: 'center',
+            layout: {type: 'border'},
+            items: [{
+                region: 'center',
+                xtype: "panel",
+                name:'eventsContainer',
+                layout: 'fit',
+                html: "",
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [{
+                        xtype: 'combo',
+                        hidden: this.settingsCmp !=null && this.settingsCmp.nodeProperties != null && this.settingsCmp.nodeProperties.type == "SERVICE",
+                        width: 120,
+                        style: {marginRight: "5px"},
+                        name: "policySelector",
+                        editable: false,
+                        valueField: "policyId",
+                        displayField: "name",
+                        queryMode: 'local',
+                        value: rpc.currentPolicy.policyId,
+                        store: policyStore
+                    }, {
+                        xtype: 'combo',
+                        width: 100,
+                        name: "limitSelector",
+                        editable: false,
+                        valueField: "value",
+                        displayField: "name",
+                        queryMode: 'local',
+                        value: 1000,
+                        store: limitStore
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('From'),
+                        initialLabel:  i18n._('From'),
+                        width: 132,
+                        tooltip: i18n._('Select Start date and time'),
+                        handler: Ext.bind(function(button) {
+                            this.startDateWindow.buttonObj=button;
+                            this.startDateWindow.show();
+                        }, this)
+                    },{
+                        xtype: 'tbtext',
+                        text: '-'
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('To'),
+                        initialLabel:  i18n._('To'),
+                        width: 132,
+                        tooltip: i18n._('Select End date and time'),
+                        handler: Ext.bind(function(button) {
+                            this.endDateWindow.buttonObj=button;
+                            this.endDateWindow.show();
+                        }, this)
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('Refresh'),
+                        name: "refresh",
+                        tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                        iconCls: 'icon-refresh',
+                        handler:function () {
+                            this.refreshHandler();
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'button',
+                        name: 'auto_refresh',
+                        text: i18n._('Auto Refresh'),
+                        enableToggle: true,
+                        pressed: false,
+                        tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'),this.autoRefreshInterval),
+                        iconCls: 'icon-autorefresh',
+                        handler: Ext.bind(function(button) {
+                            if(button.pressed) {
+                                this.startAutoRefresh();
+                            } else {
+                                this.stopAutoRefresh();
+                            }
+                        }, this)
+                    }]
+                }] 
+            }, this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
+                region: 'south',
+                parentPanel: this,
+                listeners: {
+                    "expand": {
+                        fn: Ext.bind(function() {
+                            if(this.eventEntry) {
+                                Ung.panel.Reports.getColumnsForTable(this.eventEntry.table, this.extraConditionsPanel.columnsStore);
+                            }
+                        }, this)
+                    }
+                }
+            })]
+        }];
+        
+        if(this.category) {
+            this.entriesStore = Ext.create('Ext.data.Store', {
+                sorters: "displayOrder",
+                fields: ["title", "displayOrder"],
+                data: []
+            });
+            this.loadEventEntries();
+            this.items.push({
+                region: 'west',
+                title: i18n._("Select Event Log"),
+                width: 200,
+                split: true,
+                collapsible: true,
+                collapsed: false,
+                floatable: false,
+                name: 'entriesGrid',
+                xtype: 'grid',
+                hideHeaders: true,
+                store:  this.entriesStore,
+                columns: [{
+                    dataIndex: 'title',
+                    flex: 1
+                }],
+                listeners: {
+                    rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
+                        this.loadEventEntry(Ext.clone(record.getData()));
+                    }, this)
+                }
+            
+            });
+        }
+
+        this.callParent(arguments);
+
+        this.policySelector = this.down("combo[name=policySelector]");
+        this.limitSelector = this.down("combo[name=limitSelector]");
+    },
+    loadEventEntries: function() {
+        Ung.Main.getReportingManagerNew().getEventEntries(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.eventEntries = [];
+            this.initialEntryIndex = null;
+            var eventEntry;
+            for(var i=0; i<result.list.length; i++) {
+                eventEntry = result.list[i];
+                this.eventEntries.push(eventEntry);
+            }
+            if(this.initialEntryIndex == null && this.eventEntries.length>0) {
+                this.initialEntryIndex = 0;
+            }
+            this.entriesStore.loadData(this.eventEntries);
+        }, this), this.category);
+    },
+    loadEventData: function(data) {},
+    loadEventEntry: function(eventEntry) {
+        this.eventEntry = eventEntry;
+    },
+    refreshHandler: function () {
+        if(!this.eventEntry || this.autoRefreshEnabled) {
+            return;
+        }
+        var policyId = this.policySelector.getValue();
+        var limit = this.limitSelector.getValue();
+        this.setLoading(i18n._('Syncing events to Database... '));
+        Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+            this.setLoading(i18n._('Querying Database...'));
+            Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
+                this.setLoading(false);
+                if(Ung.Util.handleException(exception)) return;
+                this.loadEventData(result.list);
+            }, this), this.eventEntry, policyId, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
+            
+        }, this));
+    },
+    autoRefresh: function() {
+        if(!this.eventEntry) {
+            return;
+        }
+        var policyId = this.policySelector.getValue();
+        var limit = this.limitSelector.getValue();
+        Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+            Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.loadEventData(result.list);
+                if(this!=null && this.rendered && this.autoRefreshEnabled) {
+                    Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
+                }
+            }, this), this.eventEntry, policyId, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
+            
+        }, this));
+    },
+
+    autoRefreshEnabled: false,
+    startAutoRefresh: function(setButton) {
+        if(!this.eventEntry) {
+            this.down('button[name=auto_refresh]').toggle(false);
+            return;
+        }
+
+        this.autoRefreshEnabled=true;
+        this.down('button[name=refresh]').disable();
+        this.autoRefresh();
+    },
+    stopAutoRefresh: function(setButton) {
+        this.autoRefreshEnabled=false;
+        if(setButton) {
+            this.down('button[name=auto_refresh]').toggle(false);
+        }
+        this.down('button[name=refresh]').enable();
+    },
+    exportHandler: function() {
+        if(!this.eventEntry) {
+            return;
+        }
+        var processRow = function (row) {
+            var data = [];
+            for (var j = 0; j < row.length; j++) {
+                var innerValue = row[j] == null ? '' : row[j].toString();
+                data.push('"' + innerValue.replace(/"/g, '""') + '"');
+            }
+            return data.join(",") + '\r\n';
+        };
+
+        var records = this.dataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
+        var gridColumns = this.dataGrid.getColumns();
+        for(i=0; i<gridColumns.length;i++) {
+            if(gridColumns[i].initialConfig.dataIndex) {
+                columns.push(gridColumns[i].initialConfig.dataIndex);
+                headers.push(gridColumns[i].initialConfig.header);
+            }
+        }
+        list.push(processRow(headers));
+        for(i=0; i<records.length;i++) {
+            row = [];
+            for(j=0; j<columns.length;j++) {
+                row.push(records[i].get(columns[j]));
+            }
+            list.push(processRow(row));
+        }
+        var content = list.join("");
+        var fileName = this.eventEntry.title.trim().replace(/ /g,"_")+".csv";
+        Ung.Util.download(content, fileName, 'text/csv');
+    },
+    isDirty: function() {
+        return false;
+    },
+    selectInitialEvent: function() {
+        this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialEntryIndex);
+        this.loadEventEntry(Ext.clone(this.eventEntries[this.initialEntryIndex]));
+    },
+    listeners: {
+        "activate": {
+            fn: function() {
+                if(this.category && !this.eventEntry && this.eventEntries !=null && this.eventEntries.length > 0) {
+                    this.selectInitialEvent();
+                }
+            }
+        },
+        "deactivate": {
+            fn: function() {
+                if(this.autoRefreshEnabled) {
+                    this.stopAutoRefresh(true);
+                }
+            }
+        }
     }
 });
