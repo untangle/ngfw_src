@@ -347,15 +347,16 @@ class ReportTests(unittest2.TestCase):
         # Setup syslog to send events to syslog host
         newSyslogSettings = node.getSettings()
         newSyslogSettings["syslogEnabled"] = True
-        newSyslogSettings["syslogEnabled"] = True
+        newSyslogSettings["syslogPort"] = 514
+        newSyslogSettings["syslogProtocol"] = "UDP"
         newSyslogSettings["syslogHost"] = fakeSmtpServerHost
         node.setSettings(newSyslogSettings)
 
         # create some traffic (blocked by firewall and thus create a syslog event)
         result = remote_control.isOnline()
+        # flush out events
+        node.flushEvents()
 
-        # get syslog results on server
-        rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
 
         # remove the firewall rule aet syslog back to original settings
         node.setSettings(orig_settings)
@@ -363,19 +364,25 @@ class ReportTests(unittest2.TestCase):
         nodeFirewall.setRules(rules);
         
         # parse the output and look for a rule that matches the expected values
-        found = False
-        for line in rsyslogResult.splitlines():
-            print "\nchecking line: %s " % line
-            for string in ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]:
-                if not string in line:
-                    print "missing: %s" % string
-                    continue
-                else:
-                    print "found: %s" % string
-            found = True
-            break
+        timeout = 5
+        found_count = 0
+        strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
+        while (timeout > 0 and found_count < 2):
+            # get syslog results on server
+            rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            for line in rsyslogResult.splitlines():
+                print "\nchecking line: %s " % line
+                timeout -= 1
+                for string in strings_to_find:
+                    if not string in line:
+                        print "missing: %s" % string
+                        continue
+                    else:
+                        found_count += 1
+                        print "found: %s" % string
+                break
 
-        assert(found)
+        assert(found_count == len(strings_to_find))
 
     def test_080_download_alerts(self):
         # raise unittest2.SkipTest("Review changes in test")        
