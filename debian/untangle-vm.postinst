@@ -36,6 +36,9 @@ if [ -z "$2" ]; then
     fi
 fi
 
+# 11.2 upgrade, change sources.list
+sed -e 's/stable-11\s/stable-112 /g' -i /etc/apt/sources.list.d/untangle.list
+
 ourInit apache2 reload
 
 exit 0
