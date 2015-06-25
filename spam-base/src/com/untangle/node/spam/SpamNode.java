@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventEntry;
 
 public interface SpamNode extends Node
 {
@@ -19,9 +18,6 @@ public interface SpamNode extends Node
     void enableSmtpFailClosed(boolean failClosed);
 
     void updateScannerInfo();
-
-    EventEntry[] getEventQueries();
-    EventEntry[] getTarpitEventQueries();
 
     Date getLastUpdate();
     void setLastUpdate(Date newValue);

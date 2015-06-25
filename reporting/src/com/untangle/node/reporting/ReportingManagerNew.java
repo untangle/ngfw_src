@@ -9,9 +9,6 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
-import com.untangle.uvm.node.SqlCondition;
-import com.untangle.uvm.node.EventEntry;
-
 /**
  * The API for interacting/viewing/editing reports
  */

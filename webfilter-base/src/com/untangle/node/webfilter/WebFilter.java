@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventEntry;
 
 /**
  * Interface the the WebFilter Node.
@@ -43,6 +42,4 @@ public interface WebFilter extends Node
     String getUnblockMode();
 
     String getName();
-
-    EventEntry[] getEventQueries();
 }

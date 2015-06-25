@@ -3,20 +3,20 @@
     "conditions": [
         {
             "column": "vendor_name",
-            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": "'spam_blocker_lite'"
         },
         {
             "column": "policy_id",
-            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": ":policyId"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","ipaddr"],
     "displayOrder": 40,
-    "javaClass": "com.untangle.uvm.node.EventEntry",
+    "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "smtp_tarpit_events",
     "title": "Tarpit Events",
     "uniqueId": "spam-blocker-lite-2FGBJUJE9W"

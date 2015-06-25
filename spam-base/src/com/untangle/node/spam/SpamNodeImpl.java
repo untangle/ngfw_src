@@ -15,14 +15,12 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.NodeMetric;
 
 public class SpamNodeImpl extends NodeBase implements SpamNode
@@ -46,11 +44,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
 
     protected volatile SpamSettings spamSettings;
 
-    private EventEntry allEventQuery;
-    private EventEntry spamEventQuery;
-    private EventEntry quarantinedEventQuery;
-    private EventEntry tarpitEventQuery;
-    
     private String signatureVersion;
     private Date lastUpdate = new Date();
     private Date lastUpdateCheck = new Date();
@@ -95,21 +88,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
         this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
         
-        this.allEventQuery = new EventEntry(I18nUtil.marktr("All Email Events"), "mail_addrs",
-                                               new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                   new SqlCondition(vendorTag + "_action","is","NOT NULL"),
-                                                                   new SqlCondition("policy_id","=",":policyId") });
-        this.spamEventQuery = new EventEntry(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"), "mail_addrs",
-                                                new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                    new SqlCondition(vendorTag + "_is_spam","is","TRUE"),
-                                                                    new SqlCondition("policy_id","=",":policyId") });
-        this.quarantinedEventQuery = new EventEntry(I18nUtil.marktr("Quarantined Events"), "mail_addrs",
-                                                       new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                           new SqlCondition(vendorTag + "_action","=","'Q'"),
-                                                                           new SqlCondition("policy_id","=",":policyId") });
-        this.tarpitEventQuery = new EventEntry(I18nUtil.marktr("Tarpit Events"), "smtp_tarpit_events",
-                                                  new SqlCondition[]{ new SqlCondition("vendor_name","=","'"+vendorTag+"'"),
-                                                                      new SqlCondition("policy_id","=",":policyId") });
         loadGreyList();
 
         synchronized( this ) {
@@ -118,16 +96,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                 greyListSaverPulse.start( GREYLIST_SAVE_FREQUENCY );
             }
         }
-    }
-
-    public EventEntry[] getEventQueries()
-    {
-        return new EventEntry[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
-    }
-    
-    public EventEntry[] getTarpitEventQueries()
-    {
-        return new EventEntry[] { this.tarpitEventQuery };
     }
 
     /**

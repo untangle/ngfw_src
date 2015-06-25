@@ -18,9 +18,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
 
@@ -44,10 +42,6 @@ public class HostTableImpl implements HostTable
 
     private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
-    private EventEntry penaltyBoxEventQuery;
-    private EventEntry hostTableEventQuery;
-    private EventEntry quotaEventQuery;
-
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
 
@@ -61,9 +55,6 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
 
-        this.penaltyBoxEventQuery = new EventEntry(I18nUtil.marktr("PenaltyBox Events"), "penaltybox", new SqlCondition[]{});
-        this.hostTableEventQuery = new EventEntry(I18nUtil.marktr("Host Table Events"), "host_table_updates", new SqlCondition[]{}); 
-        this.quotaEventQuery = new EventEntry(I18nUtil.marktr("Quota Events"), "quotas", new SqlCondition[]{}); 
         initializeMacVendorTable();
         
         UvmContextFactory.context().newThread(this.cleaner).start();
@@ -434,16 +425,6 @@ public class HostTableImpl implements HostTable
     public void unregisterListener( HostTable.HostTableListener listener )
     {
         this.listeners.remove( listener );
-    }
-
-    public EventEntry[] getPenaltyBoxEventQueries()
-    {
-        return new EventEntry[] { this.penaltyBoxEventQuery };
-    }
-
-    public EventEntry[] getQuotaEventQueries()
-    {
-        return new EventEntry[] { this.quotaEventQuery };
     }
 
     public int getCurrentSize()

@@ -6,7 +6,6 @@ package com.untangle.node.firewall;
 import java.util.List;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventEntry;
 
 public interface Firewall extends Node
 {
@@ -23,6 +22,4 @@ public interface Firewall extends Node
      * Convenience method for setting just the rules in the settings
      */
     void setRules( List<FirewallRule> rules );
-
-    EventEntry[] getEventQueries();
 }

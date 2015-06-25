@@ -177,7 +177,6 @@ Ext.define('Ung.panel.Reports', {
         }
     },
     name: 'panelReports',
-    helpSource: 'reports',
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
@@ -189,6 +188,7 @@ Ext.define('Ung.panel.Reports', {
     initComponent: function() {
         this.subCmps = [];
         if(this.category) {
+            this.helpSource = this.category.toLowerCase().replace(" ","_") + "_reports";
             if(!this.title) {
                 this.title = i18n._('Reports');
             }
@@ -1231,7 +1231,7 @@ Ext.define("Ung.panel.ExtraConditions", {
             isEmptyColumn = Ext.isEmpty(columnValue);
             if(!isEmptyColumn) {
                 conditions.push({
-                    "javaClass": "com.untangle.uvm.node.SqlCondition",
+                    "javaClass": "com.untangle.node.reporting.SqlCondition",
                     "column": columnValue,
                     "operator": operator.getValue(),
                     "value": value.getValue()
@@ -1360,7 +1360,7 @@ Ext.define("Ung.window.ReportEditor", {
             hasImportExport: false,
             dataIndex: 'conditions',
             columnsDefaultSortable: false,
-            recordJavaClass: "com.untangle.uvm.node.SqlCondition",
+            recordJavaClass: "com.untangle.node.reporting.SqlCondition",
             emptyRow: {
                 "column": "",
                 "operator": "=",
@@ -1795,31 +1795,9 @@ Ext.define("Ung.window.ReportEditor", {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Ext.define('Ung.panel.Events', {
     extend: 'Ext.panel.Panel',
     name: 'panelEventLogs',
-    helpSource: 'events',
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
@@ -1831,6 +1809,7 @@ Ext.define('Ung.panel.Events', {
     initComponent: function() {
         this.subCmps = [];
         if(this.category) {
+            this.helpSource = this.category.toLowerCase().replace(" ","_") + "_reports";
             if(!this.title) {
                 this.title = i18n._('Events');
             }

@@ -1,7 +1,7 @@
 /**
  * $Id: SqlCondition.java,v 1.00 2015/02/27 19:23:29 dmorris Exp $
  */
-package com.untangle.uvm.node;
+package com.untangle.node.reporting;
 
 import java.io.Serializable;
 

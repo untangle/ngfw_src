@@ -6,12 +6,9 @@ package com.untangle.node.idps;
 import java.util.Date;
 import java.util.List;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.EventEntry;
 
 public interface IdpsNode extends Node
 {
-    EventEntry[] getEventQueries();
-
     public String getSettingsFileName();
     public String getDefaultsSettingsFileName();
     

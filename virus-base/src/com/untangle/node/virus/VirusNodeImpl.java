@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SqlCondition;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
@@ -87,16 +85,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     private VirusSettings settings;
 
-    private EventEntry httpScannedEventQuery;
-    private EventEntry httpInfectedEventQuery;
-    private EventEntry httpCleanEventQuery;
-    private EventEntry mailScannedEventQuery;
-    private EventEntry mailInfectedEventQuery;
-    private EventEntry mailCleanEventQuery;
-    private EventEntry ftpScannedEventQuery;
-    private EventEntry ftpInfectedEventQuery;
-    private EventEntry ftpCleanEventQuery;
-    
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, sessions */
@@ -146,34 +134,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
 
         String nodeName = getName();
-
-        this.httpScannedEventQuery = new EventEntry(I18nUtil.marktr("Scanned Web Events"), "http_events",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","NOT NULL") });
-        this.httpInfectedEventQuery = new EventEntry(I18nUtil.marktr("Infected Web Events"), "http_events",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","FALSE") });
-        this.httpCleanEventQuery = new EventEntry(I18nUtil.marktr("Clean Web Events"), "http_events",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","TRUE") });
-        this.mailScannedEventQuery = new EventEntry(I18nUtil.marktr("Scanned Email Events"),"mail_addrs",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                    new SqlCondition(nodeName+"_clean","is","NOT NULL") });
-        this.mailInfectedEventQuery = new EventEntry(I18nUtil.marktr("Infected Email Events"), "mail_addrs",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                    new SqlCondition(nodeName+"_clean","is","FALSE") });
-        this.mailCleanEventQuery = new EventEntry(I18nUtil.marktr("Clean Email Events"), "mail_addrs",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
-                                                                    new SqlCondition(nodeName+"_clean","is","TRUE") });
-        this.ftpScannedEventQuery = new EventEntry(I18nUtil.marktr("Scanned Ftp Events"), "ftp_events",
-                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                          new SqlCondition(nodeName+"_clean","is","NOT NULL") });
-        this.ftpInfectedEventQuery = new EventEntry(I18nUtil.marktr("Infected Ftp Events"), "ftp_events",
-                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                          new SqlCondition(nodeName+"_clean","is","FALSE") });
-        this.ftpCleanEventQuery = new EventEntry(I18nUtil.marktr("Clean Ftp Events"), "ftp_events",
-                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
-                                                                          new SqlCondition(nodeName+"_clean","is","TRUE") });
     }
 
     // VirusNode methods -------------------------------------------------
@@ -218,21 +178,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     {
         settings.setPassSites(passSites);
         _setSettings(settings);
-    }
-
-    public EventEntry[] getWebEventQueries()
-    {
-        return new EventEntry[] { this.httpScannedEventQuery, this.httpInfectedEventQuery, this.httpCleanEventQuery };
-    }
-    
-    public EventEntry[] getFtpEventQueries()
-    {
-        return new EventEntry[] { this.ftpScannedEventQuery, this.ftpInfectedEventQuery, this.ftpCleanEventQuery };
-    }
-    
-    public EventEntry[] getMailEventQueries()
-    {
-        return new EventEntry[] { this.mailScannedEventQuery, this.mailInfectedEventQuery, this.mailCleanEventQuery };
     }
 
     public VirusBlockDetails getDetails( String nonce )

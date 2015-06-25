@@ -1,16 +1,13 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.node;
+package com.untangle.node.reporting;
 
 import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.node.SqlCondition;
-
 
 /**
  * This class represents a unique Event Log query and stores all the information the UI needs to

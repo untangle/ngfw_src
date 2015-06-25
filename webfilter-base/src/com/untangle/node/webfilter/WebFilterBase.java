@@ -13,11 +13,9 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
@@ -51,11 +49,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
 
-    protected final EventEntry blockedEventQuery;
-    protected final EventEntry flaggedEventQuery;
-    protected final EventEntry allEventQuery;
-    protected final EventEntry unblockEventQuery;
-
     public WebFilterBase( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -71,22 +64,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         
         String nodeName = this.getName();
         
-        this.allEventQuery = new EventEntry(I18nUtil.marktr("All Web Events"), "http_events",
-                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId") });
-        this.flaggedEventQuery = new EventEntry(I18nUtil.marktr("Flagged Web Events"), "http_events",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_flagged","is","TRUE") });
-        this.blockedEventQuery = new EventEntry(I18nUtil.marktr("Blocked Web Events"), "http_events",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_blocked","is","TRUE") });
-        this.unblockEventQuery = new EventEntry(I18nUtil.marktr("Unblocked Web Events"), "http_events",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_category","=","'unblocked'") });
-
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
-        
-    }
-
-    public EventEntry[] getEventQueries()
-    {
-        return new EventEntry[] { this.allEventQuery, this.flaggedEventQuery, this.blockedEventQuery, this.unblockEventQuery };
     }
 
     public String getUnblockMode()

@@ -51,7 +51,6 @@ import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;

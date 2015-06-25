@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [
         {
-            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "column": "firewall_flagged",
             "operator": "=",
             "value": "true"

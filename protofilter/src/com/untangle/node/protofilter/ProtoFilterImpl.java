@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.node.SqlCondition;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
@@ -40,9 +38,6 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     private ProtoFilterSettings nodeSettings = null;
 
-    private EventEntry allEventQuery;
-    private EventEntry blockedEventQuery;
-    
     // constructors -----------------------------------------------------------
 
     public ProtoFilterImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
@@ -55,11 +50,6 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         
         this.connector = UvmContextFactory.context().pipelineFoundry().create("protofilter", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
         this.connectors = new PipelineConnector[] { connector };
-        
-        this.allEventQuery = new EventEntry(I18nUtil.marktr("All Events"), "sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("application_control_lite_protocol","is","NOT NULL") });
-        this.blockedEventQuery = new EventEntry(I18nUtil.marktr("Blocked Events"), "sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("application_control_lite_blocked","is","TRUE") });
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -121,11 +111,6 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         
         return(count);
     }
-
-    public EventEntry[] getEventQueries()
-    {
-        return new EventEntry[] { this.allEventQuery, this.blockedEventQuery };
-    }        
 
     @Override
     protected PipelineConnector[] getConnectors()

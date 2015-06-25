@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.HostnameLookup;
-import com.untangle.uvm.node.SqlCondition;
 
 public interface ReportingNode extends Node, HostnameLookup
 {

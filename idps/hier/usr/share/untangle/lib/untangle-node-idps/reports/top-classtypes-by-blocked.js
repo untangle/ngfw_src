@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",
-        "javaClass": "com.untangle.uvm.node.SqlCondition",
+        "javaClass": "com.untangle.node.reporting.SqlCondition",
         "operator": "=",
         "value": "true"
     }],

@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
@@ -39,7 +38,6 @@ import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.NodeManager;
@@ -61,9 +59,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IdpsEventMonitor idpsEventMonitor;    
-
-    private EventEntry allEventQuery;
-    private EventEntry blockedEventQuery;
 
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
@@ -92,9 +87,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
-        this.allEventQuery = new EventEntry(I18nUtil.marktr("All Events"), "intrusion_prevention_events", new SqlCondition[]{});
-        this.blockedEventQuery = new EventEntry(I18nUtil.marktr("Blocked Events"), "intrusion_prevention_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
-
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }
 
@@ -102,11 +94,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
-    }
-
-    public EventEntry[] getEventQueries()
-    {
-        return new EventEntry[] { this.allEventQuery, this.blockedEventQuery };
     }
 
     protected void postInit()

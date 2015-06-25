@@ -23,8 +23,6 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SqlCondition;
-import com.untangle.uvm.node.EventEntry;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {

@@ -11,7 +11,7 @@
     "table": "sessions",
     "conditions": [
         {
-            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "column": "firewall_rule_index",
             "operator": "is",
             "value": "not null"

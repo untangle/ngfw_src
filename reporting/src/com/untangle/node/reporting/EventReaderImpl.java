@@ -17,8 +17,6 @@ import java.util.concurrent.Semaphore;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.untangle.uvm.node.SqlCondition;
-
 /**
  * Utility the reads events from the database
  *

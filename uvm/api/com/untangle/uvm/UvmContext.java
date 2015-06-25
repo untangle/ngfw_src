@@ -18,7 +18,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 

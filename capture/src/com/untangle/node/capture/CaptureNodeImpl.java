@@ -22,13 +22,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Subscription;
@@ -78,18 +76,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private CaptureTimer captureTimer;
     private Timer timer;
 
-    private EventEntry userEventQuery;
-    private EventEntry userSuccessQuery;
-    private EventEntry userFailureQuery;
-    private EventEntry userTimeoutQuery;
-    private EventEntry userInactiveQuery;
-    private EventEntry userLogoutQuery;
-    private EventEntry adminLogoutQuery;
-
-    private EventEntry allEventQuery;
-    private EventEntry passEventQuery;
-    private EventEntry captureEventQuery;
-
 // THIS IS FOR ECLIPSE - @formatter:off
 
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
@@ -108,27 +94,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32);
         this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
         this.connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
-        
-        this.userEventQuery = new EventEntry(I18nUtil.marktr("All Events"),"capture_user_events",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId") });
-        this.userSuccessQuery = new EventEntry(I18nUtil.marktr("Login Success"),"capture_user_events",
-                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'LOGIN'") });
-        this.userFailureQuery = new EventEntry(I18nUtil.marktr("Login Failure"),"capture_user_events",
-                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'FAILED'") });
-        this.userTimeoutQuery = new EventEntry(I18nUtil.marktr("Session Timeout"),"capture_user_events",
-                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'TIMEOUT'") });
-        this.userInactiveQuery = new EventEntry(I18nUtil.marktr("Idle Timeout"),"capture_user_events",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'INACTIVE'") });
-        this.userLogoutQuery = new EventEntry(I18nUtil.marktr("User Logout"),"capture_user_events",
-                                                 new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'USER_LOGOUT'") });
-        this.adminLogoutQuery = new EventEntry(I18nUtil.marktr("Admin Logout"),"capture_user_events",
-                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'ADMIN_LOGOUT'") });
-        this.captureEventQuery = new EventEntry(I18nUtil.marktr("Capture Events"),"sessions",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","TRUE") });
-        this.passEventQuery = new EventEntry(I18nUtil.marktr("Pass Events"),"sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","FALSE") });
-        this.allEventQuery = new EventEntry(I18nUtil.marktr("All Events"),"sessions",
-                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","NOT NULL") });
     }
 
 // THIS IS FOR ECLIPSE - @formatter:on
@@ -177,18 +142,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     public ArrayList<CaptureUserEntry> getActiveUsers()
     {
         return (captureUserTable.buildUserList());
-    }
-
-    @Override
-    public EventEntry[] getUserEventQueries()
-    {
-        return new EventEntry[] { this.userEventQuery, this.userSuccessQuery, this.userFailureQuery, this.userTimeoutQuery, this.userInactiveQuery, this.userLogoutQuery, this.adminLogoutQuery };
-    }
-
-    @Override
-    public EventEntry[] getRuleEventQueries()
-    {
-        return new EventEntry[] { this.captureEventQuery, this.passEventQuery, this.allEventQuery };
     }
 
     public void incrementBlinger(BlingerType blingerType, long delta)

@@ -14,7 +14,7 @@
     "table": "capture_user_events",
     "conditions": [
         {
-            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "column": "event_info",
             "operator": "=",
             "value": "LOGIN"

@@ -18,7 +18,6 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SqlCondition;
 
 /**
  * The settings for an individual report entry (graph)

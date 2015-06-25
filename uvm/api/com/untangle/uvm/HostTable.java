@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.Hashtable;
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.EventEntry;
-
 /**
  * The Host Table is responsible for storing known information about hosts.
  * Many different components use the host table to share known information about a given host (for example, its hostname).
@@ -86,11 +84,6 @@ public interface HostTable
     void unregisterListener( HostTableListener listener );
 
     /**
-     * Return the event log query for penalty box events
-     */
-    EventEntry[] getPenaltyBoxEventQueries();
-
-    /**
      * Give an address a quota
      * Utility function to set the appropriate attachment values
      */
@@ -130,11 +123,6 @@ public interface HostTable
      * This is used for display in the UI
      */
     LinkedList<HostTableEntry> getQuotaHosts();
-
-    /**
-     * Get the event log query for quota events
-     */
-    EventEntry[] getQuotaEventQueries();
 
     /**
      * Clear the entire table (used by tests)

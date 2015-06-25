@@ -6,7 +6,6 @@ package com.untangle.node.capture;
 
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.node.EventEntry;
 import com.untangle.uvm.node.Node;
 import java.util.ArrayList;
 import java.net.InetAddress;
@@ -27,10 +26,6 @@ public interface CaptureNode extends Node
     void setSettings(CaptureSettings settings);
 
     ArrayList<CaptureUserEntry> getActiveUsers();
-
-    EventEntry[] getUserEventQueries();
-
-    EventEntry[] getRuleEventQueries();
 
     int userAuthenticate(InetAddress address, String username, String password);
 
