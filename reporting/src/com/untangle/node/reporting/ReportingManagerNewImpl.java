@@ -428,7 +428,33 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return;
     }
 
-    
+    protected Connection getDbConnection()
+    {
+        if ( node == null ) {
+            throw new RuntimeException("Reporting node not found");
+        }
+        ReportingSettings settings = node.getSettings();
+        if ( settings == null ) {
+            throw new RuntimeException("Reporting settings not found");
+        }
+        
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+            Properties props = new Properties();
+            props.setProperty( "user", settings.getDbUser() );
+            props.setProperty( "password", settings.getDbPassword() );
+            props.setProperty( "charset", "unicode" );
+            //props.setProperty( "logUnclosedConnections", "true" );
+
+            return DriverManager.getConnection(url,props);
+        }
+        catch (Exception e) {
+            logger.warn("Failed to connect to DB", e);
+            return null;
+        }
+    }
+
     private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
@@ -515,33 +541,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             return rs;
         } catch ( Exception e ) {
             logger.warn("Failed to fetch column meta data", e);
-            return null;
-        }
-    }
-
-    private Connection getDbConnection()
-    {
-        if ( node == null ) {
-            throw new RuntimeException("Reporting node not found");
-        }
-        ReportingSettings settings = node.getSettings();
-        if ( settings == null ) {
-            throw new RuntimeException("Reporting settings not found");
-        }
-        
-        try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
-            Properties props = new Properties();
-            props.setProperty( "user", settings.getDbUser() );
-            props.setProperty( "password", settings.getDbPassword() );
-            props.setProperty( "charset", "unicode" );
-            //props.setProperty( "logUnclosedConnections", "true" );
-
-            return DriverManager.getConnection(url,props);
-        }
-        catch (Exception e) {
-            logger.warn("Failed to connect to DB", e);
             return null;
         }
     }

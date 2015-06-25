@@ -4,6 +4,8 @@
 package com.untangle.node.reporting;
 
 import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -15,6 +17,8 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class SqlCondition implements Serializable, JSONString
 {
+    private static final Logger logger = Logger.getLogger(SqlCondition.class);
+
     private String column;
     private String value;
     private String operator;
@@ -99,4 +103,86 @@ public class SqlCondition implements Serializable, JSONString
             return getColumn() + " " + getOperator() + " ? ";
         }
     }
+
+    public static void setPreparedStatementValues( PreparedStatement statement, List<SqlCondition> conditions, String table )
+    {
+        if ( conditions == null )
+            return;
+
+        try {
+            int i = 0;
+            for ( SqlCondition condition : conditions ) {
+                    
+                // these operators are not supported with Statement
+                if (! condition.getAutoFormatValue() ) {
+                    continue;
+                }
+                    
+                i++;
+                String columnType = ReportingManagerNewImpl.getInstance().getColumnType( table, condition.getColumn() );
+                String value = condition.getValue();
+
+                if ( value == null ) {
+                    logger.warn("Ignoring bad condition: Invalid value: " + value );
+                    throw new RuntimeException( "Invalid value: " + value );
+                }
+                if ( columnType == null ) {
+                    logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + table );
+                    continue;
+                }
+                    
+                switch (columnType) {
+                case "int8":
+                case "bigint":
+                case "int4":
+                case "int":
+                case "integer":
+                case "int2":
+                case "smallint":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.INTEGER);
+                    else {
+                        try {
+                            statement.setLong(i, Long.valueOf( value ));
+                        } catch (Exception e) {
+                            throw new RuntimeException( "Invalid number: " + value );
+                        }
+                    }
+                break;
+                    
+                case "inet":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.OTHER);
+                    else 
+                        statement.setObject(i, value, java.sql.Types.OTHER);
+                    break;
+                    
+                case "bool":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.BOOLEAN);
+                    else if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
+                        statement.setBoolean(i, true);
+                    else
+                        statement.setBoolean(i, false);
+                    break;
+
+                case "bpchar":
+                case "character":
+                case "varchar":
+                case "text":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.VARCHAR);
+                    else
+                        statement.setString(i, condition.getValue());
+                break;
+                default:
+                    logger.warn("Unknown column type: " + columnType);
+                    continue;
+                }
+            }
+        } catch (Exception e ) {
+            logger.warn( "Failed to set values in prepared statement.", e );
+        }
+    }
+    
 }

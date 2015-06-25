@@ -285,101 +285,11 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement sqlToStatement( Connection conn, String sql, LinkedList<SqlCondition> conditions )
     {
-        Connection dbConnection = null;
-        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-
-        if ( node == null ) {
-            logger.warn("node not found.");
-            return null;
-        }
-        
         try {
-            dbConnection = node.getDbConnection();
-            dbConnection.setAutoCommit(false);
-        } catch (Exception e) {
-            logger.warn("Unable to create connection to DB",e);
-        }
-        if ( dbConnection == null) {
-            logger.warn("Unable to connect to DB.");
-            throw new RuntimeException("Unable to connect to DB.");
-        }
-
-        try {
-            java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
+            java.sql.PreparedStatement statement = conn.prepareStatement( sql );
             statement.setFetchDirection( java.sql.ResultSet.FETCH_FORWARD );
 
-            if ( conditions != null ) {
-                int i = 0;
-                for ( SqlCondition condition : conditions ) {
-                    
-                    // these operators are not supported with Statement
-                    if (! condition.getAutoFormatValue() ) {
-                        continue;
-                    }
-                    
-                    i++;
-                    String columnType = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
-                    String value = condition.getValue();
-
-                    if ( value == null ) {
-                        logger.warn("Ignoring bad condition: Invalid value: " + value );
-                        throw new RuntimeException( "Invalid value: " + value );
-                    }
-                    if ( columnType == null ) {
-                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
-                        continue;
-                    }
-                    
-                    switch (columnType) {
-                    case "int8":
-                    case "bigint":
-                    case "int4":
-                    case "int":
-                    case "integer":
-                    case "int2":
-                    case "smallint":
-                        if ("null".equalsIgnoreCase(value))
-                            statement.setNull(i, java.sql.Types.INTEGER);
-                        else {
-                            try {
-                                statement.setLong(i, Long.valueOf( value ));
-                            } catch (Exception e) {
-                                throw new RuntimeException( "Invalid number: " + value );
-                            }
-                        }
-                    break;
-                    
-                    case "inet":
-                        if ("null".equalsIgnoreCase(value))
-                            statement.setNull(i, java.sql.Types.OTHER);
-                        else 
-                            statement.setObject(i, value, java.sql.Types.OTHER);
-                        break;
-                    
-                    case "bool":
-                        if ("null".equalsIgnoreCase(value))
-                            statement.setNull(i, java.sql.Types.BOOLEAN);
-                        else if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
-                            statement.setBoolean(i, true);
-                        else
-                            statement.setBoolean(i, false);
-                        break;
-
-                    case "bpchar":
-                    case "character":
-                    case "varchar":
-                    case "text":
-                        if ("null".equalsIgnoreCase(value))
-                            statement.setNull(i, java.sql.Types.VARCHAR);
-                        else
-                            statement.setString(i, condition.getValue());
-                        break;
-                    default:
-                        logger.warn("Unknown column type: " + columnType);
-                        continue;
-                    }
-                }
-            }
+            SqlCondition.setPreparedStatementValues( statement, conditions, getTable() );
 
             return statement;
         } catch ( Exception e) {
@@ -391,7 +301,6 @@ public class ReportEntry implements Serializable, JSONString
 
     private String conditionsToString( LinkedList<SqlCondition> conditions )
     {
-        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         String str = "";
 
         if ( conditions == null )
@@ -399,7 +308,7 @@ public class ReportEntry implements Serializable, JSONString
 
         for ( Iterator<SqlCondition> itr = conditions.iterator() ; itr.hasNext() ; ) {
             SqlCondition condition = itr.next();
-            String type = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
+            String type = ReportingManagerNewImpl.getInstance().getColumnType( getTable(), condition.getColumn() );
 
             if ( type == null ) {
                 logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
