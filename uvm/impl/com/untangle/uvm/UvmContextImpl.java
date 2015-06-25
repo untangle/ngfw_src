@@ -844,7 +844,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             extraOptions += " -u \"package-server.\" ";
             extraOptions += " -d \"nightly\" ";
         } else {
-            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
+            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getVersion().replaceAll("\\.","") + "\" ";
         }
 
         extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
