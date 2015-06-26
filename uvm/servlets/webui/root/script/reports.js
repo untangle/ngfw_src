@@ -828,25 +828,25 @@ Ext.define('Ung.panel.Reports', {
         }
     },
     refreshHandler: function () {
-        if(!this.reportEntry || this.autoRefreshEnabled) {
+        if(this.autoRefreshEnabled) {
             return;
         }
-        this.setLoading(i18n._('Refreshing report... '));
-        Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-            Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
-                this.setLoading(false);
-                if(Ung.Util.handleException(exception)) return;
-                this.loadReportData(result.list);
-            }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
-            
-        }, this));
+        this.refreshReportData();
     },
     autoRefresh: function() {
+        if(!this.autoRefreshEnabled) {
+            return;
+        }
+        this.refreshReportData();
+    },
+    refreshReportData: function() {
         if(!this.reportEntry) {
             return;
         }
+        if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Refreshing report... ')); }
         Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
             Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
+                this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
                 this.loadReportData(result.list);
                 if(this!=null && this.rendered && this.autoRefreshEnabled) {
@@ -856,7 +856,6 @@ Ext.define('Ung.panel.Reports', {
             
         }, this));
     },
-
     autoRefreshEnabled: false,
     startAutoRefresh: function(setButton) {
         if(!this.reportEntry) {
@@ -1797,8 +1796,8 @@ Ext.define("Ung.window.ReportEditor", {
 
 Ext.define('Ung.panel.Events', {
     extend: 'Ext.panel.Panel',
-    name: 'panelEventLogs',
-    autoRefreshInterval: 20, //In Seconds
+    name: 'panelEvents',
+    autoRefreshInterval: 5, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
     eventEntry: null,
@@ -1809,7 +1808,7 @@ Ext.define('Ung.panel.Events', {
     initComponent: function() {
         this.subCmps = [];
         if(this.category) {
-            this.helpSource = this.category.toLowerCase().replace(" ","_") + "_reports";
+            this.helpSource = this.category.toLowerCase().replace(" ","_") + "_events";
             if(!this.title) {
                 this.title = i18n._('Events');
             }
@@ -1843,16 +1842,113 @@ Ext.define('Ung.panel.Events', {
             fields: ["value", "name"],
             data: [{value: 1000, name: "1000 " + i18n._('Events')}, {value: 10000, name: "10000 " + i18n._('Events')}, {value: 50000, name: "50000 " + i18n._('Events')}]
         });
+        this.filterFeature = Ext.create('Ung.grid.feature.GlobalFilter', {});
         this.items = [{
+            region: 'west',
+            title: i18n._("Select Event Log"),
+            width: 200,
+            hidden: !this.category,
+            split: true,
+            collapsible: true,
+            collapsed: false,
+            floatable: false,
+            name: 'entriesGrid',
+            xtype: 'grid',
+            hideHeaders: true,
+            store:  Ext.create('Ext.data.Store', {
+                sorters: "displayOrder",
+                fields: ["title", "displayOrder"],
+                data: []
+            }),
+            columns: [{
+                dataIndex: 'title',
+                flex: 1
+            }],
+            listeners: {
+                rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
+                    this.loadEventEntry(Ext.clone(record.getData()));
+                }, this)
+            }
+        
+        }, {
             region: 'center',
             layout: {type: 'border'},
             items: [{
                 region: 'center',
-                xtype: "panel",
-                name:'eventsContainer',
-                layout: 'fit',
-                html: "",
+                xtype: 'grid',
+                name:'gridEvents',
+                reserveScrollbar: true,
+                title: ".",
+                viewConfig: {
+                    enableTextSelection: true
+                },
+                store:  Ext.create('Ext.data.Store', {
+                    fields: [],
+                    data: [],
+                    proxy: {
+                        type: 'memory',
+                        reader: {
+                            type: 'json'
+                        }
+                    }
+                }),
+                columns: [{
+                    flex: 1
+                }],
+                plugins: ['gridfilters'],
+                features: [this.filterFeature],
                 dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: [i18n._('Filter:'), {
+                        xtype: 'textfield',
+                        name: 'searchField',
+                        hideLabel: true,
+                        width: 130,
+                        listeners: {
+                            change: {
+                                fn: function() {
+                                    this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                                },
+                                scope: this,
+                                buffer: 600
+                            }
+                        }
+                    }, {
+                        xtype: 'checkbox',
+                        name: 'caseSensitive',
+                        hideLabel: true,
+                        margin: '0 4px 0 4px',
+                        boxLabel: i18n._('Case sensitive'),
+                        handler: function() {
+                            this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'button',
+                        iconCls: 'icon-clear-filter',
+                        text: i18n._('Clear Filters'),
+                        tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                        handler: Ext.bind(function () {
+                            this.gridEvents.clearFilters();
+                            this.searchField.setValue("");
+                        }, this)
+                    }, {
+                        text: i18n._('Reset View'),
+                        tooltip: i18n._('Restore default columns positions, widths and visibility'),
+                        handler: Ext.bind(function () {
+                            Ext.state.Manager.clear(this.stateId);
+                            this.reconfigure(null, this.getInitialConfig("columns"));
+                        }, this)
+                    },'->',{
+                        xtype: 'button',
+                        text: i18n._('Export'),
+                        name: "Export",
+                        tooltip: i18n._('Export Events to File'),
+                        iconCls: 'icon-export',
+                        handler: Ext.bind(this.exportHandler, this)
+                    }]
+                }, {
                     xtype: 'toolbar',
                     dock: 'bottom',
                     items: [{
@@ -1942,98 +2038,154 @@ Ext.define('Ung.panel.Events', {
             })]
         }];
         
-        if(this.category) {
-            this.entriesStore = Ext.create('Ext.data.Store', {
-                sorters: "displayOrder",
-                fields: ["title", "displayOrder"],
-                data: []
-            });
-            this.loadEventEntries();
-            this.items.push({
-                region: 'west',
-                title: i18n._("Select Event Log"),
-                width: 200,
-                split: true,
-                collapsible: true,
-                collapsed: false,
-                floatable: false,
-                name: 'entriesGrid',
-                xtype: 'grid',
-                hideHeaders: true,
-                store:  this.entriesStore,
-                columns: [{
-                    dataIndex: 'title',
-                    flex: 1
-                }],
-                listeners: {
-                    rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                        this.loadEventEntry(Ext.clone(record.getData()));
-                    }, this)
-                }
-            
-            });
-        }
 
         this.callParent(arguments);
-
+        
+        this.entriesGrid = this.down("grid[name=entriesGrid]");
+        this.gridEvents = this.down("grid[name=gridEvents]");
+        this.searchField=this.down('textfield[name=searchField]');
+        this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.policySelector = this.down("combo[name=policySelector]");
         this.limitSelector = this.down("combo[name=limitSelector]");
+        if(this.category) {
+            this.loadEventEntries();
+        }
     },
     loadEventEntries: function() {
         Ung.Main.getReportingManagerNew().getEventEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            this.eventEntries = [];
-            this.initialEntryIndex = null;
-            var eventEntry;
-            for(var i=0; i<result.list.length; i++) {
-                eventEntry = result.list[i];
-                this.eventEntries.push(eventEntry);
-            }
-            if(this.initialEntryIndex == null && this.eventEntries.length>0) {
-                this.initialEntryIndex = 0;
-            }
-            this.entriesStore.loadData(this.eventEntries);
+            this.entriesGrid.getStore().loadData(result.list);
+            this.entriesGrid.setHidden(result.list.length <= 1);
         }, this), this.category);
     },
-    loadEventData: function(data) {},
+    
     loadEventEntry: function(eventEntry) {
+        var i, col;
         this.eventEntry = eventEntry;
+        if(!eventEntry.defaultColumns) {
+            eventEntry.defaultColumns = [];
+        }
+        this.gridEvents.setTitle(eventEntry.title);
+        var tableConfig = Ung.panel.Events.getTableConfig(this.eventEntry.table);
+        if(!tableConfig) {
+            tableConfig = {
+                fields: [],
+                columns: []
+            };
+            for(i=0; i< eventEntry.defaultColumns.length; i++) {
+                col = eventEntry.defaultColumns[i];
+                tableConfig.columns.push({
+                    header: col.replace(/_/g," "),
+                    dataIndex: col,
+                    sortable: true,
+                    flex: 1
+                });
+            }
+        } else {
+            for(i=0; i< tableConfig.columns.length; i++) {
+                col = tableConfig.columns[i];
+                col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
+            }
+        }
+        this.gridEvents.getStore().setFields(tableConfig.fields);
+        this.gridEvents.setColumns(tableConfig.columns);
+        this.refreshHandler();
+        if(!this.extraConditionsPanel.getCollapsed()) {
+            Ung.panel.Reports.getColumnsForTable(eventEntry.table, this.extraConditionsPanel.columnsStore);
+        }
     },
     refreshHandler: function () {
-        if(!this.eventEntry || this.autoRefreshEnabled) {
+        if(this.autoRefreshEnabled) {
             return;
         }
-        var policyId = this.policySelector.getValue();
-        var limit = this.limitSelector.getValue();
-        this.setLoading(i18n._('Syncing events to Database... '));
-        Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-            this.setLoading(i18n._('Querying Database...'));
-            Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
-                this.setLoading(false);
-                if(Ung.Util.handleException(exception)) return;
-                this.loadEventData(result.list);
-            }, this), this.eventEntry, policyId, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
-            
-        }, this));
+        this.refreshEvents();
     },
     autoRefresh: function() {
+        if(!this.autoRefreshEnabled) {
+            return;
+        }
+        this.refreshEvents();
+    },
+    refreshEvents: function() {
         if(!this.eventEntry) {
             return;
         }
         var policyId = this.policySelector.getValue();
         var limit = this.limitSelector.getValue();
+        if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Syncing events to Database... ')); }
         Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Querying Database...')); }
             Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
+                this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
-                this.loadEventData(result.list);
-                if(this!=null && this.rendered && this.autoRefreshEnabled) {
-                    Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
-                }
+                this.loadResultSet(result);
             }, this), this.eventEntry, policyId, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
             
         }, this));
+        
     },
+    //Used to get dummy records in testing
+    getTestRecord:function(index, fields) {
+        var rec= {};
+        var property;
+        for (var i=0; i<fields.length ; i++) {
+            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
+            rec[property]=
+                (property=='id')?index+1:
+                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
+                (property.indexOf('_addr') != -1)?Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"/"+Math.floor((Math.random()*32)):
+                (property.indexOf('_port') != -1)?Math.floor((Math.random()*65000)):
+            property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
+        }
+        return rec;
+    },
+    loadNextChunkCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+        var newEventEntries = result;
+        // If we got results append them to the current events list, and make another call for more
+        if ( newEventEntries != null && newEventEntries.list != null && newEventEntries.list.length != 0 ) {
+            this.eventEntries.push.apply( this.eventEntries, newEventEntries.list );
+            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...') + ' (' + this.eventEntries.length + ')'); }
+            this.reader.getNextChunk(Ext.bind(this.loadNextChunkCallback, this), 1000);
+            return;
+        }
+        // If we got here, then we either reached the end of the resultSet or ran out of room display the results
+        if (this.settingsCmp != null && this.gridEvents!=null && this.gridEvents.getStore() != null) {
+            this.gridEvents.getStore().getProxy().setData(this.eventEntries);
+            this.gridEvents.getStore().load();
+        }
+        this.setLoading(false);
+        
+        if(this!=null && this.rendered && this.autoRefreshEnabled) {
+            if(this == this.settingsCmp.tabs.getActiveTab()) {
+                Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
+            } else {
+                this.stopAutoRefresh(true);
+            }
+        }
+    },
+    // Refresh the events list
+    loadResultSet: function(result) {
+        this.eventEntries = [];
 
+        if( testMode ) {
+            var emptyRec={};
+            var length = Math.floor((Math.random()*5000));
+            var fields = this.entriesGrid.getStore().getFields();
+            for(var i=0; i<length; i++) {
+                this.eventEntries.push(this.getTestRecord(i, fields));
+            }
+            this.loadNextChunkCallback(null);
+        }
+
+        this.reader = result;
+        if(this.reader) {
+            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...')); }
+            this.reader.getNextChunk(Ext.bind(this.loadNextChunkCallback, this), 1000);
+        } else {
+            this.loadNextChunkCallback(null);
+        }
+    },
     autoRefreshEnabled: false,
     startAutoRefresh: function(setButton) {
         if(!this.eventEntry) {
@@ -2065,8 +2217,8 @@ Ext.define('Ung.panel.Events', {
             return data.join(",") + '\r\n';
         };
 
-        var records = this.dataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
-        var gridColumns = this.dataGrid.getColumns();
+        var records = this.gridEvents.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
+        var gridColumns = this.gridEvents.getColumns();
         for(i=0; i<gridColumns.length;i++) {
             if(gridColumns[i].initialConfig.dataIndex) {
                 columns.push(gridColumns[i].initialConfig.dataIndex);
@@ -2089,13 +2241,14 @@ Ext.define('Ung.panel.Events', {
         return false;
     },
     selectInitialEvent: function() {
-        this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialEntryIndex);
-        this.loadEventEntry(Ext.clone(this.eventEntries[this.initialEntryIndex]));
+        this.entriesGrid.getSelectionModel().select(0);
+        var record = this.entriesGrid.getSelectionModel().getSelection()[0];
+        this.loadEventEntry(record.getData());
     },
     listeners: {
         "activate": {
             fn: function() {
-                if(this.category && !this.eventEntry && this.eventEntries !=null && this.eventEntries.length > 0) {
+                if(this.category && !this.eventEntry && this.entriesGrid.getStore().getCount() > 0) {
                     this.selectInitialEvent();
                 }
             }
@@ -2106,6 +2259,546 @@ Ext.define('Ung.panel.Events', {
                     this.stopAutoRefresh(true);
                 }
             }
+        }
+    },
+    statics: {
+        getTableConfig: function(table) {
+            if(!this.tableConfig) {
+                this.tableConfig = {
+                    sessions: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'bandwidth_control_priority'
+                        }, {
+                            name: 'bandwidth_control_rule'
+                        }, {
+                            name: 'protocol'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'hostname'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'c_client_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'c_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 's_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'application_control_application',
+                            type: 'string'
+                        }, {
+                            name: 'application_control_protochain',
+                            type: 'string'
+                        }, {
+                            name: 'application_control_flagged',
+                            type: 'boolean'
+                        }, {
+                            name: 'application_control_blocked',
+                            type: 'boolean'
+                        }, {
+                            name: 'application_control_confidence'
+                        }, {
+                            name: 'application_control_detail'
+                        }, {
+                            name: 'application_control_lite_blocked'
+                        }, {
+                            name: 'application_control_lite_protocol',
+                            type: 'string'
+                        }, {
+                            name: 'application_control_ruleid'
+                        }, {
+                            name: 'ssl_inspector_status'
+                        }, {
+                            name: 'ssl_inspector_detail'
+                        }, {
+                            name: 'ssl_inspector_ruleid'
+                        }, {
+                            name: 'policy_id'
+                        }, {
+                            name: 'firewall_blocked'
+                        }, {
+                            name: 'firewall_flagged'
+                        }, {
+                            name: 'firewall_rule_index'
+                        }, {
+                            name: 'ips_blocked'
+                        }, {
+                            name: 'ips_ruleid'
+                        }, {
+                            name: 'ips_description',
+                            type: 'string'
+                        }, {
+                            name: "captive_portal_rule_index"
+                        }, {
+                            name: "captive_portal_blocked"
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Protocol"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'protocol',
+                            renderer: function(value) {
+                                if (value == 17)
+                                    return "UDP";
+                                if (value == 6)
+                                    return "TCP";
+                                return value;
+                            }
+                        }, {
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_addr'
+                        }, {
+                            header: i18n._("Client port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
+                            header: i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Rule ID"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'application_control_ruleid',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Priority"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'bandwidth_control_priority',
+                            renderer: function(value) {
+                                if (Ext.isEmpty(value)) {
+                                    return "";
+                                }
+                                switch(value) {
+                                    case 0: return "";
+                                    case 1: return i18n._("Very High");
+                                    case 2: return i18n._("High");
+                                    case 3: return i18n._("Medium");
+                                    case 4: return i18n._("Low");
+                                    case 5: return i18n._("Limited");
+                                    case 6: return i18n._("Limited More");
+                                    case 7: return i18n._("Limited Severely");
+                                    default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                                }
+                            }
+                        }, {
+                            header: i18n._("Rule"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'bandwidth_control_rule',
+                            renderer: function(value) {
+                                return Ext.isEmpty(value) ? i18n._("none") : value;
+                            }
+                        }, {
+                            header: i18n._("Application"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'application_control_application'
+                        }, {
+                            header: i18n._("ProtoChain"),
+                            width: 180,
+                            sortable: true,
+                            dataIndex: 'application_control_protochain'
+                        }, {
+                            header: i18n._("Blocked (Application Control)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'application_control_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Flagged (Application Control)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'application_control_flagged',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Confidence"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'application_control_confidence',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Detail"),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'application_control_detail'
+                        },{
+                            header: i18n._("Protocol (Application Control Lite)"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'application_control_lite_protocol'
+                        }, {
+                            header: i18n._("Blocked (Application Control Lite)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'application_control_lite_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Rule ID (HTTPS Inspector)"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'ssl_inspector_ruleid',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Status (HTTPS Inspector)"),
+                            width: 100,
+                            sortable: true,
+                            dataIndex: 'ssl_inspector_status'
+                        }, {
+                            header: i18n._("Detail (HTTPS Inspector)"),
+                            width: 250,
+                            sortable: true,
+                            dataIndex: 'ssl_inspector_detail'
+                        }, {
+                            header: i18n._('Policy Id'),
+                            width: 60,
+                            sortable: true,
+                            flex:1,
+                            dataIndex: 'policy_id',
+                            renderer: Ung.Main.getPolicyName
+                        }, {
+                            header: i18n._("Blocked (Firewall)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'firewall_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Flagged (Firewall)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'firewall_flagged',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._('Rule Id (Firewall)'),
+                            width: 60,
+                            sortable: true,
+                            flex:1,
+                            dataIndex: 'firewall_rule_index',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Blocked (Intrusion Prevention)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'ips_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._('Rule Id (Intrusion Prevention)'),
+                            width: 60,
+                            sortable: true,
+                            dataIndex: 'ips_ruleid'
+                        }, {
+                            header: i18n._('Rule Description (Intrusion Prevention)'),
+                            width: 150,
+                            sortable: true,
+                            flex:1,
+                            dataIndex: 'ips_description'
+                        }, {
+                            header: i18n._("Rule ID (Captive Portal)"),
+                            width: 80,
+                            dataIndex: 'captive_portal_rule_index'
+                        }, {
+                            header: i18n._("Captured"),
+                            width: 100,
+                            sortable: true,
+                            dataIndex: "captive_portal_blocked",
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }]
+                    },
+                    http_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'web_filter_lite_blocked',
+                            type: 'boolean'
+                        }, {
+                            name: 'web_filter_blocked',
+                            type: 'boolean'
+                        }, {
+                            name: 'web_filter_lite_flagged',
+                            type: 'boolean'
+                        }, {
+                            name: 'web_filter_flagged',
+                            type: 'boolean'
+                        }, {
+                            name: 'web_filter_lite_category',
+                            type: 'string'
+                        }, {
+                            name: 'web_filter_category',
+                            type: 'string'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'hostname'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'host'
+                        }, {
+                            name: 'uri'
+                        }, {
+                            name: 'web_filter_lite_reason',
+                            type: 'string',
+                            convert: Ung.CustomEventLog.httpEventConvertReason
+                        }, {
+                            name: 'web_filter_reason',
+                            type: 'string',
+                            convert: Ung.CustomEventLog.httpEventConvertReason
+                        }, {
+                            name: 'ad_blocker_action',
+                            type: 'string',
+                            convert: function(value) {
+                                return (value == 'B')?i18n._("block") : i18n._("pass");
+                            }
+                        }, {
+                            name: 'ad_blocker_cookie_ident'
+                        }, {
+                            name: 'virus_blocker_name'
+                        }, {
+                            name: 'virus_blocker_lite_name'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_addr'
+                        }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: i18n._("Host"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'host'
+                        }, {
+                            header: i18n._("Uri"),
+                            flex:1,
+                            width: Ung.Util.uriFieldWidth,
+                            sortable: true,
+                            dataIndex: 'uri'
+                        }, {
+                            header: i18n._("Blocked (Webfilter Lite)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'web_filter_lite_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Flagged (Webfilter Lite)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            dataIndex: 'web_filter_lite_flagged',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Reason For Action (Webfilter Lite)"),
+                            width: 150,
+                            sortable: true,
+                            dataIndex: 'web_filter_lite_reason'
+                        }, {
+                            header: i18n._("Category (Webfilter Lite)"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'web_filter_lite_category'
+                        }, {
+                            header: i18n._("Blocked  (Webfilter)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'web_filter_blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Flagged (Webfilter)"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'web_filter_flagged',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Reason For Action (Webfilter)"),
+                            width: 150,
+                            sortable: true,
+                            dataIndex: 'web_filter_reason'
+                        }, {
+                            header: i18n._("Category (Webfilter)"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'web_filter_category'
+                        }, {
+                            header: i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 's_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Action (Ad Blocker)"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'ad_blocker_action'
+                        }, {
+                            header: i18n._("Cookie"),
+                            width: 100,
+                            sortable: true,
+                            dataIndex: 'ad_blocker_cookie_ident'
+                        }, {
+                            header: i18n._("Virus Name (Virus Blocker Lite)"),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_lite_name'
+                        }, {
+                            header: i18n._("Virus Name (Virus Blocker)"),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_name'
+                        }]
+                    }
+                };
+                var key, columns, i;
+                for(key in this.tableConfig) {
+                    columns = this.tableConfig[key].columns;
+                    for(i=0; i<columns.length; i++) {
+                        columns[i].filter = { type: 'string' };
+                    }
+                }
+            }
+            return this.tableConfig[table];
         }
     }
 });

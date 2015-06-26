@@ -7,7 +7,9 @@ Ext.define('Ung.RuleBuilder', {
     dirtyFlag: false,
     alias: 'widget.rulebuilder',
     javaClass: null,
-
+    viewConfig: {
+        enableTextSelection: true
+    },
     initComponent: function() {
         Ext.applyIf(this, {
             height: 220
@@ -89,7 +91,7 @@ Ext.define('Ung.RuleBuilder', {
             resizable: false,
             menuDisabled: true,
             dataIndex: "value",
-            renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
+            renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                 var name=record.get("name");
                 value=record.get("value");
                 var rule=this.matchersMap[name];
@@ -97,9 +99,10 @@ Ext.define('Ung.RuleBuilder', {
                 if (!rule) {
                     return "";
                 }
+                
                 switch(rule.type) {
                   case "text":
-                    res='<input type="text" class="row-editor-textfield" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
+                    res='<input type="text" class="row-editor-textfield" onchange1="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
                     break;
                   case "boolean":
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
@@ -130,7 +133,6 @@ Ext.define('Ung.RuleBuilder', {
                     break;
                 }
                 return res;
-
             }, this)
         }, deleteColumn];
         this.callParent(arguments);

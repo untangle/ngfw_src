@@ -7,7 +7,7 @@ Ext.define("Ung.grid.EventLog", {
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
     initComponent: function() {
-        if(this.eventQueriesFn == null && this.settingsCmp.rpcNode !== null && this.settingsCmp.rpcNode.getEventQueries !== null) {
+        if(this.eventQueriesFn == null && this.settingsCmp.rpcNode != null && this.settingsCmp.rpcNode.getEventQueries != null) {
             this.eventQueriesFn = this.settingsCmp.rpcNode.getEventQueries;
         }
         if(this.hasTimestampFilter) {
