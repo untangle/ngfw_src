@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.io.IOException;
 
+import org.jabsorb.JSONSerializer;
+
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.TomcatManager;
@@ -352,4 +354,10 @@ public interface UvmContext
      * multiple calls
      */
     org.json.JSONObject getSetupStartupInfo();
+
+    /**
+     * Get the global json serializer
+     */
+    JSONSerializer getSerializer();
+
 }

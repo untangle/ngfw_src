@@ -64,24 +64,6 @@ public interface ReportingManagerNew
     ResultSetReader getEventsForDateRangeResultSet( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 
     /**
-     * Query events in the reports database
-     * REMOVEME - deprecated
-     */
-    //ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
-    
-    /**
-     * Query events in the reports database
-     * REMOVEME - deprecated
-     */
-    ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
-    
-    /**
-     * Query events in the reports database, within a given date range
-     * REMOVEME - deprecated
-     */
-    ResultSetReader getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
-
-    /**
      * Get a list of all tables in the database
      */
     String[] getTables();

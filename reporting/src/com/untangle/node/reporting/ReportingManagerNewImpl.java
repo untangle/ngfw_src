@@ -283,7 +283,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments"); 
             return null;
         }
-        return getEventsForDateRangeResultSet( entry.getQuery(), policyId, extraConditions, limit, null, null );
+        return getEventsForDateRangeResultSet( entry, policyId, extraConditions, limit, null, null );
     }
 
     public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
@@ -293,21 +293,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             return null;
         }
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.getQuery(), policyId, extraConditions, limit, startDate, endDate );
-    }
-
-    // public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    // {
-    //     return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
-    // }
-
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return getEventsForDateRangeResultSet(query, policyId, extraConditions, limit, null, null);
-    }
-
-    public ResultSetReader getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
-    {
-        return ReportingNodeImpl.eventReader.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )

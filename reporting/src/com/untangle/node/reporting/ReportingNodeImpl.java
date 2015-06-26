@@ -54,8 +54,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     protected static EventReaderImpl eventReader = null;
     protected static ReportingManagerImpl    reportingManager = null;
 
-    private EventEntry interestingEventsQuery;
-    
     private ReportingSettings settings;
     
     public ReportingNodeImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
@@ -72,8 +70,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
-
-        this.interestingEventsQuery = new EventEntry(I18nUtil.marktr("All Events"), "alerts", new SqlCondition[]{});
     }
 
     public void setSettings( final ReportingSettings newSettings )
@@ -116,11 +112,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     public ReportingSettings getSettings()
     {
         return this.settings;
-    }
-
-    public EventEntry[] getEventQueries()
-    {
-        return new EventEntry[] { this.interestingEventsQuery };
     }
 
     public void createSchemas()
@@ -593,28 +584,33 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
-            String name = req.getParameter("arg1");
-            String query = req.getParameter("arg2");
-            String policyIdStr = req.getParameter("arg3");
-            String columnListStr = req.getParameter("arg4");
-            Date startDate = getDate(req.getParameter("arg5"));
-            Date endDate = getDate(req.getParameter("arg6"));
+            try {
+                String name = req.getParameter("arg1");
+                EventEntry query = (EventEntry) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg2") );
+                String policyIdStr = req.getParameter("arg3");
+                String columnListStr = req.getParameter("arg4");
+                Date startDate = getDate(req.getParameter("arg5"));
+                Date endDate = getDate(req.getParameter("arg6"));
 
-            if (name == null || query == null || policyIdStr == null || columnListStr == null) {
-                logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
-                return;
+                if (name == null || query == null || policyIdStr == null || columnListStr == null) {
+                    logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
+                    return;
+                }
+
+                Long policyId = Long.parseLong(policyIdStr);
+                logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
+
+                ReportingNodeImpl reporting = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                if (reporting == null) {
+                    logger.warn("reporting node not found");
+                    return;
+                }
+                ResultSetReader resultSetReader = ReportingManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, policyId, null, -1, startDate, endDate);
+                toCsv( resultSetReader, resp, columnListStr, name );
+            } catch (Exception e) {
+                logger.warn( "Failed to build CSV.", e );
+                throw new RuntimeException(e);
             }
-
-            Long policyId = Long.parseLong(policyIdStr);
-            logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
-
-            ReportingNodeImpl reporting = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-            if (reporting == null) {
-                logger.warn("reporting node not found");
-                return;
-            }
-            ResultSetReader resultSetReader = ReportingManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, policyId, null, -1, startDate, endDate);
-            toCsv( resultSetReader, resp, columnListStr, name );
         }
     }
 }
