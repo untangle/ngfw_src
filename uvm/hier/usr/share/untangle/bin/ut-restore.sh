@@ -48,9 +48,9 @@ function doRestore()
     debug "Restoring files..."
 
     if [ "true" == $VERBOSE ]; then
-      tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxhfv $WORKING_DIR/$TARBALL_FILE -C /
     else
-      tar zxf $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxhf $WORKING_DIR/$TARBALL_FILE -C /
     fi
 
     # update date on all files
