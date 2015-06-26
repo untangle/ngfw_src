@@ -14,9 +14,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.TimeZone;
 import java.util.zip.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,12 +60,14 @@ public class SystemManagerImpl implements SystemManager
     private static final Pattern SNMP_CONF_V3USER_PATTERN = Pattern.compile("usmUser\\s+");
 
     private static final String UPGRADE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-upgrade.py";
+    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-set-timezone";
     
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
     private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
+    private static final String TIMEZONE_FILE = "/etc/timezone";
     
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -66,6 +77,8 @@ public class SystemManagerImpl implements SystemManager
     private int downloadCurrentFileCount;
     private String downloadCurrentFileProgress = "";
     private String downloadCurrentFileRate = "";
+    
+    private Calendar currentCalendar = Calendar.getInstance();
     
     protected SystemManagerImpl()
     {
@@ -100,6 +113,20 @@ public class SystemManagerImpl implements SystemManager
         if (settingsFile.lastModified() > snmpConfFile.lastModified() ||
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
+
+        setTimeSource();
+
+        /**
+         * If timezone on box is different (example: kernel upgrade), reset it:
+         */
+        TimeZone currentZone = getTimeZone();
+        if (!currentZone.equals(TimeZone.getDefault())) {
+            try {
+                setTimeZone(currentZone);
+            } catch (Exception e) {
+                logger.warn( "Exception setting timezone", e );
+            }
+        }
 
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
@@ -171,6 +198,152 @@ public class SystemManagerImpl implements SystemManager
         }
 
         syncPyconnectorStart();
+    }
+
+    @Override
+    public TimeZone getTimeZone()
+    {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            String str = in.readLine();
+            str = str.trim();
+            in.close();
+            TimeZone current = TimeZone.getTimeZone(str);
+            return current;
+        } catch (Exception x) {
+            logger.warn("Unable to get timezone, using java default:" , x);
+            return TimeZone.getDefault();
+        }
+    }
+
+    @Override
+    public void setTimeZone(TimeZone timezone)
+    {
+        String id = timezone.getID();
+
+        Integer exitValue = UvmContextImpl.context().execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
+        if (0 != exitValue) {
+            String message = "Unable to set time zone (" + exitValue + ") to: " + id;
+            logger.error(message);
+            throw new RuntimeException(message);
+        } else {
+            logger.info("Time zone set to : " + id);
+            TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
+        }
+
+        this.currentCalendar = Calendar.getInstance();
+    }
+
+    @Override
+    public Calendar getCalendar()
+    {
+        return this.currentCalendar;
+    }
+    
+    public String getDate()
+    {
+        return (new Date(System.currentTimeMillis())).toString();
+    }
+
+    @Override
+    public void setDate(long timestamp)
+    {
+        if( timestamp != 0 ){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = sdf.format(timestamp);
+            UvmContextFactory.context().execManager().exec( "date -s '" + formattedDate + "'" );
+        }
+    }
+
+    public void setTimeSource()
+    {
+        /**
+         * Glob for NTP init in startup and based on whether found or not and
+         * if it conflicts with the current timeSource file, synchronize appropriately.
+         */
+        File directory = new File( "/etc/rc3.d" );
+        File[] files = directory.listFiles(
+            new FilenameFilter()
+            {
+                @Override
+                public boolean accept( File directory, String name )
+                {
+                    return ( name.endsWith("ntp") == true );
+                }
+            }
+        );
+        if( ( files.length > 0 ) && settings.getTimeSource().equals("manual") ){
+            UvmContextFactory.context().execManager().exec( "update-rc.d ntp remove" );
+            UvmContextFactory.context().execManager().exec( "service ntp stop" );
+        }else if( ( files.length == 0 ) && settings.getTimeSource().equals("ntp") ){
+            UvmContextFactory.context().execManager().exec( "update-rc.d ntp defaults" );
+            /**
+             * Restart NTP while performing an NTP time synchronization 
+             */
+            UvmContextFactory.context().forceTimeSync();
+        }
+
+    }
+
+    public String getTimeZones() 
+    {
+        String[] timezones = TimeZone.getAvailableIDs();
+        List<TimeZone> all = new ArrayList<TimeZone>();
+        for (String tz: timezones) {
+            all.add( TimeZone.getTimeZone(tz));
+        }
+        // remove TZs that the OS doesnt know
+        for ( Iterator<TimeZone> iter = all.iterator(); iter.hasNext() ; ) {
+            TimeZone tz = iter.next();
+            String path = "/usr/share/zoneinfo/" + tz.getID();
+            if ( ! ( new File(path).exists() ) ) {
+                iter.remove();
+            }
+        }
+        final long d = new Date().getTime();
+        Collections.sort(all, new Comparator<TimeZone>() {
+                @Override
+                public int compare(TimeZone o1, TimeZone o2) {
+                    if ( o1.getOffset(d) < o2.getOffset(d)) return -1;
+                    if ( o1.getOffset(d) > o2.getOffset(d)) return 1;
+                    return 0;
+                }
+        });
+        StringBuffer sb = new StringBuffer();
+        sb.append("[");
+        boolean first = true;
+        for (TimeZone tz: all) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+            sb.append("['").append(tz.getID()).append("','").append(getTZString(tz,d)).append("']");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public Integer getTimeZoneOffset()
+    {
+        try {
+            String tzoffsetStr = UvmContextImpl.context().execManager().execOutput("date +%:z");
+        
+            if (tzoffsetStr == null) {
+                return 0;
+            } else {
+                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
+                if (tzParts.length==2) {
+                    Integer hours= Integer.valueOf(tzParts[0]);
+                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
+                    return hours >= 0 ? tzoffset : -tzoffset;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return 0;
     }
 
     /**
@@ -730,4 +903,17 @@ public class SystemManagerImpl implements SystemManager
             }
         }
     }
+
+    private String getTZString(TimeZone tz, long d) 
+    {
+        long offset = tz.getOffset(d) / 1000;
+        long hours = Math.abs(offset) / 3600;
+        long minutes = (Math.abs(offset) / 60) % 60;
+        if ( offset < 0) {
+            return "~UTC-" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
+        } else {
+            return "~UTC+" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
+        }
+    }
+    
 }

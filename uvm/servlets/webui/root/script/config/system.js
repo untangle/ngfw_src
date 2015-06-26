@@ -188,7 +188,7 @@ Ext.define('Webui.config.system', {
         if (forceReload || this.rpc.timeZone === undefined) {
             try {
                 /* Handle the serialization mess of java with ZoneInfo. */
-                var tz = rpc.adminManager.getTimeZone();
+                var tz = rpc.systemManager.getTimeZone();
                 if ( tz && typeof ( tz ) != "string" ) {
                     tz = tz.ID;
                 }
@@ -660,7 +660,7 @@ Ext.define('Webui.config.system', {
         var timeZones = [];
         var timeZonesResult;
         try {
-            timeZonesResult = rpc.adminManager.getTimeZones();
+            timeZonesResult = rpc.systemManager.getTimeZones();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -668,6 +668,190 @@ Ext.define('Webui.config.system', {
         for (var i = 0; i < timeZoneData.length; i++) {
             timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
+
+        var ntpForceSyncFields = {
+            xtype: "fieldset",
+            title: this.i18n._("Force Sync Time"),
+            items: [{
+                xtype: "component",
+                html: this.i18n._("Click to force instant time synchronization.")
+            },{
+                xtype: "button",
+                margin: '10 0 0 0',
+                text: this.i18n._("Synchronize Time"),
+                name: "Setup Wizard",
+                iconCls: "reboot-icon",
+                handler: Ext.bind(function() {
+                    Ext.MessageBox.confirm(
+                        this.i18n._("Force Time Synchronization"),
+                        this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
+                        this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
+                        this.i18n._("Continue?"),
+                        Ext.bind(function(btn) {
+                            if (btn == "yes") {
+                                Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
+                                rpc.jsonrpc.UvmContext.forceTimeSync(Ext.bind(function (result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    if(result !== 0) {
+                                        Ext.MessageBox.hide();
+                                        Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Time synchronization failed. Return code: ") + result);
+                                    } else {
+                                        Ext.MessageBox.hide();
+                                    }
+                                }, this));
+                            }
+                        }, this));
+                }, this)
+            }]
+        };
+
+        timeFields = null;
+
+        var timeSource = this.getSystemSettings().timeSource;
+        this.initialTimeSource = timeSource;
+        if( this.getSystemSettings().expertMode == true ){
+            var currentTime = new Date(rpc.systemManager.getDate());
+            timeFields = {
+                title: this.i18n._("Time Settings"),
+                items: [{
+                    xtype: 'radiofield',
+                    name: 'timeSource',
+                    inputValue: 'ntp',
+                    boxLabel: this.i18n._("Synchronize time automatically via NTP"),
+                    value: (timeSource == "ntp") ? true : false,
+                    handler: Ext.bind(function(elem, checked) {
+                        if( checked ){
+                            this.panelRegional.down("fieldset[name=timeSource_ntp_settings]").setVisible(true);
+                            this.panelRegional.down("fieldset[name=timeSource_manual_settings]").setVisible(false);
+                            this.getSystemSettings().timeSource = "ntp";
+                        }
+                    }, this)
+                },{
+                    name: 'timeSource_ntp_settings',
+                    xtype: 'fieldset',
+                    hidden: (timeSource == "ntp") ? false : true,
+                    margin: '0 0 0 0',
+                    items:[
+                        ntpForceSyncFields
+                    ]
+                },{
+                    xtype: 'radiofield',
+                    name: 'timeSource',
+                    inputValue: 'manual',
+                    boxLabel: this.i18n._("Set system clock manually"),
+                    value: (timeSource == "manual") ? true : false,
+                    handler: Ext.bind(function(elem, checked) {
+                        if( checked ){
+                            this.panelRegional.down("fieldset[name=timeSource_ntp_settings]").setVisible(false);
+                            this.panelRegional.down("fieldset[name=timeSource_manual_settings]").setVisible(true);
+                            this.getSystemSettings().timeSource = "manual";
+                            // start timer
+                        }
+                    }, this)
+                },{
+                    name: 'timeSource_manual_settings',
+                    xtype: 'fieldset',
+                    hidden: (timeSource == "manual") ? false : true,
+                    layout: {
+                        type: 'hbox',
+                        align: 'middle'
+                    },
+                    items:[{
+                        xtype: 'combo',
+                        name: 'manual_time_hour',
+                        editable: false,
+                        width: 40,
+                        allowBlank: false,
+                        value: ( currentTime.getHours() < 10 ? '0' : '' ) + currentTime.getHours(),
+                        store: [
+                            ["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], 
+                            ["06","06"], ["07","07"], ["08","08"], ["09","09"], ["10","10"], ["11","11"], 
+                            ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], 
+                            ["18","18"], ["19","19"], ["20","20"], ["21","21"], ["22","22"], ["23","23"]
+                        ],
+                        listeners:{
+                            dirtychange: function( me, isDirty, eOpts){
+                                if( isDirty ){
+                                    me.up("panel[name=Regional]").updateManualDateChangeTimer();
+                                }
+                            }
+                        }
+                    },{
+                        xtype: 'component',
+                        margin: '0 3 0 3',
+                        html: ":"
+                    },{
+                        xtype: 'combo',
+                        name: 'manual_time_minute',
+                        editable: false,
+                        width: 40,
+                        allowBlank: false,
+                        value: ( currentTime.getMinutes() < 10 ? '0' : '' ) + currentTime.getMinutes(),
+                        store: [
+                            ["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                            ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                            ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
+                            ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
+                            ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
+                            ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]
+                        ],
+                        listeners:{
+                            dirtychange: function( me, isDirty, eOpts){
+                                if( isDirty ){
+                                    me.up("panel[name=Regional]").updateManualDateChangeTimer();
+                                }
+                            }
+                        }
+                    },{
+                        xtype: 'component',
+                        margin: '0 3 0 3',
+                        html: ":"
+                    },{
+                        xtype: 'combo',
+                        name: 'manual_time_second',
+                        editable: false,
+                        width: 40,
+                        allowBlank: false,
+                        value: ( currentTime.getSeconds() < 10 ? '0' : '' ) + currentTime.getSeconds(),
+                        store: [
+                            ["00","00"], ["01","01"], ["02","02"], ["03","03"], ["04","04"], ["05","05"], ["06","06"], ["07","07"], ["08","08"], ["09","09"],
+                            ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
+                            ["20","20"], ["21","21"], ["22","22"], ["23","23"], ["24","24"], ["25","25"], ["26","26"], ["27","27"], ["28","28"], ["29","29"],
+                            ["30","30"], ["31","31"], ["32","32"], ["33","33"], ["34","34"], ["35","35"], ["36","36"], ["37","37"], ["38","38"], ["39","39"],
+                            ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
+                            ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]
+                        ],
+                        listeners:{
+                            dirtychange: function( me, isDirty, eOpts){
+                                if( isDirty ){
+                                    me.up("panel[name=Regional]").updateManualDateChangeTimer();
+                                }
+                            }
+                        }
+                    },{
+                        xtype: 'component',
+                        margin: '0 3 0 3',
+                        html: "&nbsp;"
+                    },{
+                        xtype: 'datefield',
+                        name: 'manual_date',
+                        value: currentTime,
+                        listeners:{
+                            dirtychange: function( me, isDirty, eOpts){
+                                if( isDirty ){
+                                    me.up("panel[name=Regional]").updateManualDateChangeTimer();
+                                }
+                            }
+                        }
+                    }]
+                }]                
+            };
+        }else{
+            if( timeSource == "ntp" ){
+                timeFields = ntpForceSyncFields;
+            }
+        }
+
         this.panelRegional = Ext.create('Ext.panel.Panel',{
             name: "Regional",
             helpSource: "system_regional",
@@ -681,7 +865,7 @@ Ext.define('Webui.config.system', {
                 title: this.i18n._("Current Time"),
                 items: [{
                     xtype: 'component',
-                    html: this.i18n._("Time is automatically synced via NTP")
+                    html: (timeSource == "manual") ? this.i18n._("Time was set manually") : this.i18n._("Time is automatically synchronized via NTP")
                 }, {
                     xtype: 'component',
                     margin: '10 0 0 0',
@@ -694,8 +878,10 @@ Ext.define('Webui.config.system', {
                             }, this)
                         }
                     }
-                }]
-            }, {
+                }]                
+            },
+            timeFields,
+            {
                 title: this.i18n._("Timezone"),
                 items: [{
                     xtype: "combo",
@@ -780,40 +966,6 @@ Ext.define('Webui.config.system', {
                 }
             }, {
                 html: this.downloadLanguageHTML
-            }, {
-                xtype: "fieldset",
-                title: this.i18n._("Force Sync Time"),
-                items: [{
-                    xtype: "component",
-                    html: this.i18n._("Click to force instant time synchronization.")
-                },{
-                    xtype: "button",
-                    margin: '10 0 0 0',
-                    text: this.i18n._("Synchronize Time"),
-                    name: "Setup Wizard",
-                    iconCls: "reboot-icon",
-                    handler: Ext.bind(function() {
-                        Ext.MessageBox.confirm(
-                            this.i18n._("Force Time Synchronization"),
-                            this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
-                            this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
-                            this.i18n._("Continue?"),
-                            Ext.bind(function(btn) {
-                                if (btn == "yes") {
-                                    Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
-                                    rpc.jsonrpc.UvmContext.forceTimeSync(Ext.bind(function (result, exception) {
-                                        if(Ung.Util.handleException(exception)) return;
-                                        if(result !== 0) {
-                                            Ext.MessageBox.hide();
-                                            Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Time synchronization failed. Return code: ") + result);
-                                        } else {
-                                            Ext.MessageBox.hide();
-                                        }
-                                    }, this));
-                                }
-                           }, this));
-                    }, this)
-                }]
             }],
             onUpload: Ext.bind(function() {
                 var languageForm = this.panelRegional.down("form[name=upload_language_form]");
@@ -853,13 +1005,39 @@ Ext.define('Webui.config.system', {
                         Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
                     }, this)
                 });
+            }, this),
+            manualDateChangeTimer: null,
+            updateManualDateChangeTimer: Ext.bind( function(){
+                this.panelRegional.manualDateChangeTimer = new Date(); 
+            },this),
+            getManualDate: Ext.bind(function() {
+                if((this.getSystemSettings().timeSource == "manual") &&
+                   (this.panelRegional.manualDateChangeTimer != null)){
+                    // From the time you change the time/date until you save, the clock is "ticking".
+                    // Even if you  apply immediately, there's a change the saved time
+                    // will be off a second (and off even more if you go to other tabs before
+                    // applying).  To get around this, the time between the last manual field change
+                    // and applying is recorded and added to the fields when applied.
+                    var changeDiff = new Date(new Date().getTime() - this.panelRegional.manualDateChangeTimer.getTime()); 
+                    var manualDate = this.panelRegional.down("[name=manual_date]").getValue();
+                    var manualDateTime = new Date(
+                        manualDate.getFullYear(), 
+                        manualDate.getMonth(), 
+                        manualDate.getDate(), 
+                        parseInt(this.panelRegional.down("[name=manual_time_hour]").getValue(), 10),
+                        parseInt(this.panelRegional.down("[name=manual_time_minute]").getValue(), 10),
+                        parseInt(this.panelRegional.down("[name=manual_time_second]").getValue(), 10)
+                    );
+                    return manualDateTime.getTime() + changeDiff.getTime();
+                }
+                return 0;
             }, this)
         });
     },
     timeUpdateId:-1,
     timeUpdate: function() {
         if(this.isVisible()) {
-            rpc.adminManager.getDate(Ext.bind(function(result, exception) {
+            rpc.systemManager.getDate(Ext.bind(function(result, exception) {
                 if( exception != null ) return; // ignore exception
                 var currentTimeObj = this.panelRegional.down('component[name="currentTime"]');
                 if (currentTimeObj) {
@@ -1094,7 +1272,7 @@ Ext.define('Webui.config.system', {
     },
     save: function (isApply) {
         this.saveSemaphore = 7;
-        // save language settings
+       // save language settings
         rpc.languageManager.setLanguageSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
         }, this), this.getLanguageSettings());
@@ -1142,10 +1320,11 @@ Ext.define('Webui.config.system', {
         }
 
         //save timezone
-        rpc.adminManager.setTimeZone(Ext.bind(function(result, exception) {
+        rpc.systemManager.setTimeZone(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
             this.timeUpdate();
         }, this), this.rpc.timeZone);
+
     },
     afterSave: function(exception, isApply) {
         if(Ung.Util.handleException(exception)) return;
@@ -1153,10 +1332,27 @@ Ext.define('Webui.config.system', {
         this.saveSemaphore--;
         if (this.saveSemaphore === 0) {
             var needRefresh = this.initialLanguage != this.getLanguageSettings().language;
+
+            if( this.initialTimeSource != this.getSystemSettings().timeSource ){
+                rpc.systemManager.setTimeSource(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                    this.timeUpdate();
+                }, this));
+                needRefresh = true;
+            }
+
+            if( this.panelRegional.manualDateChangeTimer != null ){
+                rpc.systemManager.setDate(Ext.bind(function(result, exception) {
+                    this.afterSave(exception, isApply);
+                    this.timeUpdate();
+                }, this), this.panelRegional.getManualDate());
+                needRefresh = true;
+            }
             if (needRefresh) {
                 Ung.Util.goToStartPage();
                 return;
             }
+
             if(isApply) {
                 this.initialLanguage = this.getLanguageSettings().language;
                 if (this.isShieldLoaded()) {

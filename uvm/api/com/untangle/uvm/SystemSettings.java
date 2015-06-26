@@ -37,7 +37,10 @@ public class SystemSettings implements Serializable, JSONString
     private int autoUpgradeMinute = 0;
 
     private SnmpSettings snmpSettings;
-    
+
+    private boolean expertMode = false;
+    private String timeSource = "ntp";
+
     public SystemSettings() { }
 
     public String toJSONString()
@@ -113,6 +116,16 @@ public class SystemSettings implements Serializable, JSONString
     public int getVersion() { return version; }
     public void setVersion( int newValue) { this.version = newValue; }
     
+    /**
+    * Get expert UI mode
+    */
+    public boolean getExpertMode(){ return expertMode; }
+    public void setExpertMode( boolean newValue) { this.expertMode = newValue; }
 
+    /**
+    * Get time source
+    */
+    public String getTimeSource(){ return timeSource; }
+    public void setTimeSource( String newValue) { this.timeSource = newValue; }
     
 }

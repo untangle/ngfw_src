@@ -79,7 +79,7 @@ public abstract class LogEvent implements Serializable, JSONString
 
     public String getPartitionTablePostfix( Timestamp ts )
     {
-        Calendar cal = UvmContextFactory.context().adminManager().getCalendar();
+        Calendar cal = UvmContextFactory.context().systemManager().getCalendar();
 
         // in theory this should be synchronized
         // but I'm worried about the performance of synchronizing this

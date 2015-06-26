@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
@@ -79,7 +80,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 
     public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException
     {
-        this.context.adminManager().setTimeZone( timeZone );
+        this.context.systemManager().setTimeZone( timeZone );
     }
 
     public Map<String, String> getTranslations()
@@ -99,8 +100,8 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 
         try {
             json.put("skinName", this.context.skinManager().getSettings().getSkinName());
-            json.put("timezoneID", this.context.adminManager().getTimeZone().getID());
-            json.put("timezones", this.context.adminManager().getTimeZones());
+            json.put("timezoneID", this.context.systemManager().getTimeZone().getID());
+            json.put("timezones", this.context.systemManager().getTimeZones());
             json.put("oemName", this.context.oemManager().getOemName());
             json.put("fullVersionAndRevision", this.context.adminManager().getFullVersionAndRevision());
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
