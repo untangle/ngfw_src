@@ -11,7 +11,7 @@ ntpd -q -g
 CODE=$?
 
 # stop the daemon first
-if [ -x /etc/init.d/ntp ] ; then
+if [  -x /etc/init.d/ntp ] && [ `ls /etc/rc3.d/*ntp 2>/dev/null` ] ; then
    /etc/init.d/ntp start	
 fi
 
