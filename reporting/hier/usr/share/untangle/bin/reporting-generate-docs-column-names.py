@@ -67,6 +67,7 @@ dict = {
     'hits' : i18n._('Hits'),
     'misses' : i18n._('Misses'),
     'bypasses' : i18n._('Bypasses'),
+    'bypassed' : i18n._('Bypassed'),
     'systems' : i18n._('System bypasses'),
     'hit_bytes' : i18n._('Hit Bytes'),
     'miss_bytes' : i18n._('Miss Bytes'),

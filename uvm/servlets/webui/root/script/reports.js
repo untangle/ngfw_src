@@ -25,6 +25,7 @@ Ext.define('Ung.panel.Reports', {
                     bandwidth_control_rule: 'Bandwidth Control ' + i18n._('Rule ID'),
                     blocked: i18n._('Blocked'),
                     bypasses: i18n._('Bypasses'),
+                    bypassed: i18n._('Bypassed'),
                     c2p_bytes: i18n._('From-Client Bytes'),
                     c2s_content_length: i18n._('Client-to-server Content Length'),
                     c_client_addr: i18n._('Client-side Client Address'),
