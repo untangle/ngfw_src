@@ -95,7 +95,7 @@ public class SqlCondition implements Serializable, JSONString
     {
         // these operators are not supported with prepareStatement
         // as such there are hardcoded in the SQL query
-        if ( ! getAutoFormatValue() ) {
+        if ( getAutoFormatValue() != null && !getAutoFormatValue() ) {
             return getColumn() + " " + getOperator() + " " + getValue() + " ";
         }
         // otherwise use the PreparedStatement '?'
@@ -114,7 +114,7 @@ public class SqlCondition implements Serializable, JSONString
             for ( SqlCondition condition : conditions ) {
                     
                 // these operators are not supported with Statement
-                if (! condition.getAutoFormatValue() ) {
+                if ( condition.getAutoFormatValue() != null && !condition.getAutoFormatValue() ) {
                     continue;
                 }
                     
