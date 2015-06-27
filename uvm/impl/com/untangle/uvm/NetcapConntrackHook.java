@@ -89,6 +89,9 @@ public class NetcapConntrackHook implements NetcapCallback
             username = entry.getUsername();
             hostname = entry.getHostname();
         }
+
+        if ((hostname == null || hostname.length() == 0))
+            hostname = cClientAddr.getHostAddress();
         
         if ( type == 1 ) { /* New Session */
             SessionEvent sessionEvent =  new SessionEvent( );
