@@ -709,7 +709,7 @@ Ext.define('Webui.config.system', {
 
         var timeSource = this.getSystemSettings().timeSource;
         this.initialTimeSource = timeSource;
-        if( rpc.isExpertMode == true ){
+        if( rpc.isExpertMode == true || this.getSystemSettings().timeSource == "manual" ){
             var currentTime = new Date(rpc.systemManager.getDate());
             timeFields = {
                 title: this.i18n._("Time Settings"),
