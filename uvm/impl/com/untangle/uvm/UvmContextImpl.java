@@ -411,6 +411,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return com.untangle.uvm.Version.getFullVersion();
     }
 
+    public boolean isExpertMode()
+    {
+        File expertModeFlagFile = new File( System.getProperty("uvm.conf.dir") + "/expert-mode-flag" );
+        return expertModeFlagFile.exists();
+    }
+    
     public boolean isWizardComplete()
     {
         return getWizardSettings().getWizardComplete();
@@ -627,6 +633,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
             json.put("storeUrl", this.getStoreUrl());
             json.put("isRegistered", this.isRegistered());
+            json.put("isExpertMode", this.isExpertMode());
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);

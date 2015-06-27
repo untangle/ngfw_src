@@ -301,6 +301,11 @@ public interface UvmContext
     boolean isWizardComplete();
 
     /**
+     * Returns true if the system is in "expert mode"
+     */
+    boolean isExpertMode();
+    
+    /**
      * Returns the current wizard settings
      * This initializes settings if none exist
      *
