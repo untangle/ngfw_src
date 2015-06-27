@@ -2293,6 +2293,12 @@ Ext.define('Ung.panel.Events', {
                             name: 'c_server_port',
                             sortType: 'asInt'
                         }, {
+                            name: 's_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_client_port',
+                            sortType: 'asInt'
+                        }, {
                             name: 's_server_addr',
                             sortType: 'asIp'
                         }, {
@@ -2368,6 +2374,16 @@ Ext.define('Ung.panel.Events', {
                                 return value;
                             }
                         }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
                             header: i18n._("Client"),
                             width: Ung.Util.ipFieldWidth,
                             sortable: true,
@@ -2381,15 +2397,18 @@ Ext.define('Ung.panel.Events', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Username"),
-                            width: Ung.Util.usernameFieldWidth,
+                            header: i18n._("New Client"),
+                            width: Ung.Util.ipFieldWidth,
                             sortable: true,
-                            dataIndex: 'username'
+                            dataIndex: 's_client_addr'
                         }, {
-                            header: i18n._("Hostname"),
-                            width: Ung.Util.hostnameFieldWidth,
+                            header: i18n._("New Client Port"),
+                            width: Ung.Util.portFieldWidth,
                             sortable: true,
-                            dataIndex: 'hostname'
+                            dataIndex: 's_client_port',
+                            filter: {
+                                type: 'numeric'
+                            }
                         }, {
                             header: i18n._("Server"),
                             width: Ung.Util.ipFieldWidth,
@@ -2549,6 +2568,19 @@ Ext.define('Ung.panel.Events', {
                             sortable: true,
                             flex:1,
                             dataIndex: 'firewall_rule_index',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Original Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Original Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'c_server_port',
                             filter: {
                                 type: 'numeric'
                             }
