@@ -223,7 +223,8 @@ public abstract class NetcapSession
             return (( ifClientSide ) ? FLAG_IF_CLIENT_MASK : 0) | type;
         }
 
-        protected class SessionEndpoint implements Endpoint {
+        protected class SessionEndpoint implements Endpoint
+        {
             private final boolean ifClient;
 
             SessionEndpoint( boolean ifClient )

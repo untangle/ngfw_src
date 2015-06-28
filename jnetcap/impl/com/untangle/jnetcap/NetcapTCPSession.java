@@ -137,7 +137,8 @@ public class NetcapTCPSession extends NetcapSession
         /**
          * Set the blocking mode for one of the file descriptors.  This will throw an if it fails.
          */
-        public void blocking( boolean mode ) {
+        public void blocking( boolean mode )
+        {
             NetcapTCPSession.blocking( pointer.value(), ifClientSide, mode );
         }
 
