@@ -13,10 +13,8 @@ Ext.define('Webui.config.hostMonitor', {
         }];
         this.buildGridCurrentHosts();
         this.buildGridPenaltyBox();
-        this.buildPenaltyBoxEventLog();
         this.buildGridQuotaBox();
-        this.buildQuotaEventLog();
-        this.buildTabPanel([this.gridCurrentHosts, this.gridPenaltyBox, this.gridPenaltyBoxEventLog, this.gridQuotaBox, this.gridQuotaEventLog]);
+        this.buildTabPanel([this.gridCurrentHosts, this.gridPenaltyBox, this.gridQuotaBox]);
         this.callParent(arguments);
     },
     closeWindow: function() {
@@ -554,116 +552,6 @@ Ext.define('Webui.config.hostMonitor', {
                     }
                     return out;
                 }, this)
-            }]
-        });
-    },
-    buildPenaltyBoxEventLog: function() {
-        this.gridPenaltyBoxEventLog = Ext.create('Ung.grid.EventLog',{
-            settingsCmp: this,
-            name: 'PenaltyBoxEventLog',
-            helpSource: 'host_viewer_penalty_box_event_log',
-            eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
-            title: this.i18n._("Penalty Box Event Log"),
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'start_time',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'end_time',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'address',
-                sortType: 'asIp'
-            }, {
-                name: 'reason'
-            }],
-            columns: [{
-                header: this.i18n._("Start Time"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'start_time',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            }, {
-                header: this.i18n._("End Time"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'end_time',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            }, {
-                header: this.i18n._("Address"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'address'
-            },{
-                header: this.i18n._("Reason"),
-                width: 100,
-                flex: 1,
-                dataIndex: 'reason'
-            }]
-        });
-    },
-    buildQuotaEventLog: function() {
-        this.gridQuotaEventLog = Ext.create('Ung.grid.EventLog',{
-            settingsCmp: this,
-            name: 'QuotaEventLog',
-            helpSource: 'host_viewer_quota_event_log',
-            eventQueriesFn: rpc.hostTable.getQuotaEventQueries,
-            title: this.i18n._("Quota Event Log"),
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'action'
-            }, {
-                name: 'address',
-                sortType: 'asIp'
-            }, {
-                name: 'size'
-            }, {
-                name: 'reason'
-            }],
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            }, {
-                header: this.i18n._("Address"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'address'
-            }, {
-                header: this.i18n._("Action"),
-                width: 150,
-                sortable: true,
-                dataIndex: 'action',
-                renderer: Ext.bind(function(value, metadata, record) {
-                    switch (value) {
-                        case 0: return "";
-                        case 1: return "Quota Given";
-                        case 2: return "Quota Exceeded";
-                        default: return "Unknown";
-                    }
-                }, this)
-            },{
-                header: this.i18n._("Quota Size"),
-                width: 150,
-                dataIndex: 'size',
-                renderer: Ext.bind(this.megaByteRenderer, this)
-            },{
-                header: this.i18n._("Reason"),
-                width: 100,
-                flex: 1,
-                dataIndex: 'reason'
             }]
         });
     }
