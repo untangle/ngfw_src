@@ -93,7 +93,7 @@ public class HostTableImpl implements HostTable
     {
         HostTableEntry entry = getHostTableEntry( address, true );
         long entryTime = System.currentTimeMillis();
-        long exitTime  = entryTime + (time_sec * 1000L);
+        long exitTime  = entryTime + (((long)time_sec) * 1000L);
 
         logger.info("Adding " + address.getHostAddress() + " to Penalty box for " + time_sec + " seconds");
 
