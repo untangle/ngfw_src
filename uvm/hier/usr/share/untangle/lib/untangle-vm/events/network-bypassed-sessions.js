@@ -12,6 +12,6 @@
     "displayOrder": 12,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",
-    "title": "All Bypassed Sessions",
+    "title": "Bypassed Sessions",
     "uniqueId": "network-mKTwRemgvD"
 }

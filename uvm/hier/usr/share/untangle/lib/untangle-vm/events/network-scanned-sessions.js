@@ -12,6 +12,6 @@
     "displayOrder": 11,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",
-    "title": "All Scanned Sessions",
+    "title": "Scanned Sessions",
     "uniqueId": "network-cCHSVFktsM"
 }

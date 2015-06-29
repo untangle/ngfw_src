@@ -118,7 +118,6 @@ def createBypassMatcherRule( matcherType, value ):
 
 def createQoSMatcherRule( matcherType, value, priority):
     return {
-        "bypass": True, 
         "description": "test QoS " + str(matcherType) + " " + str(value), 
         "enabled": True, 
         "javaClass": "com.untangle.uvm.network.QosRule", 
@@ -133,7 +132,7 @@ def createQoSMatcherRule( matcherType, value, priority):
                 }, 
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
+                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher", 
                     "matcherType": "PROTOCOL", 
                     "value": "TCP,UDP"
                 }
@@ -494,6 +493,14 @@ class NetworkTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
+        events = global_functions.get_events('Network','Port Forwarded Sessions',None,None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                            "s_server_addr", test_untangle_com_ip,
+                                            "c_client_addr", remote_control.clientIP,
+                                            "s_server_port", 80)
+        assert(found)
+
     # test basic port forward (tcp port 443)
     def test_021_portForward443(self):
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
@@ -646,6 +653,14 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
         assert (result3 == 0)
 
+        events = global_functions.get_events('Network','Bypassed Sessions',None,None,20)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 20, 
+                                            "s_server_addr", test_untangle_com_ip,
+                                            "c_client_addr", remote_control.clientIP,
+                                            "s_server_port", 80)
+        assert(found)
+
     # Test FTP (outbound) in active and passive modes
     def test_070_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
@@ -686,7 +701,6 @@ class NetworkTests(unittest2.TestCase):
         assert (portResult == 0)
         assert (epsvResult == 0)
         assert (eprtResult == 0)
-
 
     # Test FTP (outbound) in active and passive modes with bypass
     def test_072_ftpModesBypassed(self):
@@ -1155,8 +1169,7 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['address'] == remote_control.clientIP) and \
-                (not sessionList[i]['penaltyBoxed']):
+            if (sessionList[i]['address'] == remote_control.clientIP):
                 foundTestSession = True
                 break
         remote_control.runCommand("pkill netcat")

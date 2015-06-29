@@ -13,6 +13,6 @@
     "displayOrder": 13,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",
-    "title": "All Port Forwarded Sessions",
+    "title": "Port Forwarded Sessions",
     "uniqueId": "network-XqsOpHP1cP"
 }

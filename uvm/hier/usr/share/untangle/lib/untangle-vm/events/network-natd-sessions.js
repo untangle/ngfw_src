@@ -13,6 +13,6 @@
     "displayOrder": 14,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",
-    "title": "All NATd Sessions",
+    "title": "NATd Sessions",
     "uniqueId": "network-hNUcmhuNsV"
 }
