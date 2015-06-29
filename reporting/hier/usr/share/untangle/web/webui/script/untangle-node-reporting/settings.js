@@ -19,8 +19,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildAlertRules();
-        this.buildAlertEventLog();
-        var panels = [this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.gridReportEntries, this.panelAlertRules, this.gridAlertEventLog ];
+        var panels = [this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.gridReportEntries, this.panelAlertRules];
         
         // only show DB settings if set to something other than localhost
         if (this.getSettings().dbHost != "localhost") {
@@ -988,53 +987,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
             }
         }));
-    },
-    // Event Log
-    buildAlertEventLog: function() {
-        this.gridAlertEventLog = Ext.create('Ung.grid.EventLog',{
-            settingsCmp: this,
-            name: "event-log",
-            helpSource: "reports_alert_event_log",
-            eventQueriesFn: this.getRpcNode().getEventQueries,
-            title: this.i18n._("Alert Event Log"),
-            // the list of fields
-            fields: [{
-                name: "time_stamp",
-                sortType: 'asTimestamp'
-            },{
-                name: "description"
-            },{
-                name: "summary_text"
-            },{
-                name: "json"
-            }],
-            // the list of columns
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            },{
-                header: this.i18n._("Description"),
-                width: 200,
-                sortable: true,
-                dataIndex: "description"
-            },{
-                header: this.i18n._("Summary Text"),
-                flex: 1,
-                width: 500,
-                sortable: true,
-                dataIndex: "summary_text"
-            },{
-                header: this.i18n._("JSON"),
-                width: 500,
-                sortable: true,
-                dataIndex: "json"
-            }]
-        });
     },
     beforeSave: function(isApply,handler) {
         this.getSettings().reportingUsers.list = this.gridReportingUsers.getList();

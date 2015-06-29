@@ -15,10 +15,8 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
         }
 
         this.buildEmail();
-        this.buildEventLog();
-        this.buildDnsblEventLog();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridDnsblEventLog]);
+        this.buildTabPanel([this.emailPanel]);
         this.callParent(arguments);
     },
     afterRender: function() {
@@ -401,66 +399,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                     (this.lastCheck != null&& this.lastCheck.time != 0 ? i18n.timestampFormat(this.lastCheck): i18n._("never")) + '<br\>' +
                     this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
-            }]
-        });
-    },
-    // Event Log
-    buildEventLog: function() {
-        this.gridEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'),
-            'spam_blocker_lite_event_log',
-            ['time_stamp','c_client_addr','s_server_addr','subject','addr','sender',this.vendor + '_score', this.vendor + '_action',this.vendor + '_tests_string'],
-            this.getRpcNode().getEventQueries);
-    },
-    // Dnsbl Event Log
-    buildDnsblEventLog: function() {
-        this.gridDnsblEventLog = Ext.create('Ung.grid.EventLog',{
-            settingsCmp: this,
-            name: 'Tarpit Event Log',
-            helpSource: 'spam_blocker_lite_tarpit_event_log',
-            eventQueriesFn: this.getRpcNode().getTarpitEventQueries,
-            title: this.i18n._("Tarpit Event Log"),
-            // the list of fields
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'skipped',
-                type: 'string',
-                convert: Ext.bind(function(value) {
-                    return value ? this.i18n._("skipped"): this.i18n._("blocked");
-                }, this)
-            }, {
-                name: 'ipaddr',
-                convert: function(value) {
-                    return value == null ? "": value;
-                }
-            }, {
-                name: 'hostname'
-            }],
-            // the list of columns
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            }, {
-                header: this.i18n._("Action"),
-                width: 120,
-                sortable: true,
-                dataIndex: 'skipped'
-            }, {
-                header: this.i18n._("Sender"),
-                width: 120,
-                sortable: true,
-                dataIndex: 'ipaddr'
-            }, {
-                header: this.i18n._("DNSBL Server"),
-                width: 120,
-                sortable: true,
-                dataIndex: 'hostname'
             }]
         });
     },

@@ -16,9 +16,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
         this.buildFtp();
         this.buildPassSites();
         this.buildAdvanced();
-        this.buildWebEventLog();
-        this.buildMailEventLog();
-        this.buildFtpEventLog();
 
         // builds the tab panel with the tabs
         this.buildTabPanel([
@@ -26,10 +23,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
             this.panelEmail,
             this.panelFtp,
             this.panelPassSites,
-            this.panelAdvanced,
-            this.gridWebEventLog,
-            this.gridMailEventLog,
-            this.gridFtpEventLog
+            this.panelAdvanced
         ]);
         this.callParent(arguments);
     },
@@ -418,89 +412,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                 deferredRender: false,
                 flex: 1,
                 items: [this.gridExtensions, this.gridMimeTypes]
-            }]
-        });
-    },
-    // Event Log
-    buildWebEventLog: function() {
-        this.gridWebEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'WebEventLog', this.i18n._('Web Event Log'),
-            this.helpSourceName + '_web_event_log',
-            ['time_stamp','c_client_addr','username','c_server_addr','host','uri',this.nodeName + '_name'],
-            this.getRpcNode().getWebEventQueries);
-    },
-    // Event Log
-    buildMailEventLog: function() {
-        this.gridMailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EmailEventLog', this.i18n._('Email Event Log'),
-            this.helpSourceName + '_email_event_log',
-            ['time_stamp','c_client_addr','username','c_server_addr','subject','addr','sender',this.nodeName + '_name'],
-            this.getRpcNode().getMailEventQueries);
-    },
-    buildFtpEventLog: function() {
-        this.gridFtpEventLog = Ext.create('Ung.grid.EventLog',{
-            name: 'Ftp Event Log',
-            //helpSource: 'virus_blocker_ftp_event_log',
-            //helpSource: 'virus_blocker_lite_ftp_event_log',
-            helpSource: this.helpSourceName + '_ftp_event_log',
-            settingsCmp: this,
-            title: this.i18n._("Ftp Event Log"),
-            eventQueriesFn: this.getRpcNode().getFtpEventQueries,
-            // the list of fields
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'c_client_addr',
-                sortType: 'asIp'
-            }, {
-                name: 'username'
-            }, {
-                name: 'c_server_addr',
-                sortType: 'asIp'
-            }, {
-                name: 'uri',
-                mapping: 'uri'
-            }, {
-                name: 'location'
-            }, {
-                name: this.nodeName + '_name'
-            }],
-            // the list of columns
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                },
-                filter: {
-                    type: 'numeric'
-                }
-            }, {
-                header: this.i18n._("Client"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'c_client_addr'
-            }, {
-                header: this.i18n._("Username"),
-                width: Ung.Util.usernameFieldWidth,
-                sortable: true,
-                dataIndex: 'username'
-            }, {
-                header: this.i18n._("File Name"),
-                flex:1,
-                width: Ung.Util.uriFieldWidth,
-                dataIndex: 'uri'
-            }, {
-                header: this.i18n._("Virus Name"),
-                width: 140,
-                sortable: true,
-                dataIndex: this.nodeName + '_name'
-            }, {
-                header: this.i18n._("Server"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'c_server_addr'
             }]
         });
     }

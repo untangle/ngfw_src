@@ -5,8 +5,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
     gridEventLog: null,
     initComponent: function() {
         this.buildRules();
-        this.buildEventLog();
-        this.buildTabPanel([this.panelRules, this.gridEventLog]);
+        this.buildTabPanel([this.panelRules]);
         this.callParent(arguments);
     },
     getMatchers: function () {
@@ -156,13 +155,6 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                 }]
             })]
         });
-    },
-    // Event Log
-    buildEventLog: function() {
-        this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'),
-            'firewall_event_log',
-            ['time_stamp','username','c_client_addr','c_client_port','s_server_addr','s_server_port','firewall_blocked','firewall_flagged','firewall_rule_index'],
-            this.getRpcNode().getEventQueries);
     },
     beforeSave: function(isApply, handler) {
         this.settings.rules.list = this.gridRules.getList();

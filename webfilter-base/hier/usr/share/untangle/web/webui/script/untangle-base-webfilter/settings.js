@@ -11,8 +11,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             this.buildPanelBlockedMimeTypes(),
             this.buildPanelPassedSites(),
             this.buildPanelPassedClients(),
-            this.buildPanelAdvanced(),
-            this.buildEventLog()
+            this.buildPanelAdvanced()
         ]);
         this.callParent(arguments);
     },
@@ -796,18 +795,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         });
         return this.panelAdvanced;
     },
-    // Event Log
-    buildEventLog: function() {
-        //helpSource: 'web_filter_event_log',
-        //helpSource: 'web_filter_lite_event_log',
-        this.gridEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'EventLog', i18n._('Event Log'),
-                this.helpSourceName + '_event_log',
-                ['time_stamp','username','c_client_addr','c_server_addr','s_server_port','host','uri',this.getRpcNode().getName() + '_blocked',
-                 this.getRpcNode().getName() + '_flagged',this.getRpcNode().getName() + '_category',this.getRpcNode().getName() + '_reason'],
-                this.getRpcNode().getEventQueries);
-        return this.gridEventLog;
-    },
-
     // private method
     alterUrls: function(saveList) {
         if (saveList != null) {

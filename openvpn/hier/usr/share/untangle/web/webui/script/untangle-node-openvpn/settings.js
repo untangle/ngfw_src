@@ -22,9 +22,8 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
         this.buildStatus();
         this.buildServer();
         this.buildClient();
-        this.buildConnectionEventLog();
 
-        this.buildTabPanel( [ this.panelStatus, this.panelServer, this.panelClient, this.gridConnectionEventLog ] );
+        this.buildTabPanel( [ this.panelStatus, this.panelServer, this.panelClient] );
         this.callParent(arguments);
     },
     getGroupsStore: function(force) {
@@ -186,57 +185,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 flex: 0,
                 html: "<i>" + statusDescription + "</i>"
             }, this.gridClientStatus, this.gridServerStatus]
-        });
-    },
-
-    // Connections Event Log
-    buildConnectionEventLog: function() {
-        this.gridConnectionEventLog = Ext.create('Ung.grid.EventLog', {
-            settingsCmp: this,
-            helpSource: 'openvpn_event_log',
-            eventQueriesFn: this.getRpcNode().getStatusEventsQueries,
-            name: "Event Log",
-            title: i18n._('Event Log'),
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'type'
-            }, {
-                name: 'client_name'
-            }, {
-                name: 'remote_address',
-                sortType: 'asIp'
-            }, {
-                name: 'pool_address',
-                sortType: 'asIp'
-            }],
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: Ext.bind(function(value) {
-                    return i18n.timestampFormat(value);
-                }, this ),
-                filter: null
-            }, {
-                header: this.i18n._("Type"),
-                sortable: true,
-                dataIndex: 'type'
-            }, {
-                header: this.i18n._("Client Name"),
-                sortable: true,
-                dataIndex: 'client_name'
-            }, {
-                header: this.i18n._("Client Address"),
-                sortable: true,
-                dataIndex: 'remote_address'
-            }, {
-                header: this.i18n._("Pool Address"),
-                sortable: true,
-                dataIndex: 'pool_address'
-            }]
         });
     },
     getGroupsColumn: function() {

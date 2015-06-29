@@ -13,11 +13,9 @@ Ext.define('Webui.untangle-node-phish.settings', {
         this.lastUpdate = this.getRpcNode().getLastUpdate();
         this.lastCheck = this.getRpcNode().getLastUpdateCheck();
         this.signatureVer = this.getRpcNode().getSignatureVersion();
-        // build tabs
+
         this.buildEmail();
-        this.buildEmailEventLog();
-        // builds the tab panel with the tabs
-        this.buildTabPanel([this.emailPanel, this.gridEmailEventLog]);
+        this.buildTabPanel([this.emailPanel]);
         this.callParent(arguments);
     },
     lookup: function(needle, haystack1, haystack2) {
@@ -85,19 +83,10 @@ Ext.define('Webui.untangle-node-phish.settings', {
             }]
         });
     },
-    // Email Event Log
-    buildEmailEventLog: function() {
-        this.gridEmailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'),
-            'phish_blocker_event_log',
-            ['time_stamp','c_client_addr','s_server_addr','subject','addr','sender','phish_blocker_action'],
-            this.getRpcNode().getEventQueries);
-    },
-    
     afterSave: function()  {
         this.lastUpdate = this.getRpcNode().getLastUpdate();
         this.lastCheck = this.getRpcNode().getLastUpdateCheck();
         this.signatureVer = this.getRpcNode().getSignatureVersion();
     }
-
 });
 //# sourceURL=phish-settings.js

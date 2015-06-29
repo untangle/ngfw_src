@@ -20,11 +20,9 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.buildPassedHosts();
         this.buildCaptivePage();
         this.buildUserAuthentication();
-        this.buildUserEventLog();
-        this.buildRuleEventLog();
 
         this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
-                             this.panelUserAuthentication, this.gridUserEventLog, this.gridRuleEventLog ]);
+                             this.panelUserAuthentication]);
         this.callParent(arguments);
     },
     getMatchers: function () {
@@ -973,95 +971,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         });
     },
 
-    buildUserEventLog: function() {
-        this.gridUserEventLog = Ext.create('Ung.grid.EventLog',{
-            title: this.i18n._( "User Event Log" ),
-            helpSource: "captive_portal_user_event_log",
-            eventQueriesFn: this.getRpcNode().getUserEventQueries,
-            settingsCmp: this,
-            fields: [{
-                name: "time_stamp",
-                sortType: 'asTimestamp'
-            },{
-                name: "client_addr",
-                sortType: 'asIp'
-            },{
-                name: "login_name"
-            },{
-                name: "auth_type"
-            },{
-                name: "event_info"
-            }],
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: "time_stamp",
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            },{
-                header: this.i18n._("Client"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: "client_addr"
-            },{
-                header: this.i18n._("Username"),
-                width: Ung.Util.usernameFieldWidth,
-                sortable: true,
-                dataIndex: "login_name",
-                flex:1
-            },{
-                header: this.i18n._("Action"),
-                width: 165,
-                sortable: true,
-                dataIndex: "event_info",
-                renderer: Ext.bind(function( value ) {
-                    switch ( value ) {
-                        case "LOGIN":
-                            return this.i18n._( "Login Success" );
-                        case "FAILED":
-                            return this.i18n._( "Login Failure" );
-                        case "TIMEOUT":
-                            return this.i18n._( "Session Timeout" );
-                        case "INACTIVE":
-                            return this.i18n._( "Idle Timeout" );
-                        case "USER_LOGOUT":
-                            return this.i18n._( "User Logout" );
-                        case "ADMIN_LOGOUT":
-                            return this.i18n._( "Admin Logout" );
-                    }
-                    return "";
-                }, this )
-            },{
-                header: this.i18n._("Authentication"),
-                width: 165,
-                sortable: true,
-                dataIndex: "auth_type",
-                renderer: Ext.bind(function( value ) {
-                    switch ( value ) {
-                        case "NONE":
-                            return this.i18n._( "None" );
-                        case "LOCAL_DIRECTORY":
-                            return this.i18n._( "Local Directory" );
-                        case "ACTIVE_DIRECTORY":
-                            return this.i18n._( "Active Directory" );
-                        case "RADIUS":
-                            return this.i18n._( "RADIUS" );
-                        case "CUSTOM":
-                            return this.i18n._( "Custom" );
-                    }
-                    return "";
-                }, this )
-            }]
-        });
-    },
-    buildRuleEventLog: function() {
-        this.gridRuleEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'RuleEventLog', this.i18n._('Rule Event Log'),
-                'captive_portal_rule_event_log',
-                ['time_stamp','c_client_addr','c_client_port','s_server_addr','s_server_port','captive_portal_rule_index','captive_portal_blocked'],
-                this.getRpcNode().getRuleEventQueries);
-    },
+
     beforeSave: function(isApply, handler) {
         if ( this.gridCaptureRules.isDirty() ) {
             this.settings.captureRules.list = this.gridCaptureRules.getList();

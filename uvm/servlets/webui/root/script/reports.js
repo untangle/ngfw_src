@@ -158,8 +158,9 @@ Ext.define('Ung.panel.Reports', {
                     web_filter_reason: 'Web Filter ' + i18n._('Reason')
                 };
             }
+            if(!columnName) columnName="";
             var readableName = this.columnsHumanReadableNames[columnName];
-            return readableName!=null ? readableName : columnName;
+            return readableName!=null ? readableName : columnName.replace(/_/g," ");
         },
         getColumnsForTable: function(table, store) {
             if(table != null && table.length > 2) {
@@ -1938,8 +1939,8 @@ Ext.define('Ung.panel.Events', {
                         text: i18n._('Reset View'),
                         tooltip: i18n._('Restore default columns positions, widths and visibility'),
                         handler: Ext.bind(function () {
-                            Ext.state.Manager.clear(this.stateId);
-                            this.reconfigure(null, this.getInitialConfig("columns"));
+                            //Ext.state.Manager.clear(this.stateId);
+                            this.gridEvents.reconfigure(null, this.gridEvents.getInitialConfig("columns"));
                         }, this)
                     },'->',{
                         xtype: 'button',
@@ -2061,7 +2062,7 @@ Ext.define('Ung.panel.Events', {
     },
     
     loadEventEntry: function(eventEntry) {
-        var i, col;
+        var i, col, sortType;
         this.eventEntry = eventEntry;
         if(!eventEntry.defaultColumns) {
             eventEntry.defaultColumns = [];
@@ -2076,11 +2077,18 @@ Ext.define('Ung.panel.Events', {
             for(i=0; i< eventEntry.defaultColumns.length; i++) {
                 col = eventEntry.defaultColumns[i];
                 tableConfig.columns.push({
-                    header: col.replace(/_/g," "),
+                    header: Ung.panel.Reports.getColumnHumanReadableName(col),
                     dataIndex: col,
                     sortable: true,
                     flex: 1
                 });
+                sortType = Ung.panel.Events.getColumnSortType(col);
+                if(sortType) {
+                    tableConfig.fields.push({
+                        name: col,
+                        sortType: sortType
+                    });
+                }
             }
         } else {
             for(i=0; i< tableConfig.columns.length; i++) {
@@ -2088,6 +2096,7 @@ Ext.define('Ung.panel.Events', {
                 col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
             }
         }
+        console.log(this.eventEntry.table, tableConfig);
         this.gridEvents.getStore().setFields(tableConfig.fields);
         this.gridEvents.setColumns(tableConfig.columns);
         this.refreshHandler();
@@ -2263,6 +2272,26 @@ Ext.define('Ung.panel.Events', {
         }
     },
     statics: {
+        getColumnSortType: function(columnName) {
+            if(!this.columnsSortTypes) {
+                this.columnsSortTypes = {
+                    'time_stamp': 'asTimestamp',
+                    'sid': 'asInt',
+                    'protocol': 'asInt',
+                    'network': 'asIp'
+                };
+            }
+            if(!columnName) columnName="";
+            var sortType = this.columnsSortTypes[columnName];
+            if(!sortType) {
+                if(/_addr$/.test(columnName) || /address$/.test(columnName)) {
+                    sortType = 'asIp';
+                } else if(/_port$/.test(columnName) || /_id$/.test(columnName)) {
+                    sortType = 'asInt';
+                }
+            }
+            return sortType;
+        },
         getTableConfig: function(table) {
             if(!this.tableConfig) {
                 this.tableConfig = {
@@ -2676,11 +2705,11 @@ Ext.define('Ung.panel.Events', {
                         }, {
                             name: 'web_filter_lite_reason',
                             type: 'string',
-                            convert: Ung.CustomEventLog.httpEventConvertReason
+                            convert: Ung.panel.Events.httpEventConvertReason
                         }, {
                             name: 'web_filter_reason',
                             type: 'string',
-                            convert: Ung.CustomEventLog.httpEventConvertReason
+                            convert: Ung.panel.Events.httpEventConvertReason
                         }, {
                             name: 'ad_blocker_action',
                             type: 'string',
@@ -2811,15 +2840,991 @@ Ext.define('Ung.panel.Events', {
                             sortable: true,
                             dataIndex: 'ad_blocker_cookie_ident'
                         }, {
-                            header: i18n._("Virus Name (Virus Blocker Lite)"),
+                            header: 'Virus Blocker Lite ' + i18n._('Name'),
                             width: 140,
                             sortable: true,
                             dataIndex: 'virus_blocker_lite_name'
                         }, {
-                            header: i18n._("Virus Name (Virus Blocker)"),
+                            header: 'Virus Blocker ' + i18n._('Name'),
                             width: 140,
                             sortable: true,
                             dataIndex: 'virus_blocker_name'
+                        }]
+                    },
+                    http_query_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'hostname'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'host'
+                        }, {
+                            name: 'uri'
+                        }, {
+                            name: 'term'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_addr'
+                        }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: i18n._("Host"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'host'
+                        }, {
+                            header: i18n._("Uri"),
+                            flex:1,
+                            width: Ung.Util.uriFieldWidth,
+                            sortable: true,
+                            dataIndex: 'uri'
+                        }, {
+                            header: i18n._("Query Term"),
+                            flex:1,
+                            width: Ung.Util.uriFieldWidth,
+                            sortable: true,
+                            dataIndex: 'term'
+                        }, {
+                            header: i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 's_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }]
+                    },
+                    mail_addrs: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'hostname'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'virus_blocker_name'
+                        }, {
+                            name: 'virus_blocker_lite_name'
+                        }, {
+                            name: 'subject',
+                            type: 'string'
+                        }, {
+                            name: 'addr',
+                            type: 'string'
+                        }, {
+                            name: 'sender',
+                            type: 'string'
+                        }, {
+                            name: 'vendor'
+                        }, {
+                            name:  'spam_blocker_lite_action',
+                            type: 'string',
+                            convert: Ung.panel.Events.mailEventConvertAction
+                        }, {
+                            name: 'spam_blocker_lite_score'
+                        }, {
+                            name: 'spam_blocker_lite_tests_string'
+                        }, {
+                            name:  'spam_blocker_action',
+                            type: 'string',
+                            convert: Ung.panel.Events.mailEventConvertAction
+                        }, {
+                            name: 'spam_blocker_score'
+                        }, {
+                            name: 'spam_blocker_tests_string'
+                        }, {
+                            name:  'phish_blocker_action',
+                            type: 'string',
+                            convert: Ung.panel.Events.mailEventConvertAction
+                        }, {
+                            name: 'phish_blocker_score'
+                        }, {
+                            name: 'phish_blocker_tests_string'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_addr'
+                        }, {
+                            header: i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 's_server_addr'
+                        }, { 
+                            header: 'Virus Blocker Lite ' + i18n._('Name'),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_lite_name'
+                        }, {
+                            header: 'Virus Blocker ' + i18n._('Name'),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_name'
+                        }, {
+                            header: i18n._("Receiver"),
+                            width: Ung.Util.emailFieldWidth,
+                            sortable: true,
+                            dataIndex: 'addr'
+                        }, {
+                            header: i18n._("Sender"),
+                            width: Ung.Util.emailFieldWidth,
+                            sortable: true,
+                            dataIndex: 'sender'
+                        }, {
+                            header: i18n._("Subject"),
+                            flex:1,
+                            width: 150,
+                            sortable: true,
+                            dataIndex: 'subject'
+                        }, {
+                            header: i18n._("Action (Spam Blocker Lite)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: 'spam_blocker_lite_action'
+                        }, {
+                            header: i18n._("Spam Score (Spam Blocker Lite)"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'spam_blocker_lite_score',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Detail (Spam Blocker Lite)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: 'spam_blocker_lite_tests_string'
+                        }, {
+                            header: i18n._("Action (Spam Blocker)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: 'spam_blocker_action'
+                        }, {
+                            header: i18n._("Spam Score (Spam Blocker)"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'spam_blocker_score',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Detail (Spam Blocker)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: ''
+                        }, {
+                            header: i18n._("Action (Phish Blocker)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: 'phish_blocker_action'
+                        }, {
+                            header: i18n._("Detail (Phish Blocker)"),
+                            width: 125,
+                            sortable: true,
+                            dataIndex: 'phish_blocker_tests_string'
+                        }]
+                    },
+                    directory_connector_login_events: {
+                        fields: [{
+                            name: 'id'
+                        }, {
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'login_name'
+                        }, {
+                            name: 'type'
+                        }, {
+                            name: 'client_addr',
+                            sortType: 'asIp'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'client_addr'
+                        }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'login_name'
+                        }, {
+                            header: i18n._('Action'),
+                            width: 100,
+                            sortable: true,
+                            dataIndex: 'type',
+                            renderer: Ext.bind(function(value) {
+                                switch(value) {
+                                    case "I": return i18n._("login");
+                                    case "U": return i18n._("update");
+                                    case "O": return i18n._("logout");
+                                    default: return i18n._("unknown");
+                                }
+                            }, this)
+                        }]
+                    },
+                    configuration_backup_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'success',
+                            type: 'string',
+                            convert: Ext.bind(function(value) {
+                                return value ?  i18n._("success"): i18n._("failed");
+                            }, this)
+                        }, {
+                            name: 'description',
+                            type: 'string'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Action"),
+                            width: 120,
+                            sortable: false,
+                            renderer: Ext.bind(function(value) {
+                                return i18n._("backup");
+                            }, this)
+                        }, {
+                            header: i18n._("Result"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'success'
+                        }, {
+                            header: i18n._("Details"),
+                            flex:1,
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'description'
+                        }]
+                    },
+                    wan_failover_test_events: {
+                        fields: [{
+                            name: "time_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "interfaceId"
+                        },{
+                            name: "name"
+                        },{
+                            name: "success"
+                        },{
+                            name: "description"
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        },{
+                            header: i18n._("Interface"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "name"
+                        },{
+                            header: i18n._("Success"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "success",
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        },{
+                            header: i18n._("Test Description"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "description",
+                            flex:1
+                        }]
+                    },
+                    wan_failover_action_events: {
+                        fields: [{
+                            name: "time_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "interface_id"
+                        },{
+                            name: "name"
+                        },{
+                            name: "action"
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        },{
+                            header: i18n._("Interface"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "name"
+                        },{
+                            header: i18n._("Action"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "action"
+                        }]
+                    },
+                    ipsec_user_events: {
+                        fields: [{
+                            name: "client_username"
+                        },{
+                            name: "client_protocol"
+                        },{
+                            name: "connect_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "goodbye_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "elapsed_time"
+                        },{
+                            name: "client_address",
+                            sortType: 'asIp'
+                        },{
+                            name: "net_interface"
+                        },{
+                            name: "net_process"
+                        },{
+                            name: "rx_bytes"
+                        },{
+                            name: "tx_bytes"
+                        }],
+                        columns: [{
+                            header: i18n._("Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: "client_address"
+                        },{
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: "client_username"
+                        },{
+                            header: i18n._("Protocol"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "client_protocol"
+                        },{
+                            header: i18n._("Login Time"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: "connect_stamp",
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        },{
+                            header: i18n._("Logout Time"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: "goodbye_stamp",
+                            renderer: function(value) {
+                                return (value ==="" ? "" : i18n.timestampFormat(value));
+                            }
+                        },{
+                            header: i18n._("Elapsed"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "elapsed_time"
+                        },{
+                            header: i18n._("Interface"),
+                            width: 80,
+                            sortable: true,
+                            dataIndex: "net_interface"
+                        },{
+                            header: i18n._("RX Bytes"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "rx_bytes"
+                        },{
+                            header: i18n._("TX Bytes"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: "tx_bytes"
+                        }]
+                    },
+                    smtp_tarpit_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'skipped',
+                            type: 'string',
+                            convert: Ext.bind(function(value) {
+                                return value ? i18n._("skipped"): i18n._("blocked");
+                            }, this)
+                        }, {
+                            name: 'ipaddr',
+                            convert: function(value) {
+                                return value == null ? "": value;
+                            }
+                        }, {
+                            name: 'hostname'
+                        }],
+                        // the list of columns
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Action"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'skipped'
+                        }, {
+                            header: i18n._("Sender"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'ipaddr'
+                        }, {
+                            header: i18n._("DNSBL Server"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }]
+                    },
+                    webcache_stats: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'hits'
+                        }, {
+                            name: 'misses'
+                        }, {
+                            name: 'bypasses'
+                        }, {
+                            name: 'systems'
+                        }, {
+                            name: 'hit_bytes'
+                        }, {
+                            name: 'miss_bytes'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Hit Count"),
+                            width: 120,
+                            sortable: false,
+                            dataIndex: 'hits',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Miss Count"),
+                            width: 120,
+                            sortable: false,
+                            dataIndex: 'misses',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Bypass Count"),
+                            width: 120,
+                            sortable: false,
+                            dataIndex: 'bypasses',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("System Count"),
+                            width: 120,
+                            sortable: false,
+                            dataIndex: 'systems',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Hit Bytes"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'hit_bytes',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Miss Bytes"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'miss_bytes',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }]
+                    },
+                    capture_user_events: {
+                        fields: [{
+                            name: "time_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "client_addr",
+                            sortType: 'asIp'
+                        },{
+                            name: "login_name"
+                        },{
+                            name: "auth_type"
+                        },{
+                            name: "event_info"
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: "time_stamp",
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        },{
+                            header: i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: "client_addr"
+                        },{
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: "login_name",
+                            flex:1
+                        },{
+                            header: i18n._("Action"),
+                            width: 165,
+                            sortable: true,
+                            dataIndex: "event_info",
+                            renderer: Ext.bind(function( value ) {
+                                switch ( value ) {
+                                    case "LOGIN":
+                                        return i18n._( "Login Success" );
+                                    case "FAILED":
+                                        return i18n._( "Login Failure" );
+                                    case "TIMEOUT":
+                                        return i18n._( "Session Timeout" );
+                                    case "INACTIVE":
+                                        return i18n._( "Idle Timeout" );
+                                    case "USER_LOGOUT":
+                                        return i18n._( "User Logout" );
+                                    case "ADMIN_LOGOUT":
+                                        return i18n._( "Admin Logout" );
+                                }
+                                return "";
+                            }, this )
+                        },{
+                            header: i18n._("Authentication"),
+                            width: 165,
+                            sortable: true,
+                            dataIndex: "auth_type",
+                            renderer: Ext.bind(function( value ) {
+                                switch ( value ) {
+                                    case "NONE":
+                                        return i18n._( "None" );
+                                    case "LOCAL_DIRECTORY":
+                                        return i18n._( "Local Directory" );
+                                    case "ACTIVE_DIRECTORY":
+                                        return i18n._( "Active Directory" );
+                                    case "RADIUS":
+                                        return i18n._( "RADIUS" );
+                                    case "CUSTOM":
+                                        return i18n._( "Custom" );
+                                }
+                                return "";
+                            }, this )
+                        }]
+                    },
+                    intrusion_prevention_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'sig_id',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'gen_id',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'class_id',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'source_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'source_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'dest_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'dest_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'protocol',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'blocked',
+                            type: 'boolean'
+                        }, {
+                            name: 'category',
+                            type: 'string'
+                        }, {
+                            name: 'classtype',
+                            type: 'string'
+                        }, {
+                            name: 'msg',
+                            type: 'string'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Sid"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'sig_id',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Gid"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'gen_id',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Cid"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'class_id',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Source Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'source_addr'
+                        }, {
+                            header: i18n._("Source port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'source_port',
+                            filter: {
+                                type: 'numeric'
+                            },
+                            renderer: function(value, metaData, record, row, col, store, gridView){
+                                if( record.get("protocol") == 1 ){
+                                    return "";
+                                }
+                                return value;
+                            }
+                        }, {
+                            header: i18n._("Destination Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'dest_addr'
+                        }, {
+                            header: i18n._("Destination port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'dest_port',
+                            filter: {
+                                type: 'numeric'
+                            },
+                            renderer: function(value, metaData, record, row, col, store, gridView){
+                                if( record.get("protocol") == 1 ){
+                                    return "";
+                                }
+                                return value;
+                            }
+                        }, {
+                            header: i18n._("Protocol"),
+                            width: 70,
+                            sortable: true,
+                            dataIndex: 'protocol',
+                            renderer: function(value, metaData, record, row, col, store, gridView){
+                                switch(value){
+                                    case 1:
+                                        return i18n._("ICMP");
+                                    case 17:
+                                        return i18n._("UDP");
+                                    case 6:
+                                        return i18n._("TCP");
+                                }
+                                return value;
+                            }
+                        }, {
+                            header: i18n._("Blocked"),
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'blocked',
+                            filter: {
+                                type: 'boolean',
+                                yesText: 'true',
+                                noText: 'false'
+                            }
+                        }, {
+                            header: i18n._("Category"),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'category'
+                        }, {
+                            header: i18n._("Classtype"),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'classtype'
+                        }, {
+                            header: i18n._("Msg"),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'msg'
+                        }]
+                    },
+                    openvpn_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'type'
+                        }, {
+                            name: 'client_name'
+                        }, {
+                            name: 'remote_address',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'pool_address',
+                            sortType: 'asIp'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: Ext.bind(function(value) {
+                                return i18n.timestampFormat(value);
+                            }, this ),
+                            filter: null
+                        }, {
+                            header: i18n._("Type"),
+                            sortable: true,
+                            dataIndex: 'type'
+                        }, {
+                            header: i18n._("Client Name"),
+                            sortable: true,
+                            dataIndex: 'client_name'
+                        }, {
+                            header: i18n._("Client Address"),
+                            sortable: true,
+                            dataIndex: 'remote_address'
+                        }, {
+                            header: i18n._("Pool Address"),
+                            sortable: true,
+                            dataIndex: 'pool_address'
+                        }]
+                    },
+                    alerts: {
+                        fields: [{
+                            name: "time_stamp",
+                            sortType: 'asTimestamp'
+                        },{
+                            name: "description"
+                        },{
+                            name: "summary_text"
+                        },{
+                            name: "json"
+                        }],
+                        // the list of columns
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        },{
+                            header: i18n._("Description"),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: "description"
+                        },{
+                            header: i18n._("Summary Text"),
+                            flex: 1,
+                            width: 500,
+                            sortable: true,
+                            dataIndex: "summary_text"
+                        },{
+                            header: i18n._("JSON"),
+                            width: 500,
+                            sortable: true,
+                            dataIndex: "json"
+                        }]
+                    },
+                    ftp_events: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'uri',
+                            mapping: 'uri'
+                        }, {
+                            name: 'location'
+                        }, {
+                            name: 'virus_blocker_lite_name'
+                        }, {
+                            name: 'virus_blocker_name'
+                        }],
+                        // the list of columns
+                        columns: [{
+                            header: this.i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            },
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: this.i18n._("Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_addr'
+                        }, {
+                            header: this.i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: this.i18n._("File Name"),
+                            flex:1,
+                            width: Ung.Util.uriFieldWidth,
+                            dataIndex: 'uri'
+                        }, {
+                            header: 'Virus Blocker Lite ' + i18n._('Name'),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_lite_name'
+                        }, {
+                            header: 'Virus Blocker ' + i18n._('Name'),
+                            width: 140,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_name'
+                        }, {
+                            header: this.i18n._("Server"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
                         }]
                     }
                 };
@@ -2832,6 +3837,42 @@ Ext.define('Ung.panel.Events', {
                 }
             }
             return this.tableConfig[table];
+        },
+        httpEventConvertReason: function(value) {
+            if(Ext.isEmpty(value)) {
+                return null;
+            }
+            switch (value) {
+              case 'D': return i18n._("in Categories Block list");
+              case 'U': return i18n._("in URLs Block list");
+              case 'E': return i18n._("in File Extensions Block list");
+              case 'M': return i18n._("in MIME Types Block list");
+              case 'H': return i18n._("Hostname is an IP address");
+              case 'I': return i18n._("in URLs Pass list");
+              case 'R': return i18n._("in URLs Pass list (via referer)");
+              case 'C': return i18n._("in Clients Pass list");
+              case 'B': return i18n._("Client Bypass");
+              default: return i18n._("no rule applied");
+            }
+        },
+        mailEventConvertAction: function(value) {
+            if(Ext.isEmpty(value)) {
+                return "";
+            }
+            switch (value) {
+                case 'P': return i18n._("pass message");
+                case 'M': return i18n._("mark message");
+                case 'D': return i18n._("drop message");
+                case 'B': return i18n._("block message");
+                case 'Q': return i18n._("quarantine message");
+                case 'S': return i18n._("pass safelist message");
+                case 'Z': return i18n._("pass oversize message");
+                case 'O': return i18n._("pass outbound message");
+                case 'F': return i18n._("block message (scan failure)");
+                case 'G': return i18n._("pass message (scan failure)");
+                case 'Y': return i18n._("block message (greylist)");
+                default: return i18n._("unknown action");
+            }
         }
     }
 });

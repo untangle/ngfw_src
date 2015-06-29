@@ -1155,75 +1155,8 @@ Ext.define('Webui.config.system', {
                 }]
             }]
         });
-
-        this.gridShieldEventLog = Ext.create('Ung.grid.EventLog',{
-            eventQueriesFn: this.getShieldNode().getEventQueries,
-            settingsCmp: this,
-            fields: [{
-                name: 'time_stamp',
-                sortType: 'asTimestamp'
-            }, {
-                name: 'username'
-            }, {
-                name: 'shield_blocked'
-            }, {
-                name: 'c_client_addr',
-                sortType: 'asIp'
-            }, {
-                name: 'c_client_port',
-                sortType: 'asInt'
-            }, {
-                name: 'c_server_addr',
-                sortType: 'asIp'
-            }, {
-                name: 's_server_port',
-                sortType: 'asInt'
-            }],
-            columns: [{
-                header: this.i18n._("Timestamp"),
-                width: Ung.Util.timestampFieldWidth,
-                sortable: true,
-                dataIndex: 'time_stamp',
-                renderer: function(value) {
-                    return i18n.timestampFormat(value);
-                }
-            }, {
-                header: this.i18n._("Client"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'c_client_addr'
-            }, {
-                header: this.i18n._("Client port"),
-                width: Ung.Util.portFieldWidth,
-                sortable: true,
-                dataIndex: 'c_client_port'
-            }, {
-                header: this.i18n._("Username"),
-                width: Ung.Util.usernameFieldWidth,
-                sortable: true,
-                dataIndex: 'username'
-            }, {
-                header: this.i18n._("Server"),
-                width: Ung.Util.ipFieldWidth,
-                sortable: true,
-                dataIndex: 'c_server_addr'
-            }, {
-                header: this.i18n._("Server Port"),
-                width: Ung.Util.portFieldWidth,
-                sortable: true,
-                dataIndex: 's_server_port'
-            }, {
-                header: this.i18n._("Action"),
-                width: 150,
-                sortable: true,
-                dataIndex: 'shield_blocked',
-                renderer: function(value) {
-                    if (value)
-                        return i18n._("blocked");
-                    else
-                        return i18n._("passed");
-                }
-            }]
+        this.panelShieldEvents = Ext.create('Ung.panel.Events', {
+            category: "Shield"
         });
         this.panelShieldReports = Ext.create('Ung.panel.Reports', {
             category: "Shield"
@@ -1257,7 +1190,7 @@ Ext.define('Webui.config.system', {
                 deferredRender: false,
                 autoHeight: true,
                 flex: 1,
-                items: [this.gridShieldRules, this.gridShieldEventLog, this.panelShieldReports]
+                items: [this.gridShieldRules, this.panelShieldEvents, this.panelShieldReports]
             }]
         });
     },
