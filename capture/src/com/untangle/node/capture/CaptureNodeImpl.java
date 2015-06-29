@@ -418,7 +418,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             CaptureUserEntry entry = captureUserTable.searchByUsername(username, ignoreCase);
 
-            if (entry != null) {
+            // when concurrent logins are disabled and we have an active entry for the user
+            // we check the address and ignore the match if they are the same since it's
+            // not really a concurrent login but a duplicate login from the same client
+            if ( (entry != null) && (address.equals(entry.getUserAddress()) == false) ) {
                 CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL, 1);
