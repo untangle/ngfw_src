@@ -243,7 +243,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     width: 200,
                     allowDecimals: false,
                     minValue: 1,
-                    maxValue: 65,
+                    maxValue: 366,
                     hideTrigger:true,
                     listeners: {
                         "change": {
