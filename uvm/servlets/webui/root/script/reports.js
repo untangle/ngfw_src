@@ -1935,14 +1935,7 @@ Ext.define('Ung.panel.Events', {
                             this.gridEvents.clearFilters();
                             this.searchField.setValue("");
                         }, this)
-                    }, {
-                        text: i18n._('Reset View'),
-                        tooltip: i18n._('Restore default columns positions, widths and visibility'),
-                        handler: Ext.bind(function () {
-                            //Ext.state.Manager.clear(this.stateId);
-                            this.gridEvents.reconfigure(null, this.gridEvents.getInitialConfig("columns"));
-                        }, this)
-                    },'->',{
+                    }, '->',{
                         xtype: 'button',
                         text: i18n._('Export'),
                         name: "Export",
@@ -2096,7 +2089,6 @@ Ext.define('Ung.panel.Events', {
                 col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
             }
         }
-        console.log(this.eventEntry.table, tableConfig);
         this.gridEvents.getStore().setFields(tableConfig.fields);
         this.gridEvents.setColumns(tableConfig.columns);
         this.refreshHandler();
@@ -2214,38 +2206,38 @@ Ext.define('Ung.panel.Events', {
         }
         this.down('button[name=refresh]').enable();
     },
+    getColumnList: function() {
+        var columns= this.gridEvents.getColumns(), columnList = "";
+        for (var i=0; i<columns.length ; i++) {
+            if (i !== 0) {
+                columnList += ",";
+            }
+            if (columns[i].dataIndex != null) {
+                columnList += columns[i].dataIndex;
+            }
+        }
+        return columnList;
+    },
     exportHandler: function() {
         if(!this.eventEntry) {
             return;
         }
-        var processRow = function (row) {
-            var data = [];
-            for (var j = 0; j < row.length; j++) {
-                var innerValue = row[j] == null ? '' : row[j].toString();
-                data.push('"' + innerValue.replace(/"/g, '""') + '"');
-            }
-            return data.join(",") + '\r\n';
-        };
-
-        var records = this.gridEvents.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
-        var gridColumns = this.gridEvents.getColumns();
-        for(i=0; i<gridColumns.length;i++) {
-            if(gridColumns[i].initialConfig.dataIndex) {
-                columns.push(gridColumns[i].initialConfig.dataIndex);
-                headers.push(gridColumns[i].initialConfig.header);
-            }
-        }
-        list.push(processRow(headers));
-        for(i=0; i<records.length;i++) {
-            row = [];
-            for(j=0; j<columns.length;j++) {
-                row.push(records[i].get(columns[j]));
-            }
-            list.push(processRow(row));
-        }
-        var content = list.join("");
-        var fileName = this.eventEntry.title.trim().replace(/ /g,"_")+".csv";
-        Ung.Util.download(content, fileName, 'text/csv');
+        var policyId = this.policySelector.getValue();
+        var startDate = this.startDateWindow.date;
+        var endDate = this.endDateWindow.date;
+        
+        Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
+        var name=this.eventEntry.title.trim().replace(/ /g,"_");
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm["type"].value="eventLogExport";
+        downloadForm["arg1"].value=name;
+        downloadForm["arg2"].value=Ext.encode(this.eventEntry);
+        downloadForm["arg3"].value=policyId;
+        downloadForm["arg4"].value=this.getColumnList();
+        downloadForm["arg5"].value=startDate?startDate.getTime():-1;
+        downloadForm["arg6"].value=endDate?endDate.getTime():-1;
+        downloadForm.submit();
+        Ext.MessageBox.hide();
     },
     isDirty: function() {
         return false;
@@ -3774,8 +3766,7 @@ Ext.define('Ung.panel.Events', {
                             name: 'c_server_addr',
                             sortType: 'asIp'
                         }, {
-                            name: 'uri',
-                            mapping: 'uri'
+                            name: 'uri'
                         }, {
                             name: 'location'
                         }, {
@@ -3785,7 +3776,7 @@ Ext.define('Ung.panel.Events', {
                         }],
                         // the list of columns
                         columns: [{
-                            header: this.i18n._("Timestamp"),
+                            header: i18n._("Timestamp"),
                             width: Ung.Util.timestampFieldWidth,
                             sortable: true,
                             dataIndex: 'time_stamp',
@@ -3796,17 +3787,17 @@ Ext.define('Ung.panel.Events', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: this.i18n._("Client"),
+                            header: i18n._("Client"),
                             width: Ung.Util.ipFieldWidth,
                             sortable: true,
                             dataIndex: 'c_client_addr'
                         }, {
-                            header: this.i18n._("Username"),
+                            header: i18n._("Username"),
                             width: Ung.Util.usernameFieldWidth,
                             sortable: true,
                             dataIndex: 'username'
                         }, {
-                            header: this.i18n._("File Name"),
+                            header: i18n._("File Name"),
                             flex:1,
                             width: Ung.Util.uriFieldWidth,
                             dataIndex: 'uri'
@@ -3821,7 +3812,7 @@ Ext.define('Ung.panel.Events', {
                             sortable: true,
                             dataIndex: 'virus_blocker_name'
                         }, {
-                            header: this.i18n._("Server"),
+                            header: i18n._("Server"),
                             width: Ung.Util.ipFieldWidth,
                             sortable: true,
                             dataIndex: 'c_server_addr'
@@ -3832,7 +3823,9 @@ Ext.define('Ung.panel.Events', {
                 for(key in this.tableConfig) {
                     columns = this.tableConfig[key].columns;
                     for(i=0; i<columns.length; i++) {
-                        columns[i].filter = { type: 'string' };
+                        if(columns[i].dataIndex && !columns[i].renderer) {
+                            columns[i].filter = { type: 'string' };
+                        }
                     }
                 }
             }
@@ -3874,5 +3867,103 @@ Ext.define('Ung.panel.Events', {
                 default: return i18n._("unknown action");
             }
         }
+    }
+});
+
+
+Ext.define("Ung.grid.feature.GlobalFilter", {
+    extend: "Ext.grid.feature.Feature",
+    useVisibleColumns: true,
+    useFields: null,
+    init: function (grid) {
+        this.grid=grid;
+
+        this.globalFilter = Ext.create('Ext.util.Filter', {
+            regExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
+            disabled: true,
+            regExpMode: false,
+            caseSensitive: false,
+            regExp: null,
+            stateId: 'globalFilter',
+            searchFields: {},
+            filterFn: function(record) {
+                if(!this.regExp) {
+                    return true;
+                }
+                var datas = record.getData(), key, val;
+                for(key in this.searchFields) {
+                    if(datas[key] !== undefined){
+                        val = datas[key];
+                        if(val == null) {
+                            continue;
+                        }
+                        if(typeof val == 'boolean' || typeof val == 'number') {
+                            val=val.toString();
+                        } else if(typeof val == 'object') {
+                            if(val.time != null) {
+                                val = i18n.timestampFormat(val);
+                            }
+                        }
+                        if(typeof val == 'string') {
+                            if(this.regExp.test(val)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            },
+            getSearchValue: function(value) {
+                if (value === '' || value === '^' || value === '$') {
+                    return null;
+                }
+                if (!this.regExpMode) {
+                    value = value.replace(this.regExpProtect, function(m) {
+                        return '\\' + m;
+                    });
+                } else {
+                    try {
+                        new RegExp(value);
+                    } catch (error) {
+                        return null;
+                    }
+                }
+                return value;
+            },
+            buildSearch: function(value, caseSensitive, searchFields) {
+                this.searchFields = searchFields;
+                this.setCaseSensitive(caseSensitive);
+                var searchValue = this.getSearchValue(value);
+                this.regExp = searchValue==null? null:new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
+                this.setDisabled(this.regExp==null);
+            }
+        });
+        
+        this.grid.on("afterrender", Ext.bind(function() {
+            this.grid.getStore().addFilter(this.globalFilter);
+        }, this));
+        this.grid.on("beforedestroy", Ext.bind(function() {
+            this.grid.getStore().removeFilter(this.globalFilter);
+            Ext.destroy(this.globalFilter);
+        }, this));
+        this.callParent(arguments);
+    },
+    updateGlobalFilter: function(value, caseSensitive) {
+        var searchFields = {}, i, col;
+        if(this.useVisibleColumns) {
+            var visibleColumns = this.grid.getVisibleColumns(); 
+            for(i=0; i<visibleColumns.length; i++) {
+                col = visibleColumns[i];
+                if(col.dataIndex) {
+                    searchFields[col.dataIndex] = true;
+                }
+            }
+        } else if(this.searchFields!=null) {
+            for(i=0; i<this.searchFields.length; i++) {
+                searchFields[this.searchFields[i]] = true;
+            }
+        }
+        this.globalFilter.buildSearch(value, caseSensitive, searchFields);
+        this.grid.getStore().getFilters().notify('endupdate');
     }
 });

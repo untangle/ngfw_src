@@ -1,3 +1,4 @@
+//TODO: remove this after events refactoring
 Ext.define("Ung.grid.EventLog", {
     extend: "Ung.grid.BaseEventLog",
     hasTimestampFilter: true,

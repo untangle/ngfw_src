@@ -38,14 +38,12 @@
     <script type="text/javascript" src="script/extOverrides.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/window.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/baseEventLog.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/eventLog.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/gridPanel.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/ruleBuilder.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/matcherWindow.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/monitor.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reports.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
@@ -113,12 +111,6 @@
     <input type="hidden" name="gridName" value=""/>
     <input type="hidden" name="gridData" value=""/>
     <input type="hidden" name="type" value="export"/>
-  </form>
-  <form name="exportEventLogEvents" id="exportEventLogEvents" method="post" action="/reports/eventLogExport">
-    <input type="hidden" name="name" value=""/>
-    <input type="hidden" name="query" value=""/>
-    <input type="hidden" name="policyId" value=""/>
-    <input type="hidden" name="columnList" value=""/>
   </form>
   <form name="downloadForm" id="downloadForm" method="post" action="download">
     <input type="hidden" name="type" value=""/>
