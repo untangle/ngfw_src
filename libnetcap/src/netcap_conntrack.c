@@ -113,7 +113,10 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         _netcap_conntrack_ct_entry_copy(&netcap_ct, ct);
 
         /* catch only bypassed sessions */
-        if( (mark & BYPASS_MARK) != BYPASS_MARK) {
+        if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) {
+            return NFCT_CB_CONTINUE;
+        }
+        if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) {
             return NFCT_CB_CONTINUE;
         }
         /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
@@ -121,7 +124,7 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
             return NFCT_CB_CONTINUE;
         }
 
-        int session_id = 0;
+        u_int64_t session_id = 0;
         
         switch (type) {
         case NFCT_T_DESTROY:
