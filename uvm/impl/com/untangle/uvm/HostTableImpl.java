@@ -219,7 +219,7 @@ public class HostTableImpl implements HostTable
         entry.setQuotaSize( quotaBytes );
         entry.setQuotaRemaining( quotaBytes );
         entry.setQuotaIssueTime( now );
-        entry.setQuotaExpirationTime( now + (time_sec*1000) );
+        entry.setQuotaExpirationTime( now + (((long)time_sec)*1000L) );
 
         /**
          * Call listeners
