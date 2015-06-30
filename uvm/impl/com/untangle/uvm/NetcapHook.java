@@ -40,11 +40,16 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public abstract class NetcapHook implements Runnable
 {
-    private final Logger logger = Logger.getLogger(getClass());
-    private static final SessionTable activeSessions = SessionTable.getInstance();
+    private static final Logger logger = Logger.getLogger( NetcapHook.class );
 
     /* Reject the client with whatever response the server returned */
     protected static final int REJECT_CODE_SRV = -1;
+
+    private static final int TCP_HEADER_SIZE_ESTIMATE = 32;
+    private static final int IP_HEADER_SIZE = 20;
+    private static final int UDP_HEADER_SIZE = 8;
+
+    private static final SessionTable activeSessions = SessionTable.getInstance();
 
     /**
      * List of all of the nodes( PipelineConnectorImpls )
@@ -342,14 +347,42 @@ public abstract class NetcapHook implements Runnable
         try {
             if (clientSide != null) {
                 SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
+                long c2pBytes = sessionGlobalState.clientSideListener().rxBytes;
+                long p2cBytes = sessionGlobalState.clientSideListener().txBytes;
+                long c2pChunks = sessionGlobalState.clientSideListener().rxChunks;
+                long p2cChunks = sessionGlobalState.clientSideListener().txChunks;
+
+                long s2pBytes = sessionGlobalState.serverSideListener().rxBytes;
+                long p2sBytes = sessionGlobalState.serverSideListener().txBytes;
+                long s2pChunks = sessionGlobalState.serverSideListener().rxChunks;
+                long p2sChunks = sessionGlobalState.serverSideListener().txChunks;
+
+                /**
+                 * Adjust for packet headers
+                 */
+                if ( sessionGlobalState.getProtocol() == 6 ) {
+                    c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * TCP_HEADER_SIZE_ESTIMATE);
+                    p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * TCP_HEADER_SIZE_ESTIMATE);
+                    s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * TCP_HEADER_SIZE_ESTIMATE);
+                    p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * TCP_HEADER_SIZE_ESTIMATE);
+                }
+                if ( sessionGlobalState.getProtocol() == 17 ) {
+                    c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * UDP_HEADER_SIZE);
+                    p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * UDP_HEADER_SIZE);
+                    s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * UDP_HEADER_SIZE);
+                    p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * UDP_HEADER_SIZE);
+                }
+                    
                 statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
                 statEvent.setP2cBytes(sessionGlobalState.clientSideListener().txBytes);
                 statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
                 statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
+
                 statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes);
                 statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes);
                 statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
                 statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+
                 UvmContextFactory.context().logEvent( statEvent );
             }
 
