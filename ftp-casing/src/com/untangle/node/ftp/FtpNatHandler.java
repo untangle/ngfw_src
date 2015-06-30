@@ -412,9 +412,6 @@ class SessionRedirectKey
 
         SessionRedirectKey key = (SessionRedirectKey)o;
 
-        FtpNatHandler.logger.warn("1: " + this.protocol + " " + this.serverAddr + " " + this.serverPort );
-        FtpNatHandler.logger.warn("2: " + key.protocol + " " + key.serverAddr + " " + key.serverPort );
-        
         if ( this.protocol != key.protocol ||
              !this.serverAddr.equals( key.serverAddr ) ||
              this.serverPort != key.serverPort ) {
