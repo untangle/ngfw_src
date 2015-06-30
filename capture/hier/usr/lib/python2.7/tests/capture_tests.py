@@ -126,7 +126,7 @@ def findNameInHostTable (hostname='test'):
             break
     remote_control.runCommand("pkill netcat")
     return foundTestSession
-    
+
 class CaptureTests(unittest2.TestCase):
 
     @staticmethod
@@ -287,8 +287,6 @@ class CaptureTests(unittest2.TestCase):
         global node, nodeData
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
-        # results = uvmContext.localDirectory().getUsers()
-        # print results
 
         # Create Internal NIC capture rule with basic login page
         nodeData['authenticationType']="LOCAL_DIRECTORY"
@@ -304,7 +302,7 @@ class CaptureTests(unittest2.TestCase):
         # check if local directory login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
