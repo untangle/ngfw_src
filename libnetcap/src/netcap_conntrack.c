@@ -112,10 +112,11 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
 
         _netcap_conntrack_ct_entry_copy(&netcap_ct, ct);
 
-        /* catch only bypassed sessions */
+        // if its TCP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) {
             return NFCT_CB_CONTINUE;
         }
+        // if its UDP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) {
             return NFCT_CB_CONTINUE;
         }
