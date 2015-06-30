@@ -34,6 +34,7 @@ public class CaptureSettings implements Serializable
     private int idleTimeout = 0;
     private int userTimeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
+    private boolean alwaysUseSecureCapture = false;
     private boolean sessionCookiesEnabled = false;
     private int sessionCookiesTimeout = 3600 * 24;
     private PageType pageType = PageType.BASIC_MESSAGE;
@@ -136,6 +137,16 @@ public class CaptureSettings implements Serializable
     public void setConcurrentLoginsEnabled(boolean newValue)
     {
         this.areConcurrentLoginsEnabled = newValue;
+    }
+
+    public boolean getAlwaysUseSecureCapture()
+    {
+        return this.alwaysUseSecureCapture;
+    }
+
+    public void setAlwaysUseSecureCapture(boolean newValue)
+    {
+        this.alwaysUseSecureCapture = newValue;
     }
 
     public boolean getSessionCookiesEnabled()

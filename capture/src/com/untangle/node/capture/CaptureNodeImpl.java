@@ -82,7 +82,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         super( nodeSettings, nodeProperties );
 
-        replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
+        replacementGenerator = new CaptureReplacementGenerator(getNodeSettings(),this);
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
         addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));

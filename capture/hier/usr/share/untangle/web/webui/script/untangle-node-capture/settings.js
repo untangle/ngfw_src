@@ -697,8 +697,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                                 this.settings.basicLoginFooter = newValue;
                             }, this)
                         }
-                    },
-                    {
+                    },{
                         xtype: "textfield",
                         allowBlank: false,
                         name: "basicMessagePageTitle",
@@ -882,21 +881,30 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 xtype: "fieldset",
                 title: this.i18n._( "Session Redirect" ),
                 items: [{
+                    xtype: "checkbox",
+                    boxLabel: this.i18n._("Always use HTTPS for the capture page redirect"),
+                    hideLabel: true,
+                    checked: this.settings.alwaysUseSecureCapture,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.settings.alwaysUseSecureCapture = checked;
+                        }, this)
+                    }
+                },{
                     xtype: "textfield",
                     name: "redirectUrl",
-                    width: 400,
+                    width: 600,
                     fieldLabel: this.i18n._("Redirect URL"),
-                    tooltip: this.i18n._("Page to display after successful user authentication."),
                     value: this.settings.redirectUrl,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.settings.redirectUrl = newValue;
                         }, this)
                     }
-                }, {
+                },{
                     xtype: 'component',
                     margin:'10 0 0 0',
-                    html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
+                    html: this.i18n._('<B>NOTE:</B> The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
             }]
         });

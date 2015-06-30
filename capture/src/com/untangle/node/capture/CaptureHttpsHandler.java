@@ -18,12 +18,12 @@ import org.apache.log4j.Logger;
 public class CaptureHttpsHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private CaptureNodeImpl node;
+    private final CaptureNode captureNode;
 
-    public CaptureHttpsHandler(CaptureNodeImpl node)
+    public CaptureHttpsHandler(CaptureNode node)
     {
         super(node);
-        this.node = node;
+        this.captureNode = node;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         // first we remove the attachment
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, null);
 
-        CaptureSSLEngine engine = new CaptureSSLEngine(node.getNodeSettings().getId().toString());
+        CaptureSSLEngine engine = new CaptureSSLEngine(node.getNodeSettings().getId().toString(),captureNode);
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, engine);
     }
 

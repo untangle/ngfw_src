@@ -16,6 +16,7 @@ import com.untangle.uvm.node.NodeSettings;
 class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetails>
 {
     private final Logger logger = Logger.getLogger(getClass());
+    private final CaptureNode captureNode;
 
 // THIS IS FOR ECLIPSE - @formatter:off
     
@@ -32,9 +33,10 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    CaptureReplacementGenerator(NodeSettings tid)
+    CaptureReplacementGenerator(NodeSettings tid,CaptureNode node)
     {
         super(tid);
+        this.captureNode = node;
     }
 
     @Override
@@ -52,7 +54,12 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
     {
         CaptureBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
-        String retval = ("http://" + host + "/capture/handler.py/index?nonce=" + nonce);
+        
+        // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
+        String prefix = "http://";
+        if (captureNode.getCaptureSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
+        
+        String retval = (prefix + host + "/capture/handler.py/index?nonce=" + nonce);
         retval = (retval + "&method=" + details.getMethod());
         retval = (retval + "&appid=" + nodeSettings.getId());
         retval = (retval + "&host=" + details.getHost());

@@ -12,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.KeyManagerFactory;
+
 import java.net.InetAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -19,9 +20,11 @@ import java.io.FileInputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
+
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;
+
 import org.apache.log4j.Logger;
 
 public class CaptureSSLEngine
@@ -30,14 +33,16 @@ public class CaptureSSLEngine
     private static final String certPass = "password";
 
     private final Logger logger = Logger.getLogger(getClass());
+    private final CaptureNode captureNode;
     private NodeTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
     private String nodeStr;
 
-    protected CaptureSSLEngine(String nodeStr)
+    protected CaptureSSLEngine(String nodeStr, CaptureNode nodePtr)
     {
         this.nodeStr = nodeStr;
+        this.captureNode = nodePtr;
 
         try {
             // use the argumented certfile and password to init our keystore
@@ -81,7 +86,7 @@ public class CaptureSSLEngine
         }
 
         // null result means something went haywire
-        if ( ! success ) {
+        if (!success) {
             logger.warn("Received null return from clientDataWorker");
             session.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, null);
             session.resetClient();
@@ -102,7 +107,7 @@ public class CaptureSSLEngine
 
         logger.debug("PARAM_BUFFER = " + data.toString());
 
-        while ( ! done ) {
+        while (!done) {
             status = sslEngine.getHandshakeStatus();
             logger.debug("STATUS = " + status);
 
@@ -185,22 +190,19 @@ public class CaptureSSLEngine
             // compact the receive buffer and hand it back for more
             data.compact();
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
-            session.setClientBuffer( data );
+            session.setClientBuffer(data);
             return true;
         }
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP) return false;
 
         // the unwrap call shouldn't produce data during handshake and if
         // that is the case we return null here allowing the loop to continue
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // unwrap calls during handshake should never produce data
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
@@ -217,22 +219,19 @@ public class CaptureSSLEngine
         logger.debug("EXEC_WRAP " + result.toString());
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine wrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
         // if the wrap call didn't produce any data return null
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // the wrap call produced some data so return it to the client
         target.flip();
         ByteBuffer array[] = new ByteBuffer[1];
         array[0] = target;
-        session.sendDataToClient( array );
+        session.sendDataToClient(array);
         return true;
     }
 
@@ -253,13 +252,11 @@ public class CaptureSSLEngine
         logger.debug("LOCAL_BUFFER = " + target.toString());
 
         // make sure we get a good status return from the SSL engine
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
         // if unwrap doesn't produce any data then we are handshaking and 
         // must return null to let the handshake process continue
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // when unwrap finally returns some data it will be the client request
         String request = new String(target.array(), 0, target.position());
@@ -268,21 +265,18 @@ public class CaptureSSLEngine
 
         // extract the method from the request
         end = request.indexOf(" ");
-        if (end >= 0)
-            methodStr = request.substring(0, end);
+        if (end >= 0) methodStr = request.substring(0, end);
 
         // extract the URL from the request
         top = request.indexOf(" ", end);
         end = request.indexOf("HTTP/", top);
-        if ((top >= 0) && (end >= 0))
-            uriStr = new String(request.substring(top + 1, end));
+        if ((top >= 0) && (end >= 0)) uriStr = new String(request.substring(top + 1, end));
 
         // extract the destination host from the request
         String look = "HOST: ";
         top = capital.indexOf(look);
         end = capital.indexOf("\r\n", top);
-        if ((top >= 0) && (end >= 0))
-            hostStr = new String(request.substring(top + look.length(), end));
+        if ((top >= 0) && (end >= 0)) hostStr = new String(request.substring(top + look.length(), end));
 
         // if we couldn't parse any of our strings log an error and block
         if ((methodStr == null) || (uriStr == null) | (hostStr == null)) {
@@ -303,13 +297,17 @@ public class CaptureSSLEngine
             captureHost = captureHost + ":" + httpPort;
         }
 
+        // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
+        String prefix = "http://";
+        if (captureNode.getCaptureSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
+
         // VERY IMPORTANT - the NONCE value must be a1b2c3d4e5f6 because the
         // handler.py script looks for this special value and uses it to
         // decide between http and https when redirecting to the originally
         // requested page after login.  Yes it's a hack but I didn't want to
         // add an additional form field and risk breaking existing custom pages
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + captureHost + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + nodeStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
+        vector += "Location: " + prefix + captureHost + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + nodeStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
@@ -333,7 +331,7 @@ public class CaptureSSLEngine
         ByteBuffer array[] = new ByteBuffer[1];
         obuff.flip();
         array[0] = obuff;
-        session.sendDataToClient( array );
+        session.sendDataToClient(array);
         return true;
     }
 
