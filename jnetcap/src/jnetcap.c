@@ -32,7 +32,7 @@
 #define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapCallback )
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
-#define _CONNTRACK_HOOK_METHOD_DESC "(JIJJIIJJIIJJIIIIIIJJ)V"
+#define _CONNTRACK_HOOK_METHOD_DESC "(IJJJIIJJIIJJIIIIIIJJ)V"
 
 /* default session limit ( 0 means no limit ) */
 #define _SESSION_LIMIT_DEFAULT 0
