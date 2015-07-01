@@ -75,7 +75,7 @@ void* netcap_conntrack_listen ( void* arg )
 
 }
 
-void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, long session_id, 
+void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, u_int64_t session_id, 
                                   int l3_proto, int l4_proto,
                                   long c_client_addr, long c_server_addr,
                                   int  c_client_port, int c_server_port,
@@ -136,6 +136,7 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
             //errlog( ERR_WARNING,"conntrack_listen: callback() type=NEW mark=0x%08x\n", mark);
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             session_id = netcap_session_next_id();
+            errlog( ERR_WARNING,"DEBUG XXXX bypass next session ID: %" PRIu64 "\n", session_id);
             break;
         default:
             errlog( ERR_WARNING,"conntrack_listen: callback() unknown type %i\n", type);

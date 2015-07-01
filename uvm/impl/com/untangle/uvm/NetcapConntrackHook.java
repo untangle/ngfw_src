@@ -94,6 +94,7 @@ public class NetcapConntrackHook implements NetcapCallback
             hostname = cClientAddr.getHostAddress();
         
         if ( type == 1 ) { /* New Session */
+            logger.warn( "XXX SESSION ID: " + session_id );
             SessionEvent sessionEvent =  new SessionEvent( );
             sessionEvent.setSessionId( session_id );
             sessionEvent.setBypassed( true );
