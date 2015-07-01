@@ -159,12 +159,13 @@ Ext.define("Ung.SettingsWin", {
         if(this.hasEvents) {
             itemsArray.push(Ext.create('Ung.panel.Events',{
                 category: this.displayName,
-                settingsCmp: this
+                showPolicySelector: this.nodeProperties && this.nodeProperties.type == "FILTER"
             }));
         }
         if(this.hasReports) {
             itemsArray.push(Ext.create('Ung.panel.Reports',{
-                category: this.displayName
+                category: this.displayName,
+                showPolicySelector: this.nodeProperties && this.nodeProperties.type == "FILTER"
             }));
         }
         

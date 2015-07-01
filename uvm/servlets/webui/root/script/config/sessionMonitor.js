@@ -4,6 +4,8 @@ Ext.define('Webui.config.sessionMonitor', {
     sortField:'bypassed',
     sortOrder: 'ASC',
     bandwidthColumns: false,
+    displayName: 'Session Viewer',
+    hasEvents: true,
     initComponent: function() {
         if(!this.breadcrumbs) {
             this.breadcrumbs = [{
@@ -11,9 +13,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }];
         }
         this.buildGridCurrentSessions();
-        //this.buildChartSessions();
-        //this.buildTabPanel([this.gridCurrentSessions]);
-        this.items=[this.gridCurrentSessions];
+        this.buildTabPanel([this.gridCurrentSessions]);
         this.callParent(arguments);
     },
     closeWindow: function() {

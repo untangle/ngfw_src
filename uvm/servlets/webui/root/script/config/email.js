@@ -540,7 +540,7 @@ Ext.define('Webui.config.email', {
                         settingsCmp: this,
                         showForCurrentAccount: function(emailAddress) {
                             this.account = emailAddress;
-                            var newTitle = this.settingsCmp.i18n._('Safe List Details for: ') + emailAddress;
+                            var newTitle = i18n._('Safe List Details for: ') + emailAddress;
                             this.setTitle(newTitle);
 
                             this.show();
@@ -824,7 +824,7 @@ Ext.define('Webui.config.email', {
                             settingsCmp: this,
                             showForCurrentAccount: function(emailAddress) {
                                 this.account = emailAddress;
-                                var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
+                                var newTitle = i18n._('Email Quarantine Details for: ') + emailAddress;
                                 this.setTitle(newTitle);
                                 this.show();
                                 //load Quarantines Details
@@ -1290,7 +1290,7 @@ Ext.define('Webui.config.email.EmailAddressDetails', {
         },'-',{
             name: 'Help',
             iconCls: 'icon-help',
-            text: this.settingsCmp.i18n._('Help'),
+            text: i18n._('Help'),
             handler: Ext.bind(function() {
                 this.settingsCmp.helpAction();
             }, this)

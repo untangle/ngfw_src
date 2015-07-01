@@ -205,18 +205,8 @@ Ext.define('Ung.panel.Reports', {
                 return;
             }
         }
-        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('Start date and time'),
-            dateTimeEmptyText: i18n._('start date and time')
-        });
-        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('End date and time'),
-            dateTimeEmptyText: i18n._('end date and time')
-        });
         this.pieLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this slice');
         this.cartesianLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this series');
-        this.subCmps.push(this.startDateWindow);
-        this.subCmps.push(this.endDateWindow);
         
         this.items = [{
             region: 'east',
@@ -257,12 +247,12 @@ Ext.define('Ung.panel.Reports', {
                     dock: 'bottom',
                     items: [{
                         xtype: 'button',
+                        name: 'startDateButton',
                         text: i18n._('One day ago'),
                         initialLabel:  i18n._('One day ago'),
                         width: 132,
                         tooltip: i18n._('Select Start date and time'),
                         handler: Ext.bind(function(button) {
-                            this.startDateWindow.buttonObj=button;
                             this.startDateWindow.show();
                         }, this)
                     },{
@@ -270,12 +260,12 @@ Ext.define('Ung.panel.Reports', {
                         text: '-'
                     }, {
                         xtype: 'button',
+                        name: 'endDateButton',
                         text: i18n._('Present'),
                         initialLabel:  i18n._('Present'),
                         width: 132,
                         tooltip: i18n._('Select End date and time'),
                         handler: Ext.bind(function(button) {
-                            this.endDateWindow.buttonObj=button;
                             this.endDateWindow.show();
                         }, this)
                     }, {
@@ -372,6 +362,18 @@ Ext.define('Ung.panel.Reports', {
         this.callParent(arguments);
         this.chartContainer = this.down("panel[name=chartContainer]");
         this.dataGrid = this.down("grid[name=dataGrid]");
+        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('Start date and time'),
+            dateTimeEmptyText: i18n._('start date and time'),
+            buttonObj: this.down("button[name=startDateButton]")
+        });
+        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('End date and time'),
+            dateTimeEmptyText: i18n._('end date and time'),
+            buttonObj: this.down("button[name=endDateButton]")
+        });
+        this.subCmps.push(this.startDateWindow);
+        this.subCmps.push(this.endDateWindow);
     },
     loadReportEntries: function(initialEntryId) {
         Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
@@ -465,7 +467,19 @@ Ext.define('Ung.panel.Reports', {
         var i, column;
         
         var data = [];
-
+        var tbar = ['->', {
+            xtype: 'button',
+            text: i18n._('View Events'),
+            name: "edit",
+            tooltip: i18n._('View events for this report'),
+            iconCls: 'icon-edit',
+            handler:Ext.bind(this.viewEvents, this)
+        }, {
+            xtype: 'button',
+            iconCls: 'icon-export',
+            text: i18n._("Download"),
+            handler: Ext.bind(this.downloadChart, this)
+        }]; 
         var chart, reportData=[];
         this.dataGrid.getStore().loadData([]);
         if(reportEntry.type == 'TEXT') {
@@ -475,12 +489,7 @@ Ext.define('Ung.panel.Reports', {
                 border: false,
                 width: '100%',
                 height: '100%',
-                tbar: ['->', {
-                    xtype: 'button',
-                    iconCls: 'icon-export',
-                    text: i18n._("Download"),
-                    handler: Ext.bind(this.downloadChart, this)
-                }],
+                tbar: tbar,
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -537,12 +546,7 @@ Ext.define('Ung.panel.Reports', {
                 legend: {
                     docked: 'right'
                 },
-                tbar: ['->', {
-                    xtype: 'button',
-                    iconCls: 'icon-export',
-                    text: i18n._("Download"),
-                    handler: Ext.bind(this.downloadChart, this)
-                }],
+                tbar: tbar,
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -654,7 +658,7 @@ Ext.define('Ung.panel.Reports', {
             if(this.reportEntry.timeStyle.indexOf('OVERLAPPED') != -1  && this.reportEntry.timeDataColumns.length <= 1){
                 this.reportEntry.timeStyle = this.reportEntry.timeStyle.replace("_OVERLAPPED", "");
             }
-            var tbar = [], timeStyle, timeStyles = [
+            var timeStyleButtons = [], timeStyle, timeStyles = [
                 { name: 'LINE', iconCls: 'icon-line-chart', text: i18n._("Line"), tooltip: i18n._("Switch to Line Chart") },
                 { name: 'BAR_3D', iconCls: 'icon-bar3d-chart', text: i18n._("Bar 3D"), tooltip: i18n._("Switch to Bar 3D Chart") },
                 { name: 'BAR_3D_OVERLAPPED', iconCls: 'icon-bar3d-overlapped-chart', text: i18n._("Bar 3D Overlapped"), tooltip: i18n._("Switch to Bar 3D Overlapped Chart") },
@@ -664,7 +668,7 @@ Ext.define('Ung.panel.Reports', {
             
             for(i=0; i<timeStyles.length; i++) {
                 timeStyle = timeStyles[i];
-                tbar.push({
+                timeStyleButtons.push({
                     xtype: 'button',
                     pressed: this.reportEntry.timeStyle == timeStyle.name,
                     hidden: (timeStyle.name.indexOf('OVERLAPPED') != -1 ) && (reportEntry.timeDataColumns.length <= 1),
@@ -694,12 +698,7 @@ Ext.define('Ung.panel.Reports', {
                 legend: {
                     docked: 'bottom'
                 },
-                tbar: tbar.concat(['->', {
-                    xtype: 'button',
-                    iconCls: 'icon-export',
-                    text: i18n._("Download"),
-                    handler: Ext.bind(this.downloadChart, this)
-                }]),
+                tbar: timeStyleButtons.concat(tbar),
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -1028,6 +1027,56 @@ Ext.define('Ung.panel.Reports', {
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
     },
+    viewEvents: function() {
+        if(!this.reportEntry) {
+            return;
+        }
+        
+        if(!this.winViewEvents) {
+            this.winViewEvents = Ext.create('Ung.Window', {
+                title: i18n._('View Events'),
+                bbar: ['->', {
+                    name: "Cancel",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: function() {
+                        this.up('window').cancelAction();
+                    }
+                }," "],
+                items: Ext.create('Ung.panel.Events',{
+                    width: 1000,
+                    height: 600,
+                    showPolicySelector: this.showPolicySelector
+                }),
+                listeners: {
+                    "hide": {
+                        fn: function() {
+                            var panelEvents = this.down('panel[name=panelEvents]');
+                            if(panelEvents.autoRefreshEnabled) {
+                                panelEvents.stopAutoRefresh(true);
+                            }
+                        }
+                    }
+                }
+            });
+            this.subCmps.push(this.winViewEvents);
+        }
+        this.winViewEvents.show();
+        var eventEntry = {
+            javaClass: "com.untangle.node.reporting.EventEntry",
+            category: this.reportEntry.category,
+            conditions: this.reportEntry.conditions,
+            displayOrder: 1,
+            table: this.reportEntry.table,
+            title: Ext.String.format(i18n._('Events for report: {0}'), this.reportEntry.title)
+        };
+        var panelEvents = this.winViewEvents.down('panel[name=panelEvents]');
+        panelEvents.startDateWindow.setDate(this.startDateWindow.date);
+        panelEvents.endDateWindow.setDate(this.endDateWindow.date);
+        panelEvents.extraConditions=this.extraConditions;
+        panelEvents.extraConditionsPanel.setValue(this.extraConditions);
+        panelEvents.loadEventEntry(eventEntry);
+    },
     isDirty: function() {
         return false;
     },
@@ -1246,7 +1295,25 @@ Ext.define("Ung.panel.ExtraConditions", {
         if(!skipReload) {
             this.parentPanel.refreshHandler();
         }
+    },
+    setValue: function(extraConditions) {
+        var me = this, i;
+        this.bulkOperation = true;
+        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+            me.remove(item);
+        });
+        if(!extraConditions) {
+            for(i=0; i<this.defaultCount; i++) {
+                this.addRow();
+            }
+        } else {
+            for(i=0; i<extraConditions.length; i++) {
+                this.addRow(extraConditions[i]);
+            }
+        }
+        this.bulkOperation = false;
     }
+    
 });
 
 Ext.define("Ung.window.ReportEditor", {
@@ -1825,16 +1892,6 @@ Ext.define('Ung.panel.Events', {
                 return;
             }
         }
-        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('Start date and time'),
-            dateTimeEmptyText: i18n._('start date and time')
-        });
-        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('End date and time'),
-            dateTimeEmptyText: i18n._('end date and time')
-        });
-        this.subCmps.push(this.startDateWindow);
-        this.subCmps.push(this.endDateWindow);
         
         var policyStore = Ext.create('Ext.data.Store', {
             fields: ["policyId", "name"],
@@ -1948,7 +2005,7 @@ Ext.define('Ung.panel.Events', {
                     dock: 'bottom',
                     items: [{
                         xtype: 'combo',
-                        hidden: this.settingsCmp !=null && this.settingsCmp.nodeProperties != null && this.settingsCmp.nodeProperties.type == "SERVICE",
+                        hidden: !this.showPolicySelector,
                         width: 120,
                         style: {marginRight: "5px"},
                         name: "policySelector",
@@ -1970,12 +2027,12 @@ Ext.define('Ung.panel.Events', {
                         store: limitStore
                     }, {
                         xtype: 'button',
+                        name: 'startDateButton',
                         text: i18n._('From'),
                         initialLabel:  i18n._('From'),
                         width: 132,
                         tooltip: i18n._('Select Start date and time'),
                         handler: Ext.bind(function(button) {
-                            this.startDateWindow.buttonObj=button;
                             this.startDateWindow.show();
                         }, this)
                     },{
@@ -1983,12 +2040,12 @@ Ext.define('Ung.panel.Events', {
                         text: '-'
                     }, {
                         xtype: 'button',
+                        name: 'endDateButton',
                         text: i18n._('To'),
                         initialLabel:  i18n._('To'),
                         width: 132,
                         tooltip: i18n._('Select End date and time'),
                         handler: Ext.bind(function(button) {
-                            this.endDateWindow.buttonObj=button;
                             this.endDateWindow.show();
                         }, this)
                     }, {
@@ -2042,6 +2099,19 @@ Ext.define('Ung.panel.Events', {
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.policySelector = this.down("combo[name=policySelector]");
         this.limitSelector = this.down("combo[name=limitSelector]");
+        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('Start date and time'),
+            dateTimeEmptyText: i18n._('start date and time'),
+            buttonObj: this.down("button[name=startDateButton]")
+        });
+        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('End date and time'),
+            dateTimeEmptyText: i18n._('end date and time'),
+            buttonObj: this.down("button[name=endDateButton]")
+        });
+        this.subCmps.push(this.startDateWindow);
+        this.subCmps.push(this.endDateWindow);
+        
         if(this.category) {
             this.loadEventEntries();
         }
@@ -2057,6 +2127,7 @@ Ext.define('Ung.panel.Events', {
     loadEventEntry: function(eventEntry) {
         var i, col, sortType;
         this.eventEntry = eventEntry;
+        console.log(this.eventEntry);
         if(!eventEntry.defaultColumns) {
             eventEntry.defaultColumns = [];
         }
@@ -2084,9 +2155,11 @@ Ext.define('Ung.panel.Events', {
                 }
             }
         } else {
-            for(i=0; i< tableConfig.columns.length; i++) {
-                col = tableConfig.columns[i];
-                col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
+            if(eventEntry.defaultColumns.length>0) {
+                for(i=0; i< tableConfig.columns.length; i++) {
+                    col = tableConfig.columns[i];
+                    col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
+                }
             }
         }
         this.gridEvents.getStore().setFields(tableConfig.fields);
@@ -2143,39 +2216,35 @@ Ext.define('Ung.panel.Events', {
     },
     loadNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
-        var newEventEntries = result;
+        var newEvents = result;
         // If we got results append them to the current events list, and make another call for more
-        if ( newEventEntries != null && newEventEntries.list != null && newEventEntries.list.length != 0 ) {
-            this.eventEntries.push.apply( this.eventEntries, newEventEntries.list );
-            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...') + ' (' + this.eventEntries.length + ')'); }
+        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
+            this.events.push.apply( this.events, newEvents.list );
+            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')'); }
             this.reader.getNextChunk(Ext.bind(this.loadNextChunkCallback, this), 1000);
             return;
         }
         // If we got here, then we either reached the end of the resultSet or ran out of room display the results
-        if (this.settingsCmp != null && this.gridEvents!=null && this.gridEvents.getStore() != null) {
-            this.gridEvents.getStore().getProxy().setData(this.eventEntries);
+        if (this.gridEvents!=null && this.gridEvents.getStore() != null) {
+            this.gridEvents.getStore().getProxy().setData(this.events);
             this.gridEvents.getStore().load();
         }
         this.setLoading(false);
         
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
-            if(this == this.settingsCmp.tabs.getActiveTab()) {
-                Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
-            } else {
-                this.stopAutoRefresh(true);
-            }
+            Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
         }
     },
     // Refresh the events list
     loadResultSet: function(result) {
-        this.eventEntries = [];
+        this.events = [];
 
         if( testMode ) {
             var emptyRec={};
             var length = Math.floor((Math.random()*5000));
             var fields = this.entriesGrid.getStore().getFields();
             for(var i=0; i<length; i++) {
-                this.eventEntries.push(this.getTestRecord(i, fields));
+                this.events.push(this.getTestRecord(i, fields));
             }
             this.loadNextChunkCallback(null);
         }
@@ -3695,8 +3764,7 @@ Ext.define('Ung.panel.Events', {
                             dataIndex: 'time_stamp',
                             renderer: Ext.bind(function(value) {
                                 return i18n.timestampFormat(value);
-                            }, this ),
-                            filter: null
+                            }, this )
                         }, {
                             header: i18n._("Type"),
                             sortable: true,
@@ -3782,9 +3850,6 @@ Ext.define('Ung.panel.Events', {
                             dataIndex: 'time_stamp',
                             renderer: function(value) {
                                 return i18n.timestampFormat(value);
-                            },
-                            filter: {
-                                type: 'numeric'
                             }
                         }, {
                             header: i18n._("Client"),
@@ -3823,7 +3888,7 @@ Ext.define('Ung.panel.Events', {
                 for(key in this.tableConfig) {
                     columns = this.tableConfig[key].columns;
                     for(i=0; i<columns.length; i++) {
-                        if(columns[i].dataIndex && !columns[i].renderer) {
+                        if(columns[i].dataIndex && !columns[i].renderer && !columns[i].filter) {
                             columns[i].filter = { type: 'string' };
                         }
                     }
