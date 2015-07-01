@@ -32,7 +32,7 @@
 #define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapCallback )
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
-#define _CONNTRACK_HOOK_METHOD_DESC "(IJJJIIJJIIJJIIIIIIJJ)V"
+#define _CONNTRACK_HOOK_METHOD_DESC "(JIJJIIJJIIJJIIIIIIJJ)V"
 
 /* default session limit ( 0 means no limit ) */
 #define _SESSION_LIMIT_DEFAULT 0
@@ -551,11 +551,10 @@ static void              _conntrack_hook( int type, long mark, long conntrack_id
 
     debug( 10, "jnetcap: Calling hook\n" );
     errlog( ERR_WARNING,"DEBUG XXXX calling hook - next session ID: %" PRIu64 "\n", session_id);
-    jlong session_id_j = session_id;
-    errlog( ERR_WARNING,"DEBUG XXXX calling hook - next session ID: %" PRIu64 "\n", session_id_j);
     
     /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, type, mark, conntrack_id, session_id_j,
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, session_id,
+                            type, mark, conntrack_id,
                             l3_proto, l4_proto,
                             c_client_addr, c_server_addr,
                             c_client_port, c_server_port,

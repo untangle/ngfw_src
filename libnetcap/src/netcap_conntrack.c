@@ -136,7 +136,6 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
             //errlog( ERR_WARNING,"conntrack_listen: callback() type=NEW mark=0x%08x\n", mark);
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             session_id = netcap_session_next_id();
-            errlog( ERR_WARNING,"DEBUG XXXX bypass next session ID: %" PRIu64 "\n", session_id);
             break;
         default:
             errlog( ERR_WARNING,"conntrack_listen: callback() unknown type %i\n", type);
