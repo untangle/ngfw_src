@@ -552,16 +552,17 @@ static void              _conntrack_hook( int type, long mark, long conntrack_id
     debug( 10, "jnetcap: Calling hook\n" );
     
     /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, session_id,
-                            type, mark, conntrack_id,
-                            l3_proto, l4_proto,
-                            c_client_addr, c_server_addr,
-                            c_client_port, c_server_port,
-                            s_client_addr, s_server_addr,
-                            s_client_port, s_server_port,
-                            c2s_packets, c2s_bytes,
-                            s2c_packets, s2c_bytes,
-                            timestamp_start, timestamp_stop );
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id,
+                            ((jlong)session_id),
+                            ((jint)type), ((jint)mark), ((jlong)conntrack_id),
+                            ((jint)l3_proto), ((jint)l4_proto),
+                            ((jlong)c_client_addr), ((jlong)c_server_addr),
+                            ((jint)c_client_port), ((jint)c_server_port),
+                            ((jlong)s_client_addr), ((jlong)s_server_addr),
+                            ((jint)s_client_port), ((jint)s_server_port),
+                            ((jint)c2s_packets), ((jint)c2s_bytes),
+                            ((jint)s2c_packets), ((jint)s2c_bytes),
+                            ((jlong)timestamp_start), ((jlong)timestamp_stop) );
 
     debug( 10, "jnetcap: Exiting hook\n" );
 
