@@ -2410,7 +2410,7 @@ Ext.define('Ung.panel.Events', {
                             sortable: true,
                             dataIndex: 'c_client_addr'
                         }, {
-                            header: i18n._("Client port"),
+                            header: i18n._("Client Port"),
                             width: Ung.Util.portFieldWidth,
                             sortable: true,
                             dataIndex: 'c_client_port',
