@@ -47,7 +47,7 @@ public class NetcapTCPHook implements NetcapCallback
         new TCPNetcapHook( sessionID ).run();
     }
 
-    public void event( long session_id, int type, long mark, long conntrack_id, 
+    public void event( int type, long mark, long conntrack_id, long session_id, 
                        int l3_proto, int l4_proto,
                        long c_client_addr, long c_server_addr,
                        int  c_client_port, int c_server_port,

@@ -553,8 +553,7 @@ static void              _conntrack_hook( int type, long mark, long conntrack_id
     
     /* Call the global method */
     (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id,
-                            ((jlong)session_id),
-                            ((jint)type), ((jlong)mark), ((jlong)conntrack_id),
+                            ((jint)type), ((jlong)mark), ((jlong)conntrack_id), ((jlong)session_id),
                             ((jint)l3_proto), ((jint)l4_proto),
                             ((jlong)c_client_addr), ((jlong)c_server_addr),
                             ((jint)c_client_port), ((jint)c_server_port),

@@ -40,7 +40,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
     public void event( long sessionId ) {}
 
-    public void event( long session_id, int type, long mark, long conntrack_id,
+    public void event( int type, long mark, long conntrack_id, long session_id, 
                        int l3_proto, int l4_proto,
                        long c_client_addr, long c_server_addr,
                        int  c_client_port, int c_server_port,
@@ -95,6 +95,7 @@ public class NetcapConntrackHook implements NetcapCallback
         
         if ( type == 1 ) { /* New Session */
             SessionEvent sessionEvent =  new SessionEvent( );
+            logger.debug( "New bypassed Session: " + session_id ); 
             sessionEvent.setSessionId( session_id );
             sessionEvent.setBypassed( true );
             sessionEvent.setProtocol( (short)l4_proto ); 
