@@ -59,7 +59,7 @@ public class EventEntry implements Serializable, JSONString
     public String[] getDefaultColumns() { return this.defaultColumns; }
     public void setDefaultColumns( String[] newValue ) { this.defaultColumns = newValue; }
     
-    public String getQuery()
+    public String toSqlQuery()
     {
         String query = ""; 
         query +=  "SELECT * FROM reports." + this.table + " WHERE true";

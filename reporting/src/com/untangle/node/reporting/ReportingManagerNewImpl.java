@@ -274,7 +274,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        return ReportingNodeImpl.eventReader.getEvents( entry.getQuery(), policyId, extraConditions, limit, null, null );
+        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), policyId, extraConditions, limit, null, null );
     }
 
     public ResultSetReader getEventsResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
@@ -292,7 +292,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.getQuery(), policyId, extraConditions, limit, startDate, endDate );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), policyId, extraConditions, limit, startDate, endDate );
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
