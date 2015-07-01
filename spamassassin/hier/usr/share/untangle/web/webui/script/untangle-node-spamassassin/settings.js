@@ -27,6 +27,8 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
         if(!this.settings.smtpConfig.scan) {
             smtpStrengthValue.disable();
         }
+        var resetBayes = this.emailPanel.down('button[name=resetBayesButton]');
+        resetBayes.setVisible(rpc.isExpertMode);
     },
     isCustomStrength: function(strength) {
         return !(strength == 50 || strength == 43 || strength == 35 || strength == 33 || strength == 30);
@@ -390,6 +392,34 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                                          }, this)
                                      }
                                  }
+                             },{
+                                 xtype: "button",
+                                 name: "resetBayesButton",
+                                 margin: '5 0 0 0',
+                                 text: this.i18n._("Clear Bayes Data"),
+                                 iconCls: "reboot-icon",
+                                 handler: Ext.bind(function() {
+                                     Ext.MessageBox.confirm(this.i18n._("Warning"),
+                                                            Ext.String.format(this.i18n._("This will clear all learned bayesian data!"), rpc.companyName ),
+                                                            Ext.bind(function(btn) {
+                                                                var script = [
+                                                                    '/bin/rm -f /home/spamd/.spamassassin/bayes*;',
+                                                                    '/etc/init.d/spamassassin restart;'
+                                                                ];
+                                                                var command =  "/bin/bash -c " + script.join("");
+
+                                                                if (btn == "yes") {
+                                                                    Ext.MessageBox.wait(this.i18n._("Clearing bayes data..."), i18n._("Please wait"));
+                                                                    Ung.Main.getExecManager().execOutput(Ext.bind(function (result, exception) {
+                                                                        if(exception) {
+                                                                            Ext.MessageBox.alert(this.i18n._("Failure"),this.i18n._("Error: Unable to reset bayes data."));
+                                                                        } else {
+                                                                            Ext.MessageBox.alert(this.i18n._("Success"), i18n._("Bayes data cleared."));
+                                                                        }
+                                                                    }, this), command);
+                                                                }
+                                                            }, this));
+                                 }, this)
                              }]
                          }]
             }, {
