@@ -550,7 +550,10 @@ static void              _conntrack_hook( int type, long mark, long conntrack_id
     }
 
     debug( 10, "jnetcap: Calling hook\n" );
-
+    errlog( ERR_WARNING,"DEBUG XXXX calling hook - next session ID: %" PRIu64 "\n", session_id);
+    jlong session_id_j = session_id;
+    errlog( ERR_WARNING,"DEBUG XXXX calling hook - next session ID: %" PRIu64 "\n", session_id_j);
+    
     /* Call the global method */
     (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, type, mark, conntrack_id, session_id,
                             l3_proto, l4_proto,
