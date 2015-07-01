@@ -244,10 +244,10 @@ public abstract class NetcapHook implements Runnable
             if (  tupleHashCodeOriginal != tupleHashCodeNew ) {
                 SessionNatEvent natEvent = new SessionNatEvent( sessionEvent,
                                                                 serverSide.getServerIntf(),
-                                                                serverSide.getClientAddr(),
-                                                                serverSide.getClientPort(),                                                               
-                                                                serverSide.getServerAddr(),
-                                                                serverSide.getServerPort());
+                                                                sessionEvent.getSClientAddr(),
+                                                                sessionEvent.getSClientPort(),                                                               
+                                                                sessionEvent.getSServerAddr(),
+                                                                sessionEvent.getSServerPort());
                 UvmContextFactory.context().logEvent(natEvent);
             }
             
