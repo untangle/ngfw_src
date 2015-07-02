@@ -1,6 +1,5 @@
 Ext.define('Webui.untangle-node-reporting.settings', {
     extend:'Ung.NodeWin',
-    hasReports: false,
     panelStatus: null,
     panelGeneration: null,
     panelEmail: null,
