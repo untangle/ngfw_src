@@ -75,6 +75,10 @@ Ext.define('Webui.config.network', {
                 }
             }
         }
+
+        var blockReplayPacketsCheckbox = this.panelAdvanced.down('checkbox[name=blockReplayPacketsCheckbox]');
+        blockReplayPacketsCheckbox.setVisible(rpc.isExpertMode);
+        
         this.callParent(arguments);
         Ext.defer(function() {
             this.loadDeviceAndInterfaceStatus(false);
@@ -3919,6 +3923,19 @@ Ext.define('Webui.config.network', {
                     "change": {
                         fn: Ext.bind(function(elem, newValue) {
                             this.settings.blockDuringRestarts = newValue;
+                        }, this)
+                    }
+                }
+            },{
+                xtype: "checkbox",
+                name: "blockReplayPacketsCheckbox",
+                fieldLabel: this.i18n._("Block replay packets"),
+                labelWidth: 190,
+                checked: this.settings.blockReplayPackets,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.blockReplayPackets = newValue;
                         }, this)
                     }
                 }

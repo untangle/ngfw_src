@@ -46,6 +46,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean enableSipNatHelper = false;
     private boolean sendIcmpRedirects = true;
     private boolean blockInvalidPackets = true;
+    private boolean blockReplayPackets = false;
     private boolean strictArpMode = true;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
@@ -126,6 +127,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getBlockInvalidPackets() { return this.blockInvalidPackets; }
     public void setBlockInvalidPackets( boolean newValue ) { this.blockInvalidPackets = newValue; }
+
+    public boolean getBlockReplayPackets() { return this.blockReplayPackets; }
+    public void setBlockReplayPackets( boolean newValue ) { this.blockReplayPackets = newValue; }
     
     public boolean getStrictArpMode() { return this.strictArpMode; }
     public void setStrictArpMode( boolean newValue ) { this.strictArpMode = newValue; }
