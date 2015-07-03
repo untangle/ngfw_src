@@ -645,7 +645,7 @@ Ext.define('Ung.panel.Reports', {
             for(i=0; i<reportEntry.timeDataColumns.length; i++) {
                 column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
                 axesFields.push(column);
-                storeFields.push({name: column, convert: zeroFn});
+                storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
                     header: column,
@@ -818,7 +818,7 @@ Ext.define('Ung.panel.Reports', {
             }
             this.dataGrid.setColumns(reportDataColumns);
         }
-        this.chartContainer.add(chart); 
+        this.chartContainer.add(chart);
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
@@ -2127,7 +2127,6 @@ Ext.define('Ung.panel.Events', {
     loadEventEntry: function(eventEntry) {
         var i, col, sortType;
         this.eventEntry = eventEntry;
-        console.log(this.eventEntry);
         if(!eventEntry.defaultColumns) {
             eventEntry.defaultColumns = [];
         }

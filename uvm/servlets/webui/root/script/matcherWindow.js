@@ -23,15 +23,12 @@ Ext.define('Ung.MatcherEditorWindow', {
         Ung.Window.superclass.onShow.call(this);
         this.setSize({width:this.width,height:this.height});
     },
-    populate: function(record, value, rulebuilder) {
-        this.record = record;
-        this.rulebuilder = rulebuilder;
-        this.setValue(value);
+    populate: function(button) {
+        this.button = button;
+        this.setValue(button.getValue());
     },
     updateAction: function() {
-        this.record.set("value", this.getValue());
-        this.rulebuilder.dirtyFlag = true;
-        this.rulebuilder.fireEvent("afteredit");
+        this.button.setValue(this.getValue());
         this.hide();
     },
     cancelAction: function() {
@@ -333,7 +330,7 @@ Ext.define('Ung.UserEditorWindow', {
         }];
         this.callParent(arguments);
     },
-    populate: function(record, value, rulebuilder) {
+    populate: function(button) {
         var data = [];
         var node;
         try {
@@ -396,7 +393,6 @@ Ext.define('Ung.GroupEditorWindow', {
     initComponent: function() {
         this.gridPanel = Ext.create('Ext.grid.Panel', {
             title: i18n._('Groups'),
-            id: 'groupsGrid_'+this.getId(),
             height: 300,
             width: 400,
             enableColumnHide: false,
@@ -449,43 +445,36 @@ Ext.define('Ung.GroupEditorWindow', {
             listeners: {
                 "change": {
                     fn: Ext.bind(function(elem, checked) {
-                        if (checked) {
-                            Ext.getCmp('groupsGrid_'+this.getId()).enable();
-                            Ext.getCmp('group_custom_value_'+this.getId()).disable();
-                        } else {
-                            Ext.getCmp('groupsGrid_'+this.getId()).disable();
-                            Ext.getCmp('group_custom_value').enable();
-                        }
+                        this.gridPanel.setDisabled(!checked);
+                        this.gropuCustomValue.setDisabled(checked);
                     }, this)
                 }
             }
         }, this.gridPanel, {
             xtype: 'radio',
             name: 'groupMethod',
-            id: 'group_method_custom_'+this.getId(),
+            groupMethodCustom: true,
             boxLabel: i18n._('Specify a Custom Value'),
             listeners: {
                 "change": {
                     fn: Ext.bind(function(elem, checked) {
-                        if (!checked) {
-                            Ext.getCmp('groupsGrid_'+this.getId()).enable();
-                            Ext.getCmp('group_custom_value_'+this.getId()).disable();
-                        } else {
-                            Ext.getCmp('groupsGrid_'+this.getId()).disable();
-                            Ext.getCmp('group_custom_value_'+this.getId()).enable();
-                        }
+                        this.gridPanel.setDisabled(checked);
+                        this.gropuCustomValue.setDisabled(!checked);
                     }, this)
                 }
             }
         }, {
             xtype:'textfield',
-            id: 'group_custom_value_'+this.getId(),
+            name: 'gropuCustomValue',
             width: 250,
             allowBlank:false
         }];
         this.callParent(arguments);
+        
+        this.groupMethodCustom = this.down("radio[groupMethodCustom]");
+        this.gropuCustomValue = this.down("textfield[name=gropuCustomValue]");
     },
-    populate: function(record, value, rulebuilder) {
+    populate: function(button) {
         var data = [];
         var node;
         try {
@@ -506,18 +495,13 @@ Ext.define('Ung.GroupEditorWindow', {
         this.callParent(arguments);
     },
     setValue: function(value) {
-        var group_method_custom = Ext.getCmp('group_method_custom_'+this.getId());
-        var group_custom_value = Ext.getCmp('group_custom_value_'+this.getId());
-
         this.gridPanel.getStore().load();
-        group_method_custom.setValue(true);
-        group_custom_value.setValue(value);
+        this.groupMethodCustom.setValue(true);
+        this.gropuCustomValue.setValue(value);
     },
     getValue: function() {
-        var group_method_custom = Ext.getCmp('group_method_custom_'+this.getId());
-        if (group_method_custom.getValue()) {
-            var group_custom_value = Ext.getCmp('group_custom_value_'+this.getId());
-            return group_custom_value.getValue();
+        if (this.groupMethodCustom.getValue()) {
+            return this.gropuCustomValue.getValue();
         } else{
             var str = "";
             var first = true;

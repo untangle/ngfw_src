@@ -31,7 +31,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     },
     getAlertRuleMatchers: function () {
         return [
-            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false, formatValue: function(value) {
+            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, disableInvert: true, allowMultiple: true, allowBlank: false, formatValue: function(value) {
                 var result= "";
                 if(value) {
                     result = value.field + " " + value.comparator + " " + value.value;
