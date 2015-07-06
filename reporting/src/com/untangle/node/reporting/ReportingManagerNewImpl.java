@@ -168,7 +168,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         setReportEntries( reportEntries );
         return;
     }
-
     
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
@@ -274,6 +273,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
+        logger.debug( "getEvents(): " + entry.toSqlQuery() );
         return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), policyId, extraConditions, limit, null, null );
     }
 
