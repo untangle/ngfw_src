@@ -292,6 +292,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
+        logger.debug( "getEvents(): " + entry.toSqlQuery() );
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), policyId, extraConditions, limit, startDate, endDate );
     }
 
