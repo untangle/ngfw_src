@@ -4062,9 +4062,9 @@ Ext.define('Ung.panel.Events', {
                                             if( action == 3){
                                                 meta.style = "background-color:#ffff99";
                                             }else if(action == 2){
-                                                meta.style = "background-color:#d9f5cb";
-                                            }else if(action == 1){
                                                 meta.style = "background-color:#ffdfd9";
+                                            }else if(action == 1){
+                                                meta.style = "background-color:#d9f5cb";
                                             }
                                             return value;
                                         };
@@ -4122,7 +4122,7 @@ Ext.define('Ung.panel.Events', {
                                                         previousLine = diffLines[i].substr(1,510);
                                                         currentAction = diffLines[i].substr(511,1);
                                                         currentLine = diffLines[i].substr(512);
-
+                                                        
                                                         if( previousAction != "<" && previousAction != ">"){
                                                             previousLine = previousAction + previousLine;
                                                             previousAction = -1;
@@ -4134,9 +4134,9 @@ Ext.define('Ung.panel.Events', {
 
                                                         if( currentAction == "|" ){
                                                             action = 3;
-                                                        }else if(previousAction != -1){
+                                                        }else if(currentAction == "<"){
                                                             action = 2;
-                                                        }else if(currentAction != -1){
+                                                        }else if(currentAction == ">"){
                                                             action = 1;
                                                         }else{
                                                             action = 0;
