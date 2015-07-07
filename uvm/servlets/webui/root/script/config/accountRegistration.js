@@ -3,16 +3,12 @@ Ext.define('Webui.config.accountRegistration', {
     helpSource: 'account_registration',
     doSize: function() {
         var objSize = Ung.Main.viewport.getSize();
-        objSize.width = objSize.width - Ung.Main.contentLeftWidth;
-        
-        if(objSize.width < 800 || objSize.height < 470) {
-            this.setPosition(Ung.Main.contentLeftWidth, 0);
-        } else {
-            this.setPosition(Ung.Main.contentLeftWidth + Math.round((objSize.width-850)/2), Math.round((objSize.height-470)/2));
-            objSize.width = 800;
-            objSize.height = 470;
-        }
-        this.setSize(objSize);
+        var width = Math.min(770, objSize.width - Ung.Main.contentLeftWidth);
+        var height = Math.min(470, objSize.height);
+        var x = Ung.Main.contentLeftWidth + Math.round((objSize.width - Ung.Main.contentLeftWidth-width)/2); 
+        var y = Math.round((objSize.height-height)/2);
+        this.setPosition(x, y);
+        this.setSize({width:width, height: height});
     },
     initComponent: function() {
         this.breadcrumbs = [{
@@ -44,7 +40,7 @@ Ext.define('Webui.config.accountRegistration', {
                 layout: 'card',
                 flex: 1,
                 items: [
-                
+                //Welcome Step
                 {
                     xtype: 'container',
                     itemId: 'step1',
@@ -96,8 +92,6 @@ Ext.define('Webui.config.accountRegistration', {
                         }
                     }]
                 }, 
-                
-                
                 {
                     xtype: 'container',
                     itemId: 'step2',
@@ -235,9 +229,7 @@ Ext.define('Webui.config.accountRegistration', {
                         }]
                     }]
                 }, 
-                
-                
-                
+                //Subscriptions step
                 {
                     xtype: 'container',
                     itemId: 'step3',
@@ -267,7 +259,7 @@ Ext.define('Webui.config.accountRegistration', {
                                 padding: '7 10 7 10',
                                 width: 150,
                                 handler: function() {
-                                    this.openMyAccount();
+                                    Ung.Main.openMyAccountScreen();
                                 },
                                 scope: this
                             }, {
@@ -284,8 +276,7 @@ Ext.define('Webui.config.accountRegistration', {
                         }
                     }]
                 },
-                
-                
+                //Voucher step
                 {
                     xtype: 'container',
                     itemId: 'step4',
@@ -332,9 +323,7 @@ Ext.define('Webui.config.accountRegistration', {
                         }
                     }]
                 },
-                
-                
-                
+                //Finish step
                 {
                     xtype: 'container',
                     itemId: 'step5',
@@ -388,25 +377,29 @@ Ext.define('Webui.config.accountRegistration', {
         this.setLoading(true);
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/account/login",
-            type: 'GET',
             scope: this,
-            headers: {
-                "Authorization": 'Basic ' + Ung.Util.btoa(emailAddress.getValue()+":"+password.getValue())
-            },
             params: {
+                email: emailAddress.getValue(),
+                password: password.getValue(),
                 uid: rpc.serverUID
             },
             success: function(response, opts) {
                 this.setLoading(false);
-                console.log(response);
-                if( response!=null && response.token) {
-                    this.token = response.token;
-                    this.checkSubscriptions();
+                if( response!=null) {
+                    if(response.customerMessage) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                    if(response.token) {
+                        this.email = emailAddress.getValue();
+                        this.token = response.token;
+                        this.checkSubscriptions();
+                    }
                 }
             },
             failure: function(response, opts) {
                 this.setLoading(false);
-                console.log("Failed to access the login api: ", response, this.storeApiUrl+"/account/login");
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to login"));
             }
         });
     },
@@ -443,8 +436,7 @@ Ext.define('Webui.config.accountRegistration', {
         }
         this.setLoading(true);
         Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/account",
-            type: 'POST',
+            url: this.storeApiUrl+"/account/create",
             scope: this,
             params: {
                 email: emailAddress.getValue(), 
@@ -456,15 +448,21 @@ Ext.define('Webui.config.accountRegistration', {
             },
             success: function(response, opts) {
                 this.setLoading(false);
-                console.log(response);
-                if( response!=null && response.token) {
-                    this.token = response.token;
-                    this.checkSubscriptions();
+                if( response!=null) {
+                    if(response.customerMessage) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                    if(response.token) {
+                        this.email = emailAddress.getValue();
+                        this.token = response.token;
+                        this.checkSubscriptions();
+                    }
                 }
             },
             failure: function(response, opts) {
                 this.setLoading(false);
-                console.log("Failed to access the registration api: ", response, this.storeApiUrl+"/account");
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to create the account"));
             }
             
         });
@@ -473,35 +471,35 @@ Ext.define('Webui.config.accountRegistration', {
         this.setLoading(true);
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/subscriptions",
-            type: 'POST',
             params: {
-                uid: rpc.serverUID
-            },
-            headers: {
-                'Authorization': 'Basic '+this.token
+                email: this.email,
+                token: this.token
             },
             success: function(response, opts) {
                 this.setLoading(false);
-                console.log(response);
-                if( response!=null && response.subscriptions && response.subscriptions.length>0) {
-                    this.down("container[name=cardsContainer]").setActiveItem("step3");
-                } else {
-                    this.checkVoucher();
+                if( response!=null) {
+                    if(response.customerMessage) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                    if( response.subscriptions && response.subscriptions.length>0) {
+                        this.down("container[name=cardsContainer]").setActiveItem("step3");
+                    } else {
+                        this.checkVoucher();
+                    }
                 }
+                
             },
             failure: function(response, opts) {
                 this.setLoading(false);
-                console.log("Failed to access the subscriptions api: ", response, this.storeApiUrl+"/subscriptions");
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to check the subscriptions"));
             },
             scope: this
         });
     },
-    openMyAccount: function() {
-        //TODO: implement this
-    },
     checkVoucher: function() {
         this.setLoading(true);
-        rpc.jsonrpc.UvmContext.isVoucher(function(result, exception) {
+        rpc.jsonrpc.UvmContext.isVoucher(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             if(result) {
@@ -510,7 +508,7 @@ Ext.define('Webui.config.accountRegistration', {
                 this.finished = true;
                 this.down("container[name=cardsContainer]").setActiveItem("step5");
             }
-        });
+        }, this));
     },
     redeemVoucher: function() {
         var voucher = form.down("textfield[name=voucher]").getValue().trim();
@@ -522,19 +520,19 @@ Ext.define('Webui.config.accountRegistration', {
             Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
             return;
         }
-        //TODO: call redeemVoucher api
+        //TODO: call redeemVoucher api if this will be implemented
     },
     closeWindow: function() {
         if(this.finished) {
             var url = rpc.storeUrl + "?" + "action=is_registered" + "&" + Ung.Main.about();
             Ext.data.JsonP.request({
                 url: url,
-                type: 'GET',
                 success: function(response, opts) {
                     if( response!=null && response.registered) {
                         rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             rpc.isRegistered = true;
+                            Ung.Main.showPostRegistrationPopup();
                         });
                     }
                 },
