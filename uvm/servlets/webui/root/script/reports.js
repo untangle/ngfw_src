@@ -4084,16 +4084,16 @@ Ext.define('Ung.panel.Events', {
                                                     }
                                                 ),
                                                 columns:[{
-                                                    text: "Line",
+                                                    text: i18n._("Line"),
                                                     dataIndex: "line",
                                                     renderer: columnRenderer
                                                 },{
-                                                    text: "Previous",
+                                                    text: i18n._("Previous"),
                                                     flex: 1,
                                                     dataIndex: "previous",
                                                     renderer: columnRenderer
                                                 },{
-                                                    text: "Current",
+                                                    text: i18n._("Current"),
                                                     flex: 1,
                                                     dataIndex: "current",
                                                     renderer: columnRenderer
