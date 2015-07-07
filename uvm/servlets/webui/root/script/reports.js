@@ -2154,6 +2154,7 @@ Ext.define('Ung.panel.Events', {
         } else {
             var columnsNames = {};
             for(i=0; i< tableConfig.columns.length; i++) {
+                col = tableConfig.columns[i].dataIndex;
                 columnsNames[col]=true;
                 col = tableConfig.columns[i];
                 if((eventEntry.defaultColumns.length>0) && (eventEntry.defaultColumns.indexOf(col.dataIndex) < 0)) {
