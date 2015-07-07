@@ -75,6 +75,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
+    private static final String VOUCHER_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/voucher-flag";
 
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store/open.php";
@@ -482,6 +483,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 logger.error("Failed to create registration file", e);
             }
         }
+    }
+
+    public boolean isVoucher()
+    {
+        File keyFile = new File(VOUCHER_FLAG_FILE);
+        return keyFile.exists();
     }
 
     /**

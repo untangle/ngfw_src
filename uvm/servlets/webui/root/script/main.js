@@ -54,6 +54,8 @@ Ext.define("Ung.Main", {
         }, this));
     },
     startApplication: function() {
+        rpc.isRegistered = false;
+        
         if(Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
@@ -234,9 +236,11 @@ Ext.define("Ung.Main", {
         var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
         window.open(url); // open a new window
     },
-    openRegistrationScreen: function() {
-        var url = rpc.storeUrl + "?" + "action=register" + "&" + this.about();
-        this.openIFrame( url, i18n._("Register"));
+    openRegistrationScreen: function () {
+        Ext.require(['Webui.config.accountRegistration'], function() {
+            Webui.config.accountRegistrationWin = Ext.create('Webui.config.accountRegistration', {});
+            Webui.config.accountRegistrationWin.show();
+        }, this);
     },
     openMyAccountScreen: function() {
         var url = rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
@@ -1090,7 +1094,7 @@ Ext.define("Ung.Main", {
                 Ung.Main.openFailureScreen();
             } else {
                 Ung.Main.openRegistrationScreen();
-                Ung.CheckStoreRegistration.start();
+                //Ung.CheckStoreRegistration.start();
             }
         }, this));
     },

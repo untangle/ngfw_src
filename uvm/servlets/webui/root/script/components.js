@@ -820,6 +820,7 @@ Ung.MetricManager = {
         }, this));
     }
 };
+/*
 //Check Store Registration Loop
 Ung.CheckStoreRegistration = {
     // update interval in millisecond
@@ -864,7 +865,7 @@ Ung.CheckStoreRegistration = {
         });
     }
 };
-
+*/
 Ext.define("Ung.SystemStats", {
     extend: "Ext.Component",
     renderTo: "rack-list",

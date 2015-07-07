@@ -327,6 +327,11 @@ public interface UvmContext
     void    setRegistered();
     
     /**
+     * Returns true if this server was has a voucher
+     *
+     * @return a <code>boolean</code> value
+     */boolean isVoucher();
+    /**
      * blocks until startup is complete
      */
     void waitForStartup();
