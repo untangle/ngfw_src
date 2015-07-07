@@ -106,6 +106,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private MetricManagerImpl metricManager;
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
+    private InheritableThreadLocal<HttpServletRequest> threadRequest;
     private TomcatManagerImpl tomcatManager;
     private ServletFileManagerImpl servletFileManager;
     private SettingsManagerImpl settingsManager;
@@ -123,7 +124,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
-
+    
     // constructor ------------------------------------------------------------
 
     private UvmContextImpl()
@@ -282,6 +283,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         ExecManagerImpl execManager = new ExecManagerImpl();
         execManager.setSerializer(serializer);
         return execManager;
+    }
+
+    public InheritableThreadLocal<HttpServletRequest> threadRequest()
+    {
+        return threadRequest;
     }
 
     public TomcatManager tomcatManager()
@@ -670,7 +676,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
         return json;
     }
-
+    
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -710,7 +716,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.loggingManager = new LoggingManagerImpl();
 
-        InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
+        this.threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 
         this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.home"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
 

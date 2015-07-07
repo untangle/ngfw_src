@@ -23,6 +23,8 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * The top-level untangle-vm API
  */
@@ -190,6 +192,11 @@ public interface UvmContext
      * @return the UploadManager
      */
     ServletFileManager servletFileManager();
+
+    /**
+     * Get the HTTP Servelet thread request
+     */
+    InheritableThreadLocal<HttpServletRequest> threadRequest = null;
 
     /**
      * Get the TomcatManager
