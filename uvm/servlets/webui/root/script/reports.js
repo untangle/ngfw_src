@@ -112,6 +112,7 @@ Ext.define('Ung.panel.Reports', {
                     sender: i18n._('Sender'),
                     server_intf: i18n._('Server Interface'),
                     session_id: i18n._('Session ID'),
+                    settings_file: i18n._('Settings File'),
                     shield_blocked: 'Shield ' + i18n._('Blocked'),
                     sig_id: i18n._('Signature ID'),
                     size: i18n._('Size'),
@@ -4003,7 +4004,163 @@ Ext.define('Ung.panel.Events', {
                             flex: 1,
                             dataIndex: 'reason'
                         }]
-                    } 
+                    },
+                    settings_changes: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'hostname',
+                        }, {
+                            name: 'settings_file'
+                        }, {
+                            name: 'actions'
+                        }],
+                        // the list of columns
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Username"),
+                            width: Ung.Util.usernameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'username'
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
+                            header: i18n._("Settings File"),
+                            flex:1,
+                            width: Ung.Util.uriFieldWidth,
+                            dataIndex: 'settings_file',
+                            renderer: function( value ){
+                                value = value.replace( /^.*\/settings\//, "" );
+                                return value;
+                            }
+                        }, {
+                            header: i18n._("Differences"),
+                            xtype: 'actioncolumn',
+                            align: 'center',
+                            dataIndex: 'settings_file',
+                            width: 100,
+                            items: [{
+                                icon: '/skins/default/images/admin/icon_detail.png',
+                                tooltip: i18n._("Show difference between previous version"),
+                                handler: function(grid, rowIndex, colIndex, item, e, record){
+                                    if( !this.diffWindow ){
+                                        var columnRenderer = function(value, meta, record){
+                                            var action = record.get("action");
+                                            if( action == 3){
+                                                meta.style = "background-color:#ffff99";
+                                            }else if(action == 2){
+                                                meta.style = "background-color:#d9f5cb";
+                                            }else if(action == 1){
+                                                meta.style = "background-color:#ffdfd9";
+                                            }
+                                            return value;
+                                        };
+                                        this.diffWindow = Ext.create('Ext.Window',{
+                                            layout: 'fit',
+                                            width: Ext.getBody().getViewSize().width,
+                                            height: Ext.getBody().getViewSize().height,
+                                            modal: true,
+                                            title: i18n._('Settings Difference'),
+                                            closeAction: 'hide',
+                                            items: {
+                                                xtype: 'grid',
+                                                cls: 'diff-grid',
+                                                store: Ext.create( 'Ext.data.Store',{
+                                                    fields: [ 'line', 'previous', 'current', 'action' ],
+                                                    data: []
+                                                    }
+                                                ),
+                                                columns:[{
+                                                    text: "Line",
+                                                    dataIndex: "line",
+                                                    renderer: columnRenderer
+                                                },{
+                                                    text: "Previous",
+                                                    flex: 1,
+                                                    dataIndex: "previous",
+                                                    renderer: columnRenderer
+                                                },{
+                                                    text: "Current",
+                                                    flex: 1,
+                                                    dataIndex: "current",
+                                                    renderer: columnRenderer
+                                                }]
+                                            },
+                                            buttons: [{
+                                                text: i18n._("Close"),
+                                                handler: Ext.bind(function() {
+                                                    this.diffWindow.destroy();
+                                                    this.diffWindow = null;
+                                                }, this)
+                                            }],
+                                            update: function(fileName){
+                                                rpc.jsonrpc.UvmContext.settingsManager().getDiff(Ext.bind(function(result,exception){
+                                                    if(Ung.Util.handleException(exception)){
+                                                        return;
+                                                    }
+                                                    var diffData = [];
+                                                    var diffLines = result.split("\n");
+                                                    var lineNum;
+                                                    var action;
+                                                    for( var i = 0; i < diffLines.length; i++){
+                                                        lineNum = (i + 1);
+
+                                                        previousAction = diffLines[i].substr(0,1);
+                                                        previousLine = diffLines[i].substr(1,510);
+                                                        currentAction = diffLines[i].substr(511,1);
+                                                        currentLine = diffLines[i].substr(512);
+
+                                                        if( previousAction != "<" && previousAction != ">"){
+                                                            previousLine = previousAction + previousLine;
+                                                            previousAction = -1;
+                                                        }
+                                                        if( currentAction != "<" && currentAction != ">" && currentAction != "|"){
+                                                            currentLine = currentAction + currentLine;
+                                                            currentAction = -1;
+                                                        }
+
+                                                        if( currentAction == "|" ){
+                                                            action = 3;
+                                                        }else if(previousAction != -1){
+                                                            action = 2;
+                                                        }else if(currentAction != -1){
+                                                            action = 1;
+                                                        }else{
+                                                            action = 0;
+                                                        }
+
+                                                        diffData.push({
+                                                            line: (i + 1),
+                                                            previous: previousLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                            current: currentLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                            action: action
+                                                        });
+                                                    }
+
+                                                    this.down("grid").store.loadData(diffData);
+                                                },this), fileName);
+                                            }
+                                        });
+                                    }
+                                    this.diffWindow.show();
+                                    this.diffWindow.update(record.get("settings_file"));
+                                }
+                            }]
+                        }]
+                    }
                 };
                 var key, columns, i;
                 for(key in this.tableConfig) {
