@@ -22,7 +22,7 @@ Ext.define('Webui.config.accountRegistration', {
             if(Ung.Util.handleException(exception)) return;
             rpc.serverUID = result;
         }, this));
-        this.storeApiUrl = rpc.storeUrl + "/api/v1";
+        this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
         console.log("storeApiUrl:", this.storeApiUrl);
         this.items = {
             xtype: 'panel',
@@ -389,9 +389,11 @@ Ext.define('Webui.config.accountRegistration', {
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/account/login",
             type: 'GET',
+            scope: this,
+            headers: {
+                "Authorization": 'Basic ' + Ung.Util.btoa(emailAddress.getValue()+":"+password.getValue())
+            },
             params: {
-                email: emailAddress.getValue(), 
-                password: password.getValue(),
                 uid: rpc.serverUID
             },
             success: function(response, opts) {
@@ -405,8 +407,7 @@ Ext.define('Webui.config.accountRegistration', {
             failure: function(response, opts) {
                 this.setLoading(false);
                 console.log("Failed to access the login api: ", response, this.storeApiUrl+"/account/login");
-            },
-            scope: this
+            }
         });
     },
     register: function() {
@@ -444,6 +445,7 @@ Ext.define('Webui.config.accountRegistration', {
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/account",
             type: 'POST',
+            scope: this,
             params: {
                 email: emailAddress.getValue(), 
                 password: password.getValue(),
@@ -463,8 +465,8 @@ Ext.define('Webui.config.accountRegistration', {
             failure: function(response, opts) {
                 this.setLoading(false);
                 console.log("Failed to access the registration api: ", response, this.storeApiUrl+"/account");
-            },
-            scope: this
+            }
+            
         });
     },
     checkSubscriptions: function() {

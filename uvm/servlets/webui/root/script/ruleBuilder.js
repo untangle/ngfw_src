@@ -14,7 +14,6 @@ Ext.define('Ung.RuleBuilder', {
         });
         this.matcherTypeStore = Ext.create('Ext.data.Store', {
             filters: [this.visibleFilter],
-            sorters: "displayName",
             fields: ["name", "displayName"],
             data: [{name: "", displayName: ""}].concat(this.matchers)
         });
@@ -22,7 +21,6 @@ Ext.define('Ung.RuleBuilder', {
             fields: ["name", "displayName"],
             data: [{name: false, displayName: i18n._("is")}, {name: true, displayName: i18n._("is NOT")}]
         });
-        
         this.items = [{
             xtype: 'container',
             layout: 'column',

@@ -350,10 +350,13 @@ Ext.define('Ung.panel.Reports', {
                         return value;
                     }
                 }],
-                listeners: {
-                    rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                        this.loadReport(Ext.clone(record.getData()));
-                    }, this)
+                selModel: {
+                    selType: 'rowmodel',
+                    listeners: {
+                        select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
+                            this.loadReport(Ext.clone(record.getData()));
+                        }, this)
+                    }
                 }
             
             });
@@ -596,9 +599,6 @@ Ext.define('Ung.panel.Reports', {
                 }]
             };
 
-            if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
-                chart.colors = reportEntry.colors;
-            }
             this.dataGrid.setColumns([{
                 dataIndex: reportEntry.pieGroupColumn,
                 header: reportEntry.pieGroupColumn,
@@ -737,10 +737,6 @@ Ext.define('Ung.panel.Reports', {
                 }]
             };
 
-            if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
-                chart.colors = reportEntry.colors;
-            }
-            
             if (reportEntry.timeStyle == 'LINE') {
                 for(i=0; i<axesFields.length; i++) {
                     series.push({
@@ -818,6 +814,15 @@ Ext.define('Ung.panel.Reports', {
             }
             this.dataGrid.setColumns(reportDataColumns);
         }
+        
+        if(chart.xtype!= 'draw') {
+            if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
+                chart.colors = reportEntry.colors;
+            } else {
+                chart.colors = ['#CED428', '#33BDBF', '#F7AF1C', '#898A7A', '#2F606E', '#CFCDBE', '#5B5A4B', '#A9BD38', '#C8441A', '#00898B', '#D0CDBE'];
+            }
+        }
+        
         this.chartContainer.add(chart);
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
@@ -1082,7 +1087,6 @@ Ext.define('Ung.panel.Reports', {
     },
     selectInitialReport: function() {
         this.down("grid[name=entriesGrid]").getSelectionModel().select(this.initialEntryIndex);
-        this.loadReport(Ext.clone(this.reportEntries[this.initialEntryIndex]));
     },
     listeners: {
         "activate": {
@@ -1923,10 +1927,13 @@ Ext.define('Ung.panel.Events', {
                 dataIndex: 'title',
                 flex: 1
             }],
-            listeners: {
-                rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                    this.loadEventEntry(Ext.clone(record.getData()));
-                }, this)
+            selModel: {
+                selType: 'rowmodel',
+                listeners: {
+                    select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
+                        this.loadEventEntry(Ext.clone(record.getData()));
+                    }, this)
+                }
             }
         
         }, {
@@ -2120,44 +2127,45 @@ Ext.define('Ung.panel.Events', {
         Ung.Main.getReportingManagerNew().getEventEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.entriesGrid.getStore().loadData(result.list);
-            this.entriesGrid.setHidden(result.list.length <= 1);
+            this.entriesGrid.setHidden(result.list.length == 0);
         }, this), this.category);
     },
     
     loadEventEntry: function(eventEntry) {
-        var i, col, sortType;
+        var i, col, sortType, config;
         this.eventEntry = eventEntry;
         if(!eventEntry.defaultColumns) {
             eventEntry.defaultColumns = [];
         }
         this.gridEvents.setTitle(eventEntry.title);
-        var tableConfig = Ung.panel.Events.getTableConfig(this.eventEntry.table);
+        var tableConfig = Ext.clone(Ung.panel.Events.getTableConfig(this.eventEntry.table));
         if(!tableConfig) {
+            console.log("tableConfig auto generated for table: "+this.eventEntry.table+". Consider adding it to Ung.panel.Events.getTableConfig.");
             tableConfig = {
                 fields: [],
                 columns: []
             };
             for(i=0; i< eventEntry.defaultColumns.length; i++) {
                 col = eventEntry.defaultColumns[i];
-                tableConfig.columns.push({
-                    header: Ung.panel.Reports.getColumnHumanReadableName(col),
-                    dataIndex: col,
-                    sortable: true,
-                    flex: 1
-                });
-                sortType = Ung.panel.Events.getColumnSortType(col);
-                if(sortType) {
-                    tableConfig.fields.push({
-                        name: col,
-                        sortType: sortType
-                    });
-                }
+                config = Ung.panel.Events.getColumnConfig(eventEntry.defaultColumns[i]);
+                tableConfig.columns.push(config.column);
+                tableConfig.fields.push(config.field);
             }
         } else {
-            if(eventEntry.defaultColumns.length>0) {
-                for(i=0; i< tableConfig.columns.length; i++) {
-                    col = tableConfig.columns[i];
-                    col.hidden = eventEntry.defaultColumns.indexOf(col.dataIndex) < 0; 
+            var columnsNames = {};
+            for(i=0; i< tableConfig.columns.length; i++) {
+                columnsNames[col]=true;
+                col = tableConfig.columns[i];
+                if((eventEntry.defaultColumns.length>0) && (eventEntry.defaultColumns.indexOf(col.dataIndex) < 0)) {
+                    col.hidden = true;
+                }
+            }
+            for(i=0; i<eventEntry.defaultColumns.length; i++) {
+                col = eventEntry.defaultColumns[i];
+                if(!columnsNames[col]) {
+                    config = Ung.panel.Events.getColumnConfig(col);
+                    tableConfig.columns.push(config.column);
+                    tableConfig.fields.push(config.field);
                 }
             }
         }
@@ -2310,16 +2318,11 @@ Ext.define('Ung.panel.Events', {
     isDirty: function() {
         return false;
     },
-    selectInitialEvent: function() {
-        this.entriesGrid.getSelectionModel().select(0);
-        var record = this.entriesGrid.getSelectionModel().getSelection()[0];
-        this.loadEventEntry(record.getData());
-    },
     listeners: {
         "activate": {
             fn: function() {
                 if(this.category && !this.eventEntry && this.entriesGrid.getStore().getCount() > 0) {
-                    this.selectInitialEvent();
+                    this.entriesGrid.getSelectionModel().select(0);
                 }
             }
         },
@@ -2332,6 +2335,29 @@ Ext.define('Ung.panel.Events', {
         }
     },
     statics: {
+        getColumnConfig: function(columnName) {
+            var config = {
+                column: {
+                    header: Ung.panel.Reports.getColumnHumanReadableName(columnName),
+                    dataIndex: columnName,
+                    sortable: true,
+                    flex: 1
+                },
+                field: {
+                    name: columnName
+                }
+            };
+            var sortType = this.getColumnSortType(columnName);
+            if(sortType) {
+                config.field.sortType = sortType;
+            }
+            if(columnName == "time_stamp") {
+                config.column.renderer = function(value) {
+                    return i18n.timestampFormat(value);
+                };
+            }
+            return config;
+        },
         getColumnSortType: function(columnName) {
             if(!this.columnsSortTypes) {
                 this.columnsSortTypes = {
@@ -3881,7 +3907,102 @@ Ext.define('Ung.panel.Events', {
                             sortable: true,
                             dataIndex: 'c_server_addr'
                         }]
-                    }
+                    },
+                    penaltybox: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'address',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'reason'
+                        }, {
+                            name: 'start_time',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'end_time',
+                            sortType: 'asTimestamp'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'address'
+                        }, {
+                            header: i18n._("Reason"),
+                            sortable: true,
+                            flex: 1,
+                            dataIndex: 'reason'
+                        }, {
+                            header: i18n._("Start Time"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'start_time',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("End Time"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'end_time',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }]
+                    },
+                    quotas: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'address',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'action'
+                        }, {
+                            name: 'size',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'reason'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'address'
+                        }, {
+                            header: i18n._("Action"),
+                            sortable: true,
+                            dataIndex: 'action'
+                        }, {
+                            header: i18n._("Size"),
+                            sortable: true,
+                            dataIndex: 'size'
+                        }, {
+                            header: i18n._("Reason"),
+                            sortable: true,
+                            flex: 1,
+                            dataIndex: 'reason'
+                        }]
+                    } 
                 };
                 var key, columns, i;
                 for(key in this.tableConfig) {
