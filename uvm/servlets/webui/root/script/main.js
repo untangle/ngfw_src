@@ -54,7 +54,7 @@ Ext.define("Ung.Main", {
         }, this));
     },
     startApplication: function() {
-        rpc.isRegistered = false;
+        //rpc.isRegistered = false; //uncomment for testing
         
         if(Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
