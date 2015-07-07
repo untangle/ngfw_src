@@ -98,7 +98,7 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-jsFiles = FileList["./uvm/**/*.js"]
+jsFiles = FileList["./uvm/servlets/**/*.js"]
 if ( jsFiles.length > 0 ) 
   jsFiles.each do |f|
     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)

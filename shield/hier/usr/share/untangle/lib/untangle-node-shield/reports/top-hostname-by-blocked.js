@@ -1,23 +1,15 @@
 {
-    "uniqueId": "firewall-x4d7u259zk",
-    "category": "Firewall",
+    "uniqueId": "shield-81IWC45RM4",
+    "category": "Shield",
     "description": "The number of blocked sessions grouped by hostname.",
-    "displayOrder": 402,
+    "displayOrder": 200,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "hostname",
-    "pieSumColumn": "count(*)",
-    "conditions": [
-        {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "column": "firewall_blocked",
-            "operator": "=",
-            "value": "true"
-        }
-    ],
+    "pieSumColumn": "count(shield_blocked::int)",
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Hostnames",

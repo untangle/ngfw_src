@@ -273,7 +273,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        logger.debug( "getEvents(): " + entry.toSqlQuery() );
+        logger.warn( "getEvents(): " + entry.toSqlQuery() );
         return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), policyId, extraConditions, limit, null, null );
     }
 
@@ -292,7 +292,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        logger.debug( "getEvents(): " + entry.toSqlQuery() );
+        logger.warn( "getEvents(): " + entry.toSqlQuery() );
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), policyId, extraConditions, limit, startDate, endDate );
     }
 
