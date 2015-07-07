@@ -94,6 +94,14 @@ public interface SettingsManager
      */
     public <T> T loadUrl(Class<T> clz, String urlStr) throws SettingsException;
     
+    /**
+     * From the specified settings file, get the previous version and return a string diff
+     *
+     * @param fileName
+     *      Filename to compare.  Expected to be in event log format settings_dir/name.js-version-js
+     */
+    public String getDiff(String fileName) throws SettingsException;
+
     @SuppressWarnings("serial")
     public static class SettingsException extends Exception
     {
@@ -109,4 +117,5 @@ public interface SettingsManager
             super(cause);
         }
     }
+
 }

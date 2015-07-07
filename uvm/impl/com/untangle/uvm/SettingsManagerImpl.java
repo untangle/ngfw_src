@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +33,8 @@ import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.SettingsChangesEvent;
+import com.untangle.uvm.node.HostnameLookup;
 
 public class SettingsManagerImpl implements SettingsManager
 {
@@ -48,9 +51,16 @@ public class SettingsManagerImpl implements SettingsManager
     public static final Pattern FILE_EXTENSION = Pattern.compile("\\.\\w+$");
     
     /**
+     * Match for filename with leading directory
+     */ 
+    public static final Pattern FILE_MATCH = Pattern.compile("(.+)\\/([a-zA-Z0-9_\\-\\+@]+)\\.\\w+\\-version\\-([0-9\\-\\.]+)\\.\\w+$");
+    
+    /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)
      */
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmmss.SSS");
+
+    public static final int MAX_DIFF_SIZE = 5242880;
 
     /**
      * This is the actual JSON serializer
@@ -120,6 +130,66 @@ public class SettingsManagerImpl implements SettingsManager
         catch (java.io.IOException e) {
             throw new IllegalArgumentException("Invalid content in URL: '" + urlStr + "'", e);
         }
+    }
+
+    /**
+     * Documented in SettingsManager.java
+     */
+    public String getDiff(String fileName) throws SettingsException{
+        String diff;
+
+        Matcher m = FILE_MATCH.matcher(fileName);
+        if (!m.find()){
+            throw new SettingsException("Invalid file: " + fileName);
+        }
+        String directoryName = m.group(1);
+        final String baseName = m.group(2);
+        String currentVersion = m.group(3);
+
+        /**
+         * Walk directory to get most recent file with our base that is not us.
+         */
+        // 
+        File currentFile = new File(fileName);
+        final long currentFileLastModified = currentFile.lastModified();
+
+        File directory = new File(directoryName);
+        File[] directoryListing = directory.listFiles();
+        File previousFile = null;
+        if(directoryListing != null){
+            for(File df: directoryListing){
+                if(df.getName().startsWith(baseName) == false){
+                    continue;
+                }
+                if((df.lastModified() < currentFileLastModified) &&
+                    ((previousFile == null) || 
+                     (previousFile.lastModified() < df.lastModified()))
+                ){
+                    previousFile = df;
+                }
+            }
+        }
+
+        if( previousFile == null ){
+            throw new SettingsException("Could not find an earlier file to compare against.");            
+        }
+
+        if( previousFile.length() > MAX_DIFF_SIZE || currentFile.length() > MAX_DIFF_SIZE ){
+            /**
+             * Current IDPS settings diff will consume so much memory that freeing that
+             * memory will trigger a garbage collection problem that will bring down the vm
+             */
+            throw new SettingsException("Settings are too big to compare");
+        }
+
+        String command = "diff -y -W1024 -t " + previousFile.getAbsolutePath() + " " + fileName;
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
+        if ( result.getResult() > 1) {
+            throw new SettingsException("Bad result on diff");
+        }else{
+            diff = result.getOutput();
+        }
+        return diff;
     }
 
     /**
@@ -356,6 +426,22 @@ public class SettingsManagerImpl implements SettingsManager
                 Path symlink = FileSystems.getDefault().getPath( link.toString() );
                 Files.deleteIfExists( symlink );
                 Files.createSymbolicLink( symlink, target );
+            
+                String username = null;
+                String hostname = null;
+                if((UvmContextImpl.getInstance().threadRequest() != null) &&
+                   (UvmContextImpl.getInstance().threadRequest().get() != null)){
+                    username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
+                    HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                    hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
+                    if( reporting != null && hostname != null){
+                        hostname = reporting.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));
+                    }
+                    if( hostname == null ){
+                        hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
+                    }
+                }
+                UvmContextFactory.context().logEvent(new SettingsChangesEvent(outputFileName, username, hostname));
             } catch ( Exception e ) {
                 logger.warn( "Failed to create symbolic link.", e );
             }

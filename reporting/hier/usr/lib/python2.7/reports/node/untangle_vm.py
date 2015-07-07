@@ -68,6 +68,7 @@ class UvmNode(Node):
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
         self.__build_alerts_events_table()
+        self.__build_settings_changes_table()
 
     @sql_helper.print_timing
     def __get_branded_name(self):
@@ -210,6 +211,15 @@ CREATE TABLE reports.alerts (
         description text NOT NULL,
         summary_text text NOT NULL,
         json text NOT NULL)""")
+
+    @sql_helper.print_timing
+    def __build_settings_changes_table( self ):
+        sql_helper.create_table("""\
+CREATE TABLE reports.settings_changes (
+        time_stamp timestamp NOT NULL,
+        settings_file text NOT NULL,
+        username text NOT NULL,
+        hostname text NOT NULL)""")
 
     @sql_helper.print_timing
     def __make_session_counts_table(self, start_date, end_date):
