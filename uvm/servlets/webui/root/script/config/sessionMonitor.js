@@ -5,7 +5,7 @@ Ext.define('Webui.config.sessionMonitor', {
     sortOrder: 'ASC',
     bandwidthColumns: false,
     displayName: 'Session Viewer',
-    hasEvents: true,
+    hasReports: true,
     initComponent: function() {
         if(!this.breadcrumbs) {
             this.breadcrumbs = [{

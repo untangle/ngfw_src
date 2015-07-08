@@ -4,7 +4,7 @@ Ext.define('Webui.config.hostMonitor', {
     sortField:'bypassed',
     sortOrder: 'ASC',
     displayName: 'Host Viewer',
-    hasEvents: true,
+    hasReports: true,
     defaultBandwidthColumns: false,
     enableBandwidthColumns: false,
     initComponent: function() {

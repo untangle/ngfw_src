@@ -10,7 +10,7 @@ Ext.define('Webui.config.network', {
             });
         }
     },
-    hasEvents: true,
+    hasReports: true,
     gridPortForwardRules: null,
     gridNatRules: null,
     gridBypassRules: null,

@@ -1,7 +1,7 @@
 Ext.define('Webui.config.administration', {
     extend: 'Ung.ConfigWin',
     displayName: 'Administration',
-    hasEvents: true,
+    hasReports: true,
     panelAdmin: null,
     panelPublicAddress: null,
     panelCertificates: null,

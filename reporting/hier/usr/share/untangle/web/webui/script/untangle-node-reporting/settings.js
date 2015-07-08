@@ -820,7 +820,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             this.subCmps.push(this.winViewReport);
         }
         this.winViewReport.show();
-        this.winViewReport.down('panel[name=panelReports]').loadReport(reportEntry);
+        this.winViewReport.down('panel[name=panelReports]').loadReportEntry(reportEntry);
     },
     // AlertRules Panel
     buildAlertRules: function() {
