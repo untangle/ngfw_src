@@ -11,7 +11,7 @@
     "table": "sessions",
     "timeDataColumns": [
         "COUNT(*) as logged",
-        "COUNT(NULLIF(application_control_lite_blocked = true, false)) as blocked"
+        "SUM(application_control_lite_blocked::int) as blocked"
     ],
     "colors": [
         "#396c2b",
