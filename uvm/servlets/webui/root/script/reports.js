@@ -2203,7 +2203,7 @@ Ext.define('Ung.panel.Events', {
                 this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
                 this.loadResultSet(result);
-            }, this), this.eventEntry, policyId, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
+            }, this), this.eventEntry, /*policyId,*/ this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
             
         }, this));
         
@@ -2310,7 +2310,7 @@ Ext.define('Ung.panel.Events', {
         downloadForm["type"].value="eventLogExport";
         downloadForm["arg1"].value=name;
         downloadForm["arg2"].value=Ext.encode(this.eventEntry);
-        downloadForm["arg3"].value=policyId;
+        downloadForm["arg4"].value=null; /* extra conditions */
         downloadForm["arg4"].value=this.getColumnList();
         downloadForm["arg5"].value=startDate?startDate.getTime():-1;
         downloadForm["arg6"].value=endDate?endDate.getTime():-1;

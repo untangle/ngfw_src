@@ -267,26 +267,26 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return array;
     }
 
-    public ArrayList<org.json.JSONObject> getEvents(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    public ArrayList<org.json.JSONObject> getEvents(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
             return null;
         }
         logger.debug( "getEvents(): " + entry.toSqlQuery() );
-        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), policyId, extraConditions, limit, null, null );
+        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    public ResultSetReader getEventsResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments"); 
             return null;
         }
-        return getEventsForDateRangeResultSet( entry, policyId, extraConditions, limit, null, null );
+        return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date start, final Date end)
+    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date end)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
@@ -304,7 +304,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
         }
 
-        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), policyId, extraConditions, limit, startDate, endDate );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), extraConditions, limit, startDate, endDate );
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )

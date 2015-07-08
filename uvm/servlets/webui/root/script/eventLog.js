@@ -85,10 +85,10 @@ Ext.define("Ung.grid.EventLog", {
             if ( selQuery != null && selPolicy != null && selLimit != null ) {
                 if (!this.hasTimestampFilter) {
                     Ung.Main.getReportingManagerNew().getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
-                                                              selQuery, selPolicy, null, selLimit);
+                                                              selQuery, /*selPolicy,*/ null, selLimit);
                 } else {
                     Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this),
-                                                                          selQuery, selPolicy, null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
+                                                                          selQuery, /*selPolicy,*/ null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
                 }
             }
         }, this));
@@ -107,7 +107,7 @@ Ext.define("Ung.grid.EventLog", {
             downloadForm["type"].value="eventLogExport";
             downloadForm["arg1"].value=name;
             downloadForm["arg2"].value=selQuery;
-            downloadForm["arg3"].value=selPolicy;
+            downloadForm["arg3"].value=null; /* FIXME extra conditions */
             downloadForm["arg4"].value=this.getColumnList();
             downloadForm["arg5"].value=startDate?startDate.getTime():-1;
             downloadForm["arg6"].value=endDate?endDate.getTime():-1;
@@ -204,10 +204,10 @@ Ext.define("Ung.grid.EventLog", {
         if ( selQuery != null && selPolicy != null && selLimit != null ) {
             if (!this.hasTimestampFilter) {
                 Ung.Main.getReportingManagerNew().getEventsResultSet(Ext.bind(this.refreshCallback, this),
-                                                          selQuery, selPolicy, null, selLimit);
+                                                          selQuery, /*selPolicy,*/ null, selLimit);
             } else {
                 Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this),
-                                                                      selQuery, selPolicy, null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
+                                                                      selQuery, /*selPolicy,*/ null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
             }
         } else {
             this.setLoading(false);

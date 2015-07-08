@@ -104,7 +104,7 @@ public class SqlCondition implements Serializable, JSONString
         }
     }
 
-    public static void setPreparedStatementValues( PreparedStatement statement, List<SqlCondition> conditions, String table )
+    public static void setPreparedStatementValues( PreparedStatement statement, SqlCondition[] conditions, String table )
     {
         if ( conditions == null )
             return;
@@ -183,6 +183,12 @@ public class SqlCondition implements Serializable, JSONString
         } catch (Exception e ) {
             logger.warn( "Failed to set values in prepared statement.", e );
         }
+    }
+
+    public static void setPreparedStatementValues( PreparedStatement statement, List<SqlCondition> conditions, String table )
+    {
+        setPreparedStatementValues( statement, (SqlCondition[])conditions.toArray(), table );
+        return;
     }
     
 }

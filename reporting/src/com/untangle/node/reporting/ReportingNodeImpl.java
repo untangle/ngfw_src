@@ -253,18 +253,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingManagerNewImpl.getInstance();
     }
     
-    /* DEPRECATED - remove me - use ReportingManagerNew */
-    public String[] getColumnsForTable( String tableName )
-    {
-        return ReportingManagerNewImpl.getInstance().getColumnsForTable( tableName );
-    }
-
-    /* DEPRECATED - remove me - use ReportingManagerNew */
-    public String[] getTables()
-    {
-        return ReportingManagerNewImpl.getInstance().getTables();
-    }
-
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -587,25 +575,24 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             try {
                 String name = req.getParameter("arg1");
                 EventEntry query = (EventEntry) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg2") );
-                String policyIdStr = req.getParameter("arg3");
+                SqlCondition[] conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );
                 String columnListStr = req.getParameter("arg4");
                 Date startDate = getDate(req.getParameter("arg5"));
                 Date endDate = getDate(req.getParameter("arg6"));
 
-                if (name == null || query == null || policyIdStr == null || columnListStr == null) {
-                    logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
+                if (name == null || query == null || columnListStr == null) {
+                    logger.warn("Invalid parameters: " + name + " , " + query + " , " + columnListStr);
                     return;
                 }
 
-                Long policyId = Long.parseLong(policyIdStr);
-                logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
+                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
 
                 ReportingNodeImpl reporting = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
                 if (reporting == null) {
                     logger.warn("reporting node not found");
                     return;
                 }
-                ResultSetReader resultSetReader = ReportingManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, policyId, null, -1, startDate, endDate);
+                ResultSetReader resultSetReader = ReportingManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);
                 toCsv( resultSetReader, resp, columnListStr, name );
             } catch (Exception e) {
                 logger.warn( "Failed to build CSV.", e );

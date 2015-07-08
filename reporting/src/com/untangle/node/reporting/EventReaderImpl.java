@@ -112,9 +112,8 @@ public class EventReaderImpl
             throw new RuntimeException("Unable to connect to DB.");
         }
 
-        /**
-         * FIXME use conditions!!! XXXXXX
-         */
+        /* FIXME */
+        //setPreparedStatementValues( statement, conditions, table );
         
         try {
             return getEventsResultSet( dbConnection, statement, limit );
@@ -184,15 +183,13 @@ public class EventReaderImpl
         } 
     }
     
-    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
+    public ResultSetReader getEventsResultSet( final String query, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
-        if ( policyId == null || policyId == -1 ) {
-            queryStr = queryStr.replace("= :policyId","is not null");
-            queryStr = queryStr.replace("=:policyId","is not null");
-        } else {
-            queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
-        }
+        /* FIXME this is to support the old queries. This should be removed once the :policyId conditions have been removed */
+        queryStr = queryStr.replace("= :policyId","is not null");
+        queryStr = queryStr.replace("=:policyId","is not null");
+
         if (startDate != null || endDate != null) {
 
             String tmpStr = queryStr.toLowerCase();
@@ -226,14 +223,14 @@ public class EventReaderImpl
         if (limit > 0)
             queryStr += " LIMIT " + limit + " ";
 
-        logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
+        logger.debug("getEventsResultSet( query: " + query + " limit: " + limit + " )");
 
         return getEventsResultSet( queryStr, conditions, limit );
     }
 
-    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate)
+    public ArrayList<JSONObject> getEvents(final String query, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate)
     {
-        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, conditions, limit, startDate, endDate);
+        ResultSetReader resultSetReader = getEventsResultSet( query, conditions, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
     }
 

@@ -51,17 +51,17 @@ public interface ReportingManagerNew
     /**
      * Query events in the reports database
      */
-    ArrayList<org.json.JSONObject> getEvents( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    ArrayList<org.json.JSONObject> getEvents( final EventEntry entry, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database
      */
-    ResultSetReader getEventsResultSet( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    ResultSetReader getEventsResultSet( final EventEntry entry, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database, within a given date range
      */
-    ResultSetReader getEventsForDateRangeResultSet( final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
+    ResultSetReader getEventsForDateRangeResultSet( final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 
     /**
      * Get a list of all tables in the database
