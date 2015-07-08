@@ -187,7 +187,7 @@ public class SqlCondition implements Serializable, JSONString
 
     public static void setPreparedStatementValues( PreparedStatement statement, List<SqlCondition> conditions, String table )
     {
-        setPreparedStatementValues( statement, (SqlCondition[])conditions.toArray(), table );
+        setPreparedStatementValues( statement, conditions.toArray( new SqlCondition[0]), table );
         return;
     }
     
