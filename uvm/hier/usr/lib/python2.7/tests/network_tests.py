@@ -493,7 +493,7 @@ class NetworkTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
-        events = global_functions.get_events('Network','Port Forwarded Sessions',None,None,5)
+        events = global_functions.get_events('Network','Port Forwarded Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", test_untangle_com_ip,
@@ -653,7 +653,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
         assert (result3 == 0)
 
-        events = global_functions.get_events('Network','Bypassed Sessions',None,None,20)
+        events = global_functions.get_events('Network','Bypassed Sessions',None,20)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 20, 
                                             "s_server_addr", test_untangle_com_ip,
