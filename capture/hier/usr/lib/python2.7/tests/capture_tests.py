@@ -119,7 +119,7 @@ def findNameInHostTable (hostname='test'):
     for i in range(len(sessionList)):
         print sessionList[i]
         # print "------------------------------"
-        if (sessionList[i]['address'] == remote_control.clientIP) and (sessionList[i]['username'] == hostname)):
+        if (sessionList[i]['address'] == remote_control.clientIP) and (sessionList[i]['username'] == hostname):
             foundTestSession = True
             break
     remote_control.runCommand("pkill netcat")
