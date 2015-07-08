@@ -386,7 +386,7 @@ Ext.define('Webui.config.accountRegistration', {
             success: function(response, opts) {
                 this.setLoading(false);
                 if( response!=null) {
-                    if(response.customerMessage) {
+                    if(!response.success) {
                         Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
                         return;
                     }
@@ -449,7 +449,7 @@ Ext.define('Webui.config.accountRegistration', {
             success: function(response, opts) {
                 this.setLoading(false);
                 if( response!=null) {
-                    if(response.customerMessage) {
+                    if(!response.success) {
                         Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
                         return;
                     }
@@ -478,7 +478,7 @@ Ext.define('Webui.config.accountRegistration', {
             success: function(response, opts) {
                 this.setLoading(false);
                 if( response!=null) {
-                    if(response.customerMessage) {
+                    if(!response.success) {
                         Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
                         return;
                     }

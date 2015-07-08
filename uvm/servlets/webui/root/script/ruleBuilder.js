@@ -262,7 +262,7 @@ Ext.define('Ung.RuleBuilder', {
         
         Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
             matcherType = item.down("[dataIndex=matcherType]").getValue();
-            if(matcherType != "") {
+            if(!Ext.isEmpty(matcherType)) {
                 list.push({
                     javaClass: me.javaClass,
                     matcherType: matcherType,
