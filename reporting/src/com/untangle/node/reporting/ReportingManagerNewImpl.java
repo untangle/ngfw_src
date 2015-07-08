@@ -286,13 +286,24 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return getEventsForDateRangeResultSet( entry, policyId, extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
+    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date start, final Date end)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
             return null;
         }
         logger.debug( "getEvents(): " + entry.toSqlQuery() );
+
+        Date startDate = start;
+        Date endDate = end;
+        
+        if ( endDate == null )
+            endDate = new Date(); // now
+        if ( startDate == null ) {
+            logger.warn("startDate not specified, using 1 day ago");
+            startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
+        }
+
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), policyId, extraConditions, limit, startDate, endDate );
     }
 
