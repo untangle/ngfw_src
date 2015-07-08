@@ -177,7 +177,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         logger.info("SQL              : " + sql);
 
         long t0 = System.currentTimeMillis();
-        ArrayList<JSONObject> results = ReportingNodeImpl.eventReader.getEvents( sql, limit );
+        ArrayList<JSONObject> results = ReportingNodeImpl.eventReader.getEvents( sql, entry.getTable(), limit );
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
@@ -274,7 +274,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             return null;
         }
         logger.debug( "getEvents(): " + entry.toSqlQuery() );
-        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), extraConditions, limit, null, null );
+        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), entry.getTable(), extraConditions, limit, null, null );
     }
 
     public ResultSetReader getEventsResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
@@ -304,7 +304,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
         }
 
-        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), extraConditions, limit, startDate, endDate );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), entry.getTable(), extraConditions, limit, startDate, endDate );
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
