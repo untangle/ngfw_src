@@ -103,7 +103,7 @@ def getDownloadSpeed():
     except Exception,e:
         return None
 
-def get_events( eventEntryCategory, eventEntryTitle, rackId, conditions, limit ):
+def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
     reporting = Uvm().getUvmContext().nodeManager().node("untangle-node-reporting")
     if reporting == None:
         print "WARNING: reporting node not found"
@@ -118,7 +118,7 @@ def get_events( eventEntryCategory, eventEntryTitle, rackId, conditions, limit )
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
 
-    return reportingManager.getEvents( eventEntry, rackId, conditions, limit)
+    return reportingManager.getEvents( eventEntry, conditions, limit)
 
 def check_events( events, num_events, *args, **kwargs):
     if events == None:

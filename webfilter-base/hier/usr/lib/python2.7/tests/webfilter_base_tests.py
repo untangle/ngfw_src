@@ -361,7 +361,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
 
-        events = global_functions.get_events(self.displayName(),'Blocked Web Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -378,7 +378,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
 
-        events = global_functions.get_events(self.displayName(),'Flagged Web Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Flagged Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -394,7 +394,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
 
-        events = global_functions.get_events(self.displayName(),'All Web Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 

@@ -228,7 +228,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result==0)
         assert(listOfClients['list'][0]['address'] == vpnClientVpnIP)
 
-        events = global_functions.get_events('OpenVPN','Events',defaultRackId,None,1)
+        events = global_functions.get_events('OpenVPN','Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'remote_address', vpnClientVpnIP,

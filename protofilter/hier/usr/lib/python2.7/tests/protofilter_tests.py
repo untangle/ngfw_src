@@ -75,7 +75,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert (result == 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -95,7 +95,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert (result != 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -115,7 +115,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert (result != 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -135,7 +135,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert (result == 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -155,7 +155,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert (result != 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,

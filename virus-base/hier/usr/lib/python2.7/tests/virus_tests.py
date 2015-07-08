@@ -131,7 +131,7 @@ class VirusTests(unittest2.TestCase):
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum != md5TestNum)
 
-        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         found = global_functions.check_events( events.get('list'), 5, 
@@ -152,7 +152,7 @@ class VirusTests(unittest2.TestCase):
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum == md5TestNum)
 
-        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
@@ -167,7 +167,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Infected Web Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Infected Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -180,7 +180,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Clean Web Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Clean Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -193,7 +193,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "fedexvirus.zip",
@@ -205,7 +205,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Clean Ftp Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Clean Ftp Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "test.zip",
@@ -226,7 +226,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Infected Email Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Infected Email Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com", 
@@ -251,7 +251,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (testsiteIP, fname, fname))
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Clean Email Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
@@ -278,7 +278,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
 
-        events = global_functions.get_events(self.displayName(),'Clean Email Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 

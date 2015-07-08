@@ -111,7 +111,7 @@ class SpamTests(unittest2.TestCase):
 
         sendSpamMail()
 
-        events = global_functions.get_events(self.displayName(),'Quarantined Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
         assert( events != None )
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == test_untangle_IP)
@@ -127,7 +127,7 @@ class SpamTests(unittest2.TestCase):
     def test_030_adminQuarantine(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
-        events = global_functions.get_events(self.displayName(),'Quarantined Events',defaultRackId,None,1)
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
         if (events == None):
             raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
             

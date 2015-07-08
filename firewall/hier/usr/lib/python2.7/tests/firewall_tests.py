@@ -671,7 +671,7 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        events = global_functions.get_events('Firewall','Blocked Events',defaultRackId,None,1)
+        events = global_functions.get_events('Firewall','Blocked Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -687,7 +687,7 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        events = global_functions.get_events('Firewall','Flagged Events',defaultRackId,None,1)
+        events = global_functions.get_events('Firewall','Flagged Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -703,7 +703,7 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        events = global_functions.get_events('Firewall','All Events',defaultRackId,None,1)
+        events = global_functions.get_events('Firewall','All Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
