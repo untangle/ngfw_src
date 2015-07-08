@@ -117,22 +117,15 @@ class MemoryUsage(Graph):
 
             dates = []
             free = []
-            cached = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
                 free.append(r[1])
-                cached.append(r[2])
 
             if not free:
                 free = [0,]
-            if not cached:
-                cached = [0,]
 
             ks = KeyStatistic(_('Avg Free Memory'), round(sum(free)/len(free), 2),
-                              N_('MB'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Cached Memory'), round(sum(cached)/len(cached), 2),
                               N_('MB'))
             lks.append(ks)
         finally:
@@ -143,7 +136,6 @@ class MemoryUsage(Graph):
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, free, _('Free Memory'))
-        plot.add_dataset(dates, cached, _('Cached Memory'))
 
         return (lks, plot)
 
