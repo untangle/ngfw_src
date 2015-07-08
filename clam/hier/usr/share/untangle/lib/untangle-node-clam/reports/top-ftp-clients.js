@@ -1,0 +1,25 @@
+{
+    "uniqueId": "virus-blocker-lite-UaEbbQhM",
+    "category": "Virus Blocker Lite",
+    "description": "The number of clients with blocked viruses by FTP activity.",
+    "displayOrder": 205,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "c_client_addr",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "column": "virus_blocker_lite_clean",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "false"
+        }
+    ],
+    "readOnly": true,
+    "table": "http_events",
+    "title": "FTP Top Blocked Clients",
+    "type": "PIE_GRAPH"
+}
