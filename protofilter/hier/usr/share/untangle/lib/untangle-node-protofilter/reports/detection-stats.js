@@ -10,13 +10,11 @@
     "readOnly": true,
     "table": "sessions",
     "timeDataColumns": [
-        "count(*) as detected",
-        "count(*) as blocked",
-        "count(*) as logged"
+        "COUNT(*) as logged",
+        "COUNT(NULLIF(application_control_lite_blocked = true, true)) as blocked"
     ],
     "colors": [
         "#396c2b",
-        "#8c0000",
         "#e5e500"
     ],
 
