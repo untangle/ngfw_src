@@ -1,7 +1,7 @@
 {
     "uniqueId": "application-control-lite-9Yyq8iXZJ5",
     "category": "Application Control Lite",
-    "description": "The number of blocked and logged sessions over time.",
+    "description": "The number of logged and blocked sessions over time.",
     "displayOrder": 99,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
@@ -11,11 +11,11 @@
     "table": "sessions",
     "timeDataColumns": [
         "COUNT(*) as logged",
-        "COUNT(NULLIF(application_control_lite_blocked = true, true)) as blocked"
+        "COUNT(NULLIF(application_control_lite_blocked = true, false)) as blocked"
     ],
     "colors": [
         "#396c2b",
-        "#e5e500"
+        "#8c0000"
     ],
 
     "conditions": [
