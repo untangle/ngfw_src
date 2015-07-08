@@ -1155,9 +1155,6 @@ Ext.define('Webui.config.system', {
                 }]
             }]
         });
-        this.panelShieldEvents = Ext.create('Ung.panel.Events', {
-            category: "Shield"
-        });
         this.panelShieldReports = Ext.create('Ung.panel.Reports', {
             category: "Shield"
         });
