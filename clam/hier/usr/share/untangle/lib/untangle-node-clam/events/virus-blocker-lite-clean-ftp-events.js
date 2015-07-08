@@ -2,12 +2,6 @@
     "category": "Virus Blocker Lite",
     "conditions": [
         {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
-        },
-        {
             "column": "virus_blocker_lite_clean",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "is",

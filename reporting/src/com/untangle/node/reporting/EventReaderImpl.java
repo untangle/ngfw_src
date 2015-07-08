@@ -150,9 +150,6 @@ public class EventReaderImpl
     public ResultSetReader getEventsResultSet( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
-        /* FIXME this is to support the old queries. This should be removed once the :policyId conditions have been removed */
-        queryStr = queryStr.replace("= :policyId","is not null");
-        queryStr = queryStr.replace("=:policyId","is not null");
 
         if (startDate != null || endDate != null) {
 

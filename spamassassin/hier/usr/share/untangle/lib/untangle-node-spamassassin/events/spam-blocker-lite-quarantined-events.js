@@ -12,12 +12,6 @@
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": "'Q'"
-        },
-        {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_lite_is_spam","spam_blocker_lite_action","spam_blocker_lite_score"],

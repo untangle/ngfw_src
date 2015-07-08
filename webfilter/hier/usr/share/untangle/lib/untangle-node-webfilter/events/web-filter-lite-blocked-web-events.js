@@ -2,12 +2,6 @@
     "category": "Web Filter Lite",
     "conditions": [
         {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
-        },
-        {
             "column": "web_filter_lite_blocked",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "is",

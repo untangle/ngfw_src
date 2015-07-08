@@ -2,12 +2,6 @@
     "category": "Captive Portal",
     "conditions": [
         {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
-        },
-        {
             "column": "event_info",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",

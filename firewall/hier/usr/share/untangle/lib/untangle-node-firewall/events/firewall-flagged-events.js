@@ -2,12 +2,6 @@
     "category": "Firewall",
     "conditions": [
         {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
-        },
-        {
             "column": "firewall_flagged",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "is",

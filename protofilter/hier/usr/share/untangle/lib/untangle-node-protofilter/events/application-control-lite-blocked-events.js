@@ -2,12 +2,6 @@
     "category": "Application Control Lite",
     "conditions": [
         {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
-        },
-        {
             "column": "application_control_lite_blocked",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "is",

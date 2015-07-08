@@ -6,12 +6,6 @@
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": "'spam_blocker_lite'"
-        },
-        {
-            "column": "policy_id",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "=",
-            "value": ":policyId"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","ipaddr"],
