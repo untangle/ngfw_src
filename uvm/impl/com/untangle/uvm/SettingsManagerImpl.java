@@ -135,7 +135,8 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public String getDiff(String fileName) throws SettingsException{
+    public String getDiff(String fileName) throws SettingsException
+    {
         String diff;
 
         Matcher m = FILE_MATCH.matcher(fileName);

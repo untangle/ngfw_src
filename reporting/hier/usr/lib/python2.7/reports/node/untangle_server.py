@@ -72,18 +72,21 @@ class ServerNode(Node):
         sql_helper.create_table("""\
 CREATE TABLE reports.server_events (
     time_stamp  TIMESTAMP,
-    mem_free 	INT8,
-    mem_cache 	INT8,
-    mem_buffers INT8,
     load_1 	DECIMAL(6, 2),
     load_5 	DECIMAL(6, 2),
     load_15	DECIMAL(6, 2),
     cpu_user 	DECIMAL(6, 3),
     cpu_system 	DECIMAL(6, 3),
+    mem_total 	INT8,
+    mem_free 	INT8,
     disk_total 	INT8,
     disk_free 	INT8,
     swap_total 	INT8,
     swap_free 	INT8)""")
+
+        sql_helper.add_column('server_events','mem_total','int8') # 11.2
+        sql_helper.drop_column('server_events','mem_cache') #11.2
+        sql_helper.drop_column('server_events','mem_buffers') #11.2
 
     def teardown(self):
         pass

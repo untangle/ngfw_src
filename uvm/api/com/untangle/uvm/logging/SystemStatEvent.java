@@ -86,17 +86,16 @@ public class SystemStatEvent extends LogEvent
     {
         String sql =
             "INSERT INTO reports.server_events" + getPartitionTablePostfix() + " " +
-            "(time_stamp, mem_free, mem_cache, mem_buffers, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
+            "(time_stamp, mem_total, mem_free, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
             " values " +
-            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setLong(++i, memTotal);
         pstmt.setLong(++i, memFree);
-        pstmt.setLong(++i, memCache);
-        pstmt.setLong(++i, memBuffers);
         pstmt.setFloat(++i, load1);
         pstmt.setFloat(++i, load5);
         pstmt.setFloat(++i, load15);
