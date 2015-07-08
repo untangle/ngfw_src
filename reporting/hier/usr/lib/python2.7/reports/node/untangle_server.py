@@ -38,8 +38,6 @@ class ServerNode(Node):
     def setup(self):
         ft = FactTable('reports.server_totals', 'reports.server_events', 'time_stamp', [], [])
         ft.measures.append(Column('mem_free', 'int8', "avg(mem_free)"))
-        ft.measures.append(Column('mem_cache', 'int8', "avg(mem_cache)"))
-        ft.measures.append(Column('mem_buffers', 'int8', "avg(mem_buffers)"))
         ft.measures.append(Column('load_1', 'DECIMAL(6, 2)', "avg(load_1)"))
         ft.measures.append(Column('load_5', 'DECIMAL(6, 2)', "avg(load_5)"))
         ft.measures.append(Column('load_15', 'DECIMAL(6, 2)', "avg(load_15)"))
@@ -108,8 +106,7 @@ class MemoryUsage(Graph):
         conn = sql_helper.get_connection()
         try:
             # MB
-            sums = ["COALESCE(AVG(mem_free),0) / 1000000",
-                    "COALESCE(AVG(mem_cache), 0) / 1000000"]
+            sums = ["COALESCE(AVG(mem_free),0) / 1000000"]
 
             q, h = sql_helper.get_averaged_query(sums, "reports.server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
