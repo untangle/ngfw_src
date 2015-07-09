@@ -524,22 +524,10 @@ Ext.define('Webui.config.accountRegistration', {
     },
     closeWindow: function() {
         if(this.finished) {
-            var url = rpc.storeUrl + "?" + "action=is_registered" + "&" + Ung.Main.about();
-            Ext.data.JsonP.request({
-                url: url,
-                success: function(response, opts) {
-                    if( response!=null && response.registered) {
-                        rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            rpc.isRegistered = true;
-                            Ung.Main.showPostRegistrationPopup();
-                        });
-                    }
-                },
-                failure: function(response, opts) {
-                    console.log("Failed to get registered status: ", response, url);
-                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to get the registration status"));
-                }
+            rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.isRegistered = true;
+                Ung.Main.showPostRegistrationPopup();
             });
         }
         this.hide();
