@@ -27,7 +27,6 @@
     
   <uvm:script src="/ext4/ext-all-debug.js"/>
   <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
-  <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
 
   <c:set var="javascript" scope="request">
     <uvm:inlineScript>

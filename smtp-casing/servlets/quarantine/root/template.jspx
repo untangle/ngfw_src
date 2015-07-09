@@ -18,7 +18,6 @@
     <title><c:out value="${pageTitle}"/></title>
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css";
-        @import "/ext4/examples/ux/css/CheckHeader.css";
         @import "/ext4/examples/ux/grid/css/GridFilters.css";
         @import "/ext4/examples/ux/grid/css/RangeMenu.css";
     </style>
@@ -28,7 +27,6 @@
     <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
     <uvm:script src="/ext4/ext-all-debug.js"/>
     <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
-    <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
     <uvm:script src="/jsonrpc/jsonrpc.js"/>
     
     <c:out escapeXml="false" value="${javascript}"/>
