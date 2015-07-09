@@ -80,8 +80,7 @@ dict['server_events'] = copy.deepcopy(generic)
 dict['server_events'].update({
     'table_description' : 'This table stores server status events.',
     'mem_free' : 'The number of free bytes of memory',
-    'mem_cache' : 'The number of bytes of memory used for cache',
-    'mem_buffers' : 'The number of bytes of memory used for buffers',
+    'mem_total' : 'The total bytes of memory',
     'load_1' : 'The 1-minute CPU load',
     'load_5' : 'The 5-minute CPU load',
     'load_15' : 'The 15-minute CPU load',
@@ -180,6 +179,7 @@ dict['http_events'] = copy.deepcopy(generic)
 dict['http_events'].update({
     'table_description' : 'This table stores HTTP events. There is one row for each HTTP request.',
     'request_id' : 'The HTTP request ID',
+    'domain' : 'The HTTP domain (shortened host)',
     'method' : 'The HTTP method',
     'uri' : 'The HTTP URI',
     'host' : 'The HTTP host',
@@ -286,6 +286,7 @@ dict['penaltybox'].update({
 dict['sessions'] = copy.deepcopy(generic)
 dict['sessions'].update({
     'table_description' : 'This table stores all scanned TCP/UDP sessions.',
+    'protocol' : 'The IP protocol of session',
     'end_time' : 'The time the session ended',
     'bypassed' : 'True if the session was bypassed, false otherwise',
     'c2p_bytes' : 'The number of bytes the client sent to Untangle (client-to-pipeline)',
@@ -322,6 +323,14 @@ dict['admin_logins'].update({
     'client_addr' : 'The client IP address',
     'succeeded' : 'True if the login succeeded, false otherwise',
     'reason' : 'The reason for the login (if applicable)',
+})
+
+dict['settings_changes'] = copy.deepcopy(generic)
+dict['settings_changes'].update({
+    'table_description' : 'This table stores settings changes.',
+    'settings_file' : 'The name of the file changed',
+    'username' : 'The username logged in at the time of the change',
+    'hostname' : 'The remote hostname',
 })
 
 
