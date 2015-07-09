@@ -11,14 +11,6 @@
         @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=${buildStamp}";
         @import "/ext5/packages/sencha-charts/build/classic/resources/sencha-charts-all-debug.css?s=${buildStamp}";
     </style>
-    <script type="text/javascript">
-        var Ext = Ext || {};
-        Ext.manifest = {
-            compatibility: {
-                ext: '4.2'
-            }
-        }
-    </script>
 
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext5/ext-all.js?s=${buildStamp}"></script>
@@ -48,6 +40,7 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
+<c:if test="${isDebug==true}">
     <!-- static resource loading during development. -->
     <script type="text/javascript" src="script/config/about.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
@@ -58,7 +51,6 @@
     <script type="text/javascript" src="script/config/sessionMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgrade.js?s=${buildStamp}"></script>
-
 
     <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus/settings.js?s=${buildStamp}"></script>
@@ -90,7 +82,8 @@
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
-    
+</c:if>
+
 <%--
 <c:if test="${param['expert']==1}">
     <script type="text/javascript">
