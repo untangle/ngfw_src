@@ -1065,7 +1065,7 @@ Ext.define('Ung.panel.Reports', {
         downloadForm["type"].value="eventLogExport";
         downloadForm["arg1"].value=name;
         downloadForm["arg2"].value=Ext.encode(this.entry);
-        downloadForm["arg4"].value=null; /* extra conditions */
+        downloadForm["arg3"].value=Ext.encode(this.extraConditions);
         downloadForm["arg4"].value=this.getColumnList();
         downloadForm["arg5"].value=startDate?startDate.getTime():-1;
         downloadForm["arg6"].value=endDate?endDate.getTime():-1;

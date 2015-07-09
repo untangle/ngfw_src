@@ -573,12 +573,27 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             try {
-                String name = req.getParameter("arg1");
-                EventEntry query = (EventEntry) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg2") );
-                SqlCondition[] conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );
-                String columnListStr = req.getParameter("arg4");
-                Date startDate = getDate(req.getParameter("arg5"));
-                Date endDate = getDate(req.getParameter("arg6"));
+                String arg1 = req.getParameter("arg1");
+                String arg2 = req.getParameter("arg2");
+                String arg3 = req.getParameter("arg3");
+                String arg4 = req.getParameter("arg4");
+                String arg5 = req.getParameter("arg5");
+                String arg6 = req.getParameter("arg6");
+
+                if ( "".equals(arg2) || arg2 == null )
+                    throw new RuntimeException("Invalid arguments");
+
+                String name = arg1;
+                EventEntry query = (EventEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
+                SqlCondition[] conditions;
+                String columnListStr = arg4;
+                Date startDate = getDate(arg5);
+                Date endDate = getDate(arg6);
+
+                if ( "".equals(arg3) || arg3 == null )
+                    conditions = null;
+                else
+                    conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );
 
                 if (name == null || query == null || columnListStr == null) {
                     logger.warn("Invalid parameters: " + name + " , " + query + " , " + columnListStr);
