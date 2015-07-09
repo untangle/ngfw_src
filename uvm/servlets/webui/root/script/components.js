@@ -820,52 +820,7 @@ Ung.MetricManager = {
         }, this));
     }
 };
-/*
-//Check Store Registration Loop
-Ung.CheckStoreRegistration = {
-    // update interval in millisecond
-    updateFrequency: 2000,
-    started: false,
-    intervalId: null,
-    url: null,
-    start: function(now) {
-        //this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
-        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + Ung.Main.about();
-        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + Ung.Main.about();
-        this.stop();
-        this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
-        this.started = true;
-    },
-    stop: function() {
-        if (this.intervalId !== null) {
-            window.clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
-        this.started = false;
-    },
-    run: function () {
-        Ext.data.JsonP.request({
-            url: Ung.CheckStoreRegistration.url,
-            type: 'GET',
-            success: function(response, opts) {
-                if( response!=null && response.registered) {
-                    Ung.CheckStoreRegistration.stop();
-                    rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        Ung.Main.closeIframe();
-                        rpc.isRegistered = true;
-                        Ung.CheckStoreRegistration.stop();
-                        Ung.Main.showPostRegistrationPopup();
-                    });
-                }
-            },
-            failure: function(response, opts) {
-                console.log("Failed to get registered status: ", response, Ung.CheckStoreRegistration.url);
-            }
-        });
-    }
-};
-*/
+
 Ext.define("Ung.SystemStats", {
     extend: "Ext.Component",
     renderTo: "rack-list",

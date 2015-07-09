@@ -32,7 +32,7 @@ Ext.define('Webui.config.accountRegistration', {
                     width: 166,
                     height: 100
                 },
-                height: 120,
+                height: 118,
                 flex: 0
             }, {
                 xtype: 'container',
@@ -216,7 +216,8 @@ Ext.define('Webui.config.accountRegistration', {
                         }, {
                             xtype: 'container',
                             layout: 'center',
-                            height: 70,
+                            margin: '10 0 0 0',
+                            height: 40,
                             items: {
                                 xtype: 'button',
                                 text: i18n._('Register'),
