@@ -1195,9 +1195,9 @@ Ext.define('Ung.panel.Reports', {
         return false;
     },
     selectInitialEntry: function() {
-        if(this.reportEntriesGrid.getStore().getCount() > 0) {
+        if(this.reportEntriesGrid && this.reportEntriesGrid.getStore().getCount() > 0) {
             this.reportEntriesGrid.getSelectionModel().select(this.initialEntryIndex);
-        } else if (this.eventEntriesGrid.getStore().getCount() > 0) {
+        } else if (this.eventEntriesGrid && this.eventEntriesGrid.getStore().getCount() > 0) {
             this.eventEntriesGrid.getSelectionModel().select(0);
         }
     },
