@@ -1001,7 +1001,7 @@ Ext.define('Ung.ImportSettingsWindow', {
                 html: "<i>" + i18n._("with settings from")+ "</i>"
             }, {
                 xtype: 'form',
-                id: 'import_settings_form'+this.getId(),
+                name: 'importSettingsForm',
                 url: 'gridSettings',
                 border: false,
                 items: [{
@@ -1010,7 +1010,8 @@ Ext.define('Ung.ImportSettingsWindow', {
                     name: 'import_settings_textfield',
                     width: 450,
                     labelWidth: 50,
-                    allowBlank: false
+                    allowBlank: false,
+                    validateOnBlur: false
                 },{
                     xtype: 'hidden',
                     name: 'type',
@@ -1032,7 +1033,7 @@ Ext.define('Ung.ImportSettingsWindow', {
         this.setPosition(objPosition);
     },
     updateAction: function() {
-        Ext.getCmp('import_settings_form'+this.getId()).getForm().submit({
+        this.down("form[name=importSettingsForm]").getForm().submit({
             waitMsg: i18n._('Please wait while the settings are uploaded...'),
             success: Ext.bind(this.importSettingsSuccess, this ),
             failure: Ext.bind(this.importSettingsFailure, this )

@@ -19,7 +19,6 @@ Ext.define('Webui.config.accountRegistration', {
             rpc.serverUID = result;
         }, this));
         this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
-        console.log("storeApiUrl:", this.storeApiUrl);
         this.items = {
             xtype: 'panel',
             layout: { type: 'vbox', align: 'stretch'},
@@ -539,6 +538,7 @@ Ext.define('Webui.config.accountRegistration', {
                 },
                 failure: function(response, opts) {
                     console.log("Failed to get registered status: ", response, url);
+                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to get the registration status"));
                 }
             });
         }
