@@ -162,7 +162,7 @@ class IdpsInterface:
         global node
 
         time.sleep(35)
-        events = global_functions.get_events('Intrusion Prevention','All Events',default_rack_id,None,1)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
 
         logged = False
         blocked = False
