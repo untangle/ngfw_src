@@ -41,7 +41,7 @@ Ext.define('Ung.RuleBuilder', {
         }];
         this.callParent(arguments);
     },
-    generateRow: function(data) {
+    generateRow: function(data, disableInvert) {
         if(!data) {
             data = {matcherType: "", invert: false, value: ""};
         }
@@ -80,6 +80,7 @@ Ext.define('Ung.RuleBuilder', {
                 displayField: "displayName",
                 queryMode: 'local',
                 value: data.invert,
+                readOnly: disableInvert,
                 store: this.invertStore
             }, {
                 xtype: 'container',
@@ -197,7 +198,7 @@ Ext.define('Ung.RuleBuilder', {
                     margin : '0 20 0 0',
                     inputValue : rule.values[count][0],
                     boxLabel : rule.values[count][1],
-                    checked : values_arr.indexOf(rule.values[count][0]) != -1
+                    checked : values_arr.indexOf(rule.values[count][0]+"") != -1
                 });
             }
             break;
@@ -237,13 +238,14 @@ Ext.define('Ung.RuleBuilder', {
         this.add(this.generateRow());
     },
     setValue: function(value) {
-        var me = this, data, rule, record;
+        var me = this, data, rule, record, disableInvert;
         Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
             me.remove(item);
         });
         if (value != null && value.list != null) {
             for(var i=0; i<value.list.length; i++) {
                 rule=this.matchersMap[value.list[i].matcherType];
+                disableInvert = rule && rule.disableInvert;
                 //if the matcher is hidden and ther is a value for it make it visible
                 if (rule && rule.visible === false) {
                     this.matcherTypeStore.clearFilter();
@@ -253,7 +255,7 @@ Ext.define('Ung.RuleBuilder', {
                     }
                     this.matcherTypeStore.setFilters(this.visibleFilter);
                 }
-                this.add(this.generateRow(value.list[i]));
+                this.add(this.generateRow(value.list[i], disableInvert));
             }
         }
     },
