@@ -1391,7 +1391,7 @@ Ext.define('Ung.panel.Reports', {
                     for (var i=0; i< result.length; i++) {
                         columns.push({
                             name: result[i],
-                            displayName: Ung.panel.Reports.getColumnHumanReadableName(result[i])
+                            displayName: Ung.panel.Reports.getColumnHumanReadableName(result[i]) + " ["+result[i]+"]"
                         });
                     }
                     store.loadData(columns);
@@ -3342,11 +3342,25 @@ Ext.define("Ung.panel.ExtraConditions", {
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {
-                            var skipReload = Ext.isEmpty(combo.next("[dataIndex=value]").getValue());
+                            this.setConditions(true);
+                        },
+                        scope: this
+                    },
+                    blur: {
+                        fn: function(field, e) {
+                            var skipReload = Ext.isEmpty(field.next("[dataIndex=value]").getValue());
                             this.setConditions(skipReload);
                         },
-                        scope: this,
-                        buffer: 200
+                        scope: this
+                    },
+                    specialkey: {
+                        fn: function(field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                this.setConditions();
+                            }
+                            
+                        },
+                        scope: this
                     }
                 }
             }, {
@@ -3377,12 +3391,11 @@ Ext.define("Ung.panel.ExtraConditions", {
                 emptyText: i18n._("[no value]"),
                 value: data.value,
                 listeners: {
-                    change: {
-                        fn: function() {
+                    blur: {
+                        fn: function(field, e) {
                             this.setConditions();
                         },
-                        scope: this,
-                        buffer: 1200
+                        scope: this
                     },
                     specialkey: {
                         fn: function(field, e) {
@@ -3464,11 +3477,16 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
         });
-        this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
-        this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
         if(!skipReload) {
-            this.parentPanel.refreshHandler();
+            var encodedConditions = Ext.encode(conditions);
+            if(this.currentConditions != encodedConditions) {
+                this.currentConditions = encodedConditions;
+                this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
+                this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
+                this.parentPanel.refreshHandler();
+            }
         }
+
     },
     setValue: function(extraConditions) {
         var me = this, i;
@@ -3615,7 +3633,7 @@ Ext.define("Ung.window.ReportEditor", {
             columns: [{
                 header: i18n._("Column"),
                 dataIndex: 'column',
-                width: 200
+                width: 280
             }, {
                 header: i18n._("Operator"),
                 dataIndex: 'operator',
@@ -3640,7 +3658,7 @@ Ext.define("Ung.window.ReportEditor", {
                     valueField: "name",
                     displayField: "displayName",
                     queryMode: 'local',
-                    width: 350,
+                    width: 600,
                     store: this.columnsStore
                 }, {
                     xtype: 'label',
