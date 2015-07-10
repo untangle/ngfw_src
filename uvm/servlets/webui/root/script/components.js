@@ -320,7 +320,7 @@ Ext.define("Ung.Node", {
         }
         Ext.destroy(this.subCmps);
         if(this.hasPowerButton) {
-            Ext.get('node-power_' + this.getId()).removeAllListeners();
+            Ext.get('node-power_' + this.getId()).clearListeners();
         }
         this.callParent(arguments);
     },
