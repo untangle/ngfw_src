@@ -51,6 +51,7 @@ import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -652,6 +653,48 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.error("Error generating WebUI startup object", e);
         }
         return json;
+    }
+
+    public org.json.JSONObject getConditionQuickAddHints()
+    {
+        LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();
+
+        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("untangle-node-policy");
+        
+        LinkedList<String> hostnames = new LinkedList<String>();
+        LinkedList<String> usernames = new LinkedList<String>();
+        LinkedList<String> addresses = new LinkedList<String>();
+        LinkedList<String> policies = new LinkedList<String>();
+
+        for ( HostTableEntry host : hosts ) {
+            String username = host.getUsername();
+            String hostname = host.getHostname();
+            String address  = host.getAddress().getHostAddress();
+            if ( hostname != null && !"".equals(hostname) && !hostnames.contains(hostname) )
+                hostnames.add(hostname);
+            if ( username != null && !"".equals(username) && !usernames.contains(username) )
+                usernames.add(username);
+            if ( address != null && !"".equals(address) && !addresses.contains(address) )
+                addresses.add(address);
+        }
+
+        try {
+            org.json.JSONObject json = new org.json.JSONObject();
+
+            json.put("hostname", hostnames.toArray( new String[0] ));
+            json.put("username", usernames.toArray( new String[0] ));
+            json.put("c_client_addr", addresses.toArray( new String[0] ));
+
+            if ( policyManager != null ) {
+                json.put("policy_id", policyManager.getPolicyIds());
+            }
+            
+            return json;
+        } catch (Exception e) {
+            logger.warn("Error generating quick add hints",e);
+        }
+
+        return null;
     }
 
     /**

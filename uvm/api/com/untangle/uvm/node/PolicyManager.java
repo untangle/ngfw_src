@@ -31,4 +31,9 @@ public interface PolicyManager
      * Or null if the provided policy ID has no parent
      */
     Long getParentPolicyId( Long policyId );
+
+    /**
+     * Return a list of all current policy IDs
+     */
+    Long[] getPolicyIds();
 }
