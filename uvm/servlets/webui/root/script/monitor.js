@@ -10,7 +10,7 @@ Ext.define('Ung.MonitorGrid', {
     autoRefreshEnabled: false,
     stateful: true,
     features: [{
-        ftype: 'groupingsummary'
+        ftype: 'grouping'
     }],
     constructor: function(config) {
         var defaults = {

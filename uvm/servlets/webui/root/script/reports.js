@@ -1221,6 +1221,16 @@ Ext.define('Ung.panel.Reports', {
         isEvent: function(entry) {
             return "com.untangle.node.reporting.EventEntry" == entry.javaClass;
         },
+        getColumnRenderer: function(columnName) {
+            if(!this.columnRenderers) {
+                this.columnRenderers = {
+                    policy_id: function(value) {
+                        return rpc.policyNamesMap[value] || value;
+                    }
+                };
+            }
+            return this.columnRenderers[columnName];
+        },
         getColumnHumanReadableName: function(columnName) {
             if(!this.columnsHumanReadableNames) {
                 this.columnsHumanReadableNames = {
@@ -3296,7 +3306,41 @@ Ext.define("Ung.panel.ExtraConditions", {
         for(var i=0; i<this.defaultCount; i++) {
             this.items.push(this.generateRow());
         }
-        
+        var quickAddMenu = Ext.create('Ext.menu.Menu');
+        var addQuickCondition = Ext.bind(function(item) {
+            this.fillCondition({
+                column: item.column,
+                operator: "=",
+                value: item.value
+            });
+        }, this);
+        rpc.jsonrpc.UvmContext.getConditionQuickAddHints(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var column, hintMenus = [], columnItems, i, columnRenderer;
+            for(column in result) {
+                var values = result[column];
+                if(values.length > 0) {
+                    columnItems = [];
+                    columnRenderer = Ung.panel.Reports.getColumnRenderer(column);
+                    for(i=0; i<values.length; i++) {
+                        columnItems.push({
+                            text: Ext.isFunction(columnRenderer) ? columnRenderer(values[i]) : values[i],
+                            column: column,
+                            value: values[i],
+                            handler: addQuickCondition
+                        });
+                    }
+                    hintMenus.push({
+                        text: Ung.panel.Reports.getColumnHumanReadableName(column),
+                        menu: {
+                            items: columnItems
+                        }
+                    });
+                }
+            }
+            quickAddMenu.add(hintMenus);
+            
+        }, this));
         this.tbar = [{
             text: i18n._("Add Condition"),
             tooltip: i18n._('Add New Condition'),
@@ -3305,7 +3349,18 @@ Ext.define("Ung.panel.ExtraConditions", {
                 this.addRow();
             },
             scope: this
-        }, '->', {
+        }, {
+            text:'Quick Add',
+            iconCls: 'icon-add-row',
+            menu: quickAddMenu
+        }, /*{
+            xtype: 'checkbox',
+            name: 'refreshOnChanges',
+            hideLabel: true,
+            margin: '0 0 0 4',
+            boxLabel: i18n._('Refresh on changes'),
+            checked: true
+        }, */'->', {
             text: i18n._("Delete All"),
             tooltip: i18n._('Delete All Conditions'),
             iconCls: 'cancel-icon',
@@ -3315,6 +3370,8 @@ Ext.define("Ung.panel.ExtraConditions", {
             scope: this
         }];
         this.callParent(arguments);
+        
+        //this.refreshOnChanges= this.down("checkbox[name=refreshOnChanges]");
     },
     generateRow: function(data) {
         if(!data) {
