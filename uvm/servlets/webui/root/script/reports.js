@@ -1559,6 +1559,8 @@ Ext.define('Ung.panel.Reports', {
                                     return "UDP";
                                 if (value == 6)
                                     return "TCP";
+                                if (value == 1)
+                                    return "ICMP";
                                 return value;
                             }
                         }, {
