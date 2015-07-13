@@ -8,7 +8,7 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "msgs",
-    "pieGroupColumn": "s_client_addr",
+    "pieGroupColumn": "s_server_addr",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
