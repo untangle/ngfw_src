@@ -65,6 +65,11 @@ public class EventEntry implements Serializable, JSONString
         query +=  "SELECT * FROM reports." + this.table + " WHERE true";
         if ( getConditions() != null ) {
             for ( SqlCondition condition : getConditions() ) {
+                if ( ! ReportingManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                    logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                    continue;
+                }
+
                 query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
             }
         }

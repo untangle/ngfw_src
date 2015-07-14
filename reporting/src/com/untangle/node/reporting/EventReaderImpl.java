@@ -176,6 +176,10 @@ public class EventReaderImpl
                 queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
             if ( conditions != null ) {
                 for ( SqlCondition condition : conditions ) {
+                    if ( ! ReportingManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + table );
+                        continue;
+                    }
                     queryStr += " and " + condition.toSqlString();
                 }
             }

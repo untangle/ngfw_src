@@ -230,6 +230,14 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         logger.warn("Failed to find column \"" + columnName + "\" in \"" + tableName + "\"");
         return null;
     }
+
+    public boolean tableHasColumn( String tableName, String columnName )
+    {
+        String type = getColumnType( tableName, columnName );
+        if ( type == null )
+            return false;
+        return true;
+    }
     
     public String[] getTables()
     {
