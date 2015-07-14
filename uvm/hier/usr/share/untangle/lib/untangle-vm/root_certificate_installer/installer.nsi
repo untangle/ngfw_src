@@ -53,6 +53,8 @@ SetCompressor /FINAL lzma
 #!define MUI_FINISHPAGE_RUN
 #!define MUI_FINISHPAGE_RUN_TEXT "Root certificates installed!"
 
+var /GLOBAL FIREFOX_INSTALL_DIRECTORY
+
 # MUI Macros
 # Install
 !insertmacro MUI_PAGE_WELCOME
@@ -67,6 +69,17 @@ SetCompressor /FINAL lzma
 !insertmacro MUI_UNPAGE_FINISH
 # Languages
 !insertmacro MUI_LANGUAGE "English"
+
+!define SF_USELECTED  0
+!macro SecUnSelect SecId
+  Push $0
+  IntOp $0 ${SF_USELECTED} | ${SF_RO}
+  SectionSetFlags ${SecId} $0
+  SectionSetText  ${SecId} ""
+  Pop $0
+!macroend
+ 
+!define UnSelectSection '!insertmacro SecUnSelect'
 
 # Added Descrption to Options for Component page.
 LangString DESC_SecWin ${LANG_ENGLISH} "Import Untangle's Root CA to Windows Keystore (used by Internet Explorer, Chrome, and others)"
@@ -112,7 +125,7 @@ SectionEnd
 
 # Section Add to Firefox will import the Root CA to Firefoxs standard profile.
 # /o infront of "Add to Firefox" makes it a Option if it should be on by default remove /0
-Section /o "Add to Firefox" SecFirefox
+Section /o "Add to Firefox" SecFirefoxUnchecked
 
     SetOutPath "$PROGRAMFILES\Mozilla Firefox"
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-certificate.cfg"
@@ -120,6 +133,18 @@ Section /o "Add to Firefox" SecFirefox
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
 
 SectionEnd
+
+# Section Add to Firefox will import the Root CA to Firefoxs standard profile.
+# /o infront of "Add to Firefox" makes it a Option if it should be on by default remove /0
+Section "Add to Firefox" SecFirefoxChecked
+
+    SetOutPath "$PROGRAMFILES\Mozilla Firefox"
+    File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-certificate.cfg"
+    SetOutPath "$PROGRAMFILES\Mozilla Firefox\defaults\pref"
+    File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
+
+SectionEnd
+
 
 Function AddCertificateToStore
     Exch $0
@@ -177,6 +202,17 @@ Function .onInit
         ${If} "$INSTDIR" == "$PROGRAMFILES\${PACKAGE_NAME}"
             StrCpy $INSTDIR "$PROGRAMFILES64\${PACKAGE_NAME}"
         ${EndIf}
+    ${EndIf}
+
+    # Determine if Firefox is installer.
+    ReadRegStr $FIREFOX_INSTALL_DIRECTORY HKLM \
+        "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe" \
+        "Path"
+
+    ${If} $FIREFOX_INSTALL_DIRECTORY == ''
+        ${UnSelectSection} ${SecFirefoxChecked}
+    ${Else}
+        ${UnSelectSection} ${SecFirefoxUnchecked}
     ${EndIf}
 
     # Delete previous start menu
@@ -274,7 +310,8 @@ FunctionEnd
 # Add Description text from Langstring Part
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecWin} $(DESC_SecWin)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecFireFox} $(DESC_SecFireFox)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecFireFoxUnchecked} $(DESC_SecFireFox)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecFireFoxChecked} $(DESC_SecFireFox)
     !insertmacro MUI_DESCRIPTION_TEXT ${-Install} $(DESC_Install)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
