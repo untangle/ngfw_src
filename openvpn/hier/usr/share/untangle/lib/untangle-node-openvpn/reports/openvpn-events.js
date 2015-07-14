@@ -15,7 +15,7 @@
     ],
     "colors": [
         "#396c2b",
-        "#0099ff",
+        "#0099ff"
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",

@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "alerts",
     "timeDataColumns": [
-        "count(*) as alerts",
+        "count(*) as alerts"
     ],
     "colors": [
         "#8c0000"
