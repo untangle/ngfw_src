@@ -965,7 +965,17 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         synchronized (this) {
             if (this.reportingNode == null) {
                 try {
-                    this.reportingNode = (Reporting) this.nodeManager().node("untangle-node-reporting");
+                    // nodeManager not initialized yet
+                    if ( this.nodeManager == null ) {
+                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
+                            logger.warn("Reporting node not found, discarding event(s)");
+                            this.lastLoggedWarningTime = System.currentTimeMillis();
+                        }
+                        return;
+                    }
+                    
+                    this.reportingNode = (Reporting) this.nodeManager.node("untangle-node-reporting");
+                    // no reporting node
                     if (this.reportingNode == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
                             logger.warn("Reporting node not found, discarding event(s)");
