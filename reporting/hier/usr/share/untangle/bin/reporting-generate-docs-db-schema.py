@@ -69,6 +69,14 @@ dict['ipsec_user_events'].update({
     'elapsed_time' : 'The total time the client was connected',
 })
 
+dict['ipsec_tunnel_stats'] = copy.deepcopy(generic)
+dict['ipsec_tunnel_stats'].update({
+    'table_description' : 'This table stores IPsec tunnel statistics.',
+    'tunnel_name' : 'The name of the IPsec tunnel',
+    'in_bytes' : 'The number of bytes received during this time frame',
+    'out_bytes' : 'The number of bytes transmitted during this time frame',
+})
+
 dict['smtp_tarpit_events'] = copy.deepcopy(generic)
 dict['smtp_tarpit_events'].update({
     'table_description' : 'This table stores SMTP tarpit events.',
