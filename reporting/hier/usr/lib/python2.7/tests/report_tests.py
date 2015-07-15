@@ -27,7 +27,8 @@ orig_settings = None
 orig_netsettings = None
 canRelay = False
 # special box with testshell in the sudoer group  - used to connect to as client
-listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.32','16','untangletest.com')]
+# DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
+listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.84','16','untangletest.com')]
 specialDnsServer = "10.111.56.57"
 fakeSmtpServerHost = ""
 testdomain = ""
@@ -369,7 +370,7 @@ class ReportTests(unittest2.TestCase):
         strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
         while (timeout > 0 and found_count < 2):
             # get syslog results on server
-            rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            rsyslogResult = remote_control.runCommand("sudo tail -n 50 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
                 timeout -= 1
