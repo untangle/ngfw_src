@@ -2297,6 +2297,74 @@ Ext.define('Ung.panel.Reports', {
                             }, this)
                         }]
                     },
+                    admin_logins: {
+                        fields: [{
+                            name: 'time_stamp',
+                            sortType: 'asTimestamp'
+                        }, {
+                            name: 'login',
+                            type: 'string'
+                        }, {
+                            name: 'succeeded',
+                            type: 'string',
+                            convert: Ext.bind(function(value) {
+                                return value ?  i18n._("success"): i18n._("failed");
+                            }, this)
+                        }, {
+                            name: 'local',
+                            type: 'string',
+                            convert: Ext.bind(function(value) {
+                                return value ?  i18n._("local"): i18n._("remote");
+                            }, this)
+                        }, {
+                            name: 'client_address',
+                            type: 'string'
+                        }, {
+                            name: 'reason',
+                            type: 'string'
+                        }],
+                        columns: [{
+                            header: i18n._("Timestamp"),
+                            width: Ung.Util.timestampFieldWidth,
+                            sortable: true,
+                            dataIndex: 'time_stamp',
+                            renderer: function(value) {
+                                return i18n.timestampFormat(value);
+                            }
+                        }, {
+                            header: i18n._("Login"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'login'
+                        }, {
+                            header: i18n._("Success"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'succeeded'
+                        }, {
+                            header: i18n._("Local"),
+                            width: 120,
+                            sortable: true,
+                            dataIndex: 'local'
+                        }, {
+                            header: i18n._("Client Address"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 'client_addr'
+                        }, {
+                            header: i18n._('Reason'),
+                            width: 200,
+                            sortable: true,
+                            dataIndex: 'reason',
+                            renderer: Ext.bind(function(value) {
+                                switch(value) {
+                                    case "U": return i18n._("invalid username");
+                                    case "P": return i18n._("invalid password");
+                                    default: return i18n._("");
+                                }
+                            }, this)
+                        }]
+                    },
                     configuration_backup_events: {
                         fields: [{
                             name: 'time_stamp',
