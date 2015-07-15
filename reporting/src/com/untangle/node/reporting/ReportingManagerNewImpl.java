@@ -281,8 +281,22 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        logger.debug( "getEvents(): " + entry.toSqlQuery() );
-        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery(), entry.getTable(), extraConditions, limit, null, null );
+
+        int extraConditionsLen = 0;
+        if ( extraConditions != null )
+            extraConditionsLen = extraConditions.length;
+        int conditionsLen = 0;
+        if ( entry.getConditions() != null )
+            conditionsLen = entry.getConditions().length;
+        
+        SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
+        if ( extraConditions != null )
+            System.arraycopy( extraConditions, 0, conditions, 0, extraConditionsLen );
+        if ( entry.getConditions() != null )
+            System.arraycopy( entry.getConditions(), 0, conditions, extraConditionsLen, conditionsLen );
+
+        logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
+        return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
     }
 
     public ResultSetReader getEventsResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
@@ -300,7 +314,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        logger.debug( "getEvents(): " + entry.toSqlQuery() );
+        logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
 
         Date startDate = start;
         Date endDate = end;
@@ -312,7 +326,20 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
         }
 
-        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery(), entry.getTable(), extraConditions, limit, startDate, endDate );
+        int extraConditionsLen = 0;
+        if ( extraConditions != null )
+            extraConditionsLen = extraConditions.length;
+        int conditionsLen = 0;
+        if ( entry.getConditions() != null )
+            conditionsLen = entry.getConditions().length;
+        
+        SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
+        if ( extraConditions != null )
+            System.arraycopy( extraConditions, 0, conditions, 0, extraConditionsLen );
+        if ( entry.getConditions() != null )
+            System.arraycopy( entry.getConditions(), 0, conditions, extraConditionsLen, conditionsLen );
+
+        return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )

@@ -59,7 +59,7 @@ public class EventEntry implements Serializable, JSONString
     public String[] getDefaultColumns() { return this.defaultColumns; }
     public void setDefaultColumns( String[] newValue ) { this.defaultColumns = newValue; }
     
-    public String toSqlQuery()
+    public String toSqlQuery( SqlCondition[] extraConditions )
     {
         String query = ""; 
         query +=  "SELECT * FROM reports." + this.table + " WHERE true";
@@ -70,8 +70,19 @@ public class EventEntry implements Serializable, JSONString
                     continue;
                 }
 
-                query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
+                query += " and " + condition.toSqlString() + " ";
             }
+            if ( extraConditions != null ) {
+                for ( SqlCondition condition : extraConditions )  {
+                    if ( ! ReportingManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                        continue;
+                    }
+
+                    query += " and " + condition.toSqlString() + " ";
+                }
+            }
+
         }
         
         query += " ORDER BY time_stamp DESC";

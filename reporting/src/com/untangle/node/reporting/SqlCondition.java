@@ -130,7 +130,7 @@ public class SqlCondition implements Serializable, JSONString
                     logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + table );
                     continue;
                 }
-                    
+
                 switch (columnType) {
                 case "int8":
                 case "bigint":
