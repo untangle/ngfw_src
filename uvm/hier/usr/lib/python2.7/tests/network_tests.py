@@ -559,6 +559,10 @@ class NetworkTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping","-c","1",iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+        result = remote_control.runCommand("uname -a", host=iperfServer)
+        if (result != 0):
+            raise unittest2.SkipTest("Unable to ssh to %s" % iperfServer)
+        
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
@@ -583,6 +587,9 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on office network, skipping")
         if not global_functions.verifyIperf(wan_IP):
             raise unittest2.SkipTest("Iperf server not reachable")
+        result = remote_control.runCommand("uname -a", host=iperfServer)
+        if (result != 0):
+            raise unittest2.SkipTest("Unable to ssh to %s" % iperfServer)
 
         # port forward UDP 5000 to client box
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
