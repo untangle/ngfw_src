@@ -195,7 +195,7 @@ Ext.define('Webui.config.hostMonitor', {
             }, {
                 header: this.i18n._("MAC Vendor"),
                 dataIndex: "macVendor",
-                width: 100,
+                width: 150,
                 filter: {
                     type: 'string'
                 }

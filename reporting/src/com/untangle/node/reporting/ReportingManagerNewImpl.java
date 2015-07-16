@@ -290,10 +290,10 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             conditionsLen = entry.getConditions().length;
         
         SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
-        if ( extraConditions != null )
-            System.arraycopy( extraConditions, 0, conditions, 0, extraConditionsLen );
         if ( entry.getConditions() != null )
-            System.arraycopy( entry.getConditions(), 0, conditions, extraConditionsLen, conditionsLen );
+            System.arraycopy( entry.getConditions(), 0, conditions, 0, conditionsLen );
+        if ( extraConditions != null )
+            System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
 
         logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
         return ReportingNodeImpl.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
@@ -334,10 +334,10 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             conditionsLen = entry.getConditions().length;
         
         SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
-        if ( extraConditions != null )
-            System.arraycopy( extraConditions, 0, conditions, 0, extraConditionsLen );
         if ( entry.getConditions() != null )
-            System.arraycopy( entry.getConditions(), 0, conditions, extraConditionsLen, conditionsLen );
+            System.arraycopy( entry.getConditions(), 0, conditions, 0, conditionsLen );
+        if ( extraConditions != null )
+            System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
 
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
     }
