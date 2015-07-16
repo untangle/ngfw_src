@@ -5,7 +5,6 @@
 # The installer supports /S (Silent mode installation)
 # Written by Kichik http://nsis.sourceforge.net/Import_Root_Certificate
 #
-
 # SetCompression Before packeting Incudes
 SetCompressor /FINAL lzma 
 
@@ -15,16 +14,20 @@ SetCompressor /FINAL lzma
 !include "MUI.nsh"
 !include "x64.nsh"
 !include "nsProcess.nsh"
+!include "EnumUsersReg.nsh"
 
-!define MULTIUSER_EXECUTIONLEVEL Admin
+#!define MULTIUSER_EXECUTIONLEVEL Admin
 !define PACKAGE_NAME "Untangle Root CA Installer"
-!define VERSION "1.0.0"
+!define VERSION "1.0.0.0"
 !define FILENAME "UntangleRootCAInstaller.exe"
 !define UNTANGLE_SETTINGS_DIR "./"
 !define PUBLISHER "Untangle"
 !define UNTANGLE_ROOTCA_DIR "/usr/share/untangle/settings/untangle-certificates"
 !define UNTANGLE_FF_CFG "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-certificate.cfg"
 !define UNTANGLE_FF_JS "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
+#!define ROOTCANAME "www.untangle.com - Untangle"
+!define ROOTCANAME "www.untangle.com"
+
 
 # Function AddCertificateToStore Defines
 !define CERT_QUERY_OBJECT_FILE 1
@@ -33,6 +36,7 @@ SetCompressor /FINAL lzma
 !define CERT_STORE_PROV_SYSTEM 10
 !define CERT_STORE_OPEN_EXISTING_FLAG 0x4000
 !define CERT_SYSTEM_STORE_LOCAL_MACHINE 0x20000
+!define CERT_STORE_MAXIMUM_ALLOWED_FLAG 0x00001000
 !define CERT_STORE_ADD_ALWAYS 4
 
 # MUI Defines
@@ -42,9 +46,6 @@ SetCompressor /FINAL lzma
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\modern-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "images\modern-header.bmp"
-!define MONITOR_SERVICE "installer\MonitorService.exe"
-!define MONITOR_NOTIFY "installer\MonitorNotify.exe"
-!define MONITOR_SETTINGS "installer\MonitorSettings.exe"
 !define MUI_WELCOMEPAGE_TITLE "$(^NameDA) Setup Wizard"
 !define MUI_TEXT_FINISH_INFO_TITLE "$(^NameDA) Setup Wizard"
 !define MUI_UNTEXT_FINISH_INFO_TITLE "$(^NameDA)"
@@ -54,6 +55,8 @@ SetCompressor /FINAL lzma
 #!define MUI_FINISHPAGE_RUN_TEXT "Root certificates installed!"
 
 var /GLOBAL FIREFOX_INSTALL_DIRECTORY
+VIProductVersion "${VERSION}"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 
 # MUI Macros
 # Install
@@ -91,6 +94,8 @@ Name "${PACKAGE_NAME}-${Version}"
 
 # If Details should be showed or not
 ShowInstDetails show
+ShowUninstDetails show
+#RequestExecutionLevel admin
 
 # Filename for generated Installer
 #OutFile "${UNTANGLE_PACKAGE_DIR}/${FILENAME}"
@@ -120,6 +125,9 @@ Section "Add to Windows" SecWin
         MessageBox MB_OK "import failed: $0"
         DetailPrint "$0"
     ${EndIf}
+
+    SetOutPath "$INSTDIR\bin"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\certmgr.exe"
         
 SectionEnd
 
@@ -132,6 +140,22 @@ Section /o "Add to Firefox" SecFirefoxUnchecked
     SetOutPath "$PROGRAMFILES\Mozilla Firefox\defaults\pref"
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
 
+    SetOutPath "$INSTDIR\bin"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\certutil.exe"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\freebl3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libnspr4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libplc4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libplds4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\msvcr100.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nss3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssckbi.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssdbm3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssutil3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\smime3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\softokn3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\sqlite3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\ssl3.dll"
+
 SectionEnd
 
 # Section Add to Firefox will import the Root CA to Firefoxs standard profile.
@@ -142,6 +166,22 @@ Section "Add to Firefox" SecFirefoxChecked
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-certificate.cfg"
     SetOutPath "$PROGRAMFILES\Mozilla Firefox\defaults\pref"
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
+
+    SetOutPath "$INSTDIR\bin"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\certutil.exe"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\freebl3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libnspr4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libplc4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\libplds4.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\msvcr100.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nss3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssckbi.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssdbm3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\nssutil3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\smime3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\softokn3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\sqlite3.dll"
+    File "${UNTANGLE_SETTINGS_DIR}\bin\ssl3.dll"
 
 SectionEnd
 
@@ -284,6 +324,9 @@ SectionEnd
 
 # Uninstaller Section
 Section "Uninstall"
+
+    Delete "$INSTDIR\Uninstall.exe"
+
     SetShellVarContext all
     ${If} ${RunningX64}
         SetRegView 64
@@ -291,14 +334,60 @@ Section "Uninstall"
 
     DetailPrint "Uninstalling Untangle Root Certificates"
 
+    DetailPrint "Uninstalling Untangle Root Certificates from Windows keystore"
+    nsExec::ExecToLog '"$INSTDIR\bin\certmgr.exe" -del -c -n ${ROOTCANAME} -s -r localMachine root'
+
+    DetailPrint "Uninstalling Untangle Root Certificates from Firefox"
+    Delete "$PROGRAMFILES\Mozilla Firefox\untangle-firefox-certificate.cfg"
+    Delete "$PROGRAMFILES\Mozilla Firefox\defaults\pref\untangle-firefox-preferences.js"
+
+    ReadINIStr $1 "$APPDATA\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
+    DetailPrint "Uninstalling Untangle Root Certificates from Firefox keystore"
+    nsExec::ExecToLog '"$INSTDIR\bin\certutil.exe -D" -n "${ROOTCANAME} - Untangle" -d "$APPDATA\Mozilla\Firefox\$1"'
+
+    ${un.EnumUsersReg} un.removeFirefox temp.key
+
+    # loop system users
+
     Delete "$INSTDIR\untangle.crt"
-    Delete "$INSTDIR\Uninstall.exe"
+    Delete "$INSTDIR\ut.ico"
+    Delete "$INSTDIR\bin\certmgr.exe"
+    Delete "$INSTDIR\bin\certutil.exe"
+    Delete "$INSTDIR\bin\freebl3.dll"
+    Delete "$INSTDIR\bin\libnspr4.dll"
+    Delete "$INSTDIR\bin\libplc4.dll"
+    Delete "$INSTDIR\bin\libplds4.dll"
+    Delete "$INSTDIR\bin\msvcr100.dll"
+    Delete "$INSTDIR\bin\nss3.dll"
+    Delete "$INSTDIR\bin\nssckbi.dll"
+    Delete "$INSTDIR\bin\nssdbm3.dll"
+    Delete "$INSTDIR\bin\nssutil3.dll"
+    Delete "$INSTDIR\bin\smime3.dll"
+    Delete "$INSTDIR\bin\softokn3.dll"
+    Delete "$INSTDIR\bin\sqlite3.dll"
+    Delete "$INSTDIR\bin\ssl3.dll"
+    RMDir "$INSTDIR\bin"
     RMDir "$INSTDIR"
 
     DetailPrint "Remove Regvalues for Untagle Root Certificates"
     DeleteRegKey HKLM  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
 
 SectionEnd
+
+Function un.removeFirefox
+    Pop $0
+
+    var /GLOBAL APPDATA_PATH
+    ReadRegStr $APPDATA_PATH HKU \
+        "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" \
+        "AppData"
+
+    ${If} "$APPDATA_PATH" != ""
+        ReadINIStr $1 "$APPDATA_PATH\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
+        nsExec::ExecToLog '"$INSTDIR\bin\certutil.exe" -D -n "${ROOTCANAME} - Untangle" -d "$APPDATA_PATH\Mozilla\Firefox\$1"'
+    ${Endif}
+
+FunctionEnd
 
 #  Function for Closeing running DirectoryLoginMonitorService.exe before Uninstall.
 Function un.onInit
