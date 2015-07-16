@@ -1,14 +1,25 @@
 #!/bin/dash
-
 #
 # Generate Windows installer for root certificate.
 #
 INSTALLER_PATH=/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
+INSTALLER_CONFIGURATION=${INSTALLER_PATH}installer.nsi
 INSTALLER_FILE_NAME=UntangleRootCAInstaller.exe
 
 UT_ROOT_PATH=/usr/share/untangle/settings/untangle-certificates
 UT_ROOT_CERTIFICATE=${UT_ROOT_PATH}/untangle.crt
 UT_ROOT_INSTALLER=${UT_ROOT_PATH}/${INSTALLER_FILE_NAME}
+
+if [ "$1" = "check" ] ; then
+	if [ -e ${UT_ROOT_INSTALLER} ] ; then
+		CONFIGURATION_VERSION=$(grep "\!define VERSION" ${INSTALLER_CONFIGURATION} | cut -d\" -f2)
+		INSTALLER_VERSION_MATCHES=$(strings -el ${UT_ROOT_INSTALLER} | grep -c ${CONFIGURATION_VERSION})
+
+		if [ $INSTALLER_VERSION_MATCHES -eq 1 ] ; then
+			exit
+		fi
+	fi
+fi
 
 if [ ! -f ${UT_ROOT_CERTIFICATE} ]; then
 	echo "Cannot find root certificate: ${UT_ROOT_CERTIFICATE}" 
@@ -55,7 +66,7 @@ for f in untangle-firefox-*; do
 	rm -f $f.converted
 done
 
-makensis installer.nsi > /dev/null
+makensis ${INSTALLER_CONFIGURATION} > /dev/null
 
 if [ $? -eq 0 ] ; then
 	if [ -f ${UT_ROOT_INSTALLER} ] ; then

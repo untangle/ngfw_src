@@ -110,10 +110,8 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
             }
         }
-        // Root CA exists but installer wasn't created (upgrade check)
-        if((rootCertFile.exists() == true) && (rootCertInstallerFile.exists() == false)){
-            UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
-        }
+        // Always perform a check for the root installer.  It will determine if it needs to be rebuilt.
+        UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + " check");
 
         // we should have a root CA at this point so we check the local apache
         // cert files and create them now if either is missing
