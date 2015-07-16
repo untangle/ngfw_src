@@ -44,7 +44,17 @@ function imgLoadFailure(isRequired) {
     newParagraph.appendChild(document.createElement('br'));
     newParagraph.appendChild(document.createElement('br'));
     var newLink = document.createElement('a');
-    var linkText = document.createTextNode("Click this link to download and install the root certificate.");
+    var linkText = document.createTextNode("Click this link to download the root certificate Windows installer.");
+    newLink.appendChild(linkText);
+    newLink.href = '/UntangleRootCAInstaller.exe';
+    newLink.title ="Download server root CA certificate installer";
+    newParagraph.appendChild(newLink);
+    cont.parentElement.appendChild(newParagraph);
+    
+    newParagraph.appendChild(document.createElement('br'));
+    
+    var newLink = document.createElement('a');
+    var linkText = document.createTextNode("Click this link to download the root certificate (manual install).");
     newLink.appendChild(linkText);
     newLink.href = '/cert';
     newLink.title ="Download server root CA certificate";
