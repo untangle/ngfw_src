@@ -71,9 +71,12 @@ public class SqlCondition implements Serializable, JSONString
     public Boolean getAutoFormatValue()
     {
         /**
-         * The "is" operator always requires special handling
+         * Some operators require special handling
          */
         if ("is".equalsIgnoreCase( getOperator() )) {
+            return false;
+        }
+        if ("in".equalsIgnoreCase( getOperator() )) {
             return false;
         }
 
