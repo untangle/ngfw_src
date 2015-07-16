@@ -11,7 +11,7 @@
             "column": "spam_blocker_lite_action",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
-            "value": "'Q'"
+            "value": "Q"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_lite_is_spam","spam_blocker_lite_action","spam_blocker_lite_score"],
