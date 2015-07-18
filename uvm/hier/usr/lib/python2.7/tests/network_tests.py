@@ -653,9 +653,9 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
         assert (result3 == 0)
 
-        events = global_functions.get_events('Network','Bypassed Sessions',None,20)
+        events = global_functions.get_events('Network','Bypassed Sessions',None,100)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 20, 
+        found = global_functions.check_events( events.get('list'), 100, 
                                             "s_server_addr", test_untangle_com_ip,
                                             "c_client_addr", remote_control.clientIP,
                                             "s_server_port", 80)
@@ -1177,6 +1177,7 @@ class NetworkTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
+        global orig_netsettings
         # Restore original settings to return to initial settings
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
