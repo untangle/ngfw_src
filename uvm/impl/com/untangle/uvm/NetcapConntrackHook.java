@@ -95,7 +95,11 @@ public class NetcapConntrackHook implements NetcapCallback
         
         if ( type == 1 ) { /* New Session */
             SessionEvent sessionEvent =  new SessionEvent( );
-            logger.debug( "New bypassed Session: " + session_id ); 
+            if ( logger.isDebugEnabled() ) {
+                logger.debug( "New bypassed Session: " + session_id + " " + l4_proto + "| " + 
+                              cClientAddr.getHostAddress() + ":" + c_client_port + " -> " +
+                              sServerAddr.getHostAddress() + ":" + s_server_port );
+            }
             sessionEvent.setSessionId( session_id );
             sessionEvent.setBypassed( true );
             sessionEvent.setProtocol( (short)l4_proto ); 
