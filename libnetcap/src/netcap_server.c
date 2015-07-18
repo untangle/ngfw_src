@@ -68,8 +68,9 @@ typedef struct epoll_info {
      * the type of this epoll fd
      */
     poll_type_t     type;
-    
-    netcap_session_t* netcap_sess;
+
+    struct nfq_handle*  nfq_h; /* for nfqueue epoll entries */
+    struct nfq_q_handle* nfq_qh; /* for nfqueue epoll entries */
     
 } epoll_info_t;
 
@@ -79,10 +80,9 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int sock );
 static int  _handle_message (epoll_info_t* info, int revents);
 static int  _handle_nfqueue (epoll_info_t* info, int revents);
 
-/* static int  _start_open_connection (struct in_addr* destaddr,u_short destport); */
-static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess);
-static int  _epoll_info_del (epoll_info_t* info);
-static int  _epoll_info_del_fd (int fd);
+static int  _epoll_info_add ( int fd, int events, int type, struct nfq_handle*  nfq_h, struct nfq_q_handle* nfq_qh );
+static int  _epoll_info_del ( epoll_info_t* info );
+static int  _epoll_info_del_fd ( int fd );
 
 static int   _message_pipe[2]; 
 static lock_t _server_lock;
@@ -119,9 +119,11 @@ int  netcap_server_init (void)
     if (ht_init(&_epoll_table, EPOLL_MAX_EVENT+1, int_hash_func, int_equ_func, HASH_FLAG_KEEP_LIST)<0)
         return perrlog("ht_init");
 
-    if (_epoll_info_add(_message_pipe[0], EPOLL_INPUT_SET,POLL_MESSAGE,NULL)<0)
+    if (_epoll_info_add( _message_pipe[0], EPOLL_INPUT_SET,POLL_MESSAGE, NULL, NULL) < 0 )
         return perrlog("_epoll_info_add");
-    if (_epoll_info_add(netcap_nfqueue_get_sock(),EPOLL_INPUT_SET,POLL_NFQUEUE_INCOMING,NULL)<0)
+    if (_epoll_info_add( netcap_nfqueue_get_udp_sock(),EPOLL_INPUT_SET,POLL_NFQUEUE_INCOMING, netcap_nfqueue_get_udp_nfq(), netcap_nfqueue_get_udp_nfqh() ) < 0 )
+        return perrlog("_epoll_info_add");
+    if (_epoll_info_add( netcap_nfqueue_get_tcp_sock(),EPOLL_INPUT_SET,POLL_NFQUEUE_INCOMING, netcap_nfqueue_get_tcp_nfq(), netcap_nfqueue_get_tcp_nfqh() ) < 0 )
         return perrlog("_epoll_info_add");
 
     if ((( _server.tcp.count = netcap_tcp_redirect_socks( &_server.tcp.sock_array )) < 0 ) || 
@@ -134,7 +136,7 @@ int  netcap_server_init (void)
         int fd = _server.tcp.sock_array[c];
         debug( 11, "NETCAP: Inserting socket: %d\n", fd );
         
-        if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_TCP_INCOMING, NULL ) < 0 ) {
+        if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_TCP_INCOMING, NULL, NULL ) < 0 ) {
             return perrlog( "_epoll_info_add" );
         }
     }
@@ -159,7 +161,9 @@ int  netcap_server_shutdown (void)
         
     if (_epoll_info_del_fd(_message_pipe[0])<0) 
         perrlog("_epoll_info_del_fd");
-    if (_epoll_info_del_fd(netcap_nfqueue_get_sock())<0) 
+    if (_epoll_info_del_fd(netcap_nfqueue_get_udp_sock())<0) 
+        perrlog("_epoll_info_del_fd");
+    if (_epoll_info_del_fd(netcap_nfqueue_get_tcp_sock())<0) 
         perrlog("_epoll_info_del_fd");
         
     if (( _server.tcp.count > 0 ) && ( _server.tcp.sock_array != NULL )) {
@@ -368,8 +372,6 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
 
         if ( info == NULL ) return errlogargs();
 
-        if ( info->fd != netcap_nfqueue_get_sock()) return errlogcons();
-        
         /* if there are any events in the input set, just read out */
         if (!( revents & ( EPOLL_INPUT_SET ))) {
             _epoll_print_stat( revents );
@@ -380,7 +382,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
 
         if (( pkt = netcap_pkt_create()) == NULL ) return errlogmalloc();
 
-        if ( netcap_nfqueue_read( buf, QUEUE_MAX_MESG_SIZE, pkt ) < 0 ) {
+        if ( netcap_nfqueue_read( info->nfq_h, info->nfq_qh, info->fd, buf, QUEUE_MAX_MESG_SIZE, pkt ) < 0 ) {
             return errlog( ERR_CRITICAL, "netcap_nfqueue_read\n" );
         }
         
@@ -429,7 +431,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
     }
 }
 
-static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess)
+static int  _epoll_info_add ( int fd, int events, int type, struct nfq_handle*  nfq_h, struct nfq_q_handle* nfq_qh )
 {
     epoll_info_t* info;
     struct epoll_event ev;
@@ -440,9 +442,10 @@ static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* net
     if (!info)
         return errlogmalloc();
 
-    info->fd    = fd;
-    info->type  = type;
-    info->netcap_sess = netcap_sess;
+    info->fd     = fd;
+    info->type   = type;
+    info->nfq_h  = nfq_h;
+    info->nfq_qh = nfq_qh;
     
     bzero(&ev,sizeof(struct epoll_event));
     ev.data.fd = fd;

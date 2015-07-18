@@ -370,7 +370,7 @@ def init_engine(node_module_dir):
 def create_tables():
     global __nodes
 
-    logger.info('create_tables(): %s ' % __get_available_nodes())
+    logger.info('create_tables()')
     for name in __get_available_nodes():
         try:
             logger.info('create_tables() for: %s' % (name))

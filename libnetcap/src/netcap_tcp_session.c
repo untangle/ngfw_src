@@ -144,7 +144,7 @@ int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
         case TCP_MSG_SYN:
             if ( msg->pkt != NULL ) {
                 if ( netcap_pkt_action_raze( msg->pkt, NF_DROP ) < 0 ) {
-                    errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+                    errlog( ERR_CRITICAL, "netcap_pkt_action_raze\n" );
                 }
             }
             break;

@@ -181,6 +181,13 @@ typedef struct netcap_pkt {
 
     /* this indicates where the packet was queued */
     netcap_queue_type_t queue_type;
+
+    /* The nfq handle that queued this packet */
+    struct nfq_handle*  nfq_h;
+
+    /* The nfq queue handle that queued this packet */
+    struct nfq_q_handle* nfq_qh;
+
 } netcap_pkt_t;
 
 typedef struct netcap_session {
@@ -423,8 +430,8 @@ char* netcap_session_cli_endp_print ( netcap_session_t* sess );
 char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
 
 /* Set the verdict on a packet */
-int  netcap_set_verdict      ( u_int32_t packet_id, int verdict, u_char* buffer, int len );
-int  netcap_set_verdict_mark      ( u_int32_t packet_id, int verdict, u_char* buffer, int len, int set_mark, u_int32_t mark );
+int  netcap_set_verdict      ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len);
+int  netcap_set_verdict_mark ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark );
 
 /* Conntrack manipulation functions */
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);

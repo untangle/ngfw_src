@@ -91,7 +91,7 @@ int  netcap_pkt_action_raze( netcap_pkt_t* pkt, int action )
     if (!pkt)
         return errlogargs();
        
-    if (( pkt->packet_id != 0 ) && netcap_set_verdict( pkt->packet_id, action, NULL, 0 ) < 0 ) {
+    if (( pkt->packet_id != 0 ) && netcap_set_verdict( pkt->nfq_qh, pkt->packet_id, action, NULL, 0 ) < 0 ) {
         perrlog( "netcap_set_verdict" );
         netcap_pkt_raze( pkt );
         return -1;

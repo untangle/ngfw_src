@@ -40,7 +40,7 @@ queue_owner()
     
     if [ ! -f /proc/net/netfilter/nfnetlink_queue ] ; then return ; fi
 
-    local t_queue_pid=`awk -v queue=0 '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue`
+    local t_queue_pid=`awk -v queue=1981 '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue`
     if [ -z "${t_queue_pid}" ]; then return ; fi
     
     UVM_PID=${t_queue_pid}  
@@ -54,7 +54,7 @@ is_uvm_running()
     if [ "${UVM_PID}x" = "invalidx" ]; then return ; fi
 
     if [ ! -f "/proc/${UVM_PID}/cmdline" ]; then return ; fi
-    
+
     grep -q com.untangle.uvm /proc/${UVM_PID}/cmdline 2>| /dev/null  && echo "true"
 }
 
@@ -126,10 +126,10 @@ insert_iptables_rules()
     ${IPTABLES} -A queue-to-uvm -t tune -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j RETURN -m comment --comment 'Do not queue (bypass) all packets with bypass bit set'
 
     # Queue all of the SYN packets.
-    ${IPTABLES} -A queue-to-uvm -t tune -p tcp --syn -j NFQUEUE -m comment --comment 'Queue TCP SYN packets to the untangle-vm'
+    ${IPTABLES} -A queue-to-uvm -t tune -p tcp --syn -j NFQUEUE --queue-num 1981 -m comment --comment 'Queue TCP SYN packets to the untangle-vm'
 
     # Queue all of the UDP packets.
-    ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
+    ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE --queue-num 1982 -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I PREROUTING 2 -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"

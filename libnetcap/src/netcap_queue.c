@@ -142,15 +142,27 @@ typedef struct
 static struct
 {
     pthread_key_t tls_key;
-    struct nfq_handle*  nfq_h;
-    struct nfq_q_handle* nfq_qh;
-    /* socket to accept connections on */
-    int nfq_fd;
+
+    struct nfq_handle*  nfq_udp_h;
+    struct nfq_handle*  nfq_tcp_h;
+
+    struct nfq_q_handle* nfq_udp_qh;
+    int nfq_udp_fd;
+    struct nfq_q_handle* nfq_tcp_qh;
+    int nfq_tcp_fd;
+
     int    raw_sock;
+
 } _queue = 
 {
-    .nfq_h    = NULL,
-    .nfq_qh   = NULL,
+    .nfq_udp_h    = NULL,
+    .nfq_tcp_h    = NULL,
+
+    .nfq_udp_qh   = NULL,
+    .nfq_udp_fd = -1,
+    .nfq_tcp_qh   = NULL,
+    .nfq_tcp_fd = -1,
+    
     .raw_sock = -1,
     .tls_key  = -1
 };
@@ -162,7 +174,8 @@ static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt );
 /* This is the callback for netfilter queuing */
 static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfa, void *data );
 
-/* Since this is a callback, have to use tls to pass data back */
+static int _init_nfq( struct nfq_handle** nfq_h );
+static int _init_nfqh( struct nfq_q_handle** nfq_qh, int* nfq_fd, int queue_num, struct nfq_handle* nfq_h );
 
 int  netcap_queue_init (void)
 {
@@ -182,49 +195,16 @@ int  netcap_queue_init (void)
             return perrlog("setsockopt");
         if ( setsockopt( _queue.raw_sock, IPPROTO_IP, IP_HDRINCL, (char *) &one, sizeof( one )) < 0 )
             return perrlog( "setsockopt" );
-        
-        /* initialize the netfilter queue */
-        if (( _queue.nfq_h = nfq_open()) == NULL ) return perrlog( "nfq_open" );
-        
-        /* Unbind any existing queue handlers */
-        /* In > 2.6.22, EINVAL is returned if the queue handler isn't register.  So
-           we just ignore it. */
-        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 && errno != EINVAL ) perrlog( "nfq_unbind_pf" );
-        
-        /* Bind queue */
-        if ( nfq_bind_pf( _queue.nfq_h, PF_INET ) < 0 ) perrlog( "nfq_bind_pf" );
-        
-        /* Bind the socket to a queue */
-        if (( _queue.nfq_qh = nfq_create_queue( _queue.nfq_h,  0, &_nf_callback, NULL )) == NULL ) {
-            return perrlog( "nfq_create_queue" );
-        }
-        
-        /* set the copy mode */
-        /* set untangle copy mode to include conntrack info */
-        if ( IS_NEW_KERNEL() ){  
-            if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET, 0xFFFF ) < 0){
-                return perrlog( "nfq_set_mode" );
-            }
-    
-            if (nfq_set_queue_flags(_queue.nfq_qh, NFQA_CFG_F_CONNTRACK,  NFQA_CFG_F_CONNTRACK )){
-                return perrlog( "nfq_set_queue_flags NFQA_CFG_F_CONNTRACK" );
-            }
-        }
-        else { 
-            if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET|NFQNL_COPY_UNTANGLE_MODE, 0xFFFF ) < 0){
-                return perrlog( "nfq_set_mode" );
-            }
-        }
-        /* Retrieve the file descriptor for the netfilter queue */
-        if (( _queue.nfq_fd = nfnl_fd( nfq_nfnlh( _queue.nfq_h ))) <= 0 ) {
-            return errlog( ERR_CRITICAL, "nfnl_fd/nfq_nfnlh\n" );
-        }
 
-        int bufsize = 1048576*2; /* 2 meg */
-        if ( setsockopt( _queue.nfq_fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof( bufsize )) < 0 ) {
-            perrlog("setsockopt");
-        }
-
+        if ( _init_nfq( &_queue.nfq_tcp_h ) < 0 )
+            return perrlog( "_init_nfq" );
+        if ( _init_nfq( &_queue.nfq_udp_h ) < 0 )
+            return perrlog( "_init_nfq" );
+        if ( _init_nfqh( &_queue.nfq_tcp_qh, &_queue.nfq_tcp_fd, 1981, _queue.nfq_tcp_h ) < 0 )
+            return perrlog( "_init_nfqh" );
+        if ( _init_nfqh( &_queue.nfq_udp_qh, &_queue.nfq_udp_fd, 1982, _queue.nfq_udp_h ) < 0 )
+            return perrlog( "_init_nfqh" );
+        
         return 0;
     }
     
@@ -240,44 +220,83 @@ int  netcap_queue_cleanup (void)
 {
     /* Cleanup */    
     /* close the queue handler */
-    if (( _queue.nfq_qh != NULL ) && ( nfq_destroy_queue( _queue.nfq_qh ) < 0 )) {
+    if (( _queue.nfq_udp_qh != NULL ) && ( nfq_destroy_queue( _queue.nfq_udp_qh ) < 0 )) {
+        perrlog( "nfq_destroy_queue" );
+    }
+    if (( _queue.nfq_tcp_qh != NULL ) && ( nfq_destroy_queue( _queue.nfq_tcp_qh ) < 0 )) {
         perrlog( "nfq_destroy_queue" );
     }
     
     /* close the queue */
-    if ( _queue.nfq_h != NULL ) {
+    if ( _queue.nfq_udp_h != NULL ) {
         // Don't unbind on shutdown, if you do other processes
         // that use nfq will stop working.
-        // if ( nfq_unbind_pf( _nfqueue.nfq_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
-        if ( nfq_close( _queue.nfq_h ) < 0 ) perrlog( "nfq_close" );
+        // if ( nfq_unbind_pf( _nfqueue.nfq_udp_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
+        if ( nfq_close( _queue.nfq_udp_h ) < 0 ) perrlog( "nfq_close" );
+    }
+    if ( _queue.nfq_tcp_h != NULL ) {
+        // Don't unbind on shutdown, if you do other processes
+        // that use nfq will stop working.
+        // if ( nfq_unbind_pf( _nfqueue.nfq_udp_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
+        if ( nfq_close( _queue.nfq_tcp_h ) < 0 ) perrlog( "nfq_close" );
     }
 
+    
     /* close the raw socket */
     if (( _queue.raw_sock > 0 ) && ( close( _queue.raw_sock ) < 0 )) perrlog("close");
     
     /* null out everything */
     _queue.raw_sock = -1;        
-    _queue.nfq_qh = NULL;
-    _queue.nfq_h = NULL;
+    _queue.nfq_udp_qh = NULL;
+    _queue.nfq_tcp_qh = NULL;
+    _queue.nfq_udp_h = NULL;
+    _queue.nfq_tcp_h = NULL;
     
     return 0;
 }
 
-int  netcap_nfqueue_get_sock (void)
+int  netcap_nfqueue_get_udp_sock (void)
 {
-    if ( _queue.nfq_h == NULL ) return errlog( ERR_CRITICAL, "QUEUE is not initialized\n" );
-
-    debug( 10, "Handle queue sock: %d\n", _queue.nfq_fd );
-
-    return _queue.nfq_fd;
+    if ( _queue.nfq_udp_h == NULL ) return errlog( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_udp_fd;
 }
 
-int  netcap_set_verdict ( u_int32_t packet_id, int verdict, u_char* buf, int len)
+struct nfq_handle*   netcap_nfqueue_get_udp_nfq ( void )
 {
-    return netcap_set_verdict_mark( packet_id, verdict, buf, len, 0, 0 );
+    if ( _queue.nfq_udp_h == NULL ) return errlog_null( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_udp_h;
 }
 
-int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark )
+struct nfq_q_handle* netcap_nfqueue_get_udp_nfqh ( void )
+{
+    if ( _queue.nfq_udp_h == NULL ) return errlog_null( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_udp_qh;
+}
+
+int  netcap_nfqueue_get_tcp_sock (void)
+{
+    if ( _queue.nfq_tcp_h == NULL ) return errlog( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_tcp_fd;
+}
+
+struct nfq_handle*   netcap_nfqueue_get_tcp_nfq ( void )
+{
+    if ( _queue.nfq_tcp_h == NULL ) return errlog_null( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_tcp_h;
+}
+
+struct nfq_q_handle* netcap_nfqueue_get_tcp_nfqh ( void )
+{
+    if ( _queue.nfq_tcp_h == NULL ) return errlog_null( ERR_CRITICAL, "QUEUE is not initialized\n" );
+    return _queue.nfq_tcp_qh;
+}
+
+int  netcap_set_verdict ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len)
+{
+    return netcap_set_verdict_mark( nfq_qh, packet_id, verdict, buf, len, 0, 0 );
+}
+
+int  netcap_set_verdict_mark( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark )
 {
     int nf_verdict = -1;
 
@@ -302,13 +321,13 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
     if ( packet_id == 0 ) return errlog( ERR_CRITICAL, "Unable to set the verdict on packet id 0\n" );
     
     if ( set_mark == 0 ) {
-        if ( nfq_set_verdict( _queue.nfq_qh, packet_id, nf_verdict, len, buf ) < 0 ) {
+        if ( nfq_set_verdict( nfq_qh, packet_id, nf_verdict, len, buf ) < 0 ) {
             return perrlog("nfq_set_verdict");
         }
     } else {
         debug( 10, "setting mark to: %#010x\n", mark );
         /* Convert to the proper byte order */
-        if ( nfq_set_verdict2( _queue.nfq_qh, packet_id, nf_verdict, mark, len, buf ) < 0 ) {
+        if ( nfq_set_verdict2( nfq_qh, packet_id, nf_verdict, mark, len, buf ) < 0 ) {
             return perrlog("nfq_set_verdict_mark");
         }
     }
@@ -317,16 +336,18 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
 }
 
 /* The netfiler version of the queue reading function */
-int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
+int  netcap_nfqueue_read( struct nfq_handle*  nfq_h, struct nfq_q_handle* nfq_qh, int nfq_fd, u_char* buf, int buf_len, netcap_pkt_t* pkt )
 {
     int _critical_section( void )
     {
         int pkt_len = 0;
         
-        if (( pkt_len = recv( _queue.nfq_fd, buf, buf_len, 0 )) < 0 ) return perrlog( "recv" );
+        if (( pkt_len = recv( nfq_fd, buf, buf_len, 0 )) < 0 ) return perrlog( "recv" );
+        pkt->nfq_h = nfq_h;
+        pkt->nfq_qh = nfq_qh;
         
         debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
-        if ( nfq_handle_packet( _queue.nfq_h, (char*)buf, pkt_len ) < 0 ) {
+        if ( nfq_handle_packet( nfq_h, (char*)buf, pkt_len ) < 0 ) {
             return errlog(ERR_WARNING, "nfq_handle_packet\n" );
         }
         
@@ -417,14 +438,14 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         l3num = nfmsg->nfgen_family; 
     
         if ( _nfq_get_conntrack_info( nfa, pkt, l3num ) < 0 ) {
-            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+            netcap_set_verdict( pkt->nfq_qh, pkt->packet_id, NF_DROP, NULL, 0 );
             pkt->packet_id = 0;
             return errlog( ERR_WARNING, "3.10 DROPPING PACKET because it has no conntrack info.\n" );
         }
     }
     else { 
         if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+            netcap_set_verdict( pkt->nfq_qh, pkt->packet_id, NF_DROP, NULL, 0 );
             pkt->packet_id = 0;
             return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
         }
@@ -560,10 +581,10 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     pkt->proto = ip_header->protocol;
     pkt->nfmark  = nfq_get_nfmark( nfa );
 
-    if ( pkt->nfmark & MARK_BYPASS){
-      netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
-      pkt->packet_id = 0;
-      return errlog( ERR_WARNING, "Queued a bypassed packet\n");
+    if ( pkt->nfmark & MARK_BYPASS) {
+        netcap_set_verdict( pkt->nfq_qh, pkt->packet_id, NF_DROP, NULL, 0 );
+        pkt->packet_id = 0;
+        return errlog( ERR_WARNING, "Queued a bypassed packet\n");
     }
 
     if ( netcap_interface_mark_to_cli_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
@@ -676,6 +697,60 @@ static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
     pkt->nat_info.reply.src_protocol_id = reply->src.u.tcp.port;
     pkt->nat_info.reply.dst_address     = reply->dst.u3.ip;
     pkt->nat_info.reply.dst_protocol_id = reply->dst.u.tcp.port;
+
+    return 0;
+}
+
+static int _init_nfq( struct nfq_handle** nfq_h )
+{
+    /* initialize the netfilter queue */
+    if (( *nfq_h = nfq_open()) == NULL ) return perrlog( "nfq_open" );
+        
+    /* Unbind any existing queue handlers */
+    /* In > 2.6.22, EINVAL is returned if the queue handler isn't registered.  So
+       we just ignore it. */
+    if ( nfq_unbind_pf( *nfq_h, PF_INET ) < 0 && errno != EINVAL ) perrlog( "nfq_unbind_pf" );
+        
+    /* Bind queue */
+    if ( nfq_bind_pf( *nfq_h, PF_INET ) < 0 ) perrlog( "nfq_bind_pf" );
+
+    return 0;
+}
+
+static int _init_nfqh( struct nfq_q_handle** nfq_qh, int* nfq_fd, int queue_num, struct nfq_handle* nfq_h )
+{
+        
+    /* Bind the socket to a queue */
+    if (( *nfq_qh = nfq_create_queue( nfq_h,  queue_num, &_nf_callback, NULL )) == NULL ) {
+        return perrlog( "nfq_create_queue" );
+    }
+        
+    /* set the copy mode */
+    if ( IS_NEW_KERNEL() ){  
+        if ( nfq_set_mode( *nfq_qh, NFQNL_COPY_PACKET, 0xFFFF ) < 0){
+            return perrlog( "nfq_set_mode" );
+        }
+    
+        if ( nfq_set_queue_flags( *nfq_qh, NFQA_CFG_F_CONNTRACK,  NFQA_CFG_F_CONNTRACK ) ) {
+            return perrlog( "nfq_set_queue_flags NFQA_CFG_F_CONNTRACK" );
+        }
+    }
+    else { 
+        /* set untangle copy mode to include conntrack info */
+        if ( nfq_set_mode( *nfq_qh, NFQNL_COPY_PACKET|NFQNL_COPY_UNTANGLE_MODE, 0xFFFF ) < 0 ) {
+            return perrlog( "nfq_set_mode" );
+        }
+    }
+
+    /* Retrieve the file descriptor for the netfilter queue */
+    if (( *nfq_fd = nfnl_fd( nfq_nfnlh( nfq_h ))) <= 0 ) {
+        return errlog( ERR_CRITICAL, "nfnl_fd/nfq_nfnlh\n" );
+    }
+
+    int bufsize = 1048576*2; /* 2 meg */
+    if ( setsockopt( *nfq_fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof( bufsize )) < 0 ) {
+        perrlog("setsockopt");
+    }
 
     return 0;
 }
