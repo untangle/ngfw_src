@@ -631,7 +631,7 @@ Ext.define('Webui.config.sessionMonitor', {
                     if ( rec.data.clientKBps == null )
                         return null;
                     else
-                        return (Math.round(rec.data.clientKBps*10))/10 + (Math.round(rec.data.serverKBps*10))/10;
+                        return Math.round((rec.data.serverKBps+rec.data.clientKBps)*10)/10;
                 }
             },{
                 name: "priority"
