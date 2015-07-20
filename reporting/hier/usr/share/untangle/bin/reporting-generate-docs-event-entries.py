@@ -9,7 +9,7 @@ import traceback
 dict = {}
 
 # read the report entries and put in dictionary
-p = subprocess.Popen(["sh","-c","/usr/bin/find /usr/share/untangle/lib -path '*/reports/*.js' -print"], stdout=subprocess.PIPE)
+p = subprocess.Popen(["sh","-c","/usr/bin/find /usr/share/untangle/lib '*/events/*.js' -print"], stdout=subprocess.PIPE)
 for line in iter(p.stdout.readline, ''):
     filename = line.strip()
 
@@ -33,8 +33,8 @@ for category in dict:
     list = sorted( list, key=lambda item: item['displayOrder'] )
 
     print 
-    print "== %s Reports == " % category
-    print "<section begin='%s' />" % category 
+    print "== %s Event Logs == " % category
+    print "<section begin='%s' />" % category
     print "{| border=\"1\" cellpadding=\"2\" width=\"85%%\" align=\"center\" "
     print "!Report Entry"
     print "!Description"
