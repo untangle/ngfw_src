@@ -724,6 +724,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         };
         this.gridReportEntries= Ext.create('Ung.grid.Panel',{
             name: 'Manage Reports',
+            helpSource: 'reports_manage_reports',
             settingsCmp: this,
             hasReadOnly: true,
             changableFields: ['enabled'],
