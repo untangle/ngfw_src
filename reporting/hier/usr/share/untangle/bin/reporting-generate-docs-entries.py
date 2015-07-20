@@ -34,15 +34,18 @@ for category in dict:
 
     print 
     print "== %s Reports == " % category
+    print "<section begin='%s' />" % category
     print 
-    print "{| border=\"1\" cellpadding=\"2\""
+    print "{| border=\"1\" cellpadding=\"2\" width=\"85%%\" align=\"center\" "
     print "!Report Entry"
     print "!Description"
     print "|-"
 
     for i in list:
-        print "|%s" % i['title']
-        print "|%s" % i['description']
+        print "| width=\"25%%\" | %s"  % i['title']
+        print "| width=\"60%%\" | %s" % i['description']
         print "|-"
 
     print "|}"
+    print "<section end='%s' />" % category
+    print 

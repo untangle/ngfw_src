@@ -369,8 +369,9 @@ for line in iter(p.stdout.readline, ''):
 
     print 
     print "== %s == " % table_name
+    print "<section begin='%s' />" % table_name
     print 
-    print "{| border=\"1\" cellpadding=\"2\""
+    print "{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\""
     print "!Column Name"
     print "!Type"
     print "!Description"
@@ -399,5 +400,6 @@ for line in iter(p.stdout.readline, ''):
         print "|-"
         
     print "|}"
-
+    print "<section end='%s' />" % table_name
+    print 
 
