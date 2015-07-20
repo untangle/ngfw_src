@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_lite_blocked","web_filter_lite_flagged","web_filter_lite_reason","web_filter_lite_category","s_server_addr","s_server_port"],
+    "description": "Shows all blocked web requests.",
     "displayOrder": 30,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "http_events",

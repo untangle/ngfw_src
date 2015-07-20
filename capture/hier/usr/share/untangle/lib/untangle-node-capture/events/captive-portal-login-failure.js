@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
+    "description": "Failed logins to Captive Portal.",
     "displayOrder": 22,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "capture_user_events",

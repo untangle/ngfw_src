@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","application_control_lite_protocol","application_control_lite_blocked"],
+    "description": "All sessions matching an application signature and blocked.",
     "displayOrder": 20,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",

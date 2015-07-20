@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
+    "description": "Sessions logged off by the admin.",
     "displayOrder": 26,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "capture_user_events",

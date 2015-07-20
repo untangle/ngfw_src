@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","sig_id","gen_id","class_id","source_addr","source_port","dest_addr","dest_port","protocol","blocked","category","classtype","msg"],
+    "description": "All sessions matching Intrusion Prevention signatures and blocked.",
     "displayOrder": 20,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "intrusion_prevention_events",

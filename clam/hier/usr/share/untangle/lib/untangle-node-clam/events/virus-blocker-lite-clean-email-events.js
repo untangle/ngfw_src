@@ -15,6 +15,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","hostname","username","addr","sender","s_server_addr","s_server_port"],
+    "description": "Scanned email sessions marked clean.",
     "displayOrder": 22,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "mail_addrs",

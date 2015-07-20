@@ -2,6 +2,7 @@
     "category": "Administration",
     "conditions": [],
     "defaultColumns": ["time_stamp","login","local","client_addr","succeeded","reason"],
+    "description": "All local administrator logins.",
     "displayOrder": 10,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "admin_logins",

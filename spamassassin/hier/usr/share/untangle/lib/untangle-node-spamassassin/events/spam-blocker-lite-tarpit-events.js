@@ -9,6 +9,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","hostname","ipaddr"],
+    "description": "All email sessions that were tarpitted.",
     "displayOrder": 40,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "smtp_tarpit_events",

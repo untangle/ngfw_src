@@ -15,6 +15,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
+    "description": "All email sessions scanned by Phish Blocker.",
     "displayOrder": 10,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "mail_addrs",
