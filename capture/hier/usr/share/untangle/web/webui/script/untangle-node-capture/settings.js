@@ -354,7 +354,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         }, this);
         var adconnectorLicense;
         try {
-            adconnectorLicense = Ung.Main.getLicenseManager().getLicense("untangle-node-adconnector");
+            adconnectorLicense = rpc.nodeManager.node("untangle-node-adconnector") && Ung.Main.getLicenseManager().getLicense("untangle-node-adconnector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
