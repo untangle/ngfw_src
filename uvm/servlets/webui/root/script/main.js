@@ -43,15 +43,21 @@ Ext.define("Ung.Main", {
 
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        rpc.jsonrpc.UvmContext.getWebuiStartupInfo(Ext.bind(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            Ext.applyIf(rpc, result);
-            rpc.nodeManager.node(Ext.bind(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.policyManager = result;
-                this.startApplication();
-            }, this), "untangle-node-policy");
-        }, this));
+        //load all managers and startup info
+        var startupInfo;
+        try {
+            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        Ext.applyIf(rpc, startupInfo);
+        //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
+        try {
+            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        this.startApplication();
     },
     startApplication: function() {
         if(Ext.supports.LocalStorage) {
