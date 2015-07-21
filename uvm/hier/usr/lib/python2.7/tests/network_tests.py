@@ -401,8 +401,8 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     settings['v3Username'] = v3Username
     settings['v3AuthenticationProtocol'] = v3AuthenticationProtocol
     settings['v3AuthenticationPassphrase'] = v3AuthenticationPassphrase
-    settings['v3PrivacyProtocol'] = v3AuthenticationProtocol
-    settings['v3PrivacyPassphrase'] = v3AuthenticationPassphrase
+    settings['v3PrivacyProtocol'] = v3PrivacyProtocol
+    settings['v3PrivacyPassphrase'] = v3PrivacyPassphrase
     settings['v3Required'] = v3Required
 
     lanAdminIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
@@ -653,9 +653,9 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
         assert (result3 == 0)
 
-        events = global_functions.get_events('Network','Bypassed Sessions',None,100)
+        events = global_functions.get_events('Network','Bypassed Sessions',None,20)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 100, 
+        found = global_functions.check_events( events.get('list'), 20,
                                             "s_server_addr", test_untangle_com_ip,
                                             "c_client_addr", remote_control.clientIP,
                                             "s_server_port", 80)
@@ -1177,7 +1177,6 @@ class NetworkTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global orig_netsettings
         # Restore original settings to return to initial settings
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
