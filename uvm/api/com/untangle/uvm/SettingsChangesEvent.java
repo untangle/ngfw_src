@@ -16,7 +16,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class SettingsChangesEvent extends LogEvent
 {
     private String settings_file;
-    private String username = "root";
+    private String username = "localadmin";
     private String hostname = "127.0.0.1";
 
     public SettingsChangesEvent( String settings_file, String username, String hostname )
