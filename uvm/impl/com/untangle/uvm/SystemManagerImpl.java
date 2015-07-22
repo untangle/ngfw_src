@@ -56,8 +56,10 @@ public class SystemManagerImpl implements SystemManager
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
     private static final String SNMP_CONF_LIB_FILE_NAME = "/var/lib/snmp/snmpd.conf";
+    private static final String SNMP_CONF_SHARE_FILE_NAME = "/usr/share/snmp/snmpd.conf";
     private static final String SNMP_CONFIG = "/usr/bin/net-snmp-config";
     private static final Pattern SNMP_CONF_V3USER_PATTERN = Pattern.compile("usmUser\\s+");
+    private static final Pattern SNMP_CONF_SHARE_USER_PATTERN = Pattern.compile("rwuser\\s+");
 
     private static final String UPGRADE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-upgrade.py";
     private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-set-timezone";
@@ -655,6 +657,22 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("Unable to open SNMP library configuration file: s" + SNMP_CONF_LIB_FILE_NAME );
             return;
         }
+        
+        StringBuilder snmpdShare_config = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(SNMP_CONF_SHARE_FILE_NAME));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = SNMP_CONF_SHARE_USER_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    foundExistingUser = true;
+                    continue;
+                }
+                snmpdShare_config.append(l).append(EOL);
+            }
+        } catch (Exception x) {
+            logger.warn("Unable to open SNMP share configuration file: s" + SNMP_CONF_SHARE_FILE_NAME );
+            return;
+        }
         if( ( false == foundExistingUser ) &&
             ( false == settings.isV3Enabled() ) ){
             return;
@@ -669,6 +687,7 @@ public class SystemManagerImpl implements SystemManager
              * Remove existing user
              */
             strToFile(snmpdLib_config.toString(), SNMP_CONF_LIB_FILE_NAME );
+            strToFile(snmpdShare_config.toString(), SNMP_CONF_SHARE_FILE_NAME );
         }
 
         if( settings.isEnabled() &&
@@ -760,9 +779,19 @@ public class SystemManagerImpl implements SystemManager
                 for ( String line : lines )
                     logger.info("/etc/init.d/snmpd stop: " + line);
             } catch (Exception e) {}
-            // A sleep, of course, is awful.  But for the purposes of managing the snmpv3 user, it must be
-            // completely shut down or net-snmp-config will fail.
-            Thread.sleep(100);
+            // The daemon must be completely shut down for purposes such as adding an snmpv3 user
+            // and returning from the init script doesn't 100% guarantee that it's shut down.
+            int tries = 10;
+            int count = 0;
+            do{
+                Thread.sleep(100);
+                result = UvmContextFactory.context().execManager().execOutput("pgrep /usr/sbin/snmpd | wc -l");
+                count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+                tries--;
+            }while( (count > 0) && (tries > 0));
+            if( count > 0 ){
+                logger.info("Waiting for snmpd shutdown took too long");
+            }
         }
         catch(Exception ex) {
             logger.error("Error stopping snmpd", ex);
