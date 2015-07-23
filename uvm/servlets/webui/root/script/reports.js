@@ -403,6 +403,7 @@ Ext.define('Ung.panel.Reports', {
                         others.value+=data[i].value;
                     }
                 }
+                others.value = Math.round(others.value*10)/10;
                 topData.push(others);
             }
             if(topData.length == 0) {
