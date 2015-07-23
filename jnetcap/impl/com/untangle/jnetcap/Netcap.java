@@ -33,7 +33,12 @@ public final class Netcap
      * @param jnetcapLevel JNetcap debugging level.
      */
     public static native int init( int netcapLevel, int jnetcapLevel );
-    
+
+    /**
+     * Return the next available session ID
+     */
+    public static native int nextSessionId();
+
     /** 
      * Initialize the JNetcap and Netcap library with the same debugging level for
      * JNetcap and Netcap.</p>

@@ -429,6 +429,11 @@ char* netcap_session_srv_endp_print ( netcap_session_t* sess );
 char* netcap_session_cli_endp_print ( netcap_session_t* sess );
 char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
 
+/**
+ * Get the next available unique session ID
+ */
+u_int64_t netcap_session_next_id ( void );
+
 /* Set the verdict on a packet */
 int  netcap_set_verdict      ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len);
 int  netcap_set_verdict_mark ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark );

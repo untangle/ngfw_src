@@ -219,6 +219,17 @@ JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
 
 /*
  * Class:     Netcap
+ * Method:    nextSessionId
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( nextSessionId )
+( JNIEnv *env, jclass _class )
+{
+    return netcap_session_next_id();
+}
+
+/*
+ * Class:     Netcap
  * Method:    cleanup
  * Signature: ()V
  */
