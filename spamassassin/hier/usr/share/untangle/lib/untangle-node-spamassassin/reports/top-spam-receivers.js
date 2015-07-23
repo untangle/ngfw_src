@@ -16,6 +16,12 @@
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": "true"
+        },
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "in",
+            "value": "('T', 'C')"
         }
     ],
     "readOnly": true,

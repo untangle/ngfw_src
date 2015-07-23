@@ -13,7 +13,7 @@
         "sum(case when spam_blocker_lite_is_spam is not null then 1 else null end::int) as scanned"
     ],
     "colors": [
-        "#e5e500"
+        "#b2b2b2"
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",

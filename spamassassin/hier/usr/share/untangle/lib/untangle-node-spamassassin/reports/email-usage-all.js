@@ -15,7 +15,7 @@
         "sum(case when spam_blocker_lite_is_spam is true then 1 else null end::int) as spam"
     ],
     "colors": [
-        "#e5e500",
+        "#b2b2b2",
         "#396c2b",
         "#8c0000"
     ],

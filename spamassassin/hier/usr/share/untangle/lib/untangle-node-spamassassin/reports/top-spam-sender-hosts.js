@@ -8,7 +8,7 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "msgs",
-    "pieGroupColumn": "s_server_addr",
+    "pieGroupColumn": "c_client_addr",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -20,6 +20,6 @@
     ],
     "readOnly": true,
     "table": "mail_addrs",
-    "title": "Top Spam Sender Hosts",
+    "title": "Top Spam Sender Addresses",
     "type": "PIE_GRAPH"
 }
