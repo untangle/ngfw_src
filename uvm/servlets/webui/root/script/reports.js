@@ -794,7 +794,8 @@ Ext.define('Ung.panel.Reports', {
             if ( entry.colors != null && entry.colors.length > 0 ) {
                 chart.colors = entry.colors;
             } else {
-                chart.colors = ['#CED428', '#33BDBF', '#F7AF1C', '#898A7A', '#2F606E', '#CFCDBE', '#5B5A4B', '#A9BD38', '#C8441A', '#00898B', '#D0CDBE'];
+                chart.colors = ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
+                //chart.colors = ['#CED428', '#33BDBF', '#F7AF1C', '#898A7A', '#2F606E', '#CFCDBE', '#5B5A4B', '#A9BD38', '#C8441A', '#00898B', '#D0CDBE'];
             }
         }
         
