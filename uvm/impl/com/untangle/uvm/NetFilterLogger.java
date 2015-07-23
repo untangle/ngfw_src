@@ -222,6 +222,9 @@ public class NetFilterLogger
                     hostname = entry.getHostname();
                 }
 
+                if ((hostname == null || hostname.length() == 0))
+                    hostname = cClientAddr.getHostAddress();
+                
                 event.setUsername(username); 
                 event.setHostname(hostname); 
 
