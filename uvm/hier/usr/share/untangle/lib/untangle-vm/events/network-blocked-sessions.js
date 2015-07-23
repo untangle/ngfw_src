@@ -2,17 +2,17 @@
     "category": "Network",
     "conditions": [
         {
-            "column": "bypassed",
+            "column": "filter_prefix",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "is",
-            "value": "false"
+            "value": "not null"
         }
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port"],
-    "description": "All sessions that were not bypassed.",
-    "displayOrder": 20,
+    "description": "All sessions blocked by filter rules.",
+    "displayOrder": 40,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "sessions",
-    "title": "Scanned Sessions",
-    "uniqueId": "network-cCHSVFktsM"
+    "title": "Blocked Sessions",
+    "uniqueId": "network-ZQzCJlWkX0"
 }
