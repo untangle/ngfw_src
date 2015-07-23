@@ -647,15 +647,17 @@ class NetworkTests(unittest2.TestCase):
         # bypass the client and verify the client can bypass the firewall
         setFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
         result3 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        events = global_functions.get_events('Network','Bypassed Sessions',None,100)
+
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (result1 == 0)
         assert (result2 != 0)
         assert (result3 == 0)
 
-        events = global_functions.get_events('Network','Bypassed Sessions',None,20)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 20,
+        found = global_functions.check_events( events.get('list'), 100,
                                             "s_server_addr", test_untangle_com_ip,
                                             "c_client_addr", remote_control.clientIP,
                                             "s_server_port", 80)
