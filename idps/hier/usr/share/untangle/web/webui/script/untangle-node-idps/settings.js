@@ -943,9 +943,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }]
             },{
                 xtype:'textfield',
-                name: "Pass",
+                name: "Definition",
                 dataIndex: "definition",
-                fieldLabel: this.i18n._("Pass"),
+                fieldLabel: this.i18n._("Definition"),
                 emptyText: this.i18n._("[enter definition]"),
                 allowBlank: false,
                 width: 400
