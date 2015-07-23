@@ -217,7 +217,7 @@ Ext.define('Ung.RuleBuilder', {
             value = valueContainer.down("textfield").getValue();
             break;
         case "boolean":
-            value = true;
+            value = "true";
             break;
         case "editor":
             value = valueContainer.down("button").getValue();
