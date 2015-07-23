@@ -33,6 +33,7 @@ public class SessionEvent extends LogEvent
     private Long policyId;
     private String username;
     private String hostname;
+    private String filterPrefix;
     
     public SessionEvent()
     {
@@ -130,6 +131,12 @@ public class SessionEvent extends LogEvent
     public void setUsername(String username) { this.username = username; }
 
     /**
+     * The iptables NFLOG prefix associated with this session
+     */
+    public String getFilterPrefix() { return filterPrefix; }
+    public void setFilterPrefix(String filterPrefix) { this.filterPrefix = filterPrefix; }
+
+    /**
      * The hostname associated with this session
      */
     public String getHostname() { return hostname; }
@@ -149,9 +156,9 @@ public class SessionEvent extends LogEvent
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, time_stamp, protocol, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, time_stamp, protocol, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
@@ -163,6 +170,7 @@ public class SessionEvent extends LogEvent
         pstmt.setTimestamp(++i,timeStampPlusSeconds(1)); // default end_time
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getUsername());
+        pstmt.setString(++i, getFilterPrefix());
         pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));
         pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getCClientPort());

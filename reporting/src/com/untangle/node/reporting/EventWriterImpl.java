@@ -360,7 +360,7 @@ public class EventWriterImpl implements Runnable
                     }
                 }
             } catch (Exception e) {
-                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString() + "\" exception=" +  e);
+                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString(), e);
             }
 
 

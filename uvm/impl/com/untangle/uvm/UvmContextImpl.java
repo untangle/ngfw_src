@@ -122,6 +122,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private JSONSerializer serializer;
     private Reporting reportingNode = null;
     private HostTableImpl hostTableImpl = null;
+    private NetFilterLogger netFilterLogger = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
@@ -748,6 +749,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.sessionMonitor = new SessionMonitorImpl();
 
         this.hostTableImpl = new HostTableImpl();
+        
+        this.netFilterLogger = new NetFilterLogger();
 
         this.servletFileManager = new ServletFileManagerImpl();
 

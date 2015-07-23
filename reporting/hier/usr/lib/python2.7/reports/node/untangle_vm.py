@@ -125,6 +125,7 @@ CREATE TABLE reports.sessions (
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         bypassed boolean,
+        filter_prefix text,
         protocol int2,
         hostname text,
         username text,
@@ -185,6 +186,7 @@ CREATE TABLE reports.sessions (
 
         sql_helper.add_column('sessions','protocol','int2') # 11.2
         sql_helper.add_column('sessions','bypassed','boolean') # 11.2
+        sql_helper.add_column('sessions','filter_prefix','text') #11.2
 
         sql_helper.rename_column('sessions','protofilter_protocol','application_control_lite_protocol') # 11.2
         sql_helper.rename_column('sessions','protofilter_blocked','application_control_lite_blocked') # 11.2
