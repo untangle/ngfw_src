@@ -186,7 +186,7 @@ public class NetFilterLogger
     protected void HandleLoggerMessage(ByteBuffer logMessage) throws Exception
     {
         String message = new String(logMessage.array(), 0, logMessage.position());
-        String srcAddress, dstAddress;
+        String srcAddressStr, dstAddressStr;
         String logPrefix;
         int netProto, srcIntf, dstIntf;
         int srcPort, dstPort;
@@ -199,23 +199,37 @@ public class NetFilterLogger
                 // extract all of the fields from the message
                 netProto = Integer.valueOf(extractField(item, "PROTO:", "0"));
                 srcIntf = Integer.valueOf(extractField(item, "SINTF:", "0"));
-                srcAddress = extractField(item, "SADDR:", "0.0.0.0");
+                srcAddressStr = extractField(item, "SADDR:", "0.0.0.0");
                 srcPort = Integer.valueOf(extractField(item, "SPORT:", "0"));
                 dstIntf = Integer.valueOf(extractField(item, "DINTF:", "0"));
-                dstAddress = extractField(item, "DADDR:", "0.0.0.0");
+                dstAddressStr = extractField(item, "DADDR:", "0.0.0.0");
                 dstPort = Integer.valueOf(extractField(item, "DPORT:", "0"));
                 logPrefix = extractField(item, "PREFIX:", "");
 
+                InetAddress srcAddress = InetAddress.getByName(srcAddressStr);
+                InetAddress dstAddress = InetAddress.getByName(dstAddressStr);
+                
                 // create a new session event and fill it with our data
                 SessionEvent event = new SessionEvent();
                 event.setSessionId(new Long(com.untangle.jnetcap.Netcap.nextSessionId()));
                 event.setProtocol(new Short((short) netProto));
                 
-                event.setSServerAddr(InetAddress.getByName(dstAddress));
-                event.setSClientAddr(InetAddress.getByName(srcAddress));
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+                String username = null;
+                String hostname = null;
+                if ( entry != null ) {
+                    username = entry.getUsername();
+                    hostname = entry.getHostname();
+                }
 
-                event.setCServerAddr(InetAddress.getByName(srcAddress));
-                event.setCClientAddr(InetAddress.getByName(dstAddress));
+                event.setUsername(username); 
+                event.setHostname(hostname); 
+
+                event.setCClientAddr(srcAddress);
+                event.setSClientAddr(srcAddress);
+
+                event.setCServerAddr(dstAddress);
+                event.setSServerAddr(dstAddress);
 
                 event.setSServerPort(new Integer(dstPort));
                 event.setSClientPort(new Integer(srcPort));
