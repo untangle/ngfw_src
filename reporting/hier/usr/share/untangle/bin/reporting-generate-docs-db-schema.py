@@ -23,6 +23,7 @@ generic = {
     'policy_id' : 'The policy',
     'username' : 'The username',
     'hostname' : 'The hostname',
+    'filter_prefix' : 'The network filter that blocked the connection',
     'c2s_content_length' : 'The client-to-server content length',
     's2c_content_length' : 'The server-to-client content length',
     's2c_content_type' : 'The server-to-client content type',

@@ -30,6 +30,7 @@ dict = {
     'policy_id' : i18n._('Policy ID'),
     'username' : i18n._('Username'),
     'hostname' : i18n._('Hostname'),
+    'filter_prefix' : i18n._('Filter Block'),
     'c2s_content_length' : i18n._('Client-to-server Content Length'),
     's2c_content_length' : i18n._('Server-to-client Content Length'),
     's2c_content_type' : i18n._('Server-to-client Content Type'),
