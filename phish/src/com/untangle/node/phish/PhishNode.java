@@ -120,6 +120,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-daemon" );
         UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-freshclam" );
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "/usr/sbin/clamd");
         super.postStop();
     }
 }

@@ -34,7 +34,7 @@ public class ClamNode extends VirusNodeImpl
     {
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-daemon" );
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-freshclam" );
-        UvmContextFactory.context().daemonManager().enableRequestMonitoring("clamav-daemon", 300, "127.0.0.1", 3310, "TEST", "UNKNOWN COMMAND");
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "/usr/sbin/clamd");
         super.preStart();
     }
 
