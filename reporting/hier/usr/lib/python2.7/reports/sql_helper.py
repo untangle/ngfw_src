@@ -247,7 +247,7 @@ def clean_table(tablename, cutoff):
     # on relevent partitions
     if column_exists( tablename, "time_stamp" ):
         sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (SCHEMA, tablename)
-        logger.debug(sql)
+        logger.debug( sql % cutoff )
         run_sql(sql, (cutoff,))
     else: 
         logger.warn("Table %s missing time_stamp column!" % tablename)
@@ -294,6 +294,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
                 start_time = table_start_time
                 end_time = table_start_time + mx.DateTime.RelativeDateTime(days=1)
                 partition_table_sql = "CREATE TABLE %s (CHECK (time_stamp >= '%s' AND time_stamp < '%s')) INHERITS (%s)" % (partition_full_tablename, start_time, end_time, full_tablename)
+                logger.info(partition_table_sql)
                 run_sql(partition_table_sql)
 
                 # always create time_stamp index
@@ -308,8 +309,14 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
                         create_index( partition_tablename, column, unique=False );
 
         # create insert trigger
-        # this trigger only includes inserting new events for today and tomorrow (not previous days)
-        __make_trigger( tablename, 'time_stamp', start_times )
+        # this trigger only includes inserting new events for today and tomorrow 
+        # and yesterday if the table exists
+        trigger_times = start_times
+        yesterday = (now - mx.DateTime.RelativeDateTime(days=1)).strftime('%Y_%m_%d')
+        if ( table_exists( tablename + "_" + yesterday ) ):
+            trigger_times.insert(0, (now - mx.DateTime.RelativeDateTime(days=1)))
+
+        __make_trigger( tablename, 'time_stamp', trigger_times )
 
 def get_update_info(tablename, default=None, delay=0):
     conn = get_connection()
