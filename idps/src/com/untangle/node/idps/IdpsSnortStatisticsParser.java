@@ -144,8 +144,12 @@ public class IdpsSnortStatisticsParser {
         File file = new File(SNORT_LOG);
         try{
             raf = new RandomAccessFile( file, "r" );
-        }catch( FileNotFoundException e){
-            logger.warn("parse: snort log does not exist: ", e);
+        }catch( Exception e){
+            /*
+             * The file likely does not exist but there's no need to 
+             * fill up the logs with this as it will eventually be
+             * created by snort.
+             */
             return;
         }
         try{
