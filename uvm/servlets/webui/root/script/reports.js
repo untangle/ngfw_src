@@ -1471,6 +1471,10 @@ Ext.define('Ung.panel.Reports', {
                         }, {
                             name: 'hostname'
                         }, {
+                            name: 'client_intf'
+                        }, {
+                            name: 'server_intf'
+                        }, {
                             name: 'c_client_addr',
                             sortType: 'asIp'
                         }, {
@@ -1566,6 +1570,22 @@ Ext.define('Ung.panel.Reports', {
                                 return value;
                             }
                         }, {
+                            header: i18n._('Policy Id'),
+                            width: 60,
+                            sortable: true,
+                            dataIndex: 'policy_id',
+                            renderer: Ung.Main.getPolicyName
+                        }, {
+                            header: i18n._("Client Interface") ,
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'client_intf'
+                        }, {
+                            header: i18n._("Server Interface") ,
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'server_intf'
+                        }, {
                             header: i18n._("Username"),
                             width: Ung.Util.usernameFieldWidth,
                             sortable: true,
@@ -1602,20 +1622,33 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Server"),
-                            width: Ung.Util.ipFieldWidth,
+                            header: i18n._("Original Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
                             sortable: true,
                             dataIndex: 'c_server_addr'
                         }, {
-                            header: i18n._("Server Port"),
-                            width: Ung.Util.portFieldWidth,
+                            header: i18n._("Original Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
                             sortable: true,
                             dataIndex: 'c_server_port',
                             filter: {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Rule ID"),
+                            header: i18n._("Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Rule ID (Application Control)"),
                             width: 70,
                             sortable: true,
                             dataIndex: 'application_control_ruleid',
@@ -1623,7 +1656,7 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Priority"),
+                            header: i18n._("Priority (Bandwidth Control)"),
                             width: 120,
                             sortable: true,
                             dataIndex: 'bandwidth_control_priority',
@@ -1644,7 +1677,7 @@ Ext.define('Ung.panel.Reports', {
                                 }
                             }
                         }, {
-                            header: i18n._("Rule"),
+                            header: i18n._("Rule (Bandwidth Control)"),
                             width: 120,
                             sortable: true,
                             dataIndex: 'bandwidth_control_rule',
@@ -1652,12 +1685,12 @@ Ext.define('Ung.panel.Reports', {
                                 return Ext.isEmpty(value) ? i18n._("none") : value;
                             }
                         }, {
-                            header: i18n._("Application"),
+                            header: i18n._("Application (Application Control)"),
                             width: 120,
                             sortable: true,
                             dataIndex: 'application_control_application'
                         }, {
-                            header: i18n._("ProtoChain"),
+                            header: i18n._("ProtoChain (Application Control)"),
                             width: 180,
                             sortable: true,
                             dataIndex: 'application_control_protochain'
@@ -1682,7 +1715,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Confidence"),
+                            header: i18n._("Confidence (Application Control)"),
                             width: Ung.Util.portFieldWidth,
                             sortable: true,
                             dataIndex: 'application_control_confidence',
@@ -1690,7 +1723,7 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Detail"),
+                            header: i18n._("Detail (Application Control)"),
                             width: 200,
                             sortable: true,
                             dataIndex: 'application_control_detail'
@@ -1728,13 +1761,6 @@ Ext.define('Ung.panel.Reports', {
                             sortable: true,
                             dataIndex: 'ssl_inspector_detail'
                         }, {
-                            header: i18n._('Policy Id'),
-                            width: 60,
-                            sortable: true,
-                            flex:1,
-                            dataIndex: 'policy_id',
-                            renderer: Ung.Main.getPolicyName
-                        }, {
                             header: i18n._("Blocked (Firewall)"),
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
@@ -1764,32 +1790,6 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Original Server") ,
-                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
-                            sortable: true,
-                            dataIndex: 'c_server_addr'
-                        }, {
-                            header: i18n._("Original Server Port"),
-                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
-                            sortable: true,
-                            dataIndex: 'c_server_port',
-                            filter: {
-                                type: 'numeric'
-                            }
-                        }, {
-                            header: i18n._("Server") ,
-                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
-                            sortable: true,
-                            dataIndex: 's_server_addr'
-                        }, {
-                            header: i18n._("Server Port"),
-                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
-                            sortable: true,
-                            dataIndex: 's_server_port',
-                            filter: {
-                                type: 'numeric'
-                            }
-                        }, {
                             header: i18n._("Blocked (Intrusion Prevention)"),
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
@@ -1815,7 +1815,7 @@ Ext.define('Ung.panel.Reports', {
                             width: 80,
                             dataIndex: 'captive_portal_rule_index'
                         }, {
-                            header: i18n._("Captured"),
+                            header: i18n._("Captured (Captive Portal)"),
                             width: 100,
                             sortable: true,
                             dataIndex: "captive_portal_blocked",
