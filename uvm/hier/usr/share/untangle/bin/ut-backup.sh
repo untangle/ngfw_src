@@ -43,12 +43,9 @@ function backupSettings()
     mkdir -p $temp/usr/share/untangle/settings
 
     # copy settings files to tmp directory
+    # only match specific versions without the date/version info so we don't backup old files
     # use -L so symlinks are dereferenced
-    cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/usr/share/untangle/settings
-
-    # delete settings history files
-    # match a very specific regex so it doesnt accidently delete other files
-    find $temp/usr/share/untangle/settings/ -regextype sed -regex '.*/.*-version-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-[0-9]\{4\}\.js' -exec rm -f {} \;
+    find /usr/share/untangle/settings/ \( -type f -o -type l \) -regextype sed ! -regex '.*/.*-version-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-[0-9\.]*\.js' -exec echo cp -L --parents {} $temp/ \;
     
     # tar up important files
     tar zcfh $1 --ignore-failed-read -C $temp usr/share/untangle/settings/
