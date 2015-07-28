@@ -90,15 +90,11 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         super( nodeSettings, nodeProperties );
 
-        this.pulse = new Pulse("uvm-license", true, task);
-        this.pulse.start(TIMER_DELAY);
         this._readLicenses();
         this._mapLicenses();
-        try {
-            reloadLicenses();
-        } catch (Exception e) {
-            logger.warn("Failed to reload licenses: ", e);
-        }
+
+        this.pulse = new Pulse("uvm-license", true, task);
+        this.pulse.start(TIMER_DELAY);
     }
 
     @Override
