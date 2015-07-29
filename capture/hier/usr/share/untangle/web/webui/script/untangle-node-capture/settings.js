@@ -898,13 +898,15 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     value: this.settings.redirectUrl,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
-                            this.settings.redirectUrl = newValue;
+                            useValue = newValue;
+                            if ((newValue.length > 0) && (newValue.indexOf("http://") != 0) && (newValue.indexOf("https://") != 0)) useValue = ("http://" + newValue);
+                            this.settings.redirectUrl = useValue;
                         }, this)
                     }
                 },{
                     xtype: 'component',
                     margin:'10 0 0 0',
-                    html: this.i18n._('<B>NOTE:</B> The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
+                    html: this.i18n._('<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
             }]
         });
@@ -979,7 +981,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         });
     },
 
-
     beforeSave: function(isApply, handler) {
         if ( this.gridCaptureRules.isDirty() ) {
             this.settings.captureRules.list = this.gridCaptureRules.getList();
@@ -992,6 +993,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         }
         handler.call(this, isApply);
     },
+
     validate: function() {
         // Iterate all of the fields checking if they are valid
         if ( !this.down('numberfield[name="idleTimeout"]').isValid() ||
@@ -1032,6 +1034,9 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 return false;
             }
         }
+
+        // update the redirect URL field in case we automatically pre-pended the method for them
+        this.panelCaptivePage.down('textfield[name="redirectUrl"]').setValue(this.settings.redirectUrl);
         return true;
     },
     configureLocalDirectory: function() {
