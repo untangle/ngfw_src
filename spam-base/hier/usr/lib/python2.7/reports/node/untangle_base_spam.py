@@ -521,7 +521,7 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subjec
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
-AND m1.%s_is_spam AND m1.addr_kind = 'G'
+AND m1.%s_is_spam AND m1.addr_kind = 'B'
 AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
@@ -587,7 +587,7 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subjec
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
-AND m1.addr_kind = 'G'
+AND m1.addr_kind = 'B'
 AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
