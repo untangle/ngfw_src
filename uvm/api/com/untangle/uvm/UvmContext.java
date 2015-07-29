@@ -332,12 +332,21 @@ public interface UvmContext
      */
     boolean isRegistered();
     void    setRegistered();
+
+    /**
+     * Returns true if this server is installed on an official Untangle appliance
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isAppliance();
     
     /**
      * Returns true if this server was has a voucher
      *
      * @return a <code>boolean</code> value
-     */boolean isVoucher();
+     */
+    boolean isVoucher();
+
     /**
      * blocks until startup is complete
      */
