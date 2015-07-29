@@ -4,8 +4,8 @@
         {
             "column": "addr_kind",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
-            "operator": "in",
-            "value": "('T', 'C')"
+            "operator": "=",
+            "value": "B"
         },
         {
             "column": "virus_blocker_lite_clean",

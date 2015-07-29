@@ -12,6 +12,14 @@
     "timeDataColumns": [
         "sum(case when virus_blocker_lite_clean is not null then 1 else null end::int) as scanned"
     ],
+    "conditions": [
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
         "#396c2b"
     ],
