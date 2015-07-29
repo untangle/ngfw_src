@@ -241,9 +241,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         if ( licenseUrl == null )
             licenseUrl = "https://license.untangle.com/license.php";
 
-        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName;
+        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName + "&appliance=" + UvmContextFactory.context().isAppliance();
         String oldName = nodeName.replace("node","libitem").replace("casing","libitem");
-        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldName;
+        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
 
         URL url;
         HttpClient hc;
