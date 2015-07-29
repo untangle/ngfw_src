@@ -72,17 +72,16 @@ public class EventEntry implements Serializable, JSONString
 
                 query += " and " + condition.toSqlString() + " ";
             }
-            if ( extraConditions != null ) {
-                for ( SqlCondition condition : extraConditions )  {
-                    if ( ! ReportingManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
-                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
-                        continue;
-                    }
-
-                    query += " and " + condition.toSqlString() + " ";
+        }
+        if ( extraConditions != null ) {
+            for ( SqlCondition condition : extraConditions )  {
+                if ( ! ReportingManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                    logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                    continue;
                 }
-            }
 
+                query += " and " + condition.toSqlString() + " ";
+            }
         }
         
         query += " ORDER BY time_stamp DESC";
