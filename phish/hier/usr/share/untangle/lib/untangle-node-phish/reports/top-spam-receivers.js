@@ -1,5 +1,5 @@
 {
-    "uniqueId": "phish-blocker-1IWlRoV9",
+    "uniqueId": "phish-blocker-PkWTck2f",
     "category": "Phish Blocker",
     "description": "The number of email addresses with phish.",
     "displayOrder": 200,
@@ -16,6 +16,12 @@
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
             "value": "true"
+        },
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
         }
     ],
     "readOnly": true,

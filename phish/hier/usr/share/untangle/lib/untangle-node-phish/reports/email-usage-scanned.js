@@ -1,5 +1,5 @@
 {
-    "uniqueId": "phish-blocker-BsWNaIy8",
+    "uniqueId": "phish-blocker-LZ3oI0bA",
     "category": "Phish Blocker",
     "description": "The amount of scanned email over time.",
     "displayOrder": 102,
@@ -12,8 +12,16 @@
     "timeDataColumns": [
         "sum(case when phish_blocker_is_spam is not null then 1 else null end::int) as scanned"
     ],
+    "conditions": [
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
-        "#e5e500"
+        "#b2b2b2"
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",

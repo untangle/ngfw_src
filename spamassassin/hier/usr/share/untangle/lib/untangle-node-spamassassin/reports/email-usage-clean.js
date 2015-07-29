@@ -12,6 +12,14 @@
     "timeDataColumns": [
         "sum(case when spam_blocker_lite_is_spam is false then 1 else null end::int) as clean"
     ],
+    "conditions": [
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
         "#396c2b"
     ],

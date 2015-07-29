@@ -14,6 +14,14 @@
         "sum(case when spam_blocker_lite_is_spam is false then 1 else null end::int) as clean",
         "sum(case when spam_blocker_lite_is_spam is true then 1 else null end::int) as spam"
     ],
+    "conditions": [
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
         "#b2b2b2",
         "#396c2b",

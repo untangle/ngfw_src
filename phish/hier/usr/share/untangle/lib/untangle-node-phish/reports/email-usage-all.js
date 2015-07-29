@@ -1,5 +1,5 @@
 {
-    "uniqueId": "phish-blocker-aYBcy2pO",
+    "uniqueId": "phish-blocker-iZV0Z13m",
     "category": "Phish Blocker",
     "description": "The amount of scanned, clean, and phish email over time.",
     "displayOrder": 101,
@@ -14,8 +14,16 @@
         "sum(case when phish_blocker_is_spam is false then 1 else null end::int) as clean",
         "sum(case when phish_blocker_is_spam is true then 1 else null end::int) as phish"
     ],
+    "conditions": [
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
-        "#e5e500",
+        "#b2b2b2",
         "#396c2b",
         "#8c0000"
     ],
