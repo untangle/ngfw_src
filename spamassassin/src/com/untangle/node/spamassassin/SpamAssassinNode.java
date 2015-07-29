@@ -83,7 +83,7 @@ public class SpamAssassinNode extends SpamNodeImpl
         UvmContextFactory.context().daemonManager().incrementUsageCount( "spamassassin" );
         String transmit = "PING SPAMC/1.0\r\n";
         String search = "SPAMD/1.5 0 PONG";
-        UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 60, "127.0.0.1", 783, transmit, search);
+        UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
         super.preStart();
     }
     
