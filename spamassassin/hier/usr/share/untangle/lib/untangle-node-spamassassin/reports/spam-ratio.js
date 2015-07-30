@@ -10,7 +10,20 @@
     "units": "msg",
     "pieGroupColumn": "spam_blocker_lite_is_spam",
     "pieSumColumn": "count(*)",
-    "conditions": [],
+    "conditions": [
+        {
+            "column": "spam_blocker_lite_is_spam",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "is",
+            "value": "not null"
+        },
+        {
+            "column": "addr_kind",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
     "colors": [
         "#8c0000",
         "#396c2b"
