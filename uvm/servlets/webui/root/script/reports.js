@@ -5,6 +5,7 @@ Ext.define('Ung.panel.Reports', {
     autoRefreshInterval: 10, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
+    hasEntriesSection: true,
     entry: null,
     beforeDestroy: function() {
         Ext.destroy(this.subCmps);
@@ -210,11 +211,11 @@ Ext.define('Ung.panel.Reports', {
                 parentPanel: this
             })]
         }];
-        
-        if(this.category) {
+
+        if(this.hasEntriesSection) {
             this.items.push(this.buildEntriesSection());
         }
-        
+
         this.callParent(arguments);
         
         this.cardsContainer = this.down("container[name=cardsContainer]");
@@ -319,11 +320,23 @@ Ext.define('Ung.panel.Reports', {
         };
         return entriesSection;
     },
-    loadEntries: function() {
-        this.loadReportEntries();
-        this.loadEventEntries();
+    setCategory: function(category) {
+        this.category = category;
+        var selectInitialEntrySemaphore = 2;
+        var loadEntriesHandler = Ext.bind(function() {
+            selectInitialEntrySemaphore--;
+            if(selectInitialEntrySemaphore==0) {
+                this.selectInitialEntry();
+            }
+        }, this);
+        this.loadEntries(loadEntriesHandler);
+        
     },
-    loadReportEntries: function(initialEntryId) {
+    loadEntries: function(handler) {
+        this.loadReportEntries(null, handler);
+        this.loadEventEntries(handler);
+    },
+    loadReportEntries: function(initialEntryId, handler) {
         if(!this.reportEntriesGrid) {
             this.reportEntriesGrid = this.down("grid[name=reportEntriesGrid]");
         }
@@ -352,9 +365,12 @@ Ext.define('Ung.panel.Reports', {
             if(initialEntryId && this.initialEntryIndex) {
                 this.reportEntriesGrid.getSelectionModel().select(this.initialEntryIndex);
             }
+            if(Ext.isFunction(handler)) {
+                handler();
+            }
         }, this), this.category);
     },
-    loadEventEntries: function() {
+    loadEventEntries: function(handler) {
         if(!this.eventEntriesGrid) {
             this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
         }
@@ -362,6 +378,9 @@ Ext.define('Ung.panel.Reports', {
             if(Ung.Util.handleException(exception)) return;
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
+            if(Ext.isFunction(handler)) {
+                handler();
+            }
         }, this), this.category);
     },
     
@@ -3425,14 +3444,7 @@ Ext.define("Ung.panel.ExtraConditions", {
             text:'Quick Add',
             iconCls: 'icon-add-row',
             menu: quickAddMenu
-        }, /*{
-            xtype: 'checkbox',
-            name: 'refreshOnChanges',
-            hideLabel: true,
-            margin: '0 0 0 4',
-            boxLabel: i18n._('Refresh on changes'),
-            checked: true
-        }, */'->', {
+        }, '->', {
             text: i18n._("Delete All"),
             tooltip: i18n._('Delete All Conditions'),
             iconCls: 'cancel-icon',
@@ -3442,8 +3454,6 @@ Ext.define("Ung.panel.ExtraConditions", {
             scope: this
         }];
         this.callParent(arguments);
-        
-        //this.refreshOnChanges= this.down("checkbox[name=refreshOnChanges]");
     },
     generateRow: function(data) {
         if(!data) {

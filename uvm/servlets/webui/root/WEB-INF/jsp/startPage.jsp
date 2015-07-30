@@ -51,6 +51,7 @@
     <script type="text/javascript" src="script/config/sessionMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgrade.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/reportsViewer.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus/settings.js?s=${buildStamp}"></script>

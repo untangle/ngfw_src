@@ -522,6 +522,7 @@ Ext.define("Ung.Main", {
         //build nodes
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
+        Ext.getCmp('reportsMenuItem').disable();
         var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
         this.destoyNodes();
         delete rpc.reportsAppInstalledAndEnabled;
@@ -871,6 +872,9 @@ Ext.define("Ung.Main", {
                 Ext.getCmp('policyManagerMenuItem').enable();
             }, this),"untangle-node-policy");
         }
+        if ( node.name == 'untangle-node-reporting') {
+            Ext.getCmp('reportsMenuItem').enable();
+        }
     },
     addNodePreview: function ( nodeProperties ) {
         var nodeCmp = Ext.create('Ung.NodePreview', nodeProperties );
@@ -950,6 +954,7 @@ Ext.define("Ung.Main", {
         items.push('-');
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
+        items.push({text: i18n._('Show Reports'), value: 'SHOW_REPORTS', handler: Ung.Main.showReports, id:'reportsMenuItem', disabled: true, hideDelay: 0});
         Ung.Main.rackSelect = Ext.create('Ext.SplitButton', {
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
@@ -1011,6 +1016,12 @@ Ext.define("Ung.Main", {
                 nodeCmp.loadSettings();
             }
         }
+    },
+    showReports: function() {
+        Ext.require(['Webui.config.reportsViewer'], function() {
+            Ung.Main.reportsViewerWin=Ext.create('Webui.config.reportsViewer', {"name": "reportsViewer"});
+            Ung.Main.reportsViewerWin.show();
+        }, this);
     },
     // change current policy
     changeRack: function () {

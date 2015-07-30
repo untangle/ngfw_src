@@ -805,7 +805,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }," "],
                 items: Ext.create('Ung.panel.Reports',{
                     width: 1000,
-                    height: 600
+                    height: 600,
+                    hasEntriesSection: false
                 }),
                 listeners: {
                     "hide": {
