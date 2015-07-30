@@ -86,23 +86,15 @@ Ext.define('Webui.config.sessionMonitor', {
                 }
             }
             // iterate through each session and change its attachments map to properties
-            var columns = this.getColumns();
-            var i, c, prop, column;
+            var i, c, prop;
             for (i = 0; i < sessions.length ; i++) {
-                var session = sessions[i];
+                session = sessions[i];
                 if (session.attachments) {
                     for (prop in session.attachments.map) {
                         session[prop] = session.attachments.map[prop];
                     }
                 }
-                for( c = 0; c < columns.length; c++){
-                    if( (typeof(columns[c].dataIndex) != 'undefined') &&
-                        (typeof(session[columns[c].dataIndex]) == 'undefined')){
-                        session[columns[c].dataIndex] = " ";
-                    }
-                }
             }
-
             handler({javaClass:"java.util.LinkedList", list:sessions});
         }, this), nodeId);
     },
@@ -179,7 +171,7 @@ Ext.define('Webui.config.sessionMonitor', {
             dataIndex: "policy",
             width: 80,
             renderer: function(value) {
-                return (value == null || value == "" ? "" : Ung.Main.getPolicyName(value) );
+                return (value == null || value == "" || value == " " ? " " : Ung.Main.getPolicyName(value) );
             },
             filter: {
                 type: 'list',
@@ -516,7 +508,10 @@ Ext.define('Webui.config.sessionMonitor', {
         }
         this.fieldConvertInterface = function( value, record){
             var interfaceName=interfaceMap[value];
-            return (interfaceName == null)?( value==null || value<0 )?"":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
+            return (interfaceName == null)?( value==null || value<0 )?" ":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
+        };
+        this.fieldConvert = function( value, record){
+            return (value == null || value == "")?" ":value;
         };
         this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
             name: this.name+"Grid",
@@ -533,39 +528,52 @@ Ext.define('Webui.config.sessionMonitor', {
             columns: this.getColumns(),
             fields: [{
                 name: "creationTime",
-                sortType: 'asTimestamp'
+                sortType: 'asTimestamp',
+                convert: this.fieldConvert
             },{
-                name: "id"
+                name: "id",
+                convert: this.fieldConvert
             },{
-                name: "protocol"
+                name: "protocol",
+                convert: this.fieldConvert
             },{
-                name: "bypassed"
+                name: "bypassed",
+                convert: this.fieldConvert
             },{
-                name: "policy"
+                name: "policy",
+                convert: this.fieldConvert
             },{
                 name: "preNatClient",
-                sortType: 'asIp'
+                sortType: 'asIp',
+                convert: this.fieldConvert
             },{
                 name: "preNatServer",
-                sortType: 'asIp'
+                sortType: 'asIp',
+                convert: this.fieldConvert
             },{
                 name: "preNatClientPort",
-                sortType: 'asInt'
+                sortType: 'asInt',
+                convert: this.fieldConvert
             },{
                 name: "preNatServerPort",
-                sortType: 'asInt'
+                sortType: 'asInt',
+                convert: this.fieldConvert
             },{
                 name: "postNatClient",
-                sortType: 'asIp'
+                sortType: 'asIp',
+                convert: this.fieldConvert
             },{
                 name: "postNatServer",
-                sortType: 'asIp'
+                sortType: 'asIp',
+                convert: this.fieldConvert
             },{
                 name: "postNatClientPort",
-                sortType: 'asInt'
+                sortType: 'asInt',
+                convert: this.fieldConvert
             },{
                 name: "postNatServerPort",
-                sortType: 'asInt'
+                sortType: 'asInt',
+                convert: this.fieldConvert
             },{
                 name: "clientIntf",
                 convert: this.fieldConvertInterface
@@ -573,54 +581,76 @@ Ext.define('Webui.config.sessionMonitor', {
                 name: "serverIntf",
                 convert: this.fieldConvertInterface
             },{
-                name: "natted"
+                name: "natted",
+                convert: this.fieldConvert
             },{
-                name: "portForwarded"
+                name: "portForwarded",
+                convert: this.fieldConvert
             },{
-                name: "platform-hostname"
+                name: "platform-hostname",
+                convert: this.fieldConvert
             },{
-                name: "platform-username"
+                name: "platform-username",
+                convert: this.fieldConvert
             },{
-                name: "protofilter-protocol"
+                name: "protofilter-protocol",
+                convert: this.fieldConvert
             },{
-                name: "protofilter-category"
+                name: "protofilter-category",
+                convert: this.fieldConvert
             },{
                 name: "protofilter-description",
-                type: 'string'
+                type: 'string',
+                convert: this.fieldConvert
             },{
                 name: "protofilter-matched",
-                type: 'string'
+                type: 'string',
+                convert: this.fieldConvert
             },{
-                name: "http-hostname"
+                name: "http-hostname",
+                convert: this.fieldConvert
             },{
-                name: "http-uri"
+                name: "http-uri",
+                convert: this.fieldConvert
             },{
-                name: "web_filter-best-category-name"
+                name: "web_filter-best-category-name",
+                convert: this.fieldConvert
             },{
-                name: "web_filter-best-category-description"
+                name: "web_filter-best-category-description",
+                convert: this.fieldConvert
             },{
                 name: "web_filter-best-category-flagged",
-                type: 'string'
+                type: 'string',
+                convert: this.fieldConvert
             },{
                 name: "web_filter-best-category-blocked",
-                type: 'string'
+                type: 'string',
+                convert: this.fieldConvert
             },{
                 name: "web_filter-flagged",
-                type: 'string'
+                type: 'string',
+                convert: this.fieldConvert
             },{
-                name: "classd-application"
+                name: "classd-application",
+                convert: this.fieldConvert
             },{
-                name: "classd-category"
+                name: "classd-category",
+                convert: this.fieldConvert
             },{
-                name: "classd-protochain"
+                name: "classd-protochain",
+                convert: this.fieldConvert
             },{
-                name: "classd-detail"
+                name: "classd-detail",
+                convert: this.fieldConvert
             },{
-                name: "classd-confidence"
+                name: "classd-confidence",
+                convert: this.fieldConvert
             },{
-                name: "classd-productivity"
+                name: "classd-productivity",
+                convert: this.fieldConvert
             },{
-                name: "classd-risk"
+                name: "classd-risk",
+                convert: this.fieldConvert
             },{
                 name: "clientKBps",
                 convert: function(val, rec) {
@@ -642,9 +672,11 @@ Ext.define('Webui.config.sessionMonitor', {
                         return Math.round((rec.data.serverKBps+rec.data.clientKBps)*10)/10;
                 }
             },{
-                name: "priority"
+                name: "priority",
+                convert: this.fieldConvert
             },{
-                name: "qosPriority"
+                name: "qosPriority",
+                convert: this.fieldConvert
             }]
         });
     },
