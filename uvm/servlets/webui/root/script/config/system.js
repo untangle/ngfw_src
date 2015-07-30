@@ -745,7 +745,7 @@ Ext.define('Webui.config.system', {
                             this.panelRegional.down("fieldset[name=timeSource_ntp_settings]").setVisible(false);
                             this.panelRegional.down("fieldset[name=timeSource_manual_settings]").setVisible(true);
                             this.getSystemSettings().timeSource = "manual";
-                            // start timer
+                            this.panelRegional.updateManualDateChangeTimer();
                         }
                     }, this)
                 },{

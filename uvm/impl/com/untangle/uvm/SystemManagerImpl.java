@@ -254,6 +254,7 @@ public class SystemManagerImpl implements SystemManager
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String formattedDate = sdf.format(timestamp);
             UvmContextFactory.context().execManager().exec( "date -s '" + formattedDate + "'" );
+            logger.info("Time manually changed: " + formattedDate);
         }
     }
 
@@ -277,12 +278,14 @@ public class SystemManagerImpl implements SystemManager
         if( ( files.length > 0 ) && settings.getTimeSource().equals("manual") ){
             UvmContextFactory.context().execManager().exec( "update-rc.d ntp remove" );
             UvmContextFactory.context().execManager().exec( "service ntp stop" );
+            logger.info("Time changed from NTP to manual");
         }else if( ( files.length == 0 ) && settings.getTimeSource().equals("ntp") ){
             UvmContextFactory.context().execManager().exec( "update-rc.d ntp defaults" );
             /**
              * Restart NTP while performing an NTP time synchronization 
              */
             UvmContextFactory.context().forceTimeSync();
+            logger.info("Time changed from manual to NTP");
         }
 
     }
