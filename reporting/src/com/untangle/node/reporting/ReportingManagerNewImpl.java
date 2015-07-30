@@ -195,11 +195,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         ArrayList<String> columnNames = new ArrayList<String>();        
         try {
             ResultSet rs = getColumnMetaData( tableName );
-
-            while(rs.next()){
-                String columnName = rs.getString(4);
-                //String columnType = rs.getString(6);
-                columnNames.add( columnName );
+            synchronized( rs ) {
+                rs.first();
+                while(rs.next()){
+                    String columnName = rs.getString(4);
+                    //String columnType = rs.getString(6);
+                    columnNames.add( columnName );
+                }
             }
         } catch ( Exception e ) {
             logger.warn("Failed to retrieve column names", e);
