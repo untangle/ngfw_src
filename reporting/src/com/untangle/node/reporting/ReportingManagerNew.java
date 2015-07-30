@@ -77,4 +77,9 @@ public interface ReportingManagerNew
      * Get a list of all columns for a certain table
      */
     String[] getColumnsForTable( String tableName );
+
+    /**
+     * Get the metadata hints for the condition quick add function
+     */
+    org.json.JSONObject getConditionQuickAddHints();
 }

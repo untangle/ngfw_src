@@ -218,10 +218,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         try {
 
             ResultSet rs = getColumnMetaData( tableName );
-            while(rs.next()){
-                String name = rs.getString(4);
-                if ( columnName.equals( name ) ) {
-                    return rs.getString(6);
+            synchronized( rs ) {
+                rs.first();
+                while(rs.next()){
+                    String name = rs.getString(4);
+                    if ( columnName.equals( name ) ) {
+                        return rs.getString(6);
+                    }
                 }
             }
         } catch ( Exception e ) {
@@ -344,6 +347,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return ReportingNodeImpl.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
     }
 
+    public org.json.JSONObject getConditionQuickAddHints()
+    {
+        return UvmContextFactory.context().getConditionQuickAddHints();
+    }
+    
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
@@ -566,7 +574,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         try {
             ResultSet rs = cacheColumnsResults.get( tableName );
             if ( rs != null ) {
-                rs.first();
                 return rs;
             }
 
