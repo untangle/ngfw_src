@@ -86,7 +86,8 @@ Ext.define('Webui.config.sessionMonitor', {
                 }
             }
             // iterate through each session and change its attachments map to properties
-            var i, prop;
+            var columns = this.getColumns();
+            var i, c, prop, column;
             for (i = 0; i < sessions.length ; i++) {
                 var session = sessions[i];
                 if (session.attachments) {
@@ -94,7 +95,14 @@ Ext.define('Webui.config.sessionMonitor', {
                         session[prop] = session.attachments.map[prop];
                     }
                 }
+                for( c = 0; c < columns.length; c++){
+                    if( (typeof(columns[c].dataIndex) != 'undefined') &&
+                        (typeof(session[columns[c].dataIndex]) == 'undefined')){
+                        session[columns[c].dataIndex] = " ";
+                    }
+                }
             }
+
             handler({javaClass:"java.util.LinkedList", list:sessions});
         }, this), nodeId);
     },
