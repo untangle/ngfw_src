@@ -20,6 +20,6 @@
     "textString": "Phish Blocker scanned {0} email messages of which {1} were phish.", 
     "readOnly": true,
     "table": "mail_addrs",
-    "title": "Summary",
+    "title": "Phish Blocker Summary",
     "type": "TEXT"
 }

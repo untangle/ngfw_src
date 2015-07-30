@@ -21,6 +21,6 @@
     "textString": "Firewall scanned {0} sessions and flagged {1} sessions of which {2} were blocked.", 
     "readOnly": true,
     "table": "sessions",
-    "title": "Summary",
+    "title": "Firewall Summary",
     "type": "TEXT"
 }

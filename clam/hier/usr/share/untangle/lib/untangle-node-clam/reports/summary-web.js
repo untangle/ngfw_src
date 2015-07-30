@@ -12,6 +12,6 @@
     "textString": "Virus Blocker Lite scanned {0} web requests of which {1} were blocked.", 
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Summary",
+    "title": "Virus Blocker Lite Web Summary",
     "type": "TEXT"
 }

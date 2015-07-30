@@ -83,6 +83,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         for ( ReportEntry entry: allReportEntries ) {
             if ( category == null || category.equals( entry.getCategory() ) )
                  entries.add( entry );
+            else if ( "Summary".equals( category ) && entry.getType() == ReportEntry.ReportEntryType.TEXT )
+                 entries.add( entry );
+                
         }
         return entries;
     }

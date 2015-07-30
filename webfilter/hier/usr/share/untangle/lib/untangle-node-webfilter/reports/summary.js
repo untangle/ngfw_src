@@ -13,6 +13,6 @@
     "textString": "Web Filter Lite scanned {0} web requests and flagged {1} violations of which {2} were blocked.", 
     "readOnly": true,
     "table": "http_events",
-    "title": "Summary",
+    "title": "Web Filter Lite Summary",
     "type": "TEXT"
 }

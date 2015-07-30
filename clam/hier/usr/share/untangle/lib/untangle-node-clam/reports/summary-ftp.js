@@ -12,6 +12,6 @@
     "textString": "Virus Blocker Lite scanned {0} FTP requests of which {1} were blocked.", 
     "readOnly": true,
     "table": "ftp_events",
-    "title": "FTP Summary",
+    "title": "Virus Blocker Lite FTP Summary",
     "type": "TEXT"
 }

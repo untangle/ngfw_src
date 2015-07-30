@@ -20,6 +20,6 @@
     "textString": "Spam Blocker Lite scanned {0} email messages of which {1} were spam.", 
     "readOnly": true,
     "table": "mail_addrs",
-    "title": "Summary",
+    "title": "Spam Blocker Lite Summary",
     "type": "TEXT"
 }

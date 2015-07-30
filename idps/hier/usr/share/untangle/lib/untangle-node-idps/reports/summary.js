@@ -12,6 +12,6 @@
     "textString": "Intrusion Prevention detected {0} attacks of which {1} were blocked.", 
     "readOnly": true,
     "table": "intrusion_prevention_events",
-    "title": "Summary",
+    "title": "Intrusion Prevention Summary",
     "type": "TEXT"
 }

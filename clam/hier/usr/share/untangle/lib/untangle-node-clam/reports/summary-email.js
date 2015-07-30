@@ -12,6 +12,6 @@
     "textString": "Virus Blocker Lite scanned {0} email messages of which {1} were blocked.", 
     "readOnly": true,
     "table": "mail_addrs",
-    "title": "Email Summary",
+    "title": "Virus Blocker Lite Email Summary",
     "type": "TEXT"
 }
