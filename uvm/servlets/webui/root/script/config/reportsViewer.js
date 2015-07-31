@@ -54,7 +54,7 @@ Ext.define('Webui.config.reportsViewer', {
                         category : nodeProperties.displayName,
                         leaf : true,
                         viewPosition : nodeProperties.viewPosition,
-                        icon : "/reports/node-icons/" + nodeProperties.name + ".png"
+                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/apps/'+nodeProperties.name+'_17x17.png'
                     });
                 }
                 

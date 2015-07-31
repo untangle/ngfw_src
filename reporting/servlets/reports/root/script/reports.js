@@ -999,9 +999,9 @@ Ext.define('Ung.ReportDetails', {
     getHighlightHTML: function(summaryItem,smallIcons) {
         var stringTemplate = summaryItem.stringTemplate,
             key,hvm,
-            imagePath = smallIcons === true ?  '/reports/node-icons/': '/reports/chiclet?name=' ,
-            imageSuffix = smallIcons === true ? '.png': '',
-            highlightClass = smallIcons === true  ? 'highlight-2': 'highlight',
+            imagePath = '/reports/node-icons/' ,
+            imageSuffix = '.png',
+            highlightClass = 'highlight-2',
             url;
         stringTemplate = stringTemplate.replace(summaryItem.name,'<strong>'+summaryItem.title+'</strong>');
         hvm = summaryItem.highlightValues.map;

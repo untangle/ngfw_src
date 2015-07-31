@@ -37,16 +37,6 @@
     <url-pattern>/JSON-RPC</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>ChicletServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.servlet.ChicletServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>ChicletServlet</servlet-name>
-    <url-pattern>/chiclet</url-pattern>
-  </servlet-mapping>
-
   <welcome-file-list>
     <welcome-file>
       index.jsp

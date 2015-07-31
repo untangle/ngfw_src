@@ -44,16 +44,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>ChicletServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.servlet.ChicletServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>ChicletServlet</servlet-name>
-    <url-pattern>/chiclet</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>UploadServlet</servlet-name>
     <servlet-class>com.untangle.uvm.webui.servlet.UploadServlet</servlet-class>
   </servlet>

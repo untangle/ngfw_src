@@ -162,7 +162,7 @@ Ext.define("Ung.AppItem", {
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
-        template: new Ext.Template('<div class="icon"><img src="chiclet?name={name}" style="vertical-align: middle;"/></div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action icon-arrow-install">{installText}</div>', '<div class="state-pos" id="state_{id}"></div>'),
+        template: new Ext.Template('<div class="icon"><img src="/skins/{skin}/images/apps/{name}_42x42.png" style="vertical-align: middle;"/></div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action icon-arrow-install">{installText}</div>', '<div class="state-pos" id="state_{id}"></div>'),
         buttonTemplate: new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>'),
         setLoading: function(name, loadingFlag) {
             Ung.AppItem.loadingFlags[name] = loadingFlag;
@@ -187,6 +187,7 @@ Ext.define("Ung.AppItem", {
             'name': this.nodeProperties.name
         });
         var html = Ung.AppItem.template.applyTemplate({
+            skin: rpc.skinSettings.skinName,
             id: this.getId(),
             name: this.nodeProperties.name,
             text: this.nodeProperties.displayName,
@@ -724,7 +725,7 @@ Ext.define("Ung.NodePreview", {
             });
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
-            'image': 'chiclet?name='+this.name,
+            'image': '/skins/'+rpc.skinSettings.skinName+'/images/apps/'+this.name+'_42x42.png',
             'displayName': this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);

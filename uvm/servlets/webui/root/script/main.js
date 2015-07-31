@@ -499,7 +499,7 @@ Ext.define("Ung.Main", {
             name: nodeProperties.name,
             displayName: nodeProperties.displayName,
             license: license,
-            image: 'chiclet?name='+nodeProperties.name,
+            image: "/skins/"+rpc.skinSettings.skinName+"/images/apps/"+nodeProperties.name+"_42x42.png",
             metrics: nodeMetrics,
             runState: runState,
             viewPosition: nodeProperties.viewPosition
