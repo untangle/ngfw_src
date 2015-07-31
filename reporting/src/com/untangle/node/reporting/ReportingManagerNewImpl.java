@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.NodeProperties;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -44,7 +45,15 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
      */
     private static ResultSet cacheTablesResults = null;
     
-    private ReportingManagerNewImpl() {}
+    /**
+     * This stores all the node properties. It is used to reference information about the different nodes/categories
+     */
+    private List<NodeProperties> nodePropertiesList = null;
+
+    private ReportingManagerNewImpl()
+    {
+        nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();        
+    }
 
     public static ReportingManagerNewImpl getInstance()
     {
@@ -80,6 +89,23 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         List<ReportEntry> allReportEntries = getReportEntries();
         LinkedList<ReportEntry> entries = new LinkedList<ReportEntry>();
 
+        /**
+         * If fetching the reports for an app, check that it is installed and has a valid license
+         * If the license is not valid, return an empty list
+         * If the category isnt an app name, just continue.
+         */
+        NodeProperties nodeProperties = findNodeProperties( category );
+        if ( nodeProperties != null ) {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because of invalid license."); 
+                return entries;
+            }
+            if ( UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed."); 
+                return entries;
+            }
+        }
+        
         for ( ReportEntry entry: allReportEntries ) {
             if ( category == null || category.equals( entry.getCategory() ) )
                  entries.add( entry );
@@ -604,5 +630,17 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
     }    
 
+    private NodeProperties findNodeProperties( String displayName )
+    {
+        if ( displayName == null )
+            return null;
+        
+        for ( NodeProperties props : this.nodePropertiesList ) {
+            if ( displayName.equals( props.getDisplayName() ) )
+                return props;
+        }
+        
+        return null;
+    }
     
 }
