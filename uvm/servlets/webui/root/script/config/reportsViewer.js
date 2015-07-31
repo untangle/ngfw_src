@@ -16,26 +16,24 @@ Ext.define('Webui.config.reportsViewer', {
             category : 'Session Viewer',
             leaf : true
         }, {
-            text : i18n._('Host Viewer'),
-            category : 'Host Viewer',
-            leaf : true
-        }, {
             text : i18n._("Configuration"),
             leaf : false,
             expanded : true,
             children : [ {
                 text : i18n._('Network'),
                 category : 'Network',
-                leaf : true
+                leaf : true,
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_network_17x17.png'
             }, {
                 text : i18n._('Administration'),
                 category : 'Administration',
-                leaf : true
+                leaf : true,
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_admin_17x17.png'
             }, {
                 text : i18n._('System'),
                 category : 'System',
                 leaf : true,
-                icon : "/reports/node-icons/untangle-system.png"
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_system_17x17.png'
             }, {
                 text : i18n._("Shield"),
                 category : "Shield",
