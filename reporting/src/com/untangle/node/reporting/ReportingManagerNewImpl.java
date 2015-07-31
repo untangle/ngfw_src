@@ -52,7 +52,23 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     private ReportingManagerNewImpl()
     {
-        nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();        
+        this.nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();        
+
+        // sort by view position
+        Collections.sort(this.nodePropertiesList, new Comparator<NodeProperties>() {
+            public int compare(NodeProperties np1, NodeProperties np2) {
+                int vp1 = np1.getViewPosition();
+                int vp2 = np2.getViewPosition();
+                if (vp1 == vp2) {
+                    return np1.getName().compareToIgnoreCase(np2.getName());
+                } else if (vp1 < vp2) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+
     }
 
     public static ReportingManagerNewImpl getInstance()
@@ -114,6 +130,28 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                 
         }
         return entries;
+    }
+
+    public String[] getCurrentApplications()
+    {
+        List<String> categories = new LinkedList<String>();
+
+        for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+                continue;
+            }
+            if ( UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ) {
+                continue;
+            }
+            if ( nodeProperties.getInvisible() ) {
+                continue;
+            }
+            categories.add( nodeProperties.getDisplayName() );
+        }
+
+        String[] array = new String[categories.size()];
+        array = categories.toArray(array);
+        return array;
     }
     
     public void setReportEntries( List<ReportEntry> newEntries )

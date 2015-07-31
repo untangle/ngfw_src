@@ -79,6 +79,11 @@ public interface ReportingManagerNew
     String[] getColumnsForTable( String tableName );
 
     /**
+     * Get current application categories that should be displayed
+     */
+    String[] getCurrentApplications();
+    
+    /**
      * Get the metadata hints for the condition quick add function
      */
     org.json.JSONObject getConditionQuickAddHints();
