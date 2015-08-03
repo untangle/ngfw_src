@@ -129,11 +129,11 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         
         switch (type) {
         case NFCT_T_DESTROY:
-            //errlog( ERR_WARNING,"conntrack_listen: callback() type=DESTROY mark=0x%08x\n", mark);
+            errlog( ERR_WARNING,"conntrack_listen: callback() type=DESTROY mark=0x%08x\n", mark);
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             break;
         case NFCT_T_NEW:
-            //errlog( ERR_WARNING,"conntrack_listen: callback() type=NEW mark=0x%08x\n", mark);
+            errlog( ERR_WARNING,"conntrack_listen: callback() type=NEW mark=0x%08x\n", mark);
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             session_id = netcap_session_next_id();
             break;
