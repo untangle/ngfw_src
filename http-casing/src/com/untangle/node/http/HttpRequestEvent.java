@@ -184,6 +184,15 @@ public class HttpRequestEvent extends LogEvent
         
         String lastPart = parts[len-1];
 
+        try {
+            /*
+             * If the last part is an int, its probably an IP
+             * Just return the whole IP.
+             */
+            int parseInt = Integer.parseInt( lastPart );
+            return host;
+        } catch ( Exception e ) {}
+        
         switch ( lastPart ) {
         case "au":
         case "za":
