@@ -1667,7 +1667,7 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Rule ID (Application Control)"),
+                            header: i18n._('Rule ID') + ' (Application Control)',
                             width: 70,
                             sortable: true,
                             dataIndex: 'application_control_ruleid',
@@ -1675,7 +1675,7 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Priority (Bandwidth Control)"),
+                            header: i18n._('Priority') + ' (Bandwidth Control)',
                             width: 120,
                             sortable: true,
                             dataIndex: 'bandwidth_control_priority',
@@ -1696,7 +1696,7 @@ Ext.define('Ung.panel.Reports', {
                                 }
                             }
                         }, {
-                            header: i18n._("Rule (Bandwidth Control)"),
+                            header: i18n._('Rule') + ' (Bandwidth Control)',
                             width: 120,
                             sortable: true,
                             dataIndex: 'bandwidth_control_rule',
@@ -1704,17 +1704,17 @@ Ext.define('Ung.panel.Reports', {
                                 return Ext.isEmpty(value) ? i18n._("none") : value;
                             }
                         }, {
-                            header: i18n._("Application (Application Control)"),
+                            header: i18n._('Application') + ' (Application Control)',
                             width: 120,
                             sortable: true,
                             dataIndex: 'application_control_application'
                         }, {
-                            header: i18n._("ProtoChain (Application Control)"),
+                            header: i18n._('ProtoChain') + ' (Application Control)',
                             width: 180,
                             sortable: true,
                             dataIndex: 'application_control_protochain'
                         }, {
-                            header: i18n._("Blocked (Application Control)"),
+                            header: i18n._('Blocked') + ' (Application Control)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'application_control_blocked',
@@ -1724,7 +1724,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Flagged (Application Control)"),
+                            header: i18n._('Flagged') + ' (Application Control)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'application_control_flagged',
@@ -1734,7 +1734,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Confidence (Application Control)"),
+                            header: i18n._('Confidence') + ' (Application Control)',
                             width: Ung.Util.portFieldWidth,
                             sortable: true,
                             dataIndex: 'application_control_confidence',
@@ -1742,17 +1742,17 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Detail (Application Control)"),
+                            header: i18n._('Detail') + ' (Application Control)',
                             width: 200,
                             sortable: true,
                             dataIndex: 'application_control_detail'
                         },{
-                            header: i18n._("Protocol (Application Control Lite)"),
+                            header: i18n._('Protocol') + ' (Application Control Lite)',
                             width: 120,
                             sortable: true,
                             dataIndex: 'application_control_lite_protocol'
                         }, {
-                            header: i18n._("Blocked (Application Control Lite)"),
+                            header: i18n._('Blocked') + ' (Application Control Lite)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'application_control_lite_blocked',
@@ -1762,7 +1762,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Rule ID (HTTPS Inspector)"),
+                            header: i18n._('Rule ID') + ' (HTTPS Inspector)',
                             width: 70,
                             sortable: true,
                             dataIndex: 'ssl_inspector_ruleid',
@@ -1770,17 +1770,17 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Status (HTTPS Inspector)"),
+                            header: i18n._('Status') + ' (HTTPS Inspector)',
                             width: 100,
                             sortable: true,
                             dataIndex: 'ssl_inspector_status'
                         }, {
-                            header: i18n._("Detail (HTTPS Inspector)"),
+                            header: i18n._('Detail') + ' (HTTPS Inspector)',
                             width: 250,
                             sortable: true,
                             dataIndex: 'ssl_inspector_detail'
                         }, {
-                            header: i18n._("Blocked (Firewall)"),
+                            header: i18n._('Blocked') + ' (Firewall)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'firewall_blocked',
@@ -1790,7 +1790,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Flagged (Firewall)"),
+                            header: i18n._('Flagged') + ' (Firewall)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'firewall_flagged',
@@ -1800,7 +1800,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._('Rule Id (Firewall)'),
+                            header: i18n._('Rule Id') + ' (Firewall)',
                             width: 60,
                             sortable: true,
                             flex:1,
@@ -1809,7 +1809,7 @@ Ext.define('Ung.panel.Reports', {
                                 type: 'numeric'
                             }
                         }, {
-                            header: i18n._("Blocked (Intrusion Prevention)"),
+                            header: i18n._('Blocked') + ' (Intrusion Prevention)',
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'ips_blocked',
@@ -1819,22 +1819,22 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._('Rule Id (Intrusion Prevention)'),
+                            header: i18n._('Rule Id') + ' (Intrusion Prevention)',
                             width: 60,
                             sortable: true,
                             dataIndex: 'ips_ruleid'
                         }, {
-                            header: i18n._('Rule Description (Intrusion Prevention)'),
+                            header: i18n._('Rule Description') + ' (Intrusion Prevention)',
                             width: 150,
                             sortable: true,
                             flex:1,
                             dataIndex: 'ips_description'
                         }, {
-                            header: i18n._("Rule ID (Captive Portal)"),
+                            header: i18n._('Rule ID') + ' (Captive Portal)',
                             width: 80,
                             dataIndex: 'captive_portal_rule_index'
                         }, {
-                            header: i18n._("Captured (Captive Portal)"),
+                            header: i18n._('Captured') + ' (Captive Portal)',
                             width: 100,
                             sortable: true,
                             dataIndex: "captive_portal_blocked",
@@ -1847,16 +1847,20 @@ Ext.define('Ung.panel.Reports', {
                     },
                     http_events: {
                         fields: [{
-                            name: 'request_id'
+                            name: 'request_id',
+                            sortType: 'asInt'
                         }, {
                             name: 'time_stamp',
                             sortType: 'asTimestamp'
                         }, {
-                            name: 'session_id'
+                            name: 'session_id',
+                            sortType: 'asInt'
                         }, {
-                            name: 'client_intf'
+                            name: 'client_intf',
+                            sortType: 'asInt'
                         }, {
-                            name: 'server_intf'
+                            name: 'server_intf',
+                            sortType: 'asInt'
                         }, {
                             name: 'c_client_addr',
                             sortType: 'asIp'
@@ -1882,21 +1886,29 @@ Ext.define('Ung.panel.Reports', {
                             name: 's_server_port',
                             sortType: 'asInt'
                         }, {
-                            name: 'username'
+                            name: 'username',
+                            type: 'string'
                         }, {
-                            name: 'hostname'
+                            name: 'hostname',
+                            type: 'string'
                         }, {
-                            name: 'method'
+                            name: 'method',
+                            type: 'string'
                         }, {
-                            name: 'domain'
+                            name: 'domain',
+                            type: 'string'
                         }, {
-                            name: 'host'
+                            name: 'host',
+                            type: 'string'
                         }, {
-                            name: 'uri'
+                            name: 'uri',
+                            type: 'string'
                         }, {
-                            name: 'c2s_content_length'
+                            name: 'c2s_content_length',
+                            sortType: 'asInt'
                         }, {
-                            name: 's2c_content_length'
+                            name: 's2c_content_length',
+                            sortType: 'asInt'
                         }, {
                             name: 's2c_content_type'
                         }, {
@@ -1932,15 +1944,20 @@ Ext.define('Ung.panel.Reports', {
                                 return (value == 'B')?i18n._("block") : i18n._("pass");
                             }
                         }, {
-                            name: 'ad_blocker_cookie_ident'
+                            name: 'ad_blocker_cookie_ident',
+                            type: 'string'
                         }, {
-                            name: 'virus_blocker_clean'
+                            name: 'virus_blocker_clean',
+                            type: 'boolean'
                         }, {
-                            name: 'virus_blocker_name'
+                            name: 'virus_blocker_name',
+                            type: 'string'
                         }, {
-                            name: 'virus_blocker_lite_clean'
+                            name: 'virus_blocker_lite_clean',
+                            type: 'boolean'
                         }, {
-                            name: 'virus_blocker_lite_name'
+                            name: 'virus_blocker_lite_name',
+                            type: 'string'
                         }],
                         columns: [{
                             header: i18n._("Request ID"),
