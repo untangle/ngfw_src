@@ -1847,8 +1847,58 @@ Ext.define('Ung.panel.Reports', {
                     },
                     http_events: {
                         fields: [{
+                            name: 'request_id'
+                        }, {
                             name: 'time_stamp',
                             sortType: 'asTimestamp'
+                        }, {
+                            name: 'session_id'
+                        }, {
+                            name: 'client_intf'
+                        }, {
+                            name: 'server_intf'
+                        }, {
+                            name: 'c_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'c_client_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'c_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 'c_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 's_client_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_client_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 's_server_addr',
+                            sortType: 'asIp'
+                        }, {
+                            name: 's_server_port',
+                            sortType: 'asInt'
+                        }, {
+                            name: 'username'
+                        }, {
+                            name: 'hostname'
+                        }, {
+                            name: 'method'
+                        }, {
+                            name: 'domain'
+                        }, {
+                            name: 'host'
+                        }, {
+                            name: 'uri'
+                        }, {
+                            name: 'c2s_content_length'
+                        }, {
+                            name: 's2c_content_length'
+                        }, {
+                            name: 's2c_content_type'
                         }, {
                             name: 'web_filter_lite_blocked',
                             type: 'boolean'
@@ -1868,23 +1918,6 @@ Ext.define('Ung.panel.Reports', {
                             name: 'web_filter_category',
                             type: 'string'
                         }, {
-                            name: 'c_client_addr',
-                            sortType: 'asIp'
-                        }, {
-                            name: 'username'
-                        }, {
-                            name: 'hostname'
-                        }, {
-                            name: 'c_server_addr',
-                            sortType: 'asIp'
-                        }, {
-                            name: 's_server_port',
-                            sortType: 'asInt'
-                        }, {
-                            name: 'host'
-                        }, {
-                            name: 'uri'
-                        }, {
                             name: 'web_filter_lite_reason',
                             type: 'string',
                             convert: Ung.panel.Reports.httpEventConvertReason
@@ -1901,11 +1934,20 @@ Ext.define('Ung.panel.Reports', {
                         }, {
                             name: 'ad_blocker_cookie_ident'
                         }, {
+                            name: 'virus_blocker_clean'
+                        }, {
                             name: 'virus_blocker_name'
+                        }, {
+                            name: 'virus_blocker_lite_clean'
                         }, {
                             name: 'virus_blocker_lite_name'
                         }],
                         columns: [{
+                            header: i18n._("Request ID"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'request_id'
+                        }, {
                             header: i18n._("Timestamp"),
                             width: Ung.Util.timestampFieldWidth,
                             sortable: true,
@@ -1914,20 +1956,87 @@ Ext.define('Ung.panel.Reports', {
                                 return i18n.timestampFormat(value);
                             }
                         }, {
-                            header: i18n._("Hostname"),
-                            width: Ung.Util.hostnameFieldWidth,
+                            header: i18n._("Session ID"),
+                            width: Ung.Util.portFieldWidth,
                             sortable: true,
-                            dataIndex: 'hostname'
+                            dataIndex: 'session_id'
+                        }, {
+                            header: i18n._("Client Interface") ,
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'client_intf'
+                        }, {
+                            header: i18n._("Server Interface") ,
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'server_intf'
                         }, {
                             header: i18n._("Client"),
                             width: Ung.Util.ipFieldWidth,
                             sortable: true,
                             dataIndex: 'c_client_addr'
                         }, {
+                            header: i18n._("Client Port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c_client_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("New Client"),
+                            width: Ung.Util.ipFieldWidth,
+                            sortable: true,
+                            dataIndex: 's_client_addr'
+                        }, {
+                            header: i18n._("New Client Port"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 's_client_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Original Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'c_server_addr'
+                        }, {
+                            header: i18n._("Original Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 'c_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Server") ,
+                            width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_addr'
+                        }, {
+                            header: i18n._("Server Port"),
+                            width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                            sortable: true,
+                            dataIndex: 's_server_port',
+                            filter: {
+                                type: 'numeric'
+                            }
+                        }, {
+                            header: i18n._("Hostname"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'hostname'
+                        }, {
                             header: i18n._("Username"),
                             width: Ung.Util.usernameFieldWidth,
                             sortable: true,
                             dataIndex: 'username'
+                        }, {
+                            header: i18n._("Domain"),
+                            width: Ung.Util.hostnameFieldWidth,
+                            sortable: true,
+                            dataIndex: 'domain'
                         }, {
                             header: i18n._("Host"),
                             width: Ung.Util.hostnameFieldWidth,
@@ -1940,7 +2049,27 @@ Ext.define('Ung.panel.Reports', {
                             sortable: true,
                             dataIndex: 'uri'
                         }, {
-                            header: i18n._("Blocked (Webfilter Lite)"),
+                            header: i18n._("Method"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'method'
+                        }, {
+                            header: i18n._("Download Content Length"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 's2c_content_length'
+                        }, {
+                            header: i18n._("Upload Content Length"),
+                            width: Ung.Util.portFieldWidth,
+                            sortable: true,
+                            dataIndex: 'c2s_content_length'
+                        }, {
+                            header: i18n._("Content Type"),
+                            width: 150,
+                            sortable: true,
+                            dataIndex: 's2c_content_type'
+                        }, {
+                            header: i18n._("Blocked") + " (Web Filter Lite)",
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'web_filter_lite_blocked',
@@ -1950,7 +2079,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Flagged (Webfilter Lite)"),
+                            header: i18n._("Flagged") + " (Web Filter Lite)",
                             width: Ung.Util.booleanFieldWidth,
                             dataIndex: 'web_filter_lite_flagged',
                             filter: {
@@ -1959,17 +2088,17 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Reason For Action (Webfilter Lite)"),
+                            header: i18n._("Reason For Action") + " (Web Filter Lite)",
                             width: 150,
                             sortable: true,
                             dataIndex: 'web_filter_lite_reason'
                         }, {
-                            header: i18n._("Category (Webfilter Lite)"),
+                            header: i18n._("Category") + " (Web Filter Lite)",
                             width: 120,
                             sortable: true,
                             dataIndex: 'web_filter_lite_category'
                         }, {
-                            header: i18n._("Blocked  (Webfilter)"),
+                            header: i18n._("Blocked") + " (Web Filter)",
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'web_filter_blocked',
@@ -1979,7 +2108,7 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Flagged (Webfilter)"),
+                            header: i18n._("Flagged") + " (Web Filter)",
                             width: Ung.Util.booleanFieldWidth,
                             sortable: true,
                             dataIndex: 'web_filter_flagged',
@@ -1989,45 +2118,42 @@ Ext.define('Ung.panel.Reports', {
                                 noText: 'false'
                             }
                         }, {
-                            header: i18n._("Reason For Action (Webfilter)"),
+                            header: i18n._("Reason For Action") +  " (Web Filter)",
                             width: 150,
                             sortable: true,
                             dataIndex: 'web_filter_reason'
                         }, {
-                            header: i18n._("Category (Webfilter)"),
+                            header: i18n._("Category") + " (Web Filter)",
                             width: 120,
                             sortable: true,
                             dataIndex: 'web_filter_category'
                         }, {
-                            header: i18n._("Server"),
-                            width: Ung.Util.ipFieldWidth,
-                            sortable: true,
-                            dataIndex: 'c_server_addr'
-                        }, {
-                            header: i18n._("Server Port"),
-                            width: Ung.Util.portFieldWidth,
-                            sortable: true,
-                            dataIndex: 's_server_port',
-                            filter: {
-                                type: 'numeric'
-                            }
-                        }, {
-                            header: i18n._("Action (Ad Blocker)"),
+                            header: i18n._("Action") + " (Ad Blocker)",
                             width: 120,
                             sortable: true,
                             dataIndex: 'ad_blocker_action'
                         }, {
-                            header: i18n._("Cookie"),
+                            header: i18n._("Blocked Cookie") + " (Ad Blocker)",
                             width: 100,
                             sortable: true,
                             dataIndex: 'ad_blocker_cookie_ident'
                         }, {
-                            header: 'Virus Blocker Lite ' + i18n._('Name'),
+                            header: i18n._('Clean') + ' (Virus Blocker Lite)',
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_lite_clean'
+                        }, {
+                            header: i18n._('Virus Name') + ' (Virus Blocker Lite)',
                             width: 140,
                             sortable: true,
                             dataIndex: 'virus_blocker_lite_name'
                         }, {
-                            header: 'Virus Blocker ' + i18n._('Name'),
+                            header: i18n._('Clean') + ' (Virus Blocker)',
+                            width: Ung.Util.booleanFieldWidth,
+                            sortable: true,
+                            dataIndex: 'virus_blocker_clean'
+                        }, {
+                            header: i18n._('Virus Name') + ' (Virus Blocker)',
                             width: 140,
                             sortable: true,
                             dataIndex: 'virus_blocker_name'
