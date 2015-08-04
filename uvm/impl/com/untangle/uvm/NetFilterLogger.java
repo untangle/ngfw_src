@@ -185,6 +185,9 @@ public class NetFilterLogger
 
     protected void HandleLoggerMessage(ByteBuffer logMessage) throws Exception
     {
+        if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions() )
+            return;
+
         String message = new String(logMessage.array(), 0, logMessage.position());
         String srcAddressStr, dstAddressStr;
         String logPrefix;

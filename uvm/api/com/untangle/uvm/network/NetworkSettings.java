@@ -51,6 +51,8 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
     private boolean blockDuringRestarts = false;
+    private boolean logBypassedSessions = true;
+    private boolean logBlockedSessions = false;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -142,6 +144,12 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getBlockDuringRestarts() { return this.blockDuringRestarts; }
     public void setBlockDuringRestarts( boolean newValue ) { this.blockDuringRestarts = newValue; }
+
+    public boolean getLogBypassedSessions() { return this.logBypassedSessions; }
+    public void setLogBypassedSessions( boolean newValue ) { this.logBypassedSessions = newValue; }
+
+    public boolean getLogBlockedSessions() { return this.logBlockedSessions; }
+    public void setLogBlockedSessions( boolean newValue ) { this.logBlockedSessions = newValue; }
     
     public QosSettings getQosSettings() { return this.qosSettings; }
     public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }

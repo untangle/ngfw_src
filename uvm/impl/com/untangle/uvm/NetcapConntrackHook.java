@@ -50,7 +50,9 @@ public class NetcapConntrackHook implements NetcapCallback
                        int s2c_packets, int s2c_bytes,
                        long timestamp_start, long timestamp_stop )
     {
-
+        if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() )
+            return;
+        
         int sourceIntf = (int)mark & 0xff;
         int destIntf = (int)(mark & 0xff00)>>8;
         InetAddress cClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_client_addr );

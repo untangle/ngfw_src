@@ -3939,6 +3939,32 @@ Ext.define('Webui.config.network', {
                         }, this)
                     }
                 }
+            },{
+                xtype: "checkbox",
+                name: "logBypassedSessions",
+                fieldLabel: this.i18n._("Log bypassed sessions"),
+                labelWidth: 190,
+                checked: this.settings.logBypassedSessions,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.logBypassedSessions = newValue;
+                        }, this)
+                    }
+                }
+            },{
+                xtype: "checkbox",
+                name: "logBlockedSessions",
+                fieldLabel: this.i18n._("Log blocked sessions"),
+                labelWidth: 190,
+                checked: this.settings.logBlockedSessions,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.logBlockedSessions = newValue;
+                        }, this)
+                    }
+                }
             }]
         });
     },
