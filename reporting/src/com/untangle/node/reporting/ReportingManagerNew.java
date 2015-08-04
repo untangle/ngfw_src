@@ -81,10 +81,21 @@ public interface ReportingManagerNew
     /**
      * Get current application categories that should be displayed
      */
-    String[] getCurrentApplications();
+    List<JSONObject> getCurrentApplications();
     
     /**
      * Get the metadata hints for the condition quick add function
      */
     org.json.JSONObject getConditionQuickAddHints();
+    
+    /**
+     * Tests if reporting is enabled, that is if reports will be
+     * generated nightly.  Currently this is the same thing as "is the
+     * reporting node installed and turned on."
+     *
+     * @return true if reporting is enabled, false otherwise.
+     */
+    boolean isReportingEnabled();
+    
+    Integer getTimeZoneOffset();
 }

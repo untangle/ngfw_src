@@ -209,5 +209,23 @@ Ext.define('Ung.Util', {
             }, 400);
             return true;
         }
-    }
+    },
+    bytesRenderer: function(bytes) {
+        var units = [i18n._("bytes"), i18n._("Kbytes"), i18n._("Mbytes"), i18n._("Gbytes")];
+        var units_itr = 0;
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+        bytes = Math.round(bytes*100)/100;
+        return bytes + " " + units[units_itr];
+    },
+    timestampFieldWidth: 135,
+    ipFieldWidth: 100,
+    portFieldWidth: 70,
+    hostnameFieldWidth: 120,
+    uriFieldWidth: 200,
+    usernameFieldWidth: 120,
+    booleanFieldWidth: 60,
+    emailFieldWidth: 150
 });

@@ -5,26 +5,27 @@
 String buildStamp = getServletContext().getInitParameter("buildStamp");
 
 UvmContext uvm = UvmContextFactory.context();
-Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
 
 String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 
-ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-ReportingManager reportingManager = null ;
-boolean reportingEnabled = false;
-boolean reportsAvailable = false;
+if(request.getParameter("old")!=null) {
+    ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+    ReportingManager reportingManager = null ;
+    boolean reportingEnabled = false;
+    boolean reportsAvailable = false;
 
-if (node != null) {
-   reportingManager = node.getReportingManager();
-   reportingEnabled = reportingManager.isReportingEnabled();
-   reportsAvailable = reportingManager.isReportsAvailable();
-}
+    if (node != null) {
+        reportingManager = node.getReportingManager();
+        reportingEnabled = reportingManager.isReportingEnabled();
+        reportsAvailable = reportingManager.isReportsAvailable();
+    }
 
-if (node == null || !reportsAvailable || !reportingEnabled) {
-   String msg = I18nUtil.tr("No reports are available.", i18n_map);
-   String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
-   String emptyMsg = I18nUtil.tr("No reports have been generated.", i18n_map);
+    if (node == null || !reportsAvailable || !reportingEnabled) {
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+        String msg = I18nUtil.tr("No reports are available.", i18n_map);
+        String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
+        String emptyMsg = I18nUtil.tr("No reports have been generated.", i18n_map);
 
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -67,7 +68,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 </body>
 </html>
 <%
-} else if(request.getParameter("old")!=null) {
+    } else  {
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -121,6 +122,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 </body>
 </html>
 <%
+    }
 } else {
 %>
 <html>
@@ -128,7 +130,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Reports</title>
+    <title><%=company%> | Reports</title>
     <style type="text/css">
         @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=<%=buildStamp%>";
         @import "/ext5/packages/sencha-charts/build/classic/resources/sencha-charts-all-debug.css?s=<%=buildStamp%>";

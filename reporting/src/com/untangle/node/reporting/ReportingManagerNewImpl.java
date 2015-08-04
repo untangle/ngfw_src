@@ -5,17 +5,15 @@ package com.untangle.node.reporting;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.PreparedStatement;
-import java.sql.DatabaseMetaData;
-import java.util.List;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -24,6 +22,7 @@ import org.json.JSONObject;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.NodeSettings;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -87,6 +86,12 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         ReportingManagerNewImpl.node = node;
     }
     
+    
+    public boolean isReportingEnabled()
+    {
+        return node != null && NodeSettings.NodeState.RUNNING.equals(node.getRunState());
+    }
+
     public List<ReportEntry> getReportEntries()
     {
         if ( node == null ) {
@@ -132,9 +137,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return entries;
     }
 
-    public String[] getCurrentApplications()
+    public List<JSONObject> getCurrentApplications()
     {
-        List<String> categories = new LinkedList<String>();
+    	ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
 
         for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
             if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
@@ -146,12 +151,19 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             if ( nodeProperties.getInvisible() ) {
                 continue;
             }
-            categories.add( nodeProperties.getDisplayName() );
+            org.json.JSONObject json = new org.json.JSONObject();
+
+            try {
+                json.put("displayName", nodeProperties.getDisplayName());
+                json.put("name", nodeProperties.getName());
+                json.put("viewPosition", nodeProperties.getViewPosition());
+            } catch (Exception e) {
+                logger.error( "Error generating Current Applications list", e );
+            }
+            currentApplications.add(json);
         }
 
-        String[] array = new String[categories.size()];
-        array = categories.toArray(array);
-        return array;
+        return currentApplications;
     }
     
     public void setReportEntries( List<ReportEntry> newEntries )
@@ -419,6 +431,27 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return UvmContextFactory.context().getConditionQuickAddHints();
     }
     
+    public Integer getTimeZoneOffset()
+    {
+        try {
+            String tzoffsetStr = UvmContextFactory.context().execManager().execOutput("date +%:z");
+        
+            if (tzoffsetStr == null) {
+                return 0;
+            } else {
+                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
+                if (tzParts.length==2) {
+                    Integer hours= Integer.valueOf(tzParts[0]);
+                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
+                    return hours >= 0 ? tzoffset : -tzoffset;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return 0;
+    }
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
@@ -433,7 +466,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
         try {
             List<String> seenUniqueIds = new LinkedList<String>();
-            boolean added = false;
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
             for ( String line : lines ) {
@@ -492,7 +524,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
         try {
             List<String> seenUniqueIds = new LinkedList<String>();
-            boolean added = false;
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
             for ( String line : lines ) {
@@ -680,5 +711,4 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         
         return null;
     }
-    
 }
