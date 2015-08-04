@@ -1,5 +1,5 @@
 <%@ page language="java" import="com.untangle.node.reporting.*,com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.node.NodeSettings,com.untangle.uvm.node.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" 
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%><!DOCTYPE html>
 
 <%
 String buildStamp = getServletContext().getInitParameter("buildStamp");
@@ -67,7 +67,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 </body>
 </html>
 <%
-} else {    
+} else if(request.getParameter("old")!=null) {
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -81,10 +81,10 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="script/reports.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="script/util.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/baseEventLog.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="script/eventLog.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/reportsOld.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/utilOld.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/baseEventLogOld.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/eventLogOld.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">
 <%
@@ -100,7 +100,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 %>
         Ext.onReady(function(){
             reports = new Ung.Reports({<%= args %>});
-        });        
+        });
     </script>
     
 </head>
@@ -118,6 +118,49 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 </form>
 </div>
 <div id="window-container"></div>
+</body>
+</html>
+<%
+} else {
+%>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Reports</title>
+    <style type="text/css">
+        @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=<%=buildStamp%>";
+        @import "/ext5/packages/sencha-charts/build/classic/resources/sencha-charts-all-debug.css?s=<%=buildStamp%>";
+    </style>
+    <script type="text/javascript" src="/ext5/ext-all-debug.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext5/packages/sencha-charts/build/sencha-charts-debug.js?s=<%=buildStamp%>"></script>
+
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/util.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/reports.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/main.js?s=<%=buildStamp%>"></script>
+
+    <script type="text/javascript">
+        Ext.onReady(function() {
+            Ung.Main.init({buildStamp:'<%=buildStamp%>'})
+        });
+    </script>
+ </head>
+<body>
+<div id="container" style="display:none;">
+  <form name="downloadForm" id="downloadForm" method="post" action="download">
+    <input type="hidden" name="type" value=""/>
+    <input type="hidden" name="arg1" value=""/>
+    <input type="hidden" name="arg2" value=""/>
+    <input type="hidden" name="arg3" value=""/>
+    <input type="hidden" name="arg4" value=""/>
+    <input type="hidden" name="arg5" value=""/>
+    <input type="hidden" name="arg6" value=""/>
+  </form>
+</div>
 </body>
 </html>
 <%

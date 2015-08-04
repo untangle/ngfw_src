@@ -9,11 +9,10 @@ Ext.define('Webui.config.reportsViewer', {
         var treeNodes = [ {
             text : i18n._('Summary'),
             category : 'Summary',
-            leaf : true,
-            icon : "/reports/node-icons/untangle-vm.png"
+            leaf : true
         }, {
-            text : i18n._('Session Viewer'),
-            category : 'Session Viewer',
+            text : i18n._('Host Viewer'),
+            category : 'Host Viewer',
             leaf : true
         }, {
             text : i18n._("Configuration"),
@@ -105,6 +104,8 @@ Ext.define('Webui.config.reportsViewer', {
             }) ]
         };
         this.callParent(arguments);
+        
+        this.down("treepanel").getSelectionModel().select(0);
     },
     doSize : function() {
         this.maximize();

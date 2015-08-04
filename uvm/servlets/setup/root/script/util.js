@@ -157,7 +157,7 @@ Ext.define('Ung.Util', {
         }
         return false;
     },
-   validate: function (panel) {
+    validate: function (panel) {
         var valid = true,
             fields = panel.query("field");
         for(var i=0;i<fields.length;i++) {

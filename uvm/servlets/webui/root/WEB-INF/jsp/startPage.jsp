@@ -34,7 +34,8 @@
     <script type="text/javascript" src="script/ruleBuilder.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/matcherWindow.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/monitor.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/reports.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>

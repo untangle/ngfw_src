@@ -18,6 +18,7 @@ import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
+import com.untangle.node.reporting.ReportingManagerNew;
 import com.untangle.node.reporting.ReportingNode;
 import com.untangle.node.reporting.ReportingManager;
 import com.untangle.node.reporting.items.ApplicationData;
@@ -51,6 +52,16 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return reporting.getReportingManager();
     }
 
+    public ReportingManagerNew reportingManagerNew()
+    {
+        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if (reporting == null) {
+            logger.warn("reporting node not found");
+            return null;
+        }
+        return reporting.getReportingManagerNew();
+    }
+
     public SkinManager skinManager()
     {
         return this.skinManager;
@@ -67,6 +78,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return new ReportsContextImpl( uvm );
     }
 
+    
     /**
      * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
      */

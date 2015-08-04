@@ -231,7 +231,7 @@ Ext.define('Ung.Reports', {
                             listeners: {
                                 "render": {
                                     fn: Ext.bind(function(comp){
-                                        comp.getEl().addListener("click",function(){window.top.location = "/auth/logout?url=/reports&realm=Reports";});
+                                        comp.getEl().addListener("click",function(){window.top.location = "/auth/logout?url=/reports/?old&realm=Reports";});
                                     },this)
                                 }
                             }
@@ -343,12 +343,6 @@ Ext.define('Ung.Reports', {
                     },
                     items: [{ html:"" }]
                 }]
-            },
-            {
-                xtype: 'panel',
-                border: false,
-                region: 'south',
-                height: 3
             }]
         });
     },
@@ -1027,6 +1021,7 @@ Ext.define('Ung.ReportDetails', {
         //add the print button
         if(reports.printView===false) {
             var printargs = [
+                ['old'],
                 ['rdate',reports.reportsDate.time].join('='),
                 ['duration',reports.numDays].join('='),
                 ['aname',appName].join('='),

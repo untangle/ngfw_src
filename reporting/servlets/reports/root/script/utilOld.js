@@ -1,20 +1,12 @@
-Ext.define('Ung.Util', {
-    singleton: true,
-    // Load css file Dynamically
-    addBuildStampToUrl: function(url) {
-        var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
-        if (url.indexOf("?") >= 0) {
-            return url + "&" + scriptArgs;
-        } else {
-            return url + "?" + scriptArgs;
-        }
-    },
+Ext.namespace('Ung');
+
+Ung.Util = {
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
         fileref.setAttribute("rel", "stylesheet");
         fileref.setAttribute("type", "text/css");
-        fileref.setAttribute("href", Ung.Util.addBuildStampToUrl(filename));
+        fileref.setAttribute("href", filename);
         document.getElementsByTagName("head")[0].appendChild(fileref);
     },
     // Load script file Dynamically
@@ -27,7 +19,7 @@ Ext.define('Ung.Util', {
             } else {
                 req = new ActiveXObject("Microsoft.XMLHTTP");
             }
-            req.open("GET", Ung.Util.addBuildStampToUrl(sScriptSrc), false);
+            req.open("GET", sScriptSrc, false);
             req.send(null);
             if( window.execScript) {
                 window.execScript(req.responseText);
@@ -43,17 +35,24 @@ Ext.define('Ung.Util', {
         }
         return error;
     },
-    loadModuleTranslations: function(moduleName, handler) {
-        if(!Ung.i18nModuleInstances[moduleName]) {
-            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, moduleName, handler) {
-                if(Ung.Util.handleException(exception)) return;
+    loadModuleTranslations : function(appName, i18n, handler) {
+        if(!Ung.i18nModuleInstances[appName]) {
+            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, appName, i18n, handler) {
+                if (exception) {
+                    var message = exception.message;
+                    if (message == null || message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                    }
+                    Ext.MessageBox.alert("Failed", message);
+                    return;
+                }
                 var moduleMap=result.map;
-                Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                    map: i18n.map,
-                    moduleMap: moduleMap
+                Ung.i18nModuleInstances[appName] = new Ung.ModuleI18N({
+                        "map" : i18n.map,
+                        "moduleMap" : moduleMap
                 });
                 handler.call(this);
-            }, this,[moduleName, handler],true), moduleName);
+            },this,[appName, i18n, handler],true), appName);
         } else {
             handler.call(this);
         }
@@ -182,32 +181,5 @@ Ext.define('Ung.Util', {
         if(Ext.MessageBox.rendered) {
             Ext.MessageBox.hide();
         }
-    },
-    download: function(content, fileName, mimeType) {
-        var a = document.createElement('a');
-        mimeType = mimeType || 'application/octet-stream';
-
-        if (navigator.msSaveBlob) { // IE10
-            return navigator.msSaveBlob(new Blob([ content ], {
-                type : mimeType
-            }), fileName);
-        } else if ('download' in a) { // html5 A[download]
-            a.href = 'data:' + mimeType + ',' + encodeURIComponent(content);
-            a.setAttribute('download', fileName);
-            document.body.appendChild(a);
-            setTimeout(function() {
-                a.click();
-                document.body.removeChild(a);
-            }, 100);
-            return true;
-        } else { //do iframe dataURL download (old ch+FF):
-            var f = document.createElement('iframe');
-            document.body.appendChild(f);
-            f.src = 'data:' + mimeType + ',' + encodeURIComponent(content);
-            setTimeout(function() {
-                document.body.removeChild(f);
-            }, 400);
-            return true;
-        }
     }
-});
+};

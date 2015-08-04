@@ -85,7 +85,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'panel',
-                    html: this.i18n._('Reports are automatically generated each night.'),
+                    html: this.i18n._('The new reports.'),
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
@@ -95,6 +95,25 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         iconCls: 'action-icon',
                         handler: Ext.bind(function() {
                             var viewReportsUrl = "../reports/";
+                            window.open(viewReportsUrl);
+                        }, this)
+                    }]
+                }]
+            }, {
+                title: this.i18n._('Old Reports'),
+                xtype: 'fieldset',
+                items: [{
+                    xtype: 'panel',
+                    html: this.i18n._('Reports are automatically generated each night.'),
+                    buttonAlign: 'center',
+                    border: false,
+                    buttons: [{
+                        xtype: 'button',
+                        text: this.i18n._('View Old Reports'),
+                        name: 'View Reports',
+                        iconCls: 'action-icon',
+                        handler: Ext.bind(function() {
+                            var viewReportsUrl = "../reports/?old";
                             window.open(viewReportsUrl);
                         }, this)
                     }]

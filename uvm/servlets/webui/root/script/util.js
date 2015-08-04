@@ -250,10 +250,6 @@ Ext.define('Ung.Util', {
             return url + "?" + scriptArgs;
         }
     },
-    getScriptSrc: function(sScriptSrc) {
-        //return Ung.Main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
-        return sScriptSrc ;
-    },
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
@@ -576,7 +572,7 @@ Ext.define('Ung.Util', {
         }
         return utftext;
     },
-    download : function(content, fileName, mimeType) {
+    download: function(content, fileName, mimeType) {
         var a = document.createElement('a');
         mimeType = mimeType || 'application/octet-stream';
 
