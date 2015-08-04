@@ -3,7 +3,7 @@
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-smtp
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker
     untangle-node-firewall
-    untangle-node-ips untangle-node-openvpn untangle-node-phish
+    untangle-node-idps untangle-node-openvpn untangle-node-phish
     untangle-node-protofilter untangle-node-reporting
     untangle-node-spamassassin
     untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup
@@ -50,7 +50,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../api/com/untangle/uvm/vnet/NodeBase.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../ips/src/com/untangle/node/ips/IpsNodeImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../idps/src/com/untangle/node/idps/IdpsNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../protofilter/src/com/untangle/node/protofilter/ProtoFilterImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java
@@ -109,7 +109,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spamassassin"|"untangle-node-capture")
+"untangle-node-protofilter"|"untangle-node-idps"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spamassassin"|"untangle-node-capture")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
