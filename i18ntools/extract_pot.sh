@@ -8,8 +8,9 @@ fi
 rm -rf ./pot/*
 
 cp ../uvm/po/untangle-libuvm.pot ./pot/
+cp ../uvm/po/fmt_keys.pot ./pot/
 cp ../../pkgs/untangle-apache2-config/po/untangle-apache2-config.pot ./pot/
-cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot
+# cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot
 
 for module in ../* ../../../hades/src/* ; do
     module_suffix=`basename ${module} | sed -e 's|-base||' -e 's|-casing||'`
