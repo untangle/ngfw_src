@@ -252,9 +252,11 @@ public class SystemManagerImpl implements SystemManager
     {
         if( timestamp != 0 ){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String formattedDate = sdf.format(timestamp);
-            UvmContextFactory.context().execManager().exec( "date -s '" + formattedDate + "'" );
-            logger.info("Time manually changed: " + formattedDate);
+            Date date = new Date();
+            String formattedCurrentDate = sdf.format(date.getTime());
+            String formattedNewDate = sdf.format(timestamp);
+            UvmContextFactory.context().execManager().exec( "date -s '" + formattedNewDate + "'" );
+            logger.info("Time manually changed from " + formattedCurrentDate + " to " + formattedNewDate);
         }
     }
 
