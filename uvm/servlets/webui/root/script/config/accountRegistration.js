@@ -4,7 +4,7 @@ Ext.define('Webui.config.accountRegistration', {
     doSize: function() {
         var objSize = Ung.Main.viewport.getSize();
         var width = Math.min(770, objSize.width - Ung.Main.contentLeftWidth);
-        var height = Math.min(470, objSize.height);
+        var height = Math.min(650, objSize.height);
         var x = Ung.Main.contentLeftWidth + Math.round((objSize.width - Ung.Main.contentLeftWidth-width)/2); 
         var y = Math.round((objSize.height-height)/2);
         this.setPosition(x, y);
@@ -19,6 +19,43 @@ Ext.define('Webui.config.accountRegistration', {
             rpc.serverUID = result;
         }, this));
         this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
+
+        this.expirationMonths = Ext.create('Ext.data.ArrayStore', {
+            fields: ['id', 'value'],
+            data: [ 
+                ["01", "01 - " + i18n._("January")],
+                ["02", "02 - " + i18n._("February")],
+                ["03", "03 - " + i18n._("March")],
+                ["04", "04 - " + i18n._("April")],
+                ["05", "05 - " + i18n._("May")],
+                ["06", "06 - " + i18n._("June")],
+                ["07", "07 - " + i18n._("July")],
+                ["08", "08 - " + i18n._("August")],
+                ["09", "09 - " + i18n._("September")],
+                ["10", "10 - " + i18n._("October)")],
+                ["11", "11 - " + i18n._("November")],
+                ["12", "12 - " + i18n._("December")]
+            ]
+        });
+        this.cardTypes = Ext.create('Ext.data.ArrayStore', {
+            fields: ['id', 'value'],
+            data: [ 
+                ["MC", i18n._("Mastercard")],
+                ["VISA", i18n._("VISA")],
+                ["DISC", i18n._("Discover")],
+                ["AMEX", i18n._("American Express")]
+            ]
+        });
+        this.defaultFocusButton = function(buttonName){
+            return function(me, event, eOpts) {
+                    var scope = this.up("container");
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {                    
+                        enter: scope.down("button[name="+buttonName+"]"),
+                        scope: scope
+                    });
+                };
+        };
+        this.renewDefaultChecked = true;
         this.items = {
             xtype: 'panel',
             layout: { type: 'vbox', align: 'stretch'},
@@ -119,8 +156,10 @@ Ext.define('Webui.config.accountRegistration', {
                             name: 'emailAddress',
                             vtype: 'email',
                             labelAlign: 'top',
-                            fieldLabel: i18n._("Email Address")+ " *"
-                            
+                            fieldLabel: i18n._("Email Address")+ " *",
+                            listeners: {
+                                focus: this.defaultFocusButton("loginButton")
+                            }                            
                         }, {
                             xtype:'textfield',
                             width: 300,
@@ -128,13 +167,17 @@ Ext.define('Webui.config.accountRegistration', {
                             labelAlign: 'top',
                             inputType: 'password',
                             name: 'password',
-                            fieldLabel: i18n._("Password")+ " *"
+                            fieldLabel: i18n._("Password")+ " *",
+                            listeners: {
+                                focus: this.defaultFocusButton("loginButton")
+                            }
                         }, {
                             xtype: 'container',
                             layout: 'center',
                             height: 70,
                             items: {
                                 xtype: 'button',
+                                name: "loginButton",
                                 text: i18n._('Login'),
                                 padding: '7 30 7 30',
                                 handler: function() {
@@ -169,29 +212,40 @@ Ext.define('Webui.config.accountRegistration', {
                                 margin: '0 10 0 20',
                                 labelAlign: 'top',
                                 name: 'firstName',
-                                fieldLabel: i18n._("First Name")+ " *"
+                                fieldLabel: i18n._("First Name")+ " *",
+                                listeners: {
+                                    focus: this.defaultFocusButton("registerButton")
+                                }
                             }, {
                                 xtype:'textfield',
                                 columnWidth: 0.5,
                                 margin: '0 20 0 10',
                                 labelAlign: 'top',
                                 name: 'lastName',
-                                fieldLabel: i18n._("Last Name")+ " *"
+                                fieldLabel: i18n._("Last Name")+ " *",
+                                listeners: {
+                                    focus: this.defaultFocusButton("registerButton")
+                                }
                             }]
                         }, {
                             xtype:'textfield',
                             margin: '0 50 0 20',
                             labelAlign: 'top',
                             name: 'companyName',
-                            fieldLabel: i18n._("Company Name")
+                            fieldLabel: i18n._("Company Name"),
+                            listeners: {
+                                focus: this.defaultFocusButton("registerButton")
+                            }
                         }, {
                             xtype:'textfield',
                             vtype: 'email',
                             margin: '0 50 0 20',
                             labelAlign: 'top',
                             name: 'emailAddress',
-                            fieldLabel: i18n._("Email Address")+ " *"
-                            
+                            fieldLabel: i18n._("Email Address")+ " *",
+                            listeners: {
+                                focus: this.defaultFocusButton("registerButton")
+                            }
                         }, {
                             xtype: 'container',
                             layout: 'column',
@@ -202,7 +256,10 @@ Ext.define('Webui.config.accountRegistration', {
                                 margin: '0 10 0 20',
                                 labelAlign: 'top',
                                 name: 'password',
-                                fieldLabel: i18n._("Password")+ " *"
+                                fieldLabel: i18n._("Password")+ " *",
+                                listeners: {
+                                    focus: this.defaultFocusButton("registerButton")
+                                }
                             }, {
                                 xtype:'textfield',
                                 inputType: 'password',
@@ -210,7 +267,10 @@ Ext.define('Webui.config.accountRegistration', {
                                 labelAlign: 'top',
                                 columnWidth: 0.5,
                                 name: 'confirmPassword',
-                                fieldLabel: i18n._("Confirm Password")+ " *"
+                                fieldLabel: i18n._("Confirm Password")+ " *",
+                                listeners: {
+                                    focus: this.defaultFocusButton("registerButton")
+                                }
                             }]
                         }, {
                             xtype: 'container',
@@ -219,6 +279,7 @@ Ext.define('Webui.config.accountRegistration', {
                             height: 40,
                             items: {
                                 xtype: 'button',
+                                name: "registerButton",
                                 text: i18n._('Register'),
                                 padding: '7 30 7 30',
                                 handler: function() {
@@ -269,29 +330,195 @@ Ext.define('Webui.config.accountRegistration', {
                                 padding: '7 10 7 10',
                                 width: 150,
                                 handler: function() {
-                                    this.checkVoucher();
+                                    this.checkActivationCode();
                                 },
                                 scope: this
                             }]
                         }
                     }]
                 },
-                //Voucher step
+                //Activation Code step
                 {
                     xtype: 'container',
                     itemId: 'step4',
                     autoScroll: true,
                     items: [{
                         xtype: 'component',
-                        margin: '10 120 0 150',
-                        html: Ext.String.format(i18n._("If your {0} appliance came with a voucher key to redem your subscription please enter it now. Otherwise simply skip this step."), rpc.companyName)
+                        margin: '0 120 0 150',
+                        html: Ext.String.format(i18n._("If your {0} appliance came with an activation code to redem your subscription please enter it now. Otherwise simply skip this step."), rpc.companyName)
                     }, {
                         xtype:'textfield',
-                        margin: '20 0 0 150',
+                        margin: '0 0 0 150',
                         width: 350,
-                        name: "voucher",
+                        name: "activationCode",
                         labelAlign: 'top',
-                        fieldLabel: i18n._("Voucher")+ " *"
+                        fieldLabel: i18n._("Activation Code")+ " *"
+                    }, {
+                        xtype:'checkbox',
+                        margin: '0 0 0 150',
+                        name: "renew",
+                        width: 350,
+                        checked: this.renewDefaultChecked,
+                        boxLabel: i18n._("Automatically renew my subscription"),
+                        listeners: {
+                            change: {
+                                fn: function(elem, newValue, oldValue, eOpts) {
+                                    this.down("container[name=creditContainer]").setVisible(newValue);
+                                    this.down("container[name=creditNoContainer]").setVisible(!newValue);
+                                },
+                                scope: this
+                            }
+                        }
+                    },{
+                        // Credit card information.  If we determine the customer already has an associated
+                        // credit card, we will hide these sections.
+                        xtype: 'container',
+                        margin: '0 120 0 150',
+                        name: 'creditNoContainer',
+                        hidden: this.renewDefaultChecked == true,
+                        html: i18n._("If you opt out of automatic renewal, services and protection will lapse at the end of the subscription period.") +
+                        '  <i>'+i18n._("It is highly recommended that you enable automatic renewal.")+'</i>'
+                    },{
+                        xtype: 'container',
+                        name: 'creditContainer',
+                        hidden: this.renewDefaultChecked == false,
+                        items:[{
+                            xtype:'textfield',
+                            margin: '0 0 0 150',
+                            width: 350,
+                            name: "creditAddress1",
+                            labelAlign: 'top',
+                            fieldLabel: i18n._("Billing Address 1")+ " *"
+                        }, {
+                            xtype:'textfield',
+                            margin: '0 0 0 150',
+                            width: 350,
+                            name: "creditAddress2",
+                            labelAlign: 'top',
+                            fieldLabel: i18n._("Billing Address 2")
+                        }, {
+                            xtype: 'container',
+                            margin: '0 0 0 150',
+                            width: 400,
+                            layout: 'column',
+                            items:[{
+                                xtype:'textfield',
+                                name: "creditCity",
+                                labelAlign: 'top',
+                                fieldLabel: i18n._("City")+ " *"
+                            },{
+                                xtype:'textfield',
+                                name: "creditState",
+                                labelAlign: 'top',
+                                margin: "0 0 0 20",
+                                fieldLabel: i18n._("State or Province")+ " *"
+                            }]
+                        }, {
+                            xtype: 'container',
+                            margin: '0 0 0 150',
+                            width: 400,
+                            layout: 'column',
+                            items:[{
+                                xtype:'textfield',
+                                name: "creditPostal",
+                                labelAlign: 'top',
+                                fieldLabel: i18n._("Postal Code")+ " *"
+                            },{
+                                xtype:'textfield',
+                                name: "creditCountry",
+                                labelAlign: 'top',
+                                margin: "0 0 0 20",
+                                fieldLabel: i18n._("Country")+ " *"
+                            }]
+                        }, {
+                            xtype:'textfield',
+                            margin: '0 0 0 150',
+                            width: 350,
+                            name: "creditNumber",
+                            labelAlign: 'top',
+                            fieldLabel: i18n._("Credit Card Number")+ " *",
+                            listeners: {
+                                change: {
+                                    fn: function(elem, creditNumber, oldValue, eOpts) {
+                                        // Determine credit card type for those supported (AMEX, MC, DISC, VISA).
+                                        // In theory we could do this silently but we would risk
+                                        // future changes to credit card algorithms.
+                                        // To be safe, we provide a combobox to select the type but 
+                                        // aid in changing that value automatically when the number has changed
+                                        // using the current card algoritm.
+                                        creditNumber = creditNumber.replace(/\-/g, '');
+                                        if( (creditNumber.length < 14) || !/^\d+$/.test(creditNumber)){
+                                            return;
+                                        }
+                                        var creditType = "MC";
+                                        var creditPrefix = creditNumber.substring(0,2);
+                                        switch(creditPrefix){
+                                            case "34":
+                                            case "37":
+                                                creditType = "AMEX";
+                                                break;
+                                            case "51":
+                                            case "52":
+                                            case "53":
+                                            case "54":
+                                            case "55":
+                                                creditType = "MC";
+                                                break;
+                                            default:
+                                                creditPrefix = creditNumber.substring(0,4);
+                                                switch(creditPrefix){
+                                                    case "6011":
+                                                        creditType = "DISC";
+                                                        break;
+                                                    default:
+                                                        creditType ="VISA";
+                                                }
+                                        }
+                                        this.down("combo[name=creditType]").setValue(creditType);
+                                    },
+                                    scope: this,
+                                    buffer: 400
+                                }
+                            }
+                        }, {
+                            xtype: 'container',
+                            margin: '0 0 0 150',
+                            width: 400,
+                            layout: 'column',
+                            items:[{
+                                xtype:'combo',
+                                name: "creditType",
+                                labelAlign: 'top',
+                                width: 130,
+                                fieldLabel: i18n._("Card Type")+ " *",
+                                queryMode: "local",
+                                valueField: "id",
+                                displayField: "value",
+                                store: this.cardTypes,
+                                value: "MC"
+                            },{
+                                xtype:'combo',
+                                name: "creditMonth",
+                                labelAlign: 'top',
+                                width: 110,
+                                margin: "0 0 0 20",
+                                fieldLabel: i18n._("Expiration Month")+ " *",
+                                queryMode: "local",
+                                valueField: "id",
+                                displayField: "value",
+                                store: this.expirationMonths,
+                                value: "01"
+                            }, {
+                                xtype:'textfield',
+                                name: "creditYear",
+                                labelAlign: 'top',
+                                width: 100,
+                                margin: "0 0 0 20",
+                                maxLength: 4,
+                                enforceMaxLength: true,
+                                fieldLabel: i18n._("Expiration Year")+ " *"
+                            }]
+                        }]
                     }, {
                         xtype: 'container',
                         layout: 'center',
@@ -301,11 +528,13 @@ Ext.define('Webui.config.accountRegistration', {
                             layout: 'hbox',
                             items: [{
                                 xtype: 'button',
-                                text: i18n._('Redeem Voucher'),
+                                text: i18n._('Redeem Activation Code'),
                                 padding: '7 10 7 10',
                                 width: 150,
                                 handler: function() {
-                                    this.redeemVoucher();
+                                    if( this.updatePaymentMethod() == true ){
+                                        this.redeemActivationCode();
+                                    }
                                 },
                                 scope: this
                             }, {
@@ -374,14 +603,15 @@ Ext.define('Webui.config.accountRegistration', {
             Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
             return;
         }
-        this.setLoading(true);
+        this.setLoading(i18n._("Logging in..."));
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/account/login",
             scope: this,
             params: {
                 email: emailAddress.getValue(),
                 password: password.getValue(),
-                uid: rpc.serverUID
+                uid: rpc.serverUID,
+                majorVersion: "11.2"
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -393,7 +623,7 @@ Ext.define('Webui.config.accountRegistration', {
                     if(response.token) {
                         this.email = emailAddress.getValue();
                         this.token = response.token;
-                        this.checkSubscriptions();
+                        this.checkAccount();
                     }
                 }
             },
@@ -434,7 +664,7 @@ Ext.define('Webui.config.accountRegistration', {
             Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
             return;
         }
-        this.setLoading(true);
+        this.setLoading(i18n._("Creating account..."));
         Ext.data.JsonP.request({
             url: this.storeApiUrl+"/account/create",
             scope: this,
@@ -444,7 +674,8 @@ Ext.define('Webui.config.accountRegistration', {
                 fname: firstName,
                 lname: lastName,
                 cname: companyName,
-                uid: rpc.serverUID
+                uid: rpc.serverUID,
+                majorVersion: "11.2"
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -456,7 +687,7 @@ Ext.define('Webui.config.accountRegistration', {
                     if(response.token) {
                         this.email = emailAddress.getValue();
                         this.token = response.token;
-                        this.checkSubscriptions();
+                        this.checkAccount();
                     }
                 }
             },
@@ -467,13 +698,14 @@ Ext.define('Webui.config.accountRegistration', {
             
         });
     },
-    checkSubscriptions: function() {
+    checkAccount: function() {
         this.setLoading(true);
         Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/subscriptions",
+            url: this.storeApiUrl+"/account",
             params: {
                 email: this.email,
-                token: this.token
+                token: this.token,
+                majorVersion: "11.2"
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -482,10 +714,53 @@ Ext.define('Webui.config.accountRegistration', {
                         Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
                         return;
                     }
+                    var paymentMethodDefined = typeof(response.paymentMethod.length) == 'undefined' ? true: false;
+                    // If credit card information is associated with account, disable credit card fields
+                    this.down("container[itemId=step4]").down("checkbox[name=renew]").setVisible(paymentMethodDefined == false);
+                    if(paymentMethodDefined){
+                        this.down("container[itemId=step4]").down("container[name=creditNoContainer]").setVisible(false);
+                        this.down("container[itemId=step4]").down("container[name=creditContainer]").setVisible(false);
+                    }
+                    this.checkSubscriptions();
+                }
+                
+            },
+            failure: function(response, opts) {
+                this.setLoading(false);
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to check the subscriptions"));
+            },
+            scope: this
+        });
+    },
+    checkSubscriptions: function() {
+        this.setLoading(true);
+        Ext.data.JsonP.request({
+            url: this.storeApiUrl+"/subscriptions",
+            params: {
+                email: this.email,
+                token: this.token,
+                majorVersion: "11.2"
+            },
+            success: function(response, opts) {
+                this.setLoading(false);
+                if( response!=null) {
+                    if(!response.success) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                    var unbound = false;
                     if( response.subscriptions && response.subscriptions.length>0) {
+                        for( var i = 0; i < response.subscriptions.length; i++){
+                            if(response.subscriptions[i].uid == ""){
+                                unbound = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(unbound == true){
                         this.down("container[name=cardsContainer]").setActiveItem("step3");
-                    } else {
-                        this.checkVoucher();
+                    }else{                            
+                        this.checkActivationCode();
                     }
                 }
                 
@@ -497,9 +772,9 @@ Ext.define('Webui.config.accountRegistration', {
             scope: this
         });
     },
-    checkVoucher: function() {
+    checkActivationCode: function() {
         this.setLoading(true);
-        rpc.jsonrpc.UvmContext.isVoucher(Ext.bind(function(result, exception) {
+        rpc.jsonrpc.UvmContext.isActivationCode(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             if(result) {
@@ -510,17 +785,140 @@ Ext.define('Webui.config.accountRegistration', {
             }
         }, this));
     },
-    redeemVoucher: function() {
-        var voucher = form.down("textfield[name=voucher]").getValue().trim();
+    updatePaymentMethod: function(){
+
+        var renew = this.down("container[itemId=step4]").down("checkbox[name=renew]");
+        if((renew.isVisible() == false) ||
+           (renew.getValue() == false)){
+            return true;
+        }
+
+        var form = this.down("container[itemId=step4]");
+        var creditAddress1 = form.down("textfield[name=creditAddress1]").getValue().trim();
+        var creditAddress2 = form.down("textfield[name=creditAddress2]").getValue().trim();
+        var creditCity = form.down("textfield[name=creditCity]").getValue().trim();
+        var creditState = form.down("textfield[name=creditState]").getValue().trim();
+        var creditPostal = form.down("textfield[name=creditPostal]").getValue().trim();
+        var creditCountry = form.down("textfield[name=creditCountry]").getValue().trim();
+        var creditNumber = form.down("textfield[name=creditNumber]").getValue().trim();
+        var creditType = form.down("textfield[name=creditType]").getValue().trim();
+        var creditMonth = form.down("textfield[name=creditMonth]").getValue().trim();
+        var creditYear = form.down("textfield[name=creditYear]").getValue().trim();
+
         var errors = [];
-        if(Ext.isEmpty(voucher.getValue())) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Voucher")));
+        if(Ext.isEmpty(creditAddress1)) {
+            errors.push(Ext.String.format(i18n._("{0} is required."), i18n._("Address 1")));
+        }
+        if(Ext.isEmpty(creditCity)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("City")));
+        }
+        if(Ext.isEmpty(creditState)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("State")));
+        }
+        if(Ext.isEmpty(creditPostal)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Postal Code")));
+        }
+        if(Ext.isEmpty(creditCountry)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Country")));
+        }
+        if(Ext.isEmpty(creditNumber)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Credit Card Number")));
+        }else{
+            creditNumber = creditNumber.replace(/\-/g, '');
+            if( (creditNumber.length < 14) || !/^\d+$/.test(creditNumber)){
+                errors.push(Ext.String.format(i18n._("The {0} is invalid."), i18n._("Credit Card Number")));
+            }
+        }
+        if(Ext.isEmpty(creditYear)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Expiration Year")));
+        }else{
+            if( (creditYear.length < 4) || !/^\d+$/.test(creditYear)){
+                errors.push(Ext.String.format(i18n._("The {0} is invalid."), i18n._("Credit Year")));
+            }            
         }
         if(errors.length>0) {
             Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
-            return;
+            return false;
         }
-        //TODO: call redeemVoucher api if this will be implemented
+
+        this.setLoading(i18n._("Updating payment..."));
+        Ext.data.JsonP.request({
+            url: this.storeApiUrl+"/account/updatePaymentMethod",
+            params: {
+                email: this.email,
+                token: this.token,
+                majorVersion: "11.2",
+                ccType: creditType,
+                ccNumber: creditNumber,
+                ccExpMonth: creditMonth,
+                ccExpYear: creditYear,
+                address1: creditAddress1,
+                address2: creditAddress2,
+                city: creditCity,
+                state: creditState,
+                postCode: creditPostal,
+                country: creditCountry
+            },
+            success: function(response, opts) {
+                this.setLoading(false);
+                if( response!=null) {
+                    if(!response.success) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                }
+                
+            },
+            failure: function(response, opts) {
+                this.setLoading(false);
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to update the payment method"));
+            },
+            scope: this
+        });
+        return true;
+    },
+    redeemActivationCode: function() {
+        var form = this.down("container[itemId=step4]");
+        var activationCode = form.down("textfield[name=activationCode]").getValue().trim();
+        var errors = [];
+        if(Ext.isEmpty(activationCode)) {
+            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Activation Code")));
+        }
+        if(errors.length>0) {
+            Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
+            return false;
+        }
+
+        this.setLoading(i18n._("Redeeming activation code..."));
+        Ext.data.JsonP.request({
+            url: this.storeApiUrl+"/appliance/create",
+            params: {
+                email: this.email,
+                token: this.token,
+                majorVersion: "11.2",
+                version: "11.2",
+                activationCode: activationCode,
+                uid: rpc.serverUID,
+                uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName
+            },
+            success: function(response, opts) {
+                this.setLoading(false);
+                if( response!=null) {
+                    if(!response.success) {
+                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                        return;
+                    }
+                    this.finished = true;
+                    this.down("container[name=cardsContainer]").setActiveItem("step5");
+                }
+            },
+            failure: function(response, opts) {
+                this.setLoading(false);
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to update the payment method"));
+            },
+            scope: this
+        });
+        return true;
     },
     closeWindow: function() {
         if(this.finished) {

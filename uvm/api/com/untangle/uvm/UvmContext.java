@@ -341,11 +341,11 @@ public interface UvmContext
     boolean isAppliance();
     
     /**
-     * Returns true if this server was has a voucher
+     * Returns true if this server was has an activation code
      *
      * @return a <code>boolean</code> value
      */
-    boolean isVoucher();
+    boolean isActivationCode();
 
     /**
      * blocks until startup is complete

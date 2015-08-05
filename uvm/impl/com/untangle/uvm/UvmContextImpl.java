@@ -76,7 +76,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
-    private static final String VOUCHER_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/voucher-flag";
+    private static final String ACTIVATION_CODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/activation-code-flag";
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
 
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
@@ -494,9 +494,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
-    public boolean isVoucher()
+    public boolean isActivationCode()
     {
-        File keyFile = new File(VOUCHER_FLAG_FILE);
+        File keyFile = new File(ACTIVATION_CODE_FLAG_FILE);
         return keyFile.exists();
     }
 
