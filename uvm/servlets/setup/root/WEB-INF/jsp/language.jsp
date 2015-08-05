@@ -11,7 +11,8 @@
         @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=${buildStamp}";
     </style>
     
-    <uvm:skin src="admin.css?s=${buildStamp}"  name="${skinSettings.skinName}"/>
+    <uvm:skin src="common.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
+    <uvm:skin src="admin.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext5/ext-all-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js?s=${buildStamp}"></script>

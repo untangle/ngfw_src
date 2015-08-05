@@ -69,6 +69,7 @@ Ext.define("Ung.Main", {
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset
         });
+        Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/common.css");
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
         if (rpc.skinSettings.outOfDate) {
             var win = Ext.create('Ext.Window', {
