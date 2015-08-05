@@ -44,7 +44,7 @@ Ext.define("Ung.Main", {
             rpc.skinManager.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.skinSettings = result;
-                Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/reports.css");
+                Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
             },this));
         }, this));
         

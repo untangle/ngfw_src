@@ -49,9 +49,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
      */
     private List<NodeProperties> nodePropertiesList = null;
 
-    private ReportingManagerNewImpl()
+    protected ReportingManagerNewImpl()
     {
-        this.nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();        
+        this.nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();
 
         // sort by view position
         Collections.sort(this.nodePropertiesList, new Comparator<NodeProperties>() {

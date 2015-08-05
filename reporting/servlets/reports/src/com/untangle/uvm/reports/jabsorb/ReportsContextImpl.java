@@ -3,29 +3,26 @@
  */
 package com.untangle.uvm.reports.jabsorb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.SkinManager;
-import com.untangle.uvm.SkinInfo;
-import com.untangle.uvm.SkinSettings;
-import com.untangle.uvm.UvmException;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
+import com.untangle.node.reporting.EventEntry;
+import com.untangle.node.reporting.ReportEntry;
+import com.untangle.node.reporting.ReportingManager;
 import com.untangle.node.reporting.ReportingManagerNew;
 import com.untangle.node.reporting.ReportingNode;
-import com.untangle.node.reporting.ReportingManager;
-import com.untangle.node.reporting.items.ApplicationData;
-import com.untangle.node.reporting.items.DateItem;
-import com.untangle.node.reporting.items.Highlight;
-import com.untangle.node.reporting.items.TableOfContents;
-import org.apache.commons.fileupload.FileItem;
+import com.untangle.uvm.LanguageManager;
+import com.untangle.uvm.LanguageSettings;
+import com.untangle.uvm.LocaleInfo;
+import com.untangle.uvm.SkinInfo;
+import com.untangle.uvm.SkinManager;
+import com.untangle.uvm.SkinSettings;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmException;
 
 
 public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
@@ -36,6 +33,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
+    private final ReportingManagerNew reportingManagerNew = ReportingManagerNewImpl.getInstance();
 
     private ReportsContextImpl( UvmContext context )
     {
@@ -54,12 +52,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     public ReportingManagerNew reportingManagerNew()
     {
-        ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-        if (reporting == null) {
-            logger.warn("reporting node not found");
-            return null;
-        }
-        return reporting.getReportingManagerNew();
+        return this.reportingManagerNew;
     }
 
     public SkinManager skinManager()
@@ -100,5 +93,15 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         public boolean uploadLanguagePack(FileItem item) throws UvmException { throw new RuntimeException("Unable to upload a language pack."); }
         public List<LocaleInfo> getLanguagesList() { return context.languageManager().getLanguagesList(); }
         public Map<String, String> getTranslations(String module) { return context.languageManager().getTranslations(module); }
+    }
+    
+    /**
+     * This class is used extend ReportingManagerNewImpl and overwrite some methods that changes settings so reporting servlet does not have access to them.
+     */
+    public class ReportingManagerNewImpl extends com.untangle.node.reporting.ReportingManagerNewImpl
+    {
+        public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
+        public void setEventEntries( List<EventEntry> newEntries ) { throw new RuntimeException("Unable to set the event entries."); }
+        public void saveReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to set the event entries."); }
     }
 }
