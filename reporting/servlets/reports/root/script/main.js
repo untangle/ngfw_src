@@ -149,7 +149,7 @@ Ext.define("Ung.Main", {
                         category : app.displayName,
                         leaf : true,
                         viewPosition : app.viewPosition,
-                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/apps/'+app.name+'_17x17.png'
+                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+app.name+'_17x17.png'
                     });
                 }
                 
