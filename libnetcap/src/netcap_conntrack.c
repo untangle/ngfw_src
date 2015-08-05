@@ -25,6 +25,7 @@
 #include <libnetfilter_conntrack/libnetfilter_conntrack.h>
 
 #define BYPASS_MARK 0x1000000
+#define BUFFER_SIZE 0x100000
 
 static struct nfct_handle *cth;
 
@@ -50,9 +51,13 @@ static void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf
 
 int  netcap_conntrack_init()
 {
+        int ret = 0;
         cth = nfct_open(CONNTRACK, NF_NETLINK_CONNTRACK_NEW|NF_NETLINK_CONNTRACK_DESTROY);
 
         if (!cth)  return -1;
+
+        ret = nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
+        debug( 1, "set socket buffer size to %d.\n", ret );
 
         nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
 
