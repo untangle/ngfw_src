@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
+import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.LicenseManager;
@@ -665,7 +667,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("c_client_addr", addresses.toArray( new String[0] ));
 
             if ( policyManager != null ) {
-                json.put("policy_id", policyManager.getPoliciesInfo());
+                ArrayList<JSONObject> policiesInfo = policyManager.getPoliciesInfo();
+                LinkedList<Long> ids = new LinkedList<Long>();
+                for(JSONObject policyInfo : policiesInfo)
+                {
+                    ids.push(policyInfo.getLong("policyId"));
+                }
+                json.put("policy_id", ids.toArray( new Long[0]));
             }
             
             return json;

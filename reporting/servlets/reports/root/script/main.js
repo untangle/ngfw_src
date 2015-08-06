@@ -59,7 +59,17 @@ Ext.define("Ung.Main", {
                     rpc.reportingManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
                         if(Ung.Util.handleException(exception)) return;
                         rpc.currentApplications = result.list;
-                        this.startApplication();
+                        rpc.reportingManagerNew.getPoliciesInfo(Ext.bind(function( result, exception ) {
+                            if(Ung.Util.handleException(exception)) return;
+                            rpc.policyNamesMap = {};
+                            rpc.policyNamesMap[0] = i18n._("No Rack");
+                            var policy;
+                            for(var i=0; i<result.list.length; i++) {
+                                policy=result.list[i];
+                                rpc.policyNamesMap[policy.policyId] = policy.name;
+                            }
+                            this.startApplication();
+                        },this));
                     },this));
                 } else {
                     this.startApplication();
@@ -92,6 +102,16 @@ Ext.define("Ung.Main", {
             },this));
         }, this));
     },
+    getPolicyName: function(policyId) {
+        if (Ext.isEmpty(policyId)){
+            return i18n._( "Services" );
+        }
+        if (rpc.policyNamesMap[policyId] !== undefined) {
+            return rpc.policyNamesMap[policyId];
+        } else {
+            return i18n._( "Unknown Rack" );
+        }
+    },
     buildReportsNotEnabled: function() {
         var items = [{
             xtype: "component",
@@ -102,9 +122,6 @@ Ext.define("Ung.Main", {
         return items;
     },
     buildReportsViewer: function() {
-        //TODO: initialize policy map
-        rpc.policyNamesMap = {};
-        
         var treeNodes = [ {
             text : i18n._('Summary'),
             category : 'Summary',

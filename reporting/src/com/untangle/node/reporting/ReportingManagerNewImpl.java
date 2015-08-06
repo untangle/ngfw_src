@@ -24,6 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager.SettingsException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.PolicyManager;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -463,6 +464,15 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     public String getSettingsDiff(String fileName) throws SettingsException
     {
         return UvmContextFactory.context().settingsManager().getDiff(fileName);
+    }
+    
+    public List<JSONObject> getPoliciesInfo() {
+        ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+        if ( policyManager != null ) {
+            policiesInfo = policyManager.getPoliciesInfo();
+        }
+        return policiesInfo;
     }
     
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
