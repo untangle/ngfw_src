@@ -622,9 +622,7 @@ Ext.define('Webui.config.network', {
                 handler: function() {
                     this.gridIfconfigLists.reload();
                     this.gridArpLists.reload();
-                    if(isWirelessInterface) {
-                        this.gridWirelessLists.reload();
-                    }
+                    this.gridWirelessLists.reload();
                 
                     this.winInterfaceStatus.show();
                 },
