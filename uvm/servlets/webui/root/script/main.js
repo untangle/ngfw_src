@@ -757,7 +757,6 @@ Ext.define("Ung.Main", {
         }
     },
     checkForIE: function (handler) {
-        console.log(Ext.browser);
         if (Ext.isIE || 
             (Ext.browser.userAgent.indexOf("Edge/") != -1)) {
             var noIEDisplay = Ext.get('no-ie-container');
