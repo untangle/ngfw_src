@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager.SettingsException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 
@@ -252,6 +253,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     {
         PreparedStatement sql = entry.toSql( getDbConnection(), startDate, endDate, extraConditions );
 
+        if ( node == null ) {
+            node.flushEvents();
+        }
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("SQL              : " + sql);
 
@@ -271,7 +275,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     public String[] getColumnsForTable( String tableName )
     {
-        ArrayList<String> columnNames = new ArrayList<String>();        
+        ArrayList<String> columnNames = new ArrayList<String>();
         try {
             ResultSet rs = getColumnMetaData( tableName );
             synchronized( rs ) {
@@ -398,6 +402,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
+        if ( node == null ) {
+            node.flushEvents();
+        }
         logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
 
         Date startDate = start;
@@ -452,6 +459,12 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
         return 0;
     }
+    
+    public String getSettingsDiff(String fileName) throws SettingsException
+    {
+        return UvmContextFactory.context().settingsManager().getDiff(fileName);
+    }
+    
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;

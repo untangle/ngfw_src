@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import com.untangle.uvm.SettingsManager.SettingsException;
+
 /**
  * The API for interacting/viewing/editing reports
  */
@@ -98,4 +100,6 @@ public interface ReportingManagerNew
     boolean isReportingEnabled();
     
     Integer getTimeZoneOffset();
+    
+    public String getSettingsDiff(String fileName) throws SettingsException;
 }
