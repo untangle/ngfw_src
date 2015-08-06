@@ -11,51 +11,22 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.util.Properties;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-
 import org.jabsorb.JSONSerializer;
-import org.json.JSONObject;
 
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.CertCacheManager;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.TomcatManager;
-import com.untangle.uvm.LocalDirectory;
-import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.OemManager;
-import com.untangle.uvm.AlertManager;
-import com.untangle.uvm.CertificateManager;
-import com.untangle.uvm.DaemonManager;
-import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.NetcapManager;
-import com.untangle.uvm.ExecManager;
-import com.untangle.uvm.MetricManager;
-import com.untangle.uvm.UvmException;
-import com.untangle.uvm.UvmState;
-import com.untangle.uvm.SessionMonitor;
-import com.untangle.uvm.HostTable;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.Reporting;
-import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.servlet.ServletUtils;
-import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
+import com.untangle.uvm.servlet.ServletUtils;
 
 /**
  * This is the root API providing the Untangle VM functionality for applications
@@ -694,7 +665,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("c_client_addr", addresses.toArray( new String[0] ));
 
             if ( policyManager != null ) {
-                json.put("policy_id", policyManager.getPolicyIds());
+                json.put("policy_id", policyManager.getPoliciesInfo());
             }
             
             return json;

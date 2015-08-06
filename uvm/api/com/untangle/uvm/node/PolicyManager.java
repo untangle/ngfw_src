@@ -3,10 +3,10 @@
  */
 package com.untangle.uvm.node;
 
-import java.util.List;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
-import com.untangle.uvm.node.Node;
+import org.json.JSONObject;
 
 public interface PolicyManager
 {
@@ -33,7 +33,7 @@ public interface PolicyManager
     Long getParentPolicyId( Long policyId );
 
     /**
-     * Return a list of all current policy IDs
+     * Return a list of all current policies Ids and names
      */
-    Long[] getPolicyIds();
+    ArrayList<JSONObject> getPoliciesInfo();
 }
