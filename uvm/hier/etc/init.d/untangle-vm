@@ -89,10 +89,6 @@ case "$1" in
         
         echo >| $UVM_CONSOLE_LOG;
 
-        #set larger socket buffer
-        echo 1048576 > /proc/sys/net/core/rmem_max
-        echo 425984  > /proc/sys/net/core/rmem_default
-
         updateStatus "[" "Starting"
 
         start-stop-daemon --start \
