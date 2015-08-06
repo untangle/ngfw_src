@@ -102,17 +102,19 @@ Ext.define("Ung.Main", {
         return items;
     },
     buildReportsViewer: function() {
-      //TODO: initialize policy map
+        //TODO: initialize policy map
         rpc.policyNamesMap = {};
         
         var treeNodes = [ {
             text : i18n._('Summary'),
             category : 'Summary',
-            leaf : true
+            leaf : true,
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_summary.png'
         }, {
             text : i18n._('Host Viewer'),
             category : 'Host Viewer',
-            leaf : true
+            leaf : true,
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png'
         }, {
             text : i18n._("Configuration"),
             leaf : false,
@@ -238,15 +240,16 @@ Ext.define("Ung.Main", {
                     region: 'east',
                     height: 60,
                     width: 350,
+                    margin: '0 10 0 0',
                     layout: {type: 'vbox', align: 'right'},
                     items: [{
                         xtype: 'component',
-                        html: '<a href="/auth/logout?url=/reports&realm=Reports">'+i18n._('Logout')+"</a>",
-                        margin: '0 10 10 0'
+                        html: '<a class="link" href="/auth/logout?url=/reports&realm=Reports">'+i18n._('Logout')+"</a>",
+                        margin: '0 0 10 0'
                     }, {
                         xtype: 'component',
-                        html: '<a href="/reports?old">'+i18n._('Go to the old reports page')+"</a>",
-                        margin: '0 10 0 0'
+                        html: '<a class="link" href="/reports?old">'+i18n._('Go to the old reports page')+"</a>"
+                        
                     }]
                 }]
             }, {

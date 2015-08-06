@@ -9,11 +9,13 @@ Ext.define('Webui.config.reportsViewer', {
         var treeNodes = [ {
             text : i18n._('Summary'),
             category : 'Summary',
-            leaf : true
+            leaf : true,
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_summary.png'
         }, {
             text : i18n._('Host Viewer'),
             category : 'Host Viewer',
-            leaf : true
+            leaf : true,
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png'
         }, {
             text : i18n._("Configuration"),
             leaf : false,
