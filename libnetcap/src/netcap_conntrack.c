@@ -25,7 +25,7 @@
 #include <libnetfilter_conntrack/libnetfilter_conntrack.h>
 
 #define BYPASS_MARK 0x1000000
-#define BUFFER_SIZE 0x100000
+#define BUFFER_SIZE 0x800000
 
 static struct nfct_handle *cth;
 
@@ -72,10 +72,10 @@ void* netcap_conntrack_listen ( void* arg )
     while (1) {
 
         res = nfct_catch(cth);  
-        if (res == -1)
+        if (res == -1) {
+            errlog( ERR_WARNING,"nfct_catch() returned! %s\n", strerror(errno) );
             return NULL;
-
-        errlog( ERR_WARNING,"nfct_catch() returned! %s\n", strerror(errno) );
+        }
     }
 
 }
@@ -119,14 +119,17 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
 
         // if its TCP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) {
+            debug( 10, "callback() type=6 mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
         // if its UDP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) {
+            debug( 10, "callback() type=17 mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
         /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
         if ( netcap_ct.ip4_src_addr == 0x0100007f && netcap_ct.ip4_dst_addr == 0x0100007f ) {
+            debug( 10, "callback() local mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
 
@@ -134,16 +137,16 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         
         switch (type) {
         case NFCT_T_DESTROY:
-            //errlog( ERR_WARNING,"conntrack_listen: callback() type=DESTROY mark=0x%08x\n", mark);
+            debug( 10, "callback() type=DESTROY mark=0x%08x\n", mark );
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             break;
         case NFCT_T_NEW:
-            //errlog( ERR_WARNING,"conntrack_listen: callback() type=NEW mark=0x%08x\n", mark);
+            debug( 10, "callback() type=NEW mark=0x%08x\n", mark );
             _netcap_conntrack_print_ct_entry(10, &netcap_ct);
             session_id = netcap_session_next_id();
             break;
         default:
-            //errlog( ERR_WARNING,"conntrack_listen: callback() unknown type %i\n", type);
+            debug( 10, "callback() type=unknow mark=0x%08x\n", mark );
             break;
         }
 
