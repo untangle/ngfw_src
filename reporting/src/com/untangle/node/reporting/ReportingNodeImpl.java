@@ -7,13 +7,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -35,6 +35,7 @@ import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import org.apache.commons.codec.binary.Base64;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
@@ -70,6 +71,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
     }
 
     public void setSettings( final ReportingSettings newSettings )
@@ -612,6 +614,39 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             } catch (Exception e) {
                 logger.warn( "Failed to build CSV.", e );
                 throw new RuntimeException(e);
+            }
+        }
+    }
+    
+    // called by the UI to download images
+    private class ImageDownloadHandler implements DownloadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "imageDownload";
+        }
+
+        @Override
+        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
+        {
+            try {
+                String fileName = req.getParameter("arg1");
+                String dataUrl = req.getParameter("arg2");
+                String encodingPrefix = "base64,";
+                int contentStartIndex = dataUrl.indexOf(encodingPrefix) + encodingPrefix.length();
+                byte[] imageData = Base64.decodeBase64(dataUrl.substring(contentStartIndex).getBytes());
+                
+                resp.setContentType("image/png");
+                resp.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+                OutputStream out = resp.getOutputStream();
+                
+                out.write(imageData);
+                
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                logger.warn("Failed to download image",e);
             }
         }
     }

@@ -27,7 +27,7 @@ public class CsvServlet extends HttpServlet
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         String downloadType = req.getParameter("type");
-        if(!ReportingNodeImpl.REPORTS_EVENT_LOG_DOWNLOAD_HANDLER.equals(downloadType) && !"eventLogExport".equals(downloadType)) {
+        if(!ReportingNodeImpl.REPORTS_EVENT_LOG_DOWNLOAD_HANDLER.equals(downloadType) && !"eventLogExport".equals(downloadType)  && !"imageDownload".equals(downloadType)) {
             logger.error("Invalid download type: " + downloadType );
             return;
         }
