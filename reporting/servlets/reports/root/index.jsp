@@ -153,7 +153,7 @@ if(request.getParameter("old")!=null) {
  </head>
 <body>
 <div id="container" style="display:none;">
-  <form name="downloadForm" id="downloadForm" method="post" action="download">
+  <form name="downloadForm" id="downloadForm" method="post" action="csv">
     <input type="hidden" name="type" value=""/>
     <input type="hidden" name="arg1" value=""/>
     <input type="hidden" name="arg2" value=""/>
