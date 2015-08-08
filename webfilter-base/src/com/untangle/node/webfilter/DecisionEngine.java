@@ -16,14 +16,15 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.http.RequestLineToken;
-import com.untangle.node.http.HeaderToken;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.util.UrlMatchingUtil;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.UrlMatcher;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.HeaderToken;
+import com.untangle.node.http.HttpEventHandler;
 
 /**
  * This is the core functionality of web filter
@@ -179,7 +180,7 @@ public abstract class DecisionEngine
         Reason reason = Reason.DEFAULT; /* this stores the corresponding reason for the flag/block */
             
         // Check Block lists
-        GenericRule urlRule = checkUrlList( host, uri.toString(), port, requestLine );
+        GenericRule urlRule = checkUrlList( host, uri.toString(), requestLine );
         if ( urlRule != null ) {
             if ( urlRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle());
@@ -193,7 +194,10 @@ public abstract class DecisionEngine
         
         // Check Extensions
         // If this extension is blocked, block the request
-        GenericRule extRule = checkExtensionList(host, uri, port, requestLine );
+        String extension = uri.toString();
+        try { extension = (new URI(uri.getPath())).toString(); /*ignore everything after ?*/ } catch (URISyntaxException e) {}
+
+        GenericRule extRule = checkExtensionList( extension, requestLine );
         if (extRule != null) {
             if ( extRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle());
@@ -259,7 +263,7 @@ public abstract class DecisionEngine
      */
     public String checkResponse( NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
     {
-        if (null == requestLine) {
+        if ( requestLine == null ) {
             return null;
         }
 
@@ -272,11 +276,24 @@ public abstract class DecisionEngine
             logger.error("Could not parse URI '" + uri + "'",e);
         }
         String host = UrlMatchingUtil.normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
-
+        String filename = HttpEventHandler.findContentDispositionFilename( header );
+        
         if ( UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients() ) != null )
             return null;
         if ( UrlMatchingUtil.checkSiteList( host,uri.toString(), node.getSettings().getPassedUrls() ) != null )
             return null;
+        if ( filename != null ) {
+            GenericRule extRule = checkExtensionList( filename, requestLine );
+            if (extRule != null) {
+                if ( extRule.getBlocked() ) {
+                    WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle());
+                    return node.generateNonce(bd);
+                } else if ( extRule.getFlagged() ) {
+                    sess.globalAttach(node.getName()+"-flagged",true);
+                }
+                
+            }
+        }
         if ( checkUnblockedSites( host,uri,clientIp ) )
             return null;
 
@@ -390,7 +407,7 @@ public abstract class DecisionEngine
      * Checks the given URL against sites in the block list
      * Returns the given rule if a rule matches, otherwise null
      */
-    private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine )
+    private GenericRule checkUrlList( String host, String uri, RequestLineToken requestLine )
     {
         logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
         GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, node.getSettings().getBlockedUrls());
@@ -432,15 +449,12 @@ public abstract class DecisionEngine
      * Checks the given URL against the file extension rules
      * Returns the given rule if a rule matches, otherwise null
      */
-    private GenericRule checkExtensionList( String host, URI fullUri, int port, RequestLineToken requestLine )
+    private GenericRule checkExtensionList( String str, RequestLineToken requestLine )
     {
-        String uri = fullUri.toString();
-        try { uri = (new URI(fullUri.getPath())).toString(); /*ignore everything after ?*/ } catch (URISyntaxException e) {}
-                
         for ( GenericRule rule : node.getSettings().getBlockedExtensions()) {
             String exn = "." + rule.getString().toLowerCase();
             
-            if ((rule.getBlocked() || rule.getFlagged()) && uri.endsWith(exn)) {
+            if ((rule.getBlocked() || rule.getFlagged()) && str.endsWith(exn)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking/flagging extension " + exn);
                 }

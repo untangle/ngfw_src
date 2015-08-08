@@ -72,8 +72,7 @@ class VirusHttpHandler extends HttpEventHandler
         private long bufferingStart;
         private int outstanding;
         private int totalSize;
-        private String extensionUri = null; /* The URL extension */
-        private String extensionContentDisposition = null; /* The content disposition filename extension */
+        private String filenameContentDisposition = null; /* The content disposition filename extension */
         private String host = null;
         private String uri = null;
         private File scanfile = null;
@@ -98,16 +97,7 @@ class VirusHttpHandler extends HttpEventHandler
     protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
-        String path = requestLine.getRequestUri().getPath();
         
-        state.extensionUri = null;
-
-        if ( path != null ) {
-            int i = path.lastIndexOf('.');
-            if ( i > 0 && i < path.length()-1 ) {
-                state.extensionUri = path.substring(i + 1);
-            } 
-        }
         return requestLine;
     }
 
@@ -170,11 +160,9 @@ class VirusHttpHandler extends HttpEventHandler
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("doing response header");
 
-        String reason = "";
+        state.filenameContentDisposition = findContentDispositionFilename( header );
 
         RequestLineToken rl = getResponseRequest( session );
-
-        findContentDispositionExtension( state, header );
         
         if ( rl == null || HttpMethod.HEAD == rl.getMethod() ) {
             logger.debug("CONTINUE or HEAD");
@@ -182,31 +170,26 @@ class VirusHttpHandler extends HttpEventHandler
         } else if ( ignoredHost( state.host ) ) {
             logger.debug("Ignoring downloads from: " + state.host);
             state.scan = false;
-        } else if ( matchesExtension( state.extensionUri ) ) {
-            logger.debug("matches extensionUri");
-            reason = state.extensionUri;
+        } else if ( matchesExtension( state.uri ) ) {
+            logger.debug("matches uri");
             state.scan = true;
-        } else if ( matchesExtension( state.extensionContentDisposition ) ) {
-            logger.debug("matches extensionContentDisposition");
-            reason = state.extensionContentDisposition;
+        } else if ( matchesExtension( state.filenameContentDisposition ) ) {
+            logger.debug("matches filenameContentDisposition");
             state.scan = true;
         } else {
-            logger.debug("else...");
             String mimeType = header.getValue("content-type");
 
             state.scan = matchesMimeType(mimeType);
             if (logger.isDebugEnabled()) {
                 logger.debug("content-type: " + mimeType + "matches mime-type: " + state.scan);
             }
-
-            reason = mimeType;
         }
 
         if ( state.scan ) {
             state.bufferingStart = System.currentTimeMillis();
             state.outstanding = 0;
             state.totalSize = 0;
-            setupFile( session, reason );
+            setupFile( session );
         } else {
             /* header.replaceField("accept-ranges", "none"); */
             releaseResponse( session );
@@ -305,14 +288,14 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
-    private boolean matchesExtension( String extension )
+    private boolean matchesExtension( String filename )
     {
-        if ( extension == null )
+        if ( filename == null )
             return false;
 
         for (Iterator<GenericRule> i = node.getSettings().getHttpFileExtensions().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
-            if (sr.getEnabled() && sr.getString().equalsIgnoreCase(extension)) {
+            if (sr.getEnabled() && filename.toLowerCase().endsWith(sr.getString().toLowerCase())) {
                 return true;
             }
         }
@@ -364,10 +347,10 @@ class VirusHttpHandler extends HttpEventHandler
         return false;
     }
 
-    private void setupFile( NodeTCPSession session, String reason )
+    private void setupFile( NodeTCPSession session )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
-        logger.debug("VIRUS: Scanning because of: " + reason);
+        logger.debug("VIRUS: Scanning");
         File fileBuf = null;
 
         try {
@@ -603,35 +586,6 @@ class VirusHttpHandler extends HttpEventHandler
     {
         protected String virusName;
         protected long creationTimeMillis;
-    }
-
-    private void findContentDispositionExtension( VirusHttpState state, HeaderToken header )
-    {
-        String contentDisposition = header.getValue("content-disposition");
-
-        if ( contentDisposition == null )
-            return;
-
-        contentDisposition = contentDisposition.toLowerCase();
-        
-        int indexOf = contentDisposition.indexOf("filename=");
-
-        if ( indexOf == -1 )
-            return;
-
-        indexOf = indexOf + "filename=".length();
-        
-        String filename = contentDisposition.substring( indexOf );
-        
-        filename = filename.replace("\"","");
-        filename = filename.replace("'","");
-        filename = filename.replaceAll("\\s","");
-        
-        int i = filename.lastIndexOf('.');
-        if ( i == -1 )
-            return;
-        
-        state.extensionContentDisposition = filename.substring(i + 1);
     }
 
 }

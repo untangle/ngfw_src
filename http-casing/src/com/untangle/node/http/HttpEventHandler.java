@@ -781,4 +781,30 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");
     }
+
+    public static String findContentDispositionFilename( HeaderToken header )
+    {
+        String contentDisposition = header.getValue("content-disposition");
+
+        if ( contentDisposition == null )
+            return null;
+
+        contentDisposition = contentDisposition.toLowerCase();
+        
+        int indexOf = contentDisposition.indexOf("filename=");
+
+        if ( indexOf == -1 )
+            return null;
+
+        indexOf = indexOf + "filename=".length();
+        
+        String filename = contentDisposition.substring( indexOf );
+        
+        filename = filename.replace("\"","");
+        filename = filename.replace("'","");
+        filename = filename.replaceAll("\\s","");
+        
+        return filename;
+    }
+
 }
