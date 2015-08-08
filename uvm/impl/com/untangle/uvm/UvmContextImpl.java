@@ -736,8 +736,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.hostTableImpl = new HostTableImpl();
         
-        this.netFilterLogger = new NetFilterLogger();
-
         this.servletFileManager = new ServletFileManagerImpl();
 
         this.languageManager = new LanguageManagerImpl();
@@ -776,6 +774,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.metricManager = new MetricManagerImpl();
 
+        this.netFilterLogger = new NetFilterLogger();
+        
         // Retrieve the connectivity tester
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
