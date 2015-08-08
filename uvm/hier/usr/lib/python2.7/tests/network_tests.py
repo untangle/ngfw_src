@@ -644,8 +644,14 @@ class NetworkTests(unittest2.TestCase):
         # Block port 80 and verify it's closed
         appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","80"))
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        # bypass the client and verify the client can bypass the firewall
-        setFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
+
+        # add bypass rule for the client and enable bypass logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['bypassRules']['list'].append( createBypassMatcherRule("SRC_ADDR",remote_control.clientIP) )
+        netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # verify the client can still get out (and that the traffic is bypassed)
         result3 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         events = global_functions.get_events('Network','Bypassed Sessions',None,100)
