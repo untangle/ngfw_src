@@ -72,7 +72,8 @@ class VirusHttpHandler extends HttpEventHandler
         private long bufferingStart;
         private int outstanding;
         private int totalSize;
-        private String extension = null;
+        private String extensionUri = null; /* The URL extension */
+        private String extensionContentDisposition = null; /* The content disposition filename extension */
         private String host = null;
         private String uri = null;
         private File scanfile = null;
@@ -99,11 +100,13 @@ class VirusHttpHandler extends HttpEventHandler
         VirusHttpState state = (VirusHttpState) session.attachment();
         String path = requestLine.getRequestUri().getPath();
         
-        if ( path == null ) {
-            state.extension = "";
-        } else {
+        state.extensionUri = null;
+
+        if ( path != null ) {
             int i = path.lastIndexOf('.');
-            state.extension = (0 <= i && path.length() - 1 > i) ? path.substring(i + 1) : null;
+            if ( i > 0 && i < path.length()-1 ) {
+                state.extensionUri = path.substring(i + 1);
+            } 
         }
         return requestLine;
     }
@@ -171,15 +174,21 @@ class VirusHttpHandler extends HttpEventHandler
 
         RequestLineToken rl = getResponseRequest( session );
 
-        if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
+        findContentDispositionExtension( state, header );
+        
+        if ( rl == null || HttpMethod.HEAD == rl.getMethod() ) {
             logger.debug("CONTINUE or HEAD");
             state.scan = false;
         } else if ( ignoredHost( state.host ) ) {
             logger.debug("Ignoring downloads from: " + state.host);
             state.scan = false;
-        } else if (matchesExtension( state.extension )) {
-            logger.debug("matches extension");
-            reason = state.extension;
+        } else if ( matchesExtension( state.extensionUri ) ) {
+            logger.debug("matches extensionUri");
+            reason = state.extensionUri;
+            state.scan = true;
+        } else if ( matchesExtension( state.extensionContentDisposition ) ) {
+            logger.debug("matches extensionContentDisposition");
+            reason = state.extensionContentDisposition;
             state.scan = true;
         } else {
             logger.debug("else...");
@@ -298,7 +307,8 @@ class VirusHttpHandler extends HttpEventHandler
 
     private boolean matchesExtension( String extension )
     {
-        if (null == extension) { return false; }
+        if ( extension == null )
+            return false;
 
         for (Iterator<GenericRule> i = node.getSettings().getHttpFileExtensions().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
@@ -316,7 +326,7 @@ class VirusHttpHandler extends HttpEventHandler
         boolean isLive = false;
         String match = "";
 
-        if (null == mimeType) {
+        if ( mimeType == null ) {
             return false;
         }
 
@@ -472,7 +482,7 @@ class VirusHttpHandler extends HttpEventHandler
     private boolean isPersistent(HeaderToken header)
     {
         String con = header.getValue("connection");
-        return null == con ? false : con.equalsIgnoreCase("keep-alive");
+        return con == null ? false : con.equalsIgnoreCase("keep-alive");
     }
 
     private boolean ignoredHost( String host )
@@ -487,7 +497,7 @@ class VirusHttpHandler extends HttpEventHandler
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
                 p = (Pattern) sr.attachment();
-                if( null == p ) {
+                if( p == null ) {
                     try{
                         p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
                     }catch( Exception error ){
@@ -594,6 +604,35 @@ class VirusHttpHandler extends HttpEventHandler
         protected String virusName;
         protected long creationTimeMillis;
     }
-    
+
+    private void findContentDispositionExtension( VirusHttpState state, HeaderToken header )
+    {
+        String contentDisposition = header.getValue("content-disposition");
+
+        if ( contentDisposition == null )
+            return;
+
+        contentDisposition = contentDisposition.toLowerCase();
+        
+        int indexOf = contentDisposition.indexOf("filename=");
+
+        if ( indexOf == -1 )
+            return;
+
+        indexOf = indexOf + "filename=".length();
+        
+        String filename = contentDisposition.substring( indexOf );
+        
+        filename = filename.replace("\"","");
+        filename = filename.replace("'","");
+        filename = filename.replaceAll("\\s","");
+        
+        int i = filename.lastIndexOf('.');
+        if ( i == -1 )
+            return;
+        
+        state.extensionContentDisposition = filename.substring(i + 1);
+    }
+
 }
 
