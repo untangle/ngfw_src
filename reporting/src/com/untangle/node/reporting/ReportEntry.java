@@ -37,6 +37,7 @@ public class ReportEntry implements Serializable, JSONString
     public static enum TimeDataInterval {
         SECOND,
         MINUTE,
+        TENMINUTE,
         HOUR,
         DAY,
         WEEK,
@@ -214,12 +215,24 @@ public class ReportEntry implements Serializable, JSONString
         case TIME_GRAPH:
             String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
             
-            String generate_series = " SELECT generate_series( " +
+            String generate_series;
+            if ( dataInterval.equals("tenminute") )
+                generate_series = " SELECT generate_series( " +
+                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '10 minute' ) as time_trunc ";
+            else
+                generate_series = " SELECT generate_series( " +
                 " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
                 " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
-            String timeQuery = "SELECT " +
+            String timeQuery;
+            if ( dataInterval.equals("tenminute") )
+                timeQuery = "SELECT " +
+                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
+            else
+                timeQuery = "SELECT " +
                 " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
 
             for ( String s : getTimeDataColumns() )
