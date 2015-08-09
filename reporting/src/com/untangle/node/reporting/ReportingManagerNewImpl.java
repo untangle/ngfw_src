@@ -254,9 +254,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     {
         PreparedStatement sql = entry.toSql( getDbConnection(), startDate, endDate, extraConditions );
 
-        if ( node == null ) {
+        if ( node != null ) 
             node.flushEvents();
-        }
+
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("SQL              : " + sql);
 
@@ -403,9 +403,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        if ( node == null ) {
+        if ( node != null ) 
             node.flushEvents();
-        }
+
         logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
 
         Date startDate = start;
