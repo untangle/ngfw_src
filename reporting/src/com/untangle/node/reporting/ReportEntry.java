@@ -49,7 +49,8 @@ public class ReportEntry implements Serializable, JSONString
         BAR_OVERLAPPED,
         BAR_3D,
         BAR_3D_OVERLAPPED,
-        LINE
+        LINE,
+        AREA
     };
     
     private String uniqueId = null;
