@@ -6,6 +6,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 import re
 import subprocess
+import pprint
 import ipaddr
 import time
 
@@ -32,131 +33,131 @@ run_ftp_inbound_tests = None
 
 def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
     return {
-        "description": "port forward  -> " + str(destinationIP) + ":" + str(destinationPort) + " test", 
-        "enabled": True, 
-        "javaClass": "com.untangle.uvm.network.PortForwardRule", 
+        "description": "port forward  -> " + str(destinationIP) + ":" + str(destinationPort) + " test",
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.network.PortForwardRule",
         "matchers": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": str(matcherType1), 
-                    "value": str(value1)
-                }, 
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": str(matcherType2),
-                    "value": str(value2)
-                }, 
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": str(matcherType3), 
-                    "value": str(value3)
-                }
-            ]
-        }, 
-        "newDestination": destinationIP,
-        "newPort": destinationPort,
-        "ruleId": 1
-    } 
-
-def createFilterRule( matcherType1, value1, matcherType2, value2, blocked ):
-    return {
-        "bypass": True, 
-        "description": "test rule " + str(matcherType1) + " " + str(value1) + " " + str(matcherType2) + " " + str(value2), 
-        "enabled": True, 
-        "blocked": blocked,
-        "javaClass": "com.untangle.uvm.network.FilterRule", 
-        "matchers": {
-            "javaClass": "java.util.LinkedList", 
-            "list": [
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher", 
-                    "matcherType": str(matcherType1), 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
+                    "matcherType": str(matcherType1),
                     "value": str(value1)
                 },
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher", 
-                    "matcherType": str(matcherType2), 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
+                    "matcherType": str(matcherType2),
+                    "value": str(value2)
+                },
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
+                    "matcherType": str(matcherType3),
+                    "value": str(value3)
+                }
+            ]
+        },
+        "newDestination": destinationIP,
+        "newPort": destinationPort,
+        "ruleId": 1
+    }
+
+def createFilterRule( matcherType1, value1, matcherType2, value2, blocked ):
+    return {
+        "bypass": True,
+        "description": "test rule " + str(matcherType1) + " " + str(value1) + " " + str(matcherType2) + " " + str(value2),
+        "enabled": True,
+        "blocked": blocked,
+        "javaClass": "com.untangle.uvm.network.FilterRule",
+        "matchers": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher",
+                    "matcherType": str(matcherType1),
+                    "value": str(value1)
+                },
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher",
+                    "matcherType": str(matcherType2),
                     "value": str(value2)
                 }
             ]
-        }, 
+        },
         "ruleId": 1
-    } 
+    }
 
 def createBypassMatcherRule( matcherType, value ):
     return {
-        "bypass": True, 
-        "description": "test bypass " + str(matcherType) + " " + str(value), 
-        "enabled": True, 
-        "javaClass": "com.untangle.uvm.network.BypassRule", 
+        "bypass": True,
+        "description": "test bypass " + str(matcherType) + " " + str(value),
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.network.BypassRule",
         "matchers": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
-                    "matcherType": str(matcherType), 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher",
+                    "matcherType": str(matcherType),
                     "value": str(value)
-                }, 
+                },
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher",
+                    "matcherType": "PROTOCOL",
                     "value": "TCP,UDP"
                 }
             ]
-        }, 
+        },
         "ruleId": 1
-    } 
+    }
 
 def createQoSMatcherRule( matcherType, value, priority):
     return {
-        "description": "test QoS " + str(matcherType) + " " + str(value), 
-        "enabled": True, 
-        "javaClass": "com.untangle.uvm.network.QosRule", 
+        "description": "test QoS " + str(matcherType) + " " + str(value),
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.network.QosRule",
         "matchers": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher", 
-                    "matcherType": str(matcherType), 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher",
+                    "matcherType": str(matcherType),
                     "value": str(value)
-                }, 
+                },
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher",
+                    "matcherType": "PROTOCOL",
                     "value": "TCP,UDP"
                 }
             ]
-        }, 
+        },
         "priority": priority,
         "ruleId": 3
-    } 
+    }
 
 def createSingleMatcherFirewallRule( matcherType, value, blocked=True, flagged=True ):
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
-        "id": 1, 
-        "enabled": True, 
-        "description": "Single Matcher: " + str(matcherType) + " = " + str(value), 
-        "flag": flagged, 
-        "block": blocked, 
+        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "id": 1,
+        "enabled": True,
+        "description": "Single Matcher: " + str(matcherType) + " = " + str(value),
+        "flag": flagged,
+        "block": blocked,
         "matchers": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": str(matcherType), 
+                    "invert": False,
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher",
+                    "matcherType": str(matcherType),
                     "value": str(value)
                     }
                 ]
@@ -165,16 +166,16 @@ def createSingleMatcherFirewallRule( matcherType, value, blocked=True, flagged=T
 
 def createRouteRule( networkAddr, netmask, gateway):
     return {
-        "description": "test route", 
-        "javaClass": "com.untangle.uvm.network.StaticRoute", 
-        "network": networkAddr, 
-        "nextHop": gateway, 
-        "prefix": netmask, 
-        "ruleId": 1, 
-        "toAddr": True, 
+        "description": "test route",
+        "javaClass": "com.untangle.uvm.network.StaticRoute",
+        "network": networkAddr,
+        "nextHop": gateway,
+        "prefix": netmask,
+        "ruleId": 1,
+        "toAddr": True,
         "toDev": False
         }
-        
+
 def createNATRule( name, matcherType, value, source):
     return {
         "auto": False,
@@ -198,8 +199,8 @@ def createNATRule( name, matcherType, value, source):
 
 def createDNSRule( networkAddr, name):
     return {
-        "address": networkAddr, 
-        "javaClass": "com.untangle.uvm.network.DnsStaticEntry", 
+        "address": networkAddr,
+        "javaClass": "com.untangle.uvm.network.DnsStaticEntry",
         "name": name
          }
 
@@ -249,7 +250,7 @@ def createVLANInterface( physicalInterface, symInterface, sysInterface, ipV4addr
             },
             "vrrpEnabled": False
         }
- 
+
 def createAlias(ipAddress,ipNetmask,ipPrefix):
     return {
             "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
@@ -300,13 +301,13 @@ def findUsedIP(startIP):
         testIPResult = subprocess.call(["ping","-c","1",str(testIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if testIPResult != 0:
             ipUsed = False
-    
+
     if ipUsed:
         # no unused IP found
         return False
     else:
         return str(testIP)
-    
+
 def appendVLAN(parentInterfaceID):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # find the physicalDev of the interface passed in.
@@ -318,12 +319,12 @@ def appendVLAN(parentInterfaceID):
                 return False
             physicalDev = interface['physicalDev']
             break
-    
+
     testVLANIP = findUsedIP("1.2.3.4")
     if testVLANIP:
         # no unused IP found
         return False
-    
+
     # Check thast VLAN ID is not used
     loopLimit = 20
     testVLANID = 100
@@ -338,16 +339,16 @@ def appendVLAN(parentInterfaceID):
                 # found duplicate VLAN ID
                 vlanIdUsed = True
                 break
-        
+
     if vlanIdUsed:
         # no unused VLAN ID found
-        return False 
+        return False
 
     # if valid VLAN interface and IP is available, create a VLAN
     netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,testVlanIdDev,testVlanIdDev,str(testVLANIP)))
     uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
-        
+
 def appendAliases(parentInterfaceID):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for i in range(len(netsettings['interfaces']['list'])):
@@ -370,17 +371,17 @@ def appendAliases(parentInterfaceID):
             return False
 
     return testAliasIP
-    
+
 def nukeFirstLevelRule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)
-    
+
 def nukeDNSRules():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'][:] = []
-    uvmContext.networkManager().setNetworkSettings(netsettings)    
-    
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
 def setDynDNS():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dynamicDnsServiceEnabled'] = True
@@ -392,7 +393,7 @@ def setDynDNS():
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def verifySnmpWalk():
-    snmpwalkResult = remote_control.runCommand("test -x /usr/bin/snmpwalk")  
+    snmpwalkResult = remote_control.runCommand("test -x /usr/bin/snmpwalk")
     if snmpwalkResult:
         raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
 
@@ -406,7 +407,7 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     settings['v3Required'] = v3Required
 
     lanAdminIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
-    v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle" 
+    v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle"
     v3command = "snmpwalk -v 3 " + " -u " + v3Username + " -l authNoPriv " + " -a " + v3AuthenticationProtocol + " -A " + v3AuthenticationPassphrase + " -x " + v3PrivacyProtocol
     if v3PrivacyPassphrase != "":
         v3command += " -X " + v3PrivacyPassphrase
@@ -424,7 +425,7 @@ def trySnmpCommand(command):
     return result
 
 class NetworkTests(unittest2.TestCase):
-    
+
     @staticmethod
     def nodeName():
         return "network"
@@ -438,7 +439,7 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
-    
+
     def setUp(self):
         global orig_netsettings, run_ftp_inbound_tests
         if orig_netsettings == None:
@@ -462,7 +463,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_015_addVLAN(self):
-        raise unittest2.SkipTest("Review changes in test")        
+        raise unittest2.SkipTest("Review changes in test")
         # Add a test static VLAN
         testVLANIP = appendVLAN(remote_control.interface)
         if testVLANIP:
@@ -475,7 +476,7 @@ class NetworkTests(unittest2.TestCase):
 
 
     def test_016_addAlias(self):
-        raise unittest2.SkipTest("Review changes in test")        
+        raise unittest2.SkipTest("Review changes in test")
         # Add Alias IP
         AliasIP = appendAliases(remote_control.interface)
         if AliasIP:
@@ -495,7 +496,7 @@ class NetworkTests(unittest2.TestCase):
 
         events = global_functions.get_events('Network','Port Forwarded Sessions',None,5)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5,
                                             "s_server_addr", test_untangle_com_ip,
                                             "c_client_addr", remote_control.clientIP,
                                             "s_server_port", 80)
@@ -542,7 +543,7 @@ class NetworkTests(unittest2.TestCase):
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
         remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
         result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
-        print "result: %s" % str(result) 
+        print "result: %s" % str(result)
         assert(result == 0)
 
     # test port forward to multiple ports (tcp port 80,443)
@@ -794,7 +795,7 @@ class NetworkTests(unittest2.TestCase):
         assert (eprtResult == 0)
 
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
-    def test_080_routes(self):        
+    def test_080_routes(self):
         setFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
         for i in range(0, 10):
             wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
@@ -806,11 +807,11 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # verify other sites are still available.
         assert (wwwResult == 0)
-        # Verify test.untangle.com is not accessible 
+        # Verify test.untangle.com is not accessible
         assert (testResult != 0)
 
     # Test static DNS entry
-    def test_090_DNS(self):        
+    def test_090_DNS(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nukeDNSRules()
         result = remote_control.runCommand("host test.untangle.com", stdout=True)
@@ -844,7 +845,7 @@ class NetworkTests(unittest2.TestCase):
         print "Result DNS lookup 1:\"%s\" 2:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
         assert(ip_address_testuntangle == ip_address_foobar)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        
+
     # Test dynamic hostname
     def test_100_DynamicDns(self):
         raise unittest2.SkipTest('Broken test')
@@ -908,18 +909,18 @@ class NetworkTests(unittest2.TestCase):
                     vrrpIP = newip
             else:
                 # The IP is beyond the range of the network, go backward through the IPs
-                ipStep = -1 
+                ipStep = -1
             loopCounter -= 1
             ip = newip
         if (vrrpIP == None):
             raise unittest2.SkipTest("No IP found for VRRP")
         # Set VRRP values
-        
+
         netsettings['interfaces']['list'][i]['vrrpAliases'] = {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [{
-                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias", 
-                    "staticAddress": str(vrrpIP), 
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+                    "staticAddress": str(vrrpIP),
                     "staticPrefix": 24
                     }]
             }
@@ -942,7 +943,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pingResult == 0)
         assert (onlineResults == 0)
-        
+
     # Test MTU settings
     def test_120_MTU(self):
         mtuSetValue = '1460'
@@ -955,7 +956,7 @@ class NetworkTests(unittest2.TestCase):
         mtuValue = None
         if reValue:
              mtuAutoValue = reValue.group(1)
-        # print "mtuValue " + mtuValue          
+        # print "mtuValue " + mtuValue
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Set eth0 to 1480
         for i in range(len(netsettings['devices']['list'])):
@@ -983,11 +984,11 @@ class NetworkTests(unittest2.TestCase):
         mtu2Value = None
         if reValue:
              mtu2Value = reValue.group(1)
-        # print "mtu2Value " + mtu2Value          
+        # print "mtu2Value " + mtu2Value
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (mtuValue == mtuSetValue)
         assert (mtu2Value == mtuAutoValue)
-        
+
     # SNMP, v1/v2enabled, v3 disabled
     def test_130_SNMP_Enabled_V1V2Only(self):
         verifySnmpWalk()
@@ -1166,7 +1167,7 @@ class NetworkTests(unittest2.TestCase):
                     break
         remote_control.runCommand("pkill netcat")
         assert(foundTestSession)
-        
+
     def test_141_hostview(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
@@ -1181,7 +1182,41 @@ class NetworkTests(unittest2.TestCase):
                 foundTestSession = True
                 break
         remote_control.runCommand("pkill netcat")
-        assert(foundTestSession)        
+        assert(foundTestSession)
+
+    # Test logging of blocked sessions via untangle-nflogd
+    def test_150_loggerDaemon(self):
+        # verify port 80 is open
+        result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
+
+        # Add a block rule for port 80 and enabled blocked session logging
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","80","PROTOCOL","TCP",True) ]
+        netsettings['logBlockedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # make the request again which should now be blocked and logged
+        result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        # give the NetFilterLogger time to receive and write the event
+        time.sleep(2)
+
+        # grab all of the blocked events for checking later
+        events = global_functions.get_events('Network','Blocked Sessions',None,100)
+
+        # put the network settings back the way we found them
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        # make sure all of our tests were successful
+        assert (result1 == 0)
+        assert (result2 != 0)
+
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 100,
+                                            "s_server_addr", test_untangle_com_ip,
+                                            "c_client_addr", remote_control.clientIP,
+                                            "s_server_port", 80)
+        assert(found)
 
     @staticmethod
     def finalTearDown(self):
