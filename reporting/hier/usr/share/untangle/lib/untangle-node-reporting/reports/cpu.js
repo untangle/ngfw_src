@@ -20,7 +20,7 @@
         "#6600ff"
     ],
     "timeDataInterval": "MINUTE",
-    "timeStyle": "LINE",
+    "timeStyle": "AREA",
     "title": "CPU Load",
     "type": "TIME_GRAPH"
 }
