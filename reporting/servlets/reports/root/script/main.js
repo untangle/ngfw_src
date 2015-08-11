@@ -284,3 +284,27 @@ Ext.define("Ung.Main", {
         }
     }
 });
+
+
+//Ext overrides used in reports serlvet
+Ext.override(Ext.grid.column.Column, {
+    defaultRenderer: Ext.util.Format.htmlEncode
+});
+
+Ext.apply(Ext.data.SortTypes, {
+    // Timestamp sorting
+    asTimestamp: function(value) {
+        return value.time;
+    },
+    // Ip address sorting. may contain netmask.
+    asIp: function(value){
+        if(Ext.isEmpty(value)) {
+            return null;
+        }
+        var i, len, parts = (""+value).replace(/\//g,".").split('.');
+        for(i = 0, len = parts.length; i < len; i++){
+            parts[i] = Ext.String.leftPad(parts[i], 3, '0');
+        }
+        return parts.join('.');
+    }
+});
