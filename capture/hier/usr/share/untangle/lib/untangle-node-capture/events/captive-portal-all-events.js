@@ -12,7 +12,7 @@
     "description": "All user sessions processed by Captive Portal.",
     "displayOrder": 12,
     "javaClass": "com.untangle.node.reporting.EventEntry",
-    "table": "sessions",
+    "table": "capture_user_events",
     "title": "All User Events",
     "uniqueId": "captive-portal-CWKFK6AXDU"
 }

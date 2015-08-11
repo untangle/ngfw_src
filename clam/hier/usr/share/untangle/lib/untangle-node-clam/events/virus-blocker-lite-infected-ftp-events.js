@@ -8,7 +8,7 @@
             "value": "FALSE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","uri","virus_blocker_lite_clean","virus_blocker_lite_name","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","uri","virus_blocker_lite_clean","virus_blocker_lite_name","s_server_addr"],
     "description": "Infected FTP sessions blocked by Virus Blocker Lite.",
     "displayOrder": 31,
     "javaClass": "com.untangle.node.reporting.EventEntry",
