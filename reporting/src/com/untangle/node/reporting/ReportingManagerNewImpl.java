@@ -281,11 +281,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             ResultSet rs = getColumnMetaData( tableName );
             synchronized( rs ) {
                 rs.first();
-                while(rs.next()){
+                do {
                     String columnName = rs.getString(4);
                     //String columnType = rs.getString(6);
                     columnNames.add( columnName );
-                }
+                } while(rs.next());
             }
         } catch ( Exception e ) {
             logger.warn("Failed to retrieve column names", e);
