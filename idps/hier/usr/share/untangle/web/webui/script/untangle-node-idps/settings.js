@@ -517,6 +517,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         var referenceFields = rmatches[1].split(",");
                         var prefix = me.referencesMap[referenceFields[0]];
                         if( prefix != null ){
+                            referenceFields[1] = referenceFields[1].trim();
+                            if((referenceFields[1].charAt(0) == '"') && 
+                                (referenceFields[1].charAt(referenceFields[1].length - 1) == '"')){
+                                referenceFields[1] = referenceFields[1].substr(1,referenceFields[1].length - 2);
+                            }
                             url = prefix + referenceFields[1];
                             references.push('<a href="'+ url + '" class="icon-detail-row href-icon" target="_reference"></a>');
                         }
