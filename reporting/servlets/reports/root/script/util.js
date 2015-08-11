@@ -219,13 +219,5 @@ Ext.define('Ung.Util', {
         }
         bytes = Math.round(bytes*100)/100;
         return bytes + " " + units[units_itr];
-    },
-    timestampFieldWidth: 135,
-    ipFieldWidth: 100,
-    portFieldWidth: 70,
-    hostnameFieldWidth: 120,
-    uriFieldWidth: 200,
-    usernameFieldWidth: 120,
-    booleanFieldWidth: 60,
-    emailFieldWidth: 150
+    }
 });

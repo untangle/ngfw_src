@@ -145,7 +145,7 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Creation Time"),
             dataIndex: "creationTime",
-            width: Ung.Util.timestampFieldWidth,
+            width: Ung.TableConfig.timestampFieldWidth,
             renderer: function(value) {
                 return i18n.timestampFormat(value);
             }
@@ -159,7 +159,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             header: this.i18n._("Bypassed"),
             dataIndex: "bypassed",
-            width: Ung.Util.booleanFieldWidth,
+            width: Ung.TableConfig.booleanFieldWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',
@@ -200,7 +200,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             header: this.i18n._("Client (Pre-NAT)"),
             dataIndex: "preNatClient",
-            width: Ung.Util.ipFieldWidth,
+            width: Ung.TableConfig.ipFieldWidth,
             filter: {
                 type: 'string'
             }
@@ -208,14 +208,14 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Server (Pre-NAT)"),
             dataIndex: "preNatServer",
-            width: Ung.Util.ipFieldWidth,
+            width: Ung.TableConfig.ipFieldWidth,
             filter: {
                 type: 'string'
             }
         },{
             header: this.i18n._("Client Port (Pre-NAT)"),
             dataIndex: "preNatClientPort",
-            width: Ung.Util.portFieldWidth,
+            width: Ung.TableConfig.portFieldWidth,
             filter: {
                 type: 'numeric'
             }
@@ -223,7 +223,7 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Server Port (Pre-NAT)"),
             dataIndex: "preNatServerPort",
-            width: Ung.Util.portFieldWidth,
+            width: Ung.TableConfig.portFieldWidth,
             filter: {
                 type: 'numeric'
             }
@@ -231,14 +231,14 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Client (Post-NAT)"),
             dataIndex: "postNatClient",
-            width: Ung.Util.ipFieldWidth,
+            width: Ung.TableConfig.ipFieldWidth,
             filter: {
                 type: 'string'
             }
         },{
             header: this.i18n._("Server (Post-NAT)"),
             dataIndex: "postNatServer",
-            width: Ung.Util.ipFieldWidth,
+            width: Ung.TableConfig.ipFieldWidth,
             filter: {
                 type: 'string'
             }
@@ -246,14 +246,14 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Client Port (Post-NAT)"),
             dataIndex: "postNatClientPort",
-            width: Ung.Util.portFieldWidth,
+            width: Ung.TableConfig.portFieldWidth,
             filter: {
                 type: 'numeric'
             }
         },{
             header: this.i18n._("Server Port (Post-NAT)"),
             dataIndex: "postNatServerPort",
-            width: Ung.Util.portFieldWidth,
+            width: Ung.TableConfig.portFieldWidth,
             filter: {
                 type: 'numeric'
             }
@@ -261,7 +261,7 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("NATd"),
             dataIndex: "natted",
-            width: Ung.Util.booleanFieldWidth,
+            width: Ung.TableConfig.booleanFieldWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',
@@ -271,7 +271,7 @@ Ext.define('Webui.config.sessionMonitor', {
             hidden: true,
             header: this.i18n._("Port Forwarded"),
             dataIndex: "portForwarded",
-            width: Ung.Util.booleanFieldWidth,
+            width: Ung.TableConfig.booleanFieldWidth,
             filter: {
                 type: 'boolean',
                 yesText: 'true',

@@ -142,6 +142,7 @@ if(request.getParameter("old")!=null) {
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/util.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/tableConfig.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/reports.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/main.js?s=<%=buildStamp%>"></script>
 

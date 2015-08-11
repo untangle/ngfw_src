@@ -599,15 +599,7 @@ Ext.define('Ung.Util', {
             return true;
         }
     },
-    hideDangerous: true,
-    timestampFieldWidth: 135,
-    ipFieldWidth: 100,
-    portFieldWidth: 70,
-    hostnameFieldWidth: 120,
-    uriFieldWidth: 200,
-    usernameFieldWidth: 120,
-    booleanFieldWidth: 60,
-    emailFieldWidth: 150
+    hideDangerous: true
 });
 
 Ung.Util.RetryHandler = {
