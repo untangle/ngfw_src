@@ -19,35 +19,35 @@ public class HostTableEntry implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private InetAddress address;
-    private String      macAddress;
-    private String      macVendor;
-    private long        creationTime;
-    private long        lastAccessTime;
+    private InetAddress address = null;
+    private String      macAddress = null;
+    private String      macVendor = null;
+    private long        creationTime = 0;
+    private long        lastAccessTime = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
     private boolean     licensed = true;
 
-    private String hostname;
+    private String hostname = null;
 
     private boolean captivePortalAuthenticated = false; /* marks if this user is authenticated with captive portal */
 
-    private String usernameCapture;
-    private String usernameTunnel;
-    private String usernameOpenvpn;
-    private String usernameAdConnector;
+    private String usernameCapture = null;
+    private String usernameTunnel = null;
+    private String usernameOpenvpn = null;
+    private String usernameAdConnector = null;
     
     private boolean penaltyBoxed = false;
-    private long    penaltyBoxExitTime;
-    private long    penaltyBoxEntryTime;
+    private long    penaltyBoxExitTime = 0;
+    private long    penaltyBoxEntryTime = 0;
 
-    private long quotaSize; /* the quota size - 0 means no quota assigned */
-    private long quotaRemaining; /* the quota remaining */
-    private long quotaIssueTime; /* the issue time on the quota */
-    private long quotaExpirationTime; /* the expiration time on the assigned quota */
+    private long quotaSize = 0; /* the quota size - 0 means no quota assigned */
+    private long quotaRemaining = 0; /* the quota remaining */
+    private long quotaIssueTime = 0; /* the issue time on the quota */
+    private long quotaExpirationTime = 0; /* the expiration time on the assigned quota */
 
-    private String httpUserAgent; /* the user-agent header from HTTP */
-    private String httpUserAgentOs; /* the os part of the user-agent header from HTTP */
-    private long   httpUserAgentSetDate; /* date the httpUserAgent was set */
+    private String httpUserAgent = null; /* the user-agent header from HTTP */
+    private String httpUserAgentOs = null; /* the os part of the user-agent header from HTTP */
+    private long   httpUserAgentSetDate = 0; /* date the httpUserAgent was set */
 
     public HostTableEntry()
     {
@@ -56,74 +56,190 @@ public class HostTableEntry implements Serializable, JSONString
     }
     
     public InetAddress getAddress() { return this.address; }
-    public void setAddress( InetAddress newValue ) { this.address = newValue; updateAccessTime(); }
+    public void setAddress( InetAddress newValue )
+    {
+        this.address = newValue;
+        if ( newValue != null )
+            updateEvent( "address", null, newValue.getHostAddress() );
+        updateAccessTime();
+    }
 
     public String getMacAddress() { return this.macAddress; }
-    public void setMacAddress( String newValue ) { this.macAddress = newValue; updateAccessTime(); }
+    public void setMacAddress( String newValue )
+    {
+        updateEvent("macAddress",this.macAddress,newValue);
+        this.macAddress = newValue;
+        updateAccessTime();
+    }
 
     public String getMacVendor() { return this.macVendor; }
-    public void setMacVendor( String newValue ) { this.macVendor = newValue; updateAccessTime(); }
+    public void setMacVendor( String newValue )
+    {
+        updateEvent("macVendor",this.macVendor,newValue);
+        this.macVendor = newValue;
+        updateAccessTime();
+    }
     
     public long getCreationTime() { return this.creationTime; }
-    public void setCreationTime( long newValue ) { this.creationTime = newValue; updateAccessTime(); }
+    public void setCreationTime( long newValue )
+    {
+        updateEvent("creationTime",String.valueOf(this.macVendor),String.valueOf(newValue));
+        this.creationTime = newValue;
+        updateAccessTime();
+    }
 
     public long getLastAccessTime() { return this.lastAccessTime; }
-    public void setLastAccessTime( long newValue ) { this.lastAccessTime = newValue; updateAccessTime(); }
+    public void setLastAccessTime( long newValue )
+    {
+        this.lastAccessTime = newValue;
+        updateAccessTime();
+    }
 
     public long getLastSessionTime() { return this.lastSessionTime; }
-    public void setLastSessionTime( long newValue ) { this.lastSessionTime = newValue; updateAccessTime(); }
+    public void setLastSessionTime( long newValue )
+    {
+        this.lastSessionTime = newValue;
+        updateAccessTime();
+    }
 
     public boolean getLicensed() { return this.licensed; }
-    public void setLicensed( boolean newValue ) { this.licensed = newValue; updateAccessTime(); }
+    public void setLicensed( boolean newValue )
+    {
+        this.licensed = newValue;
+        updateAccessTime();
+    }
     
-    //public String getHostname() { return ( this.licensed ? this.hostname : "unlicensed" ); } // disabled for now
     public String getHostname() { return this.hostname; }
-    public void setHostname( String newValue ) { this.hostname = newValue; updateAccessTime(); }
+    public void setHostname( String newValue )
+    {
+        updateEvent("hostname",this.hostname,newValue);
+        this.hostname = newValue;
+        updateAccessTime();
+    }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
-    public void setUsernameAdConnector( String newValue ) { this.usernameAdConnector = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
-
+    public void setUsernameAdConnector( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+        updateEvent("usernameAdConnector",this.usernameAdConnector,newValue);
+        this.usernameAdConnector = newValue;
+        updateAccessTime();
+    }
+    
     public String getUsernameCapture() { return this.usernameCapture; }
-    public void setUsernameCapture( String newValue ) { this.usernameCapture = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
+    public void setUsernameCapture( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+        updateEvent("usernameCapture",this.usernameCapture,newValue);
+        this.usernameCapture = newValue;
+        updateAccessTime();
+    }
     
     public boolean getCaptivePortalAuthenticated() { return this.captivePortalAuthenticated; }
-    public void setCaptivePortalAuthenticated( boolean newValue ) { this.captivePortalAuthenticated = newValue; updateAccessTime(); }
+    public void setCaptivePortalAuthenticated( boolean newValue )
+    {
+        updateEvent("captivePortalAuthenticated",String.valueOf(this.captivePortalAuthenticated),String.valueOf(newValue));
+        this.captivePortalAuthenticated = newValue;
+        updateAccessTime();
+    }
 
     public String getUsernameTunnel() { return this.usernameTunnel; }
-    public void setUsernameTunnel( String newValue ) { this.usernameTunnel = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
+    public void setUsernameTunnel( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+        updateEvent("usernameTunnel",this.usernameTunnel,newValue);
+        this.usernameTunnel = newValue;
+        updateAccessTime();
+    }
 
     public String getUsernameOpenvpn() { return this.usernameOpenvpn; }
-    public void setUsernameOpenvpn( String newValue ) { this.usernameOpenvpn = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
+    public void setUsernameOpenvpn( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+        updateEvent("usernameOpenvpn",this.usernameOpenvpn,newValue);
+        this.usernameOpenvpn = newValue;
+        updateAccessTime();
+    }
 
     public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
-    public void setPenaltyBoxed( boolean newValue ) { this.penaltyBoxed = newValue; updateAccessTime(); }
+    public void setPenaltyBoxed( boolean newValue )
+    {
+        updateEvent("penaltyBoxed",String.valueOf(this.penaltyBoxed),String.valueOf(newValue));
+        this.penaltyBoxed = newValue;
+        updateAccessTime();
+    }
 
     public long getPenaltyBoxExitTime() { return this.penaltyBoxExitTime; }
-    public void setPenaltyBoxExitTime( long newValue ) { this.penaltyBoxExitTime = newValue; updateAccessTime(); }
+    public void setPenaltyBoxExitTime( long newValue )
+    {
+        updateEvent("penaltyBoxExitTime",String.valueOf(this.penaltyBoxExitTime),String.valueOf(newValue));
+        this.penaltyBoxExitTime = newValue;
+        updateAccessTime();
+    }
 
     public long getPenaltyBoxEntryTime() { return this.penaltyBoxEntryTime; }
-    public void setPenaltyBoxEntryTime( long newValue ) { this.penaltyBoxEntryTime = newValue; updateAccessTime(); }
+    public void setPenaltyBoxEntryTime( long newValue )
+    {
+        updateEvent("penaltyBoxEntryTime",String.valueOf(this.penaltyBoxEntryTime),String.valueOf(newValue));
+        this.penaltyBoxEntryTime = newValue;
+        updateAccessTime();
+    }
 
     public long getQuotaSize() { return this.quotaSize; }
-    public void setQuotaSize( long newValue ) { this.quotaSize = newValue; updateAccessTime(); }
+    public void setQuotaSize( long newValue )
+    {
+        updateEvent("quotaSize",String.valueOf(this.quotaSize),String.valueOf(newValue));
+        this.quotaSize = newValue;
+        updateAccessTime();
+    }
 
     public long getQuotaRemaining() { return this.quotaRemaining; }
-    public void setQuotaRemaining( long newValue ) { this.quotaRemaining = newValue; updateAccessTime(); }
+    public void setQuotaRemaining( long newValue )
+    {
+        this.quotaRemaining = newValue;
+        updateAccessTime();
+    }
 
     public long getQuotaIssueTime() { return this.quotaIssueTime; }
-    public void setQuotaIssueTime( long newValue ) { this.quotaIssueTime = newValue; updateAccessTime(); }
+    public void setQuotaIssueTime( long newValue )
+    {
+        updateEvent("quotaIssueTime",String.valueOf(this.quotaIssueTime),String.valueOf(newValue));
+        this.quotaIssueTime = newValue;
+        updateAccessTime();
+    }
 
     public long getQuotaExpirationTime() { return this.quotaExpirationTime; }
-    public void setQuotaExpirationTime( long newValue ) { this.quotaExpirationTime = newValue; updateAccessTime(); }
+    public void setQuotaExpirationTime( long newValue )
+    {
+        updateEvent("quotaExpirationTime",String.valueOf(this.quotaExpirationTime),String.valueOf(newValue));
+        this.quotaExpirationTime = newValue;
+        updateAccessTime();
+    }
     
     public String getHttpUserAgent() { return this.httpUserAgent; }
-    public void setHttpUserAgent( String newValue ) { this.httpUserAgent = newValue; updateAccessTime(); this.httpUserAgentSetDate = System.currentTimeMillis(); }
+    public void setHttpUserAgent( String newValue )
+    {
+        updateEvent("httpUserAgent",String.valueOf(this.httpUserAgent),String.valueOf(newValue));
+        this.httpUserAgent = newValue;
+        updateAccessTime();
+        this.httpUserAgentSetDate = System.currentTimeMillis();
+    }
 
     public String getHttpUserAgentOs() { return this.httpUserAgentOs; }
-    public void setHttpUserAgentOs( String newValue ) { this.httpUserAgentOs = newValue; updateAccessTime(); this.httpUserAgentSetDate = System.currentTimeMillis(); }
+    public void setHttpUserAgentOs( String newValue )
+    {
+        updateEvent("httpUserAgentOs",String.valueOf(this.httpUserAgentOs),String.valueOf(newValue));
+        this.httpUserAgentOs = newValue;
+        updateAccessTime();
+        this.httpUserAgentSetDate = System.currentTimeMillis();
+    }
 
     public long getHttpUserAgentSetDate() { return this.httpUserAgentSetDate; }
-    public void setHttpUserAgentSetDate( long newValue ) { this.httpUserAgentSetDate = newValue; updateAccessTime(); }
+    public void setHttpUserAgentSetDate( long newValue )
+    {
+        this.httpUserAgentSetDate = newValue;
+        updateAccessTime();
+    }
     
     public String getUsername()
     {
@@ -185,4 +301,20 @@ public class HostTableEntry implements Serializable, JSONString
     {
         this.lastAccessTime = System.currentTimeMillis();
     }
+
+    private void updateEvent( String key, String oldValue, String newValue )
+    {
+        if ( this.address == null )
+            return;
+        if ( oldValue == null && newValue == null ) //no change
+            return;
+        if ( newValue == null ) 
+            newValue = "null";
+        if ( newValue.equals(oldValue) ) // no change
+            return;
+
+        HostTableEvent event = new HostTableEvent( this.address, key, newValue );
+        UvmContextFactory.context().logEvent(event);
+    }
+    
 }
