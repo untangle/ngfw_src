@@ -6,6 +6,6 @@
     "displayOrder": 10,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "openvpn_events",
-    "title": "Session Events",
+    "title": "Connection Events",
     "uniqueId": "openvpn-0328AZC5E3"
 }
