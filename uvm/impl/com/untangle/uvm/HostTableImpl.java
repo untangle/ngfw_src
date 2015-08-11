@@ -468,6 +468,9 @@ public class HostTableImpl implements HostTable
     {
         HostTableEntry entry = new HostTableEntry();
 
+        HostTableEvent event = new HostTableEvent( address, "init", null );
+        UvmContextFactory.context().logEvent(event);
+        
         entry.setAddress( address );
         
         String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
@@ -641,6 +644,10 @@ public class HostTableImpl implements HostTable
                              */
                             else {
                                 logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
+
+                                HostTableEvent event = new HostTableEvent( address, "remove", null );
+                                UvmContextFactory.context().logEvent(event);
+
                                 hostTable.remove(address);
                             }
                         }
