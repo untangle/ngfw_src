@@ -8,7 +8,7 @@
             "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocked_lite_clean","virus_blocker_lite_name","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocker_lite_clean","virus_blocker_lite_name","s_server_addr","s_server_port"],
     "description": "Scanned HTTP sessions marked clean.",
     "displayOrder": 12,
     "javaClass": "com.untangle.node.reporting.EventEntry",
