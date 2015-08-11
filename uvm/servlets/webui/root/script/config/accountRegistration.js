@@ -611,7 +611,7 @@ Ext.define('Webui.config.accountRegistration', {
                 email: emailAddress.getValue(),
                 password: password.getValue(),
                 uid: rpc.serverUID,
-                majorVersion: "11.2"
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -675,7 +675,7 @@ Ext.define('Webui.config.accountRegistration', {
                 lname: lastName,
                 cname: companyName,
                 uid: rpc.serverUID,
-                majorVersion: "11.2"
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -705,7 +705,7 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: "11.2"
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -739,7 +739,7 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: "11.2"
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -847,7 +847,7 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: "11.2",
+                majorVersion: rpc.version,
                 ccType: creditType,
                 ccNumber: creditNumber,
                 ccExpMonth: creditMonth,
@@ -895,8 +895,8 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: "11.2",
-                version: "11.2",
+                majorVersion: rpc.version,
+                version: rpc.version,
                 activationCode: activationCode,
                 uid: rpc.serverUID,
                 uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName
