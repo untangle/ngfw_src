@@ -11,6 +11,7 @@ Ext.define('Webui.config.network', {
         }
     },
     hasReports: true,
+    reportCategory: 'Network',
     gridPortForwardRules: null,
     gridNatRules: null,
     gridBypassRules: null,

@@ -157,8 +157,10 @@ Ext.define("Ung.SettingsWin", {
     buildTabPanel: function(itemsArray) {
         Ext.get("racks").hide();
         if(this.hasReports) {
+            var reportCategory = this.reportCategory;
+            if ( reportCategory == null ) reportCategory = this.displayName; 
             itemsArray.push(Ext.create('Ung.panel.Reports',{
-                category: this.displayName
+                category: reportCategory
             }));
         }
         

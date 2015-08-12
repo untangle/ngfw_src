@@ -2,6 +2,7 @@ Ext.define('Webui.config.administration', {
     extend: 'Ung.ConfigWin',
     displayName: 'Administration',
     hasReports: true,
+    reportCategory: 'Administration',
     panelAdmin: null,
     panelPublicAddress: null,
     panelCertificates: null,
