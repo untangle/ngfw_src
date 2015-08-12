@@ -468,7 +468,7 @@ public class HostTableImpl implements HostTable
     {
         HostTableEntry entry = new HostTableEntry();
 
-        HostTableEvent event = new HostTableEvent( address, "init", null );
+        HostTableEvent event = new HostTableEvent( address, "add", null );
         UvmContextFactory.context().logEvent(event);
         
         entry.setAddress( address );
