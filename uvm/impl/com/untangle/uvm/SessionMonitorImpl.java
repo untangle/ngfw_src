@@ -126,6 +126,7 @@ public class SessionMonitorImpl implements SessionMonitor
         
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
+
             session.setPolicy("");             
             if (session.getClientIntf() == null || session.getClientIntf() == 0 )
                 session.setClientIntf(Integer.valueOf(-1));
@@ -179,16 +180,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     logger.warn("Exception while searching for session",e);
                 }
             } else {
-                /**
-                 * If the session is not bypassed and is not in the UVM
-                 * Then it is likely some expired session or some local session (blockpages)
-                 * Remove it and dont show it to the user
-                 */
-                if ( !session.getBypassed() ) {
-                    logger.debug("Ignoring session: " + session);
-                    i.remove();
-                    continue;
-                }
+                session.setBypassed(Boolean.TRUE);
             }
 
             /**
@@ -247,60 +239,73 @@ public class SessionMonitorImpl implements SessionMonitor
         List<SessionMonitorEntry> jnettopSessions = _getJnettopSessionMonitorEntrys(systemIntfName);
         List<SessionMonitorEntry> sessions = this.getMergedSessions();
 
-        for (SessionMonitorEntry session : sessions) {
+        HashMap<Tuple,SessionMonitorEntry> map = new HashMap<Tuple,SessionMonitorEntry>();
+        for (SessionMonitorEntry entry : jnettopSessions) {
+            Tuple tuple = _makeTuple( entry.getProtocol(),
+                                      entry.getPreNatClient(),
+                                      entry.getPreNatServer(),
+                                      entry.getPreNatClientPort(),
+                                      entry.getPreNatServerPort());
+            
+            map.put( tuple, entry );
+        }
 
+        for (SessionMonitorEntry session : sessions) {
+            
             session.setClientKBps(Float.valueOf(0.0f));
             session.setServerKBps(Float.valueOf(0.0f));
             session.setTotalKBps(Float.valueOf(0.0f));
 
-            for (SessionMonitorEntry jnettopSession : jnettopSessions) {
+            Tuple a = _makeTuple(session.getProtocol(),
+                                 session.getPreNatClient(),session.getPreNatServer(),
+                                 session.getPreNatClientPort(),session.getPreNatServerPort());
+            Tuple b = _makeTuple(session.getProtocol(),
+                                 session.getPreNatServer(),session.getPreNatClient(),
+                                 session.getPreNatServerPort(),session.getPreNatClientPort());
+            Tuple c = _makeTuple(session.getProtocol(),
+                                 session.getPostNatClient(),session.getPostNatServer(),
+                                 session.getPostNatClientPort(),session.getPostNatServerPort());
+            Tuple d = _makeTuple(session.getProtocol(),
+                                 session.getPostNatServer(),session.getPostNatClient(),
+                                 session.getPostNatServerPort(),session.getPostNatClientPort());
 
-                boolean match = false;
+            SessionMonitorEntry matchingEntry = null;
+            if ( matchingEntry == null ) {
+                matchingEntry = map.get(a);
+                if ( matchingEntry != null ) map.remove(a);
+            }
+            if ( matchingEntry == null ) {
+                matchingEntry = map.get(b);
+                if ( matchingEntry != null ) map.remove(b);
+            }
+            if ( matchingEntry == null ) {
+                matchingEntry = map.get(c);
+                if ( matchingEntry != null ) map.remove(c);
+            }
+            if ( matchingEntry == null ) {
+                matchingEntry = map.get(d);
+                if ( matchingEntry != null ) map.remove(d);
+            }
 
-                /**
-                 * Depending on whether the internal and external is source interface jnettop can see either pre or post NAT
-                 * and whether jnettop sees a client or server packet first the order it can reverse client and server
-                 * We have to check for all combinations for matches
-                 * (Bug #8290)
-                 */
-                if (match || _matches(jnettopSession.getProtocol(),
-                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                      session.getProtocol(),
-                                      session.getPreNatClient(),session.getPreNatServer(),
-                                      session.getPreNatClientPort(),session.getPreNatServerPort()))
-                    match = true;
-                if (match || _matches(jnettopSession.getProtocol(),
-                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                      session.getProtocol(),
-                                      session.getPreNatServer(),session.getPreNatClient(),
-                                      session.getPreNatServerPort(),session.getPreNatClientPort()))
-                    match = true;
-                if (match || _matches(jnettopSession.getProtocol(),
-                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                      session.getProtocol(),
-                                      session.getPostNatClient(),session.getPostNatServer(),
-                                      session.getPostNatClientPort(),session.getPostNatServerPort()))
-                    match = true;
-                if (match || _matches(jnettopSession.getProtocol(),
-                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                      session.getProtocol(),
-                                      session.getPostNatServer(),session.getPostNatClient(),
-                                      session.getPostNatServerPort(),session.getPostNatClientPort()))
-                    match = true;
-
-                if ( match ) {
-                    session.setClientKBps(jnettopSession.getClientKBps());
-                    session.setServerKBps(jnettopSession.getServerKBps());
-                    session.setTotalKBps(jnettopSession.getTotalKBps());
-                    break; /* break to outer loop */
-                }
+            if ( matchingEntry == null ) {
+                logger.debug("Session not found in jnettop: " +
+                            session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  |  " +
+                            session.getPostNatClient() + ":" + session.getPostNatClientPort() + " -> " + session.getPostNatServer() + ":" + session.getPostNatServerPort());
+            } else {
+                session.setClientKBps(matchingEntry.getClientKBps());
+                session.setServerKBps(matchingEntry.getServerKBps());
+                session.setTotalKBps(matchingEntry.getTotalKBps());
             }
         }
 
+        // check for sessions that jnettop found that but we were unable to locate the corresponding conntrack/uvm session
+        for (SessionMonitorEntry session : map.values()) {
+            logger.warn("Unused jnettop session : " +
+                        session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  | " +
+                        session.getTotalKBps() + "KB/s");
+                
+        }
+        
         return sessions;
     }
 
@@ -342,40 +347,18 @@ public class SessionMonitorImpl implements SessionMonitor
         }
     }
 
-    /**
-     * Check if the entry matches the sessionDesc
-     * This checks the 5-tuple (protocol, src, dst, src_port, dst_port)
-     */
-    private boolean _matches(com.untangle.uvm.node.SessionTuple sessionDesc, SessionMonitorEntry session)
+    private Tuple _makeTuple( String protocolStr, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
     {
-        switch (sessionDesc.getProtocol()) {
-        case SessionTuple.PROTO_TCP:
-            if (! "TCP".equals(session.getProtocol())) {
-                return false;
-            }
-            break;
-        case SessionTuple.PROTO_UDP:
-            if (! "UDP".equals(session.getProtocol())) {
-                return false;
-            }
-            break;
+        short protocol;
+        if ( "TCP".equals(protocolStr) )
+            protocol = Tuple.PROTO_TCP;
+        else if ( "UDP".equals(protocolStr) )
+            protocol = Tuple.PROTO_UDP;
+        else {
+            logger.warn("Unknown protocol: " + protocolStr);
+            protocol = 0;
         }
-
-        if (! sessionDesc.getClientAddr().equals(session.getPreNatClient())) {
-            return false;
-        }
-        if (! sessionDesc.getServerAddr().equals(session.getPreNatServer())) {
-            return false;
-        }
-
-        if (sessionDesc.getClientPort() != session.getPreNatClientPort()) {
-            return false;
-        }
-        if (sessionDesc.getServerPort() != session.getPreNatServerPort()) {
-            return false;
-        }
-
-        return true;
+        return new Tuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
     }
 
     private Tuple _makeTuple( SessionMonitorEntry session )
@@ -394,28 +377,6 @@ public class SessionMonitorImpl implements SessionMonitor
                           session.getPreNatServer(),
                           session.getPreNatClientPort(),
                           session.getPreNatServerPort() );
-    }
-    
-    /**
-     * This checks first 5-tuple (protocol, src, dst, src_port, dst_port)
-     * against the second, returns true if match
-     */
-    private boolean _matches(String protocol1, InetAddress client1, InetAddress server1, int clientPort1, int serverPort1,
-                             String protocol2, InetAddress client2, InetAddress server2, int clientPort2, int serverPort2)
-
-    {
-        if (! protocol1.equals(protocol2))
-            return false;
-        if (! client1.equals(client2))
-            return false;
-        if (! server1.equals(server2))
-            return false;
-        if (clientPort1 != clientPort2)
-            return false;
-        if (serverPort1 != serverPort2)
-            return false;
-
-        return true;
     }
 
     private class Tuple

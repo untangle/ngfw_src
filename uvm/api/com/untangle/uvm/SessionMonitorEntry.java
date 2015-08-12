@@ -134,5 +134,4 @@ public class SessionMonitorEntry
     {
         return getProtocol() + "| " + getPreNatClient() + ":" + getPreNatClientPort() + " -> " + getPostNatServer() + ":" + getPostNatServerPort();
     }
-    
 }
