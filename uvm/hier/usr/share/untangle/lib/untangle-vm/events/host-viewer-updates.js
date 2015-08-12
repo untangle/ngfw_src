@@ -1,4 +1,5 @@
 {
+    "uniqueId": "host-viewer-NIFFCexFv3",
     "category": "Host Viewer",
     "conditions": [],
     "defaultColumns": ["time_stamp","address","key","value"],
@@ -6,6 +7,5 @@
     "displayOrder": 10,
     "javaClass": "com.untangle.node.reporting.EventEntry",
     "table": "host_table_updates",
-    "title": "Host Table Events",
-    "uniqueId": "host-viewer-NIFFCexFv3"
+    "title": "Host Table Events"
 }
