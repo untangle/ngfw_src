@@ -947,7 +947,19 @@ Ext.define('Webui.config.network', {
             }, {
                 header: this.i18n._("Config"),
                 dataIndex: 'configType',
-                width: 90
+                width: 90,
+                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    switch(value) {
+                      case "ADDRESSED":
+                        return this.i18n._("Addressed");
+                      case "BRIDGED":
+                        return this.i18n._("Bridged");
+                      case "DISABLED":
+                        return this.i18n._("Disabled");
+                    default:
+                        return this.i18n._(value);
+                    }
+                }, this)
             }, {
                 header: this.i18n._("Current Address"),
                 dataIndex: 'v4Address',
