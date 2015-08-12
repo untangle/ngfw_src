@@ -6,7 +6,7 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderDesc": false,
-    "units": "hits",
+    "units": "updates",
     "readOnly": true,
     "table": "host_table_updates",
      "timeDataColumns": [
