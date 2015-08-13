@@ -96,8 +96,8 @@ Ext.define("Ung.window.ReportEditor", {
         }, this));
         
         this.columnsStore = Ext.create('Ext.data.Store', {
-            sorters: "displayName",
-            fields: ["name", "displayName"],
+            sorters: "header",
+            fields: ["dataIndex", "header"],
             data: []
         });
         var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")]];
@@ -144,8 +144,8 @@ Ext.define("Ung.window.ReportEditor", {
                     fieldLabel: i18n._("Column"),
                     typeAhead:true,
                     allowBlank: false,
-                    valueField: "name",
-                    displayField: "displayName",
+                    valueField: "dataIndex",
+                    displayField: "header",
                     queryMode: 'local',
                     width: 600,
                     store: this.columnsStore
@@ -255,7 +255,7 @@ Ext.define("Ung.window.ReportEditor", {
             listeners: {
                 "change": {
                     fn: Ext.bind(function(elem, newValue) {
-                        Ung.panel.Reports.getColumnsForTable(newValue, this.columnsStore);
+                        Ung.TableConfig.getColumnsForTable(newValue, this.columnsStore);
                     }, this),
                     buffer: 600
                 }
@@ -495,7 +495,7 @@ Ext.define("Ung.window.ReportEditor", {
         return "report-"+Math.random().toString(36).substr(2);
     },
     populate: function(record, addMode) {
-        Ung.panel.Reports.getColumnsForTable(record.get("table"), this.columnsStore);
+        Ung.TableConfig.getColumnsForTable(record.get("table"), this.columnsStore);
         if(!record.get("uniqueId")) {
             record.set("uniqueId", this.getUniqueId());
         }
