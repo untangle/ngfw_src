@@ -358,6 +358,7 @@ Ext.define("Ung.window.ReportEditor", {
             width: 350,
             store: [
                 ["LINE", i18n._("Line")],
+                ["AREA", i18n._("Area")],
                 ["BAR_3D", i18n._("Bar 3D")],
                 ["BAR_3D_OVERLAPPED", i18n._("Bar 3D Overlapped")],
                 ["BAR", i18n._("Bar")],
