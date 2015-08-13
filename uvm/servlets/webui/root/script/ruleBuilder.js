@@ -56,7 +56,7 @@ Ext.define('Ung.RuleBuilder', {
             items: [{
                 xtype: 'combo',
                 width: 300,
-                dataIndex: "matcherType",
+                ruleDataIndex: "matcherType",
                 editable: false,
                 valueField: "name",
                 displayField: "displayName",
@@ -74,7 +74,7 @@ Ext.define('Ung.RuleBuilder', {
             }, {
                 xtype: 'combo',
                 width: 100,
-                dataIndex: "invert",
+                ruleDataIndex: "invert",
                 editable: false,
                 valueField: "name",
                 displayField: "displayName",
@@ -84,7 +84,7 @@ Ext.define('Ung.RuleBuilder', {
                 store: this.invertStore
             }, {
                 xtype: 'container',
-                dataIndex: "value",
+                ruleDataIndex: "value",
                 layout: 'column',
                 columnWidth: 1,
                 items: this.buildValueItems(data)
@@ -102,8 +102,8 @@ Ext.define('Ung.RuleBuilder', {
     matcherTypeChangeHandler: function(combo, newValue) {
         this.dirtyFlag=true;
         var ruleContainer = combo.up("container");
-        var invertCombo = ruleContainer.down("[dataIndex=invert]");
-        var valueContainer = ruleContainer.down("[dataIndex=value]");
+        var invertCombo = ruleContainer.down("[ruleDataIndex=invert]");
+        var valueContainer = ruleContainer.down("[ruleDataIndex=value]");
         invertCombo.setReadOnly(false);
         valueContainer.removeAll();
         
@@ -117,7 +117,7 @@ Ext.define('Ung.RuleBuilder', {
         if(!rule.allowMultiple) {
             var isDuplicate = false;
             Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
-                var matcherTypeCombo=item.down("[dataIndex=matcherType]");
+                var matcherTypeCombo=item.down("[ruleDataIndex=matcherType]");
                 if(matcherTypeCombo!=combo && newValue==matcherTypeCombo.getValue()) {
                     Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
                     combo.setValue("");
@@ -207,11 +207,11 @@ Ext.define('Ung.RuleBuilder', {
     },
     getRuleValue: function(item) {
         var value= "";
-        var rule=this.matchersMap[item.down("[dataIndex=matcherType]").getValue()];
+        var rule=this.matchersMap[item.down("[ruleDataIndex=matcherType]").getValue()];
         if (!rule) {
             return value;
         }
-        var valueContainer = item.down("[dataIndex=value]");
+        var valueContainer = item.down("[ruleDataIndex=value]");
         switch (rule.type) {
         case "text":
             value = valueContainer.down("textfield").getValue();
@@ -263,12 +263,12 @@ Ext.define('Ung.RuleBuilder', {
         var list=[], matcherType, me = this;
         
         Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
-            matcherType = item.down("[dataIndex=matcherType]").getValue();
+            matcherType = item.down("[ruleDataIndex=matcherType]").getValue();
             if(!Ext.isEmpty(matcherType)) {
                 list.push({
                     javaClass: me.javaClass,
                     matcherType: matcherType,
-                    invert: item.down("[dataIndex=invert]").getValue(),
+                    invert: item.down("[ruleDataIndex=invert]").getValue(),
                     value: me.getRuleValue(item)
                 });
             }
