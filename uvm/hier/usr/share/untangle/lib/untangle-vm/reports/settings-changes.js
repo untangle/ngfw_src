@@ -7,7 +7,7 @@
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderDesc": false,
     "units": "changes",
-    "readonly": true,
+    "readOnly": true,
     "table": "settings_changes",
     "timeDataColumns": [
         "count(*) as total"
