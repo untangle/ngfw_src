@@ -288,6 +288,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     name: 'uploadConfigFileName',
                     fieldLabel: this.i18n._('Configuration File'),
                     allowBlank: false,
+                    validateOnBlur: false,
                     labelWidth: 150,
                     width: 400
                 }, {

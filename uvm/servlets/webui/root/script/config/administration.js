@@ -920,7 +920,8 @@ Ext.define('Webui.config.administration', {
                     margin: "10 10 10 10",
                     width: 560,
                     labelWidth: 50,
-                    allowBlank: false
+                    allowBlank: false,
+                    validateOnBlur: false
                 }, {
                     xtype: "hidden",
                     name: "type",
@@ -1358,7 +1359,8 @@ Ext.define('Webui.config.administration', {
                         name: 'uploadSkinFile',
                         width: 500,
                         labelWidth: 50,
-                        allowBlank: false
+                        allowBlank: false,
+                        validateOnBlur: false
                     },{
                         xtype: 'button',
                         text: this.i18n._("Upload"),

@@ -459,7 +459,8 @@ Ext.define('Webui.config.system', {
                         name: "file",
                         id: "upload_restore_file_textfield",
                         width: 500,
-                        allowBlank: false
+                        allowBlank: false,
+                        validateOnBlur: false
                     }, {
                         xtype: "button",
                         margin: '10 0 0 0',
@@ -950,7 +951,8 @@ Ext.define('Webui.config.system', {
                         width: 500,
                         labelWidth: 50,
                         name: 'file',
-                        allowBlank: false
+                        allowBlank: false,
+                        validateOnBlur: false
                     }, {
                         xtype: "hidden",
                         name: "type",
