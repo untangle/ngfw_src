@@ -1,7 +1,7 @@
 {
     "uniqueId": "network-256FTfzi27",
     "category": "Network",
-    "description": "The amount of total, scanned, and bypassed sessions created per minute.",
+    "description": "The amount of total, scanned, and bypassed sessions created per hour.",
     "displayOrder": 102,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
