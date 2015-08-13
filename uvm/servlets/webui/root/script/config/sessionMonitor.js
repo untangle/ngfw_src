@@ -510,7 +510,7 @@ Ext.define('Webui.config.sessionMonitor', {
             return (interfaceName == null)?( value==null || value<0 )?" ":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
         };
         this.fieldConvert = function( value, record){
-            return (value == null || value == "")?" ":value;
+            return (value === undefined || value === null || value === "")?" ":value;
         };
         this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
             name: this.name+"Grid",
