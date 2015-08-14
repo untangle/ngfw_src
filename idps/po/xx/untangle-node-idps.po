@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
+msgstr "XX"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
@@ -13,6 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -824,8 +826,10 @@ msgstr "XSetup Wizard ErrorX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
-msgstr ""
+msgstr "XUnable to obtain default settings.  Please run the Setup Wizard again.X"
 "XUnable to obtain default settings.  Please run the Setup Wizard again."
+"XXUnable to obtain default settings.  Please run the Setup Wizard again."
+"XXUnable to obtain default settings.  Please run the Setup Wizard again."
 "XXUnable to obtain default settings.  Please run the Setup Wizard again."
 "XXUnable to obtain default settings.  Please run the Setup Wizard again.X"
 
@@ -1050,11 +1054,11 @@ msgstr "XSessions blockedX"
 #: /tmp/strings:35 /tmp/strings:37 /tmp/strings:39 /tmp/strings:41
 #: /tmp/strings:43
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1
 msgid "The amount of detected and blocked intrusions over time."
-msgstr ""
+msgstr "XThe amount of detected and blocked intrusions over time.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
@@ -1063,176 +1067,176 @@ msgstr ""
 #: /tmp/strings:36 /tmp/strings:38 /tmp/strings:40 /tmp/strings:42
 #: /tmp/strings:44
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "Intrusion Detection (all)"
-msgstr ""
+msgstr "XIntrusion Detection (all)X"
 
 #: /tmp/strings:3
 msgid "The number of intrusions detected grouped by source IP address."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by source IP address.X"
 
 #: /tmp/strings:4
 msgid "Top Source IP Addresses (logged)"
-msgstr ""
+msgstr "XTop Source IP Addresses (logged)X"
 
 #: /tmp/strings:5
 msgid "The number of intrusions detected grouped by category."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by category.X"
 
 #: /tmp/strings:6
 msgid "Top Categories (logged)"
-msgstr ""
+msgstr "XTop Categories (logged)X"
 
 #: /tmp/strings:7
 msgid "The number of intrusions blocked by source port."
-msgstr ""
+msgstr "XThe number of intrusions blocked by source port.X"
 
 #: /tmp/strings:8
 msgid "Top Source Port (blocked)"
-msgstr ""
+msgstr "XTop Source Port (blocked)X"
 
 #: /tmp/strings:9
 msgid "The number of intrusions blocked by rule."
-msgstr ""
+msgstr "XThe number of intrusions blocked by rule.X"
 
 #: /tmp/strings:10
 msgid "Top Rules (blocked)"
-msgstr ""
+msgstr "XTop Rules (blocked)X"
 
 #: /tmp/strings:11
 msgid "The number of intrusions blocked by destination port."
-msgstr ""
+msgstr "XThe number of intrusions blocked by destination port.X"
 
 #: /tmp/strings:12
 msgid "Top Destination Port (blocked)"
-msgstr ""
+msgstr "XTop Destination Port (blocked)X"
 
 #: /tmp/strings:13
 msgid "The amount of blocked intrusions over time."
-msgstr ""
+msgstr "XThe amount of blocked intrusions over time.X"
 
 #: /tmp/strings:14
 msgid "Intrusion Detection (blocked)"
-msgstr ""
+msgstr "XIntrusion Detection (blocked)X"
 
 #: /tmp/strings:15
 msgid "The number of intrusions blocked by classtype."
-msgstr ""
+msgstr "XThe number of intrusions blocked by classtype.X"
 
 #: /tmp/strings:16
 msgid "Top Classtypes (blocked)"
-msgstr ""
+msgstr "XTop Classtypes (blocked)X"
 
 #: /tmp/strings:17
 msgid "The number of intrusions detected grouped by rule."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by rule.X"
 
 #: /tmp/strings:18
 msgid "Top Rules (logged)"
-msgstr ""
+msgstr "XTop Rules (logged)X"
 
 #: /tmp/strings:19
 msgid "The number of intrusions blocked by category."
-msgstr ""
+msgstr "XThe number of intrusions blocked by category.X"
 
 #: /tmp/strings:20
 msgid "Top Categories (blocked)"
-msgstr ""
+msgstr "XTop Categories (blocked)X"
 
 #: /tmp/strings:21
 msgid "The number of intrusions blocked by source IP address."
-msgstr ""
+msgstr "XThe number of intrusions blocked by source IP address.X"
 
 #: /tmp/strings:22
 msgid "Top Source IP Addresses (blocked)"
-msgstr ""
+msgstr "XTop Source IP Addresses (blocked)X"
 
 #: /tmp/strings:23
 msgid "The number of intrusions detected grouped by destination IP address."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by destination IP address.X"
 
 #: /tmp/strings:24
 msgid "Top Destination IP Addresses (logged)"
-msgstr ""
+msgstr "XTop Destination IP Addresses (logged)X"
 
 #: /tmp/strings:25
 msgid "The amount of detected pintrusions over time."
-msgstr ""
+msgstr "XThe amount of detected pintrusions over time.X"
 
 #: /tmp/strings:26
 msgid "Intrusion Detection (logged)"
-msgstr ""
+msgstr "XIntrusion Detection (logged)X"
 
 #: /tmp/strings:27
 msgid "The number of intrusions detected grouped by source port."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by source port.X"
 
 #: /tmp/strings:28
 msgid "Top Source Ports (logged)"
-msgstr ""
+msgstr "XTop Source Ports (logged)X"
 
 #: /tmp/strings:29
 msgid "A summary of intrusion detection and prevention actions."
-msgstr ""
+msgstr "XA summary of intrusion detection and prevention actions.X"
 
 #: /tmp/strings:30
 msgid "Intrusion Prevention Summary"
-msgstr ""
+msgstr "XIntrusion Prevention SummaryX"
 
 #: /tmp/strings:31
 msgid "The number of intrusions detected grouped by classtype."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by classtype.X"
 
 #: /tmp/strings:32
 msgid "Top Classtypes (logged)"
-msgstr ""
+msgstr "XTop Classtypes (logged)X"
 
 #: /tmp/strings:33
 msgid "The number of intrusions detected grouped by destination port."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by destination port.X"
 
 #: /tmp/strings:34
 msgid "Top Destination Ports (logged)"
-msgstr ""
+msgstr "XTop Destination Ports (logged)X"
 
 #: /tmp/strings:35
 msgid "The number of intrusions blocked by protocol."
-msgstr ""
+msgstr "XThe number of intrusions blocked by protocol.X"
 
 #: /tmp/strings:36
 msgid "Top Protocols (blocked)"
-msgstr ""
+msgstr "XTop Protocols (blocked)X"
 
 #: /tmp/strings:37
 msgid "The number of intrusions blocked by destination IP address."
-msgstr ""
+msgstr "XThe number of intrusions blocked by destination IP address.X"
 
 #: /tmp/strings:38
 msgid "Top Destination IP Addresses (blocked)"
-msgstr ""
+msgstr "XTop Destination IP Addresses (blocked)X"
 
 #: /tmp/strings:39
 msgid "The number of intrusions detected grouped by protocol."
-msgstr ""
+msgstr "XThe number of intrusions detected grouped by protocol.X"
 
 #: /tmp/strings:40
 msgid "Top Protocols (logged)"
-msgstr ""
+msgstr "XTop Protocols (logged)X"
 
 #: /tmp/strings:41
 msgid "All sessions scanned by Intrusion Prevention."
-msgstr ""
+msgstr "XAll sessions scanned by Intrusion Prevention.X"
 
 #: /tmp/strings:42
 msgid "All Events"
-msgstr ""
+msgstr "XAll EventsX"
 
 #: /tmp/strings:43
 msgid "All sessions matching Intrusion Prevention signatures and blocked."
-msgstr ""
+msgstr "XAll sessions matching Intrusion Prevention signatures and blocked.X"
 
 #: /tmp/strings:44
 msgid "Blocked Events"
-msgstr ""
+msgstr "XBlocked EventsX"

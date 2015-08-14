@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
-"PO-Revision-Date: 2012-01-09 08:25-0800\n"
-"Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
+msgstr "XX"
 "Language-Team: Dirk Morris <dmorris@untangle.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXLast-Translator: Dirk Morris <dmorris@untangle.com>\n"
+"XXPO-Revision-Date: 2012-01-09 08:25-0800\n"
 "XXPOT-Creation-Date: 2015-08-14 10:31-0700\n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -216,106 +216,106 @@ msgstr "XTop Ten SpammedX"
 #: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
 #: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1
 msgid "The amount of scanned, clean, and spam email over time."
-msgstr ""
+msgstr "XThe amount of scanned, clean, and spam email over time.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
 #: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "Email Usage (all)"
-msgstr ""
+msgstr "XEmail Usage (all)X"
 
 #: /tmp/strings:3
 msgid "The amount of clean email over time."
-msgstr ""
+msgstr "XThe amount of clean email over time.X"
 
 #: /tmp/strings:4
 msgid "Email Usage (clean)"
-msgstr ""
+msgstr "XEmail Usage (clean)X"
 
 #: /tmp/strings:5
 msgid "The number of IP addresses sending spam."
-msgstr ""
+msgstr "XThe number of IP addresses sending spam.X"
 
 #: /tmp/strings:6
 msgid "Top Spam Sender Addresses"
-msgstr ""
+msgstr "XTop Spam Sender AddressesX"
 
 #: /tmp/strings:7
 msgid "The amount of spam email over time."
-msgstr ""
+msgstr "XThe amount of spam email over time.X"
 
 #: /tmp/strings:8
 msgid "Email Usage (spam)"
-msgstr ""
+msgstr "XEmail Usage (spam)X"
 
 #: /tmp/strings:9
 msgid "The ratio of spam (true) to ham (false)"
-msgstr ""
+msgstr "XThe ratio of spam (true) to ham (false)X"
 
 #: /tmp/strings:10
 msgid "Spam Ratio"
-msgstr ""
+msgstr "XSpam RatioX"
 
 #: /tmp/strings:11
 msgid "The amount of scanned email over time."
-msgstr ""
+msgstr "XThe amount of scanned email over time.X"
 
 #: /tmp/strings:12
 msgid "Email Usage (scanned)"
-msgstr ""
+msgstr "XEmail Usage (scanned)X"
 
 #: /tmp/strings:13
 msgid "The number of email addresses with spam."
-msgstr ""
+msgstr "XThe number of email addresses with spam.X"
 
 #: /tmp/strings:14
 msgid "Top Spam Recipients"
-msgstr ""
+msgstr "XTop Spam RecipientsX"
 
 #: /tmp/strings:15
 msgid "A summary of spam blocking actions for email activity."
-msgstr ""
+msgstr "XA summary of spam blocking actions for email activity.X"
 
 #: /tmp/strings:16
 msgid "Spam Blocker Lite Summary"
-msgstr ""
+msgstr "XSpam Blocker Lite SummaryX"
 
 #: /tmp/strings:17
 msgid "All emails marked as Spam and quarantined."
-msgstr ""
+msgstr "XAll emails marked as Spam and quarantined.X"
 
 #: /tmp/strings:18
 msgid "Quarantined Events"
-msgstr ""
+msgstr "XQuarantined EventsX"
 
 #: /tmp/strings:19
 msgid "All emails scanned by Spam Blocker."
-msgstr ""
+msgstr "XAll emails scanned by Spam Blocker.X"
 
 #: /tmp/strings:20
 msgid "All Email Events"
-msgstr ""
+msgstr "XAll Email EventsX"
 
 #: /tmp/strings:21
 msgid "All emails marked as Spam."
-msgstr ""
+msgstr "XAll emails marked as Spam.X"
 
 #: /tmp/strings:22
 msgid "All Spam Events"
-msgstr ""
+msgstr "XAll Spam EventsX"
 
 #: /tmp/strings:23
 msgid "All email sessions that were tarpitted."
-msgstr ""
+msgstr "XAll email sessions that were tarpitted.X"
 
 #: /tmp/strings:24
 msgid "Tarpit Events"
-msgstr ""
+msgstr "XTarpit EventsX"

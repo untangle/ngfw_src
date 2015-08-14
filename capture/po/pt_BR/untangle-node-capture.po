@@ -912,8 +912,7 @@ msgid "The uploaded ZIP file could not be extracted"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/capture/handler.py:313
-#, python-format
-msgid "Extracted %d files and %d directories from %s"
+msgid "Extracted files and directories"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/capture/handler.py:341
@@ -921,8 +920,7 @@ msgid "Unknown error removing custom files"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/capture/handler.py:343
-#, python-format
-msgid "Removed %d files and %d directories"
+msgid "Removed files and directories."
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/capture/logout/logout.py:52

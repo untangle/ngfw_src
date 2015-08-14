@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
+msgstr "XX"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
@@ -13,6 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -544,57 +546,57 @@ msgstr "XstatusX"
 #: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
 #: /tmp/strings:11
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1
 msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
+msgstr "XThe approximate amount of data transfered over openvpn connections.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "OpenVPN Bandwidth Usage"
-msgstr ""
+msgstr "XOpenVPN Bandwidth UsageX"
 
 #: /tmp/strings:3
 msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
+msgstr "XThe number of bytes transferred grouped by remote client.X"
 
 #: /tmp/strings:4
 msgid "Top Clients (by usage)"
-msgstr ""
+msgstr "XTop Clients (by usage)X"
 
 #: /tmp/strings:5
 msgid "The amount of openvpn sessions over time."
-msgstr ""
+msgstr "XThe amount of openvpn sessions over time.X"
 
 #: /tmp/strings:6
 msgid "OpenVPN Sessions"
-msgstr ""
+msgstr "XOpenVPN SessionsX"
 
 #: /tmp/strings:7
 msgid "The amount of login and logout events over time."
-msgstr ""
+msgstr "XThe amount of login and logout events over time.X"
 
 #: /tmp/strings:8
 msgid "OpenVPN Events"
-msgstr ""
+msgstr "XOpenVPN EventsX"
 
 #: /tmp/strings:9
 msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
+msgstr "XShows all OpenVPN connection traffic statistics events.X"
 
 #: /tmp/strings:10
 msgid "Statistic Events"
-msgstr ""
+msgstr "XStatistic EventsX"
 
 #: /tmp/strings:11
 msgid "OpenVPN client connection events."
-msgstr ""
+msgstr "XOpenVPN client connection events.X"
 
 #: /tmp/strings:12
 msgid "Connection Events"
-msgstr ""
+msgstr "XConnection EventsX"

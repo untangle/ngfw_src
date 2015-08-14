@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
+msgstr "XX"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
@@ -13,6 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -135,101 +137,101 @@ msgstr "XblockedX"
 #: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
 #: /tmp/strings:19 /tmp/strings:21
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1
 msgid "The amount of scanned, clean, and phish email over time."
-msgstr ""
+msgstr "XThe amount of scanned, clean, and phish email over time.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
 #: /tmp/strings:20 /tmp/strings:22
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "Email Usage (all)"
-msgstr ""
+msgstr "XEmail Usage (all)X"
 
 #: /tmp/strings:3
 msgid "The amount of clean email over time."
-msgstr ""
+msgstr "XThe amount of clean email over time.X"
 
 #: /tmp/strings:4
 msgid "Email Usage (clean)"
-msgstr ""
+msgstr "XEmail Usage (clean)X"
 
 #: /tmp/strings:5
 msgid "The number of IP addresses sending phish."
-msgstr ""
+msgstr "XThe number of IP addresses sending phish.X"
 
 #: /tmp/strings:6
 msgid "Top Phish Sender Addresses"
-msgstr ""
+msgstr "XTop Phish Sender AddressesX"
 
 #: /tmp/strings:7
 msgid "The amount of phish email over time."
-msgstr ""
+msgstr "XThe amount of phish email over time.X"
 
 #: /tmp/strings:8
 msgid "Email Usage (phish)"
-msgstr ""
+msgstr "XEmail Usage (phish)X"
 
 #: /tmp/strings:9
 msgid "The ratio of phish (true) to ham (false)"
-msgstr ""
+msgstr "XThe ratio of phish (true) to ham (false)X"
 
 #: /tmp/strings:10
 msgid "Phish Ratio"
-msgstr ""
+msgstr "XPhish RatioX"
 
 #: /tmp/strings:11
 msgid "The amount of scanned email over time."
-msgstr ""
+msgstr "XThe amount of scanned email over time.X"
 
 #: /tmp/strings:12
 msgid "Email Usage (scanned)"
-msgstr ""
+msgstr "XEmail Usage (scanned)X"
 
 #: /tmp/strings:13
 msgid "The number of email addresses with phish."
-msgstr ""
+msgstr "XThe number of email addresses with phish.X"
 
 #: /tmp/strings:14
 msgid "Top Phish Recipients"
-msgstr ""
+msgstr "XTop Phish RecipientsX"
 
 #: /tmp/strings:15
 msgid "A summary of phish blocking actions for email activity."
-msgstr ""
+msgstr "XA summary of phish blocking actions for email activity.X"
 
 #: /tmp/strings:16
 msgid "Phish Blocker Summary"
-msgstr ""
+msgstr "XPhish Blocker SummaryX"
 
 #: /tmp/strings:17
 msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr ""
+msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
 
 #: /tmp/strings:18
 msgid "Quarantined Events"
-msgstr ""
+msgstr "XQuarantined EventsX"
 
 #: /tmp/strings:19
 msgid "All email sessions scanned by Phish Blocker."
-msgstr ""
+msgstr "XAll email sessions scanned by Phish Blocker.X"
 
 #: /tmp/strings:20
 msgid "All Email Events"
-msgstr ""
+msgstr "XAll Email EventsX"
 
 #: /tmp/strings:21
 msgid "All email sessions detected as phishing attempts."
-msgstr ""
+msgstr "XAll email sessions detected as phishing attempts.X"
 
 #: /tmp/strings:22
 msgid "All Phish Events"
-msgstr ""
+msgstr "XAll Phish EventsX"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"

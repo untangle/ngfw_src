@@ -7,7 +7,7 @@ msgstr "XEditX"
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:44
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: ../../uvm/servlets/webui/root/script/config/network.js:657
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1646
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1623
 msgid "Delete"
 msgstr "XDeleteX"
 
@@ -221,8 +221,8 @@ msgstr "XExporting Settings...X"
 #: ../../uvm/servlets/webui/root/script/window.js:255
 #: ../../uvm/servlets/webui/root/script/window.js:400
 #: ../../uvm/servlets/webui/root/script/util.js:79
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
 msgid "Please wait"
 msgstr "XPlease waitX"
 
@@ -324,7 +324,7 @@ msgid "Value"
 msgstr "XValueX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:142
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1567
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1544
 msgid "[enter column]"
 msgstr "X[enter column]X"
 
@@ -337,8 +337,8 @@ msgid "[select operator]"
 msgstr "X[select operator]X"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:172
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1205
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1624
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1182
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1601
 msgid "[no value]"
 msgstr "X[no value]X"
 
@@ -480,33 +480,33 @@ msgid "Time Chart Style"
 msgstr "XTime Chart StyleX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:360
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Line"
 msgstr "XLineX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:361
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
 msgid "Area"
 msgstr "XAreaX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:362
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
 msgid "Bar 3D"
 msgstr "XBar 3DX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:363
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
 msgid "Bar 3D Overlapped"
 msgstr "XBar 3D OverlappedX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:364
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
 msgid "Bar"
 msgstr "XBarX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:365
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
 msgid "Bar Overlapped"
 msgstr "XBar OverlappedX"
 
@@ -2416,6 +2416,7 @@ msgstr "XUse IP address from External interface (default)X"
 msgid "This works if your {0} Server has a routable public static IP address."
 msgstr "XThis works if your {0} Server has a routable public static IP address.X"
 "XThis works if your {0} Server has a routable public static IP address."
+"XXThis works if your {0} Server has a routable public static IP address."
 "XXThis works if your {0} Server has a routable public static IP address.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:381
@@ -2730,6 +2731,7 @@ msgstr "XFailureX"
 msgid "Error during Certificate Authority generation.  Click OK to continue."
 msgstr "XError during Certificate Authority generation.  Click OK to continue.X"
 "XError during Certificate Authority generation.  Click OK to continue."
+"XXError during Certificate Authority generation.  Click OK to continue."
 "XXError during Certificate Authority generation.  Click OK to continue.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:881
@@ -3704,8 +3706,8 @@ msgstr "XPriorityX"
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:480
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:492
 #: ../../uvm/servlets/webui/root/script/config/network.js:1661
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
 msgid "None"
 msgstr "XNoneX"
@@ -5580,6 +5582,7 @@ msgstr "XConnection Test OutputX"
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "XThe <b>Traceroute Test</b> traces the route to a given host or client.X"
 "XThe <b>Traceroute Test</b> traces the route to a given host or client.XXThe "
+"<b>Traceroute Test</b> traces the route to a given host or client.XXThe "
 "<b>Traceroute Test</b> traces the route to a given host or client.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5232
@@ -5798,7 +5801,7 @@ msgid "Download system logs."
 msgstr "XDownload system logs.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:232
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:507
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:484
 msgid "Download"
 msgstr "XDownloadX"
 
@@ -6736,6 +6739,7 @@ msgstr "XWould you like to install the recommended applications now?X"
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr "XThere are unsaved settings which will be lost. Do you want to continue?X"
 "XThere are unsaved settings which will be lost. Do you want to continue?"
+"XXThere are unsaved settings which will be lost. Do you want to continue?"
 "XXThere are unsaved settings which will be lost. Do you want to continue?X"
 
 #: ../../uvm/servlets/webui/root/script/window.js:98
@@ -6779,7 +6783,7 @@ msgid "Close"
 msgstr "XCloseX"
 
 #: ../../uvm/servlets/webui/root/script/window.js:547
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1905
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1882
 msgid "Done"
 msgstr "XDoneX"
 
@@ -6987,6 +6991,7 @@ msgstr "XContinue the Setup WizardX"
 msgid "The setup was started before and the last completed step is {0}{1}{2}."
 msgstr "XThe setup was started before and the last completed step is {0}{1}{2}.X"
 "XThe setup was started before and the last completed step is {0}{1}{2}.XXThe "
+"setup was started before and the last completed step is {0}{1}{2}.XXThe "
 "setup was started before and the last completed step is {0}{1}{2}.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:115
@@ -7060,6 +7065,7 @@ msgstr "XImportant:X"
 msgid " This step identifies the external, internal, and other network cards. "
 msgstr "X This step identifies the external, internal, and other network cards. X"
 "X This step identifies the external, internal, and other network cards. XX "
+"This step identifies the external, internal, and other network cards. XX "
 "This step identifies the external, internal, and other network cards. X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:476
@@ -7092,6 +7098,7 @@ msgstr "XStep 3: X"
 msgid "Repeat steps 1 and 2 for each network card and then click <i>Next</i>."
 msgstr "XRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
 "XRepeat steps 1 and 2 for each network card and then click <i>Next</i>."
+"XXRepeat steps 1 and 2 for each network card and then click <i>Next</i>."
 "XXRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:551
@@ -7367,12 +7374,14 @@ msgstr "XDo not automatically install new versions of {0} software.X"
 msgid "This is the recommended setting for large, complex, or sensitive sites."
 msgstr "XThis is the recommended setting for large, complex, or sensitive sites.X"
 "XThis is the recommended setting for large, complex, or sensitive sites."
+"XXThis is the recommended setting for large, complex, or sensitive sites."
 "XXThis is the recommended setting for large, complex, or sensitive sites.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1510
 msgid "Software Upgrades can be applied manually at any time when available."
 msgstr "XSoftware Upgrades can be applied manually at any time when available.X"
 "XSoftware Upgrades can be applied manually at any time when available."
+"XXSoftware Upgrades can be applied manually at any time when available."
 "XXSoftware Upgrades can be applied manually at any time when available.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1515
@@ -7528,135 +7537,135 @@ msgstr "XHint: Click this label on the legend to hide this seriesX"
 msgid "Select Report"
 msgstr "XSelect ReportX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:310
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:302
 msgid "Select Events"
 msgstr "XSelect EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:446
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:423
 msgid "Others"
 msgstr "XOthersX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:481
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:458
 msgid "Loading report... "
 msgstr "XLoading report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:488
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
 msgid "Customize"
 msgstr "XCustomizeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:491
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1244
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:468
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1221
 msgid "Advanced report customization"
 msgstr "XAdvanced report customizationX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:499
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:476
 msgid "View Events"
 msgstr "XView EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:501
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:478
 msgid "View events for this report"
 msgstr "XView events for this reportX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:545
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:522
 msgid "data"
 msgstr "XdataX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:550
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:633
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:527
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:610
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr "XvalueX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:555
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:532
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 msgid "none"
 msgstr "XnoneX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:594
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:571
 msgid "Not enough data to generate the chart."
 msgstr "XNot enough data to generate the chart.X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:641
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1166
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1530
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:618
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1143
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1507
 msgid "Add Condition"
 msgstr "XAdd ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
 msgid "Switch to Line Chart"
 msgstr "XSwitch to Line ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
 msgid "Switch to Area Chart"
 msgstr "XSwitch to Area ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
 msgid "Switch to Bar 3D Chart"
 msgstr "XSwitch to Bar 3D ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
 msgid "Switch to Bar 3D Overlapped Chart"
 msgstr "XSwitch to Bar 3D Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
 msgid "Switch to Bar Chart"
 msgstr "XSwitch to Bar ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
 msgid "Switch to Bar Overlapped Chart"
 msgstr "XSwitch to Bar Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:970
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:947
 msgid "Refreshing report... "
 msgstr "XRefreshing report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:985
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:962
 msgid "Querying Database..."
 msgstr "XQuerying Database...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1032
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1062
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1009
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1039
 msgid "Fetching Events..."
 msgstr "XFetching Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
 msgid "Downloading Chart..."
 msgstr "XDownloading Chart...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
 msgid "Exporting Events..."
 msgstr "XExporting Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1180
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1157
 msgid "Add a condition using report data:"
 msgstr "XAdd a condition using report data:X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1274
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1251
 msgid "Events for report: {0}"
 msgstr "XEvents for report: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
 msgid "Conditions: {0}"
 msgstr "XConditions: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1531
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1508
 msgid "Add New Condition"
 msgstr "XAdd New ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1538
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
 msgid "Quick Add"
 msgstr "XQuick AddX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1542
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1519
 msgid "Delete All"
 msgstr "XDelete AllX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1543
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1520
 msgid "Delete All Conditions"
 msgstr "XDelete All ConditionsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1878
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1855
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:269
@@ -7671,7 +7680,7 @@ msgstr "XDelete All ConditionsX"
 msgid "Time"
 msgstr "XTimeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1912
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 msgid "Clear Value"
 msgstr "XClear ValueX"
 
@@ -10125,6 +10134,7 @@ msgstr "XAvailable ReportsX"
 #: /tmp/strings:138 /tmp/strings:549
 msgid "The amount of total, scanned, and bypassed sessions created per minute."
 msgstr "XThe amount of total, scanned, and bypassed sessions created per minute.X"
+"XThe amount of total, scanned, and bypassed sessions created per minute.X"
 
 #: /tmp/strings:139 /tmp/strings:550
 msgid "Sessions Per Minute"
@@ -10137,6 +10147,7 @@ msgstr "XThe amount of total, scanned, and bypassed sessions over time.X"
 #: /tmp/strings:142 /tmp/strings:553
 msgid "The amount of total, scanned, and bypassed sessions created per hour."
 msgstr "XThe amount of total, scanned, and bypassed sessions created per hour.X"
+"XThe amount of total, scanned, and bypassed sessions created per hour.X"
 
 #: /tmp/strings:143 /tmp/strings:554
 msgid "Sessions Per Hour"
@@ -11855,16 +11866,16 @@ msgid "Session scanned"
 msgstr "XSession scannedX"
 
 msgid "decimal_sep"
-msgstr "Xdecimal_sepX"
+msgstr ","
 
 msgid "thousand_sep"
-msgstr "Xthousand_sepX"
+msgstr "."
 
 msgid "date_fmt"
-msgstr "Xdate_fmtX"
+msgstr "Y|m|d"
 
 msgid "timestamp_fmt"
-msgstr "Xtimestamp_fmtX"
+msgstr "Y|m|d g:i:s a"
 
 #, fuzzy
 #~ msgid "timestamp"

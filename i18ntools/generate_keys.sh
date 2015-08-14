@@ -300,7 +300,7 @@ function update_po( )
         msgmerge -U -N $po $pot
         # If its the test language, go ahead and set the values in the po file
         if [ $lang == "xx" ] ; then
-            cat $po | awk -f ../../../../work/src/i18ntools/translate_test_po.awk > /tmp/xx.po
+            ../../../../work/src/i18ntools/set_test_language_strings.py $po > /tmp/xx.po
             cp /tmp/xx.po $po
         fi
             

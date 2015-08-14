@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
+msgstr "XX"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
@@ -13,6 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -403,135 +405,135 @@ msgstr "XSessions blockedX"
 #: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
 #: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1 /tmp/strings:11
 msgid "The number of flagged session grouped by username."
-msgstr ""
+msgstr "XThe number of flagged session grouped by username.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
 #: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
 #: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "Top Flagged Usernames"
-msgstr ""
+msgstr "XTop Flagged UsernamesX"
 
 #: /tmp/strings:3
 msgid "The amount of scanned, flagged, and blocked sessions over time."
-msgstr ""
+msgstr "XThe amount of scanned, flagged, and blocked sessions over time.X"
 
 #: /tmp/strings:4
 msgid "Scanned Sessions"
-msgstr ""
+msgstr "XScanned SessionsX"
 
 #: /tmp/strings:5
 msgid "The number of scanned session grouped by username."
-msgstr ""
+msgstr "XThe number of scanned session grouped by username.X"
 
 #: /tmp/strings:6
 msgid "Top Scanned Usernames"
-msgstr ""
+msgstr "XTop Scanned UsernamesX"
 
 #: /tmp/strings:7 /tmp/strings:25
 msgid "The number of flagged session grouped by client."
-msgstr ""
+msgstr "XThe number of flagged session grouped by client.X"
 
 #: /tmp/strings:8
 msgid "Top Blocked Clients"
-msgstr ""
+msgstr "XTop Blocked ClientsX"
 
 #: /tmp/strings:9
 msgid "The number of flagged session grouped by hostname."
-msgstr ""
+msgstr "XThe number of flagged session grouped by hostname.X"
 
 #: /tmp/strings:10
 msgid "Top Flagged Hostnames"
-msgstr ""
+msgstr "XTop Flagged HostnamesX"
 
 #: /tmp/strings:12
 msgid "Top Blocked Usernames"
-msgstr ""
+msgstr "XTop Blocked UsernamesX"
 
 #: /tmp/strings:13 /tmp/strings:27
 msgid "The number of flagged session grouped by server (destination) port."
-msgstr ""
+msgstr "XThe number of flagged session grouped by server (destination) port.X"
 
 #: /tmp/strings:14
 msgid "Top Blocked Server Ports"
-msgstr ""
+msgstr "XTop Blocked Server PortsX"
 
 #: /tmp/strings:15
 msgid "The number of scanned session grouped by client."
-msgstr ""
+msgstr "XThe number of scanned session grouped by client.X"
 
 #: /tmp/strings:16
 msgid "Top Scanned Clients"
-msgstr ""
+msgstr "XTop Scanned ClientsX"
 
 #: /tmp/strings:17
 msgid "The number of scanned session grouped by server (destination) port."
-msgstr ""
+msgstr "XThe number of scanned session grouped by server (destination) port.X"
 
 #: /tmp/strings:18
 msgid "Top Scanned Server Ports"
-msgstr ""
+msgstr "XTop Scanned Server PortsX"
 
 #: /tmp/strings:19
 msgid "The number of scanned session grouped by hostname."
-msgstr ""
+msgstr "XThe number of scanned session grouped by hostname.X"
 
 #: /tmp/strings:20
 msgid "Top Scanned Hostnames"
-msgstr ""
+msgstr "XTop Scanned HostnamesX"
 
 #: /tmp/strings:21
 msgid "A summary of firewall actions."
-msgstr ""
+msgstr "XA summary of firewall actions.X"
 
 #: /tmp/strings:22
 msgid "Firewall Summary"
-msgstr ""
+msgstr "XFirewall SummaryX"
 
 #: /tmp/strings:23
 msgid "The number of blocked sessions grouped by hostname."
-msgstr ""
+msgstr "XThe number of blocked sessions grouped by hostname.X"
 
 #: /tmp/strings:24
 msgid "Top Blocked Hostnames"
-msgstr ""
+msgstr "XTop Blocked HostnamesX"
 
 #: /tmp/strings:26
 msgid "Top Flagged Clients"
-msgstr ""
+msgstr "XTop Flagged ClientsX"
 
 #: /tmp/strings:28
 msgid "Top Flagged Server Ports"
-msgstr ""
+msgstr "XTop Flagged Server PortsX"
 
 #: /tmp/strings:29
 msgid "Events blocked by Firewall App."
-msgstr ""
+msgstr "XEvents blocked by Firewall App.X"
 
 #: /tmp/strings:30
 msgid "Blocked Events"
-msgstr ""
+msgstr "XBlocked EventsX"
 
 #: /tmp/strings:31
 msgid "Events flagged by Firewall App."
-msgstr ""
+msgstr "XEvents flagged by Firewall App.X"
 
 #: /tmp/strings:32
 msgid "Flagged Events"
-msgstr ""
+msgstr "XFlagged EventsX"
 
 #: /tmp/strings:33
 msgid "All events scanned by Firewall App."
-msgstr ""
+msgstr "XAll events scanned by Firewall App.X"
 
 #: /tmp/strings:34
 msgid "All Events"
-msgstr ""
+msgstr "XAll EventsX"

@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr ""
+msgstr "XX"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
@@ -13,6 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
@@ -274,81 +276,81 @@ msgstr "XidentifiedX"
 #: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
 #: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
 msgid "description"
-msgstr ""
+msgstr "XdescriptionX"
 
 #: /tmp/strings:1
 msgid "The top logged sessions by user."
-msgstr ""
+msgstr "XThe top logged sessions by user.X"
 
 #: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
 #: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
 msgid "title"
-msgstr ""
+msgstr "XtitleX"
 
 #: /tmp/strings:2
 msgid "Top Logged Users"
-msgstr ""
+msgstr "XTop Logged UsersX"
 
 #: /tmp/strings:3
 msgid "The top logged sessions by protocol."
-msgstr ""
+msgstr "XThe top logged sessions by protocol.X"
 
 #: /tmp/strings:4
 msgid "Top Logged Protocols"
-msgstr ""
+msgstr "XTop Logged ProtocolsX"
 
 #: /tmp/strings:5
 msgid "The top blocked sessions by protocol."
-msgstr ""
+msgstr "XThe top blocked sessions by protocol.X"
 
 #: /tmp/strings:6
 msgid "Top Blocked Protocols"
-msgstr ""
+msgstr "XTop Blocked ProtocolsX"
 
 #: /tmp/strings:7
 msgid "The top blocked sessions by user."
-msgstr ""
+msgstr "XThe top blocked sessions by user.X"
 
 #: /tmp/strings:8
 msgid "Top Blocked Users"
-msgstr ""
+msgstr "XTop Blocked UsersX"
 
 #: /tmp/strings:9
 msgid "The top blocked sessions by host."
-msgstr ""
+msgstr "XThe top blocked sessions by host.X"
 
 #: /tmp/strings:10
 msgid "Top Blocked Hosts"
-msgstr ""
+msgstr "XTop Blocked HostsX"
 
 #: /tmp/strings:11
 msgid "The top logged sessions by host."
-msgstr ""
+msgstr "XThe top logged sessions by host.X"
 
 #: /tmp/strings:12
 msgid "Top Logged Hosts"
-msgstr ""
+msgstr "XTop Logged HostsX"
 
 #: /tmp/strings:13
 msgid "The number of logged and blocked sessions over time."
-msgstr ""
+msgstr "XThe number of logged and blocked sessions over time.X"
 
 #: /tmp/strings:14
 msgid "Detection Statistics"
-msgstr ""
+msgstr "XDetection StatisticsX"
 
 #: /tmp/strings:15
 msgid "All sessions scanned by Application Control Lite."
-msgstr ""
+msgstr "XAll sessions scanned by Application Control Lite.X"
 
 #: /tmp/strings:16
 msgid "All Events"
-msgstr ""
+msgstr "XAll EventsX"
 
 #: /tmp/strings:17
 msgid "All sessions matching an application signature and blocked."
-msgstr ""
+msgstr "XAll sessions matching an application signature and blocked.X"
 
 #: /tmp/strings:18
 msgid "Blocked Events"
-msgstr ""
+msgstr "XBlocked EventsX"

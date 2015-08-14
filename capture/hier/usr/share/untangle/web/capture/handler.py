@@ -310,7 +310,7 @@ def custom_upload(req,upload_file,appid):
         return extjs_reply(False, _('The uploaded ZIP file could not be extracted') )
 
     # return the status
-    detail = _("Extracted %d files and %d directories from %s" ) % (fcount,dcount,upload_file.filename)
+    detail = _("Extracted files and directories") + (" (%d, %d, %s)" % (fcount,dcount,upload_file.filename))
 
     return extjs_reply(True,detail,upload_file.filename)
 
@@ -340,7 +340,7 @@ def custom_remove(req,custom_file,appid):
     except:
         return extjs_reply(False, _("Unknown error removing custom files") )
 
-    detail = _("Removed %d files and %d directories") % (fcount,dcount)
+    detail = _("Removed files and directories.") + " (" + (fcount) + "," + str(dcount) + ")"
     return extjs_reply(True,detail)
 
 #-----------------------------------------------------------------------------
