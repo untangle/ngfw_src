@@ -489,8 +489,17 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         boolean match;
         IPMaskedAddress maskedAddress;
         List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
+        /*
+         * Pull static addresses
+         */
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
             if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
+                continue;
+            }
+            if ( interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ){
+                continue;
+            }
+            if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
                 continue;
             }
             if( ( ( getWan == false ) && ( interfaceSettings.getIsWan() == true ) ) ||
@@ -515,6 +524,43 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     addresses.add( maskedAddress );
                 }
             }   
+        }
+        if( getWan == true ){
+            /*
+             * Pull dynamic addresses for WAN interfaces
+             */
+            boolean isWanInterface;
+            for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
+                isWanInterface = false;
+                for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+                    if( interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId() ){
+                        continue;
+                    }
+                    if(interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
+                        continue;
+                    }
+                    if( interfaceSettings.getIsWan()){
+                        isWanInterface = true;
+                    }
+                }
+                if( isWanInterface == false ){
+                    continue;
+                }
+                if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null ){
+                    continue;
+                }
+                match = false;
+                maskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
+                for( IPMaskedAddress ma : addresses ){
+                    if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                        ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
+                        match = true;
+                    }
+                }
+                if( match == false ){
+                    addresses.add( maskedAddress );
+                }
+            }
         }
         if( addresses.size() == 0 ){
             /*
