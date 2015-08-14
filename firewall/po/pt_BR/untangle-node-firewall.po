@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 15:59-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2010-03-26 04:54-0700\n"
 "Last-Translator: Andre Cardoso <andrecv@hsbs.com.br>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -408,6 +408,144 @@ msgstr "Sessões registradas"
 #: ../src/com/untangle/node/firewall/FirewallImpl.java:90
 msgid "Sessions blocked"
 msgstr "Sessões bloqueadas"
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
+#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1 /tmp/strings:11
+msgid "The number of flagged session grouped by username."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
+#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Top Flagged Usernames"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Scanned Sessions"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The number of scanned session grouped by username."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "Top Scanned Usernames"
+msgstr ""
+
+#: /tmp/strings:7 /tmp/strings:25
+msgid "The number of flagged session grouped by client."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Top Blocked Clients"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "The number of flagged session grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Top Flagged Hostnames"
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Top Blocked Usernames"
+msgstr ""
+
+#: /tmp/strings:13 /tmp/strings:27
+msgid "The number of flagged session grouped by server (destination) port."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "Top Blocked Server Ports"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "The number of scanned session grouped by client."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "Top Scanned Clients"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "The number of scanned session grouped by server (destination) port."
+msgstr ""
+
+#: /tmp/strings:18
+msgid "Top Scanned Server Ports"
+msgstr ""
+
+#: /tmp/strings:19
+msgid "The number of scanned session grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:20
+msgid "Top Scanned Hostnames"
+msgstr ""
+
+#: /tmp/strings:21
+msgid "A summary of firewall actions."
+msgstr ""
+
+#: /tmp/strings:22
+msgid "Firewall Summary"
+msgstr ""
+
+#: /tmp/strings:23
+msgid "The number of blocked sessions grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:24
+msgid "Top Blocked Hostnames"
+msgstr ""
+
+#: /tmp/strings:26
+msgid "Top Flagged Clients"
+msgstr ""
+
+#: /tmp/strings:28
+msgid "Top Flagged Server Ports"
+msgstr ""
+
+#: /tmp/strings:29
+msgid "Events blocked by Firewall App."
+msgstr ""
+
+#: /tmp/strings:30
+msgid "Blocked Events"
+msgstr ""
+
+#: /tmp/strings:31
+msgid "Events flagged by Firewall App."
+msgstr ""
+
+#: /tmp/strings:32
+msgid "Flagged Events"
+msgstr ""
+
+#: /tmp/strings:33
+msgid "All events scanned by Firewall App."
+msgstr ""
+
+#: /tmp/strings:34
+msgid "All Events"
+msgstr ""
 
 #~ msgid "Rule"
 #~ msgstr "Regra"

@@ -2,7 +2,7 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -571,6 +571,7 @@ msgid "Session Timeout"
 msgstr ""
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:40
+#: /tmp/strings:18
 msgid "Idle Timeout"
 msgstr ""
 
@@ -663,6 +664,7 @@ msgid "Top Captive Portal Users"
 msgstr ""
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:350
+#: /tmp/strings:6
 msgid "Top Blocked Clients"
 msgstr ""
 
@@ -762,6 +764,116 @@ msgstr ""
 
 #: ../src/com/untangle/node/capture/CaptureUserEvent.java:93
 msgid "User"
+msgstr ""
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1
+msgid "The top active users that logged in to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Top Active Users"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "A summary of Captive Portal activity."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Activity Summary"
+msgstr ""
+
+#: /tmp/strings:5
+msgid ""
+"The top clients that were blocked by Captive Portal because they were not "
+"logged in."
+msgstr ""
+
+#: /tmp/strings:7
+msgid "Sessions that reached the session timeout."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Session Timeout User Events"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "Sessions matching capture rules."
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Captured Session Events"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "Failed logins to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Login Failure User Events"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "All user logout events."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "User Logout User Events"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "Sessions logged off by the admin."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "Admin Logout User Events"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "Sessions that reached the idle timeout."
+msgstr ""
+
+#: /tmp/strings:19
+msgid "Successful logins to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:20
+msgid "Login Success User Events"
+msgstr ""
+
+#: /tmp/strings:21
+msgid "All user sessions processed by Captive Portal."
+msgstr ""
+
+#: /tmp/strings:22
+msgid "All User Events"
+msgstr ""
+
+#: /tmp/strings:23
+msgid "All sessions processed by Captive Portal."
+msgstr ""
+
+#: /tmp/strings:24
+msgid "All Session Events"
+msgstr ""
+
+#: /tmp/strings:25
+msgid "Sessions matching passed hosts."
+msgstr ""
+
+#: /tmp/strings:26
+msgid "Passed Session Events"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/capture/handler.py:192

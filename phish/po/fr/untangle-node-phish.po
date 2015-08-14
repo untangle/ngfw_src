@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2010-03-31 07:36-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,6 +127,106 @@ msgstr ""
 
 #: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
+msgstr ""
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1
+msgid "The amount of scanned, clean, and phish email over time."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Email Usage (all)"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The amount of clean email over time."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Email Usage (clean)"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The number of IP addresses sending phish."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "Top Phish Sender Addresses"
+msgstr ""
+
+#: /tmp/strings:7
+msgid "The amount of phish email over time."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Email Usage (phish)"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "The ratio of phish (true) to ham (false)"
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Phish Ratio"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "The amount of scanned email over time."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Email Usage (scanned)"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "The number of email addresses with phish."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "Top Phish Recipients"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "A summary of phish blocking actions for email activity."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "Phish Blocker Summary"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "All email sessions detected as phishing attempts and quarantined."
+msgstr ""
+
+#: /tmp/strings:18
+msgid "Quarantined Events"
+msgstr ""
+
+#: /tmp/strings:19
+msgid "All email sessions scanned by Phish Blocker."
+msgstr ""
+
+#: /tmp/strings:20
+msgid "All Email Events"
+msgstr ""
+
+#: /tmp/strings:21
+msgid "All email sessions detected as phishing attempts."
+msgstr ""
+
+#: /tmp/strings:22
+msgid "All Phish Events"
 msgstr ""
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71

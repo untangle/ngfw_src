@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 07:08-0800\n"
 "Last-Translator: Audidata Sistemas, S.L. <info@audidata.es>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -1040,6 +1040,200 @@ msgstr "Sesiones registradas"
 msgid "Sessions blocked"
 msgstr "Sesiones bloqueadas"
 
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
+#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
+#: /tmp/strings:35 /tmp/strings:37 /tmp/strings:39 /tmp/strings:41
+#: /tmp/strings:43
+msgid "description"
+msgstr "Descripción"
+
+#: /tmp/strings:1
+msgid "The amount of detected and blocked intrusions over time."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
+#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
+#: /tmp/strings:36 /tmp/strings:38 /tmp/strings:40 /tmp/strings:42
+#: /tmp/strings:44
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Intrusion Detection (all)"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The number of intrusions detected grouped by source IP address."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Top Source IP Addresses (logged)"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The number of intrusions detected grouped by category."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "Top Categories (logged)"
+msgstr ""
+
+#: /tmp/strings:7
+msgid "The number of intrusions blocked by source port."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Top Source Port (blocked)"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "The number of intrusions blocked by rule."
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Top Rules (blocked)"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "The number of intrusions blocked by destination port."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Top Destination Port (blocked)"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "The amount of blocked intrusions over time."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "Intrusion Detection (blocked)"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "The number of intrusions blocked by classtype."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "Top Classtypes (blocked)"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "The number of intrusions detected grouped by rule."
+msgstr ""
+
+#: /tmp/strings:18
+msgid "Top Rules (logged)"
+msgstr ""
+
+#: /tmp/strings:19
+msgid "The number of intrusions blocked by category."
+msgstr ""
+
+#: /tmp/strings:20
+msgid "Top Categories (blocked)"
+msgstr ""
+
+#: /tmp/strings:21
+msgid "The number of intrusions blocked by source IP address."
+msgstr ""
+
+#: /tmp/strings:22
+msgid "Top Source IP Addresses (blocked)"
+msgstr ""
+
+#: /tmp/strings:23
+msgid "The number of intrusions detected grouped by destination IP address."
+msgstr ""
+
+#: /tmp/strings:24
+msgid "Top Destination IP Addresses (logged)"
+msgstr ""
+
+#: /tmp/strings:25
+msgid "The amount of detected pintrusions over time."
+msgstr ""
+
+#: /tmp/strings:26
+msgid "Intrusion Detection (logged)"
+msgstr ""
+
+#: /tmp/strings:27
+msgid "The number of intrusions detected grouped by source port."
+msgstr ""
+
+#: /tmp/strings:28
+msgid "Top Source Ports (logged)"
+msgstr ""
+
+#: /tmp/strings:29
+msgid "A summary of intrusion detection and prevention actions."
+msgstr ""
+
+#: /tmp/strings:30
+msgid "Intrusion Prevention Summary"
+msgstr ""
+
+#: /tmp/strings:31
+msgid "The number of intrusions detected grouped by classtype."
+msgstr ""
+
+#: /tmp/strings:32
+msgid "Top Classtypes (logged)"
+msgstr ""
+
+#: /tmp/strings:33
+msgid "The number of intrusions detected grouped by destination port."
+msgstr ""
+
+#: /tmp/strings:34
+msgid "Top Destination Ports (logged)"
+msgstr ""
+
+#: /tmp/strings:35
+msgid "The number of intrusions blocked by protocol."
+msgstr ""
+
+#: /tmp/strings:36
+msgid "Top Protocols (blocked)"
+msgstr ""
+
+#: /tmp/strings:37
+msgid "The number of intrusions blocked by destination IP address."
+msgstr ""
+
+#: /tmp/strings:38
+msgid "Top Destination IP Addresses (blocked)"
+msgstr ""
+
+#: /tmp/strings:39
+msgid "The number of intrusions detected grouped by protocol."
+msgstr ""
+
+#: /tmp/strings:40
+msgid "Top Protocols (logged)"
+msgstr ""
+
+#: /tmp/strings:41
+msgid "All sessions scanned by Intrusion Prevention."
+msgstr ""
+
+#: /tmp/strings:42
+msgid "All Events"
+msgstr "Todos los eventos"
+
+#: /tmp/strings:43
+msgid "All sessions matching Intrusion Prevention signatures and blocked."
+msgstr ""
+
+#: /tmp/strings:44
+msgid "Blocked Events"
+msgstr "Eventos bloqueados"
+
 #~ msgid "[no category]"
 #~ msgstr "[sin categoría]"
 
@@ -1060,9 +1254,6 @@ msgstr "Sesiones bloqueadas"
 
 #~ msgid "log"
 #~ msgstr "Registro"
-
-#~ msgid "description"
-#~ msgstr "Descripción"
 
 #~ msgid "id"
 #~ msgstr "id"
@@ -1111,12 +1302,6 @@ msgstr "Sesiones bloqueadas"
 
 #~ msgid "Port"
 #~ msgstr "Puerto"
-
-#~ msgid "All Events"
-#~ msgstr "Todos los eventos"
-
-#~ msgid "Blocked Events"
-#~ msgstr "Eventos bloqueados"
 
 #, fuzzy
 #~ msgid "Timestamp"

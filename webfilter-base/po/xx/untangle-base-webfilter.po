@@ -14,6 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "XXReport-Msgid-Bugs-To: \n"
+"XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.1.0\n"
@@ -105,6 +106,7 @@ msgstr "XBlock CategoriesX"
 msgid "Block or flag access to sites associated with the specified category."
 msgstr ""
 "XBlock or flag access to sites associated with the specified category."
+"XXBlock or flag access to sites associated with the specified category."
 "XXBlock or flag access to sites associated with the specified category.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:169
@@ -182,6 +184,7 @@ msgstr "XBlock File TypesX"
 msgid "Block or flag access to files associated with the specified file type."
 msgstr ""
 "XBlock or flag access to files associated with the specified file type."
+"XXBlock or flag access to files associated with the specified file type."
 "XXBlock or flag access to files associated with the specified file type.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:390
@@ -213,6 +216,7 @@ msgstr "XBlock MIME TypesX"
 msgid "Block or flag access to files associated with the specified MIME type."
 msgstr ""
 "XBlock or flag access to files associated with the specified MIME type."
+"XXBlock or flag access to files associated with the specified MIME type."
 "XXBlock or flag access to files associated with the specified MIME type.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:529
@@ -255,6 +259,7 @@ msgstr "XPass ClientsX"
 msgid "Allow access for client networks regardless of matching block policies."
 msgstr ""
 "XAllow access for client networks regardless of matching block policies."
+"XXAllow access for client networks regardless of matching block policies."
 "XXAllow access for client networks regardless of matching block policies.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:684

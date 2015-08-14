@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 15:59-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2008-11-13 08:48-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -274,6 +274,88 @@ msgstr "bloqueado"
 msgid "identified"
 msgstr ""
 
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+msgid "description"
+msgstr "descrição"
+
+#: /tmp/strings:1
+msgid "The top logged sessions by user."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Top Logged Users"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The top logged sessions by protocol."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Top Logged Protocols"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The top blocked sessions by protocol."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "Top Blocked Protocols"
+msgstr ""
+
+#: /tmp/strings:7
+msgid "The top blocked sessions by user."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Top Blocked Users"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "The top blocked sessions by host."
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Top Blocked Hosts"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "The top logged sessions by host."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Top Logged Hosts"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "The number of logged and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "Detection Statistics"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "All sessions scanned by Application Control Lite."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "All Events"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "All sessions matching an application signature and blocked."
+msgstr ""
+
+#: /tmp/strings:18
+msgid "Blocked Events"
+msgstr ""
+
 #~ msgid "[no protocol]"
 #~ msgstr "[nenhum protocolo]"
 
@@ -298,9 +380,6 @@ msgstr ""
 
 #~ msgid "category"
 #~ msgstr "categoria"
-
-#~ msgid "description"
-#~ msgstr "descrição"
 
 #~ msgid "client"
 #~ msgstr "cliente"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2012-01-09 07:54-0800\n"
 "Last-Translator: Audidata Sistemas, S.L. <info@audidata.es>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -545,6 +545,64 @@ msgstr ""
 
 #: ../src/com/untangle/node/openvpn/OpenVpnStatusEvent.java:156
 msgid "status"
+msgstr ""
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1
+msgid "The approximate amount of data transfered over openvpn connections."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "OpenVPN Bandwidth Usage"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The number of bytes transferred grouped by remote client."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Top Clients (by usage)"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The amount of openvpn sessions over time."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "OpenVPN Sessions"
+msgstr ""
+
+#: /tmp/strings:7
+msgid "The amount of login and logout events over time."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "OpenVPN Events"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "Shows all OpenVPN connection traffic statistics events."
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Statistic Events"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "OpenVPN client connection events."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Connection Events"
 msgstr ""
 
 #~ msgid ""

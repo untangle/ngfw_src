@@ -4,7 +4,6 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
 "Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
 "Language-Team: Dirk Morris <dmorris@untangle.com>\n"
@@ -12,6 +11,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXPOT-Creation-Date: 2015-08-14 10:31-0700\n"
 "XXReport-Msgid-Bugs-To: \n"
 "XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -211,3 +211,111 @@ msgstr "XSpam RateX"
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
 msgstr "XTop Ten SpammedX"
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1
+msgid "The amount of scanned, clean, and spam email over time."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2
+msgid "Email Usage (all)"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "The amount of clean email over time."
+msgstr ""
+
+#: /tmp/strings:4
+msgid "Email Usage (clean)"
+msgstr ""
+
+#: /tmp/strings:5
+msgid "The number of IP addresses sending spam."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "Top Spam Sender Addresses"
+msgstr ""
+
+#: /tmp/strings:7
+msgid "The amount of spam email over time."
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Email Usage (spam)"
+msgstr ""
+
+#: /tmp/strings:9
+msgid "The ratio of spam (true) to ham (false)"
+msgstr ""
+
+#: /tmp/strings:10
+msgid "Spam Ratio"
+msgstr ""
+
+#: /tmp/strings:11
+msgid "The amount of scanned email over time."
+msgstr ""
+
+#: /tmp/strings:12
+msgid "Email Usage (scanned)"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "The number of email addresses with spam."
+msgstr ""
+
+#: /tmp/strings:14
+msgid "Top Spam Recipients"
+msgstr ""
+
+#: /tmp/strings:15
+msgid "A summary of spam blocking actions for email activity."
+msgstr ""
+
+#: /tmp/strings:16
+msgid "Spam Blocker Lite Summary"
+msgstr ""
+
+#: /tmp/strings:17
+msgid "All emails marked as Spam and quarantined."
+msgstr ""
+
+#: /tmp/strings:18
+msgid "Quarantined Events"
+msgstr ""
+
+#: /tmp/strings:19
+msgid "All emails scanned by Spam Blocker."
+msgstr ""
+
+#: /tmp/strings:20
+msgid "All Email Events"
+msgstr ""
+
+#: /tmp/strings:21
+msgid "All emails marked as Spam."
+msgstr ""
+
+#: /tmp/strings:22
+msgid "All Spam Events"
+msgstr ""
+
+#: /tmp/strings:23
+msgid "All email sessions that were tarpitted."
+msgstr ""
+
+#: /tmp/strings:24
+msgid "Tarpit Events"
+msgstr ""

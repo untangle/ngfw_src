@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-14 14:35-0700\n"
 "PO-Revision-Date: 2013-10-26 03:36+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -568,6 +568,7 @@ msgid "Cpu System"
 msgstr "CPU システム"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:279
+#: /tmp/strings:5
 msgid "Disk Usage"
 msgstr "ディスク使用量"
 
@@ -736,7 +737,7 @@ msgstr "成功"
 msgid "Reason"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:618
+#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:618 /tmp/strings:14
 msgid "Alert Events"
 msgstr ""
 
@@ -774,6 +775,76 @@ msgstr "無効な設定"
 msgid "has online access, but no password is set."
 msgstr ""
 "オンラインアクセスが設定されていますが、パスワードが設定されていません。"
+
+#: /tmp/strings:1 /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8
+#: /tmp/strings:10 /tmp/strings:12 /tmp/strings:13
+msgid "description"
+msgstr ""
+
+#: /tmp/strings:1
+msgid "The top alerts."
+msgstr ""
+
+#: /tmp/strings:2
+msgid "pieGroupColumn"
+msgstr ""
+
+#: /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9 /tmp/strings:11
+#: /tmp/strings:14
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:3
+msgid "Top Alerts"
+msgstr ""
+
+#: /tmp/strings:4
+msgid "The disk utilization over time."
+msgstr ""
+
+#: /tmp/strings:6
+msgid "The CPU load over time."
+msgstr ""
+
+#: /tmp/strings:7
+msgid "CPU Load"
+msgstr ""
+
+#: /tmp/strings:8
+msgid "Alerts over time."
+msgstr ""
+
+#: /tmp/strings:9
+msgid "Alerts"
+msgstr ""
+
+#: /tmp/strings:10
+msgid "The amount of free memory over time."
+msgstr ""
+
+#: /tmp/strings:11
+msgid "Memory Usage"
+msgstr ""
+
+#: /tmp/strings:12
+msgid "defaultColumns"
+msgstr ""
+
+#: /tmp/strings:12
+msgid "time_stamp"
+msgstr ""
+
+#: /tmp/strings:12
+msgid "summary_text"
+msgstr ""
+
+#: /tmp/strings:12
+msgid "json"
+msgstr ""
+
+#: /tmp/strings:13
+msgid "Log of all alerts created by alert rules."
+msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:17
 msgid "Event ID"
