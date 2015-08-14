@@ -4,9 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-03 15:59-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
 "Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
 "Language-Team: Dirk Morris <dmorris@untangle.com>\n"
@@ -14,124 +13,126 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Test\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:13
 msgid "Destination Address"
-msgstr ""
+msgstr "XDestination AddressX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:574
 msgid "Destination Port"
-msgstr ""
+msgstr "XDestination PortX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
 msgid "Destination Interface"
-msgstr ""
+msgstr "XDestination InterfaceX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
 msgid "Source Address"
-msgstr ""
+msgstr "XSource AddressX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:576
 msgid "Source Port"
-msgstr ""
+msgstr "XSource PortX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
 msgid "Source Interface"
-msgstr ""
+msgstr "XSource InterfaceX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "Protocol"
-msgstr ""
+msgstr "XProtocolX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "any"
-msgstr ""
+msgstr "XanyX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
 msgid "Username"
-msgstr ""
+msgstr "XUsernameX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
 msgid "Client Hostname"
-msgstr ""
+msgstr "XClient HostnameX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
 msgid "Server Hostname"
-msgstr ""
+msgstr "XServer HostnameX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
 msgid "Client MAC Address"
-msgstr ""
+msgstr "XClient MAC AddressX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
 msgid "Server MAC Address"
-msgstr ""
+msgstr "XServer MAC AddressX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
 msgid "Client MAC Vendor"
-msgstr ""
+msgstr "XClient MAC VendorX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
 msgid "Server MAC Vendor"
-msgstr ""
+msgstr "XServer MAC VendorX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:27
 msgid "Client in Penalty Box"
-msgstr ""
+msgstr "XClient in Penalty BoxX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:28
 msgid "Server in Penalty Box"
-msgstr ""
+msgstr "XServer in Penalty BoxX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
 msgid "Client has no Quota"
-msgstr ""
+msgstr "XClient has no QuotaX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:30
 msgid "Server has no Quota"
-msgstr ""
+msgstr "XServer has no QuotaX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
 msgid "Client has exceeded Quota"
-msgstr ""
+msgstr "XClient has exceeded QuotaX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:32
 msgid "Server has exceeded Quota"
-msgstr ""
+msgstr "XServer has exceeded QuotaX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:33
 msgid "Client Quota Attainment"
-msgstr ""
+msgstr "XClient Quota AttainmentX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:34
 msgid "Server Quota Attainment"
-msgstr ""
+msgstr "XServer Quota AttainmentX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:35
 msgid "Directory Connector: User in Group"
-msgstr ""
+msgstr "XDirectory Connector: User in GroupX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:36
 msgid "HTTP: Client User Agent"
-msgstr ""
+msgstr "XHTTP: Client User AgentX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
 msgid "HTTP: Client User OS"
-msgstr ""
+msgstr "XHTTP: Client User OSX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:45
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:59
 msgid "Rules"
-msgstr ""
+msgstr "XRulesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
 msgid "Note"
-msgstr ""
+msgstr "XNoteX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:52
 msgid ""
@@ -139,137 +140,137 @@ msgid ""
 "traffic based on a set of rules. To learn more click on the <b>Help</b> "
 "button below.<br/> Routing and Port Forwarding functionality can be found "
 "elsewhere in Config->Networking."
-msgstr ""
+msgstr "XX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:85
 msgid "Rule Id"
-msgstr ""
+msgstr "XRule IdX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:89
 msgid "new"
-msgstr ""
+msgstr "XnewX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:93
 msgid "Enable"
-msgstr ""
+msgstr "XEnableX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:98
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:124
 msgid "Description"
-msgstr ""
+msgstr "XDescriptionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:104
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Block"
-msgstr ""
+msgstr "XBlockX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:110
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
 msgid "Flag"
-msgstr ""
+msgstr "XFlagX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:119
 msgid "Enable Rule"
-msgstr ""
+msgstr "XEnable RuleX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:125
 msgid "[no description]"
-msgstr ""
+msgstr "X[no description]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
 msgid "If all of the following conditions are met:"
-msgstr ""
+msgstr "XIf all of the following conditions are met:X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:139
 msgid "Perform the following action(s):"
-msgstr ""
+msgstr "XPerform the following action(s):X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:145
 msgid "Action Type"
-msgstr ""
+msgstr "XAction TypeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Pass"
-msgstr ""
+msgstr "XPassX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:55
 msgid "Summary Report"
-msgstr ""
+msgstr "XSummary ReportX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:77
 msgid "scanned"
-msgstr ""
+msgstr "XscannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:78
 msgid "sessions and blocked"
-msgstr ""
+msgstr "Xsessions and blockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:79
 msgid "according to the rules"
-msgstr ""
+msgstr "Xaccording to the rulesX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:122
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:201
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:203
 msgid "Sessions"
-msgstr ""
+msgstr "XSessionsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
 msgid "Avg Scanned"
-msgstr ""
+msgstr "XAvg ScannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Scans"
-msgstr ""
+msgstr "XScansX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Max Scanned"
-msgstr ""
+msgstr "XMax ScannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
 msgid "Avg Flagged"
-msgstr ""
+msgstr "XAvg FlaggedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 msgid "Flags"
-msgstr ""
+msgstr "XFlagsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 msgid "Max Flagged"
-msgstr ""
+msgstr "XMax FlaggedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
 msgid "Avg Blocked"
-msgstr ""
+msgstr "XAvg BlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 msgid "Blocks"
-msgstr ""
+msgstr "XBlocksX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 msgid "Max Blocked"
-msgstr ""
+msgstr "XMax BlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:207
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:571
 msgid "Blocked"
-msgstr ""
+msgstr "XBlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:208
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:572
 msgid "Flagged"
-msgstr ""
+msgstr "XFlaggedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:209
 msgid "Scanned"
-msgstr ""
+msgstr "XScannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:218
 msgid "Top Firewall Flagging Rules By Hits"
-msgstr ""
+msgstr "XTop Firewall Flagging Rules By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:259
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:315
@@ -278,120 +279,120 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:484
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:540
 msgid "Hits"
-msgstr ""
+msgstr "XHitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:266
 msgid "Top Ten Firewall Flagging Rules (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Flagging Rules (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:267
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:436
 msgid "Rule #"
-msgstr ""
+msgstr "XRule #X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:268
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:324
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:380
 msgid "Flags Per Day"
-msgstr ""
+msgstr "XFlags Per DayX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:276
 msgid "Top Firewall Flagged Hosts By Hits"
-msgstr ""
+msgstr "XTop Firewall Flagged Hosts By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:322
 msgid "Top Ten Firewall Flagged Hosts (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Flagged Hosts (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:323
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:492
 msgid "Host"
-msgstr ""
+msgstr "XHostX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:331
 msgid "Top Firewall Flagged Users By Hits"
-msgstr ""
+msgstr "XTop Firewall Flagged Users By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:378
 msgid "Top Ten Firewall Flagged Users (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Flagged Users (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:379
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:548
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:568
 msgid "User"
-msgstr ""
+msgstr "XUserX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:388
 msgid "Top Firewall Blocking Rules By Hits"
-msgstr ""
+msgstr "XTop Firewall Blocking Rules By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:435
 msgid "Top Ten Firewall Blocking Rules (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Blocking Rules (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:437
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:493
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:549
 msgid "Blocks Per Day"
-msgstr ""
+msgstr "XBlocks Per DayX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:445
 msgid "Top Firewall Blocked Hosts By Hits"
-msgstr ""
+msgstr "XTop Firewall Blocked Hosts By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:491
 msgid "Top Ten Firewall Blocked Hosts (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Blocked Hosts (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:500
 msgid "Top Firewall Blocked Users By Hits"
-msgstr ""
+msgstr "XTop Firewall Blocked Users By HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:547
 msgid "Top Ten Firewall Blocked Users (by Hits)"
-msgstr ""
+msgstr "XTop Ten Firewall Blocked Users (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:557
 msgid "Firewall Events"
-msgstr ""
+msgstr "XFirewall EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:563
 msgid "Time"
-msgstr ""
+msgstr "XTimeX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:566
 msgid "Client"
-msgstr ""
+msgstr "XClientX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:570
 msgid "Rule Applied"
-msgstr ""
+msgstr "XRule AppliedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:573
 msgid "Destination Ip"
-msgstr ""
+msgstr "XDestination IpX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:575
 msgid "Source Ip"
-msgstr ""
+msgstr "XSource IpX"
 
 #: ../src/com/untangle/node/firewall/FirewallEvent.java:69
 msgid "blocked"
-msgstr ""
+msgstr "XblockedX"
 
 #: ../src/com/untangle/node/firewall/FirewallEvent.java:71
 msgid "password"
-msgstr ""
+msgstr "XpasswordX"
 
 #: ../src/com/untangle/node/firewall/FirewallImpl.java:88
 msgid "Sessions passed"
-msgstr ""
+msgstr "XSessions passedX"
 
 #: ../src/com/untangle/node/firewall/FirewallImpl.java:89
 msgid "Sessions flagged"
-msgstr ""
+msgstr "XSessions flaggedX"
 
 #: ../src/com/untangle/node/firewall/FirewallImpl.java:90
 msgid "Sessions blocked"
-msgstr ""
+msgstr "XSessions blockedX"

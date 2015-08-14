@@ -4,9 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-03 22:15-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
 "Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
 "Language-Team: Dirk Morris <dmorris@untangle.com>\n"
@@ -14,25 +13,27 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Test\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:30
 msgid "Site cannot contain URL protocol."
-msgstr ""
+msgstr "XSite cannot contain URL protocol.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:33
 msgid "Site cannot contain port."
-msgstr ""
+msgstr "XSite cannot contain port.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:48
 msgid "Invalid \"URL\" specified"
-msgstr ""
+msgstr "XInvalid \"URL\" specifiedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:59
 msgid "Categories"
-msgstr ""
+msgstr "XCategoriesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:69
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:109
@@ -45,7 +46,7 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1183
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1244
 msgid "Category"
-msgstr ""
+msgstr "XCategoryX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:75
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:117
@@ -56,7 +57,7 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:414
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:454
 msgid "Block"
-msgstr ""
+msgstr "XBlockX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:91
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:132
@@ -67,7 +68,7 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:420
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:459
 msgid "Flag"
-msgstr ""
+msgstr "XFlagX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:94
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:133
@@ -78,7 +79,7 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:423
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:460
 msgid "Flag as Violation"
-msgstr ""
+msgstr "XFlag as ViolationX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:96
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:138
@@ -93,21 +94,23 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:621
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:648
 msgid "Description"
-msgstr ""
+msgstr "XDescriptionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:145
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:159
 msgid "Block Categories"
-msgstr ""
+msgstr "XBlock CategoriesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:160
 msgid "Block or flag access to sites associated with the specified category."
 msgstr ""
+"XBlock or flag access to sites associated with the specified category."
+"XXBlock or flag access to sites associated with the specified category.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:169
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:506
 msgid "Sites"
-msgstr ""
+msgstr "XSitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:183
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:219
@@ -115,14 +118,14 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:546
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1097
 msgid "Site"
-msgstr ""
+msgstr "XSiteX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:188
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:220
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:522
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:547
 msgid "[enter site]"
-msgstr ""
+msgstr "X[enter site]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:212
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:240
@@ -135,214 +138,220 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:627
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:649
 msgid "[no description]"
-msgstr ""
+msgstr "X[no description]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:247
 msgid "Block Sites"
-msgstr ""
+msgstr "XBlock SitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:261
 msgid "Blocked Sites"
-msgstr ""
+msgstr "XBlocked SitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:262
 msgid "Block or flag access to the specified site."
-msgstr ""
+msgstr "XBlock or flag access to the specified site.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:274
 msgid "File Types"
-msgstr ""
+msgstr "XFile TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:287
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:330
 msgid "File Type"
-msgstr ""
+msgstr "XFile TypeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:292
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:331
 msgid "[enter extension]"
-msgstr ""
+msgstr "X[enter extension]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:314
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:350
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:430
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:466
 msgid "[no category]"
-msgstr ""
+msgstr "X[no category]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:364
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:378
 msgid "Block File Types"
-msgstr ""
+msgstr "XBlock File TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:379
 msgid "Block or flag access to files associated with the specified file type."
 msgstr ""
+"XBlock or flag access to files associated with the specified file type."
+"XXBlock or flag access to files associated with the specified file type.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:390
 msgid "MIME Types"
-msgstr ""
+msgstr "XMIME TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:403
 msgid "MIME type"
-msgstr ""
+msgstr "XMIME typeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:408
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:447
 msgid "[enter mime type]"
-msgstr ""
+msgstr "X[enter mime type]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:446
 msgid "MIME Type"
-msgstr ""
+msgstr "XMIME TypeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:480
 msgid "Block Mime Types"
-msgstr ""
+msgstr "XBlock Mime TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:494
 msgid "Block MIME Types"
-msgstr ""
+msgstr "XBlock MIME TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:495
 msgid "Block or flag access to files associated with the specified MIME type."
 msgstr ""
+"XBlock or flag access to files associated with the specified MIME type."
+"XXBlock or flag access to files associated with the specified MIME type.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:529
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:555
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:617
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:643
 msgid "Pass"
-msgstr ""
+msgstr "XPassX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:571
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:582
 msgid "Pass Sites"
-msgstr ""
+msgstr "XPass SitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:583
 msgid ""
 "Allow access to the specified site regardless of matching block policies."
-msgstr ""
+msgstr "XX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:594
 msgid "Client IP addresses"
-msgstr ""
+msgstr "XClient IP addressesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:605
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:634
 msgid "IP address/range"
-msgstr ""
+msgstr "XIP address/rangeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:610
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:635
 msgid "[enter IP address/range]"
-msgstr ""
+msgstr "X[enter IP address/range]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:659
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:670
 msgid "Pass Clients"
-msgstr ""
+msgstr "XPass ClientsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:671
 msgid "Allow access for client networks regardless of matching block policies."
 msgstr ""
+"XAllow access for client networks regardless of matching block policies."
+"XXAllow access for client networks regardless of matching block policies.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:684
 msgid "Advanced"
-msgstr ""
+msgstr "XAdvancedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:692
 msgid "Advanced Options"
-msgstr ""
+msgstr "XAdvanced OptionsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:695
 msgid "Block pages from IP only hosts"
-msgstr ""
+msgstr "XBlock pages from IP only hostsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:708
 msgid "Pass if referers match Pass Sites"
-msgstr ""
+msgstr "XPass if referers match Pass SitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:721
 msgid "Restrict Google applications"
-msgstr ""
+msgstr "XRestrict Google applicationsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:739
 msgid "NOTE:"
-msgstr ""
+msgstr "XNOTE:X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:739
 msgid ""
 "must be installed and running with the Inspect Google Traffic configured to "
 "Inspect."
-msgstr ""
+msgstr "XX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:745
 msgid "Allowed Domain(s)"
-msgstr ""
+msgstr "XAllowed Domain(s)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:747
 msgid ""
 "Specify the comma separated list of domains allowed to access non-search "
 "Google applications"
-msgstr ""
+msgstr "XX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:756
 msgid "Domain cannot contain URL protocol."
-msgstr ""
+msgstr "XDomain cannot contain URL protocol.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:759
 msgid "Domain cannot contain port."
-msgstr ""
+msgstr "XDomain cannot contain port.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:762
 msgid "Invalid domain specified"
-msgstr ""
+msgstr "XInvalid domain specifiedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:780
 msgid "Unblock"
-msgstr ""
+msgstr "XUnblockX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:782
 msgid "None"
-msgstr ""
+msgstr "XNoneX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:783
 msgid "Temporary"
-msgstr ""
+msgstr "XTemporaryX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:784
 msgid "Permanent and Global"
-msgstr ""
+msgstr "XPermanent and GlobalX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:94
 msgid "Summary Report"
-msgstr ""
+msgstr "XSummary ReportX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:117
 msgid "scanned"
-msgstr ""
+msgstr "XscannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:118
 msgid "web hits and detected"
-msgstr ""
+msgstr "Xweb hits and detectedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:119
 msgid "violations of which"
-msgstr ""
+msgstr "Xviolations of whichX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:120
 msgid "were blocked"
-msgstr ""
+msgstr "Xwere blockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:166
 msgid "Web Usage"
-msgstr ""
+msgstr "XWeb UsageX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:233
 msgid "Avg Hits"
-msgstr ""
+msgstr "XAvg HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:233
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:235
@@ -360,69 +369,69 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1175
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1236
 msgid "Hits"
-msgstr ""
+msgstr "XHitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:235
 msgid "Max Hits"
-msgstr ""
+msgstr "XMax HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:237
 msgid "Avg Violations"
-msgstr ""
+msgstr "XAvg ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:237
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:239
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:257
 msgid "Violations"
-msgstr ""
+msgstr "XViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:239
 msgid "Max Violations"
-msgstr ""
+msgstr "XMax ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:241
 msgid "Avg Blocks"
-msgstr ""
+msgstr "XAvg BlocksX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:241
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:243
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:258
 msgid "Blocks"
-msgstr ""
+msgstr "XBlocksX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:243
 msgid "Max Blocks"
-msgstr ""
+msgstr "XMax BlocksX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:256
 msgid "Clean Hits"
-msgstr ""
+msgstr "XClean HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:264
 msgid "Total Web Usage"
-msgstr ""
+msgstr "XTotal Web UsageX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:307
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:319
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:322
 msgid "Total Clean Hits"
-msgstr ""
+msgstr "XTotal Clean HitsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:309
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:320
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:323
 msgid "Total Violations"
-msgstr ""
+msgstr "XTotal ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:311
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:321
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:324
 msgid "Total Blocked Violations"
-msgstr ""
+msgstr "XTotal Blocked ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:316
 msgid "Date"
-msgstr ""
+msgstr "XDateX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:317
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:385
@@ -436,44 +445,44 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1184
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1245
 msgid "Hits Per Day"
-msgstr ""
+msgstr "XHits Per DayX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:331
 msgid "Top Categories Of Violations (by Hits)"
-msgstr ""
+msgstr "XTop Categories Of Violations (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:375
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1174
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1235
 msgid "Uncategorized"
-msgstr ""
+msgstr "XUncategorizedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:384
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:447
 msgid "Policy"
-msgstr ""
+msgstr "XPolicyX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:394
 msgid "Top Categories Of Blocked Violations (by Hits)"
-msgstr ""
+msgstr "XTop Categories Of Blocked Violations (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:448
 msgid "Blocks Per Day"
-msgstr ""
+msgstr "XBlocks Per DayX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:456
 msgid "Top Web Browsing Hosts (by Hits)"
-msgstr ""
+msgstr "XTop Web Browsing Hosts (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:494
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:640
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:738
 msgid "Host"
-msgstr ""
+msgstr "XHostX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:504
 msgid "Top Web Browsing Users (by Hits)"
-msgstr ""
+msgstr "XTop Web Browsing Users (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:542
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:590
@@ -482,181 +491,181 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1052
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1054
 msgid "User"
-msgstr ""
+msgstr "XUserX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:552
 msgid "Top Web Browsing Users (by Size)"
-msgstr ""
+msgstr "XTop Web Browsing Users (by Size)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:580
 msgid "MB"
-msgstr ""
+msgstr "XMBX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:591
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:739
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:855
 msgid "MB/day"
-msgstr ""
+msgstr "XMB/dayX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:600
 msgid "Top Host Violators (by Hits)"
-msgstr ""
+msgstr "XTop Host Violators (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:650
 msgid "Top User Violators (by Hits)"
-msgstr ""
+msgstr "XTop User Violators (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:690
 msgid "Uid"
-msgstr ""
+msgstr "XUidX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:700
 msgid "Top Web Browsing Hosts (by Size)"
-msgstr ""
+msgstr "XTop Web Browsing Hosts (by Size)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:748
 msgid "Top Websites (by Hits)"
-msgstr ""
+msgstr "XTop Websites (by Hits)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:795
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:854
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:915
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:973
 msgid "Hosts"
-msgstr ""
+msgstr "XHostsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:805
 msgid "Top Websites (by Size)"
-msgstr ""
+msgstr "XTop Websites (by Size)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:864
 msgid "Top Violations"
-msgstr ""
+msgstr "XTop ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:925
 msgid "Top Blocked Violations"
-msgstr ""
+msgstr "XTop Blocked ViolationsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:982
 msgid "Violation Events"
-msgstr ""
+msgstr "XViolation EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:990
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1044
 msgid "Time"
-msgstr ""
+msgstr "XTimeX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:993
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:995
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1047
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1049
 msgid "Client"
-msgstr ""
+msgstr "XClientX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1003
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1057
 msgid "Flagged"
-msgstr ""
+msgstr "XFlaggedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1004
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1058
 msgid "Blocked"
-msgstr ""
+msgstr "XBlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1005
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1059
 msgid "Url"
-msgstr ""
+msgstr "XUrlX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1006
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1060
 msgid "Server Ip"
-msgstr ""
+msgstr "XServer IpX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1007
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1061
 msgid "Client Ip"
-msgstr ""
+msgstr "XClient IpX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1036
 msgid "All Events"
-msgstr ""
+msgstr "XAll EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1089
 msgid "Site Events"
-msgstr ""
+msgstr "XSite EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1099
 msgid "Size (MB)"
-msgstr ""
+msgstr "XSize (MB)X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1132
 msgid "Web Usage By Category"
-msgstr ""
+msgstr "XWeb Usage By CategoryX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1192
 msgid "Violations By Category"
-msgstr ""
+msgstr "XViolations By CategoryX"
 
 #: ../src/com/untangle/node/webfilter/BlockPageServlet.java:38
 msgid "Feature is not installed."
-msgstr ""
+msgstr "XFeature is not installed.X"
 
 #: ../src/com/untangle/node/webfilter/BlockPageServlet.java:47
 msgid "This request has expired."
-msgstr ""
+msgstr "XThis request has expired.X"
 
 #: ../src/com/untangle/node/webfilter/BlockPageServlet.java:84
 #, java-format
 msgid "{0} | {1} Warning"
-msgstr ""
+msgstr "X{0} | {1} WarningX"
 
 #: ../src/com/untangle/node/webfilter/BlockPageServlet.java:112
 #, java-format
 msgid "{0}This web page is blocked{1} because it violates network policy."
-msgstr ""
+msgstr "X{0}This web page is blocked{1} because it violates network policy.X"
 
 #: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
 #, java-format
 msgid "If you have any questions, Please contact {0}."
-msgstr ""
+msgstr "XIf you have any questions, Please contact {0}.X"
 
 #: ../src/com/untangle/node/webfilter/WebFilterBase.java:58
 msgid "Pages scanned"
-msgstr ""
+msgstr "XPages scannedX"
 
 #: ../src/com/untangle/node/webfilter/WebFilterBase.java:59
 msgid "Pages blocked"
-msgstr ""
+msgstr "XPages blockedX"
 
 #: ../src/com/untangle/node/webfilter/WebFilterBase.java:60
 msgid "Pages passed"
-msgstr ""
+msgstr "XPages passedX"
 
 #: ../src/com/untangle/node/webfilter/WebFilterEvent.java:85
 msgid "blocked"
-msgstr ""
+msgstr "XblockedX"
 
 #: ../src/com/untangle/node/webfilter/WebFilterEvent.java:87
 msgid "passed"
-msgstr ""
+msgstr "XpassedX"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
-msgstr ""
+msgstr "XHost:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
-msgstr ""
+msgstr "XURL:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
-msgstr ""
+msgstr "XReason:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
-msgstr ""
+msgstr "XUnblock For NowX"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
-msgstr ""
+msgstr "XUnblock PermanentlyX"

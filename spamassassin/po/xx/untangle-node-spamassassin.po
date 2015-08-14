@@ -4,8 +4,6 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Untangle\n"
-"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-14 10:31-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
 "Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
@@ -14,200 +12,202 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Test\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Mark"
-msgstr ""
+msgstr "XMarkX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Pass"
-msgstr ""
+msgstr "XPassX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Drop"
-msgstr ""
+msgstr "XDropX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Quarantine"
-msgstr ""
+msgstr "XQuarantineX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Low (Threshold: 5.0)"
-msgstr ""
+msgstr "XLow (Threshold: 5.0)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Medium (Threshold: 4.3)"
-msgstr ""
+msgstr "XMedium (Threshold: 4.3)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "High (Threshold: 3.5)"
-msgstr ""
+msgstr "XHigh (Threshold: 3.5)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Very High (Threshold: 3.3)"
-msgstr ""
+msgstr "XVery High (Threshold: 3.3)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Extreme (Threshold: 3.0)"
-msgstr ""
+msgstr "XExtreme (Threshold: 3.0)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Custom"
-msgstr ""
+msgstr "XCustomX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Email"
-msgstr ""
+msgstr "XEmailX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
 msgid "SMTP"
-msgstr ""
+msgstr "XSMTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
 msgid "Scan SMTP"
-msgstr ""
+msgstr "XScan SMTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:132
 msgid "Strength"
-msgstr ""
+msgstr "XStrengthX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:154
 msgid "Strength Value"
-msgstr ""
+msgstr "XStrength ValueX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:161
 msgid "Strength Value must be a number. Smaller value is higher strength."
-msgstr ""
+msgstr "XStrength Value must be a number. Smaller value is higher strength.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Action"
-msgstr ""
+msgstr "XActionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:205
 msgid "Drop Super Spam"
-msgstr ""
+msgstr "XDrop Super SpamX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:225
 msgid "Super Spam Threshold"
-msgstr ""
+msgstr "XSuper Spam ThresholdX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:263
 msgid "Advanced SMTP Configuration"
-msgstr ""
+msgstr "XAdvanced SMTP ConfigurationX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:273
 msgid "Enable tarpitting"
-msgstr ""
+msgstr "XEnable tarpittingX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:286
 msgid "Add email headers"
-msgstr ""
+msgstr "XAdd email headersX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:299
 msgid "Close connection on scan failure"
-msgstr ""
+msgstr "XClose connection on scan failureX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:312
 msgid "Scan outbound (WAN) SMTP"
-msgstr ""
+msgstr "XScan outbound (WAN) SMTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:325
 msgid "Allow and ignore TLS sessions"
-msgstr ""
+msgstr "XAllow and ignore TLS sessionsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:337
 msgid "CPU Load Limit"
-msgstr ""
+msgstr "XCPU Load LimitX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:344
 msgid "Value must be a float."
-msgstr ""
+msgstr "XValue must be a float.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:357
 msgid "Concurrent Scan Limit"
-msgstr ""
+msgstr "XConcurrent Scan LimitX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:384
 msgid "Value must be a integer."
-msgstr ""
+msgstr "XValue must be a integer.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:377
 msgid "Message Size Limit"
-msgstr ""
+msgstr "XMessage Size LimitX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:399
 msgid "Clear Bayes Data"
-msgstr ""
+msgstr "XClear Bayes DataX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
 msgid "Warning"
-msgstr ""
+msgstr "XWarningX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:403
 msgid "This will clear all learned bayesian data!"
-msgstr ""
+msgstr "XThis will clear all learned bayesian data!X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Clearing bayes data..."
-msgstr ""
+msgstr "XClearing bayes data...X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Please wait"
-msgstr ""
+msgstr "XPlease waitX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Failure"
-msgstr ""
+msgstr "XFailureX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Error: Unable to reset bayes data."
-msgstr ""
+msgstr "XError: Unable to reset bayes data.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Success"
-msgstr ""
+msgstr "XSuccessX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Bayes data cleared."
-msgstr ""
+msgstr "XBayes data cleared.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
 msgid "Note"
-msgstr ""
+msgstr "XNoteX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
 msgid "Spam Blocker Lite last checked for updates"
-msgstr ""
+msgstr "XSpam Blocker Lite last checked for updatesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:429
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:431
 msgid "never"
-msgstr ""
+msgstr "XneverX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:430
 msgid "Spam Blocker Lite was last updated"
-msgstr ""
+msgstr "XSpam Blocker Lite was last updatedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
-msgstr ""
+msgstr "XSpamX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
-msgstr ""
+msgstr "XCleanX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
-msgstr ""
+msgstr "XHourly Spam RateX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam Rate"
-msgstr ""
+msgstr "XSpam RateX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
-msgstr ""
+msgstr "XTop Ten SpammedX"

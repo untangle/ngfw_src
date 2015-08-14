@@ -4,9 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-03 22:15-0700\n"
 "PO-Revision-Date: 2012-01-09 08:25-0800\n"
 "Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
 "Language-Team: Dirk Morris <dmorris@untangle.com>\n"
@@ -14,50 +13,52 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"XXReport-Msgid-Bugs-To: \n"
+"XXProject-Id-Version: Untangle\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Test\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:45
 msgid "Web"
-msgstr ""
+msgstr "XWebX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:52
 msgid "Scan HTTP"
-msgstr ""
+msgstr "XScan HTTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:66
 msgid "Signatures were last updated"
-msgstr ""
+msgstr "XSignatures were last updatedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:67
 msgid "never"
-msgstr ""
+msgstr "XneverX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:71
 msgid "About"
-msgstr ""
+msgstr "XAboutX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:83
 msgid "File Extensions"
-msgstr ""
+msgstr "XFile ExtensionsX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:94
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:124
 msgid "File Type"
-msgstr ""
+msgstr "XFile TypeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:99
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:125
 msgid "[enter file type]"
-msgstr ""
+msgstr "X[enter file type]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:105
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:172
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:200
 msgid "Scan"
-msgstr ""
+msgstr "XScanX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:139
@@ -66,7 +67,7 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:339
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:365
 msgid "Description"
-msgstr ""
+msgstr "XDescriptionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:116
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:140
@@ -75,34 +76,34 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:345
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:366
 msgid "[no description]"
-msgstr ""
+msgstr "X[no description]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:151
 msgid "MIME Types"
-msgstr ""
+msgstr "XMIME TypesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:192
 msgid "MIME Type"
-msgstr ""
+msgstr "XMIME TypeX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:193
 msgid "[enter MIME type]"
-msgstr ""
+msgstr "X[enter MIME type]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:219
 msgid "FTP"
-msgstr ""
+msgstr "XFTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:228
 msgid "Scan FTP"
-msgstr ""
+msgstr "XScan FTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:302
 msgid "Virus Blocker signatures were last updated"
-msgstr ""
+msgstr "XVirus Blocker signatures were last updatedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:242
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:303
@@ -110,102 +111,102 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:455
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:608
 msgid "Unknown"
-msgstr ""
+msgstr "XUnknownX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
 msgid "Email"
-msgstr ""
+msgstr "XEmailX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:267
 msgid "Scan SMTP"
-msgstr ""
+msgstr "XScan SMTPX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:286
 msgid "Action"
-msgstr ""
+msgstr "XActionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:288
 msgid "pass message"
-msgstr ""
+msgstr "Xpass messageX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:289
 msgid "remove infection"
-msgstr ""
+msgstr "Xremove infectionX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:290
 msgid "block message"
-msgstr ""
+msgstr "Xblock messageX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:313
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:377
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:388
 msgid "Pass Sites"
-msgstr ""
+msgstr "XPass SitesX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:324
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:352
 msgid "Site"
-msgstr ""
+msgstr "XSiteX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:329
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:353
 msgid "[enter site]"
-msgstr ""
+msgstr "X[enter site]X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:334
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:360
 msgid "Pass"
-msgstr ""
+msgstr "XPassX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:389
 msgid "Do not scan traffic to the specified sites.  Use caution!"
-msgstr ""
+msgstr "XDo not scan traffic to the specified sites.  Use caution!X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:401
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:407
 msgid "Advanced"
-msgstr ""
+msgstr "XAdvancedX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:408
 msgid "Advanced settings require careful configuration."
-msgstr ""
+msgstr "XAdvanced settings require careful configuration.X"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:127
 msgid "Summary Report"
-msgstr ""
+msgstr "XSummary ReportX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:150
 #: ../src/com/untangle/node/virus/VirusFtpEvent.java:91
 #: ../src/com/untangle/node/virus/VirusHttpEvent.java:77
 #: ../src/com/untangle/node/virus/VirusSmtpEvent.java:109
 msgid "scanned"
-msgstr ""
+msgstr "XscannedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:151
 msgid "documents and detected and blocked"
-msgstr ""
+msgstr "Xdocuments and detected and blockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:152
 msgid "viruses"
-msgstr ""
+msgstr "XvirusesX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:236
 msgid "Viruses Blocked"
-msgstr ""
+msgstr "XViruses BlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:324
 msgid "Avg Viruses Blocked"
-msgstr ""
+msgstr "XAvg Viruses BlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:326
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:329
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:335
 msgid "Blocks"
-msgstr ""
+msgstr "XBlocksX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:328
 msgid "Max Viruses Blocked"
-msgstr ""
+msgstr "XMax Viruses BlockedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:339
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:394
@@ -215,45 +216,45 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:610
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:618
 msgid "Viruses"
-msgstr ""
+msgstr "XVirusesX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:348
 msgid "Top Web Viruses Detected"
-msgstr ""
+msgstr "XTop Web Viruses DetectedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:402
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:465
 msgid "Name"
-msgstr ""
+msgstr "XNameX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:403
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:466
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:523
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
 msgid "Count"
-msgstr ""
+msgstr "XCountX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:411
 msgid "Top Ftp Viruses Detected"
-msgstr ""
+msgstr "XTop Ftp Viruses DetectedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:474
 msgid "Top Email Viruses Detected"
-msgstr ""
+msgstr "XTop Email Viruses DetectedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:531
 msgid "Top Viruses Detected"
-msgstr ""
+msgstr "XTop Viruses DetectedX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:628
 msgid "Web Events"
-msgstr ""
+msgstr "XWeb EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:632
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:677
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:723
 msgid "Time"
-msgstr ""
+msgstr "XTimeX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:635
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:637
@@ -262,7 +263,7 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:726
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:728
 msgid "Client"
-msgstr ""
+msgstr "XClientX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:640
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:642
@@ -271,125 +272,125 @@ msgstr ""
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:731
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:733
 msgid "User"
-msgstr ""
+msgstr "XUserX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:644
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:689
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
 msgid "Virus Name"
-msgstr ""
+msgstr "XVirus NameX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:645
 msgid "Url"
-msgstr ""
+msgstr "XUrlX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:646
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:691
 msgid "Server Ip"
-msgstr ""
+msgstr "XServer IpX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
 msgid "Server Port"
-msgstr ""
+msgstr "XServer PortX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:673
 msgid "Ftp Events"
-msgstr ""
+msgstr "XFtp EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
 msgid "File Name"
-msgstr ""
+msgstr "XFile NameX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:719
 msgid "Mail Events"
-msgstr ""
+msgstr "XMail EventsX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
 msgid "Subject"
-msgstr ""
+msgstr "XSubjectX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:737
 msgid "Recipient"
-msgstr ""
+msgstr "XRecipientX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:738
 msgid "Client Ip"
-msgstr ""
+msgstr "XClient IpX"
 
 #: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
 msgid "Client Port"
-msgstr ""
+msgstr "XClient PortX"
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:41
 msgid "Feature is not installed."
-msgstr ""
+msgstr "XFeature is not installed.X"
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:49
 msgid "This request has expired."
-msgstr ""
+msgstr "XThis request has expired.X"
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:78
 #, java-format
 msgid "{0} | {1} Warning"
-msgstr ""
+msgstr "X{0} | {1} WarningX"
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:89
 #, java-format
 msgid "{0} Virus Blocker"
-msgstr ""
+msgstr "X{0} Virus BlockerX"
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:106
 #, java-format
 msgid "{0}This file was blocked{1} because it contains a virus."
-msgstr ""
+msgstr "X{0}This file was blocked{1} because it contains a virus.X"
 
 #: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
 #, java-format
 msgid "If you have any questions, Please contact {0}."
-msgstr ""
+msgstr "XIf you have any questions, Please contact {0}.X"
 
 #: ../src/com/untangle/node/virus/VirusFtpEvent.java:93
 #: ../src/com/untangle/node/virus/VirusHttpEvent.java:79
 #: ../src/com/untangle/node/virus/VirusSmtpEvent.java:111
 msgid "found virus"
-msgstr ""
+msgstr "Xfound virusX"
 
 #: ../src/com/untangle/node/virus/VirusNodeImpl.java:120
 msgid "Documents scanned"
-msgstr ""
+msgstr "XDocuments scannedX"
 
 #: ../src/com/untangle/node/virus/VirusNodeImpl.java:121
 msgid "Documents blocked"
-msgstr ""
+msgstr "XDocuments blockedX"
 
 #: ../src/com/untangle/node/virus/VirusNodeImpl.java:122
 msgid "Documents passed"
-msgstr ""
+msgstr "XDocuments passedX"
 
 #: ../src/com/untangle/node/virus/VirusNodeImpl.java:123
 msgid "Infections removed"
-msgstr ""
+msgstr "XInfections removedX"
 
 #: ../src/com/untangle/node/virus/VirusNodeImpl.java:124
 msgid "Passed by policy"
-msgstr ""
+msgstr "XPassed by policyX"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
-msgstr ""
+msgstr "XHost:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
-msgstr ""
+msgstr "XURL:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
-msgstr ""
+msgstr "XReason:X"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
-msgstr ""
+msgstr "XUnblock For NowX"
 
 #: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
-msgstr ""
+msgstr "XUnblock PermanentlyX"

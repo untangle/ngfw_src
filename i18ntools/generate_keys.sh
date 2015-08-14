@@ -232,7 +232,13 @@ function update_po( )
             mkdir -p $(dirname $po)
             touch $po
         fi
+        # If its the test language, go ahead and set the values in the po file
+        if [ $lang == "xx" ] ; then
+            cat $po | awk -f ../../../../work/src/i18ntools/translate_test_po.awk > /tmp/xx.po
+            cp /tmp/xx.po $po
+        fi
         msgmerge -U -N $po $pot
+            
     done
 }
 
