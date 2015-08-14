@@ -48,11 +48,9 @@ case "$1" in
     find ../../ -type f -wholename '*events/*.js' | xargs cat | egrep '(description|title)' >> /tmp/strings
     xgettext -j --copyright-holder='Untangle, Inc.' -a -o tmp_keys.pot /tmp/strings
 
-
     # faceplate strings
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/Dispatcher.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../api/com/untangle/uvm/vnet/NodeBase.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../idps/src/com/untangle/node/idps/IdpsNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java
@@ -299,12 +297,12 @@ function update_po( )
             mkdir -p $(dirname $po)
             touch $po
         fi
+        msgmerge -U -N $po $pot
         # If its the test language, go ahead and set the values in the po file
         if [ $lang == "xx" ] ; then
             cat $po | awk -f ../../../../work/src/i18ntools/translate_test_po.awk > /tmp/xx.po
             cp /tmp/xx.po $po
         fi
-        msgmerge -U -N $po $pot
             
     done
 }
