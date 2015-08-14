@@ -27,25 +27,18 @@ case "$1" in
     ;;
 "untangle-libuvm")
     cd ../uvm/po
-    echo 'get main keys'
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/main.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/components.js
-    #general wizard
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js
-    #setup wizard
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/setup/root/script/setup.js
-    echo 'get config keys'
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/*.js
 
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../../reporting/servlets/reports/root/script/*.js
+    # uvm javascript. find all _("string")
+    find ../../uvm/hier -name '*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    # untangle-apache2-config javascript. find all _("string")
+    find ../../../pkgs/untangle-apache2-config/files -name '*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
-    #xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/uvm/util/OutsideValve.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/uvm/MailSenderImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../uvm/servlets/webui/src/com/untangle/uvm/webui/servlet/GridSettingsServlet.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/branding/src/com/untangle/node/branding/BrandingSettings.java
+    # uvm java. find all tr("string")
+    find ../../ -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot
+    # uvm java. find all marktr("string")
+    find ../../ -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot
 
-    echo 'get blingers keys'
+    # faceplate strings
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/Dispatcher.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../api/com/untangle/uvm/vnet/NodeBase.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
@@ -164,7 +157,7 @@ case "$1" in
     update_po $1
     ;;
 "untangle-node-sitefilter")
-moduleName=`echo "$1"|cut -d"-" -f3`
+    moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/src/${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
@@ -219,9 +212,6 @@ moduleName=`echo "$1"|cut -d"-" -f3`
     rm tmp_keys.pot
     update_po $1
     ;;
-# "untangle-systray")
-#     pygettext ../../../internal/isotools/wintangle-systray/*.py
-#     ;;
 *)
     echo 1>&2 Module Name \"$1\" is invalid ...
     exit 127
