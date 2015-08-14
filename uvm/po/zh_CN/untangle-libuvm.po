@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:42-0700\n"
+"POT-Creation-Date: 2015-08-14 15:02-0700\n"
 "PO-Revision-Date: 2008-11-27 23:22-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -29,7 +29,7 @@ msgstr "编辑"
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:44
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: ../../uvm/servlets/webui/root/script/config/network.js:657
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1623
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1646
 msgid "Delete"
 msgstr "删除"
 
@@ -243,8 +243,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/window.js:255
 #: ../../uvm/servlets/webui/root/script/window.js:400
 #: ../../uvm/servlets/webui/root/script/util.js:79
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
 msgid "Please wait"
 msgstr "请等候"
 
@@ -346,7 +346,7 @@ msgid "Value"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:142
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1544
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1567
 msgid "[enter column]"
 msgstr ""
 
@@ -359,8 +359,8 @@ msgid "[select operator]"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:172
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1182
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1601
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1205
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1624
 msgid "[no value]"
 msgstr ""
 
@@ -502,33 +502,33 @@ msgid "Time Chart Style"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:360
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Line"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:361
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
 msgid "Area"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:362
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
 msgid "Bar 3D"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:363
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
 msgid "Bar 3D Overlapped"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:364
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
 msgid "Bar"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:365
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
 msgid "Bar Overlapped"
 msgstr ""
 
@@ -831,6 +831,7 @@ msgstr "网络"
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:472
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:524
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:531
+#: /tmp/strings:141 /tmp/strings:552
 #: ../impl/com/untangle/uvm/Dispatcher.java:94
 msgid "Sessions"
 msgstr ""
@@ -840,7 +841,8 @@ msgstr ""
 msgid "Hosts"
 msgstr "主机"
 
-#: ../../uvm/servlets/webui/root/script/components.js:835
+#: ../../uvm/servlets/webui/root/script/components.js:835 /tmp/strings:109
+#: /tmp/strings:318
 msgid "CPU Load"
 msgstr "CPU负载"
 
@@ -3433,6 +3435,8 @@ msgid "Session Viewer"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:101
+#: /tmp/strings:885 /tmp/strings:1027 /tmp/strings:1055 /tmp/strings:1122
+#: /tmp/strings:1126
 msgid "All Sessions"
 msgstr ""
 
@@ -3738,8 +3742,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:480
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:492
 #: ../../uvm/servlets/webui/root/script/config/network.js:1661
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
 #, fuzzy
 msgid "None"
@@ -5831,7 +5835,7 @@ msgid "Download system logs."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:232
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:484
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:507
 msgid "Download"
 msgstr ""
 
@@ -6818,7 +6822,7 @@ msgid "Close"
 msgstr "关闭"
 
 #: ../../uvm/servlets/webui/root/script/window.js:547
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1882
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1905
 #, fuzzy
 msgid "Done"
 msgstr "消失"
@@ -7559,131 +7563,135 @@ msgstr ""
 msgid "Select Report"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:302
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:310
 msgid "Select Events"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:423
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:446
 msgid "Others"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:458
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:481
 msgid "Loading report... "
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:488
 msgid "Customize"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:468
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1221
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:491
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1244
 msgid "Advanced report customization"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:499
 msgid "View Events"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:478
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:501
 msgid "View events for this report"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:522
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:545
 msgid "data"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:527
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:610
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:550
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:633
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:532
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:555
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 msgid "none"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:571
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:594
 msgid "Not enough data to generate the chart."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:618
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1143
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1507
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:641
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1166
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1530
 msgid "Add Condition"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
 msgid "Switch to Line Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
 msgid "Switch to Area Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
 msgid "Switch to Bar 3D Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
 msgid "Switch to Bar 3D Overlapped Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
 msgid "Switch to Bar Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
 msgid "Switch to Bar Overlapped Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:947
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:970
 msgid "Refreshing report... "
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:962
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:985
 msgid "Querying Database..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1009
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1039
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1032
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1062
 msgid "Fetching Events..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
 msgid "Downloading Chart..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
 msgid "Exporting Events..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1157
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1180
 msgid "Add a condition using report data:"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1251
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1274
 msgid "Events for report: {0}"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
 msgid "Conditions: {0}"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1508
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1531
 msgid "Add New Condition"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1519
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1538
+msgid "Quick Add"
+msgstr ""
+
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1542
 msgid "Delete All"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1520
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1543
 msgid "Delete All Conditions"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1855
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1878
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:269
@@ -7698,7 +7706,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1912
 msgid "Clear Value"
 msgstr ""
 
@@ -8074,6 +8082,7 @@ msgstr ""
 
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1553
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1816
+#: /tmp/strings:1003 /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
 msgid "success"
 msgstr ""
 
@@ -8285,6 +8294,7 @@ msgid "Session Timeout"
 msgstr ""
 
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2317
+#: /tmp/strings:852 /tmp/strings:1069
 msgid "Idle Timeout"
 msgstr ""
 
@@ -9147,6 +9157,7 @@ msgid "Cpu System"
 msgstr ""
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:279
+#: /tmp/strings:107 /tmp/strings:316
 msgid "Disk Usage"
 msgstr ""
 
@@ -9206,6 +9217,7 @@ msgid "alerts"
 msgstr ""
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:351
+#: /tmp/strings:746
 msgid "Bandwidth Usage"
 msgstr ""
 
@@ -9264,6 +9276,7 @@ msgid "Client IP"
 msgstr ""
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:618
+#: /tmp/strings:871 /tmp/strings:936
 msgid "Alert Events"
 msgstr ""
 
@@ -9405,6 +9418,2319 @@ msgstr ""
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1049
 msgid "MB"
+msgstr ""
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
+#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
+#: /tmp/strings:35 /tmp/strings:37 /tmp/strings:39 /tmp/strings:41
+#: /tmp/strings:43 /tmp/strings:45 /tmp/strings:47 /tmp/strings:49
+#: /tmp/strings:51 /tmp/strings:53 /tmp/strings:55 /tmp/strings:57
+#: /tmp/strings:59 /tmp/strings:61 /tmp/strings:63 /tmp/strings:65
+#: /tmp/strings:67 /tmp/strings:69 /tmp/strings:71 /tmp/strings:73
+#: /tmp/strings:75 /tmp/strings:77 /tmp/strings:79 /tmp/strings:81
+#: /tmp/strings:83 /tmp/strings:85 /tmp/strings:87 /tmp/strings:89
+#: /tmp/strings:91 /tmp/strings:93 /tmp/strings:95 /tmp/strings:97
+#: /tmp/strings:99 /tmp/strings:101 /tmp/strings:103 /tmp/strings:104
+#: /tmp/strings:106 /tmp/strings:108 /tmp/strings:110 /tmp/strings:112
+#: /tmp/strings:138 /tmp/strings:140 /tmp/strings:142 /tmp/strings:144
+#: /tmp/strings:146 /tmp/strings:148 /tmp/strings:150 /tmp/strings:152
+#: /tmp/strings:154 /tmp/strings:156 /tmp/strings:158 /tmp/strings:160
+#: /tmp/strings:162 /tmp/strings:164 /tmp/strings:166 /tmp/strings:168
+#: /tmp/strings:170 /tmp/strings:172 /tmp/strings:174 /tmp/strings:176
+#: /tmp/strings:178 /tmp/strings:180 /tmp/strings:182 /tmp/strings:184
+#: /tmp/strings:186 /tmp/strings:188 /tmp/strings:190 /tmp/strings:192
+#: /tmp/strings:194 /tmp/strings:196 /tmp/strings:198 /tmp/strings:200
+#: /tmp/strings:202 /tmp/strings:204 /tmp/strings:206 /tmp/strings:208
+#: /tmp/strings:210 /tmp/strings:212 /tmp/strings:214 /tmp/strings:216
+#: /tmp/strings:218 /tmp/strings:220 /tmp/strings:222 /tmp/strings:224
+#: /tmp/strings:226 /tmp/strings:228 /tmp/strings:230 /tmp/strings:232
+#: /tmp/strings:234 /tmp/strings:236 /tmp/strings:238 /tmp/strings:240
+#: /tmp/strings:242 /tmp/strings:244 /tmp/strings:246 /tmp/strings:248
+#: /tmp/strings:250 /tmp/strings:252 /tmp/strings:254 /tmp/strings:256
+#: /tmp/strings:258 /tmp/strings:260 /tmp/strings:262 /tmp/strings:264
+#: /tmp/strings:266 /tmp/strings:268 /tmp/strings:270 /tmp/strings:272
+#: /tmp/strings:274 /tmp/strings:300 /tmp/strings:302 /tmp/strings:304
+#: /tmp/strings:306 /tmp/strings:308 /tmp/strings:310 /tmp/strings:312
+#: /tmp/strings:313 /tmp/strings:315 /tmp/strings:317 /tmp/strings:319
+#: /tmp/strings:321 /tmp/strings:323 /tmp/strings:325 /tmp/strings:327
+#: /tmp/strings:329 /tmp/strings:331 /tmp/strings:333 /tmp/strings:335
+#: /tmp/strings:337 /tmp/strings:339 /tmp/strings:341 /tmp/strings:343
+#: /tmp/strings:345 /tmp/strings:347 /tmp/strings:349 /tmp/strings:351
+#: /tmp/strings:353 /tmp/strings:355 /tmp/strings:357 /tmp/strings:359
+#: /tmp/strings:361 /tmp/strings:363 /tmp/strings:365 /tmp/strings:367
+#: /tmp/strings:369 /tmp/strings:371 /tmp/strings:373 /tmp/strings:375
+#: /tmp/strings:377 /tmp/strings:379 /tmp/strings:381 /tmp/strings:383
+#: /tmp/strings:385 /tmp/strings:387 /tmp/strings:389 /tmp/strings:391
+#: /tmp/strings:393 /tmp/strings:395 /tmp/strings:397 /tmp/strings:399
+#: /tmp/strings:401 /tmp/strings:403 /tmp/strings:405 /tmp/strings:407
+#: /tmp/strings:409 /tmp/strings:411 /tmp/strings:413 /tmp/strings:415
+#: /tmp/strings:417 /tmp/strings:419 /tmp/strings:421 /tmp/strings:423
+#: /tmp/strings:425 /tmp/strings:427 /tmp/strings:429 /tmp/strings:431
+#: /tmp/strings:433 /tmp/strings:435 /tmp/strings:437 /tmp/strings:439
+#: /tmp/strings:441 /tmp/strings:443 /tmp/strings:445 /tmp/strings:447
+#: /tmp/strings:449 /tmp/strings:451 /tmp/strings:453 /tmp/strings:455
+#: /tmp/strings:457 /tmp/strings:459 /tmp/strings:461 /tmp/strings:463
+#: /tmp/strings:465 /tmp/strings:467 /tmp/strings:469 /tmp/strings:471
+#: /tmp/strings:473 /tmp/strings:475 /tmp/strings:477 /tmp/strings:479
+#: /tmp/strings:481 /tmp/strings:483 /tmp/strings:485 /tmp/strings:487
+#: /tmp/strings:489 /tmp/strings:491 /tmp/strings:493 /tmp/strings:495
+#: /tmp/strings:497 /tmp/strings:499 /tmp/strings:501 /tmp/strings:503
+#: /tmp/strings:505 /tmp/strings:507 /tmp/strings:509 /tmp/strings:511
+#: /tmp/strings:513 /tmp/strings:515 /tmp/strings:517 /tmp/strings:519
+#: /tmp/strings:521 /tmp/strings:523 /tmp/strings:525 /tmp/strings:527
+#: /tmp/strings:529 /tmp/strings:531 /tmp/strings:533 /tmp/strings:535
+#: /tmp/strings:537 /tmp/strings:539 /tmp/strings:541 /tmp/strings:543
+#: /tmp/strings:545 /tmp/strings:547 /tmp/strings:549 /tmp/strings:551
+#: /tmp/strings:553 /tmp/strings:555 /tmp/strings:557 /tmp/strings:559
+#: /tmp/strings:561 /tmp/strings:563 /tmp/strings:565 /tmp/strings:567
+#: /tmp/strings:569 /tmp/strings:571 /tmp/strings:573 /tmp/strings:575
+#: /tmp/strings:577 /tmp/strings:579 /tmp/strings:581 /tmp/strings:583
+#: /tmp/strings:585 /tmp/strings:587 /tmp/strings:589 /tmp/strings:591
+#: /tmp/strings:593 /tmp/strings:595 /tmp/strings:597 /tmp/strings:599
+#: /tmp/strings:601 /tmp/strings:603 /tmp/strings:605 /tmp/strings:607
+#: /tmp/strings:609 /tmp/strings:611 /tmp/strings:613 /tmp/strings:615
+#: /tmp/strings:617 /tmp/strings:619 /tmp/strings:621 /tmp/strings:623
+#: /tmp/strings:625 /tmp/strings:627 /tmp/strings:629 /tmp/strings:631
+#: /tmp/strings:633 /tmp/strings:635 /tmp/strings:637 /tmp/strings:639
+#: /tmp/strings:641 /tmp/strings:643 /tmp/strings:645 /tmp/strings:647
+#: /tmp/strings:649 /tmp/strings:651 /tmp/strings:653 /tmp/strings:655
+#: /tmp/strings:657 /tmp/strings:659 /tmp/strings:661 /tmp/strings:663
+#: /tmp/strings:665 /tmp/strings:667 /tmp/strings:669 /tmp/strings:671
+#: /tmp/strings:673 /tmp/strings:675 /tmp/strings:677 /tmp/strings:679
+#: /tmp/strings:681 /tmp/strings:683 /tmp/strings:685 /tmp/strings:687
+#: /tmp/strings:689 /tmp/strings:691 /tmp/strings:693 /tmp/strings:695
+#: /tmp/strings:697 /tmp/strings:699 /tmp/strings:701 /tmp/strings:703
+#: /tmp/strings:705 /tmp/strings:707 /tmp/strings:709 /tmp/strings:711
+#: /tmp/strings:713 /tmp/strings:715 /tmp/strings:717 /tmp/strings:719
+#: /tmp/strings:721 /tmp/strings:723 /tmp/strings:725 /tmp/strings:727
+#: /tmp/strings:729 /tmp/strings:731 /tmp/strings:733 /tmp/strings:735
+#: /tmp/strings:737 /tmp/strings:739 /tmp/strings:741 /tmp/strings:743
+#: /tmp/strings:745 /tmp/strings:747 /tmp/strings:749 /tmp/strings:751
+#: /tmp/strings:753 /tmp/strings:755 /tmp/strings:757 /tmp/strings:759
+#: /tmp/strings:761 /tmp/strings:763 /tmp/strings:765 /tmp/strings:767
+#: /tmp/strings:769 /tmp/strings:771 /tmp/strings:773 /tmp/strings:775
+#: /tmp/strings:777 /tmp/strings:779 /tmp/strings:781 /tmp/strings:783
+#: /tmp/strings:785 /tmp/strings:787 /tmp/strings:789 /tmp/strings:791
+#: /tmp/strings:793 /tmp/strings:795 /tmp/strings:797 /tmp/strings:799
+#: /tmp/strings:801 /tmp/strings:803 /tmp/strings:805 /tmp/strings:807
+#: /tmp/strings:809 /tmp/strings:811 /tmp/strings:813 /tmp/strings:815
+#: /tmp/strings:817 /tmp/strings:819 /tmp/strings:821 /tmp/strings:823
+#: /tmp/strings:825 /tmp/strings:827 /tmp/strings:829 /tmp/strings:831
+#: /tmp/strings:833 /tmp/strings:835 /tmp/strings:837 /tmp/strings:839
+#: /tmp/strings:841 /tmp/strings:843 /tmp/strings:845 /tmp/strings:847
+#: /tmp/strings:849 /tmp/strings:851 /tmp/strings:853 /tmp/strings:855
+#: /tmp/strings:857 /tmp/strings:859 /tmp/strings:861 /tmp/strings:863
+#: /tmp/strings:865 /tmp/strings:867 /tmp/strings:869 /tmp/strings:870
+#: /tmp/strings:872 /tmp/strings:874 /tmp/strings:876 /tmp/strings:880
+#: /tmp/strings:882 /tmp/strings:884 /tmp/strings:886 /tmp/strings:888
+#: /tmp/strings:890 /tmp/strings:892 /tmp/strings:896 /tmp/strings:898
+#: /tmp/strings:900 /tmp/strings:902 /tmp/strings:904 /tmp/strings:906
+#: /tmp/strings:908 /tmp/strings:910 /tmp/strings:912 /tmp/strings:914
+#: /tmp/strings:916 /tmp/strings:918 /tmp/strings:920 /tmp/strings:922
+#: /tmp/strings:924 /tmp/strings:926 /tmp/strings:928 /tmp/strings:930
+#: /tmp/strings:932 /tmp/strings:934 /tmp/strings:935 /tmp/strings:937
+#: /tmp/strings:939 /tmp/strings:941 /tmp/strings:943 /tmp/strings:945
+#: /tmp/strings:947 /tmp/strings:949 /tmp/strings:951 /tmp/strings:953
+#: /tmp/strings:955 /tmp/strings:957 /tmp/strings:959 /tmp/strings:961
+#: /tmp/strings:963 /tmp/strings:965 /tmp/strings:967 /tmp/strings:969
+#: /tmp/strings:971 /tmp/strings:973 /tmp/strings:975 /tmp/strings:977
+#: /tmp/strings:979 /tmp/strings:981 /tmp/strings:983 /tmp/strings:985
+#: /tmp/strings:987 /tmp/strings:989 /tmp/strings:991 /tmp/strings:993
+#: /tmp/strings:995 /tmp/strings:997 /tmp/strings:999 /tmp/strings:1001
+#: /tmp/strings:1003 /tmp/strings:1004 /tmp/strings:1006 /tmp/strings:1008
+#: /tmp/strings:1010 /tmp/strings:1012 /tmp/strings:1014 /tmp/strings:1016
+#: /tmp/strings:1018 /tmp/strings:1022 /tmp/strings:1024 /tmp/strings:1026
+#: /tmp/strings:1028 /tmp/strings:1030 /tmp/strings:1032 /tmp/strings:1034
+#: /tmp/strings:1038 /tmp/strings:1040 /tmp/strings:1042 /tmp/strings:1044
+#: /tmp/strings:1046 /tmp/strings:1048 /tmp/strings:1050 /tmp/strings:1052
+#: /tmp/strings:1054 /tmp/strings:1056 /tmp/strings:1058 /tmp/strings:1060
+#: /tmp/strings:1062 /tmp/strings:1064 /tmp/strings:1066 /tmp/strings:1068
+#: /tmp/strings:1070 /tmp/strings:1072 /tmp/strings:1074 /tmp/strings:1076
+#: /tmp/strings:1078 /tmp/strings:1080 /tmp/strings:1081 /tmp/strings:1083
+#: /tmp/strings:1084 /tmp/strings:1086 /tmp/strings:1087 /tmp/strings:1089
+#: /tmp/strings:1091 /tmp/strings:1093 /tmp/strings:1095 /tmp/strings:1097
+#: /tmp/strings:1099 /tmp/strings:1101 /tmp/strings:1103 /tmp/strings:1105
+#: /tmp/strings:1107 /tmp/strings:1109 /tmp/strings:1111 /tmp/strings:1113
+#: /tmp/strings:1115 /tmp/strings:1117 /tmp/strings:1119 /tmp/strings:1121
+#: /tmp/strings:1123 /tmp/strings:1125 /tmp/strings:1127 /tmp/strings:1129
+#: /tmp/strings:1131 /tmp/strings:1133 /tmp/strings:1135 /tmp/strings:1137
+#: /tmp/strings:1139 /tmp/strings:1141 /tmp/strings:1143
+msgid "description"
+msgstr "描述"
+
+#: /tmp/strings:1 /tmp/strings:533
+msgid "The amount of scanned, clean, and phish email over time."
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
+#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
+#: /tmp/strings:36 /tmp/strings:38 /tmp/strings:40 /tmp/strings:42
+#: /tmp/strings:44 /tmp/strings:46 /tmp/strings:48 /tmp/strings:50
+#: /tmp/strings:52 /tmp/strings:54 /tmp/strings:56 /tmp/strings:58
+#: /tmp/strings:60 /tmp/strings:62 /tmp/strings:64 /tmp/strings:66
+#: /tmp/strings:68 /tmp/strings:70 /tmp/strings:72 /tmp/strings:74
+#: /tmp/strings:76 /tmp/strings:78 /tmp/strings:80 /tmp/strings:82
+#: /tmp/strings:84 /tmp/strings:86 /tmp/strings:88 /tmp/strings:90
+#: /tmp/strings:92 /tmp/strings:94 /tmp/strings:96 /tmp/strings:98
+#: /tmp/strings:100 /tmp/strings:102 /tmp/strings:105 /tmp/strings:107
+#: /tmp/strings:109 /tmp/strings:111 /tmp/strings:113 /tmp/strings:139
+#: /tmp/strings:141 /tmp/strings:143 /tmp/strings:145 /tmp/strings:147
+#: /tmp/strings:149 /tmp/strings:151 /tmp/strings:153 /tmp/strings:155
+#: /tmp/strings:157 /tmp/strings:159 /tmp/strings:161 /tmp/strings:163
+#: /tmp/strings:165 /tmp/strings:167 /tmp/strings:169 /tmp/strings:171
+#: /tmp/strings:173 /tmp/strings:175 /tmp/strings:177 /tmp/strings:179
+#: /tmp/strings:181 /tmp/strings:183 /tmp/strings:185 /tmp/strings:187
+#: /tmp/strings:189 /tmp/strings:191 /tmp/strings:193 /tmp/strings:195
+#: /tmp/strings:197 /tmp/strings:199 /tmp/strings:201 /tmp/strings:203
+#: /tmp/strings:205 /tmp/strings:207 /tmp/strings:209 /tmp/strings:211
+#: /tmp/strings:213 /tmp/strings:215 /tmp/strings:217 /tmp/strings:219
+#: /tmp/strings:221 /tmp/strings:223 /tmp/strings:225 /tmp/strings:227
+#: /tmp/strings:229 /tmp/strings:231 /tmp/strings:233 /tmp/strings:235
+#: /tmp/strings:237 /tmp/strings:239 /tmp/strings:241 /tmp/strings:243
+#: /tmp/strings:245 /tmp/strings:247 /tmp/strings:249 /tmp/strings:251
+#: /tmp/strings:253 /tmp/strings:255 /tmp/strings:257 /tmp/strings:259
+#: /tmp/strings:261 /tmp/strings:263 /tmp/strings:265 /tmp/strings:267
+#: /tmp/strings:269 /tmp/strings:271 /tmp/strings:273 /tmp/strings:275
+#: /tmp/strings:301 /tmp/strings:303 /tmp/strings:305 /tmp/strings:307
+#: /tmp/strings:309 /tmp/strings:311 /tmp/strings:314 /tmp/strings:316
+#: /tmp/strings:318 /tmp/strings:320 /tmp/strings:322 /tmp/strings:324
+#: /tmp/strings:326 /tmp/strings:328 /tmp/strings:330 /tmp/strings:332
+#: /tmp/strings:334 /tmp/strings:336 /tmp/strings:338 /tmp/strings:340
+#: /tmp/strings:342 /tmp/strings:344 /tmp/strings:346 /tmp/strings:348
+#: /tmp/strings:350 /tmp/strings:352 /tmp/strings:354 /tmp/strings:356
+#: /tmp/strings:358 /tmp/strings:360 /tmp/strings:362 /tmp/strings:364
+#: /tmp/strings:366 /tmp/strings:368 /tmp/strings:370 /tmp/strings:372
+#: /tmp/strings:374 /tmp/strings:376 /tmp/strings:378 /tmp/strings:380
+#: /tmp/strings:382 /tmp/strings:384 /tmp/strings:386 /tmp/strings:388
+#: /tmp/strings:390 /tmp/strings:392 /tmp/strings:394 /tmp/strings:396
+#: /tmp/strings:398 /tmp/strings:400 /tmp/strings:402 /tmp/strings:404
+#: /tmp/strings:406 /tmp/strings:408 /tmp/strings:410 /tmp/strings:412
+#: /tmp/strings:414 /tmp/strings:416 /tmp/strings:418 /tmp/strings:420
+#: /tmp/strings:422 /tmp/strings:424 /tmp/strings:426 /tmp/strings:428
+#: /tmp/strings:430 /tmp/strings:432 /tmp/strings:434 /tmp/strings:436
+#: /tmp/strings:438 /tmp/strings:440 /tmp/strings:442 /tmp/strings:444
+#: /tmp/strings:446 /tmp/strings:448 /tmp/strings:450 /tmp/strings:452
+#: /tmp/strings:454 /tmp/strings:456 /tmp/strings:458 /tmp/strings:460
+#: /tmp/strings:462 /tmp/strings:464 /tmp/strings:466 /tmp/strings:468
+#: /tmp/strings:470 /tmp/strings:472 /tmp/strings:474 /tmp/strings:476
+#: /tmp/strings:478 /tmp/strings:480 /tmp/strings:482 /tmp/strings:484
+#: /tmp/strings:486 /tmp/strings:488 /tmp/strings:490 /tmp/strings:492
+#: /tmp/strings:494 /tmp/strings:496 /tmp/strings:498 /tmp/strings:500
+#: /tmp/strings:502 /tmp/strings:504 /tmp/strings:506 /tmp/strings:508
+#: /tmp/strings:510 /tmp/strings:512 /tmp/strings:514 /tmp/strings:516
+#: /tmp/strings:518 /tmp/strings:520 /tmp/strings:522 /tmp/strings:524
+#: /tmp/strings:526 /tmp/strings:528 /tmp/strings:530 /tmp/strings:532
+#: /tmp/strings:534 /tmp/strings:536 /tmp/strings:538 /tmp/strings:540
+#: /tmp/strings:542 /tmp/strings:544 /tmp/strings:546 /tmp/strings:548
+#: /tmp/strings:550 /tmp/strings:552 /tmp/strings:554 /tmp/strings:556
+#: /tmp/strings:558 /tmp/strings:560 /tmp/strings:562 /tmp/strings:564
+#: /tmp/strings:566 /tmp/strings:568 /tmp/strings:570 /tmp/strings:572
+#: /tmp/strings:574 /tmp/strings:576 /tmp/strings:578 /tmp/strings:580
+#: /tmp/strings:582 /tmp/strings:584 /tmp/strings:586 /tmp/strings:588
+#: /tmp/strings:590 /tmp/strings:592 /tmp/strings:594 /tmp/strings:596
+#: /tmp/strings:598 /tmp/strings:600 /tmp/strings:602 /tmp/strings:604
+#: /tmp/strings:606 /tmp/strings:608 /tmp/strings:610 /tmp/strings:612
+#: /tmp/strings:614 /tmp/strings:616 /tmp/strings:618 /tmp/strings:620
+#: /tmp/strings:622 /tmp/strings:624 /tmp/strings:626 /tmp/strings:628
+#: /tmp/strings:630 /tmp/strings:632 /tmp/strings:634 /tmp/strings:636
+#: /tmp/strings:638 /tmp/strings:640 /tmp/strings:642 /tmp/strings:644
+#: /tmp/strings:646 /tmp/strings:648 /tmp/strings:650 /tmp/strings:652
+#: /tmp/strings:654 /tmp/strings:656 /tmp/strings:658 /tmp/strings:660
+#: /tmp/strings:662 /tmp/strings:664 /tmp/strings:666 /tmp/strings:668
+#: /tmp/strings:670 /tmp/strings:672 /tmp/strings:674 /tmp/strings:676
+#: /tmp/strings:678 /tmp/strings:680 /tmp/strings:682 /tmp/strings:684
+#: /tmp/strings:686 /tmp/strings:688 /tmp/strings:690 /tmp/strings:692
+#: /tmp/strings:694 /tmp/strings:696 /tmp/strings:698 /tmp/strings:700
+#: /tmp/strings:702 /tmp/strings:704 /tmp/strings:706 /tmp/strings:708
+#: /tmp/strings:710 /tmp/strings:712 /tmp/strings:714 /tmp/strings:716
+#: /tmp/strings:718 /tmp/strings:720 /tmp/strings:722 /tmp/strings:724
+#: /tmp/strings:726 /tmp/strings:728 /tmp/strings:730 /tmp/strings:732
+#: /tmp/strings:734 /tmp/strings:736 /tmp/strings:738 /tmp/strings:740
+#: /tmp/strings:742 /tmp/strings:744 /tmp/strings:746 /tmp/strings:748
+#: /tmp/strings:750 /tmp/strings:752 /tmp/strings:754 /tmp/strings:756
+#: /tmp/strings:758 /tmp/strings:760 /tmp/strings:762 /tmp/strings:764
+#: /tmp/strings:766 /tmp/strings:768 /tmp/strings:770 /tmp/strings:772
+#: /tmp/strings:774 /tmp/strings:776 /tmp/strings:778 /tmp/strings:780
+#: /tmp/strings:782 /tmp/strings:784 /tmp/strings:786 /tmp/strings:788
+#: /tmp/strings:790 /tmp/strings:792 /tmp/strings:794 /tmp/strings:796
+#: /tmp/strings:798 /tmp/strings:800 /tmp/strings:802 /tmp/strings:804
+#: /tmp/strings:806 /tmp/strings:808 /tmp/strings:810 /tmp/strings:812
+#: /tmp/strings:814 /tmp/strings:816 /tmp/strings:818 /tmp/strings:820
+#: /tmp/strings:822 /tmp/strings:824 /tmp/strings:826 /tmp/strings:828
+#: /tmp/strings:830 /tmp/strings:832 /tmp/strings:834 /tmp/strings:836
+#: /tmp/strings:838 /tmp/strings:840 /tmp/strings:842 /tmp/strings:844
+#: /tmp/strings:846 /tmp/strings:848 /tmp/strings:850 /tmp/strings:852
+#: /tmp/strings:854 /tmp/strings:856 /tmp/strings:858 /tmp/strings:860
+#: /tmp/strings:862 /tmp/strings:864 /tmp/strings:866 /tmp/strings:868
+#: /tmp/strings:871 /tmp/strings:873 /tmp/strings:875 /tmp/strings:877
+#: /tmp/strings:879 /tmp/strings:881 /tmp/strings:883 /tmp/strings:885
+#: /tmp/strings:887 /tmp/strings:889 /tmp/strings:891 /tmp/strings:893
+#: /tmp/strings:895 /tmp/strings:897 /tmp/strings:899 /tmp/strings:901
+#: /tmp/strings:903 /tmp/strings:905 /tmp/strings:907 /tmp/strings:909
+#: /tmp/strings:911 /tmp/strings:913 /tmp/strings:915 /tmp/strings:917
+#: /tmp/strings:919 /tmp/strings:921 /tmp/strings:923 /tmp/strings:925
+#: /tmp/strings:927 /tmp/strings:929 /tmp/strings:931 /tmp/strings:933
+#: /tmp/strings:936 /tmp/strings:938 /tmp/strings:940 /tmp/strings:942
+#: /tmp/strings:944 /tmp/strings:946 /tmp/strings:948 /tmp/strings:950
+#: /tmp/strings:952 /tmp/strings:954 /tmp/strings:956 /tmp/strings:958
+#: /tmp/strings:960 /tmp/strings:962 /tmp/strings:964 /tmp/strings:966
+#: /tmp/strings:968 /tmp/strings:970 /tmp/strings:972 /tmp/strings:974
+#: /tmp/strings:976 /tmp/strings:978 /tmp/strings:980 /tmp/strings:982
+#: /tmp/strings:984 /tmp/strings:986 /tmp/strings:988 /tmp/strings:990
+#: /tmp/strings:992 /tmp/strings:994 /tmp/strings:996 /tmp/strings:998
+#: /tmp/strings:1000 /tmp/strings:1002 /tmp/strings:1005 /tmp/strings:1007
+#: /tmp/strings:1009 /tmp/strings:1011 /tmp/strings:1013 /tmp/strings:1015
+#: /tmp/strings:1017 /tmp/strings:1019 /tmp/strings:1021 /tmp/strings:1023
+#: /tmp/strings:1025 /tmp/strings:1027 /tmp/strings:1029 /tmp/strings:1031
+#: /tmp/strings:1033 /tmp/strings:1035 /tmp/strings:1037 /tmp/strings:1039
+#: /tmp/strings:1041 /tmp/strings:1043 /tmp/strings:1045 /tmp/strings:1047
+#: /tmp/strings:1049 /tmp/strings:1051 /tmp/strings:1053 /tmp/strings:1055
+#: /tmp/strings:1057 /tmp/strings:1059 /tmp/strings:1061 /tmp/strings:1063
+#: /tmp/strings:1065 /tmp/strings:1067 /tmp/strings:1069 /tmp/strings:1071
+#: /tmp/strings:1073 /tmp/strings:1075 /tmp/strings:1077 /tmp/strings:1079
+#: /tmp/strings:1082 /tmp/strings:1085 /tmp/strings:1088 /tmp/strings:1090
+#: /tmp/strings:1092 /tmp/strings:1094 /tmp/strings:1096 /tmp/strings:1098
+#: /tmp/strings:1100 /tmp/strings:1102 /tmp/strings:1104 /tmp/strings:1106
+#: /tmp/strings:1108 /tmp/strings:1110 /tmp/strings:1112 /tmp/strings:1114
+#: /tmp/strings:1116 /tmp/strings:1118 /tmp/strings:1120 /tmp/strings:1122
+#: /tmp/strings:1124 /tmp/strings:1126 /tmp/strings:1128 /tmp/strings:1130
+#: /tmp/strings:1132 /tmp/strings:1134 /tmp/strings:1136 /tmp/strings:1138
+#: /tmp/strings:1140 /tmp/strings:1142 /tmp/strings:1144
+msgid "title"
+msgstr ""
+
+#: /tmp/strings:2 /tmp/strings:167 /tmp/strings:384 /tmp/strings:464
+#: /tmp/strings:480 /tmp/strings:534 /tmp/strings:576 /tmp/strings:802
+msgid "Email Usage (all)"
+msgstr ""
+
+#: /tmp/strings:3 /tmp/strings:465 /tmp/strings:535 /tmp/strings:577
+#: /tmp/strings:803
+msgid "The amount of clean email over time."
+msgstr ""
+
+#: /tmp/strings:4 /tmp/strings:466 /tmp/strings:536 /tmp/strings:578
+#: /tmp/strings:804
+msgid "Email Usage (clean)"
+msgstr ""
+
+#: /tmp/strings:5 /tmp/strings:537
+msgid "The number of IP addresses sending phish."
+msgstr ""
+
+#: /tmp/strings:6 /tmp/strings:538
+msgid "Top Phish Sender Addresses"
+msgstr ""
+
+#: /tmp/strings:7 /tmp/strings:539
+msgid "The amount of phish email over time."
+msgstr ""
+
+#: /tmp/strings:8 /tmp/strings:540
+msgid "Email Usage (phish)"
+msgstr ""
+
+#: /tmp/strings:9 /tmp/strings:541
+msgid "The ratio of phish (true) to ham (false)"
+msgstr ""
+
+#: /tmp/strings:10 /tmp/strings:542
+msgid "Phish Ratio"
+msgstr ""
+
+#: /tmp/strings:11 /tmp/strings:198 /tmp/strings:415 /tmp/strings:473
+#: /tmp/strings:511 /tmp/strings:543 /tmp/strings:585 /tmp/strings:811
+msgid "The amount of scanned email over time."
+msgstr ""
+
+#: /tmp/strings:12 /tmp/strings:199 /tmp/strings:416 /tmp/strings:474
+#: /tmp/strings:512 /tmp/strings:544 /tmp/strings:586 /tmp/strings:812
+msgid "Email Usage (scanned)"
+msgstr ""
+
+#: /tmp/strings:13 /tmp/strings:545
+msgid "The number of email addresses with phish."
+msgstr ""
+
+#: /tmp/strings:14 /tmp/strings:546
+msgid "Top Phish Recipients"
+msgstr ""
+
+#: /tmp/strings:15 /tmp/strings:547
+msgid "A summary of phish blocking actions for email activity."
+msgstr ""
+
+#: /tmp/strings:16 /tmp/strings:548
+msgid "Phish Blocker Summary"
+msgstr ""
+
+#: /tmp/strings:17 /tmp/strings:327
+msgid "The top logged sessions by user."
+msgstr ""
+
+#: /tmp/strings:18 /tmp/strings:328
+msgid "Top Logged Users"
+msgstr ""
+
+#: /tmp/strings:19 /tmp/strings:329
+msgid "The top logged sessions by protocol."
+msgstr ""
+
+#: /tmp/strings:20 /tmp/strings:330
+msgid "Top Logged Protocols"
+msgstr ""
+
+#: /tmp/strings:21 /tmp/strings:331
+msgid "The top blocked sessions by protocol."
+msgstr ""
+
+#: /tmp/strings:22 /tmp/strings:332
+msgid "Top Blocked Protocols"
+msgstr ""
+
+#: /tmp/strings:23 /tmp/strings:333
+msgid "The top blocked sessions by user."
+msgstr ""
+
+#: /tmp/strings:24 /tmp/strings:334
+msgid "Top Blocked Users"
+msgstr ""
+
+#: /tmp/strings:25 /tmp/strings:335
+msgid "The top blocked sessions by host."
+msgstr ""
+
+#: /tmp/strings:26 /tmp/strings:336
+msgid "Top Blocked Hosts"
+msgstr ""
+
+#: /tmp/strings:27 /tmp/strings:337
+msgid "The top logged sessions by host."
+msgstr ""
+
+#: /tmp/strings:28 /tmp/strings:338
+msgid "Top Logged Hosts"
+msgstr ""
+
+#: /tmp/strings:29 /tmp/strings:339
+msgid "The number of logged and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:30 /tmp/strings:340
+msgid "Detection Statistics"
+msgstr ""
+
+#: /tmp/strings:31 /tmp/strings:609
+msgid "The approximate amount of data transfered over openvpn connections."
+msgstr ""
+
+#: /tmp/strings:32 /tmp/strings:610
+msgid "OpenVPN Bandwidth Usage"
+msgstr ""
+
+#: /tmp/strings:33 /tmp/strings:611
+msgid "The number of bytes transferred grouped by remote client."
+msgstr ""
+
+#: /tmp/strings:34 /tmp/strings:612
+msgid "Top Clients (by usage)"
+msgstr ""
+
+#: /tmp/strings:35 /tmp/strings:613
+msgid "The amount of openvpn sessions over time."
+msgstr ""
+
+#: /tmp/strings:36 /tmp/strings:614
+msgid "OpenVPN Sessions"
+msgstr ""
+
+#: /tmp/strings:37 /tmp/strings:615
+msgid "The amount of login and logout events over time."
+msgstr ""
+
+#: /tmp/strings:38 /tmp/strings:616
+msgid "OpenVPN Events"
+msgstr ""
+
+#: /tmp/strings:39 /tmp/strings:601
+msgid "The top active users that logged in to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:40 /tmp/strings:305 /tmp/strings:602
+msgid "Top Active Users"
+msgstr ""
+
+#: /tmp/strings:41 /tmp/strings:603
+msgid "A summary of Captive Portal activity."
+msgstr ""
+
+#: /tmp/strings:42 /tmp/strings:604
+msgid "Activity Summary"
+msgstr ""
+
+#: /tmp/strings:43 /tmp/strings:605
+msgid ""
+"The top clients that were blocked by Captive Portal because they were not "
+"logged in."
+msgstr ""
+
+#: /tmp/strings:44 /tmp/strings:50 /tmp/strings:255 /tmp/strings:432
+#: /tmp/strings:456 /tmp/strings:606 /tmp/strings:628 /tmp/strings:686
+#: /tmp/strings:782 /tmp/strings:820
+msgid "Top Blocked Clients"
+msgstr ""
+
+#: /tmp/strings:45 /tmp/strings:623 /tmp/strings:681
+msgid "The sum of the size of requested web content grouped by domain."
+msgstr ""
+
+#: /tmp/strings:46 /tmp/strings:624 /tmp/strings:682
+msgid "Top Domains (by size)"
+msgstr ""
+
+#: /tmp/strings:47 /tmp/strings:625 /tmp/strings:683
+msgid "The number of flagged web request grouped by username."
+msgstr ""
+
+#: /tmp/strings:48 /tmp/strings:249 /tmp/strings:426 /tmp/strings:626
+#: /tmp/strings:684 /tmp/strings:778
+msgid "Top Flagged Usernames"
+msgstr ""
+
+#: /tmp/strings:49 /tmp/strings:627 /tmp/strings:685
+msgid "The number of blocked web request grouped by client."
+msgstr ""
+
+#: /tmp/strings:51 /tmp/strings:629 /tmp/strings:687
+msgid "The number of web requests grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:52 /tmp/strings:630 /tmp/strings:688
+msgid "Top Hostnames (by requests)"
+msgstr ""
+
+#: /tmp/strings:53 /tmp/strings:631 /tmp/strings:689
+msgid "The sum of the size of requested web content grouped by website."
+msgstr ""
+
+#: /tmp/strings:54 /tmp/strings:632 /tmp/strings:690
+msgid "Top Sites (by size)"
+msgstr ""
+
+#: /tmp/strings:55 /tmp/strings:633 /tmp/strings:691
+msgid "The number of web requests grouped by category."
+msgstr ""
+
+#: /tmp/strings:56 /tmp/strings:634 /tmp/strings:692
+msgid "Top Categories (by request)"
+msgstr ""
+
+#: /tmp/strings:57 /tmp/strings:635 /tmp/strings:693
+msgid "The sum of the size of requested web content grouped by category."
+msgstr ""
+
+#: /tmp/strings:58 /tmp/strings:636 /tmp/strings:694
+msgid "Top Categories (by size)"
+msgstr ""
+
+#: /tmp/strings:59 /tmp/strings:637 /tmp/strings:695
+msgid "The number of flagged web request grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:60 /tmp/strings:257 /tmp/strings:434 /tmp/strings:638
+#: /tmp/strings:696 /tmp/strings:786
+msgid "Top Flagged Hostnames"
+msgstr ""
+
+#: /tmp/strings:61 /tmp/strings:639 /tmp/strings:697
+msgid "The number of blocked web request grouped by username."
+msgstr ""
+
+#: /tmp/strings:62 /tmp/strings:259 /tmp/strings:436 /tmp/strings:460
+#: /tmp/strings:640 /tmp/strings:698 /tmp/strings:788 /tmp/strings:824
+msgid "Top Blocked Usernames"
+msgstr ""
+
+#: /tmp/strings:63 /tmp/strings:641 /tmp/strings:699
+msgid "The number of web requests grouped by client."
+msgstr ""
+
+#: /tmp/strings:64 /tmp/strings:642 /tmp/strings:700
+msgid "Top Clients (by requests)"
+msgstr ""
+
+#: /tmp/strings:65 /tmp/strings:643 /tmp/strings:701
+msgid "The number of flagged web requests grouped by domain."
+msgstr ""
+
+#: /tmp/strings:66 /tmp/strings:644 /tmp/strings:702
+msgid "Top Flagged Domains"
+msgstr ""
+
+#: /tmp/strings:67 /tmp/strings:645 /tmp/strings:703
+msgid "The sum of the size of requested web content grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:68 /tmp/strings:646 /tmp/strings:704
+msgid "Top Hostnames (by size)"
+msgstr ""
+
+#: /tmp/strings:69 /tmp/strings:647 /tmp/strings:705
+msgid "The number of web requests grouped by website."
+msgstr ""
+
+#: /tmp/strings:70 /tmp/strings:648 /tmp/strings:706
+msgid "Top Sites (by request)"
+msgstr ""
+
+#: /tmp/strings:71 /tmp/strings:649 /tmp/strings:707
+msgid "The number of blocked web requests grouped by category."
+msgstr ""
+
+#: /tmp/strings:72 /tmp/strings:650 /tmp/strings:708
+msgid "Top Blocked Categories"
+msgstr ""
+
+#: /tmp/strings:73 /tmp/strings:651 /tmp/strings:709
+msgid "The sum of the size of requested web content grouped by username."
+msgstr ""
+
+#: /tmp/strings:74 /tmp/strings:652 /tmp/strings:710
+msgid "Top Usernames (by size)"
+msgstr ""
+
+#: /tmp/strings:75 /tmp/strings:81 /tmp/strings:653 /tmp/strings:659
+#: /tmp/strings:711 /tmp/strings:717
+msgid "The amount of total, flagged, and blocked web requests over time."
+msgstr ""
+
+#: /tmp/strings:76 /tmp/strings:185 /tmp/strings:402 /tmp/strings:498
+#: /tmp/strings:654 /tmp/strings:712
+msgid "Web Usage (all)"
+msgstr ""
+
+#: /tmp/strings:77 /tmp/strings:83 /tmp/strings:655 /tmp/strings:661
+#: /tmp/strings:713 /tmp/strings:719
+msgid "The amount of flagged, and blocked web requests over time."
+msgstr ""
+
+#: /tmp/strings:78 /tmp/strings:656 /tmp/strings:714
+msgid "Web Usage (flagged)"
+msgstr ""
+
+#: /tmp/strings:79 /tmp/strings:657 /tmp/strings:715
+msgid "The number of web requests grouped by username."
+msgstr ""
+
+#: /tmp/strings:80 /tmp/strings:658 /tmp/strings:716
+msgid "Top Usernames (by requests)"
+msgstr ""
+
+#: /tmp/strings:82 /tmp/strings:189 /tmp/strings:406 /tmp/strings:502
+#: /tmp/strings:660 /tmp/strings:718
+msgid "Web Usage (scanned)"
+msgstr ""
+
+#: /tmp/strings:84 /tmp/strings:193 /tmp/strings:410 /tmp/strings:506
+#: /tmp/strings:662 /tmp/strings:720
+msgid "Web Usage (blocked)"
+msgstr ""
+
+#: /tmp/strings:85 /tmp/strings:663 /tmp/strings:721
+msgid "The sum of the size of requested web content grouped by client."
+msgstr ""
+
+#: /tmp/strings:86 /tmp/strings:664 /tmp/strings:722
+msgid "Top Clients (by size)"
+msgstr ""
+
+#: /tmp/strings:87 /tmp/strings:665 /tmp/strings:723
+msgid "The number of web requests grouped by domain."
+msgstr ""
+
+#: /tmp/strings:88 /tmp/strings:666 /tmp/strings:724
+msgid "Top Domains (by request)"
+msgstr ""
+
+#: /tmp/strings:89 /tmp/strings:667 /tmp/strings:725
+msgid "The number of blocked web requests grouped by domain."
+msgstr ""
+
+#: /tmp/strings:90 /tmp/strings:668 /tmp/strings:726
+msgid "Top Blocked Domains"
+msgstr ""
+
+#: /tmp/strings:91 /tmp/strings:669
+msgid "A summary of web filter lite actions."
+msgstr ""
+
+#: /tmp/strings:92 /tmp/strings:670
+msgid "Web Filter Lite Summary"
+msgstr ""
+
+#: /tmp/strings:93 /tmp/strings:671 /tmp/strings:729
+msgid "The number of blocked web request grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:94 /tmp/strings:271 /tmp/strings:448 /tmp/strings:462
+#: /tmp/strings:672 /tmp/strings:730 /tmp/strings:798 /tmp/strings:826
+msgid "Top Blocked Hostnames"
+msgstr ""
+
+#: /tmp/strings:95 /tmp/strings:673 /tmp/strings:731
+msgid "The number of flagged web request grouped by client."
+msgstr ""
+
+#: /tmp/strings:96 /tmp/strings:273 /tmp/strings:450 /tmp/strings:674
+#: /tmp/strings:732 /tmp/strings:800
+msgid "Top Flagged Clients"
+msgstr ""
+
+#: /tmp/strings:97 /tmp/strings:675 /tmp/strings:733
+msgid "The number of flagged web requests grouped by website."
+msgstr ""
+
+#: /tmp/strings:98 /tmp/strings:676 /tmp/strings:734
+msgid "Top Flagged Sites"
+msgstr ""
+
+#: /tmp/strings:99 /tmp/strings:677 /tmp/strings:735
+msgid "The number of flagged web requests grouped by category."
+msgstr ""
+
+#: /tmp/strings:100 /tmp/strings:678 /tmp/strings:736
+msgid "Top Flagged Categories"
+msgstr ""
+
+#: /tmp/strings:101 /tmp/strings:679 /tmp/strings:737
+msgid "The number of blocked web requests grouped by website."
+msgstr ""
+
+#: /tmp/strings:102 /tmp/strings:680 /tmp/strings:738
+msgid "Top Blocked Sites"
+msgstr ""
+
+#: /tmp/strings:103 /tmp/strings:312
+msgid "The top alerts."
+msgstr ""
+
+#: /tmp/strings:104 /tmp/strings:313
+msgid "pieGroupColumn"
+msgstr ""
+
+#: /tmp/strings:105 /tmp/strings:314
+msgid "Top Alerts"
+msgstr ""
+
+#: /tmp/strings:106 /tmp/strings:315
+msgid "The disk utilization over time."
+msgstr ""
+
+#: /tmp/strings:108 /tmp/strings:317
+msgid "The CPU load over time."
+msgstr ""
+
+#: /tmp/strings:110 /tmp/strings:319
+msgid "Alerts over time."
+msgstr ""
+
+#: /tmp/strings:111 /tmp/strings:320
+msgid "Alerts"
+msgstr ""
+
+#: /tmp/strings:112 /tmp/strings:321
+msgid "The amount of free memory over time."
+msgstr ""
+
+#: /tmp/strings:113 /tmp/strings:322
+#, fuzzy
+msgid "Memory Usage"
+msgstr "内存使用："
+
+#: /tmp/strings:119 /tmp/strings:281
+msgid "Report Details"
+msgstr ""
+
+#: /tmp/strings:120 /tmp/strings:282
+msgid "Available Reports"
+msgstr ""
+
+#: /tmp/strings:138 /tmp/strings:549
+msgid "The amount of total, scanned, and bypassed sessions created per minute."
+msgstr ""
+
+#: /tmp/strings:139 /tmp/strings:550
+msgid "Sessions Per Minute"
+msgstr ""
+
+#: /tmp/strings:140 /tmp/strings:551
+msgid "The amount of total, scanned, and bypassed sessions over time."
+msgstr ""
+
+#: /tmp/strings:142 /tmp/strings:553
+msgid "The amount of total, scanned, and bypassed sessions created per hour."
+msgstr ""
+
+#: /tmp/strings:143 /tmp/strings:554
+msgid "Sessions Per Hour"
+msgstr ""
+
+#: /tmp/strings:144 /tmp/strings:555
+msgid "The number of settings changes over time."
+msgstr ""
+
+#: /tmp/strings:145 /tmp/strings:556
+msgid "Settings Changes"
+msgstr ""
+
+#: /tmp/strings:146 /tmp/strings:557
+msgid "The number of updates to the host table over time."
+msgstr ""
+
+#: /tmp/strings:147 /tmp/strings:558
+msgid "Host Table Updates"
+msgstr ""
+
+#: /tmp/strings:148 /tmp/strings:158 /tmp/strings:559 /tmp/strings:569
+msgid "The amount of hosts add and removed from the host table over time."
+msgstr ""
+
+#: /tmp/strings:149 /tmp/strings:560
+msgid "Host Table Size"
+msgstr ""
+
+#: /tmp/strings:150 /tmp/strings:561
+msgid "The number of sessions grouped by IP protocol number."
+msgstr ""
+
+#: /tmp/strings:151 /tmp/strings:562
+msgid "Top IP Protocols"
+msgstr ""
+
+#: /tmp/strings:152 /tmp/strings:563
+msgid "The number of total, successful, and failed admin logins over time."
+msgstr ""
+
+#: /tmp/strings:153 /tmp/strings:564 /tmp/strings:883 /tmp/strings:1025
+msgid "Admin Logins"
+msgstr ""
+
+#: /tmp/strings:154 /tmp/strings:565
+msgid "The number of sessions grouped by server (destination) port."
+msgstr ""
+
+#: /tmp/strings:155 /tmp/strings:566
+msgid "Top Server Ports"
+msgstr ""
+
+#: /tmp/strings:156 /tmp/strings:567
+msgid "The number of sessions grouped by client (source) address."
+msgstr ""
+
+#: /tmp/strings:157 /tmp/strings:568
+msgid "Top Client Addresses"
+msgstr ""
+
+#: /tmp/strings:159 /tmp/strings:570
+msgid "Host Table Additions"
+msgstr ""
+
+#: /tmp/strings:160 /tmp/strings:617
+msgid "The amount of detected and blocked ads over time."
+msgstr ""
+
+#: /tmp/strings:161 /tmp/strings:618
+msgid "Ads Blocked"
+msgstr ""
+
+#: /tmp/strings:162 /tmp/strings:619
+msgid "A summary of ad blocker actions."
+msgstr ""
+
+#: /tmp/strings:163 /tmp/strings:620
+msgid "Ad Blocker Summary"
+msgstr ""
+
+#: /tmp/strings:164 /tmp/strings:621
+msgid "The number of blocked ads grouped by website."
+msgstr ""
+
+#: /tmp/strings:165 /tmp/strings:622
+msgid "Top Blocked Ad Sites"
+msgstr ""
+
+#: /tmp/strings:166 /tmp/strings:383 /tmp/strings:479
+msgid "The amount of scanned and blocked email over time."
+msgstr ""
+
+#: /tmp/strings:168 /tmp/strings:172 /tmp/strings:385 /tmp/strings:389
+#: /tmp/strings:481 /tmp/strings:485
+msgid "The number of clients with blocked viruses by web activity."
+msgstr ""
+
+#: /tmp/strings:169 /tmp/strings:386 /tmp/strings:482
+msgid "Web Top Blocked Sites"
+msgstr ""
+
+#: /tmp/strings:170 /tmp/strings:387 /tmp/strings:483
+msgid "The number of blocked viruses by FTP activity."
+msgstr ""
+
+#: /tmp/strings:171 /tmp/strings:388 /tmp/strings:484
+msgid "FTP Top Blocked Viruses"
+msgstr ""
+
+#: /tmp/strings:173 /tmp/strings:390 /tmp/strings:486
+msgid "Web Top Blocked Clients"
+msgstr ""
+
+#: /tmp/strings:174 /tmp/strings:190 /tmp/strings:391 /tmp/strings:407
+#: /tmp/strings:487 /tmp/strings:503
+msgid "The number of clients with blocked viruses by Email activity."
+msgstr ""
+
+#: /tmp/strings:175 /tmp/strings:392 /tmp/strings:488
+msgid "Email Top Blocked Clients"
+msgstr ""
+
+#: /tmp/strings:176 /tmp/strings:393 /tmp/strings:489
+msgid "The number of blocked viruses by web activity."
+msgstr ""
+
+#: /tmp/strings:177 /tmp/strings:394 /tmp/strings:490
+msgid "Web Top Blocked Viruses"
+msgstr ""
+
+#: /tmp/strings:178 /tmp/strings:395 /tmp/strings:491
+msgid "A summary of virus blocking actions for web activity."
+msgstr ""
+
+#: /tmp/strings:179 /tmp/strings:396
+msgid "Virus Blocker Lite Web Summary"
+msgstr ""
+
+#: /tmp/strings:180 /tmp/strings:204 /tmp/strings:397 /tmp/strings:421
+#: /tmp/strings:493 /tmp/strings:517
+msgid "The number of clients with blocked viruses by FTP activity."
+msgstr ""
+
+#: /tmp/strings:181 /tmp/strings:398 /tmp/strings:494
+msgid "FTP Top Blocked Sites"
+msgstr ""
+
+#: /tmp/strings:182 /tmp/strings:399 /tmp/strings:495
+msgid "The amount of scanned FTP requests over time."
+msgstr ""
+
+#: /tmp/strings:183 /tmp/strings:400 /tmp/strings:496
+msgid "FTP Usage (scanned)"
+msgstr ""
+
+#: /tmp/strings:184 /tmp/strings:401 /tmp/strings:497
+msgid "The amount of scanned and blocked web requests over time."
+msgstr ""
+
+#: /tmp/strings:186 /tmp/strings:403 /tmp/strings:499
+msgid "The amount of blocked email over time."
+msgstr ""
+
+#: /tmp/strings:187 /tmp/strings:404 /tmp/strings:500
+msgid "Email Usage (blocked)"
+msgstr ""
+
+#: /tmp/strings:188 /tmp/strings:405 /tmp/strings:501
+msgid "The amount of scanned web requests over time."
+msgstr ""
+
+#: /tmp/strings:191 /tmp/strings:408 /tmp/strings:504
+msgid "Email Top Blocked Sites"
+msgstr ""
+
+#: /tmp/strings:192 /tmp/strings:409 /tmp/strings:505
+msgid "The amount of blocked web requests over time."
+msgstr ""
+
+#: /tmp/strings:194 /tmp/strings:411 /tmp/strings:507
+msgid "The amount of scanned and blocked FTP requests over time."
+msgstr ""
+
+#: /tmp/strings:195 /tmp/strings:412 /tmp/strings:508
+msgid "FTP Usage (all)"
+msgstr ""
+
+#: /tmp/strings:196 /tmp/strings:413 /tmp/strings:509
+msgid "A summary of virus blocking actions for FTP activity."
+msgstr ""
+
+#: /tmp/strings:197 /tmp/strings:414
+msgid "Virus Blocker Lite FTP Summary"
+msgstr ""
+
+#: /tmp/strings:200 /tmp/strings:417 /tmp/strings:513
+msgid "The amount of blocked FTP requests over time."
+msgstr ""
+
+#: /tmp/strings:201 /tmp/strings:418 /tmp/strings:514
+msgid "FTP Usage (blocked)"
+msgstr ""
+
+#: /tmp/strings:202 /tmp/strings:419 /tmp/strings:515
+msgid "The number of blocked viruses by Email activity."
+msgstr ""
+
+#: /tmp/strings:203 /tmp/strings:420 /tmp/strings:516
+msgid "Email Top Blocked Viruses"
+msgstr ""
+
+#: /tmp/strings:205 /tmp/strings:422 /tmp/strings:518
+msgid "FTP Top Blocked Clients"
+msgstr ""
+
+#: /tmp/strings:206 /tmp/strings:423 /tmp/strings:519
+msgid "A summary of virus blocking actions for Email activity."
+msgstr ""
+
+#: /tmp/strings:207 /tmp/strings:424
+msgid "Virus Blocker Lite Email Summary"
+msgstr ""
+
+#: /tmp/strings:208 /tmp/strings:343
+msgid "The amount of detected and blocked intrusions over time."
+msgstr ""
+
+#: /tmp/strings:209 /tmp/strings:344
+msgid "Intrusion Detection (all)"
+msgstr ""
+
+#: /tmp/strings:210 /tmp/strings:345
+msgid "The number of intrusions detected grouped by source IP address."
+msgstr ""
+
+#: /tmp/strings:211 /tmp/strings:346
+msgid "Top Source IP Addresses (logged)"
+msgstr ""
+
+#: /tmp/strings:212 /tmp/strings:347
+msgid "The number of intrusions detected grouped by category."
+msgstr ""
+
+#: /tmp/strings:213 /tmp/strings:348
+msgid "Top Categories (logged)"
+msgstr ""
+
+#: /tmp/strings:214 /tmp/strings:349
+msgid "The number of intrusions blocked by source port."
+msgstr ""
+
+#: /tmp/strings:215 /tmp/strings:350
+msgid "Top Source Port (blocked)"
+msgstr ""
+
+#: /tmp/strings:216 /tmp/strings:351
+msgid "The number of intrusions blocked by rule."
+msgstr ""
+
+#: /tmp/strings:217 /tmp/strings:352
+msgid "Top Rules (blocked)"
+msgstr ""
+
+#: /tmp/strings:218 /tmp/strings:353
+msgid "The number of intrusions blocked by destination port."
+msgstr ""
+
+#: /tmp/strings:219 /tmp/strings:354
+msgid "Top Destination Port (blocked)"
+msgstr ""
+
+#: /tmp/strings:220 /tmp/strings:355
+msgid "The amount of blocked intrusions over time."
+msgstr ""
+
+#: /tmp/strings:221 /tmp/strings:356
+msgid "Intrusion Detection (blocked)"
+msgstr ""
+
+#: /tmp/strings:222 /tmp/strings:357
+msgid "The number of intrusions blocked by classtype."
+msgstr ""
+
+#: /tmp/strings:223 /tmp/strings:358
+msgid "Top Classtypes (blocked)"
+msgstr ""
+
+#: /tmp/strings:224 /tmp/strings:359
+msgid "The number of intrusions detected grouped by rule."
+msgstr ""
+
+#: /tmp/strings:225 /tmp/strings:360
+msgid "Top Rules (logged)"
+msgstr ""
+
+#: /tmp/strings:226 /tmp/strings:361
+msgid "The number of intrusions blocked by category."
+msgstr ""
+
+#: /tmp/strings:227 /tmp/strings:362
+msgid "Top Categories (blocked)"
+msgstr ""
+
+#: /tmp/strings:228 /tmp/strings:363
+msgid "The number of intrusions blocked by source IP address."
+msgstr ""
+
+#: /tmp/strings:229 /tmp/strings:364
+msgid "Top Source IP Addresses (blocked)"
+msgstr ""
+
+#: /tmp/strings:230 /tmp/strings:365
+msgid "The number of intrusions detected grouped by destination IP address."
+msgstr ""
+
+#: /tmp/strings:231 /tmp/strings:366
+msgid "Top Destination IP Addresses (logged)"
+msgstr ""
+
+#: /tmp/strings:232 /tmp/strings:367
+msgid "The amount of detected pintrusions over time."
+msgstr ""
+
+#: /tmp/strings:233 /tmp/strings:368
+msgid "Intrusion Detection (logged)"
+msgstr ""
+
+#: /tmp/strings:234 /tmp/strings:369
+msgid "The number of intrusions detected grouped by source port."
+msgstr ""
+
+#: /tmp/strings:235 /tmp/strings:370
+msgid "Top Source Ports (logged)"
+msgstr ""
+
+#: /tmp/strings:236 /tmp/strings:371
+msgid "A summary of intrusion detection and prevention actions."
+msgstr ""
+
+#: /tmp/strings:237 /tmp/strings:372
+msgid "Intrusion Prevention Summary"
+msgstr ""
+
+#: /tmp/strings:238 /tmp/strings:373
+msgid "The number of intrusions detected grouped by classtype."
+msgstr ""
+
+#: /tmp/strings:239 /tmp/strings:374
+msgid "Top Classtypes (logged)"
+msgstr ""
+
+#: /tmp/strings:240 /tmp/strings:375
+msgid "The number of intrusions detected grouped by destination port."
+msgstr ""
+
+#: /tmp/strings:241 /tmp/strings:376
+msgid "Top Destination Ports (logged)"
+msgstr ""
+
+#: /tmp/strings:242 /tmp/strings:377
+msgid "The number of intrusions blocked by protocol."
+msgstr ""
+
+#: /tmp/strings:243 /tmp/strings:378
+msgid "Top Protocols (blocked)"
+msgstr ""
+
+#: /tmp/strings:244 /tmp/strings:379
+msgid "The number of intrusions blocked by destination IP address."
+msgstr ""
+
+#: /tmp/strings:245 /tmp/strings:380
+msgid "Top Destination IP Addresses (blocked)"
+msgstr ""
+
+#: /tmp/strings:246 /tmp/strings:381
+msgid "The number of intrusions detected grouped by protocol."
+msgstr ""
+
+#: /tmp/strings:247 /tmp/strings:382
+msgid "Top Protocols (logged)"
+msgstr ""
+
+#: /tmp/strings:248 /tmp/strings:258 /tmp/strings:425 /tmp/strings:435
+msgid "The number of flagged session grouped by username."
+msgstr ""
+
+#: /tmp/strings:250 /tmp/strings:427 /tmp/strings:779
+msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:251 /tmp/strings:428 /tmp/strings:454 /tmp/strings:594
+#: /tmp/strings:818 /tmp/strings:879 /tmp/strings:976 /tmp/strings:1021
+#: /tmp/strings:1144
+msgid "Scanned Sessions"
+msgstr ""
+
+#: /tmp/strings:252 /tmp/strings:429
+msgid "The number of scanned session grouped by username."
+msgstr ""
+
+#: /tmp/strings:253 /tmp/strings:430
+msgid "Top Scanned Usernames"
+msgstr ""
+
+#: /tmp/strings:254 /tmp/strings:272 /tmp/strings:431 /tmp/strings:449
+msgid "The number of flagged session grouped by client."
+msgstr ""
+
+#: /tmp/strings:256 /tmp/strings:433
+msgid "The number of flagged session grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:260 /tmp/strings:274 /tmp/strings:437 /tmp/strings:451
+msgid "The number of flagged session grouped by server (destination) port."
+msgstr ""
+
+#: /tmp/strings:261 /tmp/strings:438
+msgid "Top Blocked Server Ports"
+msgstr ""
+
+#: /tmp/strings:262 /tmp/strings:439
+msgid "The number of scanned session grouped by client."
+msgstr ""
+
+#: /tmp/strings:263 /tmp/strings:440
+msgid "Top Scanned Clients"
+msgstr ""
+
+#: /tmp/strings:264 /tmp/strings:441
+msgid "The number of scanned session grouped by server (destination) port."
+msgstr ""
+
+#: /tmp/strings:265 /tmp/strings:442
+msgid "Top Scanned Server Ports"
+msgstr ""
+
+#: /tmp/strings:266 /tmp/strings:443
+msgid "The number of scanned session grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:267 /tmp/strings:444
+msgid "Top Scanned Hostnames"
+msgstr ""
+
+#: /tmp/strings:268 /tmp/strings:445
+msgid "A summary of firewall actions."
+msgstr ""
+
+#: /tmp/strings:269 /tmp/strings:446
+msgid "Firewall Summary"
+msgstr ""
+
+#: /tmp/strings:270 /tmp/strings:447 /tmp/strings:461 /tmp/strings:797
+#: /tmp/strings:825
+msgid "The number of blocked sessions grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:275 /tmp/strings:452
+msgid "Top Flagged Server Ports"
+msgstr ""
+
+#: /tmp/strings:300
+msgid "The top IPsec users grouped by amount of data downloaded."
+msgstr ""
+
+#: /tmp/strings:301
+msgid "Top Download Users"
+msgstr ""
+
+#: /tmp/strings:302
+msgid "The amount of IPsec tunnel traffic over time."
+msgstr ""
+
+#: /tmp/strings:303
+msgid "Hourly Tunnel Traffic"
+msgstr ""
+
+#: /tmp/strings:304
+msgid "The top IPsec VPN users by number of sessions."
+msgstr ""
+
+#: /tmp/strings:306
+msgid "The top IPsec VPN connections by protocol."
+msgstr ""
+
+#: /tmp/strings:307
+msgid "Top Protocols"
+msgstr ""
+
+#: /tmp/strings:308
+msgid "The amount of traffic for each IPsec tunnel."
+msgstr ""
+
+#: /tmp/strings:309
+msgid "Top Tunnel Traffic"
+msgstr ""
+
+#: /tmp/strings:310
+msgid "The top IPsec users grouped by amount of data uploaded."
+msgstr ""
+
+#: /tmp/strings:311
+msgid "Top Upload Users"
+msgstr ""
+
+#: /tmp/strings:323
+msgid "The number of cache hits, misses, and sessions bypassed over time."
+msgstr ""
+
+#: /tmp/strings:324
+msgid "Cache Hit/Miss Statistics"
+msgstr ""
+
+#: /tmp/strings:325
+msgid "The amount of cached and uncached web data over time."
+msgstr ""
+
+#: /tmp/strings:326
+msgid "Cache Size Statistics"
+msgstr ""
+
+#: /tmp/strings:341
+msgid ""
+"The amount of login, update and logout user notification API events over "
+"time."
+msgstr ""
+
+#: /tmp/strings:342
+msgid "User Notification API Events"
+msgstr ""
+
+#: /tmp/strings:453 /tmp/strings:817
+msgid "The amount of scanned and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:455 /tmp/strings:781 /tmp/strings:819
+msgid "The number of blocked sessions grouped by client."
+msgstr ""
+
+#: /tmp/strings:457 /tmp/strings:821
+msgid "The amount of blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:458 /tmp/strings:822 /tmp/strings:873 /tmp/strings:974
+#: /tmp/strings:1015 /tmp/strings:1051 /tmp/strings:1130 /tmp/strings:1142
+msgid "Blocked Sessions"
+msgstr ""
+
+#: /tmp/strings:459 /tmp/strings:787 /tmp/strings:823
+msgid "The number of blocked sessions grouped by username."
+msgstr ""
+
+#: /tmp/strings:463 /tmp/strings:575 /tmp/strings:801
+msgid "The amount of scanned, clean, and spam email over time."
+msgstr ""
+
+#: /tmp/strings:467 /tmp/strings:579 /tmp/strings:805
+msgid "The number of IP addresses sending spam."
+msgstr ""
+
+#: /tmp/strings:468 /tmp/strings:580 /tmp/strings:806
+msgid "Top Spam Sender Addresses"
+msgstr ""
+
+#: /tmp/strings:469 /tmp/strings:581 /tmp/strings:807
+msgid "The amount of spam email over time."
+msgstr ""
+
+#: /tmp/strings:470 /tmp/strings:582 /tmp/strings:808
+msgid "Email Usage (spam)"
+msgstr ""
+
+#: /tmp/strings:471 /tmp/strings:583 /tmp/strings:809
+msgid "The ratio of spam (true) to ham (false)"
+msgstr ""
+
+#: /tmp/strings:472 /tmp/strings:584 /tmp/strings:810
+msgid "Spam Ratio"
+msgstr ""
+
+#: /tmp/strings:475 /tmp/strings:587 /tmp/strings:813
+msgid "The number of email addresses with spam."
+msgstr ""
+
+#: /tmp/strings:476 /tmp/strings:588 /tmp/strings:814
+msgid "Top Spam Recipients"
+msgstr ""
+
+#: /tmp/strings:477 /tmp/strings:589 /tmp/strings:815
+msgid "A summary of spam blocking actions for email activity."
+msgstr ""
+
+#: /tmp/strings:478 /tmp/strings:816
+msgid "Spam Blocker Lite Summary"
+msgstr ""
+
+#: /tmp/strings:492
+msgid "Virus Blocker Web Summary"
+msgstr ""
+
+#: /tmp/strings:510
+msgid "Virus Blocker FTP Summary"
+msgstr ""
+
+#: /tmp/strings:520
+msgid "Virus Blocker Email Summary"
+msgstr ""
+
+#: /tmp/strings:521
+msgid ""
+"The amount of successes, and failures of configuration backup over time."
+msgstr ""
+
+#: /tmp/strings:522
+msgid "Backup Usage (all)"
+msgstr ""
+
+#: /tmp/strings:523
+msgid "The amount of successful configuration backups over time."
+msgstr ""
+
+#: /tmp/strings:524
+msgid "Backup Usage (success)"
+msgstr ""
+
+#: /tmp/strings:525
+msgid "The amount of failed configuration backups over time."
+msgstr ""
+
+#: /tmp/strings:526
+msgid "Backup Usage (failed)"
+msgstr ""
+
+#: /tmp/strings:527
+msgid "A summary of configuration backup actions."
+msgstr ""
+
+#: /tmp/strings:528
+msgid "Configuration Backup Summary"
+msgstr ""
+
+#: /tmp/strings:529
+msgid "The amount of traffic for each policy."
+msgstr ""
+
+#: /tmp/strings:530
+msgid "Traffic By Policy"
+msgstr ""
+
+#: /tmp/strings:531
+msgid "The number of sessions for each policy."
+msgstr ""
+
+#: /tmp/strings:532
+msgid "Sessions By Policy"
+msgstr ""
+
+#: /tmp/strings:571
+msgid "The number of sessions destined to each interface."
+msgstr ""
+
+#: /tmp/strings:572
+msgid "Sessions By Interface"
+msgstr ""
+
+#: /tmp/strings:573
+msgid "The number of bytes destined to each interface."
+msgstr ""
+
+#: /tmp/strings:574
+msgid "Bytes By Interface"
+msgstr ""
+
+#: /tmp/strings:590
+msgid "Spam Blocker Summary"
+msgstr ""
+
+#: /tmp/strings:591
+msgid "The number of ignored sessions grouped by site."
+msgstr ""
+
+#: /tmp/strings:592
+msgid "Top Ignored Sites"
+msgstr ""
+
+#: /tmp/strings:593
+msgid "The amount of SSL sessions over time."
+msgstr ""
+
+#: /tmp/strings:595
+msgid "The amount of inspected SSL sessions over time."
+msgstr ""
+
+#: /tmp/strings:596 /tmp/strings:1057
+msgid "Inspected Sessions"
+msgstr ""
+
+#: /tmp/strings:597
+msgid "The number of inspected sessions grouped by site."
+msgstr ""
+
+#: /tmp/strings:598
+msgid "Top Inspected Sites"
+msgstr ""
+
+#: /tmp/strings:599
+msgid "A summary of HTTPS Inspector actions."
+msgstr ""
+
+#: /tmp/strings:600
+msgid "HTTPS Inspector Summary"
+msgstr ""
+
+#: /tmp/strings:607
+msgid "The number of disconnect events grouped by WAN."
+msgstr ""
+
+#: /tmp/strings:608
+msgid "WAN Disconnect Events"
+msgstr ""
+
+#: /tmp/strings:727
+msgid "A summary of web filter actions."
+msgstr ""
+
+#: /tmp/strings:728
+msgid "Web Filter Summary"
+msgstr ""
+
+#: /tmp/strings:739 /tmp/strings:743
+msgid "The sum of the data sent grouped by Application Control application."
+msgstr ""
+
+#: /tmp/strings:740
+msgid "Top Application (by received bytes)"
+msgstr ""
+
+#: /tmp/strings:741
+msgid "The sum of the received data grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:742
+msgid "Top Hostnames (by received bytes)"
+msgstr ""
+
+#: /tmp/strings:744
+msgid "Top Application (by sent bytes)"
+msgstr ""
+
+#: /tmp/strings:745
+msgid ""
+"The approximate averaged data transfer rate (total, sent, received) over "
+"time grouped by session creation time."
+msgstr ""
+
+#: /tmp/strings:747
+msgid ""
+"The sum of the data transferred grouped by Application Control application."
+msgstr ""
+
+#: /tmp/strings:748
+msgid "Top Application (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:749
+msgid "The sum of the data received grouped by server port."
+msgstr ""
+
+#: /tmp/strings:750 /tmp/strings:768
+msgid "Top Ports (by sent bytes)"
+msgstr ""
+
+#: /tmp/strings:751
+msgid "The sum of the data sent grouped by client address."
+msgstr ""
+
+#: /tmp/strings:752
+msgid "Top Clients (by sent bytes)"
+msgstr ""
+
+#: /tmp/strings:753
+msgid "The sum of the data transferred grouped by client address."
+msgstr ""
+
+#: /tmp/strings:754
+msgid "Top Clients (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:755 /tmp/strings:757 /tmp/strings:769
+msgid "The sum of the data transferred grouped by username."
+msgstr ""
+
+#: /tmp/strings:756
+msgid "Top Usernames (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:758
+msgid "Top Usernames (by sent bytes)"
+msgstr ""
+
+#: /tmp/strings:759
+msgid "The sum of the data transferred grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:760
+msgid "Top Hostnames (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:761
+msgid "The sum of the data transferred grouped by priority."
+msgstr ""
+
+#: /tmp/strings:762
+msgid "Top Priorities (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:763
+msgid "The sum of the sent data grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:764
+msgid "Top Hostnames (by sent bytes)"
+msgstr ""
+
+#: /tmp/strings:765
+msgid "The sum of the data transferred grouped by server port."
+msgstr ""
+
+#: /tmp/strings:766
+msgid "Top Ports (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:767
+msgid "The sum of the data sent grouped by server port."
+msgstr ""
+
+#: /tmp/strings:770
+msgid "Top Usernames (by received bytes)"
+msgstr ""
+
+#: /tmp/strings:771
+msgid "The sum of the data transferred grouped by bypassed."
+msgstr ""
+
+#: /tmp/strings:772
+msgid "Bypassed (by total bytes)"
+msgstr ""
+
+#: /tmp/strings:773
+msgid "The sum of the data received grouped by client address."
+msgstr ""
+
+#: /tmp/strings:774
+msgid "Top Clients (by received bytes)"
+msgstr ""
+
+#: /tmp/strings:775
+msgid "The number of flagged sessions grouped by application."
+msgstr ""
+
+#: /tmp/strings:776
+msgid "Top Flagged Applications"
+msgstr ""
+
+#: /tmp/strings:777
+msgid "The number of flagged sessions grouped by username."
+msgstr ""
+
+#: /tmp/strings:780
+msgid "Scanned Sessions (all)"
+msgstr ""
+
+#: /tmp/strings:783 /tmp/strings:795
+msgid "The amount of flagged, and blocked sessions over time."
+msgstr ""
+
+#: /tmp/strings:784
+msgid "Scanned Sessions (blocked)"
+msgstr ""
+
+#: /tmp/strings:785
+msgid "The number of flagged sessions grouped by hostname."
+msgstr ""
+
+#: /tmp/strings:789
+msgid "The number of blocked sessions grouped by application."
+msgstr ""
+
+#: /tmp/strings:790
+msgid "Top Blocked Applications"
+msgstr ""
+
+#: /tmp/strings:791
+msgid "The number of bytes grouped by application."
+msgstr ""
+
+#: /tmp/strings:792
+msgid "Top Applications (by size)"
+msgstr ""
+
+#: /tmp/strings:793
+msgid "The number of sessions grouped by application."
+msgstr ""
+
+#: /tmp/strings:794
+msgid "Top Applications (by sessions)"
+msgstr ""
+
+#: /tmp/strings:796
+msgid "Scanned Sessions (flagged)"
+msgstr ""
+
+#: /tmp/strings:799
+msgid "The number of flagged sessions grouped by client."
+msgstr ""
+
+#: /tmp/strings:827 /tmp/strings:1008
+msgid "All email sessions detected as phishing attempts and quarantined."
+msgstr ""
+
+#: /tmp/strings:828 /tmp/strings:978 /tmp/strings:1009 /tmp/strings:1043
+#: /tmp/strings:1134
+msgid "Quarantined Events"
+msgstr ""
+
+#: /tmp/strings:829 /tmp/strings:1010
+msgid "All email sessions scanned by Phish Blocker."
+msgstr ""
+
+#: /tmp/strings:830 /tmp/strings:980 /tmp/strings:1011 /tmp/strings:1039
+#: /tmp/strings:1136
+msgid "All Email Events"
+msgstr ""
+
+#: /tmp/strings:831 /tmp/strings:1012
+msgid "All email sessions detected as phishing attempts."
+msgstr ""
+
+#: /tmp/strings:832 /tmp/strings:1013
+msgid "All Phish Events"
+msgstr ""
+
+#: /tmp/strings:833 /tmp/strings:939
+msgid "All sessions scanned by Application Control Lite."
+msgstr ""
+
+#: /tmp/strings:834 /tmp/strings:921 /tmp/strings:929 /tmp/strings:940
+#: /tmp/strings:946 /tmp/strings:972 /tmp/strings:1007
+msgid "All Events"
+msgstr ""
+
+#: /tmp/strings:835 /tmp/strings:941
+msgid "All sessions matching an application signature and blocked."
+msgstr ""
+
+#: /tmp/strings:836 /tmp/strings:923 /tmp/strings:925 /tmp/strings:942
+#: /tmp/strings:948 /tmp/strings:968
+msgid "Blocked Events"
+msgstr ""
+
+#: /tmp/strings:837 /tmp/strings:1089
+msgid "Shows all OpenVPN connection traffic statistics events."
+msgstr ""
+
+#: /tmp/strings:838 /tmp/strings:1090
+msgid "Statistic Events"
+msgstr ""
+
+#: /tmp/strings:839 /tmp/strings:1091
+msgid "OpenVPN client connection events."
+msgstr ""
+
+#: /tmp/strings:840 /tmp/strings:1092
+msgid "Connection Events"
+msgstr ""
+
+#: /tmp/strings:841 /tmp/strings:1058
+msgid "Sessions that reached the session timeout."
+msgstr ""
+
+#: /tmp/strings:842 /tmp/strings:1059
+msgid "Session Timeout User Events"
+msgstr ""
+
+#: /tmp/strings:843 /tmp/strings:1060
+msgid "Sessions matching capture rules."
+msgstr ""
+
+#: /tmp/strings:844 /tmp/strings:1061
+msgid "Captured Session Events"
+msgstr ""
+
+#: /tmp/strings:845 /tmp/strings:1062
+msgid "Failed logins to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:846 /tmp/strings:1063
+msgid "Login Failure User Events"
+msgstr ""
+
+#: /tmp/strings:847 /tmp/strings:1064
+msgid "All user logout events."
+msgstr ""
+
+#: /tmp/strings:848 /tmp/strings:1065
+msgid "User Logout User Events"
+msgstr ""
+
+#: /tmp/strings:849 /tmp/strings:1066
+msgid "Sessions logged off by the admin."
+msgstr ""
+
+#: /tmp/strings:850 /tmp/strings:1067
+msgid "Admin Logout User Events"
+msgstr ""
+
+#: /tmp/strings:851 /tmp/strings:1068
+msgid "Sessions that reached the idle timeout."
+msgstr ""
+
+#: /tmp/strings:853 /tmp/strings:1070
+msgid "Successful logins to Captive Portal."
+msgstr ""
+
+#: /tmp/strings:854 /tmp/strings:1071
+msgid "Login Success User Events"
+msgstr ""
+
+#: /tmp/strings:855 /tmp/strings:1072
+msgid "All user sessions processed by Captive Portal."
+msgstr ""
+
+#: /tmp/strings:856 /tmp/strings:1073
+msgid "All User Events"
+msgstr ""
+
+#: /tmp/strings:857 /tmp/strings:1074
+msgid "All sessions processed by Captive Portal."
+msgstr ""
+
+#: /tmp/strings:858 /tmp/strings:1075
+msgid "All Session Events"
+msgstr ""
+
+#: /tmp/strings:859 /tmp/strings:1076
+msgid "Sessions matching passed hosts."
+msgstr ""
+
+#: /tmp/strings:860 /tmp/strings:1077
+msgid "Passed Session Events"
+msgstr ""
+
+#: /tmp/strings:861 /tmp/strings:1099 /tmp/strings:1107
+msgid "Shows all blocked web requests."
+msgstr ""
+
+#: /tmp/strings:862 /tmp/strings:1100 /tmp/strings:1108
+msgid "Blocked Web Events"
+msgstr ""
+
+#: /tmp/strings:863 /tmp/strings:1101 /tmp/strings:1117
+msgid "Shows all scanned web requests."
+msgstr ""
+
+#: /tmp/strings:864 /tmp/strings:1102 /tmp/strings:1118
+msgid "All Web Events"
+msgstr ""
+
+#: /tmp/strings:865 /tmp/strings:1103 /tmp/strings:1113
+msgid "Shows all 'unblocked' web requests"
+msgstr ""
+
+#: /tmp/strings:866 /tmp/strings:1104 /tmp/strings:1114
+msgid "Unblocked Web Events"
+msgstr ""
+
+#: /tmp/strings:867 /tmp/strings:1105 /tmp/strings:1111
+msgid "Shows all flagged web requests."
+msgstr ""
+
+#: /tmp/strings:868 /tmp/strings:1106 /tmp/strings:1112
+msgid "Flagged Web Events"
+msgstr ""
+
+#: /tmp/strings:869 /tmp/strings:934 /tmp/strings:1003 /tmp/strings:1080
+#: /tmp/strings:1083 /tmp/strings:1086
+msgid "defaultColumns"
+msgstr ""
+
+#: /tmp/strings:869 /tmp/strings:934 /tmp/strings:1003 /tmp/strings:1080
+#: /tmp/strings:1083 /tmp/strings:1086
+msgid "time_stamp"
+msgstr ""
+
+#: /tmp/strings:869 /tmp/strings:934
+msgid "summary_text"
+msgstr ""
+
+#: /tmp/strings:869 /tmp/strings:934
+msgid "json"
+msgstr ""
+
+#: /tmp/strings:870 /tmp/strings:935
+msgid "Log of all alerts created by alert rules."
+msgstr ""
+
+#: /tmp/strings:872 /tmp/strings:1014
+msgid "All sessions blocked by filter rules."
+msgstr ""
+
+#: /tmp/strings:874 /tmp/strings:1016
+msgid "Shows when quotas are assigned or expired."
+msgstr ""
+
+#: /tmp/strings:875 /tmp/strings:1017
+msgid "Quota Events"
+msgstr ""
+
+#: /tmp/strings:876 /tmp/strings:1018
+msgid "All system status events."
+msgstr ""
+
+#: /tmp/strings:877 /tmp/strings:1019
+msgid "Server Status Eventsdescription"
+msgstr ""
+
+#: /tmp/strings:878 /tmp/strings:1020
+msgid "All sessions that were not bypassed."
+msgstr ""
+
+#: /tmp/strings:880 /tmp/strings:1022
+msgid ""
+"Shows when hosts are placed in the penalty box and when the penalty box "
+"expires."
+msgstr ""
+
+#: /tmp/strings:881 /tmp/strings:1023
+msgid "Penalty Box Events"
+msgstr ""
+
+#: /tmp/strings:882 /tmp/strings:1024
+msgid "All local administrator logins."
+msgstr ""
+
+#: /tmp/strings:884 /tmp/strings:1026
+msgid "All sessions handled by Untangle."
+msgstr ""
+
+#: /tmp/strings:886 /tmp/strings:1028
+msgid "All sessions that have been NATd by Untangle."
+msgstr ""
+
+#: /tmp/strings:887 /tmp/strings:1029
+msgid "NATd Sessions"
+msgstr ""
+
+#: /tmp/strings:888 /tmp/strings:1030
+msgid "All sessions matching a bypass rule and bypassed."
+msgstr ""
+
+#: /tmp/strings:889 /tmp/strings:1031
+msgid "Bypassed Sessions"
+msgstr ""
+
+#: /tmp/strings:890 /tmp/strings:1032
+msgid "All sessions match a port forward rule."
+msgstr ""
+
+#: /tmp/strings:891 /tmp/strings:1033
+msgid "Port Forwarded Sessions"
+msgstr ""
+
+#: /tmp/strings:892 /tmp/strings:1034
+msgid "All updates to hosts in the host table."
+msgstr ""
+
+#: /tmp/strings:893 /tmp/strings:1035
+msgid "Host Table Eventsdescription"
+msgstr ""
+
+#: /tmp/strings:894 /tmp/strings:1036
+msgid "All settings changes performed by an administrator."
+msgstr ""
+
+#: /tmp/strings:895 /tmp/strings:1037
+msgid "All Settings Changes"
+msgstr ""
+
+#: /tmp/strings:896 /tmp/strings:1093
+msgid "All HTTP requests scanned by Ad Blocker."
+msgstr ""
+
+#: /tmp/strings:897 /tmp/strings:1094
+msgid "All Ad Events"
+msgstr ""
+
+#: /tmp/strings:898 /tmp/strings:1095
+msgid "Requests blocked by cookie filters."
+msgstr ""
+
+#: /tmp/strings:899 /tmp/strings:1096
+msgid "Blocked Cookie Events"
+msgstr ""
+
+#: /tmp/strings:900 /tmp/strings:1097
+msgid "HTTP requests blocked by Ad Blocker."
+msgstr ""
+
+#: /tmp/strings:901 /tmp/strings:1098
+msgid "Blocked Ad Events"
+msgstr ""
+
+#: /tmp/strings:902 /tmp/strings:949
+msgid "Infected email sessions blocked by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:903 /tmp/strings:950 /tmp/strings:994
+msgid "Infected Email Events"
+msgstr ""
+
+#: /tmp/strings:904 /tmp/strings:951 /tmp/strings:989
+msgid "Scanned HTTP sessions marked clean."
+msgstr ""
+
+#: /tmp/strings:905 /tmp/strings:952 /tmp/strings:990
+msgid "Clean Web Events"
+msgstr ""
+
+#: /tmp/strings:906 /tmp/strings:953
+msgid "All HTTP sessions scanned by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:907 /tmp/strings:954 /tmp/strings:992
+msgid "Scanned Web Events"
+msgstr ""
+
+#: /tmp/strings:908 /tmp/strings:955
+msgid "Infected FTP sessions blocked by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:909 /tmp/strings:956 /tmp/strings:1000
+msgid "Infected Ftp Events"
+msgstr ""
+
+#: /tmp/strings:910 /tmp/strings:957
+msgid "All FTP sessions scanned by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:911 /tmp/strings:958 /tmp/strings:986
+msgid "Scanned Ftp Events"
+msgstr ""
+
+#: /tmp/strings:912 /tmp/strings:959
+msgid "All email sessions scanned by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:913 /tmp/strings:960 /tmp/strings:1002
+msgid "Scanned Email Events"
+msgstr ""
+
+#: /tmp/strings:914 /tmp/strings:961 /tmp/strings:987
+msgid "Scanned FTP sessions marked clean."
+msgstr ""
+
+#: /tmp/strings:915 /tmp/strings:962 /tmp/strings:988
+msgid "Clean Ftp Events"
+msgstr ""
+
+#: /tmp/strings:916 /tmp/strings:963
+msgid "Infected HTTP sessions blocked by Virus Blocker Lite."
+msgstr ""
+
+#: /tmp/strings:917 /tmp/strings:964 /tmp/strings:996
+msgid "Infected Web Events"
+msgstr ""
+
+#: /tmp/strings:918 /tmp/strings:965 /tmp/strings:997
+msgid "Scanned email sessions marked clean."
+msgstr ""
+
+#: /tmp/strings:919 /tmp/strings:966 /tmp/strings:998
+msgid "Clean Email Events"
+msgstr ""
+
+#: /tmp/strings:920 /tmp/strings:945
+msgid "All sessions scanned by Intrusion Prevention."
+msgstr ""
+
+#: /tmp/strings:922 /tmp/strings:947
+msgid "All sessions matching Intrusion Prevention signatures and blocked."
+msgstr ""
+
+#: /tmp/strings:924 /tmp/strings:967
+msgid "Events blocked by Firewall App."
+msgstr ""
+
+#: /tmp/strings:926 /tmp/strings:969
+msgid "Events flagged by Firewall App."
+msgstr ""
+
+#: /tmp/strings:927 /tmp/strings:970
+msgid "Flagged Events"
+msgstr ""
+
+#: /tmp/strings:928 /tmp/strings:971
+msgid "All events scanned by Firewall App."
+msgstr ""
+
+#: /tmp/strings:930
+msgid "Shows all user L2TP/Xauth events."
+msgstr ""
+
+#: /tmp/strings:931
+msgid "L2TP/Xauth Events"
+msgstr ""
+
+#: /tmp/strings:932
+msgid "Shows all IPsec tunnel traffic statistics events."
+msgstr ""
+
+#: /tmp/strings:933
+msgid "Tunnel Traffic Events"
+msgstr ""
+
+#: /tmp/strings:937
+msgid "All HTTP events processed by Web Cache."
+msgstr ""
+
+#: /tmp/strings:938
+msgid "Web Cache Events"
+msgstr ""
+
+#: /tmp/strings:943
+msgid "Events from the user notification API."
+msgstr ""
+
+#: /tmp/strings:944
+msgid "AD Events"
+msgstr ""
+
+#: /tmp/strings:973 /tmp/strings:1141
+msgid "All sessions blocked by Shield."
+msgstr ""
+
+#: /tmp/strings:975 /tmp/strings:1143
+msgid "All sessions scanned by Shield."
+msgstr ""
+
+#: /tmp/strings:977 /tmp/strings:1042 /tmp/strings:1133
+msgid "All emails marked as Spam and quarantined."
+msgstr ""
+
+#: /tmp/strings:979 /tmp/strings:1038 /tmp/strings:1135
+msgid "All emails scanned by Spam Blocker."
+msgstr ""
+
+#: /tmp/strings:981 /tmp/strings:1044 /tmp/strings:1137
+msgid "All emails marked as Spam."
+msgstr ""
+
+#: /tmp/strings:982 /tmp/strings:1045 /tmp/strings:1138
+msgid "All Spam Events"
+msgstr ""
+
+#: /tmp/strings:983 /tmp/strings:1040 /tmp/strings:1139
+msgid "All email sessions that were tarpitted."
+msgstr ""
+
+#: /tmp/strings:984 /tmp/strings:1041 /tmp/strings:1140
+msgid "Tarpit Events"
+msgstr ""
+
+#: /tmp/strings:985
+msgid "All FTP sessions scanned by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:991
+msgid "All HTTP sessions scanned by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:993
+msgid "Infected email sessions blocked by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:995
+msgid "Infected HTTP sessions blocked by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:999
+msgid "Infected FTP sessions blocked by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:1001
+msgid "All email sessions scanned by Virus Blocker."
+msgstr ""
+
+#: /tmp/strings:1004
+msgid "All Configuration Backup events."
+msgstr ""
+
+#: /tmp/strings:1005
+msgid "Backup Events"
+msgstr ""
+
+#: /tmp/strings:1006
+msgid ""
+"Lists all sessions with the policy manager rack that handled the session."
+msgstr ""
+
+#: /tmp/strings:1046
+msgid ""
+"Events where traffic was blocked due to an underlying problems with the SSL "
+"session."
+msgstr ""
+
+#: /tmp/strings:1047
+msgid "Abandoned Sessions"
+msgstr ""
+
+#: /tmp/strings:1048
+msgid ""
+"Events where traffic was not or could not be inspected, so the traffic was "
+"completely ignored and not analyzed by any applications or services."
+msgstr ""
+
+#: /tmp/strings:1049
+msgid "Ignored Sessions"
+msgstr ""
+
+#: /tmp/strings:1050
+msgid ""
+"Events where traffic was blocked because it did not contain a valid HTTPS "
+"request, and the Block Invalid Traffic option was enabled."
+msgstr ""
+
+#: /tmp/strings:1052
+msgid ""
+"Events where traffic was blocked because the server certificate could not be "
+"authenticated."
+msgstr ""
+
+#: /tmp/strings:1053
+msgid "Untrusted Sessions"
+msgstr ""
+
+#: /tmp/strings:1054
+msgid "All sessions detected by HTTPS Inspector."
+msgstr ""
+
+#: /tmp/strings:1056
+msgid ""
+"Events where traffic was fully processed by the inspector, and all traffic "
+"was passed through all the other applications and services."
+msgstr ""
+
+#: /tmp/strings:1078
+msgid ""
+"Events where the failure threshold was exceeded and the WAN was considered "
+"offline."
+msgstr ""
+
+#: /tmp/strings:1079
+msgid "Outage Events"
+msgstr ""
+
+#: /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
+msgid "interface_id"
+msgstr ""
+
+#: /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
+msgid "name"
+msgstr "名称"
+
+#: /tmp/strings:1081
+msgid "All tests that resulted in success."
+msgstr ""
+
+#: /tmp/strings:1082
+msgid "Success Test Events"
+msgstr ""
+
+#: /tmp/strings:1084
+msgid "All test events and their outcome."
+msgstr ""
+
+#: /tmp/strings:1085
+msgid "Test Events"
+msgstr ""
+
+#: /tmp/strings:1087
+msgid "All tests that resulted in failure."
+msgstr ""
+
+#: /tmp/strings:1088
+msgid "Failed Test Events"
+msgstr ""
+
+#: /tmp/strings:1109
+msgid "Shows all encrypted HTTPS requests."
+msgstr ""
+
+#: /tmp/strings:1110
+msgid "All HTTPS Events"
+msgstr ""
+
+#: /tmp/strings:1115
+msgid "Shows all search querires processed by Web Filter."
+msgstr ""
+
+#: /tmp/strings:1116
+msgid "All Query Events"
+msgstr ""
+
+#: /tmp/strings:1119
+msgid "Shows all scanned unencrypted HTTP requests."
+msgstr ""
+
+#: /tmp/strings:1120
+msgid "All HTTP Events"
+msgstr ""
+
+#: /tmp/strings:1121
+msgid "All sessions processed by Bandwidth Control."
+msgstr ""
+
+#: /tmp/strings:1123
+msgid "All sessions prioritized by Bandwidth Control."
+msgstr ""
+
+#: /tmp/strings:1124
+msgid "Prioritized Sessions"
+msgstr ""
+
+#: /tmp/strings:1125
+msgid "All sessions scanned by Application Control."
+msgstr ""
+
+#: /tmp/strings:1127
+msgid "All sessions matching an application control signature."
+msgstr ""
+
+#: /tmp/strings:1128
+msgid "Classified Sessions"
+msgstr ""
+
+#: /tmp/strings:1129
+msgid "All sessions matching an application control signature and blocked."
+msgstr ""
+
+#: /tmp/strings:1131
+msgid "All sessions matching an application control signature and flagged."
+msgstr ""
+
+#: /tmp/strings:1132
+msgid "Flagged Sessions"
 msgstr ""
 
 #: ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java:88
@@ -10004,9 +12330,6 @@ msgstr "Y-m-d g:i:s a"
 #~ msgid "The login name cannot be blank."
 #~ msgstr "登录名不能为空"
 
-#~ msgid "description"
-#~ msgstr "描述"
-
 #~ msgid "email"
 #~ msgstr "电子邮件"
 
@@ -10367,9 +12690,6 @@ msgstr "Y-m-d g:i:s a"
 
 #~ msgid "Policy Management"
 #~ msgstr "策略管理"
-
-#~ msgid "name"
-#~ msgstr "名称"
 
 #~ msgid "The policy name cannot be blank."
 #~ msgstr "策略名不能为空。"
@@ -10994,10 +13314,6 @@ msgstr "Y-m-d g:i:s a"
 
 #~ msgid "DETECT"
 #~ msgstr "探测"
-
-#, fuzzy
-#~ msgid "Memory Usage"
-#~ msgstr "内存使用："
 
 #~ msgid "Upgrade Successful"
 #~ msgstr "升级成功"

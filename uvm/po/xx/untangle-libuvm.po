@@ -7,7 +7,7 @@ msgstr "XEditX"
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:44
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: ../../uvm/servlets/webui/root/script/config/network.js:657
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1623
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1646
 msgid "Delete"
 msgstr "XDeleteX"
 
@@ -221,8 +221,8 @@ msgstr "XExporting Settings...X"
 #: ../../uvm/servlets/webui/root/script/window.js:255
 #: ../../uvm/servlets/webui/root/script/window.js:400
 #: ../../uvm/servlets/webui/root/script/util.js:79
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
 msgid "Please wait"
 msgstr "XPlease waitX"
 
@@ -324,7 +324,7 @@ msgid "Value"
 msgstr "XValueX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:142
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1544
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1567
 msgid "[enter column]"
 msgstr "X[enter column]X"
 
@@ -337,8 +337,8 @@ msgid "[select operator]"
 msgstr "X[select operator]X"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:172
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1182
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1601
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1205
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1624
 msgid "[no value]"
 msgstr "X[no value]X"
 
@@ -480,33 +480,33 @@ msgid "Time Chart Style"
 msgstr "XTime Chart StyleX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:360
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Line"
 msgstr "XLineX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:361
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
 msgid "Area"
 msgstr "XAreaX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:362
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
 msgid "Bar 3D"
 msgstr "XBar 3DX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:363
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
 msgid "Bar 3D Overlapped"
 msgstr "XBar 3D OverlappedX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:364
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
 msgid "Bar"
 msgstr "XBarX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:365
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
 msgid "Bar Overlapped"
 msgstr "XBar OverlappedX"
 
@@ -803,6 +803,7 @@ msgstr "XNetworkX"
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:472
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:524
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:531
+#: /tmp/strings:141 /tmp/strings:552
 #: ../impl/com/untangle/uvm/Dispatcher.java:94
 msgid "Sessions"
 msgstr "XSessionsX"
@@ -811,7 +812,8 @@ msgstr "XSessionsX"
 msgid "Hosts"
 msgstr "XHostsX"
 
-#: ../../uvm/servlets/webui/root/script/components.js:835
+#: ../../uvm/servlets/webui/root/script/components.js:835 /tmp/strings:109
+#: /tmp/strings:318
 msgid "CPU Load"
 msgstr "XCPU LoadX"
 
@@ -2413,7 +2415,8 @@ msgstr "XUse IP address from External interface (default)X"
 #: ../../uvm/servlets/webui/root/script/config/administration.js:378
 msgid "This works if your {0} Server has a routable public static IP address."
 msgstr "XThis works if your {0} Server has a routable public static IP address.X"
-"XThis works if your {0} Server has a routable public static IP address.X"
+"XThis works if your {0} Server has a routable public static IP address."
+"XXThis works if your {0} Server has a routable public static IP address.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:381
 msgid "Use Hostname"
@@ -2726,7 +2729,8 @@ msgstr "XFailureX"
 #: ../../uvm/servlets/webui/root/script/config/administration.js:856
 msgid "Error during Certificate Authority generation.  Click OK to continue."
 msgstr "XError during Certificate Authority generation.  Click OK to continue.X"
-"XError during Certificate Authority generation.  Click OK to continue.X"
+"XError during Certificate Authority generation.  Click OK to continue."
+"XXError during Certificate Authority generation.  Click OK to continue.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:881
 msgid "Generating server certificate and restarting web server..."
@@ -3393,6 +3397,8 @@ msgid "Session Viewer"
 msgstr "XSession ViewerX"
 
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:101
+#: /tmp/strings:885 /tmp/strings:1027 /tmp/strings:1055 /tmp/strings:1122
+#: /tmp/strings:1126
 msgid "All Sessions"
 msgstr "XAll SessionsX"
 
@@ -3698,8 +3704,8 @@ msgstr "XPriorityX"
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:480
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:492
 #: ../../uvm/servlets/webui/root/script/config/network.js:1661
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
 msgid "None"
 msgstr "XNoneX"
@@ -5573,7 +5579,8 @@ msgstr "XConnection Test OutputX"
 #: ../../uvm/servlets/webui/root/script/config/network.js:5231
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "XThe <b>Traceroute Test</b> traces the route to a given host or client.X"
-"XThe <b>Traceroute Test</b> traces the route to a given host or client.X"
+"XThe <b>Traceroute Test</b> traces the route to a given host or client.XXThe "
+"<b>Traceroute Test</b> traces the route to a given host or client.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5232
 msgid "Unable to complete the Traceroute Test."
@@ -5791,7 +5798,7 @@ msgid "Download system logs."
 msgstr "XDownload system logs.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:232
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:484
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:507
 msgid "Download"
 msgstr "XDownloadX"
 
@@ -6728,7 +6735,8 @@ msgstr "XWould you like to install the recommended applications now?X"
 #: ../../uvm/servlets/webui/root/script/window.js:108
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr "XThere are unsaved settings which will be lost. Do you want to continue?X"
-"XThere are unsaved settings which will be lost. Do you want to continue?X"
+"XThere are unsaved settings which will be lost. Do you want to continue?"
+"XXThere are unsaved settings which will be lost. Do you want to continue?X"
 
 #: ../../uvm/servlets/webui/root/script/window.js:98
 msgid ""
@@ -6771,7 +6779,7 @@ msgid "Close"
 msgstr "XCloseX"
 
 #: ../../uvm/servlets/webui/root/script/window.js:547
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1882
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1905
 msgid "Done"
 msgstr "XDoneX"
 
@@ -6978,7 +6986,8 @@ msgstr "XContinue the Setup WizardX"
 #: ../../uvm/servlets/setup/root/script/setup.js:95
 msgid "The setup was started before and the last completed step is {0}{1}{2}."
 msgstr "XThe setup was started before and the last completed step is {0}{1}{2}.X"
-"XThe setup was started before and the last completed step is {0}{1}{2}.X"
+"XThe setup was started before and the last completed step is {0}{1}{2}.XXThe "
+"setup was started before and the last completed step is {0}{1}{2}.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:115
 msgid ""
@@ -7050,7 +7059,8 @@ msgstr "XImportant:X"
 #: ../../uvm/servlets/setup/root/script/setup.js:475
 msgid " This step identifies the external, internal, and other network cards. "
 msgstr "X This step identifies the external, internal, and other network cards. X"
-"X This step identifies the external, internal, and other network cards. X"
+"X This step identifies the external, internal, and other network cards. XX "
+"This step identifies the external, internal, and other network cards. X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:476
 msgid "Step 1: "
@@ -7081,7 +7091,8 @@ msgstr "XStep 3: X"
 #: ../../uvm/servlets/setup/root/script/setup.js:481
 msgid "Repeat steps 1 and 2 for each network card and then click <i>Next</i>."
 msgstr "XRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
-"XRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
+"XRepeat steps 1 and 2 for each network card and then click <i>Next</i>."
+"XXRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:551
 #: ../../uvm/servlets/setup/root/script/setup.js:586
@@ -7355,12 +7366,14 @@ msgstr "XDo not automatically install new versions of {0} software.X"
 #: ../../uvm/servlets/setup/root/script/setup.js:1509
 msgid "This is the recommended setting for large, complex, or sensitive sites."
 msgstr "XThis is the recommended setting for large, complex, or sensitive sites.X"
-"XThis is the recommended setting for large, complex, or sensitive sites.X"
+"XThis is the recommended setting for large, complex, or sensitive sites."
+"XXThis is the recommended setting for large, complex, or sensitive sites.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1510
 msgid "Software Upgrades can be applied manually at any time when available."
 msgstr "XSoftware Upgrades can be applied manually at any time when available.X"
-"XSoftware Upgrades can be applied manually at any time when available.X"
+"XSoftware Upgrades can be applied manually at any time when available."
+"XXSoftware Upgrades can be applied manually at any time when available.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1515
 msgid ""
@@ -7515,131 +7528,135 @@ msgstr "XHint: Click this label on the legend to hide this seriesX"
 msgid "Select Report"
 msgstr "XSelect ReportX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:302
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:310
 msgid "Select Events"
 msgstr "XSelect EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:423
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:446
 msgid "Others"
 msgstr "XOthersX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:458
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:481
 msgid "Loading report... "
 msgstr "XLoading report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:488
 msgid "Customize"
 msgstr "XCustomizeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:468
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1221
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:491
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1244
 msgid "Advanced report customization"
 msgstr "XAdvanced report customizationX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:499
 msgid "View Events"
 msgstr "XView EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:478
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:501
 msgid "View events for this report"
 msgstr "XView events for this reportX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:522
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:545
 msgid "data"
 msgstr "XdataX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:527
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:610
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:550
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:633
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr "XvalueX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:532
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:555
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 msgid "none"
 msgstr "XnoneX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:571
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:594
 msgid "Not enough data to generate the chart."
 msgstr "XNot enough data to generate the chart.X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:618
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1143
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1507
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:641
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1166
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1530
 msgid "Add Condition"
 msgstr "XAdd ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:686
 msgid "Switch to Line Chart"
 msgstr "XSwitch to Line ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:687
 msgid "Switch to Area Chart"
 msgstr "XSwitch to Area ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:688
 msgid "Switch to Bar 3D Chart"
 msgstr "XSwitch to Bar 3D ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:689
 msgid "Switch to Bar 3D Overlapped Chart"
 msgstr "XSwitch to Bar 3D Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:690
 msgid "Switch to Bar Chart"
 msgstr "XSwitch to Bar ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:691
 msgid "Switch to Bar Overlapped Chart"
 msgstr "XSwitch to Bar Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:947
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:970
 msgid "Refreshing report... "
 msgstr "XRefreshing report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:962
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:985
 msgid "Querying Database..."
 msgstr "XQuerying Database...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1009
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1039
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1032
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1062
 msgid "Fetching Events..."
 msgstr "XFetching Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1122
 msgid "Downloading Chart..."
 msgstr "XDownloading Chart...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1149
 msgid "Exporting Events..."
 msgstr "XExporting Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1157
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1180
 msgid "Add a condition using report data:"
 msgstr "XAdd a condition using report data:X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1251
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1274
 msgid "Events for report: {0}"
 msgstr "XEvents for report: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1718
 msgid "Conditions: {0}"
 msgstr "XConditions: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1508
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1531
 msgid "Add New Condition"
 msgstr "XAdd New ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1519
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1538
+msgid "Quick Add"
+msgstr "XQuick AddX"
+
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1542
 msgid "Delete All"
 msgstr "XDelete AllX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1520
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1543
 msgid "Delete All Conditions"
 msgstr "XDelete All ConditionsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1855
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1878
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:269
@@ -7654,7 +7671,7 @@ msgstr "XDelete All ConditionsX"
 msgid "Time"
 msgstr "XTimeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1912
 msgid "Clear Value"
 msgstr "XClear ValueX"
 
@@ -8030,6 +8047,7 @@ msgstr "XlogoutX"
 
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1553
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1816
+#: /tmp/strings:1003 /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
 msgid "success"
 msgstr "XsuccessX"
 
@@ -8241,6 +8259,7 @@ msgid "Session Timeout"
 msgstr "XSession TimeoutX"
 
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2317
+#: /tmp/strings:852 /tmp/strings:1069
 msgid "Idle Timeout"
 msgstr "XIdle TimeoutX"
 
@@ -9103,6 +9122,7 @@ msgid "Cpu System"
 msgstr "XCpu SystemX"
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:279
+#: /tmp/strings:107 /tmp/strings:316
 msgid "Disk Usage"
 msgstr "XDisk UsageX"
 
@@ -9162,6 +9182,7 @@ msgid "alerts"
 msgstr "XalertsX"
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:351
+#: /tmp/strings:746
 msgid "Bandwidth Usage"
 msgstr "XBandwidth UsageX"
 
@@ -9220,6 +9241,7 @@ msgid "Client IP"
 msgstr "XClient IPX"
 
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:618
+#: /tmp/strings:871 /tmp/strings:936
 msgid "Alert Events"
 msgstr "XAlert EventsX"
 
@@ -9361,6 +9383,2318 @@ msgstr "XKBX"
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1049
 msgid "MB"
 msgstr "XMBX"
+
+#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
+#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
+#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
+#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
+#: /tmp/strings:35 /tmp/strings:37 /tmp/strings:39 /tmp/strings:41
+#: /tmp/strings:43 /tmp/strings:45 /tmp/strings:47 /tmp/strings:49
+#: /tmp/strings:51 /tmp/strings:53 /tmp/strings:55 /tmp/strings:57
+#: /tmp/strings:59 /tmp/strings:61 /tmp/strings:63 /tmp/strings:65
+#: /tmp/strings:67 /tmp/strings:69 /tmp/strings:71 /tmp/strings:73
+#: /tmp/strings:75 /tmp/strings:77 /tmp/strings:79 /tmp/strings:81
+#: /tmp/strings:83 /tmp/strings:85 /tmp/strings:87 /tmp/strings:89
+#: /tmp/strings:91 /tmp/strings:93 /tmp/strings:95 /tmp/strings:97
+#: /tmp/strings:99 /tmp/strings:101 /tmp/strings:103 /tmp/strings:104
+#: /tmp/strings:106 /tmp/strings:108 /tmp/strings:110 /tmp/strings:112
+#: /tmp/strings:138 /tmp/strings:140 /tmp/strings:142 /tmp/strings:144
+#: /tmp/strings:146 /tmp/strings:148 /tmp/strings:150 /tmp/strings:152
+#: /tmp/strings:154 /tmp/strings:156 /tmp/strings:158 /tmp/strings:160
+#: /tmp/strings:162 /tmp/strings:164 /tmp/strings:166 /tmp/strings:168
+#: /tmp/strings:170 /tmp/strings:172 /tmp/strings:174 /tmp/strings:176
+#: /tmp/strings:178 /tmp/strings:180 /tmp/strings:182 /tmp/strings:184
+#: /tmp/strings:186 /tmp/strings:188 /tmp/strings:190 /tmp/strings:192
+#: /tmp/strings:194 /tmp/strings:196 /tmp/strings:198 /tmp/strings:200
+#: /tmp/strings:202 /tmp/strings:204 /tmp/strings:206 /tmp/strings:208
+#: /tmp/strings:210 /tmp/strings:212 /tmp/strings:214 /tmp/strings:216
+#: /tmp/strings:218 /tmp/strings:220 /tmp/strings:222 /tmp/strings:224
+#: /tmp/strings:226 /tmp/strings:228 /tmp/strings:230 /tmp/strings:232
+#: /tmp/strings:234 /tmp/strings:236 /tmp/strings:238 /tmp/strings:240
+#: /tmp/strings:242 /tmp/strings:244 /tmp/strings:246 /tmp/strings:248
+#: /tmp/strings:250 /tmp/strings:252 /tmp/strings:254 /tmp/strings:256
+#: /tmp/strings:258 /tmp/strings:260 /tmp/strings:262 /tmp/strings:264
+#: /tmp/strings:266 /tmp/strings:268 /tmp/strings:270 /tmp/strings:272
+#: /tmp/strings:274 /tmp/strings:300 /tmp/strings:302 /tmp/strings:304
+#: /tmp/strings:306 /tmp/strings:308 /tmp/strings:310 /tmp/strings:312
+#: /tmp/strings:313 /tmp/strings:315 /tmp/strings:317 /tmp/strings:319
+#: /tmp/strings:321 /tmp/strings:323 /tmp/strings:325 /tmp/strings:327
+#: /tmp/strings:329 /tmp/strings:331 /tmp/strings:333 /tmp/strings:335
+#: /tmp/strings:337 /tmp/strings:339 /tmp/strings:341 /tmp/strings:343
+#: /tmp/strings:345 /tmp/strings:347 /tmp/strings:349 /tmp/strings:351
+#: /tmp/strings:353 /tmp/strings:355 /tmp/strings:357 /tmp/strings:359
+#: /tmp/strings:361 /tmp/strings:363 /tmp/strings:365 /tmp/strings:367
+#: /tmp/strings:369 /tmp/strings:371 /tmp/strings:373 /tmp/strings:375
+#: /tmp/strings:377 /tmp/strings:379 /tmp/strings:381 /tmp/strings:383
+#: /tmp/strings:385 /tmp/strings:387 /tmp/strings:389 /tmp/strings:391
+#: /tmp/strings:393 /tmp/strings:395 /tmp/strings:397 /tmp/strings:399
+#: /tmp/strings:401 /tmp/strings:403 /tmp/strings:405 /tmp/strings:407
+#: /tmp/strings:409 /tmp/strings:411 /tmp/strings:413 /tmp/strings:415
+#: /tmp/strings:417 /tmp/strings:419 /tmp/strings:421 /tmp/strings:423
+#: /tmp/strings:425 /tmp/strings:427 /tmp/strings:429 /tmp/strings:431
+#: /tmp/strings:433 /tmp/strings:435 /tmp/strings:437 /tmp/strings:439
+#: /tmp/strings:441 /tmp/strings:443 /tmp/strings:445 /tmp/strings:447
+#: /tmp/strings:449 /tmp/strings:451 /tmp/strings:453 /tmp/strings:455
+#: /tmp/strings:457 /tmp/strings:459 /tmp/strings:461 /tmp/strings:463
+#: /tmp/strings:465 /tmp/strings:467 /tmp/strings:469 /tmp/strings:471
+#: /tmp/strings:473 /tmp/strings:475 /tmp/strings:477 /tmp/strings:479
+#: /tmp/strings:481 /tmp/strings:483 /tmp/strings:485 /tmp/strings:487
+#: /tmp/strings:489 /tmp/strings:491 /tmp/strings:493 /tmp/strings:495
+#: /tmp/strings:497 /tmp/strings:499 /tmp/strings:501 /tmp/strings:503
+#: /tmp/strings:505 /tmp/strings:507 /tmp/strings:509 /tmp/strings:511
+#: /tmp/strings:513 /tmp/strings:515 /tmp/strings:517 /tmp/strings:519
+#: /tmp/strings:521 /tmp/strings:523 /tmp/strings:525 /tmp/strings:527
+#: /tmp/strings:529 /tmp/strings:531 /tmp/strings:533 /tmp/strings:535
+#: /tmp/strings:537 /tmp/strings:539 /tmp/strings:541 /tmp/strings:543
+#: /tmp/strings:545 /tmp/strings:547 /tmp/strings:549 /tmp/strings:551
+#: /tmp/strings:553 /tmp/strings:555 /tmp/strings:557 /tmp/strings:559
+#: /tmp/strings:561 /tmp/strings:563 /tmp/strings:565 /tmp/strings:567
+#: /tmp/strings:569 /tmp/strings:571 /tmp/strings:573 /tmp/strings:575
+#: /tmp/strings:577 /tmp/strings:579 /tmp/strings:581 /tmp/strings:583
+#: /tmp/strings:585 /tmp/strings:587 /tmp/strings:589 /tmp/strings:591
+#: /tmp/strings:593 /tmp/strings:595 /tmp/strings:597 /tmp/strings:599
+#: /tmp/strings:601 /tmp/strings:603 /tmp/strings:605 /tmp/strings:607
+#: /tmp/strings:609 /tmp/strings:611 /tmp/strings:613 /tmp/strings:615
+#: /tmp/strings:617 /tmp/strings:619 /tmp/strings:621 /tmp/strings:623
+#: /tmp/strings:625 /tmp/strings:627 /tmp/strings:629 /tmp/strings:631
+#: /tmp/strings:633 /tmp/strings:635 /tmp/strings:637 /tmp/strings:639
+#: /tmp/strings:641 /tmp/strings:643 /tmp/strings:645 /tmp/strings:647
+#: /tmp/strings:649 /tmp/strings:651 /tmp/strings:653 /tmp/strings:655
+#: /tmp/strings:657 /tmp/strings:659 /tmp/strings:661 /tmp/strings:663
+#: /tmp/strings:665 /tmp/strings:667 /tmp/strings:669 /tmp/strings:671
+#: /tmp/strings:673 /tmp/strings:675 /tmp/strings:677 /tmp/strings:679
+#: /tmp/strings:681 /tmp/strings:683 /tmp/strings:685 /tmp/strings:687
+#: /tmp/strings:689 /tmp/strings:691 /tmp/strings:693 /tmp/strings:695
+#: /tmp/strings:697 /tmp/strings:699 /tmp/strings:701 /tmp/strings:703
+#: /tmp/strings:705 /tmp/strings:707 /tmp/strings:709 /tmp/strings:711
+#: /tmp/strings:713 /tmp/strings:715 /tmp/strings:717 /tmp/strings:719
+#: /tmp/strings:721 /tmp/strings:723 /tmp/strings:725 /tmp/strings:727
+#: /tmp/strings:729 /tmp/strings:731 /tmp/strings:733 /tmp/strings:735
+#: /tmp/strings:737 /tmp/strings:739 /tmp/strings:741 /tmp/strings:743
+#: /tmp/strings:745 /tmp/strings:747 /tmp/strings:749 /tmp/strings:751
+#: /tmp/strings:753 /tmp/strings:755 /tmp/strings:757 /tmp/strings:759
+#: /tmp/strings:761 /tmp/strings:763 /tmp/strings:765 /tmp/strings:767
+#: /tmp/strings:769 /tmp/strings:771 /tmp/strings:773 /tmp/strings:775
+#: /tmp/strings:777 /tmp/strings:779 /tmp/strings:781 /tmp/strings:783
+#: /tmp/strings:785 /tmp/strings:787 /tmp/strings:789 /tmp/strings:791
+#: /tmp/strings:793 /tmp/strings:795 /tmp/strings:797 /tmp/strings:799
+#: /tmp/strings:801 /tmp/strings:803 /tmp/strings:805 /tmp/strings:807
+#: /tmp/strings:809 /tmp/strings:811 /tmp/strings:813 /tmp/strings:815
+#: /tmp/strings:817 /tmp/strings:819 /tmp/strings:821 /tmp/strings:823
+#: /tmp/strings:825 /tmp/strings:827 /tmp/strings:829 /tmp/strings:831
+#: /tmp/strings:833 /tmp/strings:835 /tmp/strings:837 /tmp/strings:839
+#: /tmp/strings:841 /tmp/strings:843 /tmp/strings:845 /tmp/strings:847
+#: /tmp/strings:849 /tmp/strings:851 /tmp/strings:853 /tmp/strings:855
+#: /tmp/strings:857 /tmp/strings:859 /tmp/strings:861 /tmp/strings:863
+#: /tmp/strings:865 /tmp/strings:867 /tmp/strings:869 /tmp/strings:870
+#: /tmp/strings:872 /tmp/strings:874 /tmp/strings:876 /tmp/strings:880
+#: /tmp/strings:882 /tmp/strings:884 /tmp/strings:886 /tmp/strings:888
+#: /tmp/strings:890 /tmp/strings:892 /tmp/strings:896 /tmp/strings:898
+#: /tmp/strings:900 /tmp/strings:902 /tmp/strings:904 /tmp/strings:906
+#: /tmp/strings:908 /tmp/strings:910 /tmp/strings:912 /tmp/strings:914
+#: /tmp/strings:916 /tmp/strings:918 /tmp/strings:920 /tmp/strings:922
+#: /tmp/strings:924 /tmp/strings:926 /tmp/strings:928 /tmp/strings:930
+#: /tmp/strings:932 /tmp/strings:934 /tmp/strings:935 /tmp/strings:937
+#: /tmp/strings:939 /tmp/strings:941 /tmp/strings:943 /tmp/strings:945
+#: /tmp/strings:947 /tmp/strings:949 /tmp/strings:951 /tmp/strings:953
+#: /tmp/strings:955 /tmp/strings:957 /tmp/strings:959 /tmp/strings:961
+#: /tmp/strings:963 /tmp/strings:965 /tmp/strings:967 /tmp/strings:969
+#: /tmp/strings:971 /tmp/strings:973 /tmp/strings:975 /tmp/strings:977
+#: /tmp/strings:979 /tmp/strings:981 /tmp/strings:983 /tmp/strings:985
+#: /tmp/strings:987 /tmp/strings:989 /tmp/strings:991 /tmp/strings:993
+#: /tmp/strings:995 /tmp/strings:997 /tmp/strings:999 /tmp/strings:1001
+#: /tmp/strings:1003 /tmp/strings:1004 /tmp/strings:1006 /tmp/strings:1008
+#: /tmp/strings:1010 /tmp/strings:1012 /tmp/strings:1014 /tmp/strings:1016
+#: /tmp/strings:1018 /tmp/strings:1022 /tmp/strings:1024 /tmp/strings:1026
+#: /tmp/strings:1028 /tmp/strings:1030 /tmp/strings:1032 /tmp/strings:1034
+#: /tmp/strings:1038 /tmp/strings:1040 /tmp/strings:1042 /tmp/strings:1044
+#: /tmp/strings:1046 /tmp/strings:1048 /tmp/strings:1050 /tmp/strings:1052
+#: /tmp/strings:1054 /tmp/strings:1056 /tmp/strings:1058 /tmp/strings:1060
+#: /tmp/strings:1062 /tmp/strings:1064 /tmp/strings:1066 /tmp/strings:1068
+#: /tmp/strings:1070 /tmp/strings:1072 /tmp/strings:1074 /tmp/strings:1076
+#: /tmp/strings:1078 /tmp/strings:1080 /tmp/strings:1081 /tmp/strings:1083
+#: /tmp/strings:1084 /tmp/strings:1086 /tmp/strings:1087 /tmp/strings:1089
+#: /tmp/strings:1091 /tmp/strings:1093 /tmp/strings:1095 /tmp/strings:1097
+#: /tmp/strings:1099 /tmp/strings:1101 /tmp/strings:1103 /tmp/strings:1105
+#: /tmp/strings:1107 /tmp/strings:1109 /tmp/strings:1111 /tmp/strings:1113
+#: /tmp/strings:1115 /tmp/strings:1117 /tmp/strings:1119 /tmp/strings:1121
+#: /tmp/strings:1123 /tmp/strings:1125 /tmp/strings:1127 /tmp/strings:1129
+#: /tmp/strings:1131 /tmp/strings:1133 /tmp/strings:1135 /tmp/strings:1137
+#: /tmp/strings:1139 /tmp/strings:1141 /tmp/strings:1143
+msgid "description"
+msgstr "XdescriptionX"
+
+#: /tmp/strings:1 /tmp/strings:533
+msgid "The amount of scanned, clean, and phish email over time."
+msgstr "XThe amount of scanned, clean, and phish email over time.X"
+
+#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
+#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
+#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
+#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
+#: /tmp/strings:36 /tmp/strings:38 /tmp/strings:40 /tmp/strings:42
+#: /tmp/strings:44 /tmp/strings:46 /tmp/strings:48 /tmp/strings:50
+#: /tmp/strings:52 /tmp/strings:54 /tmp/strings:56 /tmp/strings:58
+#: /tmp/strings:60 /tmp/strings:62 /tmp/strings:64 /tmp/strings:66
+#: /tmp/strings:68 /tmp/strings:70 /tmp/strings:72 /tmp/strings:74
+#: /tmp/strings:76 /tmp/strings:78 /tmp/strings:80 /tmp/strings:82
+#: /tmp/strings:84 /tmp/strings:86 /tmp/strings:88 /tmp/strings:90
+#: /tmp/strings:92 /tmp/strings:94 /tmp/strings:96 /tmp/strings:98
+#: /tmp/strings:100 /tmp/strings:102 /tmp/strings:105 /tmp/strings:107
+#: /tmp/strings:109 /tmp/strings:111 /tmp/strings:113 /tmp/strings:139
+#: /tmp/strings:141 /tmp/strings:143 /tmp/strings:145 /tmp/strings:147
+#: /tmp/strings:149 /tmp/strings:151 /tmp/strings:153 /tmp/strings:155
+#: /tmp/strings:157 /tmp/strings:159 /tmp/strings:161 /tmp/strings:163
+#: /tmp/strings:165 /tmp/strings:167 /tmp/strings:169 /tmp/strings:171
+#: /tmp/strings:173 /tmp/strings:175 /tmp/strings:177 /tmp/strings:179
+#: /tmp/strings:181 /tmp/strings:183 /tmp/strings:185 /tmp/strings:187
+#: /tmp/strings:189 /tmp/strings:191 /tmp/strings:193 /tmp/strings:195
+#: /tmp/strings:197 /tmp/strings:199 /tmp/strings:201 /tmp/strings:203
+#: /tmp/strings:205 /tmp/strings:207 /tmp/strings:209 /tmp/strings:211
+#: /tmp/strings:213 /tmp/strings:215 /tmp/strings:217 /tmp/strings:219
+#: /tmp/strings:221 /tmp/strings:223 /tmp/strings:225 /tmp/strings:227
+#: /tmp/strings:229 /tmp/strings:231 /tmp/strings:233 /tmp/strings:235
+#: /tmp/strings:237 /tmp/strings:239 /tmp/strings:241 /tmp/strings:243
+#: /tmp/strings:245 /tmp/strings:247 /tmp/strings:249 /tmp/strings:251
+#: /tmp/strings:253 /tmp/strings:255 /tmp/strings:257 /tmp/strings:259
+#: /tmp/strings:261 /tmp/strings:263 /tmp/strings:265 /tmp/strings:267
+#: /tmp/strings:269 /tmp/strings:271 /tmp/strings:273 /tmp/strings:275
+#: /tmp/strings:301 /tmp/strings:303 /tmp/strings:305 /tmp/strings:307
+#: /tmp/strings:309 /tmp/strings:311 /tmp/strings:314 /tmp/strings:316
+#: /tmp/strings:318 /tmp/strings:320 /tmp/strings:322 /tmp/strings:324
+#: /tmp/strings:326 /tmp/strings:328 /tmp/strings:330 /tmp/strings:332
+#: /tmp/strings:334 /tmp/strings:336 /tmp/strings:338 /tmp/strings:340
+#: /tmp/strings:342 /tmp/strings:344 /tmp/strings:346 /tmp/strings:348
+#: /tmp/strings:350 /tmp/strings:352 /tmp/strings:354 /tmp/strings:356
+#: /tmp/strings:358 /tmp/strings:360 /tmp/strings:362 /tmp/strings:364
+#: /tmp/strings:366 /tmp/strings:368 /tmp/strings:370 /tmp/strings:372
+#: /tmp/strings:374 /tmp/strings:376 /tmp/strings:378 /tmp/strings:380
+#: /tmp/strings:382 /tmp/strings:384 /tmp/strings:386 /tmp/strings:388
+#: /tmp/strings:390 /tmp/strings:392 /tmp/strings:394 /tmp/strings:396
+#: /tmp/strings:398 /tmp/strings:400 /tmp/strings:402 /tmp/strings:404
+#: /tmp/strings:406 /tmp/strings:408 /tmp/strings:410 /tmp/strings:412
+#: /tmp/strings:414 /tmp/strings:416 /tmp/strings:418 /tmp/strings:420
+#: /tmp/strings:422 /tmp/strings:424 /tmp/strings:426 /tmp/strings:428
+#: /tmp/strings:430 /tmp/strings:432 /tmp/strings:434 /tmp/strings:436
+#: /tmp/strings:438 /tmp/strings:440 /tmp/strings:442 /tmp/strings:444
+#: /tmp/strings:446 /tmp/strings:448 /tmp/strings:450 /tmp/strings:452
+#: /tmp/strings:454 /tmp/strings:456 /tmp/strings:458 /tmp/strings:460
+#: /tmp/strings:462 /tmp/strings:464 /tmp/strings:466 /tmp/strings:468
+#: /tmp/strings:470 /tmp/strings:472 /tmp/strings:474 /tmp/strings:476
+#: /tmp/strings:478 /tmp/strings:480 /tmp/strings:482 /tmp/strings:484
+#: /tmp/strings:486 /tmp/strings:488 /tmp/strings:490 /tmp/strings:492
+#: /tmp/strings:494 /tmp/strings:496 /tmp/strings:498 /tmp/strings:500
+#: /tmp/strings:502 /tmp/strings:504 /tmp/strings:506 /tmp/strings:508
+#: /tmp/strings:510 /tmp/strings:512 /tmp/strings:514 /tmp/strings:516
+#: /tmp/strings:518 /tmp/strings:520 /tmp/strings:522 /tmp/strings:524
+#: /tmp/strings:526 /tmp/strings:528 /tmp/strings:530 /tmp/strings:532
+#: /tmp/strings:534 /tmp/strings:536 /tmp/strings:538 /tmp/strings:540
+#: /tmp/strings:542 /tmp/strings:544 /tmp/strings:546 /tmp/strings:548
+#: /tmp/strings:550 /tmp/strings:552 /tmp/strings:554 /tmp/strings:556
+#: /tmp/strings:558 /tmp/strings:560 /tmp/strings:562 /tmp/strings:564
+#: /tmp/strings:566 /tmp/strings:568 /tmp/strings:570 /tmp/strings:572
+#: /tmp/strings:574 /tmp/strings:576 /tmp/strings:578 /tmp/strings:580
+#: /tmp/strings:582 /tmp/strings:584 /tmp/strings:586 /tmp/strings:588
+#: /tmp/strings:590 /tmp/strings:592 /tmp/strings:594 /tmp/strings:596
+#: /tmp/strings:598 /tmp/strings:600 /tmp/strings:602 /tmp/strings:604
+#: /tmp/strings:606 /tmp/strings:608 /tmp/strings:610 /tmp/strings:612
+#: /tmp/strings:614 /tmp/strings:616 /tmp/strings:618 /tmp/strings:620
+#: /tmp/strings:622 /tmp/strings:624 /tmp/strings:626 /tmp/strings:628
+#: /tmp/strings:630 /tmp/strings:632 /tmp/strings:634 /tmp/strings:636
+#: /tmp/strings:638 /tmp/strings:640 /tmp/strings:642 /tmp/strings:644
+#: /tmp/strings:646 /tmp/strings:648 /tmp/strings:650 /tmp/strings:652
+#: /tmp/strings:654 /tmp/strings:656 /tmp/strings:658 /tmp/strings:660
+#: /tmp/strings:662 /tmp/strings:664 /tmp/strings:666 /tmp/strings:668
+#: /tmp/strings:670 /tmp/strings:672 /tmp/strings:674 /tmp/strings:676
+#: /tmp/strings:678 /tmp/strings:680 /tmp/strings:682 /tmp/strings:684
+#: /tmp/strings:686 /tmp/strings:688 /tmp/strings:690 /tmp/strings:692
+#: /tmp/strings:694 /tmp/strings:696 /tmp/strings:698 /tmp/strings:700
+#: /tmp/strings:702 /tmp/strings:704 /tmp/strings:706 /tmp/strings:708
+#: /tmp/strings:710 /tmp/strings:712 /tmp/strings:714 /tmp/strings:716
+#: /tmp/strings:718 /tmp/strings:720 /tmp/strings:722 /tmp/strings:724
+#: /tmp/strings:726 /tmp/strings:728 /tmp/strings:730 /tmp/strings:732
+#: /tmp/strings:734 /tmp/strings:736 /tmp/strings:738 /tmp/strings:740
+#: /tmp/strings:742 /tmp/strings:744 /tmp/strings:746 /tmp/strings:748
+#: /tmp/strings:750 /tmp/strings:752 /tmp/strings:754 /tmp/strings:756
+#: /tmp/strings:758 /tmp/strings:760 /tmp/strings:762 /tmp/strings:764
+#: /tmp/strings:766 /tmp/strings:768 /tmp/strings:770 /tmp/strings:772
+#: /tmp/strings:774 /tmp/strings:776 /tmp/strings:778 /tmp/strings:780
+#: /tmp/strings:782 /tmp/strings:784 /tmp/strings:786 /tmp/strings:788
+#: /tmp/strings:790 /tmp/strings:792 /tmp/strings:794 /tmp/strings:796
+#: /tmp/strings:798 /tmp/strings:800 /tmp/strings:802 /tmp/strings:804
+#: /tmp/strings:806 /tmp/strings:808 /tmp/strings:810 /tmp/strings:812
+#: /tmp/strings:814 /tmp/strings:816 /tmp/strings:818 /tmp/strings:820
+#: /tmp/strings:822 /tmp/strings:824 /tmp/strings:826 /tmp/strings:828
+#: /tmp/strings:830 /tmp/strings:832 /tmp/strings:834 /tmp/strings:836
+#: /tmp/strings:838 /tmp/strings:840 /tmp/strings:842 /tmp/strings:844
+#: /tmp/strings:846 /tmp/strings:848 /tmp/strings:850 /tmp/strings:852
+#: /tmp/strings:854 /tmp/strings:856 /tmp/strings:858 /tmp/strings:860
+#: /tmp/strings:862 /tmp/strings:864 /tmp/strings:866 /tmp/strings:868
+#: /tmp/strings:871 /tmp/strings:873 /tmp/strings:875 /tmp/strings:877
+#: /tmp/strings:879 /tmp/strings:881 /tmp/strings:883 /tmp/strings:885
+#: /tmp/strings:887 /tmp/strings:889 /tmp/strings:891 /tmp/strings:893
+#: /tmp/strings:895 /tmp/strings:897 /tmp/strings:899 /tmp/strings:901
+#: /tmp/strings:903 /tmp/strings:905 /tmp/strings:907 /tmp/strings:909
+#: /tmp/strings:911 /tmp/strings:913 /tmp/strings:915 /tmp/strings:917
+#: /tmp/strings:919 /tmp/strings:921 /tmp/strings:923 /tmp/strings:925
+#: /tmp/strings:927 /tmp/strings:929 /tmp/strings:931 /tmp/strings:933
+#: /tmp/strings:936 /tmp/strings:938 /tmp/strings:940 /tmp/strings:942
+#: /tmp/strings:944 /tmp/strings:946 /tmp/strings:948 /tmp/strings:950
+#: /tmp/strings:952 /tmp/strings:954 /tmp/strings:956 /tmp/strings:958
+#: /tmp/strings:960 /tmp/strings:962 /tmp/strings:964 /tmp/strings:966
+#: /tmp/strings:968 /tmp/strings:970 /tmp/strings:972 /tmp/strings:974
+#: /tmp/strings:976 /tmp/strings:978 /tmp/strings:980 /tmp/strings:982
+#: /tmp/strings:984 /tmp/strings:986 /tmp/strings:988 /tmp/strings:990
+#: /tmp/strings:992 /tmp/strings:994 /tmp/strings:996 /tmp/strings:998
+#: /tmp/strings:1000 /tmp/strings:1002 /tmp/strings:1005 /tmp/strings:1007
+#: /tmp/strings:1009 /tmp/strings:1011 /tmp/strings:1013 /tmp/strings:1015
+#: /tmp/strings:1017 /tmp/strings:1019 /tmp/strings:1021 /tmp/strings:1023
+#: /tmp/strings:1025 /tmp/strings:1027 /tmp/strings:1029 /tmp/strings:1031
+#: /tmp/strings:1033 /tmp/strings:1035 /tmp/strings:1037 /tmp/strings:1039
+#: /tmp/strings:1041 /tmp/strings:1043 /tmp/strings:1045 /tmp/strings:1047
+#: /tmp/strings:1049 /tmp/strings:1051 /tmp/strings:1053 /tmp/strings:1055
+#: /tmp/strings:1057 /tmp/strings:1059 /tmp/strings:1061 /tmp/strings:1063
+#: /tmp/strings:1065 /tmp/strings:1067 /tmp/strings:1069 /tmp/strings:1071
+#: /tmp/strings:1073 /tmp/strings:1075 /tmp/strings:1077 /tmp/strings:1079
+#: /tmp/strings:1082 /tmp/strings:1085 /tmp/strings:1088 /tmp/strings:1090
+#: /tmp/strings:1092 /tmp/strings:1094 /tmp/strings:1096 /tmp/strings:1098
+#: /tmp/strings:1100 /tmp/strings:1102 /tmp/strings:1104 /tmp/strings:1106
+#: /tmp/strings:1108 /tmp/strings:1110 /tmp/strings:1112 /tmp/strings:1114
+#: /tmp/strings:1116 /tmp/strings:1118 /tmp/strings:1120 /tmp/strings:1122
+#: /tmp/strings:1124 /tmp/strings:1126 /tmp/strings:1128 /tmp/strings:1130
+#: /tmp/strings:1132 /tmp/strings:1134 /tmp/strings:1136 /tmp/strings:1138
+#: /tmp/strings:1140 /tmp/strings:1142 /tmp/strings:1144
+msgid "title"
+msgstr "XtitleX"
+
+#: /tmp/strings:2 /tmp/strings:167 /tmp/strings:384 /tmp/strings:464
+#: /tmp/strings:480 /tmp/strings:534 /tmp/strings:576 /tmp/strings:802
+msgid "Email Usage (all)"
+msgstr "XEmail Usage (all)X"
+
+#: /tmp/strings:3 /tmp/strings:465 /tmp/strings:535 /tmp/strings:577
+#: /tmp/strings:803
+msgid "The amount of clean email over time."
+msgstr "XThe amount of clean email over time.X"
+
+#: /tmp/strings:4 /tmp/strings:466 /tmp/strings:536 /tmp/strings:578
+#: /tmp/strings:804
+msgid "Email Usage (clean)"
+msgstr "XEmail Usage (clean)X"
+
+#: /tmp/strings:5 /tmp/strings:537
+msgid "The number of IP addresses sending phish."
+msgstr "XThe number of IP addresses sending phish.X"
+
+#: /tmp/strings:6 /tmp/strings:538
+msgid "Top Phish Sender Addresses"
+msgstr "XTop Phish Sender AddressesX"
+
+#: /tmp/strings:7 /tmp/strings:539
+msgid "The amount of phish email over time."
+msgstr "XThe amount of phish email over time.X"
+
+#: /tmp/strings:8 /tmp/strings:540
+msgid "Email Usage (phish)"
+msgstr "XEmail Usage (phish)X"
+
+#: /tmp/strings:9 /tmp/strings:541
+msgid "The ratio of phish (true) to ham (false)"
+msgstr "XThe ratio of phish (true) to ham (false)X"
+
+#: /tmp/strings:10 /tmp/strings:542
+msgid "Phish Ratio"
+msgstr "XPhish RatioX"
+
+#: /tmp/strings:11 /tmp/strings:198 /tmp/strings:415 /tmp/strings:473
+#: /tmp/strings:511 /tmp/strings:543 /tmp/strings:585 /tmp/strings:811
+msgid "The amount of scanned email over time."
+msgstr "XThe amount of scanned email over time.X"
+
+#: /tmp/strings:12 /tmp/strings:199 /tmp/strings:416 /tmp/strings:474
+#: /tmp/strings:512 /tmp/strings:544 /tmp/strings:586 /tmp/strings:812
+msgid "Email Usage (scanned)"
+msgstr "XEmail Usage (scanned)X"
+
+#: /tmp/strings:13 /tmp/strings:545
+msgid "The number of email addresses with phish."
+msgstr "XThe number of email addresses with phish.X"
+
+#: /tmp/strings:14 /tmp/strings:546
+msgid "Top Phish Recipients"
+msgstr "XTop Phish RecipientsX"
+
+#: /tmp/strings:15 /tmp/strings:547
+msgid "A summary of phish blocking actions for email activity."
+msgstr "XA summary of phish blocking actions for email activity.X"
+
+#: /tmp/strings:16 /tmp/strings:548
+msgid "Phish Blocker Summary"
+msgstr "XPhish Blocker SummaryX"
+
+#: /tmp/strings:17 /tmp/strings:327
+msgid "The top logged sessions by user."
+msgstr "XThe top logged sessions by user.X"
+
+#: /tmp/strings:18 /tmp/strings:328
+msgid "Top Logged Users"
+msgstr "XTop Logged UsersX"
+
+#: /tmp/strings:19 /tmp/strings:329
+msgid "The top logged sessions by protocol."
+msgstr "XThe top logged sessions by protocol.X"
+
+#: /tmp/strings:20 /tmp/strings:330
+msgid "Top Logged Protocols"
+msgstr "XTop Logged ProtocolsX"
+
+#: /tmp/strings:21 /tmp/strings:331
+msgid "The top blocked sessions by protocol."
+msgstr "XThe top blocked sessions by protocol.X"
+
+#: /tmp/strings:22 /tmp/strings:332
+msgid "Top Blocked Protocols"
+msgstr "XTop Blocked ProtocolsX"
+
+#: /tmp/strings:23 /tmp/strings:333
+msgid "The top blocked sessions by user."
+msgstr "XThe top blocked sessions by user.X"
+
+#: /tmp/strings:24 /tmp/strings:334
+msgid "Top Blocked Users"
+msgstr "XTop Blocked UsersX"
+
+#: /tmp/strings:25 /tmp/strings:335
+msgid "The top blocked sessions by host."
+msgstr "XThe top blocked sessions by host.X"
+
+#: /tmp/strings:26 /tmp/strings:336
+msgid "Top Blocked Hosts"
+msgstr "XTop Blocked HostsX"
+
+#: /tmp/strings:27 /tmp/strings:337
+msgid "The top logged sessions by host."
+msgstr "XThe top logged sessions by host.X"
+
+#: /tmp/strings:28 /tmp/strings:338
+msgid "Top Logged Hosts"
+msgstr "XTop Logged HostsX"
+
+#: /tmp/strings:29 /tmp/strings:339
+msgid "The number of logged and blocked sessions over time."
+msgstr "XThe number of logged and blocked sessions over time.X"
+
+#: /tmp/strings:30 /tmp/strings:340
+msgid "Detection Statistics"
+msgstr "XDetection StatisticsX"
+
+#: /tmp/strings:31 /tmp/strings:609
+msgid "The approximate amount of data transfered over openvpn connections."
+msgstr "XThe approximate amount of data transfered over openvpn connections.X"
+
+#: /tmp/strings:32 /tmp/strings:610
+msgid "OpenVPN Bandwidth Usage"
+msgstr "XOpenVPN Bandwidth UsageX"
+
+#: /tmp/strings:33 /tmp/strings:611
+msgid "The number of bytes transferred grouped by remote client."
+msgstr "XThe number of bytes transferred grouped by remote client.X"
+
+#: /tmp/strings:34 /tmp/strings:612
+msgid "Top Clients (by usage)"
+msgstr "XTop Clients (by usage)X"
+
+#: /tmp/strings:35 /tmp/strings:613
+msgid "The amount of openvpn sessions over time."
+msgstr "XThe amount of openvpn sessions over time.X"
+
+#: /tmp/strings:36 /tmp/strings:614
+msgid "OpenVPN Sessions"
+msgstr "XOpenVPN SessionsX"
+
+#: /tmp/strings:37 /tmp/strings:615
+msgid "The amount of login and logout events over time."
+msgstr "XThe amount of login and logout events over time.X"
+
+#: /tmp/strings:38 /tmp/strings:616
+msgid "OpenVPN Events"
+msgstr "XOpenVPN EventsX"
+
+#: /tmp/strings:39 /tmp/strings:601
+msgid "The top active users that logged in to Captive Portal."
+msgstr "XThe top active users that logged in to Captive Portal.X"
+
+#: /tmp/strings:40 /tmp/strings:305 /tmp/strings:602
+msgid "Top Active Users"
+msgstr "XTop Active UsersX"
+
+#: /tmp/strings:41 /tmp/strings:603
+msgid "A summary of Captive Portal activity."
+msgstr "XA summary of Captive Portal activity.X"
+
+#: /tmp/strings:42 /tmp/strings:604
+msgid "Activity Summary"
+msgstr "XActivity SummaryX"
+
+#: /tmp/strings:43 /tmp/strings:605
+msgid ""
+"The top clients that were blocked by Captive Portal because they were not "
+"logged in."
+msgstr "XX"
+
+#: /tmp/strings:44 /tmp/strings:50 /tmp/strings:255 /tmp/strings:432
+#: /tmp/strings:456 /tmp/strings:606 /tmp/strings:628 /tmp/strings:686
+#: /tmp/strings:782 /tmp/strings:820
+msgid "Top Blocked Clients"
+msgstr "XTop Blocked ClientsX"
+
+#: /tmp/strings:45 /tmp/strings:623 /tmp/strings:681
+msgid "The sum of the size of requested web content grouped by domain."
+msgstr "XThe sum of the size of requested web content grouped by domain.X"
+
+#: /tmp/strings:46 /tmp/strings:624 /tmp/strings:682
+msgid "Top Domains (by size)"
+msgstr "XTop Domains (by size)X"
+
+#: /tmp/strings:47 /tmp/strings:625 /tmp/strings:683
+msgid "The number of flagged web request grouped by username."
+msgstr "XThe number of flagged web request grouped by username.X"
+
+#: /tmp/strings:48 /tmp/strings:249 /tmp/strings:426 /tmp/strings:626
+#: /tmp/strings:684 /tmp/strings:778
+msgid "Top Flagged Usernames"
+msgstr "XTop Flagged UsernamesX"
+
+#: /tmp/strings:49 /tmp/strings:627 /tmp/strings:685
+msgid "The number of blocked web request grouped by client."
+msgstr "XThe number of blocked web request grouped by client.X"
+
+#: /tmp/strings:51 /tmp/strings:629 /tmp/strings:687
+msgid "The number of web requests grouped by hostname."
+msgstr "XThe number of web requests grouped by hostname.X"
+
+#: /tmp/strings:52 /tmp/strings:630 /tmp/strings:688
+msgid "Top Hostnames (by requests)"
+msgstr "XTop Hostnames (by requests)X"
+
+#: /tmp/strings:53 /tmp/strings:631 /tmp/strings:689
+msgid "The sum of the size of requested web content grouped by website."
+msgstr "XThe sum of the size of requested web content grouped by website.X"
+
+#: /tmp/strings:54 /tmp/strings:632 /tmp/strings:690
+msgid "Top Sites (by size)"
+msgstr "XTop Sites (by size)X"
+
+#: /tmp/strings:55 /tmp/strings:633 /tmp/strings:691
+msgid "The number of web requests grouped by category."
+msgstr "XThe number of web requests grouped by category.X"
+
+#: /tmp/strings:56 /tmp/strings:634 /tmp/strings:692
+msgid "Top Categories (by request)"
+msgstr "XTop Categories (by request)X"
+
+#: /tmp/strings:57 /tmp/strings:635 /tmp/strings:693
+msgid "The sum of the size of requested web content grouped by category."
+msgstr "XThe sum of the size of requested web content grouped by category.X"
+
+#: /tmp/strings:58 /tmp/strings:636 /tmp/strings:694
+msgid "Top Categories (by size)"
+msgstr "XTop Categories (by size)X"
+
+#: /tmp/strings:59 /tmp/strings:637 /tmp/strings:695
+msgid "The number of flagged web request grouped by hostname."
+msgstr "XThe number of flagged web request grouped by hostname.X"
+
+#: /tmp/strings:60 /tmp/strings:257 /tmp/strings:434 /tmp/strings:638
+#: /tmp/strings:696 /tmp/strings:786
+msgid "Top Flagged Hostnames"
+msgstr "XTop Flagged HostnamesX"
+
+#: /tmp/strings:61 /tmp/strings:639 /tmp/strings:697
+msgid "The number of blocked web request grouped by username."
+msgstr "XThe number of blocked web request grouped by username.X"
+
+#: /tmp/strings:62 /tmp/strings:259 /tmp/strings:436 /tmp/strings:460
+#: /tmp/strings:640 /tmp/strings:698 /tmp/strings:788 /tmp/strings:824
+msgid "Top Blocked Usernames"
+msgstr "XTop Blocked UsernamesX"
+
+#: /tmp/strings:63 /tmp/strings:641 /tmp/strings:699
+msgid "The number of web requests grouped by client."
+msgstr "XThe number of web requests grouped by client.X"
+
+#: /tmp/strings:64 /tmp/strings:642 /tmp/strings:700
+msgid "Top Clients (by requests)"
+msgstr "XTop Clients (by requests)X"
+
+#: /tmp/strings:65 /tmp/strings:643 /tmp/strings:701
+msgid "The number of flagged web requests grouped by domain."
+msgstr "XThe number of flagged web requests grouped by domain.X"
+
+#: /tmp/strings:66 /tmp/strings:644 /tmp/strings:702
+msgid "Top Flagged Domains"
+msgstr "XTop Flagged DomainsX"
+
+#: /tmp/strings:67 /tmp/strings:645 /tmp/strings:703
+msgid "The sum of the size of requested web content grouped by hostname."
+msgstr "XThe sum of the size of requested web content grouped by hostname.X"
+
+#: /tmp/strings:68 /tmp/strings:646 /tmp/strings:704
+msgid "Top Hostnames (by size)"
+msgstr "XTop Hostnames (by size)X"
+
+#: /tmp/strings:69 /tmp/strings:647 /tmp/strings:705
+msgid "The number of web requests grouped by website."
+msgstr "XThe number of web requests grouped by website.X"
+
+#: /tmp/strings:70 /tmp/strings:648 /tmp/strings:706
+msgid "Top Sites (by request)"
+msgstr "XTop Sites (by request)X"
+
+#: /tmp/strings:71 /tmp/strings:649 /tmp/strings:707
+msgid "The number of blocked web requests grouped by category."
+msgstr "XThe number of blocked web requests grouped by category.X"
+
+#: /tmp/strings:72 /tmp/strings:650 /tmp/strings:708
+msgid "Top Blocked Categories"
+msgstr "XTop Blocked CategoriesX"
+
+#: /tmp/strings:73 /tmp/strings:651 /tmp/strings:709
+msgid "The sum of the size of requested web content grouped by username."
+msgstr "XThe sum of the size of requested web content grouped by username.X"
+
+#: /tmp/strings:74 /tmp/strings:652 /tmp/strings:710
+msgid "Top Usernames (by size)"
+msgstr "XTop Usernames (by size)X"
+
+#: /tmp/strings:75 /tmp/strings:81 /tmp/strings:653 /tmp/strings:659
+#: /tmp/strings:711 /tmp/strings:717
+msgid "The amount of total, flagged, and blocked web requests over time."
+msgstr "XThe amount of total, flagged, and blocked web requests over time.X"
+
+#: /tmp/strings:76 /tmp/strings:185 /tmp/strings:402 /tmp/strings:498
+#: /tmp/strings:654 /tmp/strings:712
+msgid "Web Usage (all)"
+msgstr "XWeb Usage (all)X"
+
+#: /tmp/strings:77 /tmp/strings:83 /tmp/strings:655 /tmp/strings:661
+#: /tmp/strings:713 /tmp/strings:719
+msgid "The amount of flagged, and blocked web requests over time."
+msgstr "XThe amount of flagged, and blocked web requests over time.X"
+
+#: /tmp/strings:78 /tmp/strings:656 /tmp/strings:714
+msgid "Web Usage (flagged)"
+msgstr "XWeb Usage (flagged)X"
+
+#: /tmp/strings:79 /tmp/strings:657 /tmp/strings:715
+msgid "The number of web requests grouped by username."
+msgstr "XThe number of web requests grouped by username.X"
+
+#: /tmp/strings:80 /tmp/strings:658 /tmp/strings:716
+msgid "Top Usernames (by requests)"
+msgstr "XTop Usernames (by requests)X"
+
+#: /tmp/strings:82 /tmp/strings:189 /tmp/strings:406 /tmp/strings:502
+#: /tmp/strings:660 /tmp/strings:718
+msgid "Web Usage (scanned)"
+msgstr "XWeb Usage (scanned)X"
+
+#: /tmp/strings:84 /tmp/strings:193 /tmp/strings:410 /tmp/strings:506
+#: /tmp/strings:662 /tmp/strings:720
+msgid "Web Usage (blocked)"
+msgstr "XWeb Usage (blocked)X"
+
+#: /tmp/strings:85 /tmp/strings:663 /tmp/strings:721
+msgid "The sum of the size of requested web content grouped by client."
+msgstr "XThe sum of the size of requested web content grouped by client.X"
+
+#: /tmp/strings:86 /tmp/strings:664 /tmp/strings:722
+msgid "Top Clients (by size)"
+msgstr "XTop Clients (by size)X"
+
+#: /tmp/strings:87 /tmp/strings:665 /tmp/strings:723
+msgid "The number of web requests grouped by domain."
+msgstr "XThe number of web requests grouped by domain.X"
+
+#: /tmp/strings:88 /tmp/strings:666 /tmp/strings:724
+msgid "Top Domains (by request)"
+msgstr "XTop Domains (by request)X"
+
+#: /tmp/strings:89 /tmp/strings:667 /tmp/strings:725
+msgid "The number of blocked web requests grouped by domain."
+msgstr "XThe number of blocked web requests grouped by domain.X"
+
+#: /tmp/strings:90 /tmp/strings:668 /tmp/strings:726
+msgid "Top Blocked Domains"
+msgstr "XTop Blocked DomainsX"
+
+#: /tmp/strings:91 /tmp/strings:669
+msgid "A summary of web filter lite actions."
+msgstr "XA summary of web filter lite actions.X"
+
+#: /tmp/strings:92 /tmp/strings:670
+msgid "Web Filter Lite Summary"
+msgstr "XWeb Filter Lite SummaryX"
+
+#: /tmp/strings:93 /tmp/strings:671 /tmp/strings:729
+msgid "The number of blocked web request grouped by hostname."
+msgstr "XThe number of blocked web request grouped by hostname.X"
+
+#: /tmp/strings:94 /tmp/strings:271 /tmp/strings:448 /tmp/strings:462
+#: /tmp/strings:672 /tmp/strings:730 /tmp/strings:798 /tmp/strings:826
+msgid "Top Blocked Hostnames"
+msgstr "XTop Blocked HostnamesX"
+
+#: /tmp/strings:95 /tmp/strings:673 /tmp/strings:731
+msgid "The number of flagged web request grouped by client."
+msgstr "XThe number of flagged web request grouped by client.X"
+
+#: /tmp/strings:96 /tmp/strings:273 /tmp/strings:450 /tmp/strings:674
+#: /tmp/strings:732 /tmp/strings:800
+msgid "Top Flagged Clients"
+msgstr "XTop Flagged ClientsX"
+
+#: /tmp/strings:97 /tmp/strings:675 /tmp/strings:733
+msgid "The number of flagged web requests grouped by website."
+msgstr "XThe number of flagged web requests grouped by website.X"
+
+#: /tmp/strings:98 /tmp/strings:676 /tmp/strings:734
+msgid "Top Flagged Sites"
+msgstr "XTop Flagged SitesX"
+
+#: /tmp/strings:99 /tmp/strings:677 /tmp/strings:735
+msgid "The number of flagged web requests grouped by category."
+msgstr "XThe number of flagged web requests grouped by category.X"
+
+#: /tmp/strings:100 /tmp/strings:678 /tmp/strings:736
+msgid "Top Flagged Categories"
+msgstr "XTop Flagged CategoriesX"
+
+#: /tmp/strings:101 /tmp/strings:679 /tmp/strings:737
+msgid "The number of blocked web requests grouped by website."
+msgstr "XThe number of blocked web requests grouped by website.X"
+
+#: /tmp/strings:102 /tmp/strings:680 /tmp/strings:738
+msgid "Top Blocked Sites"
+msgstr "XTop Blocked SitesX"
+
+#: /tmp/strings:103 /tmp/strings:312
+msgid "The top alerts."
+msgstr "XThe top alerts.X"
+
+#: /tmp/strings:104 /tmp/strings:313
+msgid "pieGroupColumn"
+msgstr "XpieGroupColumnX"
+
+#: /tmp/strings:105 /tmp/strings:314
+msgid "Top Alerts"
+msgstr "XTop AlertsX"
+
+#: /tmp/strings:106 /tmp/strings:315
+msgid "The disk utilization over time."
+msgstr "XThe disk utilization over time.X"
+
+#: /tmp/strings:108 /tmp/strings:317
+msgid "The CPU load over time."
+msgstr "XThe CPU load over time.X"
+
+#: /tmp/strings:110 /tmp/strings:319
+msgid "Alerts over time."
+msgstr "XAlerts over time.X"
+
+#: /tmp/strings:111 /tmp/strings:320
+msgid "Alerts"
+msgstr "XAlertsX"
+
+#: /tmp/strings:112 /tmp/strings:321
+msgid "The amount of free memory over time."
+msgstr "XThe amount of free memory over time.X"
+
+#: /tmp/strings:113 /tmp/strings:322
+msgid "Memory Usage"
+msgstr "XMemory UsageX"
+
+#: /tmp/strings:119 /tmp/strings:281
+msgid "Report Details"
+msgstr "XReport DetailsX"
+
+#: /tmp/strings:120 /tmp/strings:282
+msgid "Available Reports"
+msgstr "XAvailable ReportsX"
+
+#: /tmp/strings:138 /tmp/strings:549
+msgid "The amount of total, scanned, and bypassed sessions created per minute."
+msgstr "XThe amount of total, scanned, and bypassed sessions created per minute.X"
+
+#: /tmp/strings:139 /tmp/strings:550
+msgid "Sessions Per Minute"
+msgstr "XSessions Per MinuteX"
+
+#: /tmp/strings:140 /tmp/strings:551
+msgid "The amount of total, scanned, and bypassed sessions over time."
+msgstr "XThe amount of total, scanned, and bypassed sessions over time.X"
+
+#: /tmp/strings:142 /tmp/strings:553
+msgid "The amount of total, scanned, and bypassed sessions created per hour."
+msgstr "XThe amount of total, scanned, and bypassed sessions created per hour.X"
+
+#: /tmp/strings:143 /tmp/strings:554
+msgid "Sessions Per Hour"
+msgstr "XSessions Per HourX"
+
+#: /tmp/strings:144 /tmp/strings:555
+msgid "The number of settings changes over time."
+msgstr "XThe number of settings changes over time.X"
+
+#: /tmp/strings:145 /tmp/strings:556
+msgid "Settings Changes"
+msgstr "XSettings ChangesX"
+
+#: /tmp/strings:146 /tmp/strings:557
+msgid "The number of updates to the host table over time."
+msgstr "XThe number of updates to the host table over time.X"
+
+#: /tmp/strings:147 /tmp/strings:558
+msgid "Host Table Updates"
+msgstr "XHost Table UpdatesX"
+
+#: /tmp/strings:148 /tmp/strings:158 /tmp/strings:559 /tmp/strings:569
+msgid "The amount of hosts add and removed from the host table over time."
+msgstr "XThe amount of hosts add and removed from the host table over time.X"
+
+#: /tmp/strings:149 /tmp/strings:560
+msgid "Host Table Size"
+msgstr "XHost Table SizeX"
+
+#: /tmp/strings:150 /tmp/strings:561
+msgid "The number of sessions grouped by IP protocol number."
+msgstr "XThe number of sessions grouped by IP protocol number.X"
+
+#: /tmp/strings:151 /tmp/strings:562
+msgid "Top IP Protocols"
+msgstr "XTop IP ProtocolsX"
+
+#: /tmp/strings:152 /tmp/strings:563
+msgid "The number of total, successful, and failed admin logins over time."
+msgstr "XThe number of total, successful, and failed admin logins over time.X"
+
+#: /tmp/strings:153 /tmp/strings:564 /tmp/strings:883 /tmp/strings:1025
+msgid "Admin Logins"
+msgstr "XAdmin LoginsX"
+
+#: /tmp/strings:154 /tmp/strings:565
+msgid "The number of sessions grouped by server (destination) port."
+msgstr "XThe number of sessions grouped by server (destination) port.X"
+
+#: /tmp/strings:155 /tmp/strings:566
+msgid "Top Server Ports"
+msgstr "XTop Server PortsX"
+
+#: /tmp/strings:156 /tmp/strings:567
+msgid "The number of sessions grouped by client (source) address."
+msgstr "XThe number of sessions grouped by client (source) address.X"
+
+#: /tmp/strings:157 /tmp/strings:568
+msgid "Top Client Addresses"
+msgstr "XTop Client AddressesX"
+
+#: /tmp/strings:159 /tmp/strings:570
+msgid "Host Table Additions"
+msgstr "XHost Table AdditionsX"
+
+#: /tmp/strings:160 /tmp/strings:617
+msgid "The amount of detected and blocked ads over time."
+msgstr "XThe amount of detected and blocked ads over time.X"
+
+#: /tmp/strings:161 /tmp/strings:618
+msgid "Ads Blocked"
+msgstr "XAds BlockedX"
+
+#: /tmp/strings:162 /tmp/strings:619
+msgid "A summary of ad blocker actions."
+msgstr "XA summary of ad blocker actions.X"
+
+#: /tmp/strings:163 /tmp/strings:620
+msgid "Ad Blocker Summary"
+msgstr "XAd Blocker SummaryX"
+
+#: /tmp/strings:164 /tmp/strings:621
+msgid "The number of blocked ads grouped by website."
+msgstr "XThe number of blocked ads grouped by website.X"
+
+#: /tmp/strings:165 /tmp/strings:622
+msgid "Top Blocked Ad Sites"
+msgstr "XTop Blocked Ad SitesX"
+
+#: /tmp/strings:166 /tmp/strings:383 /tmp/strings:479
+msgid "The amount of scanned and blocked email over time."
+msgstr "XThe amount of scanned and blocked email over time.X"
+
+#: /tmp/strings:168 /tmp/strings:172 /tmp/strings:385 /tmp/strings:389
+#: /tmp/strings:481 /tmp/strings:485
+msgid "The number of clients with blocked viruses by web activity."
+msgstr "XThe number of clients with blocked viruses by web activity.X"
+
+#: /tmp/strings:169 /tmp/strings:386 /tmp/strings:482
+msgid "Web Top Blocked Sites"
+msgstr "XWeb Top Blocked SitesX"
+
+#: /tmp/strings:170 /tmp/strings:387 /tmp/strings:483
+msgid "The number of blocked viruses by FTP activity."
+msgstr "XThe number of blocked viruses by FTP activity.X"
+
+#: /tmp/strings:171 /tmp/strings:388 /tmp/strings:484
+msgid "FTP Top Blocked Viruses"
+msgstr "XFTP Top Blocked VirusesX"
+
+#: /tmp/strings:173 /tmp/strings:390 /tmp/strings:486
+msgid "Web Top Blocked Clients"
+msgstr "XWeb Top Blocked ClientsX"
+
+#: /tmp/strings:174 /tmp/strings:190 /tmp/strings:391 /tmp/strings:407
+#: /tmp/strings:487 /tmp/strings:503
+msgid "The number of clients with blocked viruses by Email activity."
+msgstr "XThe number of clients with blocked viruses by Email activity.X"
+
+#: /tmp/strings:175 /tmp/strings:392 /tmp/strings:488
+msgid "Email Top Blocked Clients"
+msgstr "XEmail Top Blocked ClientsX"
+
+#: /tmp/strings:176 /tmp/strings:393 /tmp/strings:489
+msgid "The number of blocked viruses by web activity."
+msgstr "XThe number of blocked viruses by web activity.X"
+
+#: /tmp/strings:177 /tmp/strings:394 /tmp/strings:490
+msgid "Web Top Blocked Viruses"
+msgstr "XWeb Top Blocked VirusesX"
+
+#: /tmp/strings:178 /tmp/strings:395 /tmp/strings:491
+msgid "A summary of virus blocking actions for web activity."
+msgstr "XA summary of virus blocking actions for web activity.X"
+
+#: /tmp/strings:179 /tmp/strings:396
+msgid "Virus Blocker Lite Web Summary"
+msgstr "XVirus Blocker Lite Web SummaryX"
+
+#: /tmp/strings:180 /tmp/strings:204 /tmp/strings:397 /tmp/strings:421
+#: /tmp/strings:493 /tmp/strings:517
+msgid "The number of clients with blocked viruses by FTP activity."
+msgstr "XThe number of clients with blocked viruses by FTP activity.X"
+
+#: /tmp/strings:181 /tmp/strings:398 /tmp/strings:494
+msgid "FTP Top Blocked Sites"
+msgstr "XFTP Top Blocked SitesX"
+
+#: /tmp/strings:182 /tmp/strings:399 /tmp/strings:495
+msgid "The amount of scanned FTP requests over time."
+msgstr "XThe amount of scanned FTP requests over time.X"
+
+#: /tmp/strings:183 /tmp/strings:400 /tmp/strings:496
+msgid "FTP Usage (scanned)"
+msgstr "XFTP Usage (scanned)X"
+
+#: /tmp/strings:184 /tmp/strings:401 /tmp/strings:497
+msgid "The amount of scanned and blocked web requests over time."
+msgstr "XThe amount of scanned and blocked web requests over time.X"
+
+#: /tmp/strings:186 /tmp/strings:403 /tmp/strings:499
+msgid "The amount of blocked email over time."
+msgstr "XThe amount of blocked email over time.X"
+
+#: /tmp/strings:187 /tmp/strings:404 /tmp/strings:500
+msgid "Email Usage (blocked)"
+msgstr "XEmail Usage (blocked)X"
+
+#: /tmp/strings:188 /tmp/strings:405 /tmp/strings:501
+msgid "The amount of scanned web requests over time."
+msgstr "XThe amount of scanned web requests over time.X"
+
+#: /tmp/strings:191 /tmp/strings:408 /tmp/strings:504
+msgid "Email Top Blocked Sites"
+msgstr "XEmail Top Blocked SitesX"
+
+#: /tmp/strings:192 /tmp/strings:409 /tmp/strings:505
+msgid "The amount of blocked web requests over time."
+msgstr "XThe amount of blocked web requests over time.X"
+
+#: /tmp/strings:194 /tmp/strings:411 /tmp/strings:507
+msgid "The amount of scanned and blocked FTP requests over time."
+msgstr "XThe amount of scanned and blocked FTP requests over time.X"
+
+#: /tmp/strings:195 /tmp/strings:412 /tmp/strings:508
+msgid "FTP Usage (all)"
+msgstr "XFTP Usage (all)X"
+
+#: /tmp/strings:196 /tmp/strings:413 /tmp/strings:509
+msgid "A summary of virus blocking actions for FTP activity."
+msgstr "XA summary of virus blocking actions for FTP activity.X"
+
+#: /tmp/strings:197 /tmp/strings:414
+msgid "Virus Blocker Lite FTP Summary"
+msgstr "XVirus Blocker Lite FTP SummaryX"
+
+#: /tmp/strings:200 /tmp/strings:417 /tmp/strings:513
+msgid "The amount of blocked FTP requests over time."
+msgstr "XThe amount of blocked FTP requests over time.X"
+
+#: /tmp/strings:201 /tmp/strings:418 /tmp/strings:514
+msgid "FTP Usage (blocked)"
+msgstr "XFTP Usage (blocked)X"
+
+#: /tmp/strings:202 /tmp/strings:419 /tmp/strings:515
+msgid "The number of blocked viruses by Email activity."
+msgstr "XThe number of blocked viruses by Email activity.X"
+
+#: /tmp/strings:203 /tmp/strings:420 /tmp/strings:516
+msgid "Email Top Blocked Viruses"
+msgstr "XEmail Top Blocked VirusesX"
+
+#: /tmp/strings:205 /tmp/strings:422 /tmp/strings:518
+msgid "FTP Top Blocked Clients"
+msgstr "XFTP Top Blocked ClientsX"
+
+#: /tmp/strings:206 /tmp/strings:423 /tmp/strings:519
+msgid "A summary of virus blocking actions for Email activity."
+msgstr "XA summary of virus blocking actions for Email activity.X"
+
+#: /tmp/strings:207 /tmp/strings:424
+msgid "Virus Blocker Lite Email Summary"
+msgstr "XVirus Blocker Lite Email SummaryX"
+
+#: /tmp/strings:208 /tmp/strings:343
+msgid "The amount of detected and blocked intrusions over time."
+msgstr "XThe amount of detected and blocked intrusions over time.X"
+
+#: /tmp/strings:209 /tmp/strings:344
+msgid "Intrusion Detection (all)"
+msgstr "XIntrusion Detection (all)X"
+
+#: /tmp/strings:210 /tmp/strings:345
+msgid "The number of intrusions detected grouped by source IP address."
+msgstr "XThe number of intrusions detected grouped by source IP address.X"
+
+#: /tmp/strings:211 /tmp/strings:346
+msgid "Top Source IP Addresses (logged)"
+msgstr "XTop Source IP Addresses (logged)X"
+
+#: /tmp/strings:212 /tmp/strings:347
+msgid "The number of intrusions detected grouped by category."
+msgstr "XThe number of intrusions detected grouped by category.X"
+
+#: /tmp/strings:213 /tmp/strings:348
+msgid "Top Categories (logged)"
+msgstr "XTop Categories (logged)X"
+
+#: /tmp/strings:214 /tmp/strings:349
+msgid "The number of intrusions blocked by source port."
+msgstr "XThe number of intrusions blocked by source port.X"
+
+#: /tmp/strings:215 /tmp/strings:350
+msgid "Top Source Port (blocked)"
+msgstr "XTop Source Port (blocked)X"
+
+#: /tmp/strings:216 /tmp/strings:351
+msgid "The number of intrusions blocked by rule."
+msgstr "XThe number of intrusions blocked by rule.X"
+
+#: /tmp/strings:217 /tmp/strings:352
+msgid "Top Rules (blocked)"
+msgstr "XTop Rules (blocked)X"
+
+#: /tmp/strings:218 /tmp/strings:353
+msgid "The number of intrusions blocked by destination port."
+msgstr "XThe number of intrusions blocked by destination port.X"
+
+#: /tmp/strings:219 /tmp/strings:354
+msgid "Top Destination Port (blocked)"
+msgstr "XTop Destination Port (blocked)X"
+
+#: /tmp/strings:220 /tmp/strings:355
+msgid "The amount of blocked intrusions over time."
+msgstr "XThe amount of blocked intrusions over time.X"
+
+#: /tmp/strings:221 /tmp/strings:356
+msgid "Intrusion Detection (blocked)"
+msgstr "XIntrusion Detection (blocked)X"
+
+#: /tmp/strings:222 /tmp/strings:357
+msgid "The number of intrusions blocked by classtype."
+msgstr "XThe number of intrusions blocked by classtype.X"
+
+#: /tmp/strings:223 /tmp/strings:358
+msgid "Top Classtypes (blocked)"
+msgstr "XTop Classtypes (blocked)X"
+
+#: /tmp/strings:224 /tmp/strings:359
+msgid "The number of intrusions detected grouped by rule."
+msgstr "XThe number of intrusions detected grouped by rule.X"
+
+#: /tmp/strings:225 /tmp/strings:360
+msgid "Top Rules (logged)"
+msgstr "XTop Rules (logged)X"
+
+#: /tmp/strings:226 /tmp/strings:361
+msgid "The number of intrusions blocked by category."
+msgstr "XThe number of intrusions blocked by category.X"
+
+#: /tmp/strings:227 /tmp/strings:362
+msgid "Top Categories (blocked)"
+msgstr "XTop Categories (blocked)X"
+
+#: /tmp/strings:228 /tmp/strings:363
+msgid "The number of intrusions blocked by source IP address."
+msgstr "XThe number of intrusions blocked by source IP address.X"
+
+#: /tmp/strings:229 /tmp/strings:364
+msgid "Top Source IP Addresses (blocked)"
+msgstr "XTop Source IP Addresses (blocked)X"
+
+#: /tmp/strings:230 /tmp/strings:365
+msgid "The number of intrusions detected grouped by destination IP address."
+msgstr "XThe number of intrusions detected grouped by destination IP address.X"
+
+#: /tmp/strings:231 /tmp/strings:366
+msgid "Top Destination IP Addresses (logged)"
+msgstr "XTop Destination IP Addresses (logged)X"
+
+#: /tmp/strings:232 /tmp/strings:367
+msgid "The amount of detected pintrusions over time."
+msgstr "XThe amount of detected pintrusions over time.X"
+
+#: /tmp/strings:233 /tmp/strings:368
+msgid "Intrusion Detection (logged)"
+msgstr "XIntrusion Detection (logged)X"
+
+#: /tmp/strings:234 /tmp/strings:369
+msgid "The number of intrusions detected grouped by source port."
+msgstr "XThe number of intrusions detected grouped by source port.X"
+
+#: /tmp/strings:235 /tmp/strings:370
+msgid "Top Source Ports (logged)"
+msgstr "XTop Source Ports (logged)X"
+
+#: /tmp/strings:236 /tmp/strings:371
+msgid "A summary of intrusion detection and prevention actions."
+msgstr "XA summary of intrusion detection and prevention actions.X"
+
+#: /tmp/strings:237 /tmp/strings:372
+msgid "Intrusion Prevention Summary"
+msgstr "XIntrusion Prevention SummaryX"
+
+#: /tmp/strings:238 /tmp/strings:373
+msgid "The number of intrusions detected grouped by classtype."
+msgstr "XThe number of intrusions detected grouped by classtype.X"
+
+#: /tmp/strings:239 /tmp/strings:374
+msgid "Top Classtypes (logged)"
+msgstr "XTop Classtypes (logged)X"
+
+#: /tmp/strings:240 /tmp/strings:375
+msgid "The number of intrusions detected grouped by destination port."
+msgstr "XThe number of intrusions detected grouped by destination port.X"
+
+#: /tmp/strings:241 /tmp/strings:376
+msgid "Top Destination Ports (logged)"
+msgstr "XTop Destination Ports (logged)X"
+
+#: /tmp/strings:242 /tmp/strings:377
+msgid "The number of intrusions blocked by protocol."
+msgstr "XThe number of intrusions blocked by protocol.X"
+
+#: /tmp/strings:243 /tmp/strings:378
+msgid "Top Protocols (blocked)"
+msgstr "XTop Protocols (blocked)X"
+
+#: /tmp/strings:244 /tmp/strings:379
+msgid "The number of intrusions blocked by destination IP address."
+msgstr "XThe number of intrusions blocked by destination IP address.X"
+
+#: /tmp/strings:245 /tmp/strings:380
+msgid "Top Destination IP Addresses (blocked)"
+msgstr "XTop Destination IP Addresses (blocked)X"
+
+#: /tmp/strings:246 /tmp/strings:381
+msgid "The number of intrusions detected grouped by protocol."
+msgstr "XThe number of intrusions detected grouped by protocol.X"
+
+#: /tmp/strings:247 /tmp/strings:382
+msgid "Top Protocols (logged)"
+msgstr "XTop Protocols (logged)X"
+
+#: /tmp/strings:248 /tmp/strings:258 /tmp/strings:425 /tmp/strings:435
+msgid "The number of flagged session grouped by username."
+msgstr "XThe number of flagged session grouped by username.X"
+
+#: /tmp/strings:250 /tmp/strings:427 /tmp/strings:779
+msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgstr "XThe amount of scanned, flagged, and blocked sessions over time.X"
+
+#: /tmp/strings:251 /tmp/strings:428 /tmp/strings:454 /tmp/strings:594
+#: /tmp/strings:818 /tmp/strings:879 /tmp/strings:976 /tmp/strings:1021
+#: /tmp/strings:1144
+msgid "Scanned Sessions"
+msgstr "XScanned SessionsX"
+
+#: /tmp/strings:252 /tmp/strings:429
+msgid "The number of scanned session grouped by username."
+msgstr "XThe number of scanned session grouped by username.X"
+
+#: /tmp/strings:253 /tmp/strings:430
+msgid "Top Scanned Usernames"
+msgstr "XTop Scanned UsernamesX"
+
+#: /tmp/strings:254 /tmp/strings:272 /tmp/strings:431 /tmp/strings:449
+msgid "The number of flagged session grouped by client."
+msgstr "XThe number of flagged session grouped by client.X"
+
+#: /tmp/strings:256 /tmp/strings:433
+msgid "The number of flagged session grouped by hostname."
+msgstr "XThe number of flagged session grouped by hostname.X"
+
+#: /tmp/strings:260 /tmp/strings:274 /tmp/strings:437 /tmp/strings:451
+msgid "The number of flagged session grouped by server (destination) port."
+msgstr "XThe number of flagged session grouped by server (destination) port.X"
+
+#: /tmp/strings:261 /tmp/strings:438
+msgid "Top Blocked Server Ports"
+msgstr "XTop Blocked Server PortsX"
+
+#: /tmp/strings:262 /tmp/strings:439
+msgid "The number of scanned session grouped by client."
+msgstr "XThe number of scanned session grouped by client.X"
+
+#: /tmp/strings:263 /tmp/strings:440
+msgid "Top Scanned Clients"
+msgstr "XTop Scanned ClientsX"
+
+#: /tmp/strings:264 /tmp/strings:441
+msgid "The number of scanned session grouped by server (destination) port."
+msgstr "XThe number of scanned session grouped by server (destination) port.X"
+
+#: /tmp/strings:265 /tmp/strings:442
+msgid "Top Scanned Server Ports"
+msgstr "XTop Scanned Server PortsX"
+
+#: /tmp/strings:266 /tmp/strings:443
+msgid "The number of scanned session grouped by hostname."
+msgstr "XThe number of scanned session grouped by hostname.X"
+
+#: /tmp/strings:267 /tmp/strings:444
+msgid "Top Scanned Hostnames"
+msgstr "XTop Scanned HostnamesX"
+
+#: /tmp/strings:268 /tmp/strings:445
+msgid "A summary of firewall actions."
+msgstr "XA summary of firewall actions.X"
+
+#: /tmp/strings:269 /tmp/strings:446
+msgid "Firewall Summary"
+msgstr "XFirewall SummaryX"
+
+#: /tmp/strings:270 /tmp/strings:447 /tmp/strings:461 /tmp/strings:797
+#: /tmp/strings:825
+msgid "The number of blocked sessions grouped by hostname."
+msgstr "XThe number of blocked sessions grouped by hostname.X"
+
+#: /tmp/strings:275 /tmp/strings:452
+msgid "Top Flagged Server Ports"
+msgstr "XTop Flagged Server PortsX"
+
+#: /tmp/strings:300
+msgid "The top IPsec users grouped by amount of data downloaded."
+msgstr "XThe top IPsec users grouped by amount of data downloaded.X"
+
+#: /tmp/strings:301
+msgid "Top Download Users"
+msgstr "XTop Download UsersX"
+
+#: /tmp/strings:302
+msgid "The amount of IPsec tunnel traffic over time."
+msgstr "XThe amount of IPsec tunnel traffic over time.X"
+
+#: /tmp/strings:303
+msgid "Hourly Tunnel Traffic"
+msgstr "XHourly Tunnel TrafficX"
+
+#: /tmp/strings:304
+msgid "The top IPsec VPN users by number of sessions."
+msgstr "XThe top IPsec VPN users by number of sessions.X"
+
+#: /tmp/strings:306
+msgid "The top IPsec VPN connections by protocol."
+msgstr "XThe top IPsec VPN connections by protocol.X"
+
+#: /tmp/strings:307
+msgid "Top Protocols"
+msgstr "XTop ProtocolsX"
+
+#: /tmp/strings:308
+msgid "The amount of traffic for each IPsec tunnel."
+msgstr "XThe amount of traffic for each IPsec tunnel.X"
+
+#: /tmp/strings:309
+msgid "Top Tunnel Traffic"
+msgstr "XTop Tunnel TrafficX"
+
+#: /tmp/strings:310
+msgid "The top IPsec users grouped by amount of data uploaded."
+msgstr "XThe top IPsec users grouped by amount of data uploaded.X"
+
+#: /tmp/strings:311
+msgid "Top Upload Users"
+msgstr "XTop Upload UsersX"
+
+#: /tmp/strings:323
+msgid "The number of cache hits, misses, and sessions bypassed over time."
+msgstr "XThe number of cache hits, misses, and sessions bypassed over time.X"
+
+#: /tmp/strings:324
+msgid "Cache Hit/Miss Statistics"
+msgstr "XCache Hit/Miss StatisticsX"
+
+#: /tmp/strings:325
+msgid "The amount of cached and uncached web data over time."
+msgstr "XThe amount of cached and uncached web data over time.X"
+
+#: /tmp/strings:326
+msgid "Cache Size Statistics"
+msgstr "XCache Size StatisticsX"
+
+#: /tmp/strings:341
+msgid ""
+"The amount of login, update and logout user notification API events over "
+"time."
+msgstr "XX"
+
+#: /tmp/strings:342
+msgid "User Notification API Events"
+msgstr "XUser Notification API EventsX"
+
+#: /tmp/strings:453 /tmp/strings:817
+msgid "The amount of scanned and blocked sessions over time."
+msgstr "XThe amount of scanned and blocked sessions over time.X"
+
+#: /tmp/strings:455 /tmp/strings:781 /tmp/strings:819
+msgid "The number of blocked sessions grouped by client."
+msgstr "XThe number of blocked sessions grouped by client.X"
+
+#: /tmp/strings:457 /tmp/strings:821
+msgid "The amount of blocked sessions over time."
+msgstr "XThe amount of blocked sessions over time.X"
+
+#: /tmp/strings:458 /tmp/strings:822 /tmp/strings:873 /tmp/strings:974
+#: /tmp/strings:1015 /tmp/strings:1051 /tmp/strings:1130 /tmp/strings:1142
+msgid "Blocked Sessions"
+msgstr "XBlocked SessionsX"
+
+#: /tmp/strings:459 /tmp/strings:787 /tmp/strings:823
+msgid "The number of blocked sessions grouped by username."
+msgstr "XThe number of blocked sessions grouped by username.X"
+
+#: /tmp/strings:463 /tmp/strings:575 /tmp/strings:801
+msgid "The amount of scanned, clean, and spam email over time."
+msgstr "XThe amount of scanned, clean, and spam email over time.X"
+
+#: /tmp/strings:467 /tmp/strings:579 /tmp/strings:805
+msgid "The number of IP addresses sending spam."
+msgstr "XThe number of IP addresses sending spam.X"
+
+#: /tmp/strings:468 /tmp/strings:580 /tmp/strings:806
+msgid "Top Spam Sender Addresses"
+msgstr "XTop Spam Sender AddressesX"
+
+#: /tmp/strings:469 /tmp/strings:581 /tmp/strings:807
+msgid "The amount of spam email over time."
+msgstr "XThe amount of spam email over time.X"
+
+#: /tmp/strings:470 /tmp/strings:582 /tmp/strings:808
+msgid "Email Usage (spam)"
+msgstr "XEmail Usage (spam)X"
+
+#: /tmp/strings:471 /tmp/strings:583 /tmp/strings:809
+msgid "The ratio of spam (true) to ham (false)"
+msgstr "XThe ratio of spam (true) to ham (false)X"
+
+#: /tmp/strings:472 /tmp/strings:584 /tmp/strings:810
+msgid "Spam Ratio"
+msgstr "XSpam RatioX"
+
+#: /tmp/strings:475 /tmp/strings:587 /tmp/strings:813
+msgid "The number of email addresses with spam."
+msgstr "XThe number of email addresses with spam.X"
+
+#: /tmp/strings:476 /tmp/strings:588 /tmp/strings:814
+msgid "Top Spam Recipients"
+msgstr "XTop Spam RecipientsX"
+
+#: /tmp/strings:477 /tmp/strings:589 /tmp/strings:815
+msgid "A summary of spam blocking actions for email activity."
+msgstr "XA summary of spam blocking actions for email activity.X"
+
+#: /tmp/strings:478 /tmp/strings:816
+msgid "Spam Blocker Lite Summary"
+msgstr "XSpam Blocker Lite SummaryX"
+
+#: /tmp/strings:492
+msgid "Virus Blocker Web Summary"
+msgstr "XVirus Blocker Web SummaryX"
+
+#: /tmp/strings:510
+msgid "Virus Blocker FTP Summary"
+msgstr "XVirus Blocker FTP SummaryX"
+
+#: /tmp/strings:520
+msgid "Virus Blocker Email Summary"
+msgstr "XVirus Blocker Email SummaryX"
+
+#: /tmp/strings:521
+msgid ""
+"The amount of successes, and failures of configuration backup over time."
+msgstr "XX"
+
+#: /tmp/strings:522
+msgid "Backup Usage (all)"
+msgstr "XBackup Usage (all)X"
+
+#: /tmp/strings:523
+msgid "The amount of successful configuration backups over time."
+msgstr "XThe amount of successful configuration backups over time.X"
+
+#: /tmp/strings:524
+msgid "Backup Usage (success)"
+msgstr "XBackup Usage (success)X"
+
+#: /tmp/strings:525
+msgid "The amount of failed configuration backups over time."
+msgstr "XThe amount of failed configuration backups over time.X"
+
+#: /tmp/strings:526
+msgid "Backup Usage (failed)"
+msgstr "XBackup Usage (failed)X"
+
+#: /tmp/strings:527
+msgid "A summary of configuration backup actions."
+msgstr "XA summary of configuration backup actions.X"
+
+#: /tmp/strings:528
+msgid "Configuration Backup Summary"
+msgstr "XConfiguration Backup SummaryX"
+
+#: /tmp/strings:529
+msgid "The amount of traffic for each policy."
+msgstr "XThe amount of traffic for each policy.X"
+
+#: /tmp/strings:530
+msgid "Traffic By Policy"
+msgstr "XTraffic By PolicyX"
+
+#: /tmp/strings:531
+msgid "The number of sessions for each policy."
+msgstr "XThe number of sessions for each policy.X"
+
+#: /tmp/strings:532
+msgid "Sessions By Policy"
+msgstr "XSessions By PolicyX"
+
+#: /tmp/strings:571
+msgid "The number of sessions destined to each interface."
+msgstr "XThe number of sessions destined to each interface.X"
+
+#: /tmp/strings:572
+msgid "Sessions By Interface"
+msgstr "XSessions By InterfaceX"
+
+#: /tmp/strings:573
+msgid "The number of bytes destined to each interface."
+msgstr "XThe number of bytes destined to each interface.X"
+
+#: /tmp/strings:574
+msgid "Bytes By Interface"
+msgstr "XBytes By InterfaceX"
+
+#: /tmp/strings:590
+msgid "Spam Blocker Summary"
+msgstr "XSpam Blocker SummaryX"
+
+#: /tmp/strings:591
+msgid "The number of ignored sessions grouped by site."
+msgstr "XThe number of ignored sessions grouped by site.X"
+
+#: /tmp/strings:592
+msgid "Top Ignored Sites"
+msgstr "XTop Ignored SitesX"
+
+#: /tmp/strings:593
+msgid "The amount of SSL sessions over time."
+msgstr "XThe amount of SSL sessions over time.X"
+
+#: /tmp/strings:595
+msgid "The amount of inspected SSL sessions over time."
+msgstr "XThe amount of inspected SSL sessions over time.X"
+
+#: /tmp/strings:596 /tmp/strings:1057
+msgid "Inspected Sessions"
+msgstr "XInspected SessionsX"
+
+#: /tmp/strings:597
+msgid "The number of inspected sessions grouped by site."
+msgstr "XThe number of inspected sessions grouped by site.X"
+
+#: /tmp/strings:598
+msgid "Top Inspected Sites"
+msgstr "XTop Inspected SitesX"
+
+#: /tmp/strings:599
+msgid "A summary of HTTPS Inspector actions."
+msgstr "XA summary of HTTPS Inspector actions.X"
+
+#: /tmp/strings:600
+msgid "HTTPS Inspector Summary"
+msgstr "XHTTPS Inspector SummaryX"
+
+#: /tmp/strings:607
+msgid "The number of disconnect events grouped by WAN."
+msgstr "XThe number of disconnect events grouped by WAN.X"
+
+#: /tmp/strings:608
+msgid "WAN Disconnect Events"
+msgstr "XWAN Disconnect EventsX"
+
+#: /tmp/strings:727
+msgid "A summary of web filter actions."
+msgstr "XA summary of web filter actions.X"
+
+#: /tmp/strings:728
+msgid "Web Filter Summary"
+msgstr "XWeb Filter SummaryX"
+
+#: /tmp/strings:739 /tmp/strings:743
+msgid "The sum of the data sent grouped by Application Control application."
+msgstr "XThe sum of the data sent grouped by Application Control application.X"
+
+#: /tmp/strings:740
+msgid "Top Application (by received bytes)"
+msgstr "XTop Application (by received bytes)X"
+
+#: /tmp/strings:741
+msgid "The sum of the received data grouped by hostname."
+msgstr "XThe sum of the received data grouped by hostname.X"
+
+#: /tmp/strings:742
+msgid "Top Hostnames (by received bytes)"
+msgstr "XTop Hostnames (by received bytes)X"
+
+#: /tmp/strings:744
+msgid "Top Application (by sent bytes)"
+msgstr "XTop Application (by sent bytes)X"
+
+#: /tmp/strings:745
+msgid ""
+"The approximate averaged data transfer rate (total, sent, received) over "
+"time grouped by session creation time."
+msgstr "XX"
+
+#: /tmp/strings:747
+msgid ""
+"The sum of the data transferred grouped by Application Control application."
+msgstr "XX"
+
+#: /tmp/strings:748
+msgid "Top Application (by total bytes)"
+msgstr "XTop Application (by total bytes)X"
+
+#: /tmp/strings:749
+msgid "The sum of the data received grouped by server port."
+msgstr "XThe sum of the data received grouped by server port.X"
+
+#: /tmp/strings:750 /tmp/strings:768
+msgid "Top Ports (by sent bytes)"
+msgstr "XTop Ports (by sent bytes)X"
+
+#: /tmp/strings:751
+msgid "The sum of the data sent grouped by client address."
+msgstr "XThe sum of the data sent grouped by client address.X"
+
+#: /tmp/strings:752
+msgid "Top Clients (by sent bytes)"
+msgstr "XTop Clients (by sent bytes)X"
+
+#: /tmp/strings:753
+msgid "The sum of the data transferred grouped by client address."
+msgstr "XThe sum of the data transferred grouped by client address.X"
+
+#: /tmp/strings:754
+msgid "Top Clients (by total bytes)"
+msgstr "XTop Clients (by total bytes)X"
+
+#: /tmp/strings:755 /tmp/strings:757 /tmp/strings:769
+msgid "The sum of the data transferred grouped by username."
+msgstr "XThe sum of the data transferred grouped by username.X"
+
+#: /tmp/strings:756
+msgid "Top Usernames (by total bytes)"
+msgstr "XTop Usernames (by total bytes)X"
+
+#: /tmp/strings:758
+msgid "Top Usernames (by sent bytes)"
+msgstr "XTop Usernames (by sent bytes)X"
+
+#: /tmp/strings:759
+msgid "The sum of the data transferred grouped by hostname."
+msgstr "XThe sum of the data transferred grouped by hostname.X"
+
+#: /tmp/strings:760
+msgid "Top Hostnames (by total bytes)"
+msgstr "XTop Hostnames (by total bytes)X"
+
+#: /tmp/strings:761
+msgid "The sum of the data transferred grouped by priority."
+msgstr "XThe sum of the data transferred grouped by priority.X"
+
+#: /tmp/strings:762
+msgid "Top Priorities (by total bytes)"
+msgstr "XTop Priorities (by total bytes)X"
+
+#: /tmp/strings:763
+msgid "The sum of the sent data grouped by hostname."
+msgstr "XThe sum of the sent data grouped by hostname.X"
+
+#: /tmp/strings:764
+msgid "Top Hostnames (by sent bytes)"
+msgstr "XTop Hostnames (by sent bytes)X"
+
+#: /tmp/strings:765
+msgid "The sum of the data transferred grouped by server port."
+msgstr "XThe sum of the data transferred grouped by server port.X"
+
+#: /tmp/strings:766
+msgid "Top Ports (by total bytes)"
+msgstr "XTop Ports (by total bytes)X"
+
+#: /tmp/strings:767
+msgid "The sum of the data sent grouped by server port."
+msgstr "XThe sum of the data sent grouped by server port.X"
+
+#: /tmp/strings:770
+msgid "Top Usernames (by received bytes)"
+msgstr "XTop Usernames (by received bytes)X"
+
+#: /tmp/strings:771
+msgid "The sum of the data transferred grouped by bypassed."
+msgstr "XThe sum of the data transferred grouped by bypassed.X"
+
+#: /tmp/strings:772
+msgid "Bypassed (by total bytes)"
+msgstr "XBypassed (by total bytes)X"
+
+#: /tmp/strings:773
+msgid "The sum of the data received grouped by client address."
+msgstr "XThe sum of the data received grouped by client address.X"
+
+#: /tmp/strings:774
+msgid "Top Clients (by received bytes)"
+msgstr "XTop Clients (by received bytes)X"
+
+#: /tmp/strings:775
+msgid "The number of flagged sessions grouped by application."
+msgstr "XThe number of flagged sessions grouped by application.X"
+
+#: /tmp/strings:776
+msgid "Top Flagged Applications"
+msgstr "XTop Flagged ApplicationsX"
+
+#: /tmp/strings:777
+msgid "The number of flagged sessions grouped by username."
+msgstr "XThe number of flagged sessions grouped by username.X"
+
+#: /tmp/strings:780
+msgid "Scanned Sessions (all)"
+msgstr "XScanned Sessions (all)X"
+
+#: /tmp/strings:783 /tmp/strings:795
+msgid "The amount of flagged, and blocked sessions over time."
+msgstr "XThe amount of flagged, and blocked sessions over time.X"
+
+#: /tmp/strings:784
+msgid "Scanned Sessions (blocked)"
+msgstr "XScanned Sessions (blocked)X"
+
+#: /tmp/strings:785
+msgid "The number of flagged sessions grouped by hostname."
+msgstr "XThe number of flagged sessions grouped by hostname.X"
+
+#: /tmp/strings:789
+msgid "The number of blocked sessions grouped by application."
+msgstr "XThe number of blocked sessions grouped by application.X"
+
+#: /tmp/strings:790
+msgid "Top Blocked Applications"
+msgstr "XTop Blocked ApplicationsX"
+
+#: /tmp/strings:791
+msgid "The number of bytes grouped by application."
+msgstr "XThe number of bytes grouped by application.X"
+
+#: /tmp/strings:792
+msgid "Top Applications (by size)"
+msgstr "XTop Applications (by size)X"
+
+#: /tmp/strings:793
+msgid "The number of sessions grouped by application."
+msgstr "XThe number of sessions grouped by application.X"
+
+#: /tmp/strings:794
+msgid "Top Applications (by sessions)"
+msgstr "XTop Applications (by sessions)X"
+
+#: /tmp/strings:796
+msgid "Scanned Sessions (flagged)"
+msgstr "XScanned Sessions (flagged)X"
+
+#: /tmp/strings:799
+msgid "The number of flagged sessions grouped by client."
+msgstr "XThe number of flagged sessions grouped by client.X"
+
+#: /tmp/strings:827 /tmp/strings:1008
+msgid "All email sessions detected as phishing attempts and quarantined."
+msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
+
+#: /tmp/strings:828 /tmp/strings:978 /tmp/strings:1009 /tmp/strings:1043
+#: /tmp/strings:1134
+msgid "Quarantined Events"
+msgstr "XQuarantined EventsX"
+
+#: /tmp/strings:829 /tmp/strings:1010
+msgid "All email sessions scanned by Phish Blocker."
+msgstr "XAll email sessions scanned by Phish Blocker.X"
+
+#: /tmp/strings:830 /tmp/strings:980 /tmp/strings:1011 /tmp/strings:1039
+#: /tmp/strings:1136
+msgid "All Email Events"
+msgstr "XAll Email EventsX"
+
+#: /tmp/strings:831 /tmp/strings:1012
+msgid "All email sessions detected as phishing attempts."
+msgstr "XAll email sessions detected as phishing attempts.X"
+
+#: /tmp/strings:832 /tmp/strings:1013
+msgid "All Phish Events"
+msgstr "XAll Phish EventsX"
+
+#: /tmp/strings:833 /tmp/strings:939
+msgid "All sessions scanned by Application Control Lite."
+msgstr "XAll sessions scanned by Application Control Lite.X"
+
+#: /tmp/strings:834 /tmp/strings:921 /tmp/strings:929 /tmp/strings:940
+#: /tmp/strings:946 /tmp/strings:972 /tmp/strings:1007
+msgid "All Events"
+msgstr "XAll EventsX"
+
+#: /tmp/strings:835 /tmp/strings:941
+msgid "All sessions matching an application signature and blocked."
+msgstr "XAll sessions matching an application signature and blocked.X"
+
+#: /tmp/strings:836 /tmp/strings:923 /tmp/strings:925 /tmp/strings:942
+#: /tmp/strings:948 /tmp/strings:968
+msgid "Blocked Events"
+msgstr "XBlocked EventsX"
+
+#: /tmp/strings:837 /tmp/strings:1089
+msgid "Shows all OpenVPN connection traffic statistics events."
+msgstr "XShows all OpenVPN connection traffic statistics events.X"
+
+#: /tmp/strings:838 /tmp/strings:1090
+msgid "Statistic Events"
+msgstr "XStatistic EventsX"
+
+#: /tmp/strings:839 /tmp/strings:1091
+msgid "OpenVPN client connection events."
+msgstr "XOpenVPN client connection events.X"
+
+#: /tmp/strings:840 /tmp/strings:1092
+msgid "Connection Events"
+msgstr "XConnection EventsX"
+
+#: /tmp/strings:841 /tmp/strings:1058
+msgid "Sessions that reached the session timeout."
+msgstr "XSessions that reached the session timeout.X"
+
+#: /tmp/strings:842 /tmp/strings:1059
+msgid "Session Timeout User Events"
+msgstr "XSession Timeout User EventsX"
+
+#: /tmp/strings:843 /tmp/strings:1060
+msgid "Sessions matching capture rules."
+msgstr "XSessions matching capture rules.X"
+
+#: /tmp/strings:844 /tmp/strings:1061
+msgid "Captured Session Events"
+msgstr "XCaptured Session EventsX"
+
+#: /tmp/strings:845 /tmp/strings:1062
+msgid "Failed logins to Captive Portal."
+msgstr "XFailed logins to Captive Portal.X"
+
+#: /tmp/strings:846 /tmp/strings:1063
+msgid "Login Failure User Events"
+msgstr "XLogin Failure User EventsX"
+
+#: /tmp/strings:847 /tmp/strings:1064
+msgid "All user logout events."
+msgstr "XAll user logout events.X"
+
+#: /tmp/strings:848 /tmp/strings:1065
+msgid "User Logout User Events"
+msgstr "XUser Logout User EventsX"
+
+#: /tmp/strings:849 /tmp/strings:1066
+msgid "Sessions logged off by the admin."
+msgstr "XSessions logged off by the admin.X"
+
+#: /tmp/strings:850 /tmp/strings:1067
+msgid "Admin Logout User Events"
+msgstr "XAdmin Logout User EventsX"
+
+#: /tmp/strings:851 /tmp/strings:1068
+msgid "Sessions that reached the idle timeout."
+msgstr "XSessions that reached the idle timeout.X"
+
+#: /tmp/strings:853 /tmp/strings:1070
+msgid "Successful logins to Captive Portal."
+msgstr "XSuccessful logins to Captive Portal.X"
+
+#: /tmp/strings:854 /tmp/strings:1071
+msgid "Login Success User Events"
+msgstr "XLogin Success User EventsX"
+
+#: /tmp/strings:855 /tmp/strings:1072
+msgid "All user sessions processed by Captive Portal."
+msgstr "XAll user sessions processed by Captive Portal.X"
+
+#: /tmp/strings:856 /tmp/strings:1073
+msgid "All User Events"
+msgstr "XAll User EventsX"
+
+#: /tmp/strings:857 /tmp/strings:1074
+msgid "All sessions processed by Captive Portal."
+msgstr "XAll sessions processed by Captive Portal.X"
+
+#: /tmp/strings:858 /tmp/strings:1075
+msgid "All Session Events"
+msgstr "XAll Session EventsX"
+
+#: /tmp/strings:859 /tmp/strings:1076
+msgid "Sessions matching passed hosts."
+msgstr "XSessions matching passed hosts.X"
+
+#: /tmp/strings:860 /tmp/strings:1077
+msgid "Passed Session Events"
+msgstr "XPassed Session EventsX"
+
+#: /tmp/strings:861 /tmp/strings:1099 /tmp/strings:1107
+msgid "Shows all blocked web requests."
+msgstr "XShows all blocked web requests.X"
+
+#: /tmp/strings:862 /tmp/strings:1100 /tmp/strings:1108
+msgid "Blocked Web Events"
+msgstr "XBlocked Web EventsX"
+
+#: /tmp/strings:863 /tmp/strings:1101 /tmp/strings:1117
+msgid "Shows all scanned web requests."
+msgstr "XShows all scanned web requests.X"
+
+#: /tmp/strings:864 /tmp/strings:1102 /tmp/strings:1118
+msgid "All Web Events"
+msgstr "XAll Web EventsX"
+
+#: /tmp/strings:865 /tmp/strings:1103 /tmp/strings:1113
+msgid "Shows all 'unblocked' web requests"
+msgstr "XShows all 'unblocked' web requestsX"
+
+#: /tmp/strings:866 /tmp/strings:1104 /tmp/strings:1114
+msgid "Unblocked Web Events"
+msgstr "XUnblocked Web EventsX"
+
+#: /tmp/strings:867 /tmp/strings:1105 /tmp/strings:1111
+msgid "Shows all flagged web requests."
+msgstr "XShows all flagged web requests.X"
+
+#: /tmp/strings:868 /tmp/strings:1106 /tmp/strings:1112
+msgid "Flagged Web Events"
+msgstr "XFlagged Web EventsX"
+
+#: /tmp/strings:869 /tmp/strings:934 /tmp/strings:1003 /tmp/strings:1080
+#: /tmp/strings:1083 /tmp/strings:1086
+msgid "defaultColumns"
+msgstr "XdefaultColumnsX"
+
+#: /tmp/strings:869 /tmp/strings:934 /tmp/strings:1003 /tmp/strings:1080
+#: /tmp/strings:1083 /tmp/strings:1086
+msgid "time_stamp"
+msgstr "Xtime_stampX"
+
+#: /tmp/strings:869 /tmp/strings:934
+msgid "summary_text"
+msgstr "Xsummary_textX"
+
+#: /tmp/strings:869 /tmp/strings:934
+msgid "json"
+msgstr "XjsonX"
+
+#: /tmp/strings:870 /tmp/strings:935
+msgid "Log of all alerts created by alert rules."
+msgstr "XLog of all alerts created by alert rules.X"
+
+#: /tmp/strings:872 /tmp/strings:1014
+msgid "All sessions blocked by filter rules."
+msgstr "XAll sessions blocked by filter rules.X"
+
+#: /tmp/strings:874 /tmp/strings:1016
+msgid "Shows when quotas are assigned or expired."
+msgstr "XShows when quotas are assigned or expired.X"
+
+#: /tmp/strings:875 /tmp/strings:1017
+msgid "Quota Events"
+msgstr "XQuota EventsX"
+
+#: /tmp/strings:876 /tmp/strings:1018
+msgid "All system status events."
+msgstr "XAll system status events.X"
+
+#: /tmp/strings:877 /tmp/strings:1019
+msgid "Server Status Eventsdescription"
+msgstr "XServer Status EventsdescriptionX"
+
+#: /tmp/strings:878 /tmp/strings:1020
+msgid "All sessions that were not bypassed."
+msgstr "XAll sessions that were not bypassed.X"
+
+#: /tmp/strings:880 /tmp/strings:1022
+msgid ""
+"Shows when hosts are placed in the penalty box and when the penalty box "
+"expires."
+msgstr "XX"
+
+#: /tmp/strings:881 /tmp/strings:1023
+msgid "Penalty Box Events"
+msgstr "XPenalty Box EventsX"
+
+#: /tmp/strings:882 /tmp/strings:1024
+msgid "All local administrator logins."
+msgstr "XAll local administrator logins.X"
+
+#: /tmp/strings:884 /tmp/strings:1026
+msgid "All sessions handled by Untangle."
+msgstr "XAll sessions handled by Untangle.X"
+
+#: /tmp/strings:886 /tmp/strings:1028
+msgid "All sessions that have been NATd by Untangle."
+msgstr "XAll sessions that have been NATd by Untangle.X"
+
+#: /tmp/strings:887 /tmp/strings:1029
+msgid "NATd Sessions"
+msgstr "XNATd SessionsX"
+
+#: /tmp/strings:888 /tmp/strings:1030
+msgid "All sessions matching a bypass rule and bypassed."
+msgstr "XAll sessions matching a bypass rule and bypassed.X"
+
+#: /tmp/strings:889 /tmp/strings:1031
+msgid "Bypassed Sessions"
+msgstr "XBypassed SessionsX"
+
+#: /tmp/strings:890 /tmp/strings:1032
+msgid "All sessions match a port forward rule."
+msgstr "XAll sessions match a port forward rule.X"
+
+#: /tmp/strings:891 /tmp/strings:1033
+msgid "Port Forwarded Sessions"
+msgstr "XPort Forwarded SessionsX"
+
+#: /tmp/strings:892 /tmp/strings:1034
+msgid "All updates to hosts in the host table."
+msgstr "XAll updates to hosts in the host table.X"
+
+#: /tmp/strings:893 /tmp/strings:1035
+msgid "Host Table Eventsdescription"
+msgstr "XHost Table EventsdescriptionX"
+
+#: /tmp/strings:894 /tmp/strings:1036
+msgid "All settings changes performed by an administrator."
+msgstr "XAll settings changes performed by an administrator.X"
+
+#: /tmp/strings:895 /tmp/strings:1037
+msgid "All Settings Changes"
+msgstr "XAll Settings ChangesX"
+
+#: /tmp/strings:896 /tmp/strings:1093
+msgid "All HTTP requests scanned by Ad Blocker."
+msgstr "XAll HTTP requests scanned by Ad Blocker.X"
+
+#: /tmp/strings:897 /tmp/strings:1094
+msgid "All Ad Events"
+msgstr "XAll Ad EventsX"
+
+#: /tmp/strings:898 /tmp/strings:1095
+msgid "Requests blocked by cookie filters."
+msgstr "XRequests blocked by cookie filters.X"
+
+#: /tmp/strings:899 /tmp/strings:1096
+msgid "Blocked Cookie Events"
+msgstr "XBlocked Cookie EventsX"
+
+#: /tmp/strings:900 /tmp/strings:1097
+msgid "HTTP requests blocked by Ad Blocker."
+msgstr "XHTTP requests blocked by Ad Blocker.X"
+
+#: /tmp/strings:901 /tmp/strings:1098
+msgid "Blocked Ad Events"
+msgstr "XBlocked Ad EventsX"
+
+#: /tmp/strings:902 /tmp/strings:949
+msgid "Infected email sessions blocked by Virus Blocker Lite."
+msgstr "XInfected email sessions blocked by Virus Blocker Lite.X"
+
+#: /tmp/strings:903 /tmp/strings:950 /tmp/strings:994
+msgid "Infected Email Events"
+msgstr "XInfected Email EventsX"
+
+#: /tmp/strings:904 /tmp/strings:951 /tmp/strings:989
+msgid "Scanned HTTP sessions marked clean."
+msgstr "XScanned HTTP sessions marked clean.X"
+
+#: /tmp/strings:905 /tmp/strings:952 /tmp/strings:990
+msgid "Clean Web Events"
+msgstr "XClean Web EventsX"
+
+#: /tmp/strings:906 /tmp/strings:953
+msgid "All HTTP sessions scanned by Virus Blocker Lite."
+msgstr "XAll HTTP sessions scanned by Virus Blocker Lite.X"
+
+#: /tmp/strings:907 /tmp/strings:954 /tmp/strings:992
+msgid "Scanned Web Events"
+msgstr "XScanned Web EventsX"
+
+#: /tmp/strings:908 /tmp/strings:955
+msgid "Infected FTP sessions blocked by Virus Blocker Lite."
+msgstr "XInfected FTP sessions blocked by Virus Blocker Lite.X"
+
+#: /tmp/strings:909 /tmp/strings:956 /tmp/strings:1000
+msgid "Infected Ftp Events"
+msgstr "XInfected Ftp EventsX"
+
+#: /tmp/strings:910 /tmp/strings:957
+msgid "All FTP sessions scanned by Virus Blocker Lite."
+msgstr "XAll FTP sessions scanned by Virus Blocker Lite.X"
+
+#: /tmp/strings:911 /tmp/strings:958 /tmp/strings:986
+msgid "Scanned Ftp Events"
+msgstr "XScanned Ftp EventsX"
+
+#: /tmp/strings:912 /tmp/strings:959
+msgid "All email sessions scanned by Virus Blocker Lite."
+msgstr "XAll email sessions scanned by Virus Blocker Lite.X"
+
+#: /tmp/strings:913 /tmp/strings:960 /tmp/strings:1002
+msgid "Scanned Email Events"
+msgstr "XScanned Email EventsX"
+
+#: /tmp/strings:914 /tmp/strings:961 /tmp/strings:987
+msgid "Scanned FTP sessions marked clean."
+msgstr "XScanned FTP sessions marked clean.X"
+
+#: /tmp/strings:915 /tmp/strings:962 /tmp/strings:988
+msgid "Clean Ftp Events"
+msgstr "XClean Ftp EventsX"
+
+#: /tmp/strings:916 /tmp/strings:963
+msgid "Infected HTTP sessions blocked by Virus Blocker Lite."
+msgstr "XInfected HTTP sessions blocked by Virus Blocker Lite.X"
+
+#: /tmp/strings:917 /tmp/strings:964 /tmp/strings:996
+msgid "Infected Web Events"
+msgstr "XInfected Web EventsX"
+
+#: /tmp/strings:918 /tmp/strings:965 /tmp/strings:997
+msgid "Scanned email sessions marked clean."
+msgstr "XScanned email sessions marked clean.X"
+
+#: /tmp/strings:919 /tmp/strings:966 /tmp/strings:998
+msgid "Clean Email Events"
+msgstr "XClean Email EventsX"
+
+#: /tmp/strings:920 /tmp/strings:945
+msgid "All sessions scanned by Intrusion Prevention."
+msgstr "XAll sessions scanned by Intrusion Prevention.X"
+
+#: /tmp/strings:922 /tmp/strings:947
+msgid "All sessions matching Intrusion Prevention signatures and blocked."
+msgstr "XAll sessions matching Intrusion Prevention signatures and blocked.X"
+
+#: /tmp/strings:924 /tmp/strings:967
+msgid "Events blocked by Firewall App."
+msgstr "XEvents blocked by Firewall App.X"
+
+#: /tmp/strings:926 /tmp/strings:969
+msgid "Events flagged by Firewall App."
+msgstr "XEvents flagged by Firewall App.X"
+
+#: /tmp/strings:927 /tmp/strings:970
+msgid "Flagged Events"
+msgstr "XFlagged EventsX"
+
+#: /tmp/strings:928 /tmp/strings:971
+msgid "All events scanned by Firewall App."
+msgstr "XAll events scanned by Firewall App.X"
+
+#: /tmp/strings:930
+msgid "Shows all user L2TP/Xauth events."
+msgstr "XShows all user L2TP/Xauth events.X"
+
+#: /tmp/strings:931
+msgid "L2TP/Xauth Events"
+msgstr "XL2TP/Xauth EventsX"
+
+#: /tmp/strings:932
+msgid "Shows all IPsec tunnel traffic statistics events."
+msgstr "XShows all IPsec tunnel traffic statistics events.X"
+
+#: /tmp/strings:933
+msgid "Tunnel Traffic Events"
+msgstr "XTunnel Traffic EventsX"
+
+#: /tmp/strings:937
+msgid "All HTTP events processed by Web Cache."
+msgstr "XAll HTTP events processed by Web Cache.X"
+
+#: /tmp/strings:938
+msgid "Web Cache Events"
+msgstr "XWeb Cache EventsX"
+
+#: /tmp/strings:943
+msgid "Events from the user notification API."
+msgstr "XEvents from the user notification API.X"
+
+#: /tmp/strings:944
+msgid "AD Events"
+msgstr "XAD EventsX"
+
+#: /tmp/strings:973 /tmp/strings:1141
+msgid "All sessions blocked by Shield."
+msgstr "XAll sessions blocked by Shield.X"
+
+#: /tmp/strings:975 /tmp/strings:1143
+msgid "All sessions scanned by Shield."
+msgstr "XAll sessions scanned by Shield.X"
+
+#: /tmp/strings:977 /tmp/strings:1042 /tmp/strings:1133
+msgid "All emails marked as Spam and quarantined."
+msgstr "XAll emails marked as Spam and quarantined.X"
+
+#: /tmp/strings:979 /tmp/strings:1038 /tmp/strings:1135
+msgid "All emails scanned by Spam Blocker."
+msgstr "XAll emails scanned by Spam Blocker.X"
+
+#: /tmp/strings:981 /tmp/strings:1044 /tmp/strings:1137
+msgid "All emails marked as Spam."
+msgstr "XAll emails marked as Spam.X"
+
+#: /tmp/strings:982 /tmp/strings:1045 /tmp/strings:1138
+msgid "All Spam Events"
+msgstr "XAll Spam EventsX"
+
+#: /tmp/strings:983 /tmp/strings:1040 /tmp/strings:1139
+msgid "All email sessions that were tarpitted."
+msgstr "XAll email sessions that were tarpitted.X"
+
+#: /tmp/strings:984 /tmp/strings:1041 /tmp/strings:1140
+msgid "Tarpit Events"
+msgstr "XTarpit EventsX"
+
+#: /tmp/strings:985
+msgid "All FTP sessions scanned by Virus Blocker."
+msgstr "XAll FTP sessions scanned by Virus Blocker.X"
+
+#: /tmp/strings:991
+msgid "All HTTP sessions scanned by Virus Blocker."
+msgstr "XAll HTTP sessions scanned by Virus Blocker.X"
+
+#: /tmp/strings:993
+msgid "Infected email sessions blocked by Virus Blocker."
+msgstr "XInfected email sessions blocked by Virus Blocker.X"
+
+#: /tmp/strings:995
+msgid "Infected HTTP sessions blocked by Virus Blocker."
+msgstr "XInfected HTTP sessions blocked by Virus Blocker.X"
+
+#: /tmp/strings:999
+msgid "Infected FTP sessions blocked by Virus Blocker."
+msgstr "XInfected FTP sessions blocked by Virus Blocker.X"
+
+#: /tmp/strings:1001
+msgid "All email sessions scanned by Virus Blocker."
+msgstr "XAll email sessions scanned by Virus Blocker.X"
+
+#: /tmp/strings:1004
+msgid "All Configuration Backup events."
+msgstr "XAll Configuration Backup events.X"
+
+#: /tmp/strings:1005
+msgid "Backup Events"
+msgstr "XBackup EventsX"
+
+#: /tmp/strings:1006
+msgid ""
+"Lists all sessions with the policy manager rack that handled the session."
+msgstr "XX"
+
+#: /tmp/strings:1046
+msgid ""
+"Events where traffic was blocked due to an underlying problems with the SSL "
+"session."
+msgstr "XX"
+
+#: /tmp/strings:1047
+msgid "Abandoned Sessions"
+msgstr "XAbandoned SessionsX"
+
+#: /tmp/strings:1048
+msgid ""
+"Events where traffic was not or could not be inspected, so the traffic was "
+"completely ignored and not analyzed by any applications or services."
+msgstr "XX"
+
+#: /tmp/strings:1049
+msgid "Ignored Sessions"
+msgstr "XIgnored SessionsX"
+
+#: /tmp/strings:1050
+msgid ""
+"Events where traffic was blocked because it did not contain a valid HTTPS "
+"request, and the Block Invalid Traffic option was enabled."
+msgstr "XX"
+
+#: /tmp/strings:1052
+msgid ""
+"Events where traffic was blocked because the server certificate could not be "
+"authenticated."
+msgstr "XX"
+
+#: /tmp/strings:1053
+msgid "Untrusted Sessions"
+msgstr "XUntrusted SessionsX"
+
+#: /tmp/strings:1054
+msgid "All sessions detected by HTTPS Inspector."
+msgstr "XAll sessions detected by HTTPS Inspector.X"
+
+#: /tmp/strings:1056
+msgid ""
+"Events where traffic was fully processed by the inspector, and all traffic "
+"was passed through all the other applications and services."
+msgstr "XX"
+
+#: /tmp/strings:1078
+msgid ""
+"Events where the failure threshold was exceeded and the WAN was considered "
+"offline."
+msgstr "XX"
+
+#: /tmp/strings:1079
+msgid "Outage Events"
+msgstr "XOutage EventsX"
+
+#: /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
+msgid "interface_id"
+msgstr "Xinterface_idX"
+
+#: /tmp/strings:1080 /tmp/strings:1083 /tmp/strings:1086
+msgid "name"
+msgstr "XnameX"
+
+#: /tmp/strings:1081
+msgid "All tests that resulted in success."
+msgstr "XAll tests that resulted in success.X"
+
+#: /tmp/strings:1082
+msgid "Success Test Events"
+msgstr "XSuccess Test EventsX"
+
+#: /tmp/strings:1084
+msgid "All test events and their outcome."
+msgstr "XAll test events and their outcome.X"
+
+#: /tmp/strings:1085
+msgid "Test Events"
+msgstr "XTest EventsX"
+
+#: /tmp/strings:1087
+msgid "All tests that resulted in failure."
+msgstr "XAll tests that resulted in failure.X"
+
+#: /tmp/strings:1088
+msgid "Failed Test Events"
+msgstr "XFailed Test EventsX"
+
+#: /tmp/strings:1109
+msgid "Shows all encrypted HTTPS requests."
+msgstr "XShows all encrypted HTTPS requests.X"
+
+#: /tmp/strings:1110
+msgid "All HTTPS Events"
+msgstr "XAll HTTPS EventsX"
+
+#: /tmp/strings:1115
+msgid "Shows all search querires processed by Web Filter."
+msgstr "XShows all search querires processed by Web Filter.X"
+
+#: /tmp/strings:1116
+msgid "All Query Events"
+msgstr "XAll Query EventsX"
+
+#: /tmp/strings:1119
+msgid "Shows all scanned unencrypted HTTP requests."
+msgstr "XShows all scanned unencrypted HTTP requests.X"
+
+#: /tmp/strings:1120
+msgid "All HTTP Events"
+msgstr "XAll HTTP EventsX"
+
+#: /tmp/strings:1121
+msgid "All sessions processed by Bandwidth Control."
+msgstr "XAll sessions processed by Bandwidth Control.X"
+
+#: /tmp/strings:1123
+msgid "All sessions prioritized by Bandwidth Control."
+msgstr "XAll sessions prioritized by Bandwidth Control.X"
+
+#: /tmp/strings:1124
+msgid "Prioritized Sessions"
+msgstr "XPrioritized SessionsX"
+
+#: /tmp/strings:1125
+msgid "All sessions scanned by Application Control."
+msgstr "XAll sessions scanned by Application Control.X"
+
+#: /tmp/strings:1127
+msgid "All sessions matching an application control signature."
+msgstr "XAll sessions matching an application control signature.X"
+
+#: /tmp/strings:1128
+msgid "Classified Sessions"
+msgstr "XClassified SessionsX"
+
+#: /tmp/strings:1129
+msgid "All sessions matching an application control signature and blocked."
+msgstr "XAll sessions matching an application control signature and blocked.X"
+
+#: /tmp/strings:1131
+msgid "All sessions matching an application control signature and flagged."
+msgstr "XAll sessions matching an application control signature and flagged.X"
+
+#: /tmp/strings:1132
+msgid "Flagged Sessions"
+msgstr "XFlagged SessionsX"
 
 #: ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java:88
 #: ../../openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:66
