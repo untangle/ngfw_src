@@ -284,7 +284,6 @@ msgid "Configure Local Directory"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:399
-#, python-brace-format
 msgid "RADIUS {0}(requires Directory Connector) {1}"
 msgstr ""
 
@@ -293,7 +292,6 @@ msgid "Configure RADIUS"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:417
-#, python-brace-format
 msgid "Active Directory {0}(requires Directory Connector) {1}"
 msgstr ""
 
@@ -747,14 +745,6 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/capture/logout/logout.py:52
-msgid "You were already logged out"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/capture/logout/logout.py:55
-msgid "You have successfully logged out"
-msgstr ""
-
 #: ../hier/usr/share/untangle/web/capture/handler.py:192
 msgid "Invalid username or password. Please try again."
 msgstr ""
@@ -801,4 +791,12 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/capture/handler.py:343
 #, python-format
 msgid "Removed %d files and %d directories"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/capture/logout/logout.py:52
+msgid "You were already logged out"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/capture/logout/logout.py:55
+msgid "You have successfully logged out"
 msgstr ""

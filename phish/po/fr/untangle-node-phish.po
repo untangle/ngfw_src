@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"POT-Creation-Date: 2015-08-03 22:15-0700\n"
 "PO-Revision-Date: 2010-03-31 07:36-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,74 +17,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:42
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "Marquer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:42
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "Passer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "Omettre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "Quarantaine"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "Courrier"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:59
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "Scanner le SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "Action"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "Note"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:88
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr ""
 "les signatures de courriel du Bloqueur d'Hameçonage ont été mises à jour"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:89
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:95
-msgid "Event Log"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "Hameçonnage"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "Clair"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "Vitesse d'hameçonage horaire"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "Vitesse d'hameçonage quotidienne"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "Top Ten des victimes d'hameçonage"
 
@@ -93,49 +89,65 @@ msgstr "Top Ten des victimes d'hameçonage"
 msgid "If you have any questions, Please contact {0}."
 msgstr "Si vous avez des questions, SVP contactez {0}."
 
+#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+msgid "scored"
+msgstr ""
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+msgid "as"
+msgstr ""
+
 #: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
-msgid "All Email Events"
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:84
-msgid "All"
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:84
-msgid "Events"
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:90
-msgid "Quarantined Events"
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:96
-msgid "Tarpit Events"
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:102
 msgid "Messages received"
 msgstr "Messages reçus"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:103
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "Messages passés"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:104
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "Messages omis"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:105
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "Messages marqués"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:106
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "Messages mis en quarantaine"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:107
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "Spam détecté"
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+msgid "tarpit"
+msgstr ""
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+msgid "blocked"
+msgstr ""
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
+msgid "Host:"
+msgstr "Hôte:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
+msgid "URL:"
+msgstr "URL:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
+msgid "Reason:"
+msgstr "Raison:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
+msgid "Unblock For Now"
+msgstr "Débloquer Temporairement"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
+msgid "Unblock Permanently"
+msgstr "Débloquer en Permanence"
 
 #~ msgid "POP3"
 #~ msgstr "POP3"
@@ -220,41 +232,23 @@ msgstr "Spam détecté"
 #~ msgid "Feature is not installed."
 #~ msgstr "Fonctionnalité non installée."
 
-#, java-format
 #~ msgid "{0} | Phish Blocker Warning"
 #~ msgstr "{0} | Alerte du Bloqueur d'Hameçonage"
 
-#, java-format
 #~ msgid "{0}  Phish Blocker"
 #~ msgstr "{0}  Bloqueur d'Hameçonage"
 
-#, java-format
 #~ msgid ""
 #~ "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
-#~ "imitation of another website, designed to trick users into sharing personal "
-#~ "or financial information. Entering any personal information on this page may "
-#~ "result in identity theft or other abuse. "
+#~ "imitation of another website, designed to trick users into sharing "
+#~ "personal or financial information. Entering any personal information on "
+#~ "this page may result in identity theft or other abuse. "
 #~ msgstr ""
-#~ "{0}Avertissement - Suspicion de page d'hameçonnage.{1} Cette page peut être "
-#~ "une falsification ou l'imitation d'un autre site Web, conçue pour tromper "
-#~ "les utilisateurs afin de communiquer des renseignements personnels ou "
-#~ "financiers. Entrer des informations personnelles sur cette page peut "
-#~ "résulter au vol d'identité ou d'autres abus. "
-
-#~ msgid "Host:"
-#~ msgstr "Hôte:"
-
-#~ msgid "URL:"
-#~ msgstr "URL:"
-
-#~ msgid "Reason:"
-#~ msgstr "Raison:"
-
-#~ msgid "Unblock For Now"
-#~ msgstr "Débloquer Temporairement"
-
-#~ msgid "Unblock Permanently"
-#~ msgstr "Débloquer en Permanence"
+#~ "{0}Avertissement - Suspicion de page d'hameçonnage.{1} Cette page peut "
+#~ "être une falsification ou l'imitation d'un autre site Web, conçue pour "
+#~ "tromper les utilisateurs afin de communiquer des renseignements "
+#~ "personnels ou financiers. Entrer des informations personnelles sur cette "
+#~ "page peut résulter au vol d'identité ou d'autres abus. "
 
 #~ msgid "action"
 #~ msgstr "action"
@@ -313,10 +307,9 @@ msgstr "Spam détecté"
 #~ msgid "block message"
 #~ msgstr "bloquer le message"
 
-#, java-format
 #~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal personal "
-#~ "information."
+#~ "{0}This web page was blocked{1} because it may be designed to steal "
+#~ "personal information."
 #~ msgstr ""
 #~ "{0}Cette page Web a été bloqué{1} car elle a été conçue pour dérober des "
 #~ "informations personnelles."

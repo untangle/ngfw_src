@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-14 10:31-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,6 @@ msgid "Deleted one Message"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:203
-#, python-brace-format
 msgid "Deleted {0} Messages"
 msgstr ""
 
@@ -106,7 +105,6 @@ msgid "Released one Message"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:209
-#, python-brace-format
 msgid "Released {0} Messages"
 msgstr ""
 
@@ -115,12 +113,10 @@ msgid "Safelisted one Address"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:215
-#, python-brace-format
 msgid "Safelisted {0} Addresses"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:337
-#, python-brace-format
 msgid "The account {0} doesn't have any quarantined messages."
 msgstr ""
 
@@ -173,7 +169,6 @@ msgid ""
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:659
-#, python-brace-format
 msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr ""
 
@@ -240,7 +235,6 @@ msgid "Delete one Remap"
 msgstr ""
 
 #: ../servlets/quarantine/root/remaps.js:188
-#, python-brace-format
 msgid "Deleted {0} Remaps"
 msgstr ""
 
@@ -254,7 +248,6 @@ msgstr ""
 
 #: ../servlets/quarantine/root/remaps.js:202
 #: ../servlets/quarantine/root/safelist.js:166
-#, python-brace-format
 msgid "Delete {0} Addresses"
 msgstr ""
 
@@ -284,12 +277,10 @@ msgid "Please Wait"
 msgstr ""
 
 #: ../servlets/quarantine/root/request.js:94
-#, python-brace-format
 msgid "Successfully sent digest to '{0}'"
 msgstr ""
 
 #: ../servlets/quarantine/root/request.js:97
-#, python-brace-format
 msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
@@ -318,7 +309,6 @@ msgid "Deleted one address"
 msgstr ""
 
 #: ../servlets/quarantine/root/safelist.js:154
-#, python-brace-format
 msgid "Deleted {0} addresses"
 msgstr ""
 
@@ -332,7 +322,6 @@ msgstr ""
 
 #: ../../spam-base/src/com/untangle/node/spam/SpamSmtpHandler.java:103
 #: ../../phish/src/com/untangle/node/phish/PhishSmtpHandler.java:39
-#: ../../virus-base/src/com/untangle/node/virus/VirusSmtpHandler.java:80
 msgid "The attached message from"
 msgstr ""
 
@@ -358,17 +347,8 @@ msgstr ""
 msgid "The kind of phish that was found was"
 msgstr ""
 
-#: ../../virus-base/src/com/untangle/node/virus/VirusSmtpHandler.java:81
-msgid "was found to contain the virus"
-msgstr ""
-
-#: ../../virus-base/src/com/untangle/node/virus/VirusSmtpHandler.java:83
-msgid "The infected portion of the message was removed by Virus Blocker."
-msgstr ""
-
 #: ../src/resources/com/untangle/node/smtp/quarantine/DigestSimpleEmail_HTML.vm:20
 #: ../src/resources/com/untangle/node/smtp/quarantine/DigestSimpleEmail_HTML.vm:25
-#, python-brace-format
 msgid "Quarantine Digest for {0}"
 msgstr ""
 

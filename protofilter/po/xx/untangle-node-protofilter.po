@@ -1,0 +1,270 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"PO-Revision-Date: 2012-01-09 08:25-0800\n"
+"Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
+"Language-Team: Dirk Morris <dmorris@untangle.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
+"X-Poedit-Language: Test\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:20
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
+msgid "Status"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
+msgid "Total Signatures Available"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
+msgid "Total Signatures Logging"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
+msgid "Total Signatures Blocking"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:48
+msgid "Note"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:49
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
+msgid "Signatures"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:245
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:304
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:565
+msgid "Protocol"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:143
+msgid "[enter protocol]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
+msgid "Category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
+msgid "[enter category]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:118
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:158
+msgid "Block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:163
+msgid "Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:129
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:168
+msgid "Description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:135
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:169
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:176
+msgid "Signature"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:177
+msgid "[enter signature]"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:54
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:77
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:78
+msgid "sessions and detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:79
+msgid "protocols of which"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:80
+msgid "were blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:125
+msgid "Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:175
+msgid "Avg Detections"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:177
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:180
+msgid "Blocks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:179
+msgid "Max Detections"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:185
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:189
+msgid "Detections"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:198
+msgid "Top Blocked Protocols By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:237
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:296
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:356
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:416
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:476
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:535
+msgid "Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:244
+msgid "Top Ten Blocked Protocols (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:246
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:305
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:366
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:425
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:485
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:544
+msgid "Blocks Per Day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:254
+msgid "Top Detected Protocols By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:303
+msgid "Top Ten Detected Protocols (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:313
+msgid "Top Blocked Hosts By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:364
+msgid "Top Ten Blocked Hosts (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:365
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:424
+msgid "Host"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:375
+msgid "Top Logged Hosts By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:423
+msgid "Top Ten Logged Hosts (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:433
+msgid "Top Blocked Users By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:483
+msgid "Top Ten Blocked Users (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:484
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:543
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:563
+msgid "User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:493
+msgid "Top Logged Users By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:542
+msgid "Top Ten Logged Users (by Hits)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:552
+msgid "Detection Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:558
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:561
+msgid "Client"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:566
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:567
+msgid "Server"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:568
+msgid "Port"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:47
+msgid "Chunks scanned"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:48
+msgid "Sessions logged"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:49
+msgid "Sessions blocked"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:69
+msgid "blocked"
+msgstr ""
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:71
+msgid "identified"
+msgstr ""

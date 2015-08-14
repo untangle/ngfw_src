@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"POT-Creation-Date: 2015-08-03 15:59-0700\n"
 "PO-Revision-Date: 2008-11-21 22:29-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -20,278 +20,294 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:27
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:35
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:20
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
 msgid "Status"
 msgstr "Status：状态"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:37
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
 msgid ""
 "Application Control Lite logs and blocks sessions using custom signatures on "
 "the session content."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:39
-msgid " "
-msgstr " "
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
 msgid "Total Signatures Available"
 msgstr "总计签名可用"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:50
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
 msgid "Total Signatures Logging"
 msgstr "总计签名记录"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:54
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
 msgid "Total Signatures Blocking"
 msgstr "总计签名阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:48
 msgid "Note"
 msgstr "注释"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:61
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:49
 msgid ""
 "Caution and discretion is advised in configuring Application Control Lite at "
 "the the risk of harmful false positives."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:75
-msgid "[no protocol]"
-msgstr "【无协议】"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:76
-msgid "[no category]"
-msgstr "【无分类】"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:79
-msgid "[no description]"
-msgstr "【无描述】"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:80
-msgid "[no signature]"
-msgstr "【无签名】"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:82
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
 #, fuzzy
 msgid "Signatures"
 msgstr "签名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:125
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:173
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:259
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:318
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:579
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:245
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:304
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:565
 msgid "Protocol"
 msgstr "协议"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:180
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:143
+msgid "[enter protocol]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
 msgid "Category"
 msgstr "分类"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:188
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
+msgid "[enter category]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:118
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:158
 msgid "Block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:163
 msgid "Log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:157
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:200
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:129
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:168
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:208
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:135
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:169
+msgid "[no description]"
+msgstr "【无描述】"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:176
 msgid "Signature"
 msgstr "签名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
-msgid "Event Log"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:177
+msgid "[enter signature]"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:56
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:54
 msgid "Summary Report"
 msgstr "总结报告"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:79
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:77
 msgid "scanned"
 msgstr "扫描"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:80
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:78
 msgid "sessions and detected"
 msgstr "会议和检测"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:81
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:79
 msgid "protocols of which"
 msgstr "协议"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:82
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:80
 msgid "were blocked"
 msgstr "被封锁"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:127
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:125
 msgid "Usage"
 msgstr "使用频率"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:189
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:175
 msgid "Avg Detections"
 msgstr "平均检测"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:191
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:194
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:177
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:180
 #, fuzzy
 msgid "Blocks"
 msgstr "阻止"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:193
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:179
 msgid "Max Detections"
 msgstr "最大检测"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:199
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:203
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:185
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:189
 msgid "Detections"
 msgstr "检测"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:212
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:198
 msgid "Top Blocked Protocols By Hits"
 msgstr "封锁的协议通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:251
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:310
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:370
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:430
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:490
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:549
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:237
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:296
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:356
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:416
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:476
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:535
 msgid "Hits"
 msgstr "采样数"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:258
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:244
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "十大封锁的协议（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:260
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:319
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:380
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:439
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:499
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:558
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:246
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:305
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:366
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:425
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:485
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:544
 msgid "Blocks Per Day"
 msgstr "每日块"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:268
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:254
 msgid "Top Detected Protocols By Hits"
 msgstr "通过点击检测到的协议"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:317
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:303
 msgid "Top Ten Detected Protocols (by Hits)"
 msgstr "十大检测到的协议（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:327
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:313
 msgid "Top Blocked Hosts By Hits"
 msgstr "封锁主机通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:378
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:364
 msgid "Top Ten Blocked Hosts (by Hits)"
 msgstr "十大封锁主机（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:379
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:438
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:365
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:424
 msgid "Host"
 msgstr "主机"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:389
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:375
 msgid "Top Logged Hosts By Hits"
 msgstr "记录主机的点击数"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:437
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:423
 msgid "Top Ten Logged Hosts (by Hits)"
 msgstr "十大记录主机（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:447
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:433
 msgid "Top Blocked Users By Hits"
 msgstr "被阻止的用户通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:497
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:483
 msgid "Top Ten Blocked Users (by Hits)"
 msgstr "十大被阻止的用户（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:498
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:557
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:577
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:484
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:543
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:563
 msgid "User"
 msgstr "用户"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:507
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:493
 msgid "Top Logged Users By Hits"
 msgstr "登录的用户通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:556
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:542
 msgid "Top Ten Logged Users (by Hits)"
 msgstr "十大登录的用户（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:566
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:552
 msgid "Detection Events"
 msgstr "检测活动"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:572
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:558
 msgid "Time"
 msgstr "Time：时间"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:575
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:561
 #, fuzzy
 msgid "Client"
 msgstr "客户端"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:580
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:566
 #, fuzzy
 msgid "Blocked"
 msgstr "已阻止"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:581
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:567
 #, fuzzy
 msgid "Server"
 msgstr "服务器"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:582
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:568
 msgid "Port"
 msgstr "端口"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:50
-msgid "All Events"
-msgstr "<msg name=>所有活动</msg>"
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:56
-msgid "Blocked Events"
-msgstr "封锁的事件"
-
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:62
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:47
 msgid "Chunks scanned"
 msgstr "块扫描"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:63
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:48
 msgid "Sessions logged"
 msgstr "已记录会话"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:64
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:49
 msgid "Sessions blocked"
 msgstr "已阻止会话"
 
+#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:69
+msgid "blocked"
+msgstr "已阻止"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:71
+msgid "identified"
+msgstr ""
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid "[no protocol]"
+#~ msgstr "【无协议】"
+
+#~ msgid "[no category]"
+#~ msgstr "【无分类】"
+
+#~ msgid "[no signature]"
+#~ msgstr "【无签名】"
+
+#~ msgid "All Events"
+#~ msgstr "<msg name=>所有活动</msg>"
+
+#~ msgid "Blocked Events"
+#~ msgstr "封锁的事件"
+
 #~ msgid ""
-#~ "Application Control Lite uses signatures to detect the protocols of network "
-#~ "traffic. It is useful for detecting unwanted or interesting protocols in use "
-#~ "on the network."
-#~ msgstr "应用控制Lite的使用签名来检测网络流量的协议。它是有用的，用于检测在网络上使用的不必要的或有趣的协议。"
+#~ "Application Control Lite uses signatures to detect the protocols of "
+#~ "network traffic. It is useful for detecting unwanted or interesting "
+#~ "protocols in use on the network."
+#~ msgstr ""
+#~ "应用控制Lite的使用签名来检测网络流量的协议。它是有用的，用于检测在网络上使"
+#~ "用的不必要的或有趣的协议。"
 
 #~ msgid ""
 #~ "Caution and discretion is advised using block at the the risk of false "
 #~ "positives and intelligent applications shifting protocol usage to avoid "
 #~ "blocking."
-#~ msgstr "小心和谨慎，建议使用块的误报和智能应用移动协议的使用，以避免阻塞的风险。"
+#~ msgstr ""
+#~ "小心和谨慎，建议使用块的误报和智能应用移动协议的使用，以避免阻塞的风险。"
 
 #, fuzzy
 #~ msgid "Timestamp"
@@ -317,9 +333,6 @@ msgstr "已阻止会话"
 
 #~ msgid "client"
 #~ msgstr "客户端"
-
-#~ msgid "blocked"
-#~ msgstr "已阻止"
 
 #~ msgid "server"
 #~ msgstr "服务器"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"POT-Creation-Date: 2015-08-03 22:15-0700\n"
 "PO-Revision-Date: 2012-08-20 11:02+0200\n"
 "Last-Translator: Rainer <rh@webkom.net>\n"
 "Language-Team: German\n"
@@ -18,73 +18,69 @@ msgstr ""
 "X-Generator: Pootle 2.0.6\n"
 "X-Poedit-Language: German\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:42
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "Markieren"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:42
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "Zulassen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "Verwerfen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "Quarantäne"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "Email"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:59
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "Durchsuche SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "Aktion"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "Notiz"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:88
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr "Phish Blocker Email Signaturen wurden zuletzt aktualisiert am"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:89
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:95
-msgid "Event Log"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "Phish"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "Clean"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "Stündliche Phish Rate"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "Tägliche Phish Rate"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "Top Ten Phishing Opfer"
 
@@ -93,49 +89,80 @@ msgstr "Top Ten Phishing Opfer"
 msgid "If you have any questions, Please contact {0}."
 msgstr "Bei Fragen wenden sie sich bitte an {0}."
 
+#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+msgid "scored"
+msgstr ""
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+msgid "as"
+msgstr ""
+
 #: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
-msgid "All Email Events"
-msgstr "Alle Mailereignisse"
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:84
-msgid "All"
-msgstr "Alle"
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:84
-msgid "Events"
-msgstr "Ereignisse"
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:90
-msgid "Quarantined Events"
-msgstr "Quarantäne-Ereignisse"
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:96
-msgid "Tarpit Events"
-msgstr "Tarpit-Ereignisse"
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:102
 msgid "Messages received"
 msgstr "Erhaltene Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:103
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "Zugelassene Nachrichten "
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:104
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "Verworfene Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:105
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "Markierte Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:106
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "Nachrichten in Quarantäne"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:107
+#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "Entdeckte Spam"
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+msgid "tarpit"
+msgstr ""
+
+#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+msgid "blocked"
+msgstr ""
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
+msgid "Host:"
+msgstr "Host:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
+msgid "URL:"
+msgstr "URL:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
+msgid "Reason:"
+msgstr "Grund:"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
+msgid "Unblock For Now"
+msgstr "Entsperre vorläufig"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
+msgid "Unblock Permanently"
+msgstr "Entsperre dauerhaft"
+
+#~ msgid "All Email Events"
+#~ msgstr "Alle Mailereignisse"
+
+#~ msgid "All"
+#~ msgstr "Alle"
+
+#~ msgid "Events"
+#~ msgstr "Ereignisse"
+
+#~ msgid "Quarantined Events"
+#~ msgstr "Quarantäne-Ereignisse"
+
+#~ msgid "Tarpit Events"
+#~ msgstr "Tarpit-Ereignisse"
 
 #~ msgid "POP3"
 #~ msgstr "POP3"
@@ -227,44 +254,26 @@ msgstr "Entdeckte Spam"
 #~ msgid "Feature is not installed."
 #~ msgstr "Feature ist nicht installiert."
 
-#, java-format
 #~ msgid "{0} | Phish Blocker Warning"
 #~ msgstr "{0} | Phish Blocker Warnungen"
 
-#, java-format
 #~ msgid "{0}  Phish Blocker"
 #~ msgstr "{0}  Phish Blocker"
 
-#, java-format
 #~ msgid ""
 #~ "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
-#~ "imitation of another website, designed to trick users into sharing personal "
-#~ "or financial information. Entering any personal information on this page may "
-#~ "result in identity theft or other abuse. "
+#~ "imitation of another website, designed to trick users into sharing "
+#~ "personal or financial information. Entering any personal information on "
+#~ "this page may result in identity theft or other abuse. "
 #~ msgstr ""
 #~ "{0}Warnung - Vermutliche Phishing Seite.{1} Diese Seite könnte eine "
-#~ "Fälschung oder Nachahmung einer anderen Webseite sein, die erstellt wurde um "
-#~ "Benutzer zu täuschen und persönliche oder finanzwirtschaftliche "
-#~ "Informationen weiter zu geben. Die Eingabe von persönlichen Daten auf dieser "
-#~ "Seite könnte zu Identitätsdiebstahl oder anderem Missbrauch führen."
+#~ "Fälschung oder Nachahmung einer anderen Webseite sein, die erstellt wurde "
+#~ "um Benutzer zu täuschen und persönliche oder finanzwirtschaftliche "
+#~ "Informationen weiter zu geben. Die Eingabe von persönlichen Daten auf "
+#~ "dieser Seite könnte zu Identitätsdiebstahl oder anderem Missbrauch führen."
 
 #~ msgid "Blocked Web Events"
 #~ msgstr "Blockierte Webereignisse"
-
-#~ msgid "Host:"
-#~ msgstr "Host:"
-
-#~ msgid "URL:"
-#~ msgstr "URL:"
-
-#~ msgid "Reason:"
-#~ msgstr "Grund:"
-
-#~ msgid "Unblock For Now"
-#~ msgstr "Entsperre vorläufig"
-
-#~ msgid "Unblock Permanently"
-#~ msgstr "Entsperre dauerhaft"
 
 #~ msgid "action"
 #~ msgstr "Aktion"
@@ -323,13 +332,12 @@ msgstr "Entdeckte Spam"
 #~ msgid "block message"
 #~ msgstr "Nachricht sperren"
 
-#, java-format
 #~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal personal "
-#~ "information."
+#~ "{0}This web page was blocked{1} because it may be designed to steal "
+#~ "personal information."
 #~ msgstr ""
-#~ "{0}Diese Webseite wurde blockiert{1}, da sie eventuell konstruiert wurde um "
-#~ "persönliche Informationen zu stehlen."
+#~ "{0}Diese Webseite wurde blockiert{1}, da sie eventuell konstruiert wurde "
+#~ "um persönliche Informationen zu stehlen."
 
 #~ msgid "Block"
 #~ msgstr "Sperren"

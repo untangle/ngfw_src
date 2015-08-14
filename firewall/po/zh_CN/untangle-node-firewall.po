@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"POT-Creation-Date: 2015-08-03 15:59-0700\n"
 "PO-Revision-Date: 2008-11-27 21:30-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -20,98 +20,122 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:8
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:13
 msgid "Destination Address"
 msgstr "目的地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:9
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:574
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:574
 msgid "Destination Port"
 msgstr "目的端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:10
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
 msgid "Destination Interface"
 msgstr "目的接口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:11
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
 msgid "Source Address"
 msgstr "源地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:12
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:576
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:576
 msgid "Source Port"
 msgstr "源端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:13
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
 msgid "Source Interface"
 msgstr "源接口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "Protocol"
 msgstr "<msg name=>议定书</ msg>"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "any"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
 msgid "Username"
 msgstr "用户名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
 msgid "Client Hostname"
 msgstr "客户端主机名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
 msgid "Server Hostname"
 msgstr "服务器主机名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+msgid "Client MAC Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+msgid "Server MAC Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
+msgid "Client MAC Vendor"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
+msgid "Server MAC Vendor"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:27
 msgid "Client in Penalty Box"
 msgstr "客户端的罚款箱"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:28
 msgid "Server in Penalty Box"
 msgstr "服务器罚款箱"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
 msgid "Client has no Quota"
 msgstr "客户端没有配额"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:30
 msgid "Server has no Quota"
 msgstr "服务器有没有配额"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
 msgid "Client has exceeded Quota"
 msgstr "客户已超过配额"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:32
 msgid "Server has exceeded Quota"
 msgstr "服务器已超出配额"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:33
+msgid "Client Quota Attainment"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:34
+msgid "Server Quota Attainment"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:35
 msgid "Directory Connector: User in Group"
 msgstr "Directory连接器：用户组"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:36
 msgid "HTTP: Client User Agent"
 msgstr "HTTP：客户端用户代理"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
 msgid "HTTP: Client User OS"
 msgstr "HTTP：客户端用户OS"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:45
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:59
 msgid "Rules"
 msgstr "规则"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:56
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
 msgid "Note"
 msgstr "注释"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:52
 #, fuzzy
 msgid ""
 " <b>Firewall</b> is a simple application designed to block and flag network "
@@ -119,285 +143,287 @@ msgid ""
 "button below.<br/> Routing and Port Forwarding functionality can be found "
 "elsewhere in Config->Networking."
 msgstr ""
-"防火墙</ B>是一个简单的应用程序，旨在阻止和记录网络流量的基础上的一套规则。欲了解更多请点击</ "
-"b>按钮<b>帮助。<BR/>路由和端口转发功能可以在配置 - >网络其他地方。"
+"防火墙</ B>是一个简单的应用程序，旨在阻止和记录网络流量的基础上的一套规则。欲"
+"了解更多请点击</ b>按钮<b>帮助。<BR/>路由和端口转发功能可以在配置 - >网络其他"
+"地方。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:70
-msgid "[no description]"
-msgstr "【无描述】"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:92
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:85
 msgid "Rule Id"
 msgstr "规则ID"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:89
 msgid "new"
 msgstr "新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:93
 msgid "Enable"
 msgstr "启用"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:109
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:136
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:124
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:115
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:160
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:121
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:166
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:110
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
 msgid "Flag"
 msgstr "标记"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:131
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:119
 msgid "Enable Rule"
 msgstr "启用规则"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:140
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:125
+msgid "[no description]"
+msgstr "【无描述】"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
 msgid "If all of the following conditions are met:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:151
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:139
 msgid "Perform the following action(s):"
 msgstr "执行下列操作（S）："
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:145
 msgid "Action Type"
 msgstr "<msg name=>行动键入“</msg>"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:160
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:174
-msgid "Event Log"
-msgstr ""
-
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:55
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:55
 msgid "Summary Report"
 msgstr "总结报告"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:77
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:77
 msgid "scanned"
 msgstr "扫描"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:78
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:78
 #, fuzzy
 msgid "sessions and blocked"
 msgstr "已阻止的会话"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:79
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:79
 msgid "according to the rules"
 msgstr "根据规则"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:122
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:201
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:203
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:122
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:201
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:203
 msgid "Sessions"
 msgstr "Sessions"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:187
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
 msgid "Avg Scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:187
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:189
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Scans"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:189
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Max Scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:191
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
 msgid "Avg Flagged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:191
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:193
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 #, fuzzy
 msgid "Flags"
 msgstr "标记"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:193
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 msgid "Max Flagged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:195
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
 msgid "Avg Blocked"
 msgstr "平均被阻止"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:195
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:197
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 #, fuzzy
 msgid "Blocks"
 msgstr "阻止"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:197
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 msgid "Max Blocked"
 msgstr "最大封锁的"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:207
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:571
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:207
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:571
 #, fuzzy
 msgid "Blocked"
 msgstr "已阻止"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:208
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:572
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:208
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:572
 msgid "Flagged"
 msgstr "标记"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:209
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:209
 #, fuzzy
 msgid "Scanned"
 msgstr "扫描"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:218
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:218
 #, fuzzy
 msgid "Top Firewall Flagging Rules By Hits"
 msgstr "顶部的防火墙阻止规则，通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:259
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:315
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:371
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:428
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:484
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:540
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:259
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:315
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:371
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:428
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:484
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:540
 msgid "Hits"
 msgstr "采样数"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:266
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:266
 #, fuzzy
 msgid "Top Ten Firewall Flagging Rules (by Hits)"
 msgstr "十大防火墙封锁规则“（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:267
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:436
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:267
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:436
 msgid "Rule #"
 msgstr "{0}{/0}{1}Rule{/1}"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:268
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:324
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:380
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:268
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:324
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:380
 msgid "Flags Per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:276
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:276
 #, fuzzy
 msgid "Top Firewall Flagged Hosts By Hits"
 msgstr "通过点击顶部防火墙封锁主机"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:322
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:322
 #, fuzzy
 msgid "Top Ten Firewall Flagged Hosts (by Hits)"
 msgstr "十大防火墙封锁主机（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:323
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:492
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:323
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:492
 msgid "Host"
 msgstr "主机"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:331
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:331
 #, fuzzy
 msgid "Top Firewall Flagged Users By Hits"
 msgstr "顶部防火墙阻止用户通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:378
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:378
 #, fuzzy
 msgid "Top Ten Firewall Flagged Users (by Hits)"
 msgstr "十大防火墙阻止用户（通过点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:379
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:548
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:568
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:379
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:548
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:568
 msgid "User"
 msgstr "用户"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:388
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:388
 msgid "Top Firewall Blocking Rules By Hits"
 msgstr "顶部的防火墙阻止规则，通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:435
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:435
 msgid "Top Ten Firewall Blocking Rules (by Hits)"
 msgstr "十大防火墙封锁规则“（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:437
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:493
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:549
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:437
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:493
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:549
 msgid "Blocks Per Day"
 msgstr "每日块"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:445
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:445
 msgid "Top Firewall Blocked Hosts By Hits"
 msgstr "通过点击顶部防火墙封锁主机"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:491
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:491
 msgid "Top Ten Firewall Blocked Hosts (by Hits)"
 msgstr "十大防火墙封锁主机（点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:500
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:500
 msgid "Top Firewall Blocked Users By Hits"
 msgstr "顶部防火墙阻止用户通过点击"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:547
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:547
 msgid "Top Ten Firewall Blocked Users (by Hits)"
 msgstr "十大防火墙阻止用户（通过点击）"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:557
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:557
 msgid "Firewall Events"
 msgstr "防火墙事件"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:563
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:563
 msgid "Time"
 msgstr "Time：时间"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:566
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:566
 #, fuzzy
 msgid "Client"
 msgstr "客户端"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:570
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:570
 msgid "Rule Applied"
 msgstr "规则应用"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:573
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:573
 #, fuzzy
 msgid "Destination Ip"
 msgstr "目的端口"
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_firewall.py:575
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:575
 msgid "Source Ip"
 msgstr "源IP地址"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:107
-msgid "All Events"
-msgstr "<msg name=>所有活动</msg>"
+#: ../src/com/untangle/node/firewall/FirewallEvent.java:69
+msgid "blocked"
+msgstr "已阻止"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:113
-msgid "Flagged Events"
-msgstr "标记事件"
+#: ../src/com/untangle/node/firewall/FirewallEvent.java:71
+msgid "password"
+msgstr ""
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:119
-msgid "Blocked Events"
-msgstr "封锁的事件"
-
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:125
+#: ../src/com/untangle/node/firewall/FirewallImpl.java:88
 msgid "Sessions passed"
 msgstr "已通过的会话"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:126
+#: ../src/com/untangle/node/firewall/FirewallImpl.java:89
 #, fuzzy
 msgid "Sessions flagged"
 msgstr "已记录的会话"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:127
+#: ../src/com/untangle/node/firewall/FirewallImpl.java:90
 msgid "Sessions blocked"
 msgstr "已阻止的会话"
+
+#~ msgid "All Events"
+#~ msgstr "<msg name=>所有活动</msg>"
+
+#~ msgid "Flagged Events"
+#~ msgstr "标记事件"
+
+#~ msgid "Blocked Events"
+#~ msgstr "封锁的事件"
 
 #~ msgid "Rule"
 #~ msgstr "规则"
@@ -440,9 +466,6 @@ msgstr "已阻止的会话"
 
 #~ msgid "client"
 #~ msgstr "客户端"
-
-#~ msgid "blocked"
-#~ msgstr "已阻止"
 
 #~ msgid "Saving..."
 #~ msgstr "正在保存。。。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 15:59-0700\n"
+"POT-Creation-Date: 2015-08-14 10:31-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,417 +37,426 @@ msgid "Status"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:88
-msgid "Reports are automatically generated each night."
+msgid "The new reports."
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:93
 msgid "View Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:103
+msgid "Old Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:107
+msgid "Reports are automatically generated each night."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:112
+msgid "View Old Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
 msgid "Report generation for the current day can be forced with the "
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:104
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:110
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:129
 msgid "Generate Today's Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
 msgid " button."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:105
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:124
 msgid "Caution"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:105
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:124
 msgid "Real-time report generation may cause network slowness."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:133
 msgid "Generating today's reports... This may take a few minutes."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:133
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:137
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:156
 msgid "Generation"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:144
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:163
 msgid "Daily Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:167
 msgid ""
 "Daily Reports covers the previous day. Daily reports will be generated on "
 "the selected days."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:163
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:182
 msgid "Weekly Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:186
 msgid ""
 "Weekly Reports covers the previous week. Weekly reports will be generated on "
 "the selected days."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
 msgid "Monthly Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:186
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:205
 msgid "Monthly Reports are generated on the 1st and cover the previous month."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:190
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:755
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:209
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:774
 msgid "Enabled"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:202
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:221
 msgid "Generation Time"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:225
 msgid "Scheduled time to generate the reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:224
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:243
 msgid "Data Retention"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:248
 msgid ""
 "Keep event data for this number of days. The smaller the number the lower "
 "the disk space requirements and resource usage during report generation."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 msgid "Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 msgid ""
 "Depending on the server and network, increasing this value may cause "
 "performance issues."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:236
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:255
 msgid "Data Retention days"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:264
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:283
 msgid "Change Password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:277
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:296
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:303
 msgid "Email"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:307
 msgid "Reporting Users"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:314
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:341
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:360
 msgid "Email Address (username)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:320
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:343
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:339
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:362
 msgid "[enter email address]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:322
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:341
 msgid "The email address cannot be blank."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:327
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:369
 msgid "Email Summaries"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:333
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:356
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:375
 msgid "Online Access"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:364
 msgid "The email address name cannot be blank."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:369
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:445
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:624
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:388
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:464
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:643
 msgid "Password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:372
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:448
-#, python-brace-format
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:391
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:467
 msgid "The password is shorter than the minimum {0} characters."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:376
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:395
 msgid "(required for 'Online Access')"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:385
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:457
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:404
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:476
 msgid "Confirm Password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:391
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:410
 msgid "Email Attachment Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:414
 msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:408
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:427
 msgid "Attachment size limit (MB)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:469
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:476
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:488
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:495
 msgid "Syslog"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:500
 msgid ""
 "If enabled logged events will be sent in real-time to a remote syslog for "
 "custom processing."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:484
-#, python-brace-format
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:503
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:502
-#, python-brace-format
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:521
 msgid "{0}Enable{1} Syslog Events."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:523
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:582
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:542
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:601
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:92
 #: ../hier/usr/lib/python2.7/reports/__init__.py:351
 #: ../hier/usr/lib/python2.7/reports/__init__.py:376
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:92
 msgid "Host"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:529
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:587
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:548
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:606
 msgid "A \"Host\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:534
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:553
 msgid "Host cannot be localhost address."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:540
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:595
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:559
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:614
 #: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:530
 msgid "Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:548
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:602
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:567
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:621
 msgid "You must provide a valid port."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:555
-#: ../hier/usr/lib/python2.7/reports/__init__.py:334
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:574
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:107
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:130
+#: ../hier/usr/lib/python2.7/reports/__init__.py:334
 msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:557
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:576
 msgid "UDP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:558
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:577
 msgid "TCP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:571
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:578
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:590
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:597
 msgid "Database"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:611
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:630
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:616
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:635
 msgid "A \"User\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:629
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:648
 msgid "A \"Password\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:637
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:684
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:709
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:656
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:728
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:147
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:149
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:642
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:661
 msgid "A \"Name\" must be specified."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:658
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:677
 msgid "Name Map"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:674
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:700
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:693
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:719
 msgid "IP Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:680
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:701
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:699
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:720
 msgid "[enter IP address]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:690
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:710
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:709
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:729
 msgid "[enter name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:692
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:712
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:711
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:731
 msgid "Quotes and double quotes are not allowed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:720
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:720
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Pie Graph"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:720
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Time Graph"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:731
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:750
 msgid "Manage Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:750
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:769
 msgid "Title"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:760
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:779
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:45
 msgid "Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:765
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:895
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:922
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:784
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:914
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:941
 #: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:626
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:770
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:789
 msgid "Units"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:774
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:793
 msgid "Display Order"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:778
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:797
 msgid "View"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:783
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:797
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:802
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:816
 msgid "View Report"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:801
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:820
 msgid "Cancel"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:832
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:846
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:851
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:865
 msgid "Alert Rules"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:837
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:856
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:839
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:858
 msgid ""
 " <b>Alert Rules</b> process all events to log and/or alert administrators "
 "when special or noteworthy events occur."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:878
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:897
 msgid "Rule Id"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:902
 msgid "new"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:890
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:909
 msgid "Enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:901
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:942
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:920
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:961
 msgid "Log Alert"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:906
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:947
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:925
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:966
 msgid "Send Alert"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:917
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:936
 msgid "Enable Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:923
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:942
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:927
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:946
 msgid "If all of the following conditions are met:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:937
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:956
 msgid "Perform the following action(s):"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:962
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:981
 msgid "Limit Send Frequency"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:976
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:995
 msgid "To once per"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:979
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:998
 msgid "(minutes)"
 msgstr ""
 
@@ -750,300 +759,12 @@ msgid ""
 "Alert Rules."
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:457
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:459
 msgid "Invalid Settings"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:457
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:459
 msgid "has online access, but no password is set."
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:193
-msgid "Title Page"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:197
-#: ../hier/usr/lib/python2.7/reports/pdf.py:218
-msgid "Table of Contents"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:256
-#, python-format
-msgid "Page %d"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:268
-msgid "day"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:270
-msgid "days"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:272
-msgid "Report for"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:292
-msgid "Report"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:317
-msgid "Highlights Summary"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/pdf.py:318
-#: ../hier/usr/lib/python2.7/reports/__init__.py:585
-msgid "Highlights"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/mailer.py:138
-msgid "Report Summary"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/mailer.py:254
-msgid "This report has no detail data."
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:318
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:141
-msgid "Priority"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:319
-msgid "Rule"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:320
-#: ../hier/usr/lib/python2.7/reports/__init__.py:350
-#: ../hier/usr/lib/python2.7/reports/__init__.py:375
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:31
-msgid "Username"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:321
-#: ../hier/usr/lib/python2.7/reports/__init__.py:349
-#: ../hier/usr/lib/python2.7/reports/__init__.py:374
-#: ../hier/usr/lib/python2.7/reports/__init__.py:387
-msgid "Client"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:322
-msgid "Client port"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:324
-#: ../hier/usr/lib/python2.7/reports/__init__.py:326
-#: ../hier/usr/lib/python2.7/reports/__init__.py:364
-#: ../hier/usr/lib/python2.7/reports/__init__.py:381
-msgid "Server Port"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:327
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:134
-msgid "Application"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:328
-msgid "ProtoChain"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:329
-msgid "Flagged (Application Control)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:330
-msgid "Blocked (Application Control)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:331
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:138
-msgid "Confidence"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:332
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:140
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:145
-msgid "Detail"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:333
-msgid "Blocked (Application Control Lite)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:335
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:129
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:133
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:139
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:142
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:143
-msgid "Rule ID"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:336
-msgid "Status (Https)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:337
-msgid "Detail (Https)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:338
-msgid "Rule ID (Https)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:339
-msgid "Policy Id"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:340
-msgid "Blocked (Firewall)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:341
-msgid "Flagged (Firewall)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:342
-msgid "Rule Id (Firewall)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:343
-msgid "Rule ID (Captive Portal)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:344
-msgid "Captured"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:352
-#: ../hier/usr/lib/python2.7/reports/__init__.py:377
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:32
-msgid "Hostname"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:353
-#: ../hier/usr/lib/python2.7/reports/__init__.py:378
-msgid "Uri"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:354
-msgid "Url"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:355
-msgid "Blocked (Webfilter Lite)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:356
-msgid "Flagged (Webfilter Lite)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:357
-msgid "Reason For Action (Webfilter Lite)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:358
-msgid "Category (Webfilter Lite)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:359
-msgid "Blocked  (Webfilter)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:360
-msgid "Flagged (Webfilter)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:361
-msgid "Reason For Action (Webfilter)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:362
-msgid "Category (Webfilter)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:365
-msgid "Action (Ad Blocker)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:366
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:162
-msgid "Cookie"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:367
-#: ../hier/usr/lib/python2.7/reports/__init__.py:390
-msgid "Virus Name (Clam)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:368
-#: ../hier/usr/lib/python2.7/reports/__init__.py:391
-msgid "Virus Name (Virus Blocker)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:379
-msgid "Term"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:392
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:91
-msgid "Receiver"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:393
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:89
-msgid "Sender"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:394
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:85
-msgid "Subject"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:395
-msgid "Action (Spamassassin)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:396
-msgid "Spam score (Spamassassin)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:397
-msgid "Action (Spam Blocker)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:398
-msgid "Spam score (Spam Blocker)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:399
-msgid "Action (Phish)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:765
-#: ../hier/usr/lib/python2.7/reports/__init__.py:769
-msgid "Key Statistics"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
-msgid "slice"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
-msgid "value"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1028
-msgid "Unknown"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1045
-msgid "KB"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1049
-msgid "MB"
 msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:17
@@ -1100,6 +821,19 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:30
 msgid "Policy ID"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:31
+#: ../hier/usr/lib/python2.7/reports/__init__.py:320
+#: ../hier/usr/lib/python2.7/reports/__init__.py:350
+#: ../hier/usr/lib/python2.7/reports/__init__.py:375
+msgid "Username"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:32
+#: ../hier/usr/lib/python2.7/reports/__init__.py:352
+#: ../hier/usr/lib/python2.7/reports/__init__.py:377
+msgid "Hostname"
 msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:33
@@ -1294,12 +1028,27 @@ msgstr ""
 msgid "Message ID"
 msgstr ""
 
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:85
+#: ../hier/usr/lib/python2.7/reports/__init__.py:394
+msgid "Subject"
+msgstr ""
+
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:87
 msgid "Address Name"
 msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:88
 msgid "Address Kind"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:89
+#: ../hier/usr/lib/python2.7/reports/__init__.py:393
+msgid "Sender"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:91
+#: ../hier/usr/lib/python2.7/reports/__init__.py:392
+msgid "Receiver"
 msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:93
@@ -1435,8 +1184,38 @@ msgstr ""
 msgid "Flagged"
 msgstr ""
 
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:129
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:133
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:139
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:142
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:143
+#: ../hier/usr/lib/python2.7/reports/__init__.py:335
+msgid "Rule ID"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:134
+#: ../hier/usr/lib/python2.7/reports/__init__.py:327
+msgid "Application"
+msgstr ""
+
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:135
 msgid "Protochain"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:138
+#: ../hier/usr/lib/python2.7/reports/__init__.py:331
+msgid "Confidence"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:140
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:145
+#: ../hier/usr/lib/python2.7/reports/__init__.py:332
+msgid "Detail"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:141
+#: ../hier/usr/lib/python2.7/reports/__init__.py:318
+msgid "Priority"
 msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:146
@@ -1463,4 +1242,234 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:159
 msgid "Phish"
+msgstr ""
+
+#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:162
+#: ../hier/usr/lib/python2.7/reports/__init__.py:366
+msgid "Cookie"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/mailer.py:138
+msgid "Report Summary"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/mailer.py:254
+msgid "This report has no detail data."
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:193
+msgid "Title Page"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:197
+#: ../hier/usr/lib/python2.7/reports/pdf.py:218
+msgid "Table of Contents"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:256
+#, python-format
+msgid "Page %d"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:268
+msgid "day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:270
+msgid "days"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:272
+msgid "Report for"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:292
+msgid "Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:317
+msgid "Highlights Summary"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/pdf.py:318
+#: ../hier/usr/lib/python2.7/reports/__init__.py:585
+msgid "Highlights"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:319
+msgid "Rule"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:321
+#: ../hier/usr/lib/python2.7/reports/__init__.py:349
+#: ../hier/usr/lib/python2.7/reports/__init__.py:374
+#: ../hier/usr/lib/python2.7/reports/__init__.py:387
+msgid "Client"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:322
+msgid "Client port"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:324
+#: ../hier/usr/lib/python2.7/reports/__init__.py:326
+#: ../hier/usr/lib/python2.7/reports/__init__.py:364
+#: ../hier/usr/lib/python2.7/reports/__init__.py:381
+msgid "Server Port"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:328
+msgid "ProtoChain"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:329
+msgid "Flagged (Application Control)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:330
+msgid "Blocked (Application Control)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:333
+msgid "Blocked (Application Control Lite)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:336
+msgid "Status (Https)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:337
+msgid "Detail (Https)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:338
+msgid "Rule ID (Https)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:339
+msgid "Policy Id"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:340
+msgid "Blocked (Firewall)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:341
+msgid "Flagged (Firewall)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:342
+msgid "Rule Id (Firewall)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:343
+msgid "Rule ID (Captive Portal)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:344
+msgid "Captured"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:353
+#: ../hier/usr/lib/python2.7/reports/__init__.py:378
+msgid "Uri"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:354
+msgid "Url"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:355
+msgid "Blocked (Webfilter Lite)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:356
+msgid "Flagged (Webfilter Lite)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:357
+msgid "Reason For Action (Webfilter Lite)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:358
+msgid "Category (Webfilter Lite)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:359
+msgid "Blocked  (Webfilter)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:360
+msgid "Flagged (Webfilter)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:361
+msgid "Reason For Action (Webfilter)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:362
+msgid "Category (Webfilter)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:365
+msgid "Action (Ad Blocker)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:367
+#: ../hier/usr/lib/python2.7/reports/__init__.py:390
+msgid "Virus Name (Clam)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:368
+#: ../hier/usr/lib/python2.7/reports/__init__.py:391
+msgid "Virus Name (Virus Blocker)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:379
+msgid "Term"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:395
+msgid "Action (Spamassassin)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:396
+msgid "Spam score (Spamassassin)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:397
+msgid "Action (Spam Blocker)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:398
+msgid "Spam score (Spam Blocker)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:399
+msgid "Action (Phish)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:765
+#: ../hier/usr/lib/python2.7/reports/__init__.py:769
+msgid "Key Statistics"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
+msgid "slice"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
+msgid "value"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:1028
+msgid "Unknown"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:1045
+msgid "KB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/__init__.py:1049
+msgid "MB"
 msgstr ""

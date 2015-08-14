@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-14 10:31-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -543,7 +543,6 @@ msgid "Note"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:291
-#, python-brace-format
 msgid ""
 "{0} continues to maintain the default signature settings through automatic "
 "updates. You are free to modify and add signatures, however it is not "
@@ -573,17 +572,14 @@ msgid "Rules"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:337
-#, python-brace-format
 msgid "{0} logging or blocking"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:340
-#, python-brace-format
 msgid "{0} matching rules(s) found"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:345
-#, python-brace-format
 msgid "{0} available rules"
 msgstr ""
 
@@ -592,14 +588,14 @@ msgid "Search"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:383
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:528
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:713
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:533
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:718
 msgid "Log"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:400
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:545
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:727
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:550
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:732
 msgid "Block"
 msgstr ""
 
@@ -608,7 +604,7 @@ msgid "Loading..."
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:455
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:649
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:654
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:587
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:605
 msgid "Sid"
@@ -623,21 +619,21 @@ msgid "Gid:"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:569
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:588
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:608
 msgid "Classtype"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:480
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:601
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:606
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:589
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:609
 msgid "Category"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:492
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:615
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:620
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:590
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:610
 msgid "Msg"
@@ -647,146 +643,146 @@ msgstr ""
 msgid "Reference"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:565
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:570
 msgid "[enter class]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:576
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:581
 msgid "Invalid Classtype"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:603
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:608
 msgid "[enter category]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:616
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:920
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:621
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:925
 msgid "[enter name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:622
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:627
 msgid "Msg contains invalid characters."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:650
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:655
 msgid "[enter sid]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:659
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:664
 msgid "Sid must be numeric"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:686
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:691
 msgid "Sid already in use."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:741
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:746
 msgid "Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:742
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:747
 msgid "[enter rule]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:750
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:755
 msgid "Rule formatted wrong."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:845
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:850
 msgid "Variables"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:872
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:919
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:877
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:924
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:877
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:948
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:882
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:953
 msgid "Definition"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:882
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:949
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:887
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:954
 msgid "[enter definition]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:886
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:956
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:891
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:961
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:892
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:957
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:897
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:962
 msgid "[enter description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:897
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:902
 msgid "Validating..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:897
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1070
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1179
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:902
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1075
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1184
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:901
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:906
 msgid "Cannot Delete Variable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:901
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:941
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:906
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:946
 msgid "Variable is used by one or more rules."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:933
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:938
 msgid "Variable name already in use."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1003
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1008
 msgid "Intrusion Prevention Setup Wizard"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1031
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1036
 msgid "Setup Wizard Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1031
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1036
 msgid ""
 "You have not finished configuring Intrusion Prevention. Please run the Setup "
 "Wizard again."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1048
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1053
 msgid "Intrusion Prevention Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1048
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1053
 msgid ""
 "Settings have been changed by rule updater.  Current changes must be "
 "discarded."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1070
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1075
 msgid "Saving and creating settings (this may take a few minutes)..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1116
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1121
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1138
 msgid "Error"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1116
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1121
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1138
 msgid "Unable to save settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1146
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1151
 msgid "Welcome to the Intrusion Prevention Setup Wizard!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1149
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1154
 msgid ""
 "Intrusion Prevention operates using rules to identify possible threats.  An "
 "enabled ruled performs an action, either logging or blocking traffic.  Not "
@@ -794,7 +790,7 @@ msgid ""
 "them may negatively impact your network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1153
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1158
 msgid ""
 "This wizard is designed to help you correctly configure the appropriate "
 "amount of rules for your network by selecting rule identifiers: classtypes "
@@ -802,92 +798,92 @@ msgid ""
 "Again, too many enabled rules may negatively impact your network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1162
 msgid "It is highly suggested that you use Recommended values."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1164
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1169
 msgid ""
 "WARNING: Completing this setup wizard will overwrite the previous settings "
 "with new settings. All previous settings will be lost!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1170
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1175
 msgid "Welcome"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1179
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1184
 msgid "Determining recommended settings..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Setup Wizard Error"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1258
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1283
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1287
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1263
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1292
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:357
 msgid "Classtypes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1290
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1295
 msgid ""
 "Classtypes are a generalized  grouping for rules, such as attempts to gain "
 "user access."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1296
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1438
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1443
 msgid "Recommended (default)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1306
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1311
 msgid "Recommended classtype Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1316
 msgid "Custom"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1368
 msgid "None.  Classtypes within selected categories will be used."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1400
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1425
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1429
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1405
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1430
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1434
 #: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:288
 msgid "Categories"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1432
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1437
 msgid ""
 "Categories are a different rule grouping that can span multiple classtypes, "
 "such as VOIP access."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1452
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1457
 msgid "Select by name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1503
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1508
 msgid "None.  Categories within selected classtypes will be used."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1543
 msgid "Finish"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1542
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1547
 msgid "Congratulations!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1545
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1550
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr ""
 
