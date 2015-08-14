@@ -340,7 +340,7 @@ def custom_remove(req,custom_file,appid):
     except:
         return extjs_reply(False, _("Unknown error removing custom files") )
 
-    detail = _("Removed files and directories.") + " (" + (fcount) + "," + str(dcount) + ")"
+    detail = _("Removed files and directories.") + " (" + str(fcount) + "," + str(dcount) + ")"
     return extjs_reply(True,detail)
 
 #-----------------------------------------------------------------------------
