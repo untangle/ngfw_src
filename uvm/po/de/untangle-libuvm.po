@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 10:04-0700\n"
+"POT-Creation-Date: 2015-08-15 11:32-0700\n"
 "PO-Revision-Date: 2009-10-21 15:17-0700\n"
 "Last-Translator: Marcus Lumpp <ml@m2lp-consult.de>\n"
 "Language-Team: German\n"
@@ -113,8 +113,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:1048
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:1057
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:1059
-#: ../../uvm/servlets/webui/root/script/components.js:1171
-#: ../../uvm/servlets/webui/root/script/components.js:1217
+#: ../../uvm/servlets/webui/root/script/components.js:1173
+#: ../../uvm/servlets/webui/root/script/components.js:1219
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:122
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:183
 #: ../../uvm/servlets/webui/root/script/config/upgrade.js:99
@@ -1087,37 +1087,36 @@ msgstr "Stunden"
 msgid "Minutes"
 msgstr "Minuten"
 
-#: ../../uvm/servlets/webui/root/script/components.js:1155
-msgid "Session History: {0}"
-msgstr ""
-
 #: ../../uvm/servlets/webui/root/script/components.js:1156
-msgid "Current Sessions: {0}"
+msgid "Session History:"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:1157
-msgid "Click chart to open Sesion Viewer for {0}"
+msgid "Current Sessions:"
 msgstr ""
 
-#: ../../uvm/servlets/webui/root/script/components.js:1171
-msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
+#: ../../uvm/servlets/webui/root/script/components.js:1158
+msgid "Click chart to open Sesion Viewer for"
 msgstr ""
-"Der Knoten {0} hat {1} Metrik(en). Die maximale Anzahl an Metriken ist {2}."
 
-#: ../../uvm/servlets/webui/root/script/components.js:1217
+#: ../../uvm/servlets/webui/root/script/components.js:1173
+msgid "The app {0} has {1} metrics. The maximum number of metrics is {2}."
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/components.js:1219
 msgid "Please set up to four items."
 msgstr "Bitte maximal vier Elemente einrichten."
 
-#: ../../uvm/servlets/webui/root/script/components.js:1245
+#: ../../uvm/servlets/webui/root/script/components.js:1247
 msgid "Set up to four"
 msgstr "Maximal vier einrichten"
 
-#: ../../uvm/servlets/webui/root/script/components.js:1254
+#: ../../uvm/servlets/webui/root/script/components.js:1256
 #: ../../uvm/servlets/webui/root/script/main.js:84
 msgid "Ok"
 msgstr "OK"
 
-#: ../../uvm/servlets/webui/root/script/components.js:1261
+#: ../../uvm/servlets/webui/root/script/components.js:1263
 #: ../../uvm/servlets/webui/root/script/config/administration.js:772
 #: ../../uvm/servlets/webui/root/script/config/administration.js:941
 #: ../../uvm/servlets/webui/root/script/config/email.js:1286
@@ -9310,15 +9309,12 @@ msgid "is installed but an unsupported DNS server is used"
 msgstr ""
 
 #: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:571
-msgid "is installed but but a DNS server"
+#: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:659
+msgid "is installed but a DNS server"
 msgstr ""
 
 #: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:576
-msgid " fails to resolve DNSBL queries."
-msgstr ""
-
-#: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:659
-msgid "is installed but a DNS server"
+msgid "fails to resolve DNSBL queries."
 msgstr ""
 
 #: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:664
@@ -10483,6 +10479,7 @@ msgid "The uploaded ZIP file could not be extracted"
 msgstr ""
 
 #: ../../capture/hier/usr/share/untangle/web/capture/handler.py:313
+#: ../../dist/usr/share/untangle/web/capture/handler.py:313
 msgid "Extracted files and directories"
 msgstr ""
 
@@ -10492,6 +10489,7 @@ msgid "Unknown error removing custom files"
 msgstr ""
 
 #: ../../capture/hier/usr/share/untangle/web/capture/handler.py:343
+#: ../../dist/usr/share/untangle/web/capture/handler.py:343
 msgid "Removed files and directories."
 msgstr ""
 
@@ -11834,16 +11832,6 @@ msgstr ""
 #: ../../dist/usr/lib/python2.7/reports/node/untangle_node_shield.py:329
 #: ../../shield/hier/usr/lib/python2.7/reports/node/untangle_node_shield.py:329
 msgid "Source Ip"
-msgstr ""
-
-#: ../../dist/usr/share/untangle/web/capture/handler.py:313
-#, python-format
-msgid "Extracted %d files and %d directories from %s"
-msgstr ""
-
-#: ../../dist/usr/share/untangle/web/capture/handler.py:343
-#, python-format
-msgid "Removed %d files and %d directories"
 msgstr ""
 
 #: ../../dist/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:77
@@ -15422,6 +15410,11 @@ msgstr "Y-m-d g:i:s a"
 #, fuzzy
 #~ msgid "timestamp"
 #~ msgstr "Y-m-d g:i:s a"
+
+#~ msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
+#~ msgstr ""
+#~ "Der Knoten {0} hat {1} Metrik(en). Die maximale Anzahl an Metriken ist "
+#~ "{2}."
 
 #, fuzzy
 #~ msgid "Emails"
