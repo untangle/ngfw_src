@@ -39,14 +39,20 @@ case "$1" in
     find ../../uvm -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot
 
     # python scripts
-    find ../../uvm/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
-    find ../../reporting/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    find ../../ -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    find ../../../../hades/src -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
-    # ALL report/event entries
+    # all report/event entries
     rm -f /tmp/strings
     find ../../ -type f -wholename '*reports/*.js' | xargs cat | egrep '(description|title)' >> /tmp/strings
+    find ../../../../hades/src -type f -wholename '*reports/*.js' | xargs cat | egrep '(description|title)' >> /tmp/strings
     find ../../ -type f -wholename '*events/*.js' | xargs cat | egrep '(description|title)' >> /tmp/strings
+    find ../../../../hades/src -type f -wholename '*events/*.js' | xargs cat | egrep '(description|title)' >> /tmp/strings
     xgettext -j --copyright-holder='Untangle, Inc.' -a -o tmp_keys.pot /tmp/strings
+
+    # java files
+    find ../../ -type f -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot
+    find ../../../../hades/src -type f -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot
 
     # faceplate strings
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/Dispatcher.java

@@ -1152,9 +1152,11 @@ Ext.define("Ung.FaceplateMetric", {
                     style: 'background: #fff',
                     dismissDelay: 2000,
                     renderer: function(record, item) {
-                        this.setHtml(Ext.String.format(i18n._("Session History: {0}"), record.get('sessions'))+'<br/>' +
-                            Ext.String.format(i18n._("Current Sessions: {0}"), me.currentSessions)+'<br/>' +
-                            Ext.String.format(i18n._("Click chart to open Sesion Viewer for {0}"), me.displayName));
+                        this.setHtml(
+                            i18n._("Session History:") + record.get('sessions') + '<br/>' +
+                            i18n._("Current Sessions:") + me.currentSessions + '<br/>' +
+                            i18n._("Click chart to open Sesion Viewer for") + " " + me.displayName
+                        );
                     }
                 }
             }]
@@ -1168,7 +1170,7 @@ Ext.define("Ung.FaceplateMetric", {
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics = nodeCmp.activeMetrics;
         if(activeMetrics.length>4) {
-            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The app {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
         }
         var metricsLen=Math.min(activeMetrics.length,4);
         var i, nameDiv, valueDiv;
