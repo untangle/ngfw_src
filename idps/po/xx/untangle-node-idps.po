@@ -1,27 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr "XX"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
-"PO-Revision-Date: 2012-01-09 08:25-0800\n"
-"Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
-"Language-Team: Dirk Morris <dmorris@untangle.com>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXProject-Id-Version: Untangle\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 1.1.0\n"
-"X-Poedit-Language: Test\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:120
 msgid "Attempted Administrator Privilege Gain"
 msgstr "XAttempted Administrator Privilege GainX"
@@ -163,7 +139,7 @@ msgid ""
 "This category contains rules that look for, and control, the traffic of "
 "certain applications that generate network activity. This category will be "
 "used to control various aspects of how an application behaves."
-msgstr "XX"
+msgstr "XThis category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:166
 msgid ""
@@ -171,7 +147,7 @@ msgid ""
 "been determined to be indicators of malicious activity. These rules are "
 "based on activity from the Talos virus sandboxes, public list of malicious "
 "URLs, and other data sources."
-msgstr "XX"
+msgstr "XThis category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:167
 msgid ""
@@ -179,57 +155,57 @@ msgid ""
 "browser. (This is separate from the 'browser-webkit' category, as Chrome has "
 "enough vulnerabilities to be broken out into it's own, and while it uses the "
 "Webkit rendering engine, there's a lot of other features to Chrome.)"
-msgstr "XX"
+msgstr "XThis category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the 'browser-webkit' category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:168
 msgid ""
 "This category contains detection for vulnerabilities present in the Firefox "
 "browser, or products that have the 'Gecko' engine. (Thunderbird email "
 "client, etc)"
-msgstr "XX"
+msgstr "XThis category contains detection for vulnerabilities present in the Firefox browser, or products that have the 'Gecko' engine. (Thunderbird email client, etc)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:169
 msgid ""
 "This category contains detection for vulnerabilities present in the Internet "
 "Explorer browser (Trident or Tasman engines)"
-msgstr "XX"
+msgstr "XThis category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:170
 msgid ""
 "This category contains detection of vulnerabilities present in the Webkit "
 "browser engine (aside from Chrome) this includes Apple's Safari, RIM's "
 "mobile browser, Nokia, KDE, Webkit itself, and Palm."
-msgstr "XX"
+msgstr "XThis category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:171
 msgid ""
 "This category contains detection for vulnerabilities in other browsers not "
 "listed above."
-msgstr "XX"
+msgstr "XThis category contains detection for vulnerabilities in other browsers not listed above.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:172
 msgid ""
 "This category contains detection for vulnerabilities in browsers that deal "
 "with plugins to the browser. (Example: Active-x)"
-msgstr "XX"
+msgstr "XThis category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:173
 msgid ""
 "This category containt any rule that utilizes the 'replace' functionality "
 "inside of Snort."
-msgstr "XX"
+msgstr "XThis category containt any rule that utilizes the 'replace' functionality inside of Snort.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:174
 msgid ""
 "When a rule has been deprecated or replaced it is moved to this categories. "
 "Rules are never totally removed from the ruleset, they are moved here."
-msgstr "XX"
+msgstr "XWhen a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:175
 msgid ""
 "This is an older category which will be deprecated soon. This category looks "
 "for exploits against software in a generic form."
-msgstr "XX"
+msgstr "XThis is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:176
 msgid ""
@@ -237,79 +213,79 @@ msgid ""
 "exploit kit activity. This does not include 'post-compromise' rules (as "
 "those would be in indicator-compromise). Files that are dropped as result of "
 "visiting an exploit kit would be in their respective file category."
-msgstr "XX"
+msgstr "XThis category contains rules that are specifically tailored to detect exploit kit activity. This does not include 'post-compromise' rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:177
 msgid ""
 "This category contains rules for vulnerabilities that are found or are "
 "delivered through executable files, regardless of platform."
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:178
 msgid ""
 "This category contains rules for vulnerabilities that are found or are "
 "delivered through flash files. Either compressed or uncompressed, regardless "
 "of delivery method platform being attacked."
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:179
 msgid ""
 "This category contains rules for vulnerabilities that are found inside of "
 "images files. Regardless of delivery method, software being attacked, or "
 "type of image. (Examples include: jpg, png, gif, bmp, etc)"
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:180
 msgid ""
 "This category is to identify files through file extension, the content in "
 "the file (file magic), or header found in the traffic. This information is "
 "usually used to then set a flowbit to be used in a different rule."
-msgstr "XX"
+msgstr "XThis category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:181
 msgid ""
 "This category contains rules for vulnerabilities present inside of "
 "multimedia files (mp3, movies, wmv)"
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:182
 msgid ""
 "This category contains rules for vulnerabilities present inside of files "
 "belonging to the Microsoft Office suite of software. (Excel, PowerPoint, "
 "Word, Visio, Access, Outlook, etc)"
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:183
 msgid ""
 "This category contains rules for vulnerabilities found inside of PDF files. "
 "Regardless of method of creation, delivery method, or which piece of "
 "software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:184
 msgid ""
 "This category contains rules for vulnerabilities present inside a file, that "
 "doesn't fit into the other categories above."
-msgstr "XX"
+msgstr "XThis category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:185
 msgid ""
 "This category contains rules that are clearly to be used only for the "
 "detection of a positively compromised system, false positives may occur."
-msgstr "XX"
+msgstr "XThis category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:186
 msgid ""
 "This category contains rules that are clearly used only for the detection of "
 "obfuscated content. Like encoded JavaScript rules."
-msgstr "XX"
+msgstr "XThis category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:187
 msgid ""
 "This category contains rules that are simply looking for simple "
 "identification markers of shellcode in traffic. This replaces the old "
 "'shellcode.rules'."
-msgstr "XX"
+msgstr "XThis category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old 'shellcode.rules'.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:188
 msgid ""
@@ -319,7 +295,7 @@ msgid ""
 "of detection will be here. A simple example would be the detection for "
 "BackOrifice as it listens on a specific port and then executes the commands "
 "sent."
-msgstr "XX"
+msgstr "XThis category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:189
 msgid ""
@@ -327,44 +303,44 @@ msgid ""
 "identified botnet traffic. This includes call home, downloading of dropped "
 "files, and ex-filtration of data. Actual commands issued from 'Master to "
 "Zombie' type stuff will also be here."
-msgstr "XX"
+msgstr "XThis category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from 'Master to Zombie' type stuff will also be here.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:190
 msgid ""
 "This category contains rules that deal with tools that can be considered "
 "malicious in nature. For example, LOIC."
-msgstr "XX"
+msgstr "XThis category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:191
 msgid ""
 "This category contains rules that are malware related, but don't fit into "
 "one of the other 'malware' categories."
-msgstr "XX"
+msgstr "XThis category contains rules that are malware related, but don't fit into one of the other 'malware' categories.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:192
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Linux "
 "based OSes. Not for browsers or any other software on it, but simply against "
 "the OS itself."
-msgstr "XX"
+msgstr "XThis category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:193
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Solaris "
 "based OSes. Not for any browsers or any other software on top of the OS."
-msgstr "XX"
+msgstr "XThis category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:194
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Windows "
 "based OSes. Not for any browsers or any other software on top of the OS."
-msgstr "XX"
+msgstr "XThis category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:195
 msgid ""
 "This category contains rules that are looking for vulnerabilities in an OS "
 "that is not listed above."
-msgstr "XX"
+msgstr "XThis category contains rules that are looking for vulnerabilities in an OS that is not listed above.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:196
 msgid ""
@@ -372,141 +348,141 @@ msgid ""
 "multimedia. Examples like the detection of the use of iTunes on the network. "
 "This is not for vulnerabilities found within multimedia files, as that would "
 "be in file-multimedia."
-msgstr "XX"
+msgstr "XThis category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:197
 msgid ""
 "This category contains rules for the detection potential violations of "
 "policy on corporate networks for the use of social media. (p2p, chat, etc)"
-msgstr "XX"
+msgstr "XThis category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:198
 msgid ""
 "This category is for rules that may violate the end-users corporate policy "
 "bud do not fall into any of the other policy categories first."
-msgstr "XX"
+msgstr "XThis category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:199
 msgid ""
 "This category is for rules that may indicate the presence of spam on the "
 "network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of spam on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:200
 msgid ""
 "This category is for rules that may indicate the presence of the finger "
 "protocol or vulnerabilities in the finger protocol on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:201
 msgid ""
 "This category is for rules that may indicate the presence of the ftp "
 "protocol or vulnerabilities in the ftp protocol on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:202
 msgid ""
 "This category is for rules that may indicate the presence of icmp traffic or "
 "vulnerabilities in icmp on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:203
 msgid ""
 "This category is for rules that may indicate the presence of the imap "
 "protocol or vulnerabilities in the imap protocol on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:204
 msgid ""
 "This category is for rules that may indicate the presence of the pop "
 "protocol or vulnerabilities in the pop protocol on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:205
 msgid ""
 "This category is for rules that may indicate the presence of the rservices "
 "protocol or vulnerabilities in the rservices protocols on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:206
 msgid ""
 "This category is for rules that may indicate the presence of voip services "
 "or vulnerabilities in the voip protocol on the network."
-msgstr "XX"
+msgstr "XThis category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:207
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with adware or spyware."
-msgstr "XX"
+msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with adware or spyware.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:208
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with p2p."
-msgstr "XX"
+msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with p2p.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:209
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with toolbars installed on the client system. (Google Toolbar, Yahoo "
 "Toolbar, Hotbar, etc)"
-msgstr "XX"
+msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:210
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "don't fit into one of the categories shown above."
-msgstr "XX"
+msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that don't fit into one of the categories shown above.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:211
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Apache "
 "Web Server."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against the Apache Web Server.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:212
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Microsoft "
 "IIS Web server."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:213
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Microsoft "
 "SQL Server."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against the Microsoft SQL Server.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:214
 msgid ""
 "This category deals with vulnerabilities in or attacks against Oracle's "
 "MySQL server."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against Oracle's MySQL server.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:215
 msgid ""
 "This category deals with vulnerabilities in or attacks against Oracle's "
 "Oracle DB Server."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:216
 msgid ""
 "This category deals with vulnerabilities in or attacks against Web based "
 "applications on servers."
-msgstr "XX"
+msgstr "XThis category deals with vulnerabilities in or attacks against Web based applications on servers.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:217
 msgid ""
 "This category contains rules that detect vulnerabilities in mail servers. "
 "(Exchange, Courier). These are separate from the protocol categories, as "
 "those deal with the traffic going to the mail servers itself."
-msgstr "XX"
+msgstr "XThis category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:218
 msgid ""
 "This category contains rules that detect vulnerabilities in or attacks "
 "against servers that are not detailed in the above list."
-msgstr "XX"
+msgstr "XThis category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:247
 msgid "Status"
@@ -536,7 +512,7 @@ msgstr "XSetup WizardX"
 msgid ""
 " Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion "
 "Prevention."
-msgstr "XX"
+msgstr "X Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:283
 msgid "Run Intrusion Detection/Prevention Setup Wizard"
@@ -551,7 +527,7 @@ msgid ""
 "{0} continues to maintain the default signature settings through automatic "
 "updates. You are free to modify and add signatures, however it is not "
 "required."
-msgstr "XX"
+msgstr "X{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:293
 msgid "Updates"
@@ -756,7 +732,7 @@ msgstr "XSetup Wizard WarningX"
 msgid ""
 "You have not finished configuring Intrusion Prevention. Please run the Setup "
 "Wizard again."
-msgstr "XX"
+msgstr "XYou have not finished configuring Intrusion Prevention. Please run the Setup Wizard again.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1053
 msgid "Intrusion Prevention Warning"
@@ -766,7 +742,7 @@ msgstr "XIntrusion Prevention WarningX"
 msgid ""
 "Settings have been changed by rule updater.  Current changes must be "
 "discarded."
-msgstr "XX"
+msgstr "XSettings have been changed by rule updater.  Current changes must be discarded.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1075
 msgid "Saving and creating settings (this may take a few minutes)..."
@@ -792,7 +768,7 @@ msgid ""
 "enabled ruled performs an action, either logging or blocking traffic.  Not "
 "all rules are necessary for a given network environment and enabling all of "
 "them may negatively impact your network."
-msgstr "XX"
+msgstr "XIntrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1158
 msgid ""
@@ -800,7 +776,7 @@ msgid ""
 "amount of rules for your network by selecting rule identifiers: classtypes "
 "and categories.  The more that you select, the more rules will be enabled.  "
 "Again, too many enabled rules may negatively impact your network."
-msgstr "XX"
+msgstr "XThis wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1162
 msgid "It is highly suggested that you use Recommended values."
@@ -810,7 +786,7 @@ msgstr "XIt is highly suggested that you use Recommended values.X"
 msgid ""
 "WARNING: Completing this setup wizard will overwrite the previous settings "
 "with new settings. All previous settings will be lost!"
-msgstr "XX"
+msgstr "XWARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1175
 msgid "Welcome"
@@ -827,11 +803,6 @@ msgstr "XSetup Wizard ErrorX"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
 msgstr "XUnable to obtain default settings.  Please run the Setup Wizard again.X"
-"XUnable to obtain default settings.  Please run the Setup Wizard again."
-"XXUnable to obtain default settings.  Please run the Setup Wizard again."
-"XXUnable to obtain default settings.  Please run the Setup Wizard again."
-"XXUnable to obtain default settings.  Please run the Setup Wizard again."
-"XXUnable to obtain default settings.  Please run the Setup Wizard again.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1263
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1288
@@ -844,7 +815,7 @@ msgstr "XClasstypesX"
 msgid ""
 "Classtypes are a generalized  grouping for rules, such as attempts to gain "
 "user access."
-msgstr "XX"
+msgstr "XClasstypes are a generalized  grouping for rules, such as attempts to gain user access.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1301
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1443
@@ -874,7 +845,7 @@ msgstr "XCategoriesX"
 msgid ""
 "Categories are a different rule grouping that can span multiple classtypes, "
 "such as VOIP access."
-msgstr "XX"
+msgstr "XCategories are a different rule grouping that can span multiple classtypes, such as VOIP access.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1457
 msgid "Select by name"

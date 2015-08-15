@@ -1,32 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr "XX"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
-"PO-Revision-Date: 2012-01-09 08:25-0800\n"
-"Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
-"Language-Team: Dirk Morris <dmorris@untangle.com>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXProject-Id-Version: Untangle\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 1.1.0\n"
-"X-Poedit-Language: Test\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:18
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
-msgstr "XX"
+msgstr "XA name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:61
 msgid "Connected Remote Clients"
@@ -74,7 +50,7 @@ msgstr "XRemote Server StatusX"
 msgid ""
 "The Remote Server Status list shows the current status of the configured "
 "remote servers."
-msgstr "XX"
+msgstr "XThe Remote Server Status list shows the current status of the configured remote servers.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:140
 msgid "Name"
@@ -173,13 +149,13 @@ msgstr "XImport failureX"
 msgid ""
 "These settings configure how OpenVPN will connect to remote servers as a "
 "client."
-msgstr "XX"
+msgstr "XThese settings configure how OpenVPN will connect to remote servers as a client.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:338
 msgid ""
 "Remote Servers is a list remote OpenVPN servers that OpenVPN should connect "
 "to as a client."
-msgstr "XX"
+msgstr "XRemote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:346
 msgid "Download OpenVPN Client"
@@ -198,7 +174,7 @@ msgstr "XThese files can be used to configure your Remote Clients.X"
 msgid ""
 "This file can be used to configure Chromebook clients.  On the target "
 "device, browse to <b>chrome://net-internals</b> and use Import ONC file."
-msgstr "XX"
+msgstr "XThis file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:389
 msgid "Close"
@@ -226,19 +202,19 @@ msgstr "XClick here to download this client's Windows setup.exe file.X"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:420
 msgid ""
 "Click here to download this client's configuration onc file for Chromebook."
-msgstr "XX"
+msgstr "XClick here to download this client's configuration onc file for Chromebook.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:426
 msgid ""
 "Click here to download this client's configuration zip file for other OSs "
 "(apple/linux/etc). "
-msgstr "XX"
+msgstr "XClick here to download this client's configuration zip file for other OSs (apple/linux/etc). X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:427
 msgid ""
 "Click here to download this client's configuration file for remote Untangle "
 "OpenVPN clients."
-msgstr "XX"
+msgstr "XClick here to download this client's configuration file for remote Untangle OpenVPN clients.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:440
 msgid "Remote Clients"
@@ -350,7 +326,7 @@ msgstr "XServerX"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:875
 msgid ""
 "These settings configure how OpenVPN will be a server for remote clients."
-msgstr "XX"
+msgstr "XThese settings configure how OpenVPN will be a server for remote clients.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:880
 msgid "Site Name"
@@ -389,7 +365,7 @@ msgstr "XWarningX"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:965
 msgid ""
 "Changing the protocol will require redistributing ALL of the openvpn clients."
-msgstr "XX"
+msgstr "XChanging the protocol will require redistributing ALL of the openvpn clients.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:966
 msgid "Do you want to continue anyway?"
@@ -428,7 +404,7 @@ msgstr "XYou must create at least one group.X"
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
-msgstr "XX"
+msgstr "XThe group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
 msgid "The group name: \"{0}\" in row: {1} already exists."

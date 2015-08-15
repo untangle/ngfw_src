@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 16:08-0700\n"
+"POT-Creation-Date: 2015-08-14 16:28-0700\n"
 "PO-Revision-Date: 2010-04-12 18:57-0700\n"
 "Last-Translator: Nito Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr "編集"
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:44
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: ../../uvm/servlets/webui/root/script/config/network.js:657
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1623
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1630
 msgid "Delete"
 msgstr "削除"
 
@@ -239,8 +239,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/window.js:255
 #: ../../uvm/servlets/webui/root/script/window.js:400
 #: ../../uvm/servlets/webui/root/script/util.js:79
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
 msgid "Please wait"
 msgstr "お待ちください"
 
@@ -342,7 +342,7 @@ msgid "Value"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:142
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1544
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1551
 msgid "[enter column]"
 msgstr ""
 
@@ -355,8 +355,8 @@ msgid "[select operator]"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:172
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1182
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1601
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1189
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1608
 msgid "[no value]"
 msgstr ""
 
@@ -498,33 +498,33 @@ msgid "Time Chart Style"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:360
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:670
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Line"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:361
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:671
 msgid "Area"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:362
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:672
 msgid "Bar 3D"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:363
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:673
 msgid "Bar 3D Overlapped"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:364
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:674
 msgid "Bar"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:365
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:675
 msgid "Bar Overlapped"
 msgstr ""
 
@@ -3756,8 +3756,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:480
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:492
 #: ../../uvm/servlets/webui/root/script/config/network.js:1661
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
 #, fuzzy
 msgid "None"
@@ -5849,7 +5849,7 @@ msgid "Download system logs."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:232
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:484
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:491
 msgid "Download"
 msgstr ""
 
@@ -6842,7 +6842,7 @@ msgid "Close"
 msgstr "閉じる"
 
 #: ../../uvm/servlets/webui/root/script/window.js:547
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1882
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 #, fuzzy
 msgid "Done"
 msgstr "完了"
@@ -7588,131 +7588,131 @@ msgstr ""
 msgid "Select Events"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:423
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:430
 msgid "Others"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:458
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
 msgid "Loading report... "
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:472
 msgid "Customize"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:468
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1221
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:475
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1228
 msgid "Advanced report customization"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:483
 msgid "View Events"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:478
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:485
 msgid "View events for this report"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:522
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:529
 msgid "data"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:527
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:610
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:534
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:617
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:532
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:539
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 msgid "none"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:571
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:578
 msgid "Not enough data to generate the chart."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:618
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1143
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1507
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:625
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1150
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1514
 msgid "Add Condition"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:670
 msgid "Switch to Line Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:671
 msgid "Switch to Area Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:672
 msgid "Switch to Bar 3D Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:673
 msgid "Switch to Bar 3D Overlapped Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:674
 msgid "Switch to Bar Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:675
 msgid "Switch to Bar Overlapped Chart"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:947
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:954
 msgid "Refreshing report... "
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:962
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:969
 msgid "Querying Database..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1009
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1039
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1016
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1046
 msgid "Fetching Events..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
 msgid "Downloading Chart..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
 msgid "Exporting Events..."
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1157
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1164
 msgid "Add a condition using report data:"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1251
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1258
 msgid "Events for report: {0}"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
 msgid "Conditions: {0}"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1508
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
 msgid "Add New Condition"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1522
 msgid "Quick Add"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1519
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1526
 msgid "Delete All"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1520
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1527
 msgid "Delete All Conditions"
 msgstr ""
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1855
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1862
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:269
@@ -7727,7 +7727,7 @@ msgstr ""
 msgid "Time"
 msgstr "時間"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1896
 msgid "Clear Value"
 msgstr ""
 

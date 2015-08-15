@@ -1,27 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr "XX"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
-"PO-Revision-Date: 2012-01-09 08:25-0800\n"
-"Last-Translator: Dirk Morris <dmorris@untangle.com>\n"
-"Language-Team: Dirk Morris <dmorris@untangle.com>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXProject-Id-Version: Untangle\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 1.1.0\n"
-"X-Poedit-Language: Test\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:34
 msgid "Field condition"
 msgstr "XField conditionX"
@@ -101,7 +77,7 @@ msgstr "XDaily ReportsX"
 msgid ""
 "Daily Reports covers the previous day. Daily reports will be generated on "
 "the selected days."
-msgstr "XX"
+msgstr "XDaily Reports covers the previous day. Daily reports will be generated on the selected days.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:182
 msgid "Weekly Reports"
@@ -111,7 +87,7 @@ msgstr "XWeekly ReportsX"
 msgid ""
 "Weekly Reports covers the previous week. Weekly reports will be generated on "
 "the selected days."
-msgstr "XX"
+msgstr "XWeekly Reports covers the previous week. Weekly reports will be generated on the selected days.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
 msgid "Monthly Reports"
@@ -120,11 +96,6 @@ msgstr "XMonthly ReportsX"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:205
 msgid "Monthly Reports are generated on the 1st and cover the previous month."
 msgstr "XMonthly Reports are generated on the 1st and cover the previous month.X"
-"XMonthly Reports are generated on the 1st and cover the previous month."
-"XXMonthly Reports are generated on the 1st and cover the previous month."
-"XXMonthly Reports are generated on the 1st and cover the previous month."
-"XXMonthly Reports are generated on the 1st and cover the previous month."
-"XXMonthly Reports are generated on the 1st and cover the previous month.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:209
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:774
@@ -147,7 +118,7 @@ msgstr "XData RetentionX"
 msgid ""
 "Keep event data for this number of days. The smaller the number the lower "
 "the disk space requirements and resource usage during report generation."
-msgstr "XX"
+msgstr "XKeep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 msgid "Warning"
@@ -157,7 +128,7 @@ msgstr "XWarningX"
 msgid ""
 "Depending on the server and network, increasing this value may cause "
 "performance issues."
-msgstr "XX"
+msgstr "XDepending on the server and network, increasing this value may cause performance issues.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:255
 msgid "Data Retention days"
@@ -245,7 +216,7 @@ msgstr "XSyslogX"
 msgid ""
 "If enabled logged events will be sent in real-time to a remote syslog for "
 "custom processing."
-msgstr "XX"
+msgstr "XIf enabled logged events will be sent in real-time to a remote syslog for custom processing.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:503
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
@@ -417,7 +388,7 @@ msgstr "XNoteX"
 msgid ""
 " <b>Alert Rules</b> process all events to log and/or alert administrators "
 "when special or noteworthy events occur."
-msgstr "XX"
+msgstr "X <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:897
 msgid "Rule Id"
@@ -767,7 +738,7 @@ msgstr "XAn following event occurred on theX"
 msgid ""
 "This is an automated message sent because the event matched the configured "
 "Alert Rules."
-msgstr "XX"
+msgstr "XThis is an automated message sent because the event matched the configured Alert Rules.X"
 
 #: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:459
 msgid "Invalid Settings"

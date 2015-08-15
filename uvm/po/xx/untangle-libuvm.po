@@ -7,7 +7,7 @@ msgstr "XEditX"
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:44
 #: ../../uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: ../../uvm/servlets/webui/root/script/config/network.js:657
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1623
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1630
 msgid "Delete"
 msgstr "XDeleteX"
 
@@ -171,7 +171,7 @@ msgstr "XImport failed. Imported file has no records.X"
 msgid ""
 "Import failed. Imported file contains {0} invalid records and no valid "
 "records."
-msgstr "XX"
+msgstr "XImport failed. Imported file contains {0} invalid records and no valid records.X"
 
 #: ../../uvm/servlets/webui/root/script/gridPanel.js:517
 msgid "Exporting Settings..."
@@ -221,8 +221,8 @@ msgstr "XExporting Settings...X"
 #: ../../uvm/servlets/webui/root/script/window.js:255
 #: ../../uvm/servlets/webui/root/script/window.js:400
 #: ../../uvm/servlets/webui/root/script/util.js:79
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
 msgid "Please wait"
 msgstr "XPlease waitX"
 
@@ -324,7 +324,7 @@ msgid "Value"
 msgstr "XValueX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:142
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1544
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1551
 msgid "[enter column]"
 msgstr "X[enter column]X"
 
@@ -337,8 +337,8 @@ msgid "[select operator]"
 msgstr "X[select operator]X"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:172
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1182
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1601
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1189
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1608
 msgid "[no value]"
 msgstr "X[no value]X"
 
@@ -480,33 +480,33 @@ msgid "Time Chart Style"
 msgstr "XTime Chart StyleX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:360
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:670
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Line"
 msgstr "XLineX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:361
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:671
 msgid "Area"
 msgstr "XAreaX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:362
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:672
 msgid "Bar 3D"
 msgstr "XBar 3DX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:363
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:673
 msgid "Bar 3D Overlapped"
 msgstr "XBar 3D OverlappedX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:364
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:674
 msgid "Bar"
 msgstr "XBarX"
 
 #: ../../uvm/servlets/webui/root/script/reportEditor.js:365
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:675
 msgid "Bar Overlapped"
 msgstr "XBar OverlappedX"
 
@@ -700,7 +700,7 @@ msgstr "XBuy NowX"
 msgid ""
 "The <B>Status Indicator</B> shows the current operating condition of a "
 "particular application."
-msgstr "XX"
+msgstr "XThe <B>Status Indicator</B> shows the current operating condition of a particular application.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:400
 msgid "Green"
@@ -718,7 +718,7 @@ msgstr "XRedX"
 msgid ""
 "indicates that the application is \"on\", but that an abnormal condition has "
 "occurred."
-msgstr "XX"
+msgstr "Xindicates that the application is \"on\", but that an abnormal condition has occurred.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:404
 msgid "Yellow"
@@ -736,18 +736,18 @@ msgstr "XClearX"
 msgid ""
 "indicates that the application is \"off\", and may be turned \"on\" by the "
 "user."
-msgstr "XX"
+msgstr "Xindicates that the application is \"off\", and may be turned \"on\" by the user.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:414
 msgid ""
 "The <B>Power Button</B> allows you to turn a application \"on\" and \"off\"."
-msgstr "XX"
+msgstr "XThe <B>Power Button</B> allows you to turn a application \"on\" and \"off\".X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:422
 msgid ""
 "This app belongs to the parent rack shown above.<br/> To access the settings "
 "for this app, select the parent rack."
-msgstr "XX"
+msgstr "XThis app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:497
 msgid "Unable to start {0}"
@@ -1340,7 +1340,7 @@ msgid ""
 "If new upgrades are available at the specified upgrade time they will be "
 "automatically downloaded and installed. During the install the system may be "
 "rebooted resulting in momentary loss of connectivicty."
-msgstr "XX"
+msgstr "XIf new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.X"
 
 #: ../../uvm/servlets/webui/root/script/config/upgrade.js:161
 msgid "Do Not Automatically Install Upgrades"
@@ -1351,13 +1351,13 @@ msgid ""
 "If new upgrades are available at the specified upgrade time they will be not "
 "be installed. All upgrades must be manually installed using the button on "
 "the Upgrade tab."
-msgstr "XX"
+msgstr "XIf new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.X"
 
 #: ../../uvm/servlets/webui/root/script/config/upgrade.js:179
 msgid ""
 "Note: Turning off Automatic Upgrades does not disable signature & list "
 "updates"
-msgstr "XX"
+msgstr "XNote: Turning off Automatic Upgrades does not disable signature & list updatesX"
 
 #: ../../uvm/servlets/webui/root/script/config/upgrade.js:182
 msgid "Automatic Upgrade Schedule"
@@ -2388,13 +2388,13 @@ msgstr "XNote:X"
 msgid ""
 "HTTP is open on non-WANs (internal interfaces) for blockpages and other "
 "services."
-msgstr "XX"
+msgstr "XHTTP is open on non-WANs (internal interfaces) for blockpages and other services.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:339
 msgid ""
 "This settings only controls the availability of <b>administration</b> via "
 "HTTP."
-msgstr "XX"
+msgstr "XThis settings only controls the availability of <b>administration</b> via HTTP.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:349
 msgid "Public Address"
@@ -2406,7 +2406,7 @@ msgid ""
 "the {0} Server. This address will be used in emails sent by the {0} Server "
 "to link back to services hosted on the {0} Server such as Quarantine Digests "
 "and OpenVPN Client emails."
-msgstr "XX"
+msgstr "XThe Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:360
 msgid "Use IP address from External interface (default)"
@@ -2415,9 +2415,6 @@ msgstr "XUse IP address from External interface (default)X"
 #: ../../uvm/servlets/webui/root/script/config/administration.js:378
 msgid "This works if your {0} Server has a routable public static IP address."
 msgstr "XThis works if your {0} Server has a routable public static IP address.X"
-"XThis works if your {0} Server has a routable public static IP address."
-"XXThis works if your {0} Server has a routable public static IP address."
-"XXThis works if your {0} Server has a routable public static IP address.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:381
 msgid "Use Hostname"
@@ -2427,7 +2424,7 @@ msgstr "XUse HostnameX"
 msgid ""
 "This is recommended if the {0} Server's fully qualified domain name looks up "
 "to its IP address both internally and externally."
-msgstr "XX"
+msgstr "XThis is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:404
 msgid "Current Hostname: {0}"
@@ -2442,7 +2439,7 @@ msgid ""
 "This is recommended if the {0} Server is installed behind another firewall "
 "with a port forward from the specified hostname/IP that redirects traffic to "
 "the {0} Server."
-msgstr "XX"
+msgstr "XThis is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:440
 msgid "IP/Hostname"
@@ -2485,7 +2482,7 @@ msgid ""
 "certificate. To eliminate certificate security warnings on client computers "
 "and devices, you should download the root certificate and add it to the list "
 "of trusted authorities on each client connected to your network."
-msgstr "XX"
+msgstr "XThe Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:485
 #: ../../uvm/servlets/webui/root/script/config/administration.js:567
@@ -2511,7 +2508,7 @@ msgstr "XGenerate Certificate AuthorityX"
 msgid ""
 "Click here to re-create the internal certificate authority.  Use this to "
 "change the information in the Subject DN of the root certificate."
-msgstr "XX"
+msgstr "XClick here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:523
 msgid "Download Root Certificate"
@@ -2522,7 +2519,7 @@ msgid ""
 "Click here to download the root certificate.  Installing this certificate on "
 "client devices will allow them to trust certificates generated by this "
 "server."
-msgstr "XX"
+msgstr "XClick here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:543
 msgid "Download Root Certificate Installer"
@@ -2532,7 +2529,7 @@ msgstr "XDownload Root Certificate InstallerX"
 msgid ""
 "Click here to download the root certificate installer.  It installs the root "
 "certificate appropriately on a Windows device."
-msgstr "XX"
+msgstr "XClick here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:558
 msgid "Server Certificate"
@@ -2545,7 +2542,7 @@ msgid ""
 "create a certificate signed by the Certificate Authority created and "
 "displayed above, or you can purchase a certificate that is signed by a third "
 "party certificate authority such as Thawte, Verisign, etc."
-msgstr "XX"
+msgstr "XThe Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:577
 msgid "Issuer DN"
@@ -2565,7 +2562,7 @@ msgid ""
 "Click here to create a server certificate signed by the Certificate "
 "Authority displayed above.  Use this to change the information in the "
 "Subject DN of the server certificate."
-msgstr "XX"
+msgstr "XClick here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:610
 msgid "Third Party Server Certificate"
@@ -2579,7 +2576,7 @@ msgid ""
 "downloaded to your computer.  You will provide this file to the certificate "
 "vendor of your choice, and they will use it to create a signed server "
 "certificate which you can import using the second button below."
-msgstr "XX"
+msgstr "XTo use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:628
 #: ../../uvm/servlets/webui/root/script/config/administration.js:631
@@ -2590,7 +2587,7 @@ msgstr "XCreate Signature Signing RequestX"
 msgid ""
 "Click here to generate and download a new Certificate Signing Request (CSR) "
 "to your computer."
-msgstr "XX"
+msgstr "XClick here to generate and download a new Certificate Signing Request (CSR) to your computer.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:651
 #: ../../uvm/servlets/webui/root/script/config/administration.js:904
@@ -2601,7 +2598,7 @@ msgstr "XImport Signed Server CertificateX"
 msgid ""
 "Click here to upload a signed server certificate that you received from the "
 "CSR you created in step one."
-msgstr "XX"
+msgstr "XClick here to upload a signed server certificate that you received from the CSR you created in step one.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:713
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:431
@@ -2621,7 +2618,7 @@ msgstr "XState/ProvinceX"
 msgid ""
 "Name of state, province, region, territory where your organization is "
 "located. Please enter the full name. Do not abbreviate."
-msgstr "XX"
+msgstr "XName of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:730
 msgid "City/Locality"
@@ -2631,7 +2628,7 @@ msgstr "XCity/LocalityX"
 msgid ""
 "Name of the city/locality in which your organization is registered/located. "
 "Please spell out the name of the city/locality. Do not abbreviate."
-msgstr "XX"
+msgstr "XName of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:736
 msgid "Organization"
@@ -2645,7 +2642,7 @@ msgid ""
 "proprietor, please enter the certificate requester's name in the "
 "'Organization' field, and the DBA (doing business as) name in the "
 "'Organizational Unit' field."
-msgstr "XX"
+msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:742
 msgid "Organizational Unit "
@@ -2656,7 +2653,7 @@ msgid ""
 "Optional. Use this field to differentiate between divisions within an "
 "organization. For example, 'Engineering' or 'Human Resources.' If "
 "applicable, you may enter the DBA (doing business as) name in this field."
-msgstr "XX"
+msgstr "XOptional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:748
 msgid "Common Name"
@@ -2668,7 +2665,7 @@ msgid ""
 "domain name of the website for which you will be using the certificate (e."
 "g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' "
 "prefixes in your common name. Do NOT enter your personal name in this field."
-msgstr "XX"
+msgstr "XThe name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:755
 msgid "Subject Alternative Names"
@@ -2679,7 +2676,7 @@ msgid ""
 "Optional. Use this field to enter a comma seperated list of one or more "
 "alternative host names or IP addresses that may be used to access the "
 "website for which you will be using the certificate."
-msgstr "XX"
+msgstr "XOptional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:764
 msgid "Generate"
@@ -2719,7 +2716,7 @@ msgstr "XSuccessX"
 msgid ""
 "Certificate Authority generation successfully completed. Click OK to "
 "continue."
-msgstr "XX"
+msgstr "XCertificate Authority generation successfully completed. Click OK to continue.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:856
 #: ../../uvm/servlets/webui/root/script/config/administration.js:895
@@ -2730,9 +2727,6 @@ msgstr "XFailureX"
 #: ../../uvm/servlets/webui/root/script/config/administration.js:856
 msgid "Error during Certificate Authority generation.  Click OK to continue."
 msgstr "XError during Certificate Authority generation.  Click OK to continue.X"
-"XError during Certificate Authority generation.  Click OK to continue."
-"XXError during Certificate Authority generation.  Click OK to continue."
-"XXError during Certificate Authority generation.  Click OK to continue.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:881
 msgid "Generating server certificate and restarting web server..."
@@ -2759,7 +2753,7 @@ msgstr "XPlease WaitX"
 msgid ""
 "Certificate generation successfully completed. Click OK to return to the "
 "main page."
-msgstr "XX"
+msgstr "XCertificate generation successfully completed. Click OK to return to the main page.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:895
 msgid "Error during certificate generation."
@@ -2785,7 +2779,7 @@ msgstr "XUploading server certificate and restarting web server...X"
 msgid ""
 "Certificate upload successfully completed. Click OK to return to the main "
 "page."
-msgstr "XX"
+msgstr "XCertificate upload successfully completed. Click OK to return to the main page.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1027
 msgid "Password is too short."
@@ -3028,7 +3022,7 @@ msgid ""
 "not, the email settings may not be correct.<br/><br/>It is recommended to "
 "verify that the email settings work for sending to both internal (your "
 "domain) and external email addresses."
-msgstr "XX"
+msgstr "XEnter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:180
 #: ../../uvm/servlets/webui/root/script/config/email.js:382
@@ -3066,7 +3060,7 @@ msgid ""
 "such as reports, quarantine digests, etc. <br/>In most cases the default "
 "setting should work. If not, specify a valid SMTP server that will relay "
 "mail for the {0} Server."
-msgstr "XX"
+msgstr "XThe Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify a valid SMTP server that will relay mail for the {0} Server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:251
 msgid "Send email directly (default)"
@@ -3132,7 +3126,7 @@ msgid ""
 "The Email Test will send an email to a specified address with the current "
 "configuration. If the test email is not received your settings may be "
 "incorrect."
-msgstr "XX"
+msgstr "XThe Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:395
 msgid "Save Changes?"
@@ -3142,7 +3136,7 @@ msgstr "XSave Changes?X"
 msgid ""
 "Your current settings have not been saved yet.{0}Would you like to save your "
 "settings before executing the test?"
-msgstr "XX"
+msgstr "XYour current settings have not been saved yet.{0}Would you like to save your settings before executing the test?X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:426
 #: ../../uvm/servlets/webui/root/script/config/email.js:622
@@ -3222,7 +3216,7 @@ msgstr "XQuarantine Digest Sending TimeX"
 msgid ""
 "Users can also request Quarantine Digest Emails manually at this link: "
 "<b>https://{0}/quarantine/</b>"
-msgstr "XX"
+msgstr "XUsers can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:727
 msgid "User Quarantines"
@@ -3260,7 +3254,7 @@ msgstr "XEmail Quarantine Details for: X"
 msgid ""
 "Email addresses on this list will have quarantines automatically created. "
 "All other emails will be marked and not quarantined."
-msgstr "XX"
+msgstr "XEmail addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:845
 msgid "Quarantinable Addresses"
@@ -3299,7 +3293,7 @@ msgid ""
 "This is a list of email addresses whose quarantine digest gets forwarded to "
 "another account. This is common for distribution lists where the whole list "
 "should not receive the digest."
-msgstr "XX"
+msgstr "XThis is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:884
 msgid "Quarantine Forwards"
@@ -3706,8 +3700,8 @@ msgstr "XPriorityX"
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:480
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:492
 #: ../../uvm/servlets/webui/root/script/config/network.js:1661
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
 msgid "None"
 msgstr "XNoneX"
@@ -3940,7 +3934,7 @@ msgstr "XLicensesX"
 msgid ""
 "Licenses determine entitlement to paid applications and services. Click "
 "Refresh to force reconciliation with the license server."
-msgstr "XX"
+msgstr "XLicenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:139
 msgid "The Current list of Licenses available on this Server."
@@ -4430,7 +4424,7 @@ msgstr "XRefresh Device StatusX"
 msgid ""
 "Click on a Device to open a combo and choose the desired Device from a list. "
 "When another Device is selected the 2 Devices are switched."
-msgstr "XX"
+msgstr "XClick on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:1207
 msgid "Vendor"
@@ -4450,7 +4444,7 @@ msgid ""
 "><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the "
 "desired Device from a list. When another Device is selected the 2 Devices "
 "are switched."
-msgstr "XX"
+msgstr "X<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:1326
 msgid "Interface configuration"
@@ -4460,7 +4454,7 @@ msgstr "XInterface configurationX"
 msgid ""
 "Use this page to configure each interface's configuration and its mapping to "
 "a physical network card."
-msgstr "XX"
+msgstr "XUse this page to configure each interface's configuration and its mapping to a physical network card.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:1355
 #: ../../uvm/servlets/webui/root/script/config/network.js:1462
@@ -4812,7 +4806,7 @@ msgstr "XLocal ServicesX"
 msgid ""
 "The specified HTTPS port will be forwarded from all interfaces to the local "
 "HTTPS server to provide administration and other services."
-msgstr "XX"
+msgstr "XThe specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2660
 msgid "HTTPS port"
@@ -4822,7 +4816,7 @@ msgstr "XHTTPS portX"
 msgid ""
 "The specified HTTP port will be forwarded on non-WAN interfaces to the local "
 "HTTP server to provide administration, blockpages, and other services."
-msgstr "XX"
+msgstr "XThe specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2681
 msgid "HTTP port"
@@ -4883,7 +4877,7 @@ msgstr "XTest 1: Verify pinging the <b>new destination</b>X"
 msgid ""
 "Test 2: Verify connecting to the new destination<br/><i>This test applies "
 "only to TCP port forwards.</i>"
-msgstr "XX"
+msgstr "XTest 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2878
 msgid "Connect Test"
@@ -4903,7 +4897,7 @@ msgstr "XPacket TestX"
 msgid ""
 "For more help troubleshooting port forwards view the<br/>{0}Port Forward "
 "Troubleshooting Guide{1}"
-msgstr "XX"
+msgstr "XFor more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2928
 msgid "Other"
@@ -4914,7 +4908,7 @@ msgid ""
 "Port Forward rules forward sessions matching the configured criteria from a "
 "public IP to an IP on an internal (NAT'd) network. The rules are evaluated "
 "in order."
-msgstr "XX"
+msgstr "XPort Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2947
 msgid "The following ports are currently reserved and can not be forwarded:"
@@ -4924,7 +4918,7 @@ msgstr "XThe following ports are currently reserved and can not be forwarded:X"
 msgid ""
 "Traffic matching the above description destined to any Untangle IP will be "
 "forwarded to the new location:"
-msgstr "XX"
+msgstr "XTraffic matching the above description destined to any Untangle IP will be forwarded to the new location:X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:2987
 msgid "Forward to the following location:"
@@ -4971,7 +4965,7 @@ msgstr "XNAT RulesX"
 msgid ""
 "NAT Rules control the rewriting of the IP source address of traffic (Network "
 "Address Translation). The rules are evaluated in order."
-msgstr "XX"
+msgstr "XNAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3246
 msgid "Enable NAT Rule"
@@ -5010,7 +5004,7 @@ msgid ""
 "Bypass Rules control what traffic is scanned by the applications. Bypassed "
 "traffic skips application processing. The rules are evaluated in order. "
 "Sessions that meet no rule are not bypassed."
-msgstr "XX"
+msgstr "XBypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3388
 msgid "Enable Bypass Rule"
@@ -5071,13 +5065,13 @@ msgstr "X[1.2.3.0]X"
 msgid ""
 "If <b>Next Hop</b> is an IP address that network will be routed via the "
 "specified IP address."
-msgstr "XX"
+msgstr "XIf <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3534
 msgid ""
 "If <b>Next Hop</b> is an interface that network will be routed <b>locally</"
 "b> on that interface."
-msgstr "XX"
+msgstr "XIf <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3551
 msgid " Refresh Routes "
@@ -5092,7 +5086,7 @@ msgid ""
 "Static Routes are global routes that control how traffic is routed by "
 "destination address. The most specific Static Route is taken for a "
 "particular packet, order is not important."
-msgstr "XX"
+msgstr "XStatic Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3575
 msgid "Current Routes"
@@ -5102,7 +5096,7 @@ msgstr "XCurrent RoutesX"
 msgid ""
 "Current Routes shows the current routing system's configuration and how all "
 "traffic will be routed."
-msgstr "XX"
+msgstr "XCurrent Routes shows the current routing system's configuration and how all traffic will be routed.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3587
 msgid "Static DNS Entries"
@@ -5183,7 +5177,7 @@ msgstr "XAdvancedX"
 msgid ""
 "Advanced settings require careful configuration. Misconfiguration can "
 "compromise the proper operation and security of your server."
-msgstr "XX"
+msgstr "XAdvanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:3865
 msgid "Options"
@@ -5250,7 +5244,7 @@ msgstr "XTotal: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) uploadX"
 msgid ""
 "{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth "
 "limits must be set for all WAN interfaces."
-msgstr "XX"
+msgstr "X{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:4220
 msgid "Upload Reservation"
@@ -5490,7 +5484,7 @@ msgstr "XNetwork TestsX"
 #: ../../uvm/servlets/webui/root/script/config/network.js:4992
 msgid ""
 "The <b>Connectivity Test</b> verifies a working connection to the Internet."
-msgstr "XX"
+msgstr "XThe <b>Connectivity Test</b> verifies a working connection to the Internet.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:4993
 msgid "Unable to complete the Connectivity Test."
@@ -5524,7 +5518,7 @@ msgstr "XTest Connectivity ResultX"
 msgid ""
 "The <b>Ping Test</b> can be used to test that a particular host or client "
 "can be pinged"
-msgstr "XX"
+msgstr "XThe <b>Ping Test</b> can be used to test that a particular host or client can be pingedX"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5034
 msgid "Unable to complete the Ping Test."
@@ -5568,7 +5562,7 @@ msgstr "XPlease enter a valid HostnameX"
 msgid ""
 "The <b>Connection Test</b> verifies that Untangle can open a TCP connection "
 "to a port on the given host or client."
-msgstr "XX"
+msgstr "XThe <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5151
 msgid "Unable to complete Connection test."
@@ -5581,9 +5575,6 @@ msgstr "XConnection Test OutputX"
 #: ../../uvm/servlets/webui/root/script/config/network.js:5231
 msgid "The <b>Traceroute Test</b> traces the route to a given host or client."
 msgstr "XThe <b>Traceroute Test</b> traces the route to a given host or client.X"
-"XThe <b>Traceroute Test</b> traces the route to a given host or client.XXThe "
-"<b>Traceroute Test</b> traces the route to a given host or client.XXThe "
-"<b>Traceroute Test</b> traces the route to a given host or client.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5232
 msgid "Unable to complete the Traceroute Test."
@@ -5613,7 +5604,7 @@ msgstr "XPlease enter a valid UrlX"
 msgid ""
 "The <b>Packet Test</b> can be used to view packets on the network wire for "
 "troubleshooting."
-msgstr "XX"
+msgstr "XThe <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5360
 msgid "Unable to complete the Packet Test."
@@ -5667,19 +5658,19 @@ msgstr "XA HTTP port must be specified.X"
 msgid ""
 "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth "
 "limits in WAN Bandwidth for all WAN interfaces."
-msgstr "XX"
+msgstr "XQoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5616
 msgid ""
 "The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
 "dangerous and not allowed! Refer to the documentation."
-msgstr "XX"
+msgstr "XThe \"Block All\" rule in \"Input Filter Rules\" is disabled. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5627
 msgid ""
 "The \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
 "dangerous and not allowed! Refer to the documentation."
-msgstr "XX"
+msgstr "XThe \"Block All\" rule in \"Input Filter Rules\" is missing. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5639
 msgid "The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled."
@@ -5689,7 +5680,7 @@ msgstr "XThe \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled.X"
 msgid ""
 "If the admin/root password is poorly chosen, enabling SSH can be very "
 "dangerous and will compromise the security of the server."
-msgstr "XX"
+msgstr "XIf the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5641
 msgid "Do you want to continue anyway?"
@@ -5801,7 +5792,7 @@ msgid "Download system logs."
 msgstr "XDownload system logs.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:232
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:484
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:491
 msgid "Download"
 msgstr "XDownloadX"
 
@@ -5826,7 +5817,7 @@ msgid ""
 "The server is about to manually reboot.  This will interrupt normal network "
 "operations until the {0} Server is finished automatically restarting. This "
 "may take up to several minutes to complete."
-msgstr "XX"
+msgstr "XThe server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:258
 msgid "Manual Reboot Failure Warning"
@@ -5859,7 +5850,7 @@ msgstr "XManual Shutdown WarningX"
 #: ../../uvm/servlets/webui/root/script/config/system.js:281
 msgid ""
 "The {0} Server is about to shutdown.  This will stop all network operations."
-msgstr "XX"
+msgstr "XThe {0} Server is about to shutdown.  This will stop all network operations.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:286
 msgid "Manual Shutdown Failure Warning"
@@ -5891,7 +5882,7 @@ msgstr "XSetup Wizard WarningX"
 msgid ""
 "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server "
 "and {1}overwrite your current settings.{2}"
-msgstr "XX"
+msgstr "XThe Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:319
 #: ../../uvm/servlets/webui/root/script/config/system.js:356
@@ -5914,7 +5905,7 @@ msgstr "XReset to Factory Defaults WarningX"
 msgid ""
 "This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL "
 "BE LOST."
-msgstr "XX"
+msgstr "XThis will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:340
 #: ../../uvm/servlets/webui/root/script/config/system.js:347
@@ -5942,14 +5933,14 @@ msgstr "XBackup to FileX"
 msgid ""
 "Backup can save the current system configuration to a file on your local "
 "computer for later restoration. The file name will end with \".backup\""
-msgstr "XX"
+msgstr "XBackup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:390
 msgid ""
 "After backing up your current system configuration to a file, you can then "
 "restore that configuration through this dialog by going to \"Restore\" -> "
 "\"From File\"."
-msgstr "XX"
+msgstr "XAfter backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:408
 #: ../../uvm/servlets/webui/root/script/config/system.js:422
@@ -5978,7 +5969,7 @@ msgid ""
 "Restore can restore a previous system configuration to the server from a "
 "backup file on your local computer.  The backup file name ends with \".backup"
 "\""
-msgstr "XX"
+msgstr "XRestore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:448
 msgid "Restore Options"
@@ -5995,7 +5986,7 @@ msgstr "XRestore all except keep current network settings.X"
 #: ../../uvm/servlets/webui/root/script/config/system.js:485
 msgid ""
 "These settings should not be changed unless instructed to do so by support."
-msgstr "XX"
+msgstr "XThese settings should not be changed unless instructed to do so by support.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:490
 msgid "HTTP"
@@ -6069,7 +6060,7 @@ msgstr "XForce Time SynchronizationX"
 msgid ""
 "Forced time synchronization can cause problems if the current date is far in "
 "the future."
-msgstr "XX"
+msgstr "XForced time synchronization can cause problems if the current date is far in the future.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:689
 msgid "A reboot is suggested after time sychronization."
@@ -6276,7 +6267,7 @@ msgstr "XAccess to your account on untangle.comX"
 msgid ""
 "Manage your licences, renewals, servers, and contact info all from one "
 "dashboard."
-msgstr "XX"
+msgstr "XManage your licences, renewals, servers, and contact info all from one dashboard.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:106
 msgid "Easily transfer licences between servers."
@@ -6286,13 +6277,13 @@ msgstr "XEasily transfer licences between servers.X"
 msgid ""
 "Registration only takes a second and it is required before installing "
 "applications."
-msgstr "XX"
+msgstr "XRegistration only takes a second and it is required before installing applications.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:114
 msgid ""
 "Rest assured, we will never spam you or share your contact information with "
 "anyone."
-msgstr "XX"
+msgstr "XRest assured, we will never spam you or share your contact information with anyone.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:122
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:574
@@ -6315,19 +6306,19 @@ msgstr "XRegisterX"
 msgid ""
 "Your untangle.com account has subscriptions that are not assigned to any "
 "server."
-msgstr "XX"
+msgstr "XYour untangle.com account has subscriptions that are not assigned to any server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:304
 msgid ""
 "If you wish to assign a subscription to this server visit your account and "
 "transfer the subscription to this server."
-msgstr "XX"
+msgstr "XIf you wish to assign a subscription to this server visit your account and transfer the subscription to this server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:308
 msgid ""
 "If you do not wish to do this, you can skip this and do this at any time in "
 "the future by visiting your account at untangle.com"
-msgstr "XX"
+msgstr "XIf you do not wish to do this, you can skip this and do this at any time in the future by visiting your account at untangle.comX"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:319
 msgid "Open My Account"
@@ -6342,7 +6333,7 @@ msgstr "XSkipX"
 msgid ""
 "If your {0} appliance came with an activation code to redem your "
 "subscription please enter it now. Otherwise simply skip this step."
-msgstr "XX"
+msgstr "XIf your {0} appliance came with an activation code to redem your subscription please enter it now. Otherwise simply skip this step.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:355
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:885
@@ -6357,7 +6348,7 @@ msgstr "XAutomatically renew my subscriptionX"
 msgid ""
 "If you opt out of automatic renewal, services and protection will lapse at "
 "the end of the subscription period."
-msgstr "XX"
+msgstr "XIf you opt out of automatic renewal, services and protection will lapse at the end of the subscription period.X"
 
 #: ../../uvm/servlets/webui/root/script/config/accountRegistration.js:380
 msgid "It is highly recommended that you enable automatic renewal."
@@ -6522,7 +6513,7 @@ msgstr "XClear FiltersX"
 msgid ""
 "Filters can be added by clicking on column headers arrow down menu and using "
 "Filters menu"
-msgstr "XX"
+msgstr "XFilters can be added by clicking on column headers arrow down menu and using Filters menuX"
 
 #: ../../uvm/servlets/webui/root/script/monitor.js:121
 msgid "Clear Grouping"
@@ -6532,7 +6523,7 @@ msgstr "XClear GroupingX"
 msgid ""
 "Grouping can be used by clicking on column headers arrow down menu and "
 "clicking Group by this field"
-msgstr "XX"
+msgstr "XGrouping can be used by clicking on column headers arrow down menu and clicking Group by this fieldX"
 
 #: ../../uvm/servlets/webui/root/script/monitor.js:127
 msgid "Reset View"
@@ -6575,7 +6566,7 @@ msgstr "XMust be a comma seperated list of networks in CIDR format.X"
 msgid ""
 "The port must be an integer number between {0} and {1} or one of the "
 "following values: any, all, n/a, none."
-msgstr "XX"
+msgstr "XThe port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.X"
 
 #: ../../uvm/servlets/webui/root/script/main.js:32
 msgid "Starting..."
@@ -6588,7 +6579,7 @@ msgid ""
 "skin settings under Config Administration. To get more information on how to "
 "fix the custom skin: <a href=\"http://wiki.untangle.com/index.php/Skins\" "
 "target=\"_blank\">Where can I find updated skins and new skins?</a>"
-msgstr "XX"
+msgstr "XThe current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href=\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Where can I find updated skins and new skins?</a>X"
 
 #: ../../uvm/servlets/webui/root/script/main.js:82
 msgid "Skin Out of Date"
@@ -6606,7 +6597,7 @@ msgstr "XMy AccountX"
 msgid ""
 "You can access your online account and reinstall apps you already purchased, "
 "redeem vouchers, or buy new ones."
-msgstr "XX"
+msgstr "XYou can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.X"
 
 #: ../../uvm/servlets/webui/root/script/main.js:176
 msgid "Logout"
@@ -6738,15 +6729,12 @@ msgstr "XWould you like to install the recommended applications now?X"
 #: ../../uvm/servlets/webui/root/script/window.js:108
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr "XThere are unsaved settings which will be lost. Do you want to continue?X"
-"XThere are unsaved settings which will be lost. Do you want to continue?"
-"XXThere are unsaved settings which will be lost. Do you want to continue?"
-"XXThere are unsaved settings which will be lost. Do you want to continue?X"
 
 #: ../../uvm/servlets/webui/root/script/window.js:98
 msgid ""
 "One or more fields contain invalid values. Settings cannot be saved until "
 "these problems are resolved."
-msgstr "XX"
+msgstr "XOne or more fields contain invalid values. Settings cannot be saved until these problems are resolved.X"
 
 #: ../../uvm/servlets/webui/root/script/window.js:314
 msgid "Remove"
@@ -6770,7 +6758,7 @@ msgid ""
 "Its settings will be lost and it will stop processing network traffic.\n"
 "\n"
 "Would you like to continue removing?"
-msgstr "XX"
+msgstr "X{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?X"
 
 #: ../../uvm/servlets/webui/root/script/window.js:400
 msgid "Reloading..."
@@ -6783,7 +6771,7 @@ msgid "Close"
 msgstr "XCloseX"
 
 #: ../../uvm/servlets/webui/root/script/window.js:547
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1882
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 msgid "Done"
 msgstr "XDoneX"
 
@@ -6977,7 +6965,7 @@ msgstr "XThanks for choosing {0}!X"
 msgid ""
 "This wizard will guide you through the initial setup and configuration of "
 "the {0} Server."
-msgstr "XX"
+msgstr "XThis wizard will guide you through the initial setup and configuration of the {0} Server.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:67
 msgid "Click {0}Next{1} to get started."
@@ -6990,15 +6978,12 @@ msgstr "XContinue the Setup WizardX"
 #: ../../uvm/servlets/setup/root/script/setup.js:95
 msgid "The setup was started before and the last completed step is {0}{1}{2}."
 msgstr "XThe setup was started before and the last completed step is {0}{1}{2}.X"
-"XThe setup was started before and the last completed step is {0}{1}{2}.XXThe "
-"setup was started before and the last completed step is {0}{1}{2}.XXThe "
-"setup was started before and the last completed step is {0}{1}{2}.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:115
 msgid ""
 "To continue with step {1}{0}{2} fill the admin password and press the {1}Next"
 "{2}."
-msgstr "XX"
+msgstr "XTo continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:124
 msgid "Restart the Setup Wizard"
@@ -7051,7 +7036,7 @@ msgstr "XUnable to save the admin passwordX"
 msgid ""
 "Click on a Device to open a combo and choose the desired Device from a list. "
 "When anoter Device is selected the 2 Devices are swithced."
-msgstr "XX"
+msgstr "XClick on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:469
 msgid "Identify Network Cards"
@@ -7064,9 +7049,6 @@ msgstr "XImportant:X"
 #: ../../uvm/servlets/setup/root/script/setup.js:475
 msgid " This step identifies the external, internal, and other network cards. "
 msgstr "X This step identifies the external, internal, and other network cards. X"
-"X This step identifies the external, internal, and other network cards. XX "
-"This step identifies the external, internal, and other network cards. XX "
-"This step identifies the external, internal, and other network cards. X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:476
 msgid "Step 1: "
@@ -7076,7 +7058,7 @@ msgstr "XStep 1: X"
 msgid ""
 "Plug an active cable into one network card to determine which network card "
 "it is."
-msgstr "XX"
+msgstr "XPlug an active cable into one network card to determine which network card it is.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:478
 msgid "Step 2: "
@@ -7097,9 +7079,6 @@ msgstr "XStep 3: X"
 #: ../../uvm/servlets/setup/root/script/setup.js:481
 msgid "Repeat steps 1 and 2 for each network card and then click <i>Next</i>."
 msgstr "XRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
-"XRepeat steps 1 and 2 for each network card and then click <i>Next</i>."
-"XXRepeat steps 1 and 2 for each network card and then click <i>Next</i>."
-"XXRepeat steps 1 and 2 for each network card and then click <i>Next</i>.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:551
 #: ../../uvm/servlets/setup/root/script/setup.js:586
@@ -7126,7 +7105,7 @@ msgstr "XMissing interfacesX"
 msgid ""
 "Untangle requires two or more network cards. Please reinstall with at least "
 "two network cards."
-msgstr "XX"
+msgstr "XUntangle requires two or more network cards. Please reinstall with at least two network cards.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:638
 msgid "DHCP Status"
@@ -7228,7 +7207,7 @@ msgstr "XWarning! Internet tests and DNS tests failed.X"
 msgid ""
 "It is recommended to configure valid internet settings before continuing. "
 "Try again?"
-msgstr "XX"
+msgstr "XIt is recommended to configure valid internet settings before continuing. Try again?X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1052
 msgid "Testing Connectivity..."
@@ -7246,7 +7225,7 @@ msgstr "XRouterX"
 msgid ""
 "This is recommended if the external port is plugged into the internet "
 "connection. This enables NAT and DHCP."
-msgstr "XX"
+msgstr "XThis is recommended if the external port is plugged into the internet connection. This enables NAT and DHCP.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1183
 msgid "Internal Address"
@@ -7272,7 +7251,7 @@ msgstr "XTransparent BridgeX"
 msgid ""
 "This is recommended if the external port is plugged into a firewall/router. "
 "This bridges Internal and External and disables DHCP."
-msgstr "XX"
+msgstr "XThis is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1250
 #: ../../uvm/servlets/setup/root/script/setup.js:1650
@@ -7307,28 +7286,28 @@ msgid ""
 "When switching from Router to Transparent Bridge the setup is no longer "
 "accessible using Internal Address. Instead it could be accessible using the "
 "External Address: {0}"
-msgstr "XX"
+msgstr "XWhen switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1383
 #: ../../uvm/servlets/setup/root/script/setup.js:1436
 msgid ""
 "If you want to be redirected to the new setup address: {0} please "
 "reinitialize your Network Settings and press Yes."
-msgstr "XX"
+msgstr "XIf you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1384
 #: ../../uvm/servlets/setup/root/script/setup.js:1437
 msgid ""
 "Clicking No will prevent redirection and will try to continue setup using "
 "the current address, but it might no longer be accessible."
-msgstr "XX"
+msgstr "XClicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1435
 msgid ""
 "When switching to from Transparent Bridge to Router the setup might no "
 "longer accessible using External Address. Instead it could be accessible "
 "using the Internal Address: {0}"
-msgstr "XX"
+msgstr "XWhen switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1455
 msgid "The Internal Address is changed to: {0}"
@@ -7338,13 +7317,13 @@ msgstr "XThe Internal Address is changed to: {0}X"
 msgid ""
 "The changes are applied and you will be redirected to the new setup address: "
 "{0}"
-msgstr "XX"
+msgstr "XThe changes are applied and you will be redirected to the new setup address: {0}X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1457
 msgid ""
 "If the new location is not loaded after 30 seconds please reinitialize your "
 "Network Settings and try again."
-msgstr "XX"
+msgstr "XIf the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1477
 msgid "Configure Automatic Upgrade Settings"
@@ -7373,28 +7352,22 @@ msgstr "XDo not automatically install new versions of {0} software.X"
 #: ../../uvm/servlets/setup/root/script/setup.js:1509
 msgid "This is the recommended setting for large, complex, or sensitive sites."
 msgstr "XThis is the recommended setting for large, complex, or sensitive sites.X"
-"XThis is the recommended setting for large, complex, or sensitive sites."
-"XXThis is the recommended setting for large, complex, or sensitive sites."
-"XXThis is the recommended setting for large, complex, or sensitive sites.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1510
 msgid "Software Upgrades can be applied manually at any time when available."
 msgstr "XSoftware Upgrades can be applied manually at any time when available.X"
-"XSoftware Upgrades can be applied manually at any time when available."
-"XXSoftware Upgrades can be applied manually at any time when available."
-"XXSoftware Upgrades can be applied manually at any time when available.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1515
 msgid ""
 "Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still "
 "updated automatically."
-msgstr "XX"
+msgstr "XSignatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1516
 msgid ""
 "If desired, a custom upgrade schedule can be configured after installation "
 "in the Upgrade Settings."
-msgstr "XX"
+msgstr "XIf desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1522
 #: ../../uvm/servlets/setup/root/script/setup.js:1651
@@ -7425,7 +7398,7 @@ msgstr "XCongratulations!X"
 msgid ""
 "<b>The {0} Server is now configured.</b><br/><br/>You are now ready to "
 "configure the applications."
-msgstr "XX"
+msgstr "X<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.X"
 
 #: ../../uvm/servlets/setup/root/script/setup.js:1589
 #: ../../uvm/servlets/setup/root/script/setup.js:1652
@@ -7465,7 +7438,7 @@ msgstr "XCheck internet connectivity and the network/DNS configuration.X"
 msgid ""
 "Reports application is required for this feature. Please install and enable "
 "the Reports application."
-msgstr "XX"
+msgstr "XReports application is required for this feature. Please install and enable the Reports application.X"
 
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:41
 msgid "Current Data"
@@ -7541,131 +7514,131 @@ msgstr "XSelect ReportX"
 msgid "Select Events"
 msgstr "XSelect EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:423
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:430
 msgid "Others"
 msgstr "XOthersX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:458
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
 msgid "Loading report... "
 msgstr "XLoading report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:465
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:472
 msgid "Customize"
 msgstr "XCustomizeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:468
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1221
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:475
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1228
 msgid "Advanced report customization"
 msgstr "XAdvanced report customizationX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:476
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:483
 msgid "View Events"
 msgstr "XView EventsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:478
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:485
 msgid "View events for this report"
 msgstr "XView events for this reportX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:522
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:529
 msgid "data"
 msgstr "XdataX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:527
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:610
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:534
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:617
 #: ../../reporting/hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr "XvalueX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:532
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:539
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 msgid "none"
 msgstr "XnoneX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:571
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:578
 msgid "Not enough data to generate the chart."
 msgstr "XNot enough data to generate the chart.X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:618
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1143
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1507
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:625
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1150
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1514
 msgid "Add Condition"
 msgstr "XAdd ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:663
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:670
 msgid "Switch to Line Chart"
 msgstr "XSwitch to Line ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:664
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:671
 msgid "Switch to Area Chart"
 msgstr "XSwitch to Area ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:665
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:672
 msgid "Switch to Bar 3D Chart"
 msgstr "XSwitch to Bar 3D ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:666
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:673
 msgid "Switch to Bar 3D Overlapped Chart"
 msgstr "XSwitch to Bar 3D Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:667
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:674
 msgid "Switch to Bar Chart"
 msgstr "XSwitch to Bar ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:668
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:675
 msgid "Switch to Bar Overlapped Chart"
 msgstr "XSwitch to Bar Overlapped ChartX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:947
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:954
 msgid "Refreshing report... "
 msgstr "XRefreshing report... X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:962
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:969
 msgid "Querying Database..."
 msgstr "XQuerying Database...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1009
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1039
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1016
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1046
 msgid "Fetching Events..."
 msgstr "XFetching Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1099
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
 msgid "Downloading Chart..."
 msgstr "XDownloading Chart...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1126
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
 msgid "Exporting Events..."
 msgstr "XExporting Events...X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1157
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1164
 msgid "Add a condition using report data:"
 msgstr "XAdd a condition using report data:X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1251
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1258
 msgid "Events for report: {0}"
 msgstr "XEvents for report: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1453
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1695
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
 msgid "Conditions: {0}"
 msgstr "XConditions: {0}X"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1508
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
 msgid "Add New Condition"
 msgstr "XAdd New ConditionX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1522
 msgid "Quick Add"
 msgstr "XQuick AddX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1519
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1526
 msgid "Delete All"
 msgstr "XDelete AllX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1520
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1527
 msgid "Delete All Conditions"
 msgstr "XDelete All ConditionsX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1855
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1862
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 #: ../../reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:269
@@ -7680,7 +7653,7 @@ msgstr "XDelete All ConditionsX"
 msgid "Time"
 msgstr "XTimeX"
 
-#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1896
 msgid "Clear Value"
 msgstr "XClear ValueX"
 
@@ -8515,7 +8488,7 @@ msgid ""
 "The restore procedure is running. This may take several minutes. The server "
 "may be unavailable during this time. Once the process is complete you will "
 "be able to log in again."
-msgstr "XX"
+msgstr "XThe restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again.X"
 
 #: ../../uvm/impl/com/untangle/uvm/MailSenderImpl.java:327
 #, java-format
@@ -8527,7 +8500,7 @@ msgstr "X{0} Server Test MessageX"
 msgid ""
 "This automated message was generated by the {0} Server{1}to confirm that "
 "your email settings are correct."
-msgstr "XX"
+msgstr "XThis automated message was generated by the {0} Server{1}to confirm that your email settings are correct.X"
 
 #: ../../uvm/impl/com/untangle/uvm/TomcatManagerImpl.java:479
 msgid "HTTP administration is disabled."
@@ -8649,7 +8622,7 @@ msgstr "XPacket processing recently overloaded.X"
 #: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:755
 msgid ""
 "The shield is disabled. This can cause performance and stability problems."
-msgstr "XX"
+msgstr "XThe shield is disabled. This can cause performance and stability problems.X"
 
 #: ../../uvm/impl/com/untangle/uvm/AlertManagerImpl.java:803
 msgid "Route to unreachable address:"
@@ -8663,7 +8636,7 @@ msgstr "XRunning 64-bit with less than 2 gigabytes RAM is not suggested.X"
 msgid ""
 "Currently the number of devices significantly exceeds the number of licensed "
 "devices."
-msgstr "XX"
+msgstr "XCurrently the number of devices significantly exceeds the number of licensed devices.X"
 
 #: ../../uvm/servlets/webui/src/com/untangle/uvm/webui/servlet/GridSettingsServlet.java:115
 msgid "Import failed. Settings must be formatted as a JSON Array."
@@ -9849,7 +9822,7 @@ msgstr "XActivity SummaryX"
 msgid ""
 "The top clients that were blocked by Captive Portal because they were not "
 "logged in."
-msgstr "XX"
+msgstr "XThe top clients that were blocked by Captive Portal because they were not logged in.X"
 
 #: /tmp/strings:44 /tmp/strings:50 /tmp/strings:255 /tmp/strings:432
 #: /tmp/strings:456 /tmp/strings:606 /tmp/strings:628 /tmp/strings:686
@@ -10134,7 +10107,6 @@ msgstr "XAvailable ReportsX"
 #: /tmp/strings:138 /tmp/strings:549
 msgid "The amount of total, scanned, and bypassed sessions created per minute."
 msgstr "XThe amount of total, scanned, and bypassed sessions created per minute.X"
-"XThe amount of total, scanned, and bypassed sessions created per minute.X"
 
 #: /tmp/strings:139 /tmp/strings:550
 msgid "Sessions Per Minute"
@@ -10147,7 +10119,6 @@ msgstr "XThe amount of total, scanned, and bypassed sessions over time.X"
 #: /tmp/strings:142 /tmp/strings:553
 msgid "The amount of total, scanned, and bypassed sessions created per hour."
 msgstr "XThe amount of total, scanned, and bypassed sessions created per hour.X"
-"XThe amount of total, scanned, and bypassed sessions created per hour.X"
 
 #: /tmp/strings:143 /tmp/strings:554
 msgid "Sessions Per Hour"
@@ -10675,7 +10646,7 @@ msgstr "XCache Size StatisticsX"
 msgid ""
 "The amount of login, update and logout user notification API events over "
 "time."
-msgstr "XX"
+msgstr "XThe amount of login, update and logout user notification API events over time.X"
 
 #: /tmp/strings:342
 msgid "User Notification API Events"
@@ -10761,7 +10732,7 @@ msgstr "XVirus Blocker Email SummaryX"
 #: /tmp/strings:521
 msgid ""
 "The amount of successes, and failures of configuration backup over time."
-msgstr "XX"
+msgstr "XThe amount of successes, and failures of configuration backup over time.X"
 
 #: /tmp/strings:522
 msgid "Backup Usage (all)"
@@ -10903,12 +10874,12 @@ msgstr "XTop Application (by sent bytes)X"
 msgid ""
 "The approximate averaged data transfer rate (total, sent, received) over "
 "time grouped by session creation time."
-msgstr "XX"
+msgstr "XThe approximate averaged data transfer rate (total, sent, received) over time grouped by session creation time.X"
 
 #: /tmp/strings:747
 msgid ""
 "The sum of the data transferred grouped by Application Control application."
-msgstr "XX"
+msgstr "XThe sum of the data transferred grouped by Application Control application.X"
 
 #: /tmp/strings:748
 msgid "Top Application (by total bytes)"
@@ -11284,7 +11255,7 @@ msgstr "XAll sessions that were not bypassed.X"
 msgid ""
 "Shows when hosts are placed in the penalty box and when the penalty box "
 "expires."
-msgstr "XX"
+msgstr "XShows when hosts are placed in the penalty box and when the penalty box expires.X"
 
 #: /tmp/strings:881 /tmp/strings:1023
 msgid "Penalty Box Events"
@@ -11557,13 +11528,13 @@ msgstr "XBackup EventsX"
 #: /tmp/strings:1006
 msgid ""
 "Lists all sessions with the policy manager rack that handled the session."
-msgstr "XX"
+msgstr "XLists all sessions with the policy manager rack that handled the session.X"
 
 #: /tmp/strings:1046
 msgid ""
 "Events where traffic was blocked due to an underlying problems with the SSL "
 "session."
-msgstr "XX"
+msgstr "XEvents where traffic was blocked due to an underlying problems with the SSL session.X"
 
 #: /tmp/strings:1047
 msgid "Abandoned Sessions"
@@ -11573,7 +11544,7 @@ msgstr "XAbandoned SessionsX"
 msgid ""
 "Events where traffic was not or could not be inspected, so the traffic was "
 "completely ignored and not analyzed by any applications or services."
-msgstr "XX"
+msgstr "XEvents where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services.X"
 
 #: /tmp/strings:1049
 msgid "Ignored Sessions"
@@ -11583,13 +11554,13 @@ msgstr "XIgnored SessionsX"
 msgid ""
 "Events where traffic was blocked because it did not contain a valid HTTPS "
 "request, and the Block Invalid Traffic option was enabled."
-msgstr "XX"
+msgstr "XEvents where traffic was blocked because it did not contain a valid HTTPS request, and the Block Invalid Traffic option was enabled.X"
 
 #: /tmp/strings:1052
 msgid ""
 "Events where traffic was blocked because the server certificate could not be "
 "authenticated."
-msgstr "XX"
+msgstr "XEvents where traffic was blocked because the server certificate could not be authenticated.X"
 
 #: /tmp/strings:1053
 msgid "Untrusted Sessions"
@@ -11603,13 +11574,13 @@ msgstr "XAll sessions detected by HTTPS Inspector.X"
 msgid ""
 "Events where traffic was fully processed by the inspector, and all traffic "
 "was passed through all the other applications and services."
-msgstr "XX"
+msgstr "XEvents where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services.X"
 
 #: /tmp/strings:1078
 msgid ""
 "Events where the failure threshold was exceeded and the WAN was considered "
 "offline."
-msgstr "XX"
+msgstr "XEvents where the failure threshold was exceeded and the WAN was considered offline.X"
 
 #: /tmp/strings:1079
 msgid "Outage Events"

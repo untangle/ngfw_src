@@ -26,12 +26,16 @@ if len(args) < 1:
 filename = args[0]
 
 txt = open(filename)
+in_msgid_phase = False
+in_msgstr_phase = False
 
 for line in txt.readlines():
     if bool( re.search( '^msgid ', line )):
+        in_msgid_phase = True
+        in_msgstr_phase = False
         key = line
         key = re.sub('^msgid \"','',key)
-        key = re.sub('\"$','',key)
+        key = re.sub('\"\s$','',key)
         key = re.sub('\n','',key)
         if key == "date_fmt":
             value = 'Y|m|d'
@@ -46,9 +50,29 @@ for line in txt.readlines():
         sys.stdout.write(line)
     else:
         if bool( re.search( '^msgstr ', line )):
+            in_msgid_phase = False
+            in_msgstr_phase = True
             sys.stdout.write('msgstr "' + value + '"\n')
+            value = None
         else:
+            if line.strip() == "":
+                in_msgstr_phase = False
+                in_msgid_phase = False
+
+            if in_msgid_phase:
+                str = line
+                str = re.sub('^\"','',str)
+                str = re.sub('\"\s$','',str)
+                if value.endswith("X"):
+                    value = value[:-1]
+                value = value + str + "X"
+
+            elif in_msgstr_phase:
+                # dont print the extra lines
+                continue
+                
             sys.stdout.write(line)
+
 
 sys.stdout.flush()
 txt.close()

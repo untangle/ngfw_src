@@ -1,23 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr "XX"
-"Language-Team: Dirk Morris <dmorris@untangle.com>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"XXLast-Translator: Dirk Morris <dmorris@untangle.com>\n"
-"XXPO-Revision-Date: 2012-01-09 08:25-0800\n"
-"XXPOT-Creation-Date: 2015-08-14 10:31-0700\n"
-"XXReport-Msgid-Bugs-To: \n"
-"XXProject-Id-Version: Untangle\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 1.1.0\n"
-"X-Poedit-Language: Test\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:30
 msgid "Destination Address"
 msgstr "XDestination AddressX"
@@ -140,7 +120,7 @@ msgid ""
 "Captive Portal allows administrators to require network users to complete a "
 "defined process, such as logging in or accepting a network usage policy, "
 "before accessing the internet."
-msgstr "XX"
+msgstr "XCaptive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:85
 msgid "Active Sessions"
@@ -188,7 +168,7 @@ msgstr "XCapture RulesX"
 msgid ""
 "Network access is controlled based on the set of rules defined below. To "
 "learn more click on the <b>Help</b> button below."
-msgstr "XX"
+msgstr "XNetwork access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:162
 msgid "Rules"
@@ -251,7 +231,7 @@ msgstr "XPass Listed Client AddressesX"
 msgid ""
 "Pass Listed Client Addresses is a list of Client IPs that are not subjected "
 "to the Captive Portal."
-msgstr "XX"
+msgstr "XPass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:260
 msgid "Pass Listed Server Addresses"
@@ -261,7 +241,7 @@ msgstr "XPass Listed Server AddressesX"
 msgid ""
 "Pass Listed Server Addresses is a list of Server IPs that unauthenticated "
 "clients can access without authentication."
-msgstr "XX"
+msgstr "XPass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:267
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:272
@@ -272,7 +252,7 @@ msgstr "XPassed HostsX"
 msgid ""
 "The pass lists provide a quick alternative way to allow access from specific "
 "clients, or to specific servers."
-msgstr "XX"
+msgstr "XThe pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:317
 msgid "Log"
@@ -335,7 +315,7 @@ msgstr "XIdle Timeout (minutes)X"
 msgid ""
 "Clients will be unauthenticated after this amount of idle time. They may re-"
 "authenticate immediately.  Use zero to disable."
-msgstr "XX"
+msgstr "XClients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:472
 msgid "Timeout (minutes)"
@@ -344,18 +324,13 @@ msgstr "XTimeout (minutes)X"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:475
 msgid "The Timeout must be more than 5 minutes and less than 525600 minutes."
 msgstr "XThe Timeout must be more than 5 minutes and less than 525600 minutes.X"
-"XThe Timeout must be more than 5 minutes and less than 525600 minutes.XXThe "
-"Timeout must be more than 5 minutes and less than 525600 minutes.XXThe "
-"Timeout must be more than 5 minutes and less than 525600 minutes.XXThe "
-"Timeout must be more than 5 minutes and less than 525600 minutes.XXThe "
-"Timeout must be more than 5 minutes and less than 525600 minutes.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:484
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:533
 msgid ""
 "Clients will be unauthenticated after this amount of time regardless of "
 "activity. They may re-authenticate immediately."
-msgstr "XX"
+msgstr "XClients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:489
 msgid "Allow Concurrent Logins"
@@ -365,7 +340,7 @@ msgstr "XAllow Concurrent LoginsX"
 msgid ""
 "This will allow multiple hosts to use the same username & password "
 "concurrently."
-msgstr "XX"
+msgstr "XThis will allow multiple hosts to use the same username & password concurrently.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:500
 msgid "Allow Cookie-based authentication"
@@ -375,7 +350,7 @@ msgstr "XAllow Cookie-based authenticationX"
 msgid ""
 "This will allow authenicated clients to continue to access even after "
 "session idle and timeout values."
-msgstr "XX"
+msgstr "XThis will allow authenicated clients to continue to access even after session idle and timeout values.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:520
 msgid "Cookie Timeout (minutes)"
@@ -384,7 +359,7 @@ msgstr "XCookie Timeout (minutes)X"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:523
 msgid ""
 "The Cookie Timeout must be more than 5 minutes and less than 525600 minutes."
-msgstr "XX"
+msgstr "XThe Cookie Timeout must be more than 5 minutes and less than 525600 minutes.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:578
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:592
@@ -505,7 +480,7 @@ msgid ""
 "allows you to specify a page to display immediately after user "
 "authentication.  If you leave this field blank, users will instead be "
 "forwarded to their original destination."
-msgstr "XX"
+msgstr "X<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:919
 msgid "Missing Filename"
@@ -557,11 +532,6 @@ msgstr "XWhen using 'Basic Message', 'Authentication' must be set to 'None'.X"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1020
 msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
 msgstr "XWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled.X"
-"XWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
-"XXWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
-"XXWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
-"XXWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
-"XXWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled.X"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1030
 msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
@@ -809,7 +779,7 @@ msgstr "XActivity SummaryX"
 msgid ""
 "The top clients that were blocked by Captive Portal because they were not "
 "logged in."
-msgstr "XX"
+msgstr "XThe top clients that were blocked by Captive Portal because they were not logged in.X"
 
 #: /tmp/strings:7
 msgid "Sessions that reached the session timeout."
@@ -940,9 +910,3 @@ msgstr "XYou were already logged outX"
 #: ../hier/usr/share/untangle/web/capture/logout/logout.py:55
 msgid "You have successfully logged out"
 msgstr "XYou have successfully logged outX"
-
-#~ msgid "Extracted %d files and %d directories from %s"
-#~ msgstr "XExtracted %d files and %d directories from %sX"
-
-#~ msgid "Removed %d files and %d directories"
-#~ msgstr "XRemoved %d files and %d directoriesX"

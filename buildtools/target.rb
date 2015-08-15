@@ -547,11 +547,11 @@ class JavaMsgFmtTarget
     info "[msgfmt  ] #{@po_file} => #{@dest}official/#{@lang}/#{@basename}.mo"
 
     command = "msgfmt --java2 -d #{@dest} -r \"i18n.official.#{@basename.gsub('-', '_')}\" -l #{@lang} #{@po_file} 2> /dev/null"
-    raise "msgfmt failed" unless Kernel.system command
+    raise "msgfmt failed: " + command unless Kernel.system command
 
     command = "msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file} 2> /dev/null"
     ensureDirectory "#{@dest}/official/#{@lang}"
-    raise "msgfmt failed" unless Kernel.system command
+    raise "msgfmt failed: " + command unless Kernel.system command
   end
 end
 
