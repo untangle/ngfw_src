@@ -568,12 +568,12 @@ public class AlertManagerImpl implements AlertManager
 
                     if ( !found ) {
                         String alertText = "";
-                        alertText += nodeName + " " + i18nUtil.tr("is installed but but a DNS server");
+                        alertText += nodeName + " " + i18nUtil.tr("is installed but a DNS server");
                         alertText += " (";
                         alertText += intf.getName();
                         alertText += ", ";
-                        alertText += dnsServer + ")";
-                        alertText += i18nUtil.tr(" fails to resolve DNSBL queries.");
+                        alertText += dnsServer + ") ";
+                        alertText += i18nUtil.tr("fails to resolve DNSBL queries.");
 
                         alertList.add(alertText);
                     }
