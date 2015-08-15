@@ -398,12 +398,12 @@ Ext.define("Ung.Node", {
                    '<div style="text-align: left;">',
                    i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
                    '<br/><font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
-                       i18n._('indicates that the application is "on" and operating normally.'),
+                       i18n._('indicates that the application is ON and operating normally.'),
                    '<br/><font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
-                       i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
+                       i18n._('indicates that the application is ON, but that an abnormal condition has occurred.'),
                    '<br/><font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
                        i18n._('indicates that the application is saving or refreshing settings.'),
-                   '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
+                   '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is OFF, and may be turned ON by the user.'),
                    '</div>'].join(''),
                 target: 'node-state_' + this.getId(),
                 showDelay: 20,
@@ -411,7 +411,7 @@ Ext.define("Ung.Node", {
                 hideDelay: 0
             }));
             this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
-                html: i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".'),
+                html: i18n._('The <B>Power Button</B> allows you to turn a application ON and OFF.'),
                 target: 'node-power_' + this.getId(),
                 showDelay: 20,
                 dismissDelay: 0,

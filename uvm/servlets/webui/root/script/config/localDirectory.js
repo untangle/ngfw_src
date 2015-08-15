@@ -251,7 +251,7 @@ Ext.define('Webui.config.localDirectory', {
             user = listUsers[i];
             // verify that the login name is not duplicated
             if(mapUsers[user.username]) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), user.username, i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The login name has already been taken:') + ' ' + user.username,
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -261,7 +261,7 @@ Ext.define('Webui.config.localDirectory', {
             mapUsers[user.username]=true;
             // login name contains no forward slash character
             if (user.username.indexOf("/") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The login name must not contain forward slash character.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -270,7 +270,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // first name contains no spaces
             if (user.firstName.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The first name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -279,7 +279,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // last name contains no spaces
             if (user.lastName.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The last name at row {0} must not contain any space characters.'), i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The last name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -288,7 +288,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // the password is at least one character
             if (Ext.isEmpty(user.passwordBase64Hash) && Ext.isEmpty(user.password)) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The password must contain at least 1 character.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -297,7 +297,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // the password contains no spaces
             if (user.password !=null && user.password.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The password must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)

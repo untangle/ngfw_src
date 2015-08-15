@@ -219,7 +219,7 @@ msgstr "XExporting Settings...X"
 #: ../../uvm/servlets/webui/root/script/main.js:1007
 #: ../../uvm/servlets/webui/root/script/main.js:1104
 #: ../../uvm/servlets/webui/root/script/window.js:255
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:403
 #: ../../uvm/servlets/webui/root/script/util.js:79
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
@@ -720,9 +720,9 @@ msgstr "XSettingsX"
 #: ../../uvm/servlets/webui/root/script/config/network.js:5733
 #: ../../uvm/servlets/webui/root/script/main.js:160
 #: ../../uvm/servlets/webui/root/script/window.js:322
-#: ../../uvm/servlets/webui/root/script/window.js:439
-#: ../../uvm/servlets/webui/root/script/window.js:495
-#: ../../uvm/servlets/webui/root/script/window.js:529
+#: ../../uvm/servlets/webui/root/script/window.js:442
+#: ../../uvm/servlets/webui/root/script/window.js:498
+#: ../../uvm/servlets/webui/root/script/window.js:532
 msgid "Help"
 msgstr "XHelpX"
 
@@ -741,8 +741,8 @@ msgid "Green"
 msgstr "XGreenX"
 
 #: ../../uvm/servlets/webui/root/script/components.js:401
-msgid "indicates that the application is \"on\" and operating normally."
-msgstr "Xindicates that the application is \"on\" and operating normally.X"
+msgid "indicates that the application is ON and operating normally."
+msgstr "Xindicates that the application is ON and operating normally.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:402
 msgid "Red"
@@ -750,9 +750,9 @@ msgstr "XRedX"
 
 #: ../../uvm/servlets/webui/root/script/components.js:403
 msgid ""
-"indicates that the application is \"on\", but that an abnormal condition has "
+"indicates that the application is ON, but that an abnormal condition has "
 "occurred."
-msgstr "Xindicates that the application is \"on\", but that an abnormal condition has occurred.X"
+msgstr "Xindicates that the application is ON, but that an abnormal condition has occurred.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:404
 msgid "Yellow"
@@ -768,14 +768,12 @@ msgstr "XClearX"
 
 #: ../../uvm/servlets/webui/root/script/components.js:406
 msgid ""
-"indicates that the application is \"off\", and may be turned \"on\" by the "
-"user."
-msgstr "Xindicates that the application is \"off\", and may be turned \"on\" by the user.X"
+"indicates that the application is OFF, and may be turned ON by the user."
+msgstr "Xindicates that the application is OFF, and may be turned ON by the user.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:414
-msgid ""
-"The <B>Power Button</B> allows you to turn a application \"on\" and \"off\"."
-msgstr "XThe <B>Power Button</B> allows you to turn a application \"on\" and \"off\".X"
+msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
+msgstr "XThe <B>Power Button</B> allows you to turn a application ON and OFF.X"
 
 #: ../../uvm/servlets/webui/root/script/components.js:422
 msgid ""
@@ -1093,8 +1091,8 @@ msgstr "XOkX"
 #: ../../uvm/servlets/webui/root/script/config/network.js:2844
 #: ../../uvm/servlets/webui/root/script/config/network.js:5741
 #: ../../uvm/servlets/webui/root/script/window.js:338
-#: ../../uvm/servlets/webui/root/script/window.js:455
-#: ../../uvm/servlets/webui/root/script/window.js:539
+#: ../../uvm/servlets/webui/root/script/window.js:458
+#: ../../uvm/servlets/webui/root/script/window.js:542
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:45
 msgid "Cancel"
 msgstr "XCancelX"
@@ -2764,8 +2762,8 @@ msgid ""
 "certificate request. If you are enrolling as a small business/sole "
 "proprietor, please enter the certificate requester's name in the "
 "'Organization' field, and the DBA (doing business as) name in the "
-"'Organizational Unit' field."
-msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field.X"
+"Organizational Unit field."
+msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the Organizational Unit field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:742
 msgid "Organizational Unit "
@@ -2774,9 +2772,9 @@ msgstr "XOrganizational Unit X"
 #: ../../uvm/servlets/webui/root/script/config/administration.js:744
 msgid ""
 "Optional. Use this field to differentiate between divisions within an "
-"organization. For example, 'Engineering' or 'Human Resources.' If "
-"applicable, you may enter the DBA (doing business as) name in this field."
-msgstr "XOptional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field.X"
+"organization. If applicable, you may enter the DBA (doing business as) name "
+"in this field."
+msgstr "XOptional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:748
 msgid "Common Name"
@@ -2784,11 +2782,11 @@ msgstr "XCommon NameX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:750
 msgid ""
-"The name entered in the 'CN' (common name) field MUST be the fully-qualified "
-"domain name of the website for which you will be using the certificate (e."
-"g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' "
-"prefixes in your common name. Do NOT enter your personal name in this field."
-msgstr "XThe name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field.X"
+"The name entered in the CN (common name) field MUST be the fully-qualified "
+"domain name of the website for which you will be using the certificate "
+"(example.com). Do not include the http:// or https:// prefixes in your "
+"common name. Do NOT enter your personal name in this field."
+msgstr "XThe name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:755
 msgid "Subject Alternative Names"
@@ -2932,8 +2930,8 @@ msgstr "XCHANGE_MEX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1109
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1514
-msgid "An SNMP \"Community\" must be specified."
-msgstr "XAn SNMP \"Community\" must be specified.X"
+msgid "An SNMP Community must be specified."
+msgstr "XAn SNMP Community must be specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1113
 msgid "System Contact"
@@ -2961,8 +2959,8 @@ msgstr "XMY_TRAP_COMMUNITYX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1156
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1529
-msgid "An Trap \"Community\" must be specified."
-msgstr "XAn Trap \"Community\" must be specified.X"
+msgid "An Trap Community must be specified."
+msgstr "XAn Trap Community must be specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1160
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:808
@@ -3010,8 +3008,8 @@ msgstr "XMY_TRAP_HOSTX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1165
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1540
-msgid "An Trap \"Host\" must be specified."
-msgstr "XAn Trap \"Host\" must be specified.X"
+msgid "An Trap Host must be specified."
+msgstr "XAn Trap Host must be specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1181
 msgid "Enable SNMP v3"
@@ -3148,8 +3146,12 @@ msgid "Failed"
 msgstr "XFailedX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1439
-msgid "The username name: \"{0}\" in row: {1}  already exists."
-msgstr "XThe username name: \"{0}\" in row: {1}  already exists.X"
+msgid "The username"
+msgstr "XThe usernameX"
+
+#: ../../uvm/servlets/webui/root/script/config/administration.js:1439
+msgid "already exists in row"
+msgstr "Xalready exists in rowX"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1456
 msgid "There must always be at least one valid account."
@@ -3161,7 +3163,6 @@ msgstr "XThere must always be at least one non-read-only (writable) account.X"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1492
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1551
-#: ../../uvm/servlets/webui/root/script/config/email.js:1161
 #: ../../uvm/servlets/webui/root/script/extOverrides.js:242
 msgid "The port must be an integer number between {0} and {1}."
 msgstr "XThe port must be an integer number between {0} and {1}.X"
@@ -3178,12 +3179,12 @@ msgstr "XOutgoing ServerX"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:173
 msgid ""
-"Enter an email address to send a test message and then press \"Send\". That "
+"Enter an email address to send a test message and then press Send. That "
 "email account should receive an email shortly after running the test. If "
 "not, the email settings may not be correct.<br/><br/>It is recommended to "
 "verify that the email settings work for sending to both internal (your "
 "domain) and external email addresses."
-msgstr "XEnter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.X"
+msgstr "XEnter an email address to send a test message and then press Send. That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:180
 #: ../../uvm/servlets/webui/root/script/config/email.js:382
@@ -3260,7 +3261,7 @@ msgstr "XServer PortX"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:330
 #: ../../uvm/servlets/webui/root/script/config/system.js:485
-#: ../../uvm/servlets/webui/root/script/window.js:359
+#: ../../uvm/servlets/webui/root/script/window.js:362
 #: ../../uvm/servlets/setup/root/script/setup.js:1040
 msgid "Warning:"
 msgstr "XWarning:X"
@@ -3578,21 +3579,25 @@ msgstr "XDetailX"
 msgid "Phish"
 msgstr "XPhishX"
 
+#: ../../uvm/servlets/webui/root/script/config/email.js:1161
+msgid "The port must be an integer number between 1 and 65535."
+msgstr "XThe port must be an integer number between 1 and 65535.X"
+
 #: ../../uvm/servlets/webui/root/script/config/email.js:1172
-msgid "A \"Password\" must be specified if a \"Login\" is specified."
-msgstr "XA \"Password\" must be specified if a \"Login\" is specified.X"
+msgid "A Password must be specified if a Login is specified."
+msgstr "XA Password must be specified if a Login is specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1181
-msgid "A \"Login\" must be specified if a \"Password\" is specified."
-msgstr "XA \"Login\" must be specified if a \"Password\" is specified.X"
+msgid "A Login must be specified if a Password is specified."
+msgstr "XA Login must be specified if a Password is specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1192
 msgid "A Server Address or Hostname must be specified for an SMTP server."
 msgstr "XA Server Address or Hostname must be specified for an SMTP server.X"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1203
-msgid "A \"From Address\" must be specified."
-msgstr "XA \"From Address\" must be specified.X"
+msgid "A From Address must be specified."
+msgstr "XA From Address must be specified.X"
 
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:11
 msgid "Session Viewer"
@@ -4115,28 +4120,36 @@ msgid "Expiration Time"
 msgstr "XExpiration TimeX"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:254
-msgid "The login name \"{0}\" at row {1} has already been taken."
-msgstr "XThe login name \"{0}\" at row {1} has already been taken.X"
+msgid "The login name has already been taken:"
+msgstr "XThe login name has already been taken:X"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
-msgid "The login name at row {0} must not contain forward slash character."
-msgstr "XThe login name at row {0} must not contain forward slash character.X"
+msgid "The login name must not contain forward slash character."
+msgstr "XThe login name must not contain forward slash character.X"
+
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
+msgid "row"
+msgstr "XrowX"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
-msgid "The first name at row {0} must not contain any space characters."
-msgstr "XThe first name at row {0} must not contain any space characters.X"
+msgid "The first name must not contain any spaces."
+msgstr "XThe first name must not contain any spaces.X"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
-msgid "The last name at row {0} must not contain any space characters."
-msgstr "XThe last name at row {0} must not contain any space characters.X"
+msgid "The last name must not contain any spaces."
+msgstr "XThe last name must not contain any spaces.X"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
-msgid "The password at row {0} must be at least 1 character long."
-msgstr "XThe password at row {0} must be at least 1 character long.X"
+msgid "The password must contain at least 1 character."
+msgstr "XThe password must contain at least 1 character.X"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
-msgid "The password at row {0} must not contain any space characters."
-msgstr "XThe password at row {0} must not contain any space characters.X"
+msgid "The password must not contain any spaces."
+msgstr "XThe password must not contain any spaces.X"
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:334
 msgid "Please save the changes before cleaning up expired users !"
@@ -4210,12 +4223,12 @@ msgid "Reboots"
 msgstr "XRebootsX"
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:70
-msgid "Current \"licensed\" device count"
-msgstr "XCurrent \"licensed\" device countX"
+msgid "Current active device count"
+msgstr "XCurrent active device countX"
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:71
-msgid "Highest \"licensed\" device count since reboot"
-msgstr "XHighest \"licensed\" device count since rebootX"
+msgid "Highest active device count since reboot"
+msgstr "XHighest active device count since rebootX"
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:85
 msgid "Account"
@@ -6011,19 +6024,19 @@ msgstr "XQoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidt
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5616
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
-"dangerous and not allowed! Refer to the documentation."
-msgstr "XThe \"Block All\" rule in \"Input Filter Rules\" is disabled. This is dangerous and not allowed! Refer to the documentation.X"
+"The Block All rule in Input Filter Rules is disabled. This is dangerous and "
+"not allowed! Refer to the documentation."
+msgstr "XThe Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5627
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
-"dangerous and not allowed! Refer to the documentation."
-msgstr "XThe \"Block All\" rule in \"Input Filter Rules\" is missing. This is dangerous and not allowed! Refer to the documentation.X"
+"The Block All rule in Input Filter Rules is missing. This is dangerous and "
+"not allowed! Refer to the documentation."
+msgstr "XThe Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5639
-msgid "The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled."
-msgstr "XThe \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled.X"
+msgid "The Allow SSH rule in Input Filter Rules has been enabled."
+msgstr "XThe Allow SSH rule in Input Filter Rules has been enabled.X"
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5640
 msgid ""
@@ -6281,15 +6294,15 @@ msgstr "XBackup to FileX"
 #: ../../uvm/servlets/webui/root/script/config/system.js:388
 msgid ""
 "Backup can save the current system configuration to a file on your local "
-"computer for later restoration. The file name will end with \".backup\""
-msgstr "XBackup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"X"
+"computer for later restoration. The file name will end with .backup"
+msgstr "XBackup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backupX"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:390
 msgid ""
 "After backing up your current system configuration to a file, you can then "
-"restore that configuration through this dialog by going to \"Restore\" -> "
-"\"From File\"."
-msgstr "XAfter backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".X"
+"restore that configuration through this dialog by clicking on Restore from "
+"File."
+msgstr "XAfter backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File.X"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:408
 #: ../../uvm/servlets/webui/root/script/config/system.js:422
@@ -6316,9 +6329,8 @@ msgstr "XRestore from FileX"
 #: ../../uvm/servlets/webui/root/script/config/system.js:438
 msgid ""
 "Restore can restore a previous system configuration to the server from a "
-"backup file on your local computer.  The backup file name ends with \".backup"
-"\""
-msgstr "XRestore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"X"
+"backup file on your local computer.  The backup file name ends with .backup"
+msgstr "XRestore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backupX"
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:448
 msgid "Restore Options"
@@ -7092,36 +7104,40 @@ msgid "Remove"
 msgstr "XRemoveX"
 
 #: ../../uvm/servlets/webui/root/script/window.js:330
-#: ../../uvm/servlets/webui/root/script/window.js:447
+#: ../../uvm/servlets/webui/root/script/window.js:450
 #: ../../uvm/servlets/webui/root/script/util.js:151
 #: ../../uvm/servlets/setup/root/script/util.js:66
 msgid "OK"
 msgstr "XOKX"
 
 #: ../../uvm/servlets/webui/root/script/window.js:348
-#: ../../uvm/servlets/webui/root/script/window.js:465
+#: ../../uvm/servlets/webui/root/script/window.js:468
 msgid "Apply"
 msgstr "XApplyX"
 
-#: ../../uvm/servlets/webui/root/script/window.js:358
-msgid ""
-"{0} is about to be removed from the rack.\n"
-"Its settings will be lost and it will stop processing network traffic.\n"
-"\n"
-"Would you like to continue removing?"
-msgstr "X{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?X"
+#: ../../uvm/servlets/webui/root/script/window.js:359
+msgid "is about to be removed from the rack."
+msgstr "Xis about to be removed from the rack.X"
 
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:360
+msgid "Its settings will be lost and it will stop processing network traffic."
+msgstr "XIts settings will be lost and it will stop processing network traffic.X"
+
+#: ../../uvm/servlets/webui/root/script/window.js:361
+msgid "Would you like to continue?"
+msgstr "XWould you like to continue?X"
+
+#: ../../uvm/servlets/webui/root/script/window.js:403
 msgid "Reloading..."
 msgstr "XReloading...X"
 
-#: ../../uvm/servlets/webui/root/script/window.js:503
+#: ../../uvm/servlets/webui/root/script/window.js:506
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:167
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3041
 msgid "Close"
 msgstr "XCloseX"
 
-#: ../../uvm/servlets/webui/root/script/window.js:547
+#: ../../uvm/servlets/webui/root/script/window.js:550
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 msgid "Done"
 msgstr "XDoneX"
@@ -15321,6 +15337,191 @@ msgstr "Y|m|d g:i:s a"
 #, fuzzy
 #~ msgid "timestamp"
 #~ msgstr "XtimestampX"
+
+#~ msgid ""
+#~ "indicates that the application is \"off\", and may be turned \"on\" by "
+#~ "the user."
+#~ msgstr ""
+#~ "Xindicates that the application is \"off\", and may be turned \"on\" by "
+#~ "the user.X"
+
+#~ msgid ""
+#~ "The name entered in the 'CN' (common name) field MUST be the fully-"
+#~ "qualified domain name of the website for which you will be using the "
+#~ "certificate (e.g., 'www.domainnamegoeshere'). Do not include the "
+#~ "'http://' or 'https://' prefixes in your common name. Do NOT enter your "
+#~ "personal name in this field."
+#~ msgstr ""
+#~ "XThe name entered in the 'CN' (common name) field MUST be the fully-"
+#~ "qualified domain name of the website for which you will be using the "
+#~ "certificate (e.g., 'www.domainnamegoeshere'). Do not include the "
+#~ "'http://' or 'https://' prefixes in your common name. Do NOT enter your "
+#~ "personal name in this field.X"
+
+#~ msgid "An SNMP \"Community\" must be specified."
+#~ msgstr "XAn SNMP \"Community\" must be specified.X"
+
+#~ msgid ""
+#~ "is about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?"
+#~ msgstr ""
+#~ "Xis about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?X"
+
+#~ msgid "indicates that the application is \"on\" and operating normally."
+#~ msgstr "Xindicates that the application is \"on\" and operating normally.X"
+
+#~ msgid ""
+#~ "indicates that the application is \"on\", but that an abnormal condition "
+#~ "has occurred."
+#~ msgstr ""
+#~ "Xindicates that the application is \"on\", but that an abnormal condition "
+#~ "has occurred.X"
+
+#~ msgid ""
+#~ "The <B>Power Button</B> allows you to turn a application \"on\" and \"off"
+#~ "\"."
+#~ msgstr ""
+#~ "XThe <B>Power Button</B> allows you to turn a application \"on\" and \"off"
+#~ "\".X"
+
+#~ msgid ""
+#~ "The name under which your business is legally registered. The listed "
+#~ "organization must be the legal registrant of the domain name in the "
+#~ "certificate request. If you are enrolling as a small business/sole "
+#~ "proprietor, please enter the certificate requester's name in the "
+#~ "'Organization' field, and the DBA (doing business as) name in the "
+#~ "'Organizational Unit' field."
+#~ msgstr ""
+#~ "XThe name under which your business is legally registered. The listed "
+#~ "organization must be the legal registrant of the domain name in the "
+#~ "certificate request. If you are enrolling as a small business/sole "
+#~ "proprietor, please enter the certificate requester's name in the "
+#~ "'Organization' field, and the DBA (doing business as) name in the "
+#~ "'Organizational Unit' field.X"
+
+#~ msgid ""
+#~ "Optional. Use this field to differentiate between divisions within an "
+#~ "organization. For example, 'Engineering' or 'Human Resources.' If "
+#~ "applicable, you may enter the DBA (doing business as) name in this field."
+#~ msgstr ""
+#~ "XOptional. Use this field to differentiate between divisions within an "
+#~ "organization. For example, 'Engineering' or 'Human Resources.' If "
+#~ "applicable, you may enter the DBA (doing business as) name in this field.X"
+
+#~ msgid "An Trap \"Community\" must be specified."
+#~ msgstr "XAn Trap \"Community\" must be specified.X"
+
+#~ msgid "An Trap \"Host\" must be specified."
+#~ msgstr "XAn Trap \"Host\" must be specified.X"
+
+#~ msgid "The username name: \"{0}\" in row: {1}  already exists."
+#~ msgstr "XThe username name: \"{0}\" in row: {1}  already exists.X"
+
+#~ msgid ""
+#~ "Enter an email address to send a test message and then press \"Send\". "
+#~ "That email account should receive an email shortly after running the "
+#~ "test. If not, the email settings may not be correct.<br/><br/>It is "
+#~ "recommended to verify that the email settings work for sending to both "
+#~ "internal (your domain) and external email addresses."
+#~ msgstr ""
+#~ "XEnter an email address to send a test message and then press \"Send\". "
+#~ "That email account should receive an email shortly after running the "
+#~ "test. If not, the email settings may not be correct.<br/><br/>It is "
+#~ "recommended to verify that the email settings work for sending to both "
+#~ "internal (your domain) and external email addresses.X"
+
+#~ msgid "A \"Password\" must be specified if a \"Login\" is specified."
+#~ msgstr "XA \"Password\" must be specified if a \"Login\" is specified.X"
+
+#~ msgid "A \"Login\" must be specified if a \"Password\" is specified."
+#~ msgstr "XA \"Login\" must be specified if a \"Password\" is specified.X"
+
+#~ msgid "A \"From Address\" must be specified."
+#~ msgstr "XA \"From Address\" must be specified.X"
+
+#~ msgid "The login name \"{0}\" at row {1} has already been taken."
+#~ msgstr "XThe login name \"{0}\" at row {1} has already been taken.X"
+
+#~ msgid "The login name at row {0} must not contain forward slash character."
+#~ msgstr ""
+#~ "XThe login name at row {0} must not contain forward slash character.X"
+
+#~ msgid "The first name at row {0} must not contain any space characters."
+#~ msgstr "XThe first name at row {0} must not contain any space characters.X"
+
+#~ msgid "The last name at row {0} must not contain any space characters."
+#~ msgstr "XThe last name at row {0} must not contain any space characters.X"
+
+#~ msgid "The password at row {0} must be at least 1 character long."
+#~ msgstr "XThe password at row {0} must be at least 1 character long.X"
+
+#~ msgid "The password at row {0} must not contain any space characters."
+#~ msgstr "XThe password at row {0} must not contain any space characters.X"
+
+#~ msgid "Current \"licensed\" device count"
+#~ msgstr "XCurrent \"licensed\" device countX"
+
+#~ msgid "Highest \"licensed\" device count since reboot"
+#~ msgstr "XHighest \"licensed\" device count since rebootX"
+
+#~ msgid ""
+#~ "The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
+#~ "dangerous and not allowed! Refer to the documentation."
+#~ msgstr ""
+#~ "XThe \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
+#~ "dangerous and not allowed! Refer to the documentation.X"
+
+#~ msgid ""
+#~ "The \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
+#~ "dangerous and not allowed! Refer to the documentation."
+#~ msgstr ""
+#~ "XThe \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
+#~ "dangerous and not allowed! Refer to the documentation.X"
+
+#~ msgid "The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled."
+#~ msgstr ""
+#~ "XThe \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled.X"
+
+#~ msgid ""
+#~ "Backup can save the current system configuration to a file on your local "
+#~ "computer for later restoration. The file name will end with \".backup\""
+#~ msgstr ""
+#~ "XBackup can save the current system configuration to a file on your local "
+#~ "computer for later restoration. The file name will end with \".backup\"X"
+
+#~ msgid ""
+#~ "After backing up your current system configuration to a file, you can "
+#~ "then restore that configuration through this dialog by going to \"Restore"
+#~ "\" -> \"From File\"."
+#~ msgstr ""
+#~ "XAfter backing up your current system configuration to a file, you can "
+#~ "then restore that configuration through this dialog by going to \"Restore"
+#~ "\" -> \"From File\".X"
+
+#~ msgid ""
+#~ "Restore can restore a previous system configuration to the server from a "
+#~ "backup file on your local computer.  The backup file name ends with \"."
+#~ "backup\""
+#~ msgstr ""
+#~ "XRestore can restore a previous system configuration to the server from a "
+#~ "backup file on your local computer.  The backup file name ends with \"."
+#~ "backup\"X"
+
+#~ msgid ""
+#~ "{0} is about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?"
+#~ msgstr ""
+#~ "X{0} is about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?X"
 
 #~ msgid "Session History: {0}"
 #~ msgstr "XSession History: {0}X"

@@ -385,9 +385,9 @@ Ext.define('Webui.config.system', {
                 title: this.i18n._("Backup to File"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"") +
+                    html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backup") +
                             "<br> <br> " +
-                            this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".")
+                            this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File.")
                 },{
                     xtype:"button",
                     margin: '10 0 0 0',
@@ -435,7 +435,7 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"")
+                    html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backup")
                 }, {
                     xtype: "form",
                     margin: '20 0 0 0',

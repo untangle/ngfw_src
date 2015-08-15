@@ -735,19 +735,19 @@ Ext.define('Webui.config.administration', {
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organization') + " (O)",
                     name: "Organization",
-                    helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field."),
+                    helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the Organizational Unit field."),
                     allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organizational Unit ') + " (OU)",
                     name: "OrganizationalUnit",
-                    helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field."),
+                    helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."),
                     allowBlank: true
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Common Name') + " (CN)",
                     name: "CommonName",
-                    helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
+                    helptip: this.i18n._("The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."),
                     allowBlank: false,
                     value: hostName
                 },{
@@ -1035,7 +1035,7 @@ Ext.define('Webui.config.administration', {
             name: 'panelSnmp',
             helpSource: 'administration_snmp',
             title: this.i18n._('SNMP'),
-            cls: 'ung-panel',
+            cls: 'ung-panel', 
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
@@ -1106,7 +1106,7 @@ Ext.define('Webui.config.administration', {
                     id: 'administration_snmp_communityString',
                     value: this.getSystemSettings().snmpSettings.communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME'): this.getSystemSettings().snmpSettings.communityString,
                     allowBlank: false,
-                    blankText: this.i18n._("An SNMP \"Community\" must be specified."),
+                    blankText: this.i18n._("An SNMP Community must be specified."),
                     disabled: !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
@@ -1153,7 +1153,7 @@ Ext.define('Webui.config.administration', {
                     id: 'administration_snmp_trapCommunity',
                     value: this.getSystemSettings().snmpSettings.trapCommunity == 'MY_TRAP_COMMUNITY' ? this.i18n._('MY_TRAP_COMMUNITY'): this.getSystemSettings().snmpSettings.trapCommunity,
                     allowBlank: false,
-                    blankText: this.i18n._("An Trap \"Community\" must be specified."),
+                    blankText: this.i18n._("An Trap Community must be specified."),
                     disabled: !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                 },{
                     xtype: 'textfield',
@@ -1162,7 +1162,7 @@ Ext.define('Webui.config.administration', {
                     id: 'administration_snmp_trapHost',
                     value: this.getSystemSettings().snmpSettings.trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST'): this.getSystemSettings().snmpSettings.trapHost,
                     allowBlank: false,
-                    blankText: this.i18n._("An Trap \"Host\" must be specified."),
+                    blankText: this.i18n._("An Trap Host must be specified."),
                     disabled: !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                 },{
                     xtype: 'numberfield',
@@ -1436,7 +1436,7 @@ Ext.define('Webui.config.administration', {
         for(var i=0; i<listAdminAccounts.length;i++) {
             for(var j=i+1; j<listAdminAccounts.length;j++) {
                 if (listAdminAccounts[i].username == listAdminAccounts[j].username) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The username name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].username, j+1),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("The username") + ": " + listAdminAccounts[j].username + " " + this.i18n._("already exists in row") + " " + (j+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelAdmin);
                         }, this)
@@ -1511,7 +1511,7 @@ Ext.define('Webui.config.administration', {
         if (isSnmpEnabled) {
             var snmpCommunityCmp = Ext.getCmp('administration_snmp_communityString');
             if (!snmpCommunityCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An SNMP \"Community\" must be specified."),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An SNMP Community must be specified."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelSnmp);
                         snmpCommunityCmp.focus(true);
@@ -1526,7 +1526,7 @@ Ext.define('Webui.config.administration', {
             if (isTrapEnabled) {
                 snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
                 if (!snmpTrapCommunityCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Community\" must be specified."),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap Community must be specified."),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelSnmp);
                             snmpTrapCommunityCmp.focus(true);
@@ -1537,7 +1537,7 @@ Ext.define('Webui.config.administration', {
 
                 snmpTrapHostCmp = Ext.getCmp('administration_snmp_trapHost');
                 if (!snmpTrapHostCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Host\" must be specified."),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap Host must be specified."),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.panelSnmp);
                             snmpTrapHostCmp.focus(true);

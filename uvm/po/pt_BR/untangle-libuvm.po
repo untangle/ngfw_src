@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 11:32-0700\n"
+"POT-Creation-Date: 2015-08-15 12:29-0700\n"
 "PO-Revision-Date: 2010-03-26 12:33-0700\n"
 "Last-Translator: Andre Cardoso <andrecv@hsbs.com.br>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -239,7 +239,7 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/main.js:1007
 #: ../../uvm/servlets/webui/root/script/main.js:1104
 #: ../../uvm/servlets/webui/root/script/window.js:255
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:403
 #: ../../uvm/servlets/webui/root/script/util.js:79
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
@@ -740,9 +740,9 @@ msgstr "Configurações"
 #: ../../uvm/servlets/webui/root/script/config/network.js:5733
 #: ../../uvm/servlets/webui/root/script/main.js:160
 #: ../../uvm/servlets/webui/root/script/window.js:322
-#: ../../uvm/servlets/webui/root/script/window.js:439
-#: ../../uvm/servlets/webui/root/script/window.js:495
-#: ../../uvm/servlets/webui/root/script/window.js:529
+#: ../../uvm/servlets/webui/root/script/window.js:442
+#: ../../uvm/servlets/webui/root/script/window.js:498
+#: ../../uvm/servlets/webui/root/script/window.js:532
 msgid "Help"
 msgstr "Ajuda"
 
@@ -764,20 +764,18 @@ msgid "Green"
 msgstr "Verde"
 
 #: ../../uvm/servlets/webui/root/script/components.js:401
-#, fuzzy
-msgid "indicates that the application is \"on\" and operating normally."
-msgstr "indica que o produto está \"ativado\" e operando normalmente."
+msgid "indicates that the application is ON and operating normally."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:402
 msgid "Red"
 msgstr "Vermelho"
 
 #: ../../uvm/servlets/webui/root/script/components.js:403
-#, fuzzy
 msgid ""
-"indicates that the application is \"on\", but that an abnormal condition has "
+"indicates that the application is ON, but that an abnormal condition has "
 "occurred."
-msgstr "indica que o produto está \"ativado\", mas houve uma condição anormal."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:404
 msgid "Yellow"
@@ -793,20 +791,13 @@ msgid "Clear"
 msgstr "Limpo"
 
 #: ../../uvm/servlets/webui/root/script/components.js:406
-#, fuzzy
 msgid ""
-"indicates that the application is \"off\", and may be turned \"on\" by the "
-"user."
+"indicates that the application is OFF, and may be turned ON by the user."
 msgstr ""
-"indica que o produto está \"desativado\" e pode ser \"ativado\" pelo usuário."
 
 #: ../../uvm/servlets/webui/root/script/components.js:414
-#, fuzzy
-msgid ""
-"The <B>Power Button</B> allows you to turn a application \"on\" and \"off\"."
+msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
 msgstr ""
-"O <B>Botão de Alimentação</B> permite a você \"ativar\" e \"desativar\" um "
-"produto."
 
 #: ../../uvm/servlets/webui/root/script/components.js:422
 msgid ""
@@ -1126,8 +1117,8 @@ msgstr "Ok"
 #: ../../uvm/servlets/webui/root/script/config/network.js:2844
 #: ../../uvm/servlets/webui/root/script/config/network.js:5741
 #: ../../uvm/servlets/webui/root/script/window.js:338
-#: ../../uvm/servlets/webui/root/script/window.js:455
-#: ../../uvm/servlets/webui/root/script/window.js:539
+#: ../../uvm/servlets/webui/root/script/window.js:458
+#: ../../uvm/servlets/webui/root/script/window.js:542
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:45
 msgid "Cancel"
 msgstr "Cancelar"
@@ -2808,7 +2799,7 @@ msgid ""
 "certificate request. If you are enrolling as a small business/sole "
 "proprietor, please enter the certificate requester's name in the "
 "'Organization' field, and the DBA (doing business as) name in the "
-"'Organizational Unit' field."
+"Organizational Unit field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:742
@@ -2818,8 +2809,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/config/administration.js:744
 msgid ""
 "Optional. Use this field to differentiate between divisions within an "
-"organization. For example, 'Engineering' or 'Human Resources.' If "
-"applicable, you may enter the DBA (doing business as) name in this field."
+"organization. If applicable, you may enter the DBA (doing business as) name "
+"in this field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:748
@@ -2828,10 +2819,10 @@ msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:750
 msgid ""
-"The name entered in the 'CN' (common name) field MUST be the fully-qualified "
-"domain name of the website for which you will be using the certificate (e."
-"g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' "
-"prefixes in your common name. Do NOT enter your personal name in this field."
+"The name entered in the CN (common name) field MUST be the fully-qualified "
+"domain name of the website for which you will be using the certificate "
+"(example.com). Do not include the http:// or https:// prefixes in your "
+"common name. Do NOT enter your personal name in this field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:755
@@ -2978,8 +2969,8 @@ msgstr "ALTERAR_ME"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1109
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1514
-msgid "An SNMP \"Community\" must be specified."
-msgstr "Um SNMP \"Comunidade\" deve ser especificado."
+msgid "An SNMP Community must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1113
 msgid "System Contact"
@@ -3007,8 +2998,8 @@ msgstr "MINHA_COMUNIDADE_TRAP"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1156
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1529
-msgid "An Trap \"Community\" must be specified."
-msgstr "Uma \"Comunidade\" Trap deve ser especificada."
+msgid "An Trap Community must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1160
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:808
@@ -3056,8 +3047,8 @@ msgstr "MEU_HOST_TRAP"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1165
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1540
-msgid "An Trap \"Host\" must be specified."
-msgstr "Um \"Host\" Trap deve ser especificado."
+msgid "An Trap Host must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1181
 msgid "Enable SNMP v3"
@@ -3194,7 +3185,11 @@ msgid "Failed"
 msgstr "Falha"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1439
-msgid "The username name: \"{0}\" in row: {1}  already exists."
+msgid "The username"
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/config/administration.js:1439
+msgid "already exists in row"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1456
@@ -3209,7 +3204,6 @@ msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1492
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1551
-#: ../../uvm/servlets/webui/root/script/config/email.js:1161
 #: ../../uvm/servlets/webui/root/script/extOverrides.js:242
 msgid "The port must be an integer number between {0} and {1}."
 msgstr "A porta deve ser um número inteiro entre {0} e {1}."
@@ -3226,17 +3220,12 @@ msgstr "Servidor de saída"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:173
 msgid ""
-"Enter an email address to send a test message and then press \"Send\". That "
+"Enter an email address to send a test message and then press Send. That "
 "email account should receive an email shortly after running the test. If "
 "not, the email settings may not be correct.<br/><br/>It is recommended to "
 "verify that the email settings work for sending to both internal (your "
 "domain) and external email addresses."
 msgstr ""
-"Informe um endereço de E-mail para enviar uma mensagem de teste, e clique "
-"\"Enviar\". Essa conta de E-mail deverá receber um E-mail em breve após esse "
-"teste. Se não, pode ser que as configurações de E-mail não estejam corretas. "
-"<br/><br/>É recomendado que seja verificado que as configurações de E-mail "
-"funcionam tanto internamente (seu domínio) quanto para E-mails externos."
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:180
 #: ../../uvm/servlets/webui/root/script/config/email.js:382
@@ -3313,7 +3302,7 @@ msgstr "Porta do servidor"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:330
 #: ../../uvm/servlets/webui/root/script/config/system.js:485
-#: ../../uvm/servlets/webui/root/script/window.js:359
+#: ../../uvm/servlets/webui/root/script/window.js:362
 #: ../../uvm/servlets/setup/root/script/setup.js:1040
 msgid "Warning:"
 msgstr "Aviso:"
@@ -3641,21 +3630,25 @@ msgstr "Detalhe"
 msgid "Phish"
 msgstr ""
 
+#: ../../uvm/servlets/webui/root/script/config/email.js:1161
+msgid "The port must be an integer number between 1 and 65535."
+msgstr ""
+
 #: ../../uvm/servlets/webui/root/script/config/email.js:1172
-msgid "A \"Password\" must be specified if a \"Login\" is specified."
-msgstr "Uma \"Senha\" deve ser especificada se \"Login\" for especificado."
+msgid "A Password must be specified if a Login is specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1181
-msgid "A \"Login\" must be specified if a \"Password\" is specified."
-msgstr "Um \"Login\" deve ser especificado se \"Senha\" for especificado."
+msgid "A Login must be specified if a Password is specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1192
 msgid "A Server Address or Hostname must be specified for an SMTP server."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1203
-msgid "A \"From Address\" must be specified."
-msgstr "Um \"De endereço\" deve ser especificado."
+msgid "A From Address must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:11
 msgid "Session Viewer"
@@ -4179,28 +4172,36 @@ msgid "Expiration Time"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:254
-msgid "The login name \"{0}\" at row {1} has already been taken."
-msgstr "O nome de login \"{0}\" na linha {1} já foi usado."
+msgid "The login name has already been taken:"
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
-msgid "The login name at row {0} must not contain forward slash character."
-msgstr "O nome de login na linha {0} deve conter o caractere de barra oblíqua."
+msgid "The login name must not contain forward slash character."
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
+msgid "row"
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
-msgid "The first name at row {0} must not contain any space characters."
-msgstr "O nome na linha {0} não deve conter caracteres de espaço."
+msgid "The first name must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
-msgid "The last name at row {0} must not contain any space characters."
-msgstr "O sobrenome na linha {0} não deve conter caracteres de espaço."
+msgid "The last name must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
-msgid "The password at row {0} must be at least 1 character long."
-msgstr "A senha na linha {0} deve conter pelo menos 1 caractere de extensão."
+msgid "The password must contain at least 1 character."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
-msgid "The password at row {0} must not contain any space characters."
-msgstr "A senha na linha {0} não deve conter caracteres de espaço."
+msgid "The password must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:334
 msgid "Please save the changes before cleaning up expired users !"
@@ -4274,11 +4275,11 @@ msgid "Reboots"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:70
-msgid "Current \"licensed\" device count"
+msgid "Current active device count"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:71
-msgid "Highest \"licensed\" device count since reboot"
+msgid "Highest active device count since reboot"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:85
@@ -6075,18 +6076,18 @@ msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5616
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
-"dangerous and not allowed! Refer to the documentation."
+"The Block All rule in Input Filter Rules is disabled. This is dangerous and "
+"not allowed! Refer to the documentation."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5627
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
-"dangerous and not allowed! Refer to the documentation."
+"The Block All rule in Input Filter Rules is missing. This is dangerous and "
+"not allowed! Refer to the documentation."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5639
-msgid "The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled."
+msgid "The Allow SSH rule in Input Filter Rules has been enabled."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5640
@@ -6347,14 +6348,14 @@ msgstr "Backup para arquivo"
 #: ../../uvm/servlets/webui/root/script/config/system.js:388
 msgid ""
 "Backup can save the current system configuration to a file on your local "
-"computer for later restoration. The file name will end with \".backup\""
+"computer for later restoration. The file name will end with .backup"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:390
 msgid ""
 "After backing up your current system configuration to a file, you can then "
-"restore that configuration through this dialog by going to \"Restore\" -> "
-"\"From File\"."
+"restore that configuration through this dialog by clicking on Restore from "
+"File."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:408
@@ -6382,8 +6383,7 @@ msgstr "Restaurar a partir do arquivo"
 #: ../../uvm/servlets/webui/root/script/config/system.js:438
 msgid ""
 "Restore can restore a previous system configuration to the server from a "
-"backup file on your local computer.  The backup file name ends with \".backup"
-"\""
+"backup file on your local computer.  The backup file name ends with .backup"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:448
@@ -7164,41 +7164,40 @@ msgid "Remove"
 msgstr "Remover"
 
 #: ../../uvm/servlets/webui/root/script/window.js:330
-#: ../../uvm/servlets/webui/root/script/window.js:447
+#: ../../uvm/servlets/webui/root/script/window.js:450
 #: ../../uvm/servlets/webui/root/script/util.js:151
 #: ../../uvm/servlets/setup/root/script/util.js:66
 msgid "OK"
 msgstr "OK"
 
 #: ../../uvm/servlets/webui/root/script/window.js:348
-#: ../../uvm/servlets/webui/root/script/window.js:465
+#: ../../uvm/servlets/webui/root/script/window.js:468
 msgid "Apply"
 msgstr "Aplicar"
 
-#: ../../uvm/servlets/webui/root/script/window.js:358
-msgid ""
-"{0} is about to be removed from the rack.\n"
-"Its settings will be lost and it will stop processing network traffic.\n"
-"\n"
-"Would you like to continue removing?"
+#: ../../uvm/servlets/webui/root/script/window.js:359
+msgid "is about to be removed from the rack."
 msgstr ""
-"{0} está para ser removido do rack.\n"
-"Suas configurações serão perdidas e irá parar o processamento de tráfego de "
-"rede.\n"
-"\n"
-"Gostaria de continuar removendo?"
 
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:360
+msgid "Its settings will be lost and it will stop processing network traffic."
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/window.js:361
+msgid "Would you like to continue?"
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/window.js:403
 msgid "Reloading..."
 msgstr ""
 
-#: ../../uvm/servlets/webui/root/script/window.js:503
+#: ../../uvm/servlets/webui/root/script/window.js:506
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:167
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3041
 msgid "Close"
 msgstr "Fechar"
 
-#: ../../uvm/servlets/webui/root/script/window.js:547
+#: ../../uvm/servlets/webui/root/script/window.js:550
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 #, fuzzy
 msgid "Done"
@@ -15411,6 +15410,97 @@ msgstr "Y-m-d g:i:s a"
 #, fuzzy
 #~ msgid "timestamp"
 #~ msgstr "Y-m-d g:i:s a"
+
+#, fuzzy
+#~ msgid ""
+#~ "indicates that the application is \"off\", and may be turned \"on\" by "
+#~ "the user."
+#~ msgstr ""
+#~ "indica que o produto está \"desativado\" e pode ser \"ativado\" pelo "
+#~ "usuário."
+
+#~ msgid "An SNMP \"Community\" must be specified."
+#~ msgstr "Um SNMP \"Comunidade\" deve ser especificado."
+
+#, fuzzy
+#~ msgid "indicates that the application is \"on\" and operating normally."
+#~ msgstr "indica que o produto está \"ativado\" e operando normalmente."
+
+#, fuzzy
+#~ msgid ""
+#~ "indicates that the application is \"on\", but that an abnormal condition "
+#~ "has occurred."
+#~ msgstr ""
+#~ "indica que o produto está \"ativado\", mas houve uma condição anormal."
+
+#, fuzzy
+#~ msgid ""
+#~ "The <B>Power Button</B> allows you to turn a application \"on\" and \"off"
+#~ "\"."
+#~ msgstr ""
+#~ "O <B>Botão de Alimentação</B> permite a você \"ativar\" e \"desativar\" "
+#~ "um produto."
+
+#~ msgid "An Trap \"Community\" must be specified."
+#~ msgstr "Uma \"Comunidade\" Trap deve ser especificada."
+
+#~ msgid "An Trap \"Host\" must be specified."
+#~ msgstr "Um \"Host\" Trap deve ser especificado."
+
+#~ msgid ""
+#~ "Enter an email address to send a test message and then press \"Send\". "
+#~ "That email account should receive an email shortly after running the "
+#~ "test. If not, the email settings may not be correct.<br/><br/>It is "
+#~ "recommended to verify that the email settings work for sending to both "
+#~ "internal (your domain) and external email addresses."
+#~ msgstr ""
+#~ "Informe um endereço de E-mail para enviar uma mensagem de teste, e clique "
+#~ "\"Enviar\". Essa conta de E-mail deverá receber um E-mail em breve após "
+#~ "esse teste. Se não, pode ser que as configurações de E-mail não estejam "
+#~ "corretas. <br/><br/>É recomendado que seja verificado que as "
+#~ "configurações de E-mail funcionam tanto internamente (seu domínio) quanto "
+#~ "para E-mails externos."
+
+#~ msgid "A \"Password\" must be specified if a \"Login\" is specified."
+#~ msgstr "Uma \"Senha\" deve ser especificada se \"Login\" for especificado."
+
+#~ msgid "A \"Login\" must be specified if a \"Password\" is specified."
+#~ msgstr "Um \"Login\" deve ser especificado se \"Senha\" for especificado."
+
+#~ msgid "A \"From Address\" must be specified."
+#~ msgstr "Um \"De endereço\" deve ser especificado."
+
+#~ msgid "The login name \"{0}\" at row {1} has already been taken."
+#~ msgstr "O nome de login \"{0}\" na linha {1} já foi usado."
+
+#~ msgid "The login name at row {0} must not contain forward slash character."
+#~ msgstr ""
+#~ "O nome de login na linha {0} deve conter o caractere de barra oblíqua."
+
+#~ msgid "The first name at row {0} must not contain any space characters."
+#~ msgstr "O nome na linha {0} não deve conter caracteres de espaço."
+
+#~ msgid "The last name at row {0} must not contain any space characters."
+#~ msgstr "O sobrenome na linha {0} não deve conter caracteres de espaço."
+
+#~ msgid "The password at row {0} must be at least 1 character long."
+#~ msgstr ""
+#~ "A senha na linha {0} deve conter pelo menos 1 caractere de extensão."
+
+#~ msgid "The password at row {0} must not contain any space characters."
+#~ msgstr "A senha na linha {0} não deve conter caracteres de espaço."
+
+#~ msgid ""
+#~ "{0} is about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?"
+#~ msgstr ""
+#~ "{0} está para ser removido do rack.\n"
+#~ "Suas configurações serão perdidas e irá parar o processamento de tráfego "
+#~ "de rede.\n"
+#~ "\n"
+#~ "Gostaria de continuar removendo?"
 
 #~ msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 #~ msgstr "O nó {0} possui {1} medidas. O número máximo de medidas é {2}."

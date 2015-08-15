@@ -170,7 +170,7 @@ Ext.define('Webui.config.email', {
             },
 
             onEmailTest: Ext.bind(function(saveBefore) {
-                var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
+                var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press Send. That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
                 if(!this.emailMessageBox) {
                     this.emailMessageBox = Ext.create('Ext.Window',{
                         layout: 'fit',
@@ -1158,7 +1158,7 @@ Ext.define('Webui.config.email', {
 
         //validate port
         if (!portCmp.isValid()) {
-            Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
+            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("The port must be an integer number between 1 and 65535."),
                 Ext.bind(function () {
                     this.tabs.setActiveTab(this.panelOutgoingServer);
                     portCmp.focus(true);
@@ -1169,7 +1169,7 @@ Ext.define('Webui.config.email', {
 
         // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED
         if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length == 0) {
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Password" must be specified if a "Login" is specified.'),
+            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Password must be specified if a Login is specified.'),
                 Ext.bind(function () {
                     this.tabs.setActiveTab(this.panelOutgoingServer);
                     passwordCmp.focus(true);
@@ -1178,7 +1178,7 @@ Ext.define('Webui.config.email', {
             return false;
         }
         else if(loginCmp.getValue().length == 0 && passwordCmp.getValue().length > 0) {
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Login" must be specified if a "Password" is specified.'),
+            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Login must be specified if a Password is specified.'),
                 Ext.bind(function () {
                     this.tabs.setActiveTab(this.panelOutgoingServer);
                     loginCmp.focus(true);
@@ -1200,7 +1200,7 @@ Ext.define('Webui.config.email', {
 
         // CHECK THAT A FROM ADDRESS IS SPECIFIED
         if (fromAddressCmp.getValue().length == 0) {
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "From Address" must be specified.'),
+            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A From Address must be specified.'),
                 Ext.bind(function () {
                     this.tabs.setActiveTab(this.panelOutgoingServer);
                     fromAddressCmp.focus(true);

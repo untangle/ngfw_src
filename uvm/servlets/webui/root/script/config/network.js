@@ -5613,7 +5613,7 @@ Ext.define('Webui.config.network', {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelFilter);
                         this.gridInputFilterRules.focus();
-                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is dangerous and not allowed! Refer to the documentation."));
+                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."));
                         return false;
                     }
                     break;
@@ -5624,7 +5624,7 @@ Ext.define('Webui.config.network', {
             this.tabs.setActiveTab(this.panelAdvanced);
             this.advancedTabPanel.setActiveTab(this.panelFilter);
             this.gridInputFilterRules.focus();
-            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is missing. This is dangerous and not allowed! Refer to the documentation."));
+            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."));
             return false;
         }
         if(!this.initialAllowSSHEnabled && rules && !this.confirmedAllowSSHEnabled) {
@@ -5636,7 +5636,7 @@ Ext.define('Webui.config.network', {
                         this.advancedTabPanel.setActiveTab(this.panelFilter);
                         this.gridInputFilterRules.focus();
                         Ext.MessageBox.confirm(this.i18n._("Warning"),
-                                               this.i18n._("The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled.") + "<br/><br/>" +
+                                               this.i18n._("The Allow SSH rule in Input Filter Rules has been enabled.") + "<br/><br/>" +
                                                this.i18n._("If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server.") + "<br/><br/>" +
                                                this.i18n._("Do you want to continue anyway?"),
                                                Ext.bind(function(btn, text) {

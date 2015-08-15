@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 11:32-0700\n"
+"POT-Creation-Date: 2015-08-15 12:29-0700\n"
 "PO-Revision-Date: 2008-11-27 23:22-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -241,7 +241,7 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/main.js:1007
 #: ../../uvm/servlets/webui/root/script/main.js:1104
 #: ../../uvm/servlets/webui/root/script/window.js:255
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:403
 #: ../../uvm/servlets/webui/root/script/util.js:79
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
@@ -742,9 +742,9 @@ msgstr "设置"
 #: ../../uvm/servlets/webui/root/script/config/network.js:5733
 #: ../../uvm/servlets/webui/root/script/main.js:160
 #: ../../uvm/servlets/webui/root/script/window.js:322
-#: ../../uvm/servlets/webui/root/script/window.js:439
-#: ../../uvm/servlets/webui/root/script/window.js:495
-#: ../../uvm/servlets/webui/root/script/window.js:529
+#: ../../uvm/servlets/webui/root/script/window.js:442
+#: ../../uvm/servlets/webui/root/script/window.js:498
+#: ../../uvm/servlets/webui/root/script/window.js:532
 msgid "Help"
 msgstr "帮助"
 
@@ -764,20 +764,18 @@ msgid "Green"
 msgstr "绿色"
 
 #: ../../uvm/servlets/webui/root/script/components.js:401
-#, fuzzy
-msgid "indicates that the application is \"on\" and operating normally."
-msgstr "指示出该产品处于开机状态并且运行正常。"
+msgid "indicates that the application is ON and operating normally."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:402
 msgid "Red"
 msgstr "红色"
 
 #: ../../uvm/servlets/webui/root/script/components.js:403
-#, fuzzy
 msgid ""
-"indicates that the application is \"on\", but that an abnormal condition has "
+"indicates that the application is ON, but that an abnormal condition has "
 "occurred."
-msgstr "指示出该产品处于开机状态，但有异常情况发生。"
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:404
 msgid "Yellow"
@@ -793,17 +791,13 @@ msgid "Clear"
 msgstr "无"
 
 #: ../../uvm/servlets/webui/root/script/components.js:406
-#, fuzzy
 msgid ""
-"indicates that the application is \"off\", and may be turned \"on\" by the "
-"user."
-msgstr "指示出该产品处于关机状态，并处于可开机状态。"
+"indicates that the application is OFF, and may be turned ON by the user."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:414
-#, fuzzy
-msgid ""
-"The <B>Power Button</B> allows you to turn a application \"on\" and \"off\"."
-msgstr "<B>电源按钮</B>允许您启动和关闭一个产品。"
+msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/components.js:422
 msgid ""
@@ -1123,8 +1117,8 @@ msgstr "确定"
 #: ../../uvm/servlets/webui/root/script/config/network.js:2844
 #: ../../uvm/servlets/webui/root/script/config/network.js:5741
 #: ../../uvm/servlets/webui/root/script/window.js:338
-#: ../../uvm/servlets/webui/root/script/window.js:455
-#: ../../uvm/servlets/webui/root/script/window.js:539
+#: ../../uvm/servlets/webui/root/script/window.js:458
+#: ../../uvm/servlets/webui/root/script/window.js:542
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:45
 msgid "Cancel"
 msgstr "取消"
@@ -2798,7 +2792,7 @@ msgid ""
 "certificate request. If you are enrolling as a small business/sole "
 "proprietor, please enter the certificate requester's name in the "
 "'Organization' field, and the DBA (doing business as) name in the "
-"'Organizational Unit' field."
+"Organizational Unit field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:742
@@ -2808,8 +2802,8 @@ msgstr ""
 #: ../../uvm/servlets/webui/root/script/config/administration.js:744
 msgid ""
 "Optional. Use this field to differentiate between divisions within an "
-"organization. For example, 'Engineering' or 'Human Resources.' If "
-"applicable, you may enter the DBA (doing business as) name in this field."
+"organization. If applicable, you may enter the DBA (doing business as) name "
+"in this field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:748
@@ -2818,10 +2812,10 @@ msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:750
 msgid ""
-"The name entered in the 'CN' (common name) field MUST be the fully-qualified "
-"domain name of the website for which you will be using the certificate (e."
-"g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' "
-"prefixes in your common name. Do NOT enter your personal name in this field."
+"The name entered in the CN (common name) field MUST be the fully-qualified "
+"domain name of the website for which you will be using the certificate "
+"(example.com). Do not include the http:// or https:// prefixes in your "
+"common name. Do NOT enter your personal name in this field."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:755
@@ -2968,8 +2962,8 @@ msgstr "更改_我"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1109
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1514
-msgid "An SNMP \"Community\" must be specified."
-msgstr "必须指定一个SNMP“公共组”。"
+msgid "An SNMP Community must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1113
 msgid "System Contact"
@@ -2997,8 +2991,8 @@ msgstr "我的_陷阱_组"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1156
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1529
-msgid "An Trap \"Community\" must be specified."
-msgstr "必须指定一个陷阱“公共组”。"
+msgid "An Trap Community must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1160
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:808
@@ -3046,8 +3040,8 @@ msgstr "我的_陷阱_主机"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1165
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1540
-msgid "An Trap \"Host\" must be specified."
-msgstr "必须指定一个陷阱“主机”。"
+msgid "An Trap Host must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1181
 msgid "Enable SNMP v3"
@@ -3184,7 +3178,11 @@ msgid "Failed"
 msgstr "失败"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1439
-msgid "The username name: \"{0}\" in row: {1}  already exists."
+msgid "The username"
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/config/administration.js:1439
+msgid "already exists in row"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1456
@@ -3197,7 +3195,6 @@ msgstr "这里必须至少有一个非只读（可写）的账户。"
 
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1492
 #: ../../uvm/servlets/webui/root/script/config/administration.js:1551
-#: ../../uvm/servlets/webui/root/script/config/email.js:1161
 #: ../../uvm/servlets/webui/root/script/extOverrides.js:242
 msgid "The port must be an integer number between {0} and {1}."
 msgstr "端口必须是一个{0}和{1}之间的整数。"
@@ -3214,7 +3211,7 @@ msgstr "出站服务器"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:173
 msgid ""
-"Enter an email address to send a test message and then press \"Send\". That "
+"Enter an email address to send a test message and then press Send. That "
 "email account should receive an email shortly after running the test. If "
 "not, the email settings may not be correct.<br/><br/>It is recommended to "
 "verify that the email settings work for sending to both internal (your "
@@ -3296,7 +3293,7 @@ msgstr "服务器端口"
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:330
 #: ../../uvm/servlets/webui/root/script/config/system.js:485
-#: ../../uvm/servlets/webui/root/script/window.js:359
+#: ../../uvm/servlets/webui/root/script/window.js:362
 #: ../../uvm/servlets/setup/root/script/setup.js:1040
 msgid "Warning:"
 msgstr "警告："
@@ -3620,21 +3617,25 @@ msgstr "细节"
 msgid "Phish"
 msgstr ""
 
+#: ../../uvm/servlets/webui/root/script/config/email.js:1161
+msgid "The port must be an integer number between 1 and 65535."
+msgstr ""
+
 #: ../../uvm/servlets/webui/root/script/config/email.js:1172
-msgid "A \"Password\" must be specified if a \"Login\" is specified."
-msgstr "如果指定了一个“登录”也必须同时指定一个“密码”。"
+msgid "A Password must be specified if a Login is specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1181
-msgid "A \"Login\" must be specified if a \"Password\" is specified."
-msgstr "如果指定了一个“密码”也必须同时指定一个“登录”。"
+msgid "A Login must be specified if a Password is specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1192
 msgid "A Server Address or Hostname must be specified for an SMTP server."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/email.js:1203
-msgid "A \"From Address\" must be specified."
-msgstr "必须指定一个“发件人地址”。"
+msgid "A From Address must be specified."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/sessionMonitor.js:11
 msgid "Session Viewer"
@@ -4158,28 +4159,36 @@ msgid "Expiration Time"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:254
-msgid "The login name \"{0}\" at row {1} has already been taken."
-msgstr "行{1}中的登录名“{0}”已被人使用。"
+msgid "The login name has already been taken:"
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
-msgid "The login name at row {0} must not contain forward slash character."
-msgstr "行{0}的登录名不能包含任何正斜杠“/”字符。"
+msgid "The login name must not contain forward slash character."
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:264
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
+#: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
+msgid "row"
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:273
-msgid "The first name at row {0} must not contain any space characters."
-msgstr "行{0}的名不能包含任何空格。"
+msgid "The first name must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:282
-msgid "The last name at row {0} must not contain any space characters."
-msgstr "行{0}的姓不能包含任何空格。"
+msgid "The last name must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:291
-msgid "The password at row {0} must be at least 1 character long."
-msgstr "行{0}的密码至少要有1个字符长。"
+msgid "The password must contain at least 1 character."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:300
-msgid "The password at row {0} must not contain any space characters."
-msgstr "行{0}的密码不能包含任何空格。"
+msgid "The password must not contain any spaces."
+msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/localDirectory.js:334
 msgid "Please save the changes before cleaning up expired users !"
@@ -4253,11 +4262,11 @@ msgid "Reboots"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:70
-msgid "Current \"licensed\" device count"
+msgid "Current active device count"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:71
-msgid "Highest \"licensed\" device count since reboot"
+msgid "Highest active device count since reboot"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/about.js:85
@@ -6054,18 +6063,18 @@ msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5616
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is "
-"dangerous and not allowed! Refer to the documentation."
+"The Block All rule in Input Filter Rules is disabled. This is dangerous and "
+"not allowed! Refer to the documentation."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5627
 msgid ""
-"The \"Block All\" rule in \"Input Filter Rules\" is missing. This is "
-"dangerous and not allowed! Refer to the documentation."
+"The Block All rule in Input Filter Rules is missing. This is dangerous and "
+"not allowed! Refer to the documentation."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5639
-msgid "The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled."
+msgid "The Allow SSH rule in Input Filter Rules has been enabled."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/network.js:5640
@@ -6326,14 +6335,14 @@ msgstr "备份到文件"
 #: ../../uvm/servlets/webui/root/script/config/system.js:388
 msgid ""
 "Backup can save the current system configuration to a file on your local "
-"computer for later restoration. The file name will end with \".backup\""
+"computer for later restoration. The file name will end with .backup"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:390
 msgid ""
 "After backing up your current system configuration to a file, you can then "
-"restore that configuration through this dialog by going to \"Restore\" -> "
-"\"From File\"."
+"restore that configuration through this dialog by clicking on Restore from "
+"File."
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:408
@@ -6361,8 +6370,7 @@ msgstr "从文件恢复"
 #: ../../uvm/servlets/webui/root/script/config/system.js:438
 msgid ""
 "Restore can restore a previous system configuration to the server from a "
-"backup file on your local computer.  The backup file name ends with \".backup"
-"\""
+"backup file on your local computer.  The backup file name ends with .backup"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/config/system.js:448
@@ -7139,40 +7147,40 @@ msgid "Remove"
 msgstr "移除"
 
 #: ../../uvm/servlets/webui/root/script/window.js:330
-#: ../../uvm/servlets/webui/root/script/window.js:447
+#: ../../uvm/servlets/webui/root/script/window.js:450
 #: ../../uvm/servlets/webui/root/script/util.js:151
 #: ../../uvm/servlets/setup/root/script/util.js:66
 msgid "OK"
 msgstr ""
 
 #: ../../uvm/servlets/webui/root/script/window.js:348
-#: ../../uvm/servlets/webui/root/script/window.js:465
+#: ../../uvm/servlets/webui/root/script/window.js:468
 msgid "Apply"
 msgstr ""
 
-#: ../../uvm/servlets/webui/root/script/window.js:358
-msgid ""
-"{0} is about to be removed from the rack.\n"
-"Its settings will be lost and it will stop processing network traffic.\n"
-"\n"
-"Would you like to continue removing?"
+#: ../../uvm/servlets/webui/root/script/window.js:359
+msgid "is about to be removed from the rack."
 msgstr ""
-"{0}将被从机架移除。\n"
-"其设置将丢失并且将会停止网络数据流处理。\n"
-"\n"
-"您要继续移除操作吗？"
 
-#: ../../uvm/servlets/webui/root/script/window.js:400
+#: ../../uvm/servlets/webui/root/script/window.js:360
+msgid "Its settings will be lost and it will stop processing network traffic."
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/window.js:361
+msgid "Would you like to continue?"
+msgstr ""
+
+#: ../../uvm/servlets/webui/root/script/window.js:403
 msgid "Reloading..."
 msgstr ""
 
-#: ../../uvm/servlets/webui/root/script/window.js:503
+#: ../../uvm/servlets/webui/root/script/window.js:506
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:167
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3041
 msgid "Close"
 msgstr "关闭"
 
-#: ../../uvm/servlets/webui/root/script/window.js:547
+#: ../../uvm/servlets/webui/root/script/window.js:550
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
 #, fuzzy
 msgid "Done"
@@ -15379,6 +15387,75 @@ msgstr "Y-m-d g:i:s a"
 
 #~ msgid "timestamp"
 #~ msgstr "年-月-日 g:i:s a"
+
+#, fuzzy
+#~ msgid ""
+#~ "indicates that the application is \"off\", and may be turned \"on\" by "
+#~ "the user."
+#~ msgstr "指示出该产品处于关机状态，并处于可开机状态。"
+
+#~ msgid "An SNMP \"Community\" must be specified."
+#~ msgstr "必须指定一个SNMP“公共组”。"
+
+#, fuzzy
+#~ msgid "indicates that the application is \"on\" and operating normally."
+#~ msgstr "指示出该产品处于开机状态并且运行正常。"
+
+#, fuzzy
+#~ msgid ""
+#~ "indicates that the application is \"on\", but that an abnormal condition "
+#~ "has occurred."
+#~ msgstr "指示出该产品处于开机状态，但有异常情况发生。"
+
+#, fuzzy
+#~ msgid ""
+#~ "The <B>Power Button</B> allows you to turn a application \"on\" and \"off"
+#~ "\"."
+#~ msgstr "<B>电源按钮</B>允许您启动和关闭一个产品。"
+
+#~ msgid "An Trap \"Community\" must be specified."
+#~ msgstr "必须指定一个陷阱“公共组”。"
+
+#~ msgid "An Trap \"Host\" must be specified."
+#~ msgstr "必须指定一个陷阱“主机”。"
+
+#~ msgid "A \"Password\" must be specified if a \"Login\" is specified."
+#~ msgstr "如果指定了一个“登录”也必须同时指定一个“密码”。"
+
+#~ msgid "A \"Login\" must be specified if a \"Password\" is specified."
+#~ msgstr "如果指定了一个“密码”也必须同时指定一个“登录”。"
+
+#~ msgid "A \"From Address\" must be specified."
+#~ msgstr "必须指定一个“发件人地址”。"
+
+#~ msgid "The login name \"{0}\" at row {1} has already been taken."
+#~ msgstr "行{1}中的登录名“{0}”已被人使用。"
+
+#~ msgid "The login name at row {0} must not contain forward slash character."
+#~ msgstr "行{0}的登录名不能包含任何正斜杠“/”字符。"
+
+#~ msgid "The first name at row {0} must not contain any space characters."
+#~ msgstr "行{0}的名不能包含任何空格。"
+
+#~ msgid "The last name at row {0} must not contain any space characters."
+#~ msgstr "行{0}的姓不能包含任何空格。"
+
+#~ msgid "The password at row {0} must be at least 1 character long."
+#~ msgstr "行{0}的密码至少要有1个字符长。"
+
+#~ msgid "The password at row {0} must not contain any space characters."
+#~ msgstr "行{0}的密码不能包含任何空格。"
+
+#~ msgid ""
+#~ "{0} is about to be removed from the rack.\n"
+#~ "Its settings will be lost and it will stop processing network traffic.\n"
+#~ "\n"
+#~ "Would you like to continue removing?"
+#~ msgstr ""
+#~ "{0}将被从机架移除。\n"
+#~ "其设置将丢失并且将会停止网络数据流处理。\n"
+#~ "\n"
+#~ "您要继续移除操作吗？"
 
 #~ msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 #~ msgstr "节点{0}有{1}个跃距。最大跃距数是{2}。"
