@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 21:56-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,233 +18,76 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
-msgid "Mark"
+#: /home/dmorris/work/src/phish/src/com/untangle/node/phish/PhishSmtpHandler.java:39
+msgid "The attached message from"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
-msgid "Pass"
+#: /home/dmorris/work/src/phish/src/com/untangle/node/phish/PhishSmtpHandler.java:42
+msgid ""
+"was determined by the Phish Blocker to be phish (a fraudulent email intended "
+"to steal information).  "
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
-msgid "Drop"
+#: /home/dmorris/work/src/phish/src/com/untangle/node/phish/PhishSmtpHandler.java:43
+msgid "The kind of phish that was found was"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
-msgid "Quarantine"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
-msgid "Email"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
-msgid "SMTP"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
-msgid "Scan SMTP"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
-msgid "Action"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
-msgid "Note"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
-msgid "Phish Blocker email signatures were last updated"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
-msgid "never"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
-msgid "Phish"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
-msgid "Clean"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
-msgid "Hourly Phish Rate"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
-msgid "Daily Phish Rate"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
-msgid "Top Ten Phishing Victims"
-msgstr ""
-
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
-msgid "If you have any questions, Please contact {0}."
-msgstr ""
-
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
 msgid "Messages received"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21
-msgid "description"
+#: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
+msgid "Phish"
 msgstr ""
 
-#: /tmp/strings:1
-msgid "The amount of scanned, clean, and phish email over time."
+#: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
+msgid "Clean"
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22
-msgid "title"
+#: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
+msgid "Hourly Phish Rate"
 msgstr ""
 
-#: /tmp/strings:2
-msgid "Email Usage (all)"
+#: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
+msgid "Daily Phish Rate"
 msgstr ""
 
-#: /tmp/strings:3
-msgid "The amount of clean email over time."
-msgstr ""
-
-#: /tmp/strings:4
-msgid "Email Usage (clean)"
-msgstr ""
-
-#: /tmp/strings:5
-msgid "The number of IP addresses sending phish."
-msgstr ""
-
-#: /tmp/strings:6
-msgid "Top Phish Sender Addresses"
-msgstr ""
-
-#: /tmp/strings:7
-msgid "The amount of phish email over time."
-msgstr ""
-
-#: /tmp/strings:8
-msgid "Email Usage (phish)"
-msgstr ""
-
-#: /tmp/strings:9
-msgid "The ratio of phish (true) to ham (false)"
-msgstr ""
-
-#: /tmp/strings:10
-msgid "Phish Ratio"
-msgstr ""
-
-#: /tmp/strings:11
-msgid "The amount of scanned email over time."
-msgstr ""
-
-#: /tmp/strings:12
-msgid "Email Usage (scanned)"
-msgstr ""
-
-#: /tmp/strings:13
-msgid "The number of email addresses with phish."
-msgstr ""
-
-#: /tmp/strings:14
-msgid "Top Phish Recipients"
-msgstr ""
-
-#: /tmp/strings:15
-msgid "A summary of phish blocking actions for email activity."
-msgstr ""
-
-#: /tmp/strings:16
-msgid "Phish Blocker Summary"
-msgstr ""
-
-#: /tmp/strings:17
-msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr ""
-
-#: /tmp/strings:18
-msgid "Quarantined Events"
-msgstr ""
-
-#: /tmp/strings:19
-msgid "All email sessions scanned by Phish Blocker."
-msgstr ""
-
-#: /tmp/strings:20
-msgid "All Email Events"
-msgstr ""
-
-#: /tmp/strings:21
-msgid "All email sessions detected as phishing attempts."
-msgstr ""
-
-#: /tmp/strings:22
-msgid "All Phish Events"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
-msgid "Host:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
-msgid "URL:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
-msgid "Reason:"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
-msgid "Unblock For Now"
-msgstr ""
-
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
-msgid "Unblock Permanently"
+#: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
+msgid "Top Ten Phishing Victims"
 msgstr ""

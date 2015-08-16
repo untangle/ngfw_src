@@ -24,7 +24,7 @@ msgid "thousand_sep"
 msgstr ","
 
 msgid "date_fmt"
-msgstr "m/d/y"
+msgstr "Y-m-d"
 
 msgid "timestamp_fmt"
 msgstr "Y-m-d g:i:s a"
