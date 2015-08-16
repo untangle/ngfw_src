@@ -2950,7 +2950,7 @@ msgid ""
 "organization must be the legal registrant of the domain name in the "
 "certificate request. If you are enrolling as a small business/sole "
 "proprietor, please enter the certificate requester's name in the "
-"'Organization' field, and the DBA (doing business as) name in the "
+"Organization field, and the DBA (doing business as) name in the "
 "Organizational Unit field."
 msgstr ""
 
@@ -9359,7 +9359,7 @@ msgid "The email address name cannot be blank."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:395
-msgid "(required for 'Online Access')"
+msgid "(required for Online Access)"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:410
@@ -18249,7 +18249,7 @@ msgid "All Web Events"
 msgstr ""
 
 #: /tmp/strings:564 /tmp/strings:647
-msgid "Shows all 'unblocked' web requests"
+msgid "Shows all unblocked web requests"
 msgstr ""
 
 #: /tmp/strings:565 /tmp/strings:648

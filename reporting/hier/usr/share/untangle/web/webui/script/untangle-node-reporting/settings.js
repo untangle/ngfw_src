@@ -392,7 +392,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                             validator: this.passwordValidator
                         },{
                             xtype: 'label',
-                            html: this.i18n._("(required for 'Online Access')"),
+                            html: this.i18n._("(required for Online Access)"),
                             cls: 'boxlabel'
                         }]
                     }, {

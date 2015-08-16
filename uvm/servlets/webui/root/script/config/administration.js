@@ -735,7 +735,7 @@ Ext.define('Webui.config.administration', {
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organization') + " (O)",
                     name: "Organization",
-                    helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the Organizational Unit field."),
+                    helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."),
                     allowBlank: false
                 },{
                     xtype: 'textfield',

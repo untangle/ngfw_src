@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"POT-Creation-Date: 2015-08-16 12:15-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1262,7 +1262,7 @@ msgid "The password is shorter than the minimum {0} characters."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:395
-msgid "(required for 'Online Access')"
+msgid "(required for Online Access)"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:404
