@@ -1009,7 +1009,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         if ( this.settings.pageType == "BASIC_MESSAGE" ) {
             if (this.settings.authenticationType != "NONE" ) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
-                    this.i18n._("When using 'Basic Message', 'Authentication' must be set to 'None'."),
+                    this.i18n._("When using Basic Message, Authentication must be set to None."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelUserAuthentication);
                     }, this));
@@ -1017,7 +1017,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
             }
             if ( !this.settings.concurrentLoginsEnabled ) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
-                    this.i18n._("When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."),
+                    this.i18n._("When using Basic Message, Allow Concurrent Logins must be enabled."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelUserAuthentication);
                     }, this));
@@ -1027,7 +1027,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         if ( this.settings.pageType == "BASIC_LOGIN" ) {
             if (this.settings.authenticationType == "NONE" ) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
-                    this.i18n._("When using 'Basic Login', 'Authentication' cannot be set to 'None'."),
+                    this.i18n._("When using Basic Login, Authentication cannot be set to None."),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelUserAuthentication);
                     }, this));

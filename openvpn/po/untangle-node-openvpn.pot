@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 22:34-0700\n"
+"POT-Creation-Date: 2015-08-16 11:26-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -523,8 +523,8 @@ msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1079
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
 msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098

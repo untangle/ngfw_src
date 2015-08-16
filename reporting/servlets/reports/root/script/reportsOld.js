@@ -362,7 +362,7 @@ Ext.define('Ung.Reports', {
         }else{
             this.availableReportsWindow.hide();
             if(this.isDynamicDataAvailable(this.reportDatesItems[found])===false){
-                alert(i18n._("The data used to calculate the selected report is older than the \"Retention Time\" setting and has been removed from the server. So you may not see any dynamic data for this report.")); //this has to be an alert - inorder to be blocking.
+                alert(i18n._("The data used to calculate the selected report is older than the Retention Time setting and has been removed from the server. So you may not see any dynamic data for this report.")); //this has to be an alert - inorder to be blocking.
             }
             this.changeDate(this.reportDatesItems[found].dt, this.reportDatesItems[found].numDays);
         }

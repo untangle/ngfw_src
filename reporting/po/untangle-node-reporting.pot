@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 22:34-0700\n"
+"POT-Creation-Date: 2015-08-16 11:26-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1303,7 +1303,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:548
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:606
-msgid "A \"Host\" must be specified."
+msgid "A Host must be specified."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:553
@@ -1333,15 +1333,15 @@ msgid "User"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:635
-msgid "A \"User\" must be specified."
+msgid "A User must be specified."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:648
-msgid "A \"Password\" must be specified."
+msgid "A Password must be specified."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:661
-msgid "A \"Name\" must be specified."
+msgid "A Name must be specified."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:677

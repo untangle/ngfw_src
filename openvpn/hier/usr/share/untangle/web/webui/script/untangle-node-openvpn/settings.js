@@ -1076,7 +1076,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 for(var j=0; j<clientList.length;j++) {
                     if (removedGroups[i].groupId == clientList[j].groupId) {
                         Ext.MessageBox.alert(this.i18n._('Failed'),
-                            Ext.String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
+                            Ext.String.format(this.i18n._("The group: {0} cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
                             Ext.bind(function () {
                                 this.tabs.setActiveTab(this.gridGroups);
                             }, this)

@@ -545,7 +545,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         value: this.getSettings().syslogHost,
                         toValidate: true,
                         allowBlank: false,
-                        blankText: this.i18n._("A \"Host\" must be specified."),
+                        blankText: this.i18n._("A Host must be specified."),
                         disabled: !this.getSettings().syslogEnabled,
                         validator: Ext.bind( function( value ){
                             if( value == '127.0.0.1' ||
@@ -603,7 +603,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     width: 300,
                     value: this.getSettings().dbHost,
                     allowBlank: false,
-                    blankText: this.i18n._("A \"Host\" must be specified."),
+                    blankText: this.i18n._("A Host must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbHost = newValue;
@@ -632,7 +632,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     width: 300,
                     value: this.getSettings().dbUser,
                     allowBlank: false,
-                    blankText: this.i18n._("A \"User\" must be specified."),
+                    blankText: this.i18n._("A User must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbUser = newValue;
@@ -645,7 +645,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     width: 300,
                     value: this.getSettings().dbPassword,
                     allowBlank: false,
-                    blankText: this.i18n._("A \"Password\" must be specified."),
+                    blankText: this.i18n._("A Password must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbPassword = newValue;
@@ -658,7 +658,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     width: 300,
                     value: this.getSettings().dbName,
                     allowBlank: false,
-                    blankText: this.i18n._("A \"Name\" must be specified."),
+                    blankText: this.i18n._("A Name must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbName = newValue;

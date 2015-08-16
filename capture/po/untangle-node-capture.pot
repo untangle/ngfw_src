@@ -788,13 +788,13 @@ msgid "Please correct any highlighted fields."
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1012
-msgid "When using 'Basic Message', 'Authentication' must be set to 'None'."
+msgid "When using Basic Message, Authentication must be set to None."
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1020
-msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
+msgid "When using Basic Message, Allow Concurrent Logins must be enabled."
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1030
-msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
+msgid "When using Basic Login, Authentication cannot be set to None."
 msgstr ""
