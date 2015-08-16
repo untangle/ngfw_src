@@ -45,7 +45,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 fieldValue = fieldValue.substring(0, fieldValue.length - 1);
             }
             if (fieldValue.trim().length == 0) {
-                return this.i18n._("Invalid \"URL\" specified");
+                return this.i18n._("Invalid URL specified");
             }
             return true;
         }, this);

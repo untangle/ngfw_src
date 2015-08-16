@@ -1095,7 +1095,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             var groupName = group.name.toLowerCase();
 
             if ( groupNames[groupName] != null ) {
-                Ext.MessageBox.alert(this.i18n._('Failed'), Ext.String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), group.name, i+1),
+                Ext.MessageBox.alert(this.i18n._('Failed'), Ext.String.format(this.i18n._("The group name: {0} in row: {1} already exists."), group.name, i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridGroups);
                     }, this)
@@ -1127,7 +1127,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
 
             if ( clientNames[clientName] != null ) {
                 Ext.MessageBox.alert(this.i18n._('Failed'),
-                    Ext.String.format(this.i18n._("The client name: \"{0}\" in row: {1} already exists."), clientName, i),
+                    Ext.String.format(this.i18n._("The client name: {0} in row: {1} already exists."), clientName, i),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridRemoteClients);
                     }, this)

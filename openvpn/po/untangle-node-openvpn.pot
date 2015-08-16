@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -528,7 +528,7 @@ msgid ""
 msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
-msgid "The group name: \"{0}\" in row: {1} already exists."
+msgid "The group name: {0} in row: {1} already exists."
 msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1120
@@ -536,5 +536,5 @@ msgid "Changing name is not allowed. Create a new user."
 msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1130
-msgid "The client name: \"{0}\" in row: {1} already exists."
+msgid "The client name: {0} in row: {1} already exists."
 msgstr ""

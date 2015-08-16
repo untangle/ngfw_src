@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -370,7 +370,7 @@ msgstr ""
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:167
 msgid ""
 "This category contains detection for vulnerabilities present in the Chrome "
-"browser. (This is separate from the 'browser-webkit' category, as Chrome has "
+"browser. (This is separate from the browser-webkit category, as Chrome has "
 "enough vulnerabilities to be broken out into it's own, and while it uses the "
 "Webkit rendering engine, there's a lot of other features to Chrome.)"
 msgstr ""
@@ -378,8 +378,8 @@ msgstr ""
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:168
 msgid ""
 "This category contains detection for vulnerabilities present in the Firefox "
-"browser, or products that have the 'Gecko' engine. (Thunderbird email "
-"client, etc)"
+"browser, or products that have the Gecko engine. (Thunderbird email client, "
+"etc)"
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:169
@@ -409,7 +409,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:173
 msgid ""
-"This category containt any rule that utilizes the 'replace' functionality "
+"This category containt any rule that utilizes the replace functionality "
 "inside of Snort."
 msgstr ""
 
@@ -502,7 +502,7 @@ msgstr ""
 msgid ""
 "This category contains rules that are simply looking for simple "
 "identification markers of shellcode in traffic. This replaces the old "
-"'shellcode.rules'."
+"shellcode.rules."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:188
@@ -519,8 +519,8 @@ msgstr ""
 msgid ""
 "This category contains known malicious command and control activity for "
 "identified botnet traffic. This includes call home, downloading of dropped "
-"files, and ex-filtration of data. Actual commands issued from 'Master to "
-"Zombie' type stuff will also be here."
+"files, and ex-filtration of data. Actual commands issued from Master to "
+"Zombie type stuff will also be here."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:190
@@ -532,7 +532,7 @@ msgstr ""
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:191
 msgid ""
 "This category contains rules that are malware related, but don't fit into "
-"one of the other 'malware' categories."
+"one of the other malware categories."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:192
@@ -630,27 +630,27 @@ msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:207
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with adware or spyware."
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with adware or spyware."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:208
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with p2p."
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with p2p."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:209
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with toolbars installed on the client system. (Google Toolbar, Yahoo "
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with toolbars installed on the client system. (Google Toolbar, Yahoo "
 "Toolbar, Hotbar, etc)"
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:210
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"don't fit into one of the categories shown above."
+"This category deals with pua or Potentially Unwanted Applications that don't "
+"fit into one of the categories shown above."
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:211
