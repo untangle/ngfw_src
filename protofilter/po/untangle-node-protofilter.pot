@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 21:56-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,6 +100,8 @@ msgstr ""
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:245
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:304
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:565
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:99
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
 msgid "Protocol"
 msgstr ""
 
@@ -185,4 +187,84 @@ msgstr ""
 
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:568
 msgid "Port"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:20
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
+msgid "Status"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
+msgid "Total Signatures Available"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
+msgid "Total Signatures Logging"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
+msgid "Total Signatures Blocking"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:48
+msgid "Note"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:49
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
+msgid "Signatures"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:104
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:143
+msgid "[enter protocol]"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
+msgid "Category"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:113
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
+msgid "[enter category]"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:118
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:158
+msgid "Block"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:163
+msgid "Log"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:129
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:168
+msgid "Description"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:135
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:169
+msgid "[no description]"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:176
+msgid "Signature"
+msgstr ""
+
+#: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:177
+msgid "[enter signature]"
 msgstr ""

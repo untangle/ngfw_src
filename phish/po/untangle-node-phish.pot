@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 21:56-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,4 +90,50 @@ msgstr ""
 
 #: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
+msgid "Mark"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
+msgid "Pass"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
+msgid "Drop"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
+msgid "Quarantine"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
+msgid "Email"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
+msgid "SMTP"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
+msgid "Scan SMTP"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
+msgid "Action"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
+msgid "Note"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
+msgid "Phish Blocker email signatures were last updated"
+msgstr ""
+
+#: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
+msgid "never"
 msgstr ""

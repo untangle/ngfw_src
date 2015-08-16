@@ -33,7 +33,9 @@ case "$1" in
     ;;
 "untangle-libuvm")
     # uvm javascript. find all _("string")
-    find $WORK/src/uvm/servlets -name '*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    find $WORK/src/uvm/servlets -name '*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot
+    find $WORK -wholename '*/web/*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot
+    find $HADES -wholename '*/web/*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot
 
     # untangle-apache2-config javascript. find all _("string")
     find $WORK/pkgs/untangle-apache2-config/files/var/www/script -name '*.js' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot

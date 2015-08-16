@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 21:24-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,6 +65,7 @@ msgid "Host name is an IP address ({0})"
 msgstr ""
 
 #: /home/dmorris/work/src/webfilter-base/src/com/untangle/node/webfilter/DecisionEngine.java:254
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:782
 msgid "None"
 msgstr ""
 
@@ -334,6 +335,12 @@ msgstr ""
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1056
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1183
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1244
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:69
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:109
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:309
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:349
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:425
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:465
 msgid "Category"
 msgstr ""
 
@@ -371,6 +378,10 @@ msgid "Site Events"
 msgstr ""
 
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1097
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:183
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:219
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:517
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:546
 msgid "Site"
 msgstr ""
 
@@ -384,4 +395,277 @@ msgstr ""
 
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1192
 msgid "Violations By Category"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:30
+msgid "Site cannot contain URL protocol."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:33
+msgid "Site cannot contain port."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:48
+msgid "Invalid \"URL\" specified"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:59
+msgid "Categories"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:75
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:117
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:195
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:228
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:298
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:338
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:414
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:454
+msgid "Block"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:91
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:132
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:201
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:233
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:304
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:343
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:420
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:459
+msgid "Flag"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:94
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:133
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:204
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:234
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:307
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:344
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:423
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:460
+msgid "Flag as Violation"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:96
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:138
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:206
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:239
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:317
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:356
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:433
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:472
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:533
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:560
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:621
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:648
+msgid "Description"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:145
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:159
+msgid "Block Categories"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:160
+msgid "Block or flag access to sites associated with the specified category."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:169
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:506
+msgid "Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:188
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:220
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:522
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:547
+msgid "[enter site]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:212
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:240
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:323
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:357
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:439
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:473
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:539
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:561
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:627
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:649
+msgid "[no description]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:247
+msgid "Block Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:261
+msgid "Blocked Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:262
+msgid "Block or flag access to the specified site."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:274
+msgid "File Types"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:287
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:330
+msgid "File Type"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:292
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:331
+msgid "[enter extension]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:314
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:350
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:430
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:466
+msgid "[no category]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:364
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:378
+msgid "Block File Types"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:379
+msgid "Block or flag access to files associated with the specified file type."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:390
+msgid "MIME Types"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:403
+msgid "MIME type"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:408
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:447
+msgid "[enter mime type]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:446
+msgid "MIME Type"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:480
+msgid "Block Mime Types"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:494
+msgid "Block MIME Types"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:495
+msgid "Block or flag access to files associated with the specified MIME type."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:529
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:555
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:617
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:643
+msgid "Pass"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:571
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:582
+msgid "Pass Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:583
+msgid ""
+"Allow access to the specified site regardless of matching block policies."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:594
+msgid "Client IP addresses"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:605
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:634
+msgid "IP address/range"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:610
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:635
+msgid "[enter IP address/range]"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:659
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:670
+msgid "Pass Clients"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:671
+msgid "Allow access for client networks regardless of matching block policies."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:684
+msgid "Advanced"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:692
+msgid "Advanced Options"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:695
+msgid "Block pages from IP only hosts"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:708
+msgid "Pass if referers match Pass Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:721
+msgid "Restrict Google applications"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:739
+msgid "NOTE:"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:739
+msgid ""
+"must be installed and running with the Inspect Google Traffic configured to "
+"Inspect."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:745
+msgid "Allowed Domain(s)"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:747
+msgid ""
+"Specify the comma separated list of domains allowed to access non-search "
+"Google applications"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:756
+msgid "Domain cannot contain URL protocol."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:759
+msgid "Domain cannot contain port."
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:762
+msgid "Invalid domain specified"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:780
+msgid "Unblock"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:783
+msgid "Temporary"
+msgstr ""
+
+#: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:784
+msgid "Permanent and Global"
 msgstr ""

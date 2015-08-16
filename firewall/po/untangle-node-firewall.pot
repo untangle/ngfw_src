@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 21:56-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,6 +219,7 @@ msgid "Destination Ip"
 msgstr ""
 
 #: /home/dmorris/work/src/firewall/hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:574
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
 msgid "Destination Port"
 msgstr ""
 
@@ -227,5 +228,170 @@ msgid "Source Ip"
 msgstr ""
 
 #: /home/dmorris/work/src/firewall/hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:576
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
 msgid "Source Port"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:13
+msgid "Destination Address"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
+msgid "Destination Interface"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
+msgid "Source Address"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
+msgid "Source Interface"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
+msgid "Protocol"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
+msgid "any"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
+msgid "Username"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
+msgid "Client Hostname"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
+msgid "Server Hostname"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+msgid "Client MAC Address"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+msgid "Server MAC Address"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
+msgid "Client MAC Vendor"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
+msgid "Server MAC Vendor"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:27
+msgid "Client in Penalty Box"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:28
+msgid "Server in Penalty Box"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
+msgid "Client has no Quota"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:30
+msgid "Server has no Quota"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
+msgid "Client has exceeded Quota"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:32
+msgid "Server has exceeded Quota"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:33
+msgid "Client Quota Attainment"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:34
+msgid "Server Quota Attainment"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:35
+msgid "Directory Connector: User in Group"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:36
+msgid "HTTP: Client User Agent"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
+msgid "HTTP: Client User OS"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:45
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:59
+msgid "Rules"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
+msgid "Note"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:52
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:85
+msgid "Rule Id"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:89
+msgid "new"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:93
+msgid "Enable"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:98
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:124
+msgid "Description"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:104
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
+msgid "Block"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:110
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
+msgid "Flag"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:119
+msgid "Enable Rule"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:125
+msgid "[no description]"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
+msgid "If all of the following conditions are met:"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:139
+msgid "Perform the following action(s):"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:145
+msgid "Action Type"
+msgstr ""
+
+#: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
+msgid "Pass"
 msgstr ""

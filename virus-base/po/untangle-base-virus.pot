@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 21:24-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,6 +158,8 @@ msgstr ""
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:392
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:455
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:608
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:242
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:303
 msgid "Unknown"
 msgstr ""
 
@@ -258,4 +260,148 @@ msgstr ""
 
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
 msgid "Client Port"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:45
+msgid "Web"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:52
+msgid "Scan HTTP"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:66
+msgid "Signatures were last updated"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:67
+msgid "never"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:71
+msgid "About"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:83
+msgid "File Extensions"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:94
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:124
+msgid "File Type"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:99
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:125
+msgid "[enter file type]"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:105
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:172
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:200
+msgid "Scan"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:139
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:177
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:205
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:339
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:365
+msgid "Description"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:116
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:140
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:206
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:345
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:366
+msgid "[no description]"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:151
+msgid "MIME Types"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:192
+msgid "MIME Type"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:193
+msgid "[enter MIME type]"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:219
+msgid "FTP"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:228
+msgid "Scan FTP"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:302
+msgid "Virus Blocker signatures were last updated"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
+msgid "Email"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:267
+msgid "Scan SMTP"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:286
+msgid "Action"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:288
+msgid "pass message"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:289
+msgid "remove infection"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:290
+msgid "block message"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:313
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:377
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:388
+msgid "Pass Sites"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:324
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:352
+msgid "Site"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:329
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:353
+msgid "[enter site]"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:334
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:360
+msgid "Pass"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:389
+msgid "Do not scan traffic to the specified sites.  Use caution!"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:401
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:407
+msgid "Advanced"
+msgstr ""
+
+#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:408
+msgid "Advanced settings require careful configuration."
 msgstr ""
