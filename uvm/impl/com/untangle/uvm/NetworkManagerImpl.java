@@ -783,6 +783,7 @@ public class NetworkManagerImpl implements NetworkManager
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
                 external.setV6ConfigType( InterfaceSettings.V6ConfigType.DISABLED );
                 external.setV4NatEgressTraffic( true );
+                if (devName.startsWith("wlan")) external.setIsWirelessInterface(true);
                 interfaces.add( external );
             }
         
@@ -804,6 +805,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV6StaticAddress( null );
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
+                if (devName.startsWith("wlan")) internal.setIsWirelessInterface(true);
                 interfaces.add(internal);
             }
 
