@@ -974,7 +974,7 @@ Ext.define('Webui.config.network', {
                 width:50,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                     // only ADDRESSED interfaces can be WANs
-                    return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
+                    return (record.data.configType == 'ADDRESSED') ? (value ? i18n._("true"):i18n._("false")): ""; // if its addressed return value
                 }, this)
             }, deleteVlanColumn, intfStatus],
             bbar: ['-',{
