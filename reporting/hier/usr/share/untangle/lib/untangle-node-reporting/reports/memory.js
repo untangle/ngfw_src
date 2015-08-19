@@ -2,7 +2,7 @@
     "uniqueId": "system-fgQnUn1Tle",
     "category": "System",
     "description": "The amount of free memory over time.",
-    "displayOrder": 101,
+    "displayOrder": 102,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderDesc": false,

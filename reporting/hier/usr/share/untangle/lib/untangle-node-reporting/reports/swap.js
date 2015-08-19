@@ -1,8 +1,8 @@
 {
-    "uniqueId": "system-6iYMGsnldQ",
+    "uniqueId": "system-xejkMsUFk0",
     "category": "System",
-    "description": "The disk utilization over time.",
-    "displayOrder": 102,
+    "description": "The swap utilization over time.",
+    "displayOrder": 103,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "orderDesc": false,
@@ -10,13 +10,13 @@
     "readOnly": true,
     "table": "server_events",
     "timeDataColumns": [
-        "round(((max(disk_total)-max(disk_free))::float/max(disk_total)::float)::numeric,4)*100 as disk_usage"
+        "round(((max(swap_total)-max(swap_free))::float/max(swap_total)::float)::numeric,4)*100 as swap_usage"
     ],
     "colors": [
         "#396c2b"
     ],
     "timeDataInterval": "HOUR",
     "timeStyle": "LINE",
-    "title": "Disk Usage",
+    "title": "Swap Usage",
     "type": "TIME_GRAPH"
 }
