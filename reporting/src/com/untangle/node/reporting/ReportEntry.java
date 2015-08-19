@@ -193,7 +193,7 @@ public class ReportEntry implements Serializable, JSONString
             allConditions.addAll( Arrays.asList(extraConditions) );
         
         String dateCondition =
-            " time_stamp > '" + dateFormatter.format(startDate) + "' " + " and " +
+            " time_stamp => '" + dateFormatter.format(startDate) + "' " + " and " +
             " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
         
         switch ( this.type ) {
