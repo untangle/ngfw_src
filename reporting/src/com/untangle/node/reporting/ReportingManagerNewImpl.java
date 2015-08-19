@@ -397,7 +397,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date end)
+    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
@@ -409,10 +409,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
 
         Date startDate = start;
-        Date endDate = end;
         
-        if ( endDate == null )
-            endDate = new Date(); // now
         if ( startDate == null ) {
             logger.warn("startDate not specified, using 1 day ago");
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));

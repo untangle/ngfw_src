@@ -180,7 +180,7 @@ public class ReportEntry implements Serializable, JSONString
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
     {
         if ( endDate == null )
-            endDate = new Date(); // now
+            endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
         if ( startDate == null ) {
             logger.warn("startDate not specified, using 1 day ago");
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
@@ -194,7 +194,7 @@ public class ReportEntry implements Serializable, JSONString
         
         String dateCondition =
             " time_stamp > '" + dateFormatter.format(startDate) + "' " + " and " +
-            " time_stamp < '" + dateFormatter.format(endDate) + "' ";
+            " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
         
         switch ( this.type ) {
 
