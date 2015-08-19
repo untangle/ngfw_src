@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2012-06-26 05:56-0700\n"
 "Last-Translator: David Dai <david.dai@ispire.ca>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,6 +16,84 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
+msgid "status"
+msgstr ""
+
+msgid "event"
+msgstr ""
+
+msgid "Sessions passed"
+msgstr "会议通过"
+
+msgid "Clients Connected"
+msgstr "已连接客户端"
+
+msgid "primary network"
+msgstr ""
+
+msgid "Default Group"
+msgstr ""
+
+msgid "Invalid Settings"
+msgstr ""
+
+msgid "conflicts with address"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "总结报告"
+
+msgid "securely passed"
+msgstr "安全地传送"
+
+msgid "MB"
+msgstr "<msg name=> MB</msg>"
+
+msgid "of traffic and processed"
+msgstr "的流量和处理"
+
+msgid "remote logins"
+msgstr "远程登录"
+
+msgid "Bandwidth Usage"
+msgstr "<msg name=>带宽使用</msg>"
+
+msgid "Avg Data Rate"
+msgstr "平均数据传输速率"
+
+msgid "Max Data Rate"
+msgstr "最大数据传输率"
+
+msgid "Data Transferred"
+msgstr "传输的数据"
+
+msgid "Date"
+msgstr "日期:"
+
+msgid "Throughput (kB/s)"
+msgstr "吞吐量（KB / S）"
+
+msgid "Usage (kB/sec)"
+msgstr "使用量（KB /秒）"
+
+msgid "Top Users"
+msgstr "用户排行"
+
+msgid "Login Events"
+msgstr "登录活动"
+
+msgid "Time"
+msgstr "Time：时间"
+
+msgid "Client"
+msgstr "客户端"
+
+msgid "Address"
+msgstr "地址"
+
+msgid "Port"
+msgstr "端口"
+
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
@@ -26,12 +104,6 @@ msgstr ""
 
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr "活动用户列表显示已连接用户"
-
-msgid "Address"
-msgstr "地址"
-
-msgid "Client"
-msgstr "客户端"
 
 msgid "Pool Address"
 msgstr ""
@@ -260,9 +332,6 @@ msgstr ""
 msgid "Client To Client Allowed"
 msgstr ""
 
-msgid "Port"
-msgstr "端口"
-
 msgid "Protocol"
 msgstr ""
 
@@ -295,298 +364,18 @@ msgid "You must create at least one group."
 msgstr "您必须至少创建一个组。"
 
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
-msgstr "无法删除组“{0}”，因为其已被在客户到站点列表中的用户：{1}使用。"
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
+msgstr ""
 
-msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "{1}行中的组名称：“{0}”已经存在。"
+msgid "The group name: {0} in row: {1} already exists."
+msgstr ""
 
 msgid "Changing name is not allowed. Create a new user."
 msgstr "更改名称是不允许的。创建一个新的用户。"
 
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "{1}行中的用户名称：“{0}”已经存在。"
-
-msgid "Summary Report"
-msgstr "总结报告"
-
-msgid "securely passed"
-msgstr "安全地传送"
-
-msgid "MB"
-msgstr "<msg name=> MB</msg>"
-
-msgid "of traffic and processed"
-msgstr "的流量和处理"
-
-msgid "remote logins"
-msgstr "远程登录"
-
-msgid "Bandwidth Usage"
-msgstr "<msg name=>带宽使用</msg>"
-
-msgid "Avg Data Rate"
-msgstr "平均数据传输速率"
-
-msgid "Max Data Rate"
-msgstr "最大数据传输率"
-
-msgid "Data Transferred"
-msgstr "传输的数据"
-
-msgid "Date"
-msgstr "日期:"
-
-msgid "Throughput (kB/s)"
-msgstr "吞吐量（KB / S）"
-
-msgid "Usage (kB/sec)"
-msgstr "使用量（KB /秒）"
-
-msgid "Top Users"
-msgstr "用户排行"
-
-msgid "Login Events"
-msgstr "登录活动"
-
-msgid "Time"
-msgstr "Time：时间"
-
-msgid "event"
+msgid "The client name: {0} in row: {1} already exists."
 msgstr ""
-
-msgid "Sessions passed"
-msgstr "会议通过"
-
-msgid "Clients Connected"
-msgstr "已连接客户端"
-
-msgid "primary network"
-msgstr ""
-
-msgid "Default Group"
-msgstr ""
-
-msgid "Invalid Settings"
-msgstr ""
-
-msgid "conflicts with address"
-msgstr ""
-
-msgid "status"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "OpenVPN Bandwidth Usage"
-msgstr ""
-
-msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
-
-msgid "Top Clients (by usage)"
-msgstr ""
-
-msgid "The amount of openvpn sessions over time."
-msgstr ""
-
-msgid "OpenVPN Sessions"
-msgstr ""
-
-msgid "The amount of login and logout events over time."
-msgstr ""
-
-msgid "OpenVPN Events"
-msgstr ""
-
-msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
-
-msgid "Statistic Events"
-msgstr ""
-
-msgid "OpenVPN client connection events."
-msgstr ""
-
-msgid "Connection Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

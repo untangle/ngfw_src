@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2008-11-24 18:52-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -15,6 +15,84 @@ msgstr ""
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 
+msgid "status"
+msgstr ""
+
+msgid "event"
+msgstr ""
+
+msgid "Sessions passed"
+msgstr ""
+
+msgid "Clients Connected"
+msgstr "Clientes conectados"
+
+msgid "primary network"
+msgstr ""
+
+msgid "Default Group"
+msgstr ""
+
+msgid "Invalid Settings"
+msgstr ""
+
+msgid "conflicts with address"
+msgstr ""
+
+msgid "Summary Report"
+msgstr ""
+
+msgid "securely passed"
+msgstr ""
+
+msgid "MB"
+msgstr ""
+
+msgid "of traffic and processed"
+msgstr ""
+
+msgid "remote logins"
+msgstr ""
+
+msgid "Bandwidth Usage"
+msgstr ""
+
+msgid "Avg Data Rate"
+msgstr ""
+
+msgid "Max Data Rate"
+msgstr ""
+
+msgid "Data Transferred"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Throughput (kB/s)"
+msgstr ""
+
+msgid "Usage (kB/sec)"
+msgstr ""
+
+msgid "Top Users"
+msgstr ""
+
+msgid "Login Events"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Client"
+msgstr "Clientes"
+
+msgid "Address"
+msgstr ""
+
+msgid "Port"
+msgstr ""
+
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
@@ -25,12 +103,6 @@ msgstr ""
 
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr ""
-
-msgid "Address"
-msgstr ""
-
-msgid "Client"
-msgstr "Clientes"
 
 msgid "Pool Address"
 msgstr ""
@@ -259,9 +331,6 @@ msgstr ""
 msgid "Client To Client Allowed"
 msgstr ""
 
-msgid "Port"
-msgstr ""
-
 msgid "Protocol"
 msgstr ""
 
@@ -294,270 +363,18 @@ msgid "You must create at least one group."
 msgstr "Você deve criar pelo menos um grupo."
 
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
 msgstr ""
-"O grupo: \"{0}\" não pode ser excluído porque está sendo usado por um "
-"cliente: {1} na Lista Cliente a Site."
 
-msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "O nome de grupo: \"{0}\" na linha: {1} já existe."
+msgid "The group name: {0} in row: {1} already exists."
+msgstr ""
 
 msgid "Changing name is not allowed. Create a new user."
 msgstr ""
 
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "O nome de cliente: \"{0}\" na linha: {1} já existe."
-
-msgid "Summary Report"
+msgid "The client name: {0} in row: {1} already exists."
 msgstr ""
-
-msgid "securely passed"
-msgstr ""
-
-msgid "MB"
-msgstr ""
-
-msgid "of traffic and processed"
-msgstr ""
-
-msgid "remote logins"
-msgstr ""
-
-msgid "Bandwidth Usage"
-msgstr ""
-
-msgid "Avg Data Rate"
-msgstr ""
-
-msgid "Max Data Rate"
-msgstr ""
-
-msgid "Data Transferred"
-msgstr ""
-
-msgid "Date"
-msgstr ""
-
-msgid "Throughput (kB/s)"
-msgstr ""
-
-msgid "Usage (kB/sec)"
-msgstr ""
-
-msgid "Top Users"
-msgstr ""
-
-msgid "Login Events"
-msgstr ""
-
-msgid "Time"
-msgstr ""
-
-msgid "event"
-msgstr ""
-
-msgid "Sessions passed"
-msgstr ""
-
-msgid "Clients Connected"
-msgstr "Clientes conectados"
-
-msgid "primary network"
-msgstr ""
-
-msgid "Default Group"
-msgstr ""
-
-msgid "Invalid Settings"
-msgstr ""
-
-msgid "conflicts with address"
-msgstr ""
-
-msgid "status"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "OpenVPN Bandwidth Usage"
-msgstr ""
-
-msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
-
-msgid "Top Clients (by usage)"
-msgstr ""
-
-msgid "The amount of openvpn sessions over time."
-msgstr ""
-
-msgid "OpenVPN Sessions"
-msgstr ""
-
-msgid "The amount of login and logout events over time."
-msgstr ""
-
-msgid "OpenVPN Events"
-msgstr ""
-
-msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
-
-msgid "Statistic Events"
-msgstr ""
-
-msgid "OpenVPN client connection events."
-msgstr ""
-
-msgid "Connection Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

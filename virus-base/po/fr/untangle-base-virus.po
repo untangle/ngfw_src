@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2010-03-19 06:03-0700\n"
 "Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,104 +12,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-msgid "Web"
-msgstr "Web"
+msgid "Documents scanned"
+msgstr "Documents scannés"
 
-msgid "Scan HTTP"
-msgstr "Scan HTTP"
+msgid "Documents blocked"
+msgstr "Documents bloqués"
 
-msgid "Signatures were last updated"
-msgstr ""
+msgid "Documents passed"
+msgstr "Documents passés"
 
-msgid "never"
-msgstr ""
+msgid "Infections removed"
+msgstr "Infections supprimées"
 
-msgid "About"
-msgstr ""
-
-msgid "File Extensions"
-msgstr "Extensions de fichiers"
-
-msgid "File Type"
-msgstr "Type de Fichier"
-
-msgid "[enter file type]"
-msgstr ""
-
-msgid "Scan"
-msgstr "Scan"
-
-msgid "Description"
-msgstr "Description"
-
-msgid "[no description]"
-msgstr "[pas de description]"
-
-msgid "MIME Types"
-msgstr "Types MIME"
-
-msgid "MIME Type"
-msgstr "Type MIME"
-
-msgid "[enter MIME type]"
-msgstr ""
-
-msgid "FTP"
-msgstr "FTP"
-
-msgid "Scan FTP"
-msgstr "Scan FTP"
-
-msgid "Virus Blocker signatures were last updated"
-msgstr "Les signatures du bloqueur de virus ont été mises à jour le"
-
-msgid "Unknown"
-msgstr "Inconnu"
-
-msgid "Email"
-msgstr "Courriel"
-
-msgid "Scan SMTP"
-msgstr "Scan SMTP"
-
-msgid "Action"
-msgstr "Action"
-
-msgid "pass message"
-msgstr "passer le message"
-
-msgid "remove infection"
-msgstr "éliminer l'infection"
-
-msgid "block message"
-msgstr "bloquer le message"
-
-msgid "Pass Sites"
-msgstr ""
-
-msgid "Site"
-msgstr ""
-
-msgid "[enter site]"
-msgstr ""
-
-msgid "Pass"
-msgstr ""
-
-msgid "Do not scan traffic to the specified sites.  Use caution!"
-msgstr ""
-
-msgid "Advanced"
-msgstr ""
-
-msgid "Advanced settings require careful configuration."
-msgstr ""
-
-msgid "Summary Report"
-msgstr "Rapport de synthèse"
+msgid "Passed by policy"
+msgstr "Autorisé par la politique"
 
 msgid "scanned"
 msgstr "scanné"
+
+msgid "found virus"
+msgstr ""
+
+msgid "The attached message from"
+msgstr ""
+
+msgid "was found to contain the virus"
+msgstr ""
+
+msgid "The infected portion of the message was removed by Virus Blocker."
+msgstr ""
+
+msgid "Feature is not installed."
+msgstr "La fonctionnalité n'est pas installée."
+
+msgid "This request has expired."
+msgstr "Cette demande a expiré."
+
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} Avertissement"
+
+msgid "{0} Virus Blocker"
+msgstr "{0} Bloqueur de Virus"
+
+msgid "{0}This file was blocked{1} because it contains a virus."
+msgstr ""
+
+msgid "If you have any questions, Please contact {0}."
+msgstr "Si vous avez des questions, SVP contactez {0}."
+
+msgid "Host:"
+msgstr "Hôte:"
+
+msgid "URL:"
+msgstr "URL:"
+
+msgid "Reason:"
+msgstr "Raison:"
+
+msgid "Unblock For Now"
+msgstr "Débloquage temporaire"
+
+msgid "Unblock Permanently"
+msgstr "Débloquage permanent"
+
+msgid "Summary Report"
+msgstr "Rapport de synthèse"
 
 msgid "documents and detected and blocked"
 msgstr "documents ainsi que les détectés et bloqués"
@@ -134,6 +101,9 @@ msgstr "Virus"
 
 msgid "Top Web Viruses Detected"
 msgstr "Virus \"Top Web\" détectés"
+
+msgid "Unknown"
+msgstr "Inconnu"
 
 msgid "Name"
 msgstr "nom"
@@ -195,101 +165,92 @@ msgstr "IP Client"
 msgid "Client Port"
 msgstr "Port Client"
 
-msgid "Feature is not installed."
-msgstr "La fonctionnalité n'est pas installée."
+msgid "Web"
+msgstr "Web"
 
-msgid "This request has expired."
-msgstr "Cette demande a expiré."
+msgid "Scan HTTP"
+msgstr "Scan HTTP"
 
-msgid "{0} | {1} Warning"
-msgstr "{0} | {1} Avertissement"
-
-msgid "{0} Virus Blocker"
-msgstr "{0} Bloqueur de Virus"
-
-msgid "{0}This file was blocked{1} because it contains a virus."
+msgid "Signatures were last updated"
 msgstr ""
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "Si vous avez des questions, SVP contactez {0}."
-
-msgid "found virus"
+msgid "never"
 msgstr ""
 
-msgid "Documents scanned"
-msgstr "Documents scannés"
+msgid "About"
+msgstr ""
 
-msgid "Documents blocked"
-msgstr "Documents bloqués"
+msgid "File Extensions"
+msgstr "Extensions de fichiers"
 
-msgid "Documents passed"
-msgstr "Documents passés"
+msgid "File Type"
+msgstr "Type de Fichier"
 
-msgid "Infections removed"
-msgstr "Infections supprimées"
+msgid "[enter file type]"
+msgstr ""
 
-msgid "Passed by policy"
-msgstr "Autorisé par la politique"
+msgid "Scan"
+msgstr "Scan"
 
-msgid "Host:"
-msgstr "Hôte:"
+msgid "Description"
+msgstr "Description"
 
-msgid "URL:"
-msgstr "URL:"
+msgid "[no description]"
+msgstr "[pas de description]"
 
-msgid "Reason:"
-msgstr "Raison:"
+msgid "MIME Types"
+msgstr "Types MIME"
 
-msgid "Unblock For Now"
-msgstr "Débloquage temporaire"
+msgid "MIME Type"
+msgstr "Type MIME"
 
-msgid "Unblock Permanently"
-msgstr "Débloquage permanent"
+msgid "[enter MIME type]"
+msgstr ""
 
+msgid "FTP"
+msgstr "FTP"
 
+msgid "Scan FTP"
+msgstr "Scan FTP"
 
+msgid "Virus Blocker signatures were last updated"
+msgstr "Les signatures du bloqueur de virus ont été mises à jour le"
 
+msgid "Email"
+msgstr "Courriel"
 
+msgid "Scan SMTP"
+msgstr "Scan SMTP"
 
+msgid "Action"
+msgstr "Action"
 
+msgid "pass message"
+msgstr "passer le message"
 
+msgid "remove infection"
+msgstr "éliminer l'infection"
 
+msgid "block message"
+msgstr "bloquer le message"
 
+msgid "Pass Sites"
+msgstr ""
 
+msgid "Site"
+msgstr ""
 
+msgid "[enter site]"
+msgstr ""
 
+msgid "Pass"
+msgstr ""
 
+msgid "Do not scan traffic to the specified sites.  Use caution!"
+msgstr ""
 
+msgid "Advanced"
+msgstr ""
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Advanced settings require careful configuration."
+msgstr ""

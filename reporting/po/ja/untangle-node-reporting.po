@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 12:15-0700\n"
 "PO-Revision-Date: 2013-10-26 03:36+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,6 +13,717 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
+msgid "Server"
+msgstr "サーバ"
+
+msgid "Alert!"
+msgstr ""
+
+msgid "An following event occurred on the"
+msgstr ""
+
+msgid ""
+"This is an automated message sent because the event matched the configured "
+"Alert Rules."
+msgstr ""
+
+msgid "Invalid Settings"
+msgstr "無効な設定"
+
+msgid "has online access, but no password is set."
+msgstr ""
+"オンラインアクセスが設定されていますが、パスワードが設定されていません。"
+
+msgid "Alert Event"
+msgstr ""
+
+msgid "Event ID"
+msgstr ""
+
+msgid "Timestamp"
+msgstr ""
+
+msgid "Session ID"
+msgstr ""
+
+msgid "Client Interface"
+msgstr ""
+
+msgid "Server Interface"
+msgstr ""
+
+msgid "Client-side Client Address"
+msgstr ""
+
+msgid "Server-side Client Address"
+msgstr ""
+
+msgid "Client-side Server Address"
+msgstr ""
+
+msgid "Server-side Server Address"
+msgstr ""
+
+msgid "Client-side Client Port"
+msgstr ""
+
+msgid "Server-side Client Port"
+msgstr ""
+
+msgid "Client-side Server Port"
+msgstr ""
+
+msgid "Server-side Server Port"
+msgstr ""
+
+msgid "Policy ID"
+msgstr ""
+
+msgid "Username"
+msgstr "ユーザ名"
+
+msgid "Hostname"
+msgstr "ホスト名"
+
+msgid "Filter Block"
+msgstr ""
+
+msgid "Client-to-server Content Length"
+msgstr ""
+
+msgid "Server-to-client Content Length"
+msgstr ""
+
+msgid "Server-to-client Content Type"
+msgstr ""
+
+msgid "Bytes Received"
+msgstr ""
+
+msgid "Bytes Sent"
+msgstr ""
+
+msgid "Client Name"
+msgstr ""
+
+msgid "Start Time"
+msgstr ""
+
+msgid "End Time"
+msgstr ""
+
+msgid "Remote Address"
+msgstr ""
+
+msgid "Remote Port"
+msgstr ""
+
+msgid "Pool Address"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Connect Time"
+msgstr ""
+
+msgid "Client Address"
+msgstr ""
+
+msgid "Client Protocol"
+msgstr ""
+
+msgid "Client Username"
+msgstr ""
+
+msgid "Net Process"
+msgstr ""
+
+msgid "Net Interface"
+msgstr ""
+
+msgid "Elapsed Time"
+msgstr ""
+
+msgid "Vendor Name"
+msgstr ""
+
+msgid "Memory Free"
+msgstr ""
+
+msgid "Memory Cache"
+msgstr ""
+
+msgid "Memory Buffers"
+msgstr ""
+
+msgid "CPU load (1-min)"
+msgstr ""
+
+msgid "CPU load (5-min)"
+msgstr ""
+
+msgid "CPU load (15-min)"
+msgstr ""
+
+msgid "CPU User Utilization"
+msgstr ""
+
+msgid "CPU System Utilization"
+msgstr ""
+
+msgid "Disk Size"
+msgstr ""
+
+msgid "Disk Free"
+msgstr ""
+
+msgid "Swap Size"
+msgstr ""
+
+msgid "Swap Free"
+msgstr ""
+
+msgid "Hits"
+msgstr ""
+
+msgid "Misses"
+msgstr ""
+
+msgid "Bypasses"
+msgstr ""
+
+msgid "Bypassed"
+msgstr ""
+
+msgid "System bypasses"
+msgstr ""
+
+msgid "Hit Bytes"
+msgstr ""
+
+msgid "Miss Bytes"
+msgstr ""
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Text detail of the event"
+msgstr ""
+
+msgid "Login Name"
+msgstr ""
+
+msgid "Event Type"
+msgstr ""
+
+msgid "Authorization Type"
+msgstr ""
+
+msgid "Request ID"
+msgstr ""
+
+msgid "Method"
+msgstr ""
+
+msgid "URI"
+msgstr ""
+
+msgid "Message ID"
+msgstr ""
+
+msgid "Subject"
+msgstr "件名"
+
+msgid "Address"
+msgstr "アドレス"
+
+msgid "Address Name"
+msgstr ""
+
+msgid "Address Kind"
+msgstr ""
+
+msgid "Sender"
+msgstr "送信者"
+
+msgid "Receiver"
+msgstr "受信者"
+
+msgid "Host"
+msgstr "ホスト"
+
+msgid "Search Term"
+msgstr ""
+
+msgid "Interface ID"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Interface O/S Name"
+msgstr ""
+
+msgid "Interface Name"
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Signature ID"
+msgstr ""
+
+msgid "Grouping ID"
+msgstr ""
+
+msgid "Classtype ID"
+msgstr ""
+
+msgid "Source Address"
+msgstr ""
+
+msgid "Source Port"
+msgstr ""
+
+msgid "Destination Address"
+msgstr ""
+
+msgid "Destination Port"
+msgstr ""
+
+msgid "Protocol"
+msgstr "プロトコル"
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Classtype"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Summary Text"
+msgstr ""
+
+msgid "JSON Text"
+msgstr ""
+
+msgid "Key"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Size"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "From-Client Bytes"
+msgstr ""
+
+msgid "To-Client Bytes"
+msgstr ""
+
+msgid "From-Server Bytes"
+msgstr ""
+
+msgid "To-Server Bytes"
+msgstr ""
+
+msgid "Login"
+msgstr "ログイン"
+
+msgid "Local"
+msgstr ""
+
+msgid "Succeeded"
+msgstr ""
+
+msgid "Flagged"
+msgstr ""
+
+msgid "Rule ID"
+msgstr "ルールID"
+
+msgid "Application"
+msgstr "アプリケーション"
+
+msgid "Protochain"
+msgstr ""
+
+msgid "Confidence"
+msgstr "信頼"
+
+msgid "Detail"
+msgstr "詳細"
+
+msgid "Priority"
+msgstr "優先度"
+
+msgid "Status"
+msgstr "状態"
+
+msgid "Clean"
+msgstr ""
+
+msgid "Name"
+msgstr "名前"
+
+msgid "Score"
+msgstr ""
+
+msgid "Spam"
+msgstr ""
+
+msgid "Tests"
+msgstr ""
+
+msgid "Phish"
+msgstr ""
+
+msgid "Cookie"
+msgstr "クッキー"
+
+msgid "Report Summary"
+msgstr "サマリレポート"
+
+msgid "This report has no detail data."
+msgstr "このレポートは、詳細なデータを持っていません。"
+
+msgid "Title Page"
+msgstr "タイトルページ"
+
+msgid "Table of Contents"
+msgstr "目次"
+
+msgid "Page %d"
+msgstr "%d ページ"
+
+msgid "day"
+msgstr "日"
+
+msgid "days"
+msgstr "日"
+
+msgid "Report for"
+msgstr "レポートの"
+
+msgid "Report"
+msgstr "レポート"
+
+msgid "Highlights Summary"
+msgstr "ハイライトの概要"
+
+msgid "Highlights"
+msgstr "ハイライト"
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "Free Memory"
+msgstr "空きメモリ"
+
+msgid "Avg Free Memory"
+msgstr "空きメモリの平均"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "Memory (MB)"
+msgstr "メモリ(MB)"
+
+msgid "Cpu Load"
+msgstr "CPUロード"
+
+msgid "Avg 1-min Load"
+msgstr "1分間の平均負荷"
+
+msgid "Max 1-min Load"
+msgstr "1分間の最大負荷"
+
+msgid "Avg 5-min Load"
+msgstr "5分間の平均負荷"
+
+msgid "Max 5-min Load"
+msgstr "5分間の最大負荷"
+
+msgid "Avg 15-min Load"
+msgstr "15分間の平均負荷"
+
+msgid "Max 15-min Load"
+msgstr "15分間の最大負荷"
+
+msgid "Load"
+msgstr "負荷"
+
+msgid "1-min Load"
+msgstr "1分間の負荷"
+
+msgid "5-min Load"
+msgstr "5分間の負荷"
+
+msgid "15-min Load"
+msgstr "15分間の負荷"
+
+msgid "Cpu Usage"
+msgstr "CPU使用量"
+
+msgid "Avg Cpu User"
+msgstr "平均CPU システム"
+
+msgid "Avg Cpu System"
+msgstr "平均CPU システム"
+
+msgid "CPU (%)"
+msgstr "CPU (%)"
+
+msgid "Cpu User"
+msgstr "CPU ユーザ"
+
+msgid "Cpu System"
+msgstr "CPU システム"
+
+msgid "Disk Usage"
+msgstr "ディスク使用量"
+
+msgid "Avg Disk Free"
+msgstr "平均空きディスク容量"
+
+msgid "Disk (GB)"
+msgstr "ディスク (GB)"
+
+msgid "Free Disk"
+msgstr "空きディスク"
+
+msgid "Swap Usage"
+msgstr "スワップ使用量"
+
+msgid "Avg Swap Free"
+msgstr "平均スワップ空き容量"
+
+msgid "Avg Swap Used"
+msgstr "平均スワップ使用量"
+
+msgid "Swap (MB)"
+msgstr "スワップ (MB)"
+
+msgid "Swap Used"
+msgstr "スワップ使用"
+
+msgid "scanned"
+msgstr "スキャン済"
+
+msgid "GB"
+msgstr "GB"
+
+msgid "and"
+msgstr "and"
+
+msgid "sessions"
+msgstr "セッション"
+
+msgid "logged"
+msgstr ""
+
+msgid "alerts"
+msgstr ""
+
+msgid "Bandwidth Usage"
+msgstr "帯域幅の使用量"
+
+msgid "Avg Data Rate"
+msgstr "平均データ速度"
+
+msgid "Data Transferred"
+msgstr "データ転送"
+
+msgid "Date"
+msgstr "日付"
+
+msgid "Throughput (kB/s)"
+msgstr "スループット(KB/秒)"
+
+msgid "Usage"
+msgstr "使用量"
+
+msgid "Sessions per Minute"
+msgstr "毎分あたりのセッション"
+
+msgid "Avg Sessions/Min"
+msgstr "平均セッション/分"
+
+msgid "Sessions"
+msgstr "セッション"
+
+msgid "Max Sessions/Min"
+msgstr "最大セッション/分"
+
+msgid "Total Sessions"
+msgstr "総セッション数"
+
+msgid "Top Destination Ports"
+msgstr "トップの宛先ポート"
+
+msgid "Port"
+msgstr "ポート"
+
+msgid "Top Penalty Box Hosts"
+msgstr "トップのペナルティーボックスホスト"
+
+msgid "seconds"
+msgstr "秒"
+
+msgid "Administrative Login Events"
+msgstr "管理ログインイベント"
+
+msgid "Client IP"
+msgstr ""
+
+msgid "Alert Events"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "JSON"
+msgstr ""
+
+msgid "Rule"
+msgstr "ルール"
+
+msgid "Client"
+msgstr "クライアント"
+
+msgid "Client port"
+msgstr "クライアントポート"
+
+msgid "Server Port"
+msgstr "サーバポート"
+
+msgid "ProtoChain"
+msgstr "プロトチェーン"
+
+msgid "Flagged (Application Control)"
+msgstr "フラグ (Application Control)"
+
+msgid "Blocked (Application Control)"
+msgstr "ブロック (Application Control)"
+
+msgid "Blocked (Application Control Lite)"
+msgstr "ブロック(Application Control Lite)"
+
+msgid "Status (Https)"
+msgstr "状態（HTTPS）"
+
+msgid "Detail (Https)"
+msgstr "詳細（HTTPS）"
+
+msgid "Rule ID (Https)"
+msgstr "ルールID（HTTPS）"
+
+msgid "Policy Id"
+msgstr "ポリシーID"
+
+msgid "Blocked (Firewall)"
+msgstr "ブロック（ファイヤーウォール）"
+
+msgid "Flagged (Firewall)"
+msgstr "フラグ（ファイヤーウォール）"
+
+msgid "Rule Id (Firewall)"
+msgstr "ルールID（ファイヤーウォール）"
+
+msgid "Rule ID (Captive Portal)"
+msgstr "ルールID (Captive Portal)"
+
+msgid "Captured"
+msgstr "キャプチャした"
+
+msgid "Uri"
+msgstr "Uri"
+
+msgid "Url"
+msgstr "URL"
+
+msgid "Blocked (Webfilter Lite)"
+msgstr "ブロック (Webfilter Lite)"
+
+msgid "Flagged (Webfilter Lite)"
+msgstr "フラグ (Webfilter Lite)"
+
+msgid "Reason For Action (Webfilter Lite)"
+msgstr "動作理由 (Webfilter Lite)"
+
+msgid "Category (Webfilter Lite)"
+msgstr "カテゴリ (Webfilter Lite)"
+
+msgid "Blocked  (Webfilter)"
+msgstr "ブロック  (Webfilter)"
+
+msgid "Flagged (Webfilter)"
+msgstr "フラグ (Webfilter)"
+
+msgid "Reason For Action (Webfilter)"
+msgstr "動作理由 (Webfilter)"
+
+msgid "Category (Webfilter)"
+msgstr "カテゴリ (Webfilter)"
+
+msgid "Action (Ad Blocker)"
+msgstr "動作 (Ad Blocker)"
+
+msgid "Virus Name (Clam)"
+msgstr "ウィルス名 (Clam)"
+
+msgid "Virus Name (Virus Blocker)"
+msgstr ""
+
+msgid "Term"
+msgstr ""
+
+msgid "Action (Spamassassin)"
+msgstr "動作 (Spamassassin)"
+
+msgid "Spam score (Spamassassin)"
+msgstr "スパムスコア (Spamassassin)"
+
+msgid "Action (Spam Blocker)"
+msgstr ""
+
+msgid "Spam score (Spam Blocker)"
+msgstr ""
+
+msgid "Action (Phish)"
+msgstr "動作 (Phish)"
+
+msgid "Key Statistics"
+msgstr "主要な統計"
+
+msgid "slice"
+msgstr "スライス"
+
+msgid "value"
+msgstr "値"
+
+msgid "Unknown"
+msgstr "不明"
+
+msgid "KB"
+msgstr "KB"
+
+msgid "MB"
+msgstr "MB"
+
 msgid "Field condition"
 msgstr ""
 
@@ -21,9 +732,6 @@ msgstr "パスワードが一致しません"
 
 msgid "A password must be set to enable Online Access!"
 msgstr "オンラインレポートを有効にするにはパスワードを設定する必要があります！"
-
-msgid "Status"
-msgstr "状態"
 
 msgid "The new reports."
 msgstr ""
@@ -153,8 +861,8 @@ msgstr "パスワード"
 msgid "The password is shorter than the minimum {0} characters."
 msgstr "パスワードは{0} 文字以上で入力してください。"
 
-msgid "(required for 'Online Access')"
-msgstr " (\"オンラインアクセス\"に必要)"
+msgid "(required for Online Access)"
+msgstr ""
 
 msgid "Confirm Password"
 msgstr "パスワード確認"
@@ -184,23 +892,14 @@ msgstr "Syslogイベントを{0}無効{1}にする (デフォルト)"
 msgid "{0}Enable{1} Syslog Events."
 msgstr "Syslogイベントを{0}有効{1}にする"
 
-msgid "Host"
-msgstr "ホスト"
-
-msgid "A \"Host\" must be specified."
-msgstr "\"ホスト\"を指定する必要があります。"
+msgid "A Host must be specified."
+msgstr ""
 
 msgid "Host cannot be localhost address."
 msgstr ""
 
-msgid "Port"
-msgstr "ポート"
-
 msgid "You must provide a valid port."
 msgstr "有効なポートを指定する必要があります。"
-
-msgid "Protocol"
-msgstr "プロトコル"
 
 msgid "UDP"
 msgstr "UDP"
@@ -214,17 +913,14 @@ msgstr "データベース"
 msgid "User"
 msgstr "ユーザ"
 
-msgid "A \"User\" must be specified."
-msgstr "\"ユーザ\"を指定する必要があります。"
+msgid "A User must be specified."
+msgstr ""
 
-msgid "A \"Password\" must be specified."
-msgstr "\"パスワード\"を指定する必要があります。"
+msgid "A Password must be specified."
+msgstr ""
 
-msgid "Name"
-msgstr "名前"
-
-msgid "A \"Name\" must be specified."
-msgstr "\"名前\"を指定する必要があります。"
+msgid "A Name must be specified."
+msgstr ""
 
 msgid "Name Map"
 msgstr "名前マップ"
@@ -254,12 +950,6 @@ msgid "Manage Reports"
 msgstr ""
 
 msgid "Title"
-msgstr ""
-
-msgid "Type"
-msgstr ""
-
-msgid "Description"
 msgstr ""
 
 msgid "Units"
@@ -323,798 +1013,6 @@ msgstr ""
 
 msgid "(minutes)"
 msgstr ""
-
-msgid "Summary Report"
-msgstr "サマリレポート"
-
-msgid "Free Memory"
-msgstr "空きメモリ"
-
-msgid "Avg Free Memory"
-msgstr "空きメモリの平均"
-
-msgid "Time"
-msgstr "時間"
-
-msgid "Memory (MB)"
-msgstr "メモリ(MB)"
-
-msgid "Cpu Load"
-msgstr "CPUロード"
-
-msgid "Avg 1-min Load"
-msgstr "1分間の平均負荷"
-
-msgid "Max 1-min Load"
-msgstr "1分間の最大負荷"
-
-msgid "Avg 5-min Load"
-msgstr "5分間の平均負荷"
-
-msgid "Max 5-min Load"
-msgstr "5分間の最大負荷"
-
-msgid "Avg 15-min Load"
-msgstr "15分間の平均負荷"
-
-msgid "Max 15-min Load"
-msgstr "15分間の最大負荷"
-
-msgid "Load"
-msgstr "負荷"
-
-msgid "1-min Load"
-msgstr "1分間の負荷"
-
-msgid "5-min Load"
-msgstr "5分間の負荷"
-
-msgid "15-min Load"
-msgstr "15分間の負荷"
-
-msgid "Cpu Usage"
-msgstr "CPU使用量"
-
-msgid "Avg Cpu User"
-msgstr "平均CPU システム"
-
-msgid "Avg Cpu System"
-msgstr "平均CPU システム"
-
-msgid "CPU (%)"
-msgstr "CPU (%)"
-
-msgid "Cpu User"
-msgstr "CPU ユーザ"
-
-msgid "Cpu System"
-msgstr "CPU システム"
-
-msgid "Disk Usage"
-msgstr "ディスク使用量"
-
-msgid "Avg Disk Free"
-msgstr "平均空きディスク容量"
-
-msgid "Disk (GB)"
-msgstr "ディスク (GB)"
-
-msgid "Free Disk"
-msgstr "空きディスク"
-
-msgid "Swap Usage"
-msgstr "スワップ使用量"
-
-msgid "Avg Swap Free"
-msgstr "平均スワップ空き容量"
-
-msgid "Avg Swap Used"
-msgstr "平均スワップ使用量"
-
-msgid "Swap (MB)"
-msgstr "スワップ (MB)"
-
-msgid "Swap Used"
-msgstr "スワップ使用"
-
-msgid "Server"
-msgstr "サーバ"
-
-msgid "scanned"
-msgstr "スキャン済"
-
-msgid "GB"
-msgstr "GB"
-
-msgid "and"
-msgstr "and"
-
-msgid "sessions"
-msgstr "セッション"
-
-msgid "logged"
-msgstr ""
-
-msgid "alerts"
-msgstr ""
-
-msgid "Bandwidth Usage"
-msgstr "帯域幅の使用量"
-
-msgid "Avg Data Rate"
-msgstr "平均データ速度"
-
-msgid "Data Transferred"
-msgstr "データ転送"
-
-msgid "Date"
-msgstr "日付"
-
-msgid "Throughput (kB/s)"
-msgstr "スループット(KB/秒)"
-
-msgid "Usage"
-msgstr "使用量"
-
-msgid "Sessions per Minute"
-msgstr "毎分あたりのセッション"
-
-msgid "Avg Sessions/Min"
-msgstr "平均セッション/分"
-
-msgid "Sessions"
-msgstr "セッション"
-
-msgid "Max Sessions/Min"
-msgstr "最大セッション/分"
-
-msgid "Total Sessions"
-msgstr "総セッション数"
-
-msgid "Top Destination Ports"
-msgstr "トップの宛先ポート"
-
-msgid "Top Penalty Box Hosts"
-msgstr "トップのペナルティーボックスホスト"
-
-msgid "seconds"
-msgstr "秒"
-
-msgid "Address"
-msgstr "アドレス"
-
-msgid "Administrative Login Events"
-msgstr "管理ログインイベント"
-
-msgid "Client IP"
-msgstr ""
-
-msgid "Login"
-msgstr "ログイン"
-
-msgid "Success"
-msgstr "成功"
-
-msgid "Reason"
-msgstr ""
-
-msgid "Alert Events"
-msgstr ""
-
-msgid "Summary"
-msgstr ""
-
-msgid "JSON"
-msgstr ""
-
-msgid "Alert Event"
-msgstr ""
-
-msgid "Alert!"
-msgstr ""
-
-msgid "An following event occurred on the"
-msgstr ""
-
-msgid ""
-"This is an automated message sent because the event matched the configured "
-"Alert Rules."
-msgstr ""
-
-msgid "Invalid Settings"
-msgstr "無効な設定"
-
-msgid "has online access, but no password is set."
-msgstr ""
-"オンラインアクセスが設定されていますが、パスワードが設定されていません。"
-
-msgid "description"
-msgstr ""
-
-msgid "The top alerts."
-msgstr ""
-
-msgid "pieGroupColumn"
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Top Alerts"
-msgstr ""
-
-msgid "The disk utilization over time."
-msgstr ""
-
-msgid "The CPU load over time."
-msgstr ""
-
-msgid "CPU Load"
-msgstr ""
-
-msgid "Alerts over time."
-msgstr ""
-
-msgid "Alerts"
-msgstr ""
-
-msgid "The amount of free memory over time."
-msgstr ""
-
-msgid "Memory Usage"
-msgstr ""
-
-msgid "defaultColumns"
-msgstr ""
-
-msgid "time_stamp"
-msgstr ""
-
-msgid "summary_text"
-msgstr ""
-
-msgid "json"
-msgstr ""
-
-msgid "Log of all alerts created by alert rules."
-msgstr ""
-
-msgid "Event ID"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Session ID"
-msgstr ""
-
-msgid "Client Interface"
-msgstr ""
-
-msgid "Server Interface"
-msgstr ""
-
-msgid "Client-side Client Address"
-msgstr ""
-
-msgid "Server-side Client Address"
-msgstr ""
-
-msgid "Client-side Server Address"
-msgstr ""
-
-msgid "Server-side Server Address"
-msgstr ""
-
-msgid "Client-side Client Port"
-msgstr ""
-
-msgid "Server-side Client Port"
-msgstr ""
-
-msgid "Client-side Server Port"
-msgstr ""
-
-msgid "Server-side Server Port"
-msgstr ""
-
-msgid "Policy ID"
-msgstr ""
-
-msgid "Username"
-msgstr "ユーザ名"
-
-msgid "Hostname"
-msgstr "ホスト名"
-
-msgid "Filter Block"
-msgstr ""
-
-msgid "Client-to-server Content Length"
-msgstr ""
-
-msgid "Server-to-client Content Length"
-msgstr ""
-
-msgid "Server-to-client Content Type"
-msgstr ""
-
-msgid "Bytes Received"
-msgstr ""
-
-msgid "Bytes Sent"
-msgstr ""
-
-msgid "Client Name"
-msgstr ""
-
-msgid "Start Time"
-msgstr ""
-
-msgid "End Time"
-msgstr ""
-
-msgid "Remote Address"
-msgstr ""
-
-msgid "Remote Port"
-msgstr ""
-
-msgid "Pool Address"
-msgstr ""
-
-msgid "Connect Time"
-msgstr ""
-
-msgid "Client Address"
-msgstr ""
-
-msgid "Client Protocol"
-msgstr ""
-
-msgid "Client Username"
-msgstr ""
-
-msgid "Net Process"
-msgstr ""
-
-msgid "Net Interface"
-msgstr ""
-
-msgid "Elapsed Time"
-msgstr ""
-
-msgid "Vendor Name"
-msgstr ""
-
-msgid "Memory Free"
-msgstr ""
-
-msgid "Memory Cache"
-msgstr ""
-
-msgid "Memory Buffers"
-msgstr ""
-
-msgid "CPU load (1-min)"
-msgstr ""
-
-msgid "CPU load (5-min)"
-msgstr ""
-
-msgid "CPU load (15-min)"
-msgstr ""
-
-msgid "CPU User Utilization"
-msgstr ""
-
-msgid "CPU System Utilization"
-msgstr ""
-
-msgid "Disk Size"
-msgstr ""
-
-msgid "Disk Free"
-msgstr ""
-
-msgid "Swap Size"
-msgstr ""
-
-msgid "Swap Free"
-msgstr ""
-
-msgid "Hits"
-msgstr ""
-
-msgid "Misses"
-msgstr ""
-
-msgid "Bypasses"
-msgstr ""
-
-msgid "Bypassed"
-msgstr ""
-
-msgid "System bypasses"
-msgstr ""
-
-msgid "Hit Bytes"
-msgstr ""
-
-msgid "Miss Bytes"
-msgstr ""
-
-msgid "Text detail of the event"
-msgstr ""
-
-msgid "Login Name"
-msgstr ""
-
-msgid "Event Type"
-msgstr ""
-
-msgid "Authorization Type"
-msgstr ""
-
-msgid "Request ID"
-msgstr ""
-
-msgid "Method"
-msgstr ""
-
-msgid "URI"
-msgstr ""
-
-msgid "Message ID"
-msgstr ""
-
-msgid "Subject"
-msgstr "件名"
-
-msgid "Address Name"
-msgstr ""
-
-msgid "Address Kind"
-msgstr ""
-
-msgid "Sender"
-msgstr "送信者"
-
-msgid "Receiver"
-msgstr "受信者"
-
-msgid "Search Term"
-msgstr ""
-
-msgid "Interface ID"
-msgstr ""
-
-msgid "Action"
-msgstr ""
-
-msgid "Interface O/S Name"
-msgstr ""
-
-msgid "Interface Name"
-msgstr ""
-
-msgid "Domain"
-msgstr ""
-
-msgid "Signature ID"
-msgstr ""
-
-msgid "Grouping ID"
-msgstr ""
-
-msgid "Classtype ID"
-msgstr ""
-
-msgid "Source Address"
-msgstr ""
-
-msgid "Source Port"
-msgstr ""
-
-msgid "Destination Address"
-msgstr ""
-
-msgid "Destination Port"
-msgstr ""
-
-msgid "Blocked"
-msgstr ""
-
-msgid "Category"
-msgstr ""
-
-msgid "Classtype"
-msgstr ""
-
-msgid "Message"
-msgstr ""
-
-msgid "Summary Text"
-msgstr ""
-
-msgid "JSON Text"
-msgstr ""
-
-msgid "Key"
-msgstr ""
-
-msgid "Value"
-msgstr ""
-
-msgid "Size"
-msgstr ""
-
-msgid "From-Client Bytes"
-msgstr ""
-
-msgid "To-Client Bytes"
-msgstr ""
-
-msgid "From-Server Bytes"
-msgstr ""
-
-msgid "To-Server Bytes"
-msgstr ""
-
-msgid "Local"
-msgstr ""
-
-msgid "Succeeded"
-msgstr ""
-
-msgid "Flagged"
-msgstr ""
-
-msgid "Rule ID"
-msgstr "ルールID"
-
-msgid "Application"
-msgstr "アプリケーション"
-
-msgid "Protochain"
-msgstr ""
-
-msgid "Confidence"
-msgstr "信頼"
-
-msgid "Detail"
-msgstr "詳細"
-
-msgid "Priority"
-msgstr "優先度"
-
-msgid "Clean"
-msgstr ""
-
-msgid "Score"
-msgstr ""
-
-msgid "Spam"
-msgstr ""
-
-msgid "Tests"
-msgstr ""
-
-msgid "Phish"
-msgstr ""
-
-msgid "Cookie"
-msgstr "クッキー"
-
-msgid "Report Summary"
-msgstr "サマリレポート"
-
-msgid "This report has no detail data."
-msgstr "このレポートは、詳細なデータを持っていません。"
-
-msgid "Title Page"
-msgstr "タイトルページ"
-
-msgid "Table of Contents"
-msgstr "目次"
-
-msgid "Page %d"
-msgstr "%d ページ"
-
-msgid "day"
-msgstr "日"
-
-msgid "days"
-msgstr "日"
-
-msgid "Report for"
-msgstr "レポートの"
-
-msgid "Report"
-msgstr "レポート"
-
-msgid "Highlights Summary"
-msgstr "ハイライトの概要"
-
-msgid "Highlights"
-msgstr "ハイライト"
-
-msgid "Rule"
-msgstr "ルール"
-
-msgid "Client"
-msgstr "クライアント"
-
-msgid "Client port"
-msgstr "クライアントポート"
-
-msgid "Server Port"
-msgstr "サーバポート"
-
-msgid "ProtoChain"
-msgstr "プロトチェーン"
-
-msgid "Flagged (Application Control)"
-msgstr "フラグ (Application Control)"
-
-msgid "Blocked (Application Control)"
-msgstr "ブロック (Application Control)"
-
-msgid "Blocked (Application Control Lite)"
-msgstr "ブロック(Application Control Lite)"
-
-msgid "Status (Https)"
-msgstr "状態（HTTPS）"
-
-msgid "Detail (Https)"
-msgstr "詳細（HTTPS）"
-
-msgid "Rule ID (Https)"
-msgstr "ルールID（HTTPS）"
-
-msgid "Policy Id"
-msgstr "ポリシーID"
-
-msgid "Blocked (Firewall)"
-msgstr "ブロック（ファイヤーウォール）"
-
-msgid "Flagged (Firewall)"
-msgstr "フラグ（ファイヤーウォール）"
-
-msgid "Rule Id (Firewall)"
-msgstr "ルールID（ファイヤーウォール）"
-
-msgid "Rule ID (Captive Portal)"
-msgstr "ルールID (Captive Portal)"
-
-msgid "Captured"
-msgstr "キャプチャした"
-
-msgid "Uri"
-msgstr "Uri"
-
-msgid "Url"
-msgstr "URL"
-
-msgid "Blocked (Webfilter Lite)"
-msgstr "ブロック (Webfilter Lite)"
-
-msgid "Flagged (Webfilter Lite)"
-msgstr "フラグ (Webfilter Lite)"
-
-msgid "Reason For Action (Webfilter Lite)"
-msgstr "動作理由 (Webfilter Lite)"
-
-msgid "Category (Webfilter Lite)"
-msgstr "カテゴリ (Webfilter Lite)"
-
-msgid "Blocked  (Webfilter)"
-msgstr "ブロック  (Webfilter)"
-
-msgid "Flagged (Webfilter)"
-msgstr "フラグ (Webfilter)"
-
-msgid "Reason For Action (Webfilter)"
-msgstr "動作理由 (Webfilter)"
-
-msgid "Category (Webfilter)"
-msgstr "カテゴリ (Webfilter)"
-
-msgid "Action (Ad Blocker)"
-msgstr "動作 (Ad Blocker)"
-
-msgid "Virus Name (Clam)"
-msgstr "ウィルス名 (Clam)"
-
-msgid "Virus Name (Virus Blocker)"
-msgstr ""
-
-msgid "Term"
-msgstr ""
-
-msgid "Action (Spamassassin)"
-msgstr "動作 (Spamassassin)"
-
-msgid "Spam score (Spamassassin)"
-msgstr "スパムスコア (Spamassassin)"
-
-msgid "Action (Spam Blocker)"
-msgstr ""
-
-msgid "Spam score (Spam Blocker)"
-msgstr ""
-
-msgid "Action (Phish)"
-msgstr "動作 (Phish)"
-
-msgid "Key Statistics"
-msgstr "主要な統計"
-
-msgid "slice"
-msgstr "スライス"
-
-msgid "value"
-msgstr "値"
-
-msgid "Unknown"
-msgstr "不明"
-
-msgid "KB"
-msgstr "KB"
-
-msgid "MB"
-msgstr "MB"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

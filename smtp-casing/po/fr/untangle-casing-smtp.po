@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-15 21:24-0700\n"
 "PO-Revision-Date: 2009-11-02 01:22-0800\n"
 "Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,281 +12,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-msgid "Releasing..."
+msgid "sent"
 msgstr ""
 
-msgid "Release to Inbox"
+msgid "received"
 msgstr ""
 
-msgid "Release to Inbox & Add Senders to Safe List"
+msgid "involved in"
 msgstr ""
 
-msgid "Deleting..."
+msgid "email"
 msgstr ""
 
-msgid "Delete"
+msgid "subject"
 msgstr ""
 
-msgid "Please wait"
+msgid "sender"
 msgstr ""
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-msgid "An error has occurred."
-msgstr ""
-
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-msgid "The connection to the server has been lost."
-msgstr ""
-
-msgid "Press OK to return to the login page."
-msgstr ""
-
-msgid "An error has occurred"
-msgstr ""
-
-msgid "Exception name"
-msgstr ""
-
-msgid "Exception code"
-msgstr ""
-
-msgid "Exception message"
-msgstr ""
-
-msgid "Exception java stack"
-msgstr ""
-
-msgid "Exception js stack"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Deleted one Message"
-msgstr "Un Message Effacé"
-
-msgid "Deleted {0} Messages"
-msgstr "{0} Messages Effacés"
-
-msgid "Released one Message"
-msgstr "Un Message Libéré"
-
-msgid "Released {0} Messages"
-msgstr "{0} Messages Libérés"
-
-msgid "Safelisted one Address"
-msgstr "Une Adresse ajouté à la liste de confiance"
-
-msgid "Safelisted {0} Addresses"
-msgstr "{0} Adresses ajoutés à la liste de confiance"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "Le compte {0} n'a pas de messages en quarantaine."
-
-msgid "Please Try Again"
-msgstr "SVP essayer à nouveau"
-
-msgid "From"
-msgstr "A partir de"
-
-msgid "Number of Attachments in the email."
-msgstr "Nombre de pièces jointes dans le courriel."
-
-msgid "Score"
-msgstr "Score"
-
-msgid "Subject"
-msgstr "Sujet"
-
-msgid "Date"
-msgstr "Date"
-
-msgid "Size (KB)"
-msgstr "Taille (KB)"
-
-msgid "Filter:"
-msgstr ""
-
-msgid "Case sensitive"
-msgstr ""
-
-msgid "Clear Filters"
-msgstr ""
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr ""
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr ""
-"Les messages ci-dessous ont été mis en quarantaine et seront effacés après "
-"{0} jours. "
-
-msgid "Quarantined Messages"
-msgstr "Messages mis en quarantaine"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr ""
-
-msgid "Safe List"
-msgstr ""
-
-msgid "Email Address"
-msgstr "Adresse de courriel"
-
-msgid "Delete Addresses"
-msgstr "Supprimer les adresses"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "Transférer les messages en quarantaine à:"
-
-msgid "Address"
-msgstr "Adresse"
-
-msgid "Change Address"
-msgstr ""
-
-msgid "Received Quarantined Messages From:"
-msgstr "Reçu les messages en quarantaine De:"
-
-msgid "Forward or Receive Quarantines"
-msgstr "Transmettre ou recevoir les quarantaines"
-
-msgid "Unable to set the forward."
-msgstr "Impossible de définir le faire suivre."
-
-msgid "Unable to delete an entry."
-msgstr "Impossible de supprimer une entrée."
-
-msgid "Delete one Remap"
-msgstr "Effacer une réaffectation"
-
-msgid "Deleted {0} Remaps"
-msgstr "{0} réaffectations effacées"
-
-msgid "Unable to update remap table."
-msgstr "Impossible de mettre à jour la table de réaffectation."
-
-msgid "Delete one Addressess"
-msgstr "Supprimer une adresse"
-
-msgid "Delete {0} Addresses"
-msgstr "Supprimer {0} adresses"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr ""
-"Votre connexion au Portail d'Accès Distant n'est pas configurée avec une "
-"adresse courriel valide."
-
-msgid "Select User"
-msgstr "Sélectionner un utilisateur"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr ""
-"Entrer l'adresse courriel pour laquelle vous désirez le résumé des "
-"quarantaines"
-
-msgid "Request"
-msgstr "Demande"
-
-msgid "Requesting Digest"
-msgstr ""
-
-msgid "Please Wait"
-msgstr ""
-
-msgid "Successfully sent digest to '{0}'"
-msgstr "Envoi du rapport à '{0}' réussi"
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr "Il n'éxiste pas de quarantaine pour '{0}'"
-
-msgid "Quarantine Request"
-msgstr "Demande des Quarantaines"
-
-msgid "Add"
-msgstr "Ajouter"
-
-msgid "Add an Email Address to Safelist"
-msgstr "Ajouter une adresse courriel à la liste de confiance"
-
-msgid "Save"
-msgstr "Sauvegarder"
-
-msgid "Cancel"
-msgstr "Annuler"
-
-msgid "Deleted one address"
-msgstr "Une adresse effacée"
-
-msgid "Deleted {0} addresses"
-msgstr "{0} adresses effacées"
-
-msgid "Delete one Address"
-msgstr "Effacer une adresse"
 
 msgid "Quarantine Digest"
 msgstr "Résumé des Quarantaines"
 
-msgid "The attached message from"
-msgstr ""
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr ""
 
-msgid "where anything above"
-msgstr ""
 
-msgid "is spam."
-msgstr ""
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
 
-msgid "Quarantine Digest for {0}"
-msgstr "Résumé des Quarantaines de {0}"
 
-msgid "Click here to access your spam quarantine."
-msgstr "Cliquer ici pour accéder à votre liste de spam en quarantaine."
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr ""
-"La quarantaine des spams contient des courriels qui sont détenus à partir de "
-"votre compte de messagerie."
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr ""
-"Les courriels mis en quarantaine peuvent être libérés dans votre boîte de "
-"réception ou supprimés en utilisant le lien de quarantaine du spam."
 
-msgid "Quarantine Digest for: {0}"
-msgstr "Résumé des Quarantaines pour: {0}"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | Résumé des Quarantaines pour: {1}"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "Demande de courriels de résumé des quarantaines"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | Demande de courriel de résumé des quarantaines"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,305 +1,412 @@
-msgid "Field condition"
-msgstr "XField conditionX"
+msgid "Server"
+msgstr "XServerX"
 
-msgid "Passwords do not match"
-msgstr "XPasswords do not matchX"
+msgid "Alert!"
+msgstr "XAlert!X"
 
-msgid "A password must be set to enable Online Access!"
-msgstr "XA password must be set to enable Online Access!X"
-
-msgid "Status"
-msgstr "XStatusX"
-
-msgid "The new reports."
-msgstr "XThe new reports.X"
-
-msgid "View Reports"
-msgstr "XView ReportsX"
-
-msgid "Old Reports"
-msgstr "XOld ReportsX"
-
-msgid "Reports are automatically generated each night."
-msgstr "XReports are automatically generated each night.X"
-
-msgid "View Old Reports"
-msgstr "XView Old ReportsX"
-
-msgid "Report generation for the current day can be forced with the "
-msgstr "XReport generation for the current day can be forced with the X"
-
-msgid "Generate Today's Reports"
-msgstr "XGenerate Today's ReportsX"
-
-msgid " button."
-msgstr "X button.X"
-
-msgid "Caution"
-msgstr "XCautionX"
-
-msgid "Real-time report generation may cause network slowness."
-msgstr "XReal-time report generation may cause network slowness.X"
-
-msgid "Generating today's reports... This may take a few minutes."
-msgstr "XGenerating today's reports... This may take a few minutes.X"
-
-msgid "Please wait"
-msgstr "XPlease waitX"
-
-msgid "Generation"
-msgstr "XGenerationX"
-
-msgid "Daily Reports"
-msgstr "XDaily ReportsX"
+msgid "An following event occurred on the"
+msgstr "XAn following event occurred on theX"
 
 msgid ""
-"Daily Reports covers the previous day. Daily reports will be generated on "
-"the selected days."
-msgstr "XDaily Reports covers the previous day. Daily reports will be generated on the selected days.X"
+"This is an automated message sent because the event matched the configured "
+"Alert Rules."
+msgstr "XThis is an automated message sent because the event matched the configured Alert Rules.X"
 
-msgid "Weekly Reports"
-msgstr "XWeekly ReportsX"
+msgid "Invalid Settings"
+msgstr "XInvalid SettingsX"
 
-msgid ""
-"Weekly Reports covers the previous week. Weekly reports will be generated on "
-"the selected days."
-msgstr "XWeekly Reports covers the previous week. Weekly reports will be generated on the selected days.X"
+msgid "has online access, but no password is set."
+msgstr "Xhas online access, but no password is set.X"
 
-msgid "Monthly Reports"
-msgstr "XMonthly ReportsX"
+msgid "Alert Event"
+msgstr "XAlert EventX"
 
-msgid "Monthly Reports are generated on the 1st and cover the previous month."
-msgstr "XMonthly Reports are generated on the 1st and cover the previous month.X"
+msgid "Event ID"
+msgstr "XEvent IDX"
 
-msgid "Enabled"
-msgstr "XEnabledX"
+msgid "Timestamp"
+msgstr "XTimestampX"
 
-msgid "Generation Time"
-msgstr "XGeneration TimeX"
+msgid "Session ID"
+msgstr "XSession IDX"
 
-msgid "Scheduled time to generate the reports"
-msgstr "XScheduled time to generate the reportsX"
+msgid "Client Interface"
+msgstr "XClient InterfaceX"
 
-msgid "Data Retention"
-msgstr "XData RetentionX"
+msgid "Server Interface"
+msgstr "XServer InterfaceX"
 
-msgid ""
-"Keep event data for this number of days. The smaller the number the lower "
-"the disk space requirements and resource usage during report generation."
-msgstr "XKeep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.X"
+msgid "Client-side Client Address"
+msgstr "XClient-side Client AddressX"
 
-msgid "Warning"
-msgstr "XWarningX"
+msgid "Server-side Client Address"
+msgstr "XServer-side Client AddressX"
 
-msgid ""
-"Depending on the server and network, increasing this value may cause "
-"performance issues."
-msgstr "XDepending on the server and network, increasing this value may cause performance issues.X"
+msgid "Client-side Server Address"
+msgstr "XClient-side Server AddressX"
 
-msgid "Data Retention days"
-msgstr "XData Retention daysX"
+msgid "Server-side Server Address"
+msgstr "XServer-side Server AddressX"
 
-msgid "Change Password"
-msgstr "XChange PasswordX"
+msgid "Client-side Client Port"
+msgstr "XClient-side Client PortX"
 
-msgid "Email"
-msgstr "XEmailX"
+msgid "Server-side Client Port"
+msgstr "XServer-side Client PortX"
 
-msgid "Reporting Users"
-msgstr "XReporting UsersX"
+msgid "Client-side Server Port"
+msgstr "XClient-side Server PortX"
 
-msgid "Email Address (username)"
-msgstr "XEmail Address (username)X"
+msgid "Server-side Server Port"
+msgstr "XServer-side Server PortX"
 
-msgid "[enter email address]"
-msgstr "X[enter email address]X"
+msgid "Policy ID"
+msgstr "XPolicy IDX"
 
-msgid "The email address cannot be blank."
-msgstr "XThe email address cannot be blank.X"
+msgid "Username"
+msgstr "XUsernameX"
 
-msgid "Email Summaries"
-msgstr "XEmail SummariesX"
+msgid "Hostname"
+msgstr "XHostnameX"
 
-msgid "Online Access"
-msgstr "XOnline AccessX"
+msgid "Filter Block"
+msgstr "XFilter BlockX"
 
-msgid "The email address name cannot be blank."
-msgstr "XThe email address name cannot be blank.X"
+msgid "Client-to-server Content Length"
+msgstr "XClient-to-server Content LengthX"
 
-msgid "Password"
-msgstr "XPasswordX"
+msgid "Server-to-client Content Length"
+msgstr "XServer-to-client Content LengthX"
 
-msgid "The password is shorter than the minimum {0} characters."
-msgstr "XThe password is shorter than the minimum {0} characters.X"
+msgid "Server-to-client Content Type"
+msgstr "XServer-to-client Content TypeX"
 
-msgid "(required for 'Online Access')"
-msgstr "X(required for 'Online Access')X"
+msgid "Bytes Received"
+msgstr "XBytes ReceivedX"
 
-msgid "Confirm Password"
-msgstr "XConfirm PasswordX"
+msgid "Bytes Sent"
+msgstr "XBytes SentX"
 
-msgid "Email Attachment Settings"
-msgstr "XEmail Attachment SettingsX"
+msgid "Client Name"
+msgstr "XClient NameX"
 
-msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
-msgstr "XAttach Detailed Report Logs to Email (CSV Zip File)X"
+msgid "Start Time"
+msgstr "XStart TimeX"
 
-msgid "Attachment size limit (MB)"
-msgstr "XAttachment size limit (MB)X"
+msgid "End Time"
+msgstr "XEnd TimeX"
 
-msgid "Syslog"
-msgstr "XSyslogX"
+msgid "Remote Address"
+msgstr "XRemote AddressX"
 
-msgid ""
-"If enabled logged events will be sent in real-time to a remote syslog for "
-"custom processing."
-msgstr "XIf enabled logged events will be sent in real-time to a remote syslog for custom processing.X"
+msgid "Remote Port"
+msgstr "XRemote PortX"
 
-msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
-msgstr "X{0}Disable{1} Syslog Events. (This is the default setting.)X"
-
-msgid "{0}Enable{1} Syslog Events."
-msgstr "X{0}Enable{1} Syslog Events.X"
-
-msgid "Host"
-msgstr "XHostX"
-
-msgid "A \"Host\" must be specified."
-msgstr "XA \"Host\" must be specified.X"
-
-msgid "Host cannot be localhost address."
-msgstr "XHost cannot be localhost address.X"
-
-msgid "Port"
-msgstr "XPortX"
-
-msgid "You must provide a valid port."
-msgstr "XYou must provide a valid port.X"
-
-msgid "Protocol"
-msgstr "XProtocolX"
-
-msgid "UDP"
-msgstr "XUDPX"
-
-msgid "TCP"
-msgstr "XTCPX"
-
-msgid "Database"
-msgstr "XDatabaseX"
-
-msgid "User"
-msgstr "XUserX"
-
-msgid "A \"User\" must be specified."
-msgstr "XA \"User\" must be specified.X"
-
-msgid "A \"Password\" must be specified."
-msgstr "XA \"Password\" must be specified.X"
-
-msgid "Name"
-msgstr "XNameX"
-
-msgid "A \"Name\" must be specified."
-msgstr "XA \"Name\" must be specified.X"
-
-msgid "Name Map"
-msgstr "XName MapX"
-
-msgid "IP Address"
-msgstr "XIP AddressX"
-
-msgid "[enter IP address]"
-msgstr "X[enter IP address]X"
-
-msgid "[enter name]"
-msgstr "X[enter name]X"
-
-msgid "Quotes and double quotes are not allowed"
-msgstr "XQuotes and double quotes are not allowedX"
-
-msgid "Text"
-msgstr "XTextX"
-
-msgid "Pie Graph"
-msgstr "XPie GraphX"
-
-msgid "Time Graph"
-msgstr "XTime GraphX"
-
-msgid "Manage Reports"
-msgstr "XManage ReportsX"
-
-msgid "Title"
-msgstr "XTitleX"
+msgid "Pool Address"
+msgstr "XPool AddressX"
 
 msgid "Type"
 msgstr "XTypeX"
 
-msgid "Description"
-msgstr "XDescriptionX"
+msgid "Connect Time"
+msgstr "XConnect TimeX"
 
-msgid "Units"
-msgstr "XUnitsX"
+msgid "Client Address"
+msgstr "XClient AddressX"
 
-msgid "Display Order"
-msgstr "XDisplay OrderX"
+msgid "Client Protocol"
+msgstr "XClient ProtocolX"
 
-msgid "View"
-msgstr "XViewX"
+msgid "Client Username"
+msgstr "XClient UsernameX"
 
-msgid "View Report"
-msgstr "XView ReportX"
+msgid "Net Process"
+msgstr "XNet ProcessX"
 
-msgid "Cancel"
-msgstr "XCancelX"
+msgid "Net Interface"
+msgstr "XNet InterfaceX"
 
-msgid "Alert Rules"
-msgstr "XAlert RulesX"
+msgid "Elapsed Time"
+msgstr "XElapsed TimeX"
 
-msgid "Note"
-msgstr "XNoteX"
+msgid "Vendor Name"
+msgstr "XVendor NameX"
 
-msgid ""
-" <b>Alert Rules</b> process all events to log and/or alert administrators "
-"when special or noteworthy events occur."
-msgstr "X <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.X"
+msgid "Memory Free"
+msgstr "XMemory FreeX"
 
-msgid "Rule Id"
-msgstr "XRule IdX"
+msgid "Memory Cache"
+msgstr "XMemory CacheX"
 
-msgid "new"
-msgstr "XnewX"
+msgid "Memory Buffers"
+msgstr "XMemory BuffersX"
 
-msgid "Enable"
-msgstr "XEnableX"
+msgid "CPU load (1-min)"
+msgstr "XCPU load (1-min)X"
 
-msgid "Log Alert"
-msgstr "XLog AlertX"
+msgid "CPU load (5-min)"
+msgstr "XCPU load (5-min)X"
 
-msgid "Send Alert"
-msgstr "XSend AlertX"
+msgid "CPU load (15-min)"
+msgstr "XCPU load (15-min)X"
 
-msgid "Enable Rule"
-msgstr "XEnable RuleX"
+msgid "CPU User Utilization"
+msgstr "XCPU User UtilizationX"
 
-msgid "[no description]"
-msgstr "X[no description]X"
+msgid "CPU System Utilization"
+msgstr "XCPU System UtilizationX"
 
-msgid "If all of the following conditions are met:"
-msgstr "XIf all of the following conditions are met:X"
+msgid "Disk Size"
+msgstr "XDisk SizeX"
 
-msgid "Perform the following action(s):"
-msgstr "XPerform the following action(s):X"
+msgid "Disk Free"
+msgstr "XDisk FreeX"
 
-msgid "Limit Send Frequency"
-msgstr "XLimit Send FrequencyX"
+msgid "Swap Size"
+msgstr "XSwap SizeX"
 
-msgid "To once per"
-msgstr "XTo once perX"
+msgid "Swap Free"
+msgstr "XSwap FreeX"
 
-msgid "(minutes)"
-msgstr "X(minutes)X"
+msgid "Hits"
+msgstr "XHitsX"
+
+msgid "Misses"
+msgstr "XMissesX"
+
+msgid "Bypasses"
+msgstr "XBypassesX"
+
+msgid "Bypassed"
+msgstr "XBypassedX"
+
+msgid "System bypasses"
+msgstr "XSystem bypassesX"
+
+msgid "Hit Bytes"
+msgstr "XHit BytesX"
+
+msgid "Miss Bytes"
+msgstr "XMiss BytesX"
+
+msgid "Success"
+msgstr "XSuccessX"
+
+msgid "Text detail of the event"
+msgstr "XText detail of the eventX"
+
+msgid "Login Name"
+msgstr "XLogin NameX"
+
+msgid "Event Type"
+msgstr "XEvent TypeX"
+
+msgid "Authorization Type"
+msgstr "XAuthorization TypeX"
+
+msgid "Request ID"
+msgstr "XRequest IDX"
+
+msgid "Method"
+msgstr "XMethodX"
+
+msgid "URI"
+msgstr "XURIX"
+
+msgid "Message ID"
+msgstr "XMessage IDX"
+
+msgid "Subject"
+msgstr "XSubjectX"
+
+msgid "Address"
+msgstr "XAddressX"
+
+msgid "Address Name"
+msgstr "XAddress NameX"
+
+msgid "Address Kind"
+msgstr "XAddress KindX"
+
+msgid "Sender"
+msgstr "XSenderX"
+
+msgid "Receiver"
+msgstr "XReceiverX"
+
+msgid "Host"
+msgstr "XHostX"
+
+msgid "Search Term"
+msgstr "XSearch TermX"
+
+msgid "Interface ID"
+msgstr "XInterface IDX"
+
+msgid "Action"
+msgstr "XActionX"
+
+msgid "Interface O/S Name"
+msgstr "XInterface O/S NameX"
+
+msgid "Interface Name"
+msgstr "XInterface NameX"
+
+msgid "Domain"
+msgstr "XDomainX"
+
+msgid "Signature ID"
+msgstr "XSignature IDX"
+
+msgid "Grouping ID"
+msgstr "XGrouping IDX"
+
+msgid "Classtype ID"
+msgstr "XClasstype IDX"
+
+msgid "Source Address"
+msgstr "XSource AddressX"
+
+msgid "Source Port"
+msgstr "XSource PortX"
+
+msgid "Destination Address"
+msgstr "XDestination AddressX"
+
+msgid "Destination Port"
+msgstr "XDestination PortX"
+
+msgid "Protocol"
+msgstr "XProtocolX"
+
+msgid "Blocked"
+msgstr "XBlockedX"
+
+msgid "Category"
+msgstr "XCategoryX"
+
+msgid "Classtype"
+msgstr "XClasstypeX"
+
+msgid "Message"
+msgstr "XMessageX"
+
+msgid "Summary Text"
+msgstr "XSummary TextX"
+
+msgid "JSON Text"
+msgstr "XJSON TextX"
+
+msgid "Key"
+msgstr "XKeyX"
+
+msgid "Value"
+msgstr "XValueX"
+
+msgid "Size"
+msgstr "XSizeX"
+
+msgid "Reason"
+msgstr "XReasonX"
+
+msgid "From-Client Bytes"
+msgstr "XFrom-Client BytesX"
+
+msgid "To-Client Bytes"
+msgstr "XTo-Client BytesX"
+
+msgid "From-Server Bytes"
+msgstr "XFrom-Server BytesX"
+
+msgid "To-Server Bytes"
+msgstr "XTo-Server BytesX"
+
+msgid "Login"
+msgstr "XLoginX"
+
+msgid "Local"
+msgstr "XLocalX"
+
+msgid "Succeeded"
+msgstr "XSucceededX"
+
+msgid "Flagged"
+msgstr "XFlaggedX"
+
+msgid "Rule ID"
+msgstr "XRule IDX"
+
+msgid "Application"
+msgstr "XApplicationX"
+
+msgid "Protochain"
+msgstr "XProtochainX"
+
+msgid "Confidence"
+msgstr "XConfidenceX"
+
+msgid "Detail"
+msgstr "XDetailX"
+
+msgid "Priority"
+msgstr "XPriorityX"
+
+msgid "Status"
+msgstr "XStatusX"
+
+msgid "Clean"
+msgstr "XCleanX"
+
+msgid "Name"
+msgstr "XNameX"
+
+msgid "Score"
+msgstr "XScoreX"
+
+msgid "Spam"
+msgstr "XSpamX"
+
+msgid "Tests"
+msgstr "XTestsX"
+
+msgid "Phish"
+msgstr "XPhishX"
+
+msgid "Cookie"
+msgstr "XCookieX"
+
+msgid "Report Summary"
+msgstr "XReport SummaryX"
+
+msgid "This report has no detail data."
+msgstr "XThis report has no detail data.X"
+
+msgid "Title Page"
+msgstr "XTitle PageX"
+
+msgid "Table of Contents"
+msgstr "XTable of ContentsX"
+
+msgid "Page %d"
+msgstr "XPage %dX"
+
+msgid "day"
+msgstr "XdayX"
+
+msgid "days"
+msgstr "XdaysX"
+
+msgid "Report for"
+msgstr "XReport forX"
+
+msgid "Report"
+msgstr "XReportX"
+
+msgid "Highlights Summary"
+msgstr "XHighlights SummaryX"
+
+msgid "Highlights"
+msgstr "XHighlightsX"
 
 msgid "Summary Report"
 msgstr "XSummary ReportX"
@@ -394,9 +501,6 @@ msgstr "XSwap (MB)X"
 msgid "Swap Used"
 msgstr "XSwap UsedX"
 
-msgid "Server"
-msgstr "XServerX"
-
 msgid "scanned"
 msgstr "XscannedX"
 
@@ -451,14 +555,14 @@ msgstr "XTotal SessionsX"
 msgid "Top Destination Ports"
 msgstr "XTop Destination PortsX"
 
+msgid "Port"
+msgstr "XPortX"
+
 msgid "Top Penalty Box Hosts"
 msgstr "XTop Penalty Box HostsX"
 
 msgid "seconds"
 msgstr "XsecondsX"
-
-msgid "Address"
-msgstr "XAddressX"
 
 msgid "Administrative Login Events"
 msgstr "XAdministrative Login EventsX"
@@ -466,454 +570,17 @@ msgstr "XAdministrative Login EventsX"
 msgid "Client IP"
 msgstr "XClient IPX"
 
-msgid "Login"
-msgstr "XLoginX"
-
-msgid "Success"
-msgstr "XSuccessX"
-
-msgid "Reason"
-msgstr "XReasonX"
-
 msgid "Alert Events"
 msgstr "XAlert EventsX"
+
+msgid "Description"
+msgstr "XDescriptionX"
 
 msgid "Summary"
 msgstr "XSummaryX"
 
 msgid "JSON"
 msgstr "XJSONX"
-
-msgid "Alert Event"
-msgstr "XAlert EventX"
-
-msgid "Alert!"
-msgstr "XAlert!X"
-
-msgid "An following event occurred on the"
-msgstr "XAn following event occurred on theX"
-
-msgid ""
-"This is an automated message sent because the event matched the configured "
-"Alert Rules."
-msgstr "XThis is an automated message sent because the event matched the configured Alert Rules.X"
-
-msgid "Invalid Settings"
-msgstr "XInvalid SettingsX"
-
-msgid "has online access, but no password is set."
-msgstr "Xhas online access, but no password is set.X"
-
-msgid "description"
-msgstr "XdescriptionX"
-
-msgid "The top alerts."
-msgstr "XThe top alerts.X"
-
-msgid "pieGroupColumn"
-msgstr "XpieGroupColumnX"
-
-msgid "title"
-msgstr "XtitleX"
-
-msgid "Top Alerts"
-msgstr "XTop AlertsX"
-
-msgid "The disk utilization over time."
-msgstr "XThe disk utilization over time.X"
-
-msgid "The CPU load over time."
-msgstr "XThe CPU load over time.X"
-
-msgid "CPU Load"
-msgstr "XCPU LoadX"
-
-msgid "Alerts over time."
-msgstr "XAlerts over time.X"
-
-msgid "Alerts"
-msgstr "XAlertsX"
-
-msgid "The amount of free memory over time."
-msgstr "XThe amount of free memory over time.X"
-
-msgid "Memory Usage"
-msgstr "XMemory UsageX"
-
-msgid "defaultColumns"
-msgstr "XdefaultColumnsX"
-
-msgid "time_stamp"
-msgstr "Xtime_stampX"
-
-msgid "summary_text"
-msgstr "Xsummary_textX"
-
-msgid "json"
-msgstr "XjsonX"
-
-msgid "Log of all alerts created by alert rules."
-msgstr "XLog of all alerts created by alert rules.X"
-
-msgid "Event ID"
-msgstr "XEvent IDX"
-
-msgid "Timestamp"
-msgstr "XTimestampX"
-
-msgid "Session ID"
-msgstr "XSession IDX"
-
-msgid "Client Interface"
-msgstr "XClient InterfaceX"
-
-msgid "Server Interface"
-msgstr "XServer InterfaceX"
-
-msgid "Client-side Client Address"
-msgstr "XClient-side Client AddressX"
-
-msgid "Server-side Client Address"
-msgstr "XServer-side Client AddressX"
-
-msgid "Client-side Server Address"
-msgstr "XClient-side Server AddressX"
-
-msgid "Server-side Server Address"
-msgstr "XServer-side Server AddressX"
-
-msgid "Client-side Client Port"
-msgstr "XClient-side Client PortX"
-
-msgid "Server-side Client Port"
-msgstr "XServer-side Client PortX"
-
-msgid "Client-side Server Port"
-msgstr "XClient-side Server PortX"
-
-msgid "Server-side Server Port"
-msgstr "XServer-side Server PortX"
-
-msgid "Policy ID"
-msgstr "XPolicy IDX"
-
-msgid "Username"
-msgstr "XUsernameX"
-
-msgid "Hostname"
-msgstr "XHostnameX"
-
-msgid "Filter Block"
-msgstr "XFilter BlockX"
-
-msgid "Client-to-server Content Length"
-msgstr "XClient-to-server Content LengthX"
-
-msgid "Server-to-client Content Length"
-msgstr "XServer-to-client Content LengthX"
-
-msgid "Server-to-client Content Type"
-msgstr "XServer-to-client Content TypeX"
-
-msgid "Bytes Received"
-msgstr "XBytes ReceivedX"
-
-msgid "Bytes Sent"
-msgstr "XBytes SentX"
-
-msgid "Client Name"
-msgstr "XClient NameX"
-
-msgid "Start Time"
-msgstr "XStart TimeX"
-
-msgid "End Time"
-msgstr "XEnd TimeX"
-
-msgid "Remote Address"
-msgstr "XRemote AddressX"
-
-msgid "Remote Port"
-msgstr "XRemote PortX"
-
-msgid "Pool Address"
-msgstr "XPool AddressX"
-
-msgid "Connect Time"
-msgstr "XConnect TimeX"
-
-msgid "Client Address"
-msgstr "XClient AddressX"
-
-msgid "Client Protocol"
-msgstr "XClient ProtocolX"
-
-msgid "Client Username"
-msgstr "XClient UsernameX"
-
-msgid "Net Process"
-msgstr "XNet ProcessX"
-
-msgid "Net Interface"
-msgstr "XNet InterfaceX"
-
-msgid "Elapsed Time"
-msgstr "XElapsed TimeX"
-
-msgid "Vendor Name"
-msgstr "XVendor NameX"
-
-msgid "Memory Free"
-msgstr "XMemory FreeX"
-
-msgid "Memory Cache"
-msgstr "XMemory CacheX"
-
-msgid "Memory Buffers"
-msgstr "XMemory BuffersX"
-
-msgid "CPU load (1-min)"
-msgstr "XCPU load (1-min)X"
-
-msgid "CPU load (5-min)"
-msgstr "XCPU load (5-min)X"
-
-msgid "CPU load (15-min)"
-msgstr "XCPU load (15-min)X"
-
-msgid "CPU User Utilization"
-msgstr "XCPU User UtilizationX"
-
-msgid "CPU System Utilization"
-msgstr "XCPU System UtilizationX"
-
-msgid "Disk Size"
-msgstr "XDisk SizeX"
-
-msgid "Disk Free"
-msgstr "XDisk FreeX"
-
-msgid "Swap Size"
-msgstr "XSwap SizeX"
-
-msgid "Swap Free"
-msgstr "XSwap FreeX"
-
-msgid "Hits"
-msgstr "XHitsX"
-
-msgid "Misses"
-msgstr "XMissesX"
-
-msgid "Bypasses"
-msgstr "XBypassesX"
-
-msgid "Bypassed"
-msgstr "XBypassedX"
-
-msgid "System bypasses"
-msgstr "XSystem bypassesX"
-
-msgid "Hit Bytes"
-msgstr "XHit BytesX"
-
-msgid "Miss Bytes"
-msgstr "XMiss BytesX"
-
-msgid "Text detail of the event"
-msgstr "XText detail of the eventX"
-
-msgid "Login Name"
-msgstr "XLogin NameX"
-
-msgid "Event Type"
-msgstr "XEvent TypeX"
-
-msgid "Authorization Type"
-msgstr "XAuthorization TypeX"
-
-msgid "Request ID"
-msgstr "XRequest IDX"
-
-msgid "Method"
-msgstr "XMethodX"
-
-msgid "URI"
-msgstr "XURIX"
-
-msgid "Message ID"
-msgstr "XMessage IDX"
-
-msgid "Subject"
-msgstr "XSubjectX"
-
-msgid "Address Name"
-msgstr "XAddress NameX"
-
-msgid "Address Kind"
-msgstr "XAddress KindX"
-
-msgid "Sender"
-msgstr "XSenderX"
-
-msgid "Receiver"
-msgstr "XReceiverX"
-
-msgid "Search Term"
-msgstr "XSearch TermX"
-
-msgid "Interface ID"
-msgstr "XInterface IDX"
-
-msgid "Action"
-msgstr "XActionX"
-
-msgid "Interface O/S Name"
-msgstr "XInterface O/S NameX"
-
-msgid "Interface Name"
-msgstr "XInterface NameX"
-
-msgid "Domain"
-msgstr "XDomainX"
-
-msgid "Signature ID"
-msgstr "XSignature IDX"
-
-msgid "Grouping ID"
-msgstr "XGrouping IDX"
-
-msgid "Classtype ID"
-msgstr "XClasstype IDX"
-
-msgid "Source Address"
-msgstr "XSource AddressX"
-
-msgid "Source Port"
-msgstr "XSource PortX"
-
-msgid "Destination Address"
-msgstr "XDestination AddressX"
-
-msgid "Destination Port"
-msgstr "XDestination PortX"
-
-msgid "Blocked"
-msgstr "XBlockedX"
-
-msgid "Category"
-msgstr "XCategoryX"
-
-msgid "Classtype"
-msgstr "XClasstypeX"
-
-msgid "Message"
-msgstr "XMessageX"
-
-msgid "Summary Text"
-msgstr "XSummary TextX"
-
-msgid "JSON Text"
-msgstr "XJSON TextX"
-
-msgid "Key"
-msgstr "XKeyX"
-
-msgid "Value"
-msgstr "XValueX"
-
-msgid "Size"
-msgstr "XSizeX"
-
-msgid "From-Client Bytes"
-msgstr "XFrom-Client BytesX"
-
-msgid "To-Client Bytes"
-msgstr "XTo-Client BytesX"
-
-msgid "From-Server Bytes"
-msgstr "XFrom-Server BytesX"
-
-msgid "To-Server Bytes"
-msgstr "XTo-Server BytesX"
-
-msgid "Local"
-msgstr "XLocalX"
-
-msgid "Succeeded"
-msgstr "XSucceededX"
-
-msgid "Flagged"
-msgstr "XFlaggedX"
-
-msgid "Rule ID"
-msgstr "XRule IDX"
-
-msgid "Application"
-msgstr "XApplicationX"
-
-msgid "Protochain"
-msgstr "XProtochainX"
-
-msgid "Confidence"
-msgstr "XConfidenceX"
-
-msgid "Detail"
-msgstr "XDetailX"
-
-msgid "Priority"
-msgstr "XPriorityX"
-
-msgid "Clean"
-msgstr "XCleanX"
-
-msgid "Score"
-msgstr "XScoreX"
-
-msgid "Spam"
-msgstr "XSpamX"
-
-msgid "Tests"
-msgstr "XTestsX"
-
-msgid "Phish"
-msgstr "XPhishX"
-
-msgid "Cookie"
-msgstr "XCookieX"
-
-msgid "Report Summary"
-msgstr "XReport SummaryX"
-
-msgid "This report has no detail data."
-msgstr "XThis report has no detail data.X"
-
-msgid "Title Page"
-msgstr "XTitle PageX"
-
-msgid "Table of Contents"
-msgstr "XTable of ContentsX"
-
-msgid "Page %d"
-msgstr "XPage %dX"
-
-msgid "day"
-msgstr "XdayX"
-
-msgid "days"
-msgstr "XdaysX"
-
-msgid "Report for"
-msgstr "XReport forX"
-
-msgid "Report"
-msgstr "XReportX"
-
-msgid "Highlights Summary"
-msgstr "XHighlights SummaryX"
-
-msgid "Highlights"
-msgstr "XHighlightsX"
 
 msgid "Rule"
 msgstr "XRuleX"
@@ -1040,3 +707,307 @@ msgstr "XKBX"
 
 msgid "MB"
 msgstr "XMBX"
+
+msgid "Field condition"
+msgstr "XField conditionX"
+
+msgid "Passwords do not match"
+msgstr "XPasswords do not matchX"
+
+msgid "A password must be set to enable Online Access!"
+msgstr "XA password must be set to enable Online Access!X"
+
+msgid "The new reports."
+msgstr "XThe new reports.X"
+
+msgid "View Reports"
+msgstr "XView ReportsX"
+
+msgid "Old Reports"
+msgstr "XOld ReportsX"
+
+msgid "Reports are automatically generated each night."
+msgstr "XReports are automatically generated each night.X"
+
+msgid "View Old Reports"
+msgstr "XView Old ReportsX"
+
+msgid "Report generation for the current day can be forced with the "
+msgstr "XReport generation for the current day can be forced with the X"
+
+msgid "Generate Today's Reports"
+msgstr "XGenerate Today's ReportsX"
+
+msgid " button."
+msgstr "X button.X"
+
+msgid "Caution"
+msgstr "XCautionX"
+
+msgid "Real-time report generation may cause network slowness."
+msgstr "XReal-time report generation may cause network slowness.X"
+
+msgid "Generating today's reports... This may take a few minutes."
+msgstr "XGenerating today's reports... This may take a few minutes.X"
+
+msgid "Please wait"
+msgstr "XPlease waitX"
+
+msgid "Generation"
+msgstr "XGenerationX"
+
+msgid "Daily Reports"
+msgstr "XDaily ReportsX"
+
+msgid ""
+"Daily Reports covers the previous day. Daily reports will be generated on "
+"the selected days."
+msgstr "XDaily Reports covers the previous day. Daily reports will be generated on the selected days.X"
+
+msgid "Weekly Reports"
+msgstr "XWeekly ReportsX"
+
+msgid ""
+"Weekly Reports covers the previous week. Weekly reports will be generated on "
+"the selected days."
+msgstr "XWeekly Reports covers the previous week. Weekly reports will be generated on the selected days.X"
+
+msgid "Monthly Reports"
+msgstr "XMonthly ReportsX"
+
+msgid "Monthly Reports are generated on the 1st and cover the previous month."
+msgstr "XMonthly Reports are generated on the 1st and cover the previous month.X"
+
+msgid "Enabled"
+msgstr "XEnabledX"
+
+msgid "Generation Time"
+msgstr "XGeneration TimeX"
+
+msgid "Scheduled time to generate the reports"
+msgstr "XScheduled time to generate the reportsX"
+
+msgid "Data Retention"
+msgstr "XData RetentionX"
+
+msgid ""
+"Keep event data for this number of days. The smaller the number the lower "
+"the disk space requirements and resource usage during report generation."
+msgstr "XKeep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.X"
+
+msgid "Warning"
+msgstr "XWarningX"
+
+msgid ""
+"Depending on the server and network, increasing this value may cause "
+"performance issues."
+msgstr "XDepending on the server and network, increasing this value may cause performance issues.X"
+
+msgid "Data Retention days"
+msgstr "XData Retention daysX"
+
+msgid "Change Password"
+msgstr "XChange PasswordX"
+
+msgid "Email"
+msgstr "XEmailX"
+
+msgid "Reporting Users"
+msgstr "XReporting UsersX"
+
+msgid "Email Address (username)"
+msgstr "XEmail Address (username)X"
+
+msgid "[enter email address]"
+msgstr "X[enter email address]X"
+
+msgid "The email address cannot be blank."
+msgstr "XThe email address cannot be blank.X"
+
+msgid "Email Summaries"
+msgstr "XEmail SummariesX"
+
+msgid "Online Access"
+msgstr "XOnline AccessX"
+
+msgid "The email address name cannot be blank."
+msgstr "XThe email address name cannot be blank.X"
+
+msgid "Password"
+msgstr "XPasswordX"
+
+msgid "The password is shorter than the minimum {0} characters."
+msgstr "XThe password is shorter than the minimum {0} characters.X"
+
+msgid "(required for Online Access)"
+msgstr "X(required for Online Access)X"
+
+msgid "Confirm Password"
+msgstr "XConfirm PasswordX"
+
+msgid "Email Attachment Settings"
+msgstr "XEmail Attachment SettingsX"
+
+msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
+msgstr "XAttach Detailed Report Logs to Email (CSV Zip File)X"
+
+msgid "Attachment size limit (MB)"
+msgstr "XAttachment size limit (MB)X"
+
+msgid "Syslog"
+msgstr "XSyslogX"
+
+msgid ""
+"If enabled logged events will be sent in real-time to a remote syslog for "
+"custom processing."
+msgstr "XIf enabled logged events will be sent in real-time to a remote syslog for custom processing.X"
+
+msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
+msgstr "X{0}Disable{1} Syslog Events. (This is the default setting.)X"
+
+msgid "{0}Enable{1} Syslog Events."
+msgstr "X{0}Enable{1} Syslog Events.X"
+
+msgid "A Host must be specified."
+msgstr "XA Host must be specified.X"
+
+msgid "Host cannot be localhost address."
+msgstr "XHost cannot be localhost address.X"
+
+msgid "You must provide a valid port."
+msgstr "XYou must provide a valid port.X"
+
+msgid "UDP"
+msgstr "XUDPX"
+
+msgid "TCP"
+msgstr "XTCPX"
+
+msgid "Database"
+msgstr "XDatabaseX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "A User must be specified."
+msgstr "XA User must be specified.X"
+
+msgid "A Password must be specified."
+msgstr "XA Password must be specified.X"
+
+msgid "A Name must be specified."
+msgstr "XA Name must be specified.X"
+
+msgid "Name Map"
+msgstr "XName MapX"
+
+msgid "IP Address"
+msgstr "XIP AddressX"
+
+msgid "[enter IP address]"
+msgstr "X[enter IP address]X"
+
+msgid "[enter name]"
+msgstr "X[enter name]X"
+
+msgid "Quotes and double quotes are not allowed"
+msgstr "XQuotes and double quotes are not allowedX"
+
+msgid "Text"
+msgstr "XTextX"
+
+msgid "Pie Graph"
+msgstr "XPie GraphX"
+
+msgid "Time Graph"
+msgstr "XTime GraphX"
+
+msgid "Manage Reports"
+msgstr "XManage ReportsX"
+
+msgid "Title"
+msgstr "XTitleX"
+
+msgid "Units"
+msgstr "XUnitsX"
+
+msgid "Display Order"
+msgstr "XDisplay OrderX"
+
+msgid "View"
+msgstr "XViewX"
+
+msgid "View Report"
+msgstr "XView ReportX"
+
+msgid "Cancel"
+msgstr "XCancelX"
+
+msgid "Alert Rules"
+msgstr "XAlert RulesX"
+
+msgid "Note"
+msgstr "XNoteX"
+
+msgid ""
+" <b>Alert Rules</b> process all events to log and/or alert administrators "
+"when special or noteworthy events occur."
+msgstr "X <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.X"
+
+msgid "Rule Id"
+msgstr "XRule IdX"
+
+msgid "new"
+msgstr "XnewX"
+
+msgid "Enable"
+msgstr "XEnableX"
+
+msgid "Log Alert"
+msgstr "XLog AlertX"
+
+msgid "Send Alert"
+msgstr "XSend AlertX"
+
+msgid "Enable Rule"
+msgstr "XEnable RuleX"
+
+msgid "[no description]"
+msgstr "X[no description]X"
+
+msgid "If all of the following conditions are met:"
+msgstr "XIf all of the following conditions are met:X"
+
+msgid "Perform the following action(s):"
+msgstr "XPerform the following action(s):X"
+
+msgid "Limit Send Frequency"
+msgstr "XLimit Send FrequencyX"
+
+msgid "To once per"
+msgstr "XTo once perX"
+
+msgid "(minutes)"
+msgstr "X(minutes)X"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

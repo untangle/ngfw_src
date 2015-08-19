@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2009-09-09 03:18-0700\n"
 "Last-Translator: define.chang <feng_0779@sina.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,175 +16,59 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: CHINA\n"
 
-msgid "Site cannot contain URL protocol."
+msgid "Pages scanned"
+msgstr "已扫描页面"
+
+msgid "Pages blocked"
+msgstr "已阻止页面"
+
+msgid "Pages passed"
+msgstr "已通过页面"
+
+msgid "blocked"
 msgstr ""
 
-msgid "Site cannot contain port."
+msgid "passed"
 msgstr ""
 
-msgid "Invalid \"URL\" specified"
-msgstr "指定了无效的 \"URL\""
+msgid "Feature is not installed."
+msgstr "功能尚未安装。"
 
-msgid "Categories"
-msgstr "分类"
+msgid "This request has expired."
+msgstr "该请求已过期。"
 
-msgid "Category"
-msgstr "分类"
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} 警告"
 
-msgid "Block"
-msgstr "阻止"
-
-msgid "Flag"
+msgid "{0}This web page is blocked{1} because it violates network policy."
 msgstr ""
 
-msgid "Flag as Violation"
+msgid "Unblocked"
 msgstr ""
 
-msgid "Description"
-msgstr "描述"
-
-msgid "Block Categories"
-msgstr ""
-
-msgid "Block or flag access to sites associated with the specified category."
-msgstr ""
-
-msgid "Sites"
-msgstr "站点"
-
-msgid "Site"
-msgstr "站点"
-
-msgid "[enter site]"
-msgstr ""
-
-msgid "[no description]"
-msgstr "【无描述】"
-
-msgid "Block Sites"
-msgstr ""
-
-msgid "Blocked Sites"
-msgstr ""
-
-msgid "Block or flag access to the specified site."
-msgstr ""
-
-msgid "File Types"
-msgstr "文件类型"
-
-msgid "File Type"
-msgstr "文件类型"
-
-msgid "[enter extension]"
-msgstr ""
-
-msgid "[no category]"
-msgstr ""
-
-msgid "Block File Types"
-msgstr ""
-
-msgid "Block or flag access to files associated with the specified file type."
-msgstr ""
-
-msgid "MIME Types"
-msgstr "MIME类型"
-
-msgid "MIME type"
-msgstr "MIME类型"
-
-msgid "[enter mime type]"
-msgstr ""
-
-msgid "MIME Type"
-msgstr "MIME类型"
-
-msgid "Block Mime Types"
-msgstr ""
-
-msgid "Block MIME Types"
-msgstr ""
-
-msgid "Block or flag access to files associated with the specified MIME type."
-msgstr ""
-
-msgid "Pass"
-msgstr "通过"
-
-msgid "Pass Sites"
-msgstr ""
-
-msgid ""
-"Allow access to the specified site regardless of matching block policies."
-msgstr ""
-
-msgid "Client IP addresses"
-msgstr "客户端IP地址"
-
-msgid "IP address/range"
-msgstr "IP地址/范围"
-
-msgid "[enter IP address/range]"
-msgstr ""
-
-msgid "Pass Clients"
-msgstr ""
-
-msgid "Allow access for client networks regardless of matching block policies."
-msgstr ""
-
-msgid "Advanced"
-msgstr ""
-
-msgid "Advanced Options"
-msgstr ""
-
-msgid "Block pages from IP only hosts"
-msgstr "阻止从只有IP的主机来的页面"
-
-msgid "Pass if referers match Pass Sites"
-msgstr ""
-
-msgid "Restrict Google applications"
-msgstr ""
-
-msgid "NOTE:"
-msgstr ""
-
-msgid ""
-"must be installed and running with the Inspect Google Traffic configured to "
-"Inspect."
-msgstr ""
-
-msgid "Allowed Domain(s)"
-msgstr ""
-
-msgid ""
-"Specify the comma separated list of domains allowed to access non-search "
-"Google applications"
-msgstr ""
-
-msgid "Domain cannot contain URL protocol."
-msgstr ""
-
-msgid "Domain cannot contain port."
-msgstr ""
-
-msgid "Invalid domain specified"
-msgstr ""
-
-msgid "Unblock"
+msgid "Host name is an IP address ({0})"
 msgstr ""
 
 msgid "None"
 msgstr "无"
 
-msgid "Temporary"
-msgstr "临时的"
+msgid "If you have any questions, Please contact {0}."
+msgstr "如果您有任何问题，请联系{0}。"
 
-msgid "Permanent and Global"
-msgstr "永久和全局的"
+msgid "Host:"
+msgstr "主机："
+
+msgid "URL:"
+msgstr "URL："
+
+msgid "Reason:"
+msgstr "原因："
+
+msgid "Unblock For Now"
+msgstr "从现在开始不阻止"
+
+msgid "Unblock Permanently"
+msgstr "永远不阻止"
 
 msgid "Summary Report"
 msgstr ""
@@ -324,6 +208,9 @@ msgstr ""
 msgid "Client"
 msgstr "客户端"
 
+msgid "Category"
+msgstr "分类"
+
 msgid "Flagged"
 msgstr ""
 
@@ -345,6 +232,9 @@ msgstr ""
 msgid "Site Events"
 msgstr ""
 
+msgid "Site"
+msgstr "站点"
+
 msgid "Size (MB)"
 msgstr ""
 
@@ -354,97 +244,164 @@ msgstr ""
 msgid "Violations By Category"
 msgstr ""
 
-msgid "Feature is not installed."
-msgstr "功能尚未安装。"
-
-msgid "This request has expired."
-msgstr "该请求已过期。"
-
-msgid "{0} | {1} Warning"
-msgstr "{0} | {1} 警告"
-
-msgid "{0}This web page is blocked{1} because it violates network policy."
+msgid "Site cannot contain URL protocol."
 msgstr ""
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "如果您有任何问题，请联系{0}。"
-
-msgid "Pages scanned"
-msgstr "已扫描页面"
-
-msgid "Pages blocked"
-msgstr "已阻止页面"
-
-msgid "Pages passed"
-msgstr "已通过页面"
-
-msgid "blocked"
+msgid "Site cannot contain port."
 msgstr ""
 
-msgid "passed"
+msgid "Invalid URL specified"
 msgstr ""
 
-msgid "Host:"
-msgstr "主机："
+msgid "Categories"
+msgstr "分类"
 
-msgid "URL:"
-msgstr "URL："
+msgid "Block"
+msgstr "阻止"
 
-msgid "Reason:"
-msgstr "原因："
+msgid "Flag"
+msgstr ""
 
-msgid "Unblock For Now"
-msgstr "从现在开始不阻止"
+msgid "Flag as Violation"
+msgstr ""
 
-msgid "Unblock Permanently"
-msgstr "永远不阻止"
+msgid "Description"
+msgstr "描述"
 
+msgid "Block Categories"
+msgstr ""
 
+msgid "Block or flag access to sites associated with the specified category."
+msgstr ""
 
+msgid "Sites"
+msgstr "站点"
 
+msgid "[enter site]"
+msgstr ""
 
+msgid "[no description]"
+msgstr "【无描述】"
 
+msgid "Block Sites"
+msgstr ""
 
+msgid "Blocked Sites"
+msgstr ""
 
+msgid "Block or flag access to the specified site."
+msgstr ""
 
+msgid "File Types"
+msgstr "文件类型"
 
+msgid "File Type"
+msgstr "文件类型"
 
+msgid "[enter extension]"
+msgstr ""
 
+msgid "[no category]"
+msgstr ""
 
+msgid "Block File Types"
+msgstr ""
 
+msgid "Block or flag access to files associated with the specified file type."
+msgstr ""
 
+msgid "MIME Types"
+msgstr "MIME类型"
 
+msgid "MIME type"
+msgstr "MIME类型"
 
+msgid "[enter mime type]"
+msgstr ""
 
+msgid "MIME Type"
+msgstr "MIME类型"
 
+msgid "Block Mime Types"
+msgstr ""
 
+msgid "Block MIME Types"
+msgstr ""
 
+msgid "Block or flag access to files associated with the specified MIME type."
+msgstr ""
 
+msgid "Pass"
+msgstr "通过"
 
+msgid "Pass Sites"
+msgstr ""
 
+msgid ""
+"Allow access to the specified site regardless of matching block policies."
+msgstr ""
 
+msgid "Client IP addresses"
+msgstr "客户端IP地址"
 
+msgid "IP address/range"
+msgstr "IP地址/范围"
 
+msgid "[enter IP address/range]"
+msgstr ""
 
+msgid "Pass Clients"
+msgstr ""
 
+msgid "Allow access for client networks regardless of matching block policies."
+msgstr ""
 
+msgid "Advanced"
+msgstr ""
 
+msgid "Advanced Options"
+msgstr ""
 
+msgid "Block pages from IP only hosts"
+msgstr "阻止从只有IP的主机来的页面"
 
+msgid "Pass if referers match Pass Sites"
+msgstr ""
 
+msgid "Restrict Google applications"
+msgstr ""
 
+msgid "NOTE:"
+msgstr ""
 
+msgid ""
+"must be installed and running with the Inspect Google Traffic configured to "
+"Inspect."
+msgstr ""
 
+msgid "Allowed Domain(s)"
+msgstr ""
 
+msgid ""
+"Specify the comma separated list of domains allowed to access non-search "
+"Google applications"
+msgstr ""
 
+msgid "Domain cannot contain URL protocol."
+msgstr ""
 
+msgid "Domain cannot contain port."
+msgstr ""
 
+msgid "Invalid domain specified"
+msgstr ""
 
+msgid "Unblock"
+msgstr ""
 
+msgid "Temporary"
+msgstr "临时的"
 
-
-
-
-
-
+msgid "Permanent and Global"
+msgstr "永久和全局的"
 

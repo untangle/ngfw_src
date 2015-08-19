@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2009-02-21 07:44-0800\n"
 "Last-Translator: Michael Pfautsch <mp@m2lp-consult.de>\n"
 "Language-Team: German\n"
@@ -14,175 +14,59 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: German\n"
 
-msgid "Site cannot contain URL protocol."
+msgid "Pages scanned"
+msgstr "Seiten durchsucht"
+
+msgid "Pages blocked"
+msgstr "Seiten gesperrt"
+
+msgid "Pages passed"
+msgstr "Seiten zugelassen"
+
+msgid "blocked"
 msgstr ""
 
-msgid "Site cannot contain port."
+msgid "passed"
 msgstr ""
 
-msgid "Invalid \"URL\" specified"
-msgstr "Ungültige \"URL\" festgelegt"
+msgid "Feature is not installed."
+msgstr "Feature ist nicht installiert."
 
-msgid "Categories"
-msgstr "Kategorien"
+msgid "This request has expired."
+msgstr "Dies Anforderung ist abgelaufen."
 
-msgid "Category"
-msgstr "Kategorie"
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} Warnung"
 
-msgid "Block"
-msgstr "Sperre"
-
-msgid "Flag"
+msgid "{0}This web page is blocked{1} because it violates network policy."
 msgstr ""
 
-msgid "Flag as Violation"
+msgid "Unblocked"
 msgstr ""
 
-msgid "Description"
-msgstr "Beschreibung"
-
-msgid "Block Categories"
-msgstr ""
-
-msgid "Block or flag access to sites associated with the specified category."
-msgstr ""
-
-msgid "Sites"
-msgstr "Webseiten"
-
-msgid "Site"
-msgstr "Webseite"
-
-msgid "[enter site]"
-msgstr ""
-
-msgid "[no description]"
-msgstr "[keine Beschreibung]"
-
-msgid "Block Sites"
-msgstr ""
-
-msgid "Blocked Sites"
-msgstr ""
-
-msgid "Block or flag access to the specified site."
-msgstr ""
-
-msgid "File Types"
-msgstr "Dateitypen"
-
-msgid "File Type"
-msgstr "Dateityp"
-
-msgid "[enter extension]"
-msgstr ""
-
-msgid "[no category]"
-msgstr ""
-
-msgid "Block File Types"
-msgstr ""
-
-msgid "Block or flag access to files associated with the specified file type."
-msgstr ""
-
-msgid "MIME Types"
-msgstr "MIME Typen"
-
-msgid "MIME type"
-msgstr "MIME Typ"
-
-msgid "[enter mime type]"
-msgstr ""
-
-msgid "MIME Type"
-msgstr "MIME Typ"
-
-msgid "Block Mime Types"
-msgstr ""
-
-msgid "Block MIME Types"
-msgstr ""
-
-msgid "Block or flag access to files associated with the specified MIME type."
-msgstr ""
-
-msgid "Pass"
-msgstr "Zulassen"
-
-msgid "Pass Sites"
-msgstr ""
-
-msgid ""
-"Allow access to the specified site regardless of matching block policies."
-msgstr ""
-
-msgid "Client IP addresses"
-msgstr "Client IP Adresse"
-
-msgid "IP address/range"
-msgstr "IP Adresse/Bereich"
-
-msgid "[enter IP address/range]"
-msgstr ""
-
-msgid "Pass Clients"
-msgstr ""
-
-msgid "Allow access for client networks regardless of matching block policies."
-msgstr ""
-
-msgid "Advanced"
-msgstr ""
-
-msgid "Advanced Options"
-msgstr ""
-
-msgid "Block pages from IP only hosts"
-msgstr "Sperre nur Seiten von IP Hosts"
-
-msgid "Pass if referers match Pass Sites"
-msgstr ""
-
-msgid "Restrict Google applications"
-msgstr ""
-
-msgid "NOTE:"
-msgstr ""
-
-msgid ""
-"must be installed and running with the Inspect Google Traffic configured to "
-"Inspect."
-msgstr ""
-
-msgid "Allowed Domain(s)"
-msgstr ""
-
-msgid ""
-"Specify the comma separated list of domains allowed to access non-search "
-"Google applications"
-msgstr ""
-
-msgid "Domain cannot contain URL protocol."
-msgstr ""
-
-msgid "Domain cannot contain port."
-msgstr ""
-
-msgid "Invalid domain specified"
-msgstr ""
-
-msgid "Unblock"
+msgid "Host name is an IP address ({0})"
 msgstr ""
 
 msgid "None"
 msgstr "Kein"
 
-msgid "Temporary"
-msgstr "Temporär"
+msgid "If you have any questions, Please contact {0}."
+msgstr "Bei Fragen wenden sie sich bitte an {0}."
 
-msgid "Permanent and Global"
-msgstr "Dauerhaft und Global"
+msgid "Host:"
+msgstr "Host:"
+
+msgid "URL:"
+msgstr "URL:"
+
+msgid "Reason:"
+msgstr "Grund:"
+
+msgid "Unblock For Now"
+msgstr "Entsperre vorläufig"
+
+msgid "Unblock Permanently"
+msgstr "Entsperre dauerhaft"
 
 msgid "Summary Report"
 msgstr ""
@@ -322,6 +206,9 @@ msgstr ""
 msgid "Client"
 msgstr "Client"
 
+msgid "Category"
+msgstr "Kategorie"
+
 msgid "Flagged"
 msgstr ""
 
@@ -343,6 +230,9 @@ msgstr ""
 msgid "Site Events"
 msgstr ""
 
+msgid "Site"
+msgstr "Webseite"
+
 msgid "Size (MB)"
 msgstr ""
 
@@ -352,97 +242,164 @@ msgstr ""
 msgid "Violations By Category"
 msgstr ""
 
-msgid "Feature is not installed."
-msgstr "Feature ist nicht installiert."
-
-msgid "This request has expired."
-msgstr "Dies Anforderung ist abgelaufen."
-
-msgid "{0} | {1} Warning"
-msgstr "{0} | {1} Warnung"
-
-msgid "{0}This web page is blocked{1} because it violates network policy."
+msgid "Site cannot contain URL protocol."
 msgstr ""
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "Bei Fragen wenden sie sich bitte an {0}."
-
-msgid "Pages scanned"
-msgstr "Seiten durchsucht"
-
-msgid "Pages blocked"
-msgstr "Seiten gesperrt"
-
-msgid "Pages passed"
-msgstr "Seiten zugelassen"
-
-msgid "blocked"
+msgid "Site cannot contain port."
 msgstr ""
 
-msgid "passed"
+msgid "Invalid URL specified"
 msgstr ""
 
-msgid "Host:"
-msgstr "Host:"
+msgid "Categories"
+msgstr "Kategorien"
 
-msgid "URL:"
-msgstr "URL:"
+msgid "Block"
+msgstr "Sperre"
 
-msgid "Reason:"
-msgstr "Grund:"
+msgid "Flag"
+msgstr ""
 
-msgid "Unblock For Now"
-msgstr "Entsperre vorläufig"
+msgid "Flag as Violation"
+msgstr ""
 
-msgid "Unblock Permanently"
-msgstr "Entsperre dauerhaft"
+msgid "Description"
+msgstr "Beschreibung"
 
+msgid "Block Categories"
+msgstr ""
 
+msgid "Block or flag access to sites associated with the specified category."
+msgstr ""
 
+msgid "Sites"
+msgstr "Webseiten"
 
+msgid "[enter site]"
+msgstr ""
 
+msgid "[no description]"
+msgstr "[keine Beschreibung]"
 
+msgid "Block Sites"
+msgstr ""
 
+msgid "Blocked Sites"
+msgstr ""
 
+msgid "Block or flag access to the specified site."
+msgstr ""
 
+msgid "File Types"
+msgstr "Dateitypen"
 
+msgid "File Type"
+msgstr "Dateityp"
 
+msgid "[enter extension]"
+msgstr ""
 
+msgid "[no category]"
+msgstr ""
 
+msgid "Block File Types"
+msgstr ""
 
+msgid "Block or flag access to files associated with the specified file type."
+msgstr ""
 
+msgid "MIME Types"
+msgstr "MIME Typen"
 
+msgid "MIME type"
+msgstr "MIME Typ"
 
+msgid "[enter mime type]"
+msgstr ""
 
+msgid "MIME Type"
+msgstr "MIME Typ"
 
+msgid "Block Mime Types"
+msgstr ""
 
+msgid "Block MIME Types"
+msgstr ""
 
+msgid "Block or flag access to files associated with the specified MIME type."
+msgstr ""
 
+msgid "Pass"
+msgstr "Zulassen"
 
+msgid "Pass Sites"
+msgstr ""
 
+msgid ""
+"Allow access to the specified site regardless of matching block policies."
+msgstr ""
 
+msgid "Client IP addresses"
+msgstr "Client IP Adresse"
 
+msgid "IP address/range"
+msgstr "IP Adresse/Bereich"
 
+msgid "[enter IP address/range]"
+msgstr ""
 
+msgid "Pass Clients"
+msgstr ""
 
+msgid "Allow access for client networks regardless of matching block policies."
+msgstr ""
 
+msgid "Advanced"
+msgstr ""
 
+msgid "Advanced Options"
+msgstr ""
 
+msgid "Block pages from IP only hosts"
+msgstr "Sperre nur Seiten von IP Hosts"
 
+msgid "Pass if referers match Pass Sites"
+msgstr ""
 
+msgid "Restrict Google applications"
+msgstr ""
 
+msgid "NOTE:"
+msgstr ""
 
+msgid ""
+"must be installed and running with the Inspect Google Traffic configured to "
+"Inspect."
+msgstr ""
 
+msgid "Allowed Domain(s)"
+msgstr ""
 
+msgid ""
+"Specify the comma separated list of domains allowed to access non-search "
+"Google applications"
+msgstr ""
 
+msgid "Domain cannot contain URL protocol."
+msgstr ""
 
+msgid "Domain cannot contain port."
+msgstr ""
 
+msgid "Invalid domain specified"
+msgstr ""
 
+msgid "Unblock"
+msgstr ""
 
+msgid "Temporary"
+msgstr "Temporär"
 
-
-
-
-
-
+msgid "Permanent and Global"
+msgstr "Dauerhaft und Global"
 

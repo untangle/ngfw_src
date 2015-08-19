@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2014-03-11 01:40+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,6 +12,84 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
+
+msgid "status"
+msgstr ""
+
+msgid "event"
+msgstr ""
+
+msgid "Sessions passed"
+msgstr "セッションがパスしました"
+
+msgid "Clients Connected"
+msgstr "クライアントが接続されました"
+
+msgid "primary network"
+msgstr "プライマリネットワーク"
+
+msgid "Default Group"
+msgstr "デフォルトグループ"
+
+msgid "Invalid Settings"
+msgstr ""
+
+msgid "conflicts with address"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "securely passed"
+msgstr "安全にパス"
+
+msgid "MB"
+msgstr "MB"
+
+msgid "of traffic and processed"
+msgstr "トラフィックの処理"
+
+msgid "remote logins"
+msgstr "リモートログイン"
+
+msgid "Bandwidth Usage"
+msgstr "帯域幅の使用量"
+
+msgid "Avg Data Rate"
+msgstr "平均データ速度"
+
+msgid "Max Data Rate"
+msgstr "最大データ速度"
+
+msgid "Data Transferred"
+msgstr "データ転送"
+
+msgid "Date"
+msgstr "日"
+
+msgid "Throughput (kB/s)"
+msgstr "スループット (KB/秒)"
+
+msgid "Usage (kB/sec)"
+msgstr "使用量 (KB/秒)"
+
+msgid "Top Users"
+msgstr "上位のユーザ"
+
+msgid "Login Events"
+msgstr "ログインイベント"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "Client"
+msgstr "クライアント"
+
+msgid "Address"
+msgstr "アドレス"
+
+msgid "Port"
+msgstr "ポート"
 
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
@@ -25,12 +103,6 @@ msgid "The Connected Remote Clients list shows connected clients."
 msgstr ""
 "接続したリモートクライアントリストは、接続しているクライアントを示していま"
 "す。"
-
-msgid "Address"
-msgstr "アドレス"
-
-msgid "Client"
-msgstr "クライアント"
 
 msgid "Pool Address"
 msgstr "プールアドレス"
@@ -275,9 +347,6 @@ msgstr "サーバ有効"
 msgid "Client To Client Allowed"
 msgstr "クライアントクライアントを許可"
 
-msgid "Port"
-msgstr "ポート"
-
 msgid "Protocol"
 msgstr "プロトコル"
 
@@ -310,310 +379,18 @@ msgid "You must create at least one group."
 msgstr "最低 1つのグループを作成しなければなりません。"
 
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
 msgstr ""
-"グループ：”{0}”他のクライアントが使用中なので削除できません：{1}Client To "
-"Siteリストにある"
 
-msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "グループ名：\"{0}\"行に存在:{1}既に存在します。"
+msgid "The group name: {0} in row: {1} already exists."
+msgstr ""
 
 msgid "Changing name is not allowed. Create a new user."
 msgstr "名前の変更は許可されていません、新しいユーザを作成します。"
 
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "クライアント名：\"{0}\"行に存在：{1}既に存在します。"
-
-msgid "Summary Report"
-msgstr "サマリレポート"
-
-msgid "securely passed"
-msgstr "安全にパス"
-
-msgid "MB"
-msgstr "MB"
-
-msgid "of traffic and processed"
-msgstr "トラフィックの処理"
-
-msgid "remote logins"
-msgstr "リモートログイン"
-
-msgid "Bandwidth Usage"
-msgstr "帯域幅の使用量"
-
-msgid "Avg Data Rate"
-msgstr "平均データ速度"
-
-msgid "Max Data Rate"
-msgstr "最大データ速度"
-
-msgid "Data Transferred"
-msgstr "データ転送"
-
-msgid "Date"
-msgstr "日"
-
-msgid "Throughput (kB/s)"
-msgstr "スループット (KB/秒)"
-
-msgid "Usage (kB/sec)"
-msgstr "使用量 (KB/秒)"
-
-msgid "Top Users"
-msgstr "上位のユーザ"
-
-msgid "Login Events"
-msgstr "ログインイベント"
-
-msgid "Time"
-msgstr "時間"
-
-msgid "event"
+msgid "The client name: {0} in row: {1} already exists."
 msgstr ""
-
-msgid "Sessions passed"
-msgstr "セッションがパスしました"
-
-msgid "Clients Connected"
-msgstr "クライアントが接続されました"
-
-msgid "primary network"
-msgstr "プライマリネットワーク"
-
-msgid "Default Group"
-msgstr "デフォルトグループ"
-
-msgid "Invalid Settings"
-msgstr ""
-
-msgid "conflicts with address"
-msgstr ""
-
-msgid "status"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "OpenVPN Bandwidth Usage"
-msgstr ""
-
-msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
-
-msgid "Top Clients (by usage)"
-msgstr ""
-
-msgid "The amount of openvpn sessions over time."
-msgstr ""
-
-msgid "OpenVPN Sessions"
-msgstr ""
-
-msgid "The amount of login and logout events over time."
-msgstr ""
-
-msgid "OpenVPN Events"
-msgstr ""
-
-msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
-
-msgid "Statistic Events"
-msgstr ""
-
-msgid "OpenVPN client connection events."
-msgstr ""
-
-msgid "Connection Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

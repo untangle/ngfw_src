@@ -1,265 +1,104 @@
-msgid "Releasing..."
-msgstr "XReleasing...X"
+msgid "sent"
+msgstr "XsentX"
 
-msgid "Release to Inbox"
-msgstr "XRelease to InboxX"
+msgid "received"
+msgstr "XreceivedX"
 
-msgid "Release to Inbox & Add Senders to Safe List"
-msgstr "XRelease to Inbox & Add Senders to Safe ListX"
+msgid "involved in"
+msgstr "Xinvolved inX"
 
-msgid "Deleting..."
-msgstr "XDeleting...X"
+msgid "email"
+msgstr "XemailX"
 
-msgid "Delete"
-msgstr "XDeleteX"
+msgid "subject"
+msgstr "XsubjectX"
 
-msgid "Please wait"
-msgstr "XPlease waitX"
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr "XReleasing and adding Senders to Safe List...X"
-
-msgid "An error has occurred."
-msgstr "XAn error has occurred.X"
-
-msgid "No sender address to be added to safelist."
-msgstr "XNo sender address to be added to safelist.X"
-
-msgid "The connection to the server has been lost."
-msgstr "XThe connection to the server has been lost.X"
-
-msgid "Press OK to return to the login page."
-msgstr "XPress OK to return to the login page.X"
-
-msgid "An error has occurred"
-msgstr "XAn error has occurredX"
-
-msgid "Exception name"
-msgstr "XException nameX"
-
-msgid "Exception code"
-msgstr "XException codeX"
-
-msgid "Exception message"
-msgstr "XException messageX"
-
-msgid "Exception java stack"
-msgstr "XException java stackX"
-
-msgid "Exception js stack"
-msgstr "XException js stackX"
-
-msgid "Timestamp"
-msgstr "XTimestampX"
-
-msgid "Deleted one Message"
-msgstr "XDeleted one MessageX"
-
-msgid "Deleted {0} Messages"
-msgstr "XDeleted {0} MessagesX"
-
-msgid "Released one Message"
-msgstr "XReleased one MessageX"
-
-msgid "Released {0} Messages"
-msgstr "XReleased {0} MessagesX"
-
-msgid "Safelisted one Address"
-msgstr "XSafelisted one AddressX"
-
-msgid "Safelisted {0} Addresses"
-msgstr "XSafelisted {0} AddressesX"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "XThe account {0} doesn't have any quarantined messages.X"
-
-msgid "Please Try Again"
-msgstr "XPlease Try AgainX"
-
-msgid "From"
-msgstr "XFromX"
-
-msgid "Number of Attachments in the email."
-msgstr "XNumber of Attachments in the email.X"
-
-msgid "Score"
-msgstr "XScoreX"
-
-msgid "Subject"
-msgstr "XSubjectX"
-
-msgid "Date"
-msgstr "XDateX"
-
-msgid "Size (KB)"
-msgstr "XSize (KB)X"
-
-msgid "Filter:"
-msgstr "XFilter:X"
-
-msgid "Case sensitive"
-msgstr "XCase sensitiveX"
-
-msgid "Clear Filters"
-msgstr "XClear FiltersX"
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr "XFilters can be added by clicking on column headers arrow down menu and using Filters menuX"
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr "XThe messages below were quarantined and will be deleted after {0} days.X"
-
-msgid "Quarantined Messages"
-msgstr "XQuarantined MessagesX"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr "XYou can use the Safe List to make sure that messages from these senders are never quarantined.X"
-
-msgid "Safe List"
-msgstr "XSafe ListX"
-
-msgid "Email Address"
-msgstr "XEmail AddressX"
-
-msgid "Delete Addresses"
-msgstr "XDelete AddressesX"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "XForward Quarantined Messages To:X"
-
-msgid "Address"
-msgstr "XAddressX"
-
-msgid "Change Address"
-msgstr "XChange AddressX"
-
-msgid "Received Quarantined Messages From:"
-msgstr "XReceived Quarantined Messages From:X"
-
-msgid "Forward or Receive Quarantines"
-msgstr "XForward or Receive QuarantinesX"
-
-msgid "Unable to set the forward."
-msgstr "XUnable to set the forward.X"
-
-msgid "Unable to delete an entry."
-msgstr "XUnable to delete an entry.X"
-
-msgid "Delete one Remap"
-msgstr "XDelete one RemapX"
-
-msgid "Deleted {0} Remaps"
-msgstr "XDeleted {0} RemapsX"
-
-msgid "Unable to update remap table."
-msgstr "XUnable to update remap table.X"
-
-msgid "Delete one Addressess"
-msgstr "XDelete one AddressessX"
-
-msgid "Delete {0} Addresses"
-msgstr "XDelete {0} AddressesX"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr "XYour Remote Access Portal login is not configured with a valid email address.X"
-
-msgid "Select User"
-msgstr "XSelect UserX"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr "XEnter the email address for which you would like the Quarantine DigestX"
-
-msgid "Request"
-msgstr "XRequestX"
-
-msgid "Requesting Digest"
-msgstr "XRequesting DigestX"
-
-msgid "Please Wait"
-msgstr "XPlease WaitX"
-
-msgid "Successfully sent digest to '{0}'"
-msgstr "XSuccessfully sent digest to '{0}'X"
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr "XA quarantine does not exist for '{0}'X"
-
-msgid "Quarantine Request"
-msgstr "XQuarantine RequestX"
-
-msgid "Add"
-msgstr "XAddX"
-
-msgid "Add an Email Address to Safelist"
-msgstr "XAdd an Email Address to SafelistX"
-
-msgid "Save"
-msgstr "XSaveX"
-
-msgid "Cancel"
-msgstr "XCancelX"
-
-msgid "Deleted one address"
-msgstr "XDeleted one addressX"
-
-msgid "Deleted {0} addresses"
-msgstr "XDeleted {0} addressesX"
-
-msgid "Delete one Address"
-msgstr "XDelete one AddressX"
+msgid "sender"
+msgstr "XsenderX"
 
 msgid "Quarantine Digest"
 msgstr "XQuarantine DigestX"
 
-msgid "The attached message from"
-msgstr "XThe attached message fromX"
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr "Xwas determined by the Spam Blocker to be spam based on a score ofX"
 
-msgid "where anything above"
-msgstr "Xwhere anything aboveX"
 
-msgid "is spam."
-msgstr "Xis spam.X"
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr "Xwas determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  X"
 
-msgid "The kind of phish that was found was"
-msgstr "XThe kind of phish that was found wasX"
 
-msgid "Quarantine Digest for {0}"
-msgstr "XQuarantine Digest for {0}X"
 
-msgid "Click here to access your spam quarantine."
-msgstr "XClick here to access your spam quarantine.X"
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr "XThe spam quarantine contains emails that are being held from your email account.X"
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr "XQuarantined emails can be released to your inbox or deleted using the spam quarantine link.X"
 
-msgid "Quarantine Digest for: {0}"
-msgstr "XQuarantine Digest for: {0}X"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "X{0} | Quarantine Digest for: {1}X"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "XRequest Quarantine Digest EmailsX"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "X{0} | Request Quarantine Digest EmailX"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

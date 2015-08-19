@@ -1,3 +1,198 @@
+msgid "logged in"
+msgstr "Xlogged inX"
+
+msgid "failed to login"
+msgstr "Xfailed to loginX"
+
+msgid "timed out"
+msgstr "Xtimed outX"
+
+msgid "timed out (inactivity)"
+msgstr "Xtimed out (inactivity)X"
+
+msgid "logged out"
+msgstr "Xlogged outX"
+
+msgid "logged out (admin forced)"
+msgstr "Xlogged out (admin forced)X"
+
+msgid "unknown"
+msgstr "XunknownX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "Sessions Allowed"
+msgstr "XSessions AllowedX"
+
+msgid "Sessions Blocked"
+msgstr "XSessions BlockedX"
+
+msgid "DNS Lookups"
+msgstr "XDNS LookupsX"
+
+msgid "Login Success"
+msgstr "XLogin SuccessX"
+
+msgid "Login Failure"
+msgstr "XLogin FailureX"
+
+msgid "captured"
+msgstr "XcapturedX"
+
+msgid "passed"
+msgstr "XpassedX"
+
+msgid "Invalid username or password. Please try again."
+msgstr "XInvalid username or password. Please try again.X"
+
+msgid "You are already logged in from another location."
+msgstr "XYou are already logged in from another location.X"
+
+msgid "The server returned an unexpected error."
+msgstr "XThe server returned an unexpected error.X"
+
+msgid "You must enable the checkbox above to continue."
+msgstr "XYou must enable the checkbox above to continue.X"
+
+msgid "Invalid or missing filename in upload request"
+msgstr "XInvalid or missing filename in upload requestX"
+
+msgid "%s is not a valid ZIP file"
+msgstr "X%s is not a valid ZIP fileX"
+
+msgid "The uploaded ZIP file does not contain custom.html or custom.py"
+msgstr "XThe uploaded ZIP file does not contain custom.html or custom.pyX"
+
+msgid "The uploaded ZIP file could not be extracted"
+msgstr "XThe uploaded ZIP file could not be extractedX"
+
+msgid "Extracted files and directories"
+msgstr "XExtracted files and directoriesX"
+
+msgid "Unknown error removing custom files"
+msgstr "XUnknown error removing custom filesX"
+
+msgid "Removed files and directories."
+msgstr "XRemoved files and directories.X"
+
+msgid "You were already logged out"
+msgstr "XYou were already logged outX"
+
+msgid "You have successfully logged out"
+msgstr "XYou have successfully logged outX"
+
+msgid "Session Timeout"
+msgstr "XSession TimeoutX"
+
+msgid "Idle Timeout"
+msgstr "XIdle TimeoutX"
+
+msgid "User Logout"
+msgstr "XUser LogoutX"
+
+msgid "Admin Logout"
+msgstr "XAdmin LogoutX"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
+
+msgid "processed"
+msgstr "XprocessedX"
+
+msgid "user login events"
+msgstr "Xuser login eventsX"
+
+msgid "Usage"
+msgstr "XUsageX"
+
+msgid "Average Logins"
+msgstr "XAverage LoginsX"
+
+msgid "Max Logins"
+msgstr "XMax LoginsX"
+
+msgid "Average Failures"
+msgstr "XAverage FailuresX"
+
+msgid "Max Failures"
+msgstr "XMax FailuresX"
+
+msgid "Average Timeouts"
+msgstr "XAverage TimeoutsX"
+
+msgid "Max Timeouts"
+msgstr "XMax TimeoutsX"
+
+msgid "Average Logouts"
+msgstr "XAverage LogoutsX"
+
+msgid "Max Logouts"
+msgstr "XMax LogoutsX"
+
+msgid "Average Events"
+msgstr "XAverage EventsX"
+
+msgid "Max Events"
+msgstr "XMax EventsX"
+
+msgid "Events"
+msgstr "XEventsX"
+
+msgid "Logins"
+msgstr "XLoginsX"
+
+msgid "Failures"
+msgstr "XFailuresX"
+
+msgid "Timeouts"
+msgstr "XTimeoutsX"
+
+msgid "Logouts"
+msgstr "XLogoutsX"
+
+msgid "Top Captive Portal Users"
+msgstr "XTop Captive Portal UsersX"
+
+msgid "Top Blocked Clients"
+msgstr "XTop Blocked ClientsX"
+
+msgid "Blocked"
+msgstr "XBlockedX"
+
+msgid "Capture User Events"
+msgstr "XCapture User EventsX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "Client"
+msgstr "XClientX"
+
+msgid "User Name"
+msgstr "XUser NameX"
+
+msgid "Type"
+msgstr "XTypeX"
+
+msgid "Capture Rule Events"
+msgstr "XCapture Rule EventsX"
+
+msgid "Client Address"
+msgstr "XClient AddressX"
+
+msgid "Client Port"
+msgstr "XClient PortX"
+
+msgid "Server Address"
+msgstr "XServer AddressX"
+
+msgid "Server Port"
+msgstr "XServer PortX"
+
+msgid "Rule Applied"
+msgstr "XRule AppliedX"
+
 msgid "Destination Address"
 msgstr "XDestination AddressX"
 
@@ -99,9 +294,6 @@ msgstr "XThe Active Sessions list shows authenticated users.X"
 
 msgid "IP Address"
 msgstr "XIP AddressX"
-
-msgid "User Name"
-msgstr "XUser NameX"
 
 msgid "Login Time"
 msgstr "XLogin TimeX"
@@ -385,283 +577,40 @@ msgstr "XWarningX"
 msgid "Please correct any highlighted fields."
 msgstr "XPlease correct any highlighted fields.X"
 
-msgid "When using 'Basic Message', 'Authentication' must be set to 'None'."
-msgstr "XWhen using 'Basic Message', 'Authentication' must be set to 'None'.X"
+msgid "When using Basic Message, Authentication must be set to None."
+msgstr "XWhen using Basic Message, Authentication must be set to None.X"
 
-msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
-msgstr "XWhen using 'Basic Message', 'Allow Concurrent Logins' must be enabled.X"
+msgid "When using Basic Message, Allow Concurrent Logins must be enabled."
+msgstr "XWhen using Basic Message, Allow Concurrent Logins must be enabled.X"
 
-msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
-msgstr "XWhen using 'Basic Login', 'Authentication' cannot be set to 'None'.X"
+msgid "When using Basic Login, Authentication cannot be set to None."
+msgstr "XWhen using Basic Login, Authentication cannot be set to None.X"
 
-msgid "Login Success"
-msgstr "XLogin SuccessX"
 
-msgid "Login Failure"
-msgstr "XLogin FailureX"
 
-msgid "Session Timeout"
-msgstr "XSession TimeoutX"
 
-msgid "Idle Timeout"
-msgstr "XIdle TimeoutX"
 
-msgid "User Logout"
-msgstr "XUser LogoutX"
 
-msgid "Admin Logout"
-msgstr "XAdmin LogoutX"
 
-msgid "Summary Report"
-msgstr "XSummary ReportX"
 
-msgid "processed"
-msgstr "XprocessedX"
 
-msgid "user login events"
-msgstr "Xuser login eventsX"
 
-msgid "Usage"
-msgstr "XUsageX"
 
-msgid "Average Logins"
-msgstr "XAverage LoginsX"
 
-msgid "Max Logins"
-msgstr "XMax LoginsX"
 
-msgid "Average Failures"
-msgstr "XAverage FailuresX"
 
-msgid "Max Failures"
-msgstr "XMax FailuresX"
 
-msgid "Average Timeouts"
-msgstr "XAverage TimeoutsX"
 
-msgid "Max Timeouts"
-msgstr "XMax TimeoutsX"
 
-msgid "Average Logouts"
-msgstr "XAverage LogoutsX"
 
-msgid "Max Logouts"
-msgstr "XMax LogoutsX"
 
-msgid "Average Events"
-msgstr "XAverage EventsX"
 
-msgid "Max Events"
-msgstr "XMax EventsX"
 
-msgid "Events"
-msgstr "XEventsX"
 
-msgid "Logins"
-msgstr "XLoginsX"
 
-msgid "Failures"
-msgstr "XFailuresX"
 
-msgid "Timeouts"
-msgstr "XTimeoutsX"
 
-msgid "Logouts"
-msgstr "XLogoutsX"
 
-msgid "Top Captive Portal Users"
-msgstr "XTop Captive Portal UsersX"
 
-msgid "Top Blocked Clients"
-msgstr "XTop Blocked ClientsX"
 
-msgid "Blocked"
-msgstr "XBlockedX"
 
-msgid "Capture User Events"
-msgstr "XCapture User EventsX"
-
-msgid "Time"
-msgstr "XTimeX"
-
-msgid "Client"
-msgstr "XClientX"
-
-msgid "Type"
-msgstr "XTypeX"
-
-msgid "Capture Rule Events"
-msgstr "XCapture Rule EventsX"
-
-msgid "Client Address"
-msgstr "XClient AddressX"
-
-msgid "Client Port"
-msgstr "XClient PortX"
-
-msgid "Server Address"
-msgstr "XServer AddressX"
-
-msgid "Server Port"
-msgstr "XServer PortX"
-
-msgid "Rule Applied"
-msgstr "XRule AppliedX"
-
-msgid "Sessions Allowed"
-msgstr "XSessions AllowedX"
-
-msgid "Sessions Blocked"
-msgstr "XSessions BlockedX"
-
-msgid "DNS Lookups"
-msgstr "XDNS LookupsX"
-
-msgid "captured"
-msgstr "XcapturedX"
-
-msgid "passed"
-msgstr "XpassedX"
-
-msgid "logged in"
-msgstr "Xlogged inX"
-
-msgid "failed to login"
-msgstr "Xfailed to loginX"
-
-msgid "timed out"
-msgstr "Xtimed outX"
-
-msgid "timed out (inactivity)"
-msgstr "Xtimed out (inactivity)X"
-
-msgid "logged out"
-msgstr "Xlogged outX"
-
-msgid "logged out (admin forced)"
-msgstr "Xlogged out (admin forced)X"
-
-msgid "unknown"
-msgstr "XunknownX"
-
-msgid "User"
-msgstr "XUserX"
-
-msgid "description"
-msgstr "XdescriptionX"
-
-msgid "The top active users that logged in to Captive Portal."
-msgstr "XThe top active users that logged in to Captive Portal.X"
-
-msgid "title"
-msgstr "XtitleX"
-
-msgid "Top Active Users"
-msgstr "XTop Active UsersX"
-
-msgid "A summary of Captive Portal activity."
-msgstr "XA summary of Captive Portal activity.X"
-
-msgid "Activity Summary"
-msgstr "XActivity SummaryX"
-
-msgid ""
-"The top clients that were blocked by Captive Portal because they were not "
-"logged in."
-msgstr "XThe top clients that were blocked by Captive Portal because they were not logged in.X"
-
-msgid "Sessions that reached the session timeout."
-msgstr "XSessions that reached the session timeout.X"
-
-msgid "Session Timeout User Events"
-msgstr "XSession Timeout User EventsX"
-
-msgid "Sessions matching capture rules."
-msgstr "XSessions matching capture rules.X"
-
-msgid "Captured Session Events"
-msgstr "XCaptured Session EventsX"
-
-msgid "Failed logins to Captive Portal."
-msgstr "XFailed logins to Captive Portal.X"
-
-msgid "Login Failure User Events"
-msgstr "XLogin Failure User EventsX"
-
-msgid "All user logout events."
-msgstr "XAll user logout events.X"
-
-msgid "User Logout User Events"
-msgstr "XUser Logout User EventsX"
-
-msgid "Sessions logged off by the admin."
-msgstr "XSessions logged off by the admin.X"
-
-msgid "Admin Logout User Events"
-msgstr "XAdmin Logout User EventsX"
-
-msgid "Sessions that reached the idle timeout."
-msgstr "XSessions that reached the idle timeout.X"
-
-msgid "Successful logins to Captive Portal."
-msgstr "XSuccessful logins to Captive Portal.X"
-
-msgid "Login Success User Events"
-msgstr "XLogin Success User EventsX"
-
-msgid "All user sessions processed by Captive Portal."
-msgstr "XAll user sessions processed by Captive Portal.X"
-
-msgid "All User Events"
-msgstr "XAll User EventsX"
-
-msgid "All sessions processed by Captive Portal."
-msgstr "XAll sessions processed by Captive Portal.X"
-
-msgid "All Session Events"
-msgstr "XAll Session EventsX"
-
-msgid "Sessions matching passed hosts."
-msgstr "XSessions matching passed hosts.X"
-
-msgid "Passed Session Events"
-msgstr "XPassed Session EventsX"
-
-msgid "Invalid username or password. Please try again."
-msgstr "XInvalid username or password. Please try again.X"
-
-msgid "You are already logged in from another location."
-msgstr "XYou are already logged in from another location.X"
-
-msgid "The server returned an unexpected error."
-msgstr "XThe server returned an unexpected error.X"
-
-msgid "You must enable the checkbox above to continue."
-msgstr "XYou must enable the checkbox above to continue.X"
-
-msgid "Invalid or missing filename in upload request"
-msgstr "XInvalid or missing filename in upload requestX"
-
-msgid "%s is not a valid ZIP file"
-msgstr "X%s is not a valid ZIP fileX"
-
-msgid "The uploaded ZIP file does not contain custom.html or custom.py"
-msgstr "XThe uploaded ZIP file does not contain custom.html or custom.pyX"
-
-msgid "The uploaded ZIP file could not be extracted"
-msgstr "XThe uploaded ZIP file could not be extractedX"
-
-msgid "Extracted files and directories"
-msgstr "XExtracted files and directoriesX"
-
-msgid "Unknown error removing custom files"
-msgstr "XUnknown error removing custom filesX"
-
-msgid "Removed files and directories."
-msgstr "XRemoved files and directories.X"
-
-msgid "You were already logged out"
-msgstr "XYou were already logged outX"
-
-msgid "You have successfully logged out"
-msgstr "XYou have successfully logged outX"

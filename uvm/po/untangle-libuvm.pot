@@ -8,7 +8,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/ruleBuilder.js:95
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:657
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:231
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1630
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1644
 msgid "Delete"
 msgstr ""
 
@@ -261,8 +261,8 @@ msgstr ""
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:1226
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:1366
 #: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:73
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1107
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1134
 msgid "Please wait"
 msgstr ""
 
@@ -365,13 +365,13 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/matcherWindow.js:551
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/ruleBuilder.js:32
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:1531
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1799
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1810
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:116
 msgid "Value"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/reportEditor.js:142
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1551
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1565
 msgid "[enter column]"
 msgstr ""
 
@@ -384,8 +384,8 @@ msgid "[select operator]"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/reportEditor.js:172
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1189
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1608
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1190
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1622
 msgid "[no value]"
 msgstr ""
 
@@ -405,9 +405,9 @@ msgstr ""
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:465
 #: /home/dmorris/hades/src/sitefilter/hier/usr/share/untangle/web/webui/script/untangle-node-sitefilter/settings.js:291
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:240
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:878
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:908
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2485
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:889
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:919
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2496
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:109
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:165
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:169
@@ -510,7 +510,7 @@ msgstr ""
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:165
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:229
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:249
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2669
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2680
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:626
 #: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:121
 msgid "Description"
@@ -621,7 +621,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:492
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:549
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:779
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2526
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2537
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:405
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:45
 #: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:430
@@ -659,7 +659,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/reportEditor.js:360
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:670
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3036
 msgid "Line"
 msgstr ""
 
@@ -771,7 +771,7 @@ msgstr ""
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:232
 #: /home/dmorris/hades/src/spamblocker/hier/usr/share/untangle/web/webui/script/untangle-node-spamblocker/settings.js:84
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:1188
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2341
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2352
 msgid "Custom"
 msgstr ""
 
@@ -781,8 +781,8 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/matcherWindow.js:80
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:96
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2593
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2876
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2604
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2887
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:40
 msgid "Start Time"
 msgstr ""
@@ -827,10 +827,10 @@ msgstr ""
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:236
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:119
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:157
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1401
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1411
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2814
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2824
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1412
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1422
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2825
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2835
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:402
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:465
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:147
@@ -1364,12 +1364,12 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:5100
 #: /home/dmorris/hades/src/webcache/hier/usr/share/untangle/web/webui/script/untangle-node-webcache/settings.js:143
 #: /home/dmorris/hades/src/webcache/hier/usr/share/untangle/web/webui/script/untangle-node-webcache/settings.js:160
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:327
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:798
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1062
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1318
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2799
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2974
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:338
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:809
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1073
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1329
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2810
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2985
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:32
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:352
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:377
@@ -1397,15 +1397,15 @@ msgstr ""
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:24
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:43
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:20
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:322
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:793
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1057
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1313
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1518
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2003
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2298
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2804
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2969
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:333
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:804
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1068
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1324
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1529
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2014
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2309
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2815
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2980
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:31
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:320
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:350
@@ -1603,7 +1603,7 @@ msgstr ""
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:244
 #: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:45
 #: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:52
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:502
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:513
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:144
 #: /home/dmorris/hades/src/https-casing/hier/usr/lib/python2.7/reports/untangle_casing_https.py:294
 msgid "Status"
@@ -3018,8 +3018,8 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:309
 #: /home/dmorris/work/src/spamassassin/hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 #: /home/dmorris/hades/src/spamblocker/hier/usr/share/untangle/web/webui/script/untangle-node-spamblocker/settings.js:426
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1582
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1887
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1593
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1898
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:75
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:596
 #: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:122
@@ -3162,8 +3162,8 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/administration.js:1160
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:542
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:601
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:808
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1119
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:819
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1130
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:365
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:424
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:92
@@ -3430,11 +3430,11 @@ msgid "Server Address or Hostname"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:308
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:376
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:785
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1111
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1161
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1367
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:387
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:796
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1122
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1172
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1378
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:445
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:324
@@ -3465,7 +3465,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/accountRegistration.js:181
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/setup.js:99
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/setup.js:181
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1577
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1588
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/usr/share/untangle/mod_python/auth/index.py:155
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:123
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:595
@@ -3644,10 +3644,10 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:84
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:322
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:1070
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1789
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1998
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2865
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2917
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1800
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2009
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2876
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2928
 #: /home/dmorris/work/src/openvpn/hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:262
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:86
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:114
@@ -3706,15 +3706,15 @@ msgid "Date"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1098
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1390
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2162
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1401
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2173
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:89
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:393
 msgid "Sender"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1105
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1395
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1406
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:496
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:562
@@ -3729,11 +3729,11 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1130
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:415
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:474
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:507
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1439
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1462
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1482
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:485
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:518
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1450
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1473
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1493
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:140
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:145
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:332
@@ -3807,7 +3807,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3997
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:10
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:88
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:417
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:428
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:37
 msgid "Very High"
 msgstr ""
@@ -3818,7 +3818,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3998
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:11
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:89
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:418
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:429
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:38
 msgid "High"
 msgstr ""
@@ -3829,7 +3829,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3999
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:12
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:90
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:419
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:430
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:39
 msgid "Medium"
 msgstr ""
@@ -3840,7 +3840,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4000
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:13
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:91
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:420
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:431
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:40
 msgid "Low"
 msgstr ""
@@ -3851,7 +3851,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4001
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:14
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:92
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:421
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:432
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:41
 msgid "Limited"
 msgstr ""
@@ -3862,7 +3862,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4002
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:15
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:93
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:422
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:42
 msgid "Limited More"
 msgstr ""
@@ -3873,7 +3873,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4003
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:16
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:94
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:423
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:434
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:43
 msgid "Limited Severely"
 msgstr ""
@@ -3904,10 +3904,10 @@ msgstr ""
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:23
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:42
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:19
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:300
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:479
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2008
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2459
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:311
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:490
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2019
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2470
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:245
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:304
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:565
@@ -3920,7 +3920,7 @@ msgid "Protocol"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:160
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:290
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:301
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:71
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:207
 msgid "Bypassed"
@@ -3935,21 +3935,21 @@ msgid "Policy"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:180
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:312
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:731
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1047
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1303
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2769
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:323
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:742
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1058
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1314
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2780
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:20
 msgid "Client Interface"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:187
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:317
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:736
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1052
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1308
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2774
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:328
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:747
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1063
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1319
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2785
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:21
 msgid "Server Interface"
 msgstr ""
@@ -4041,16 +4041,16 @@ msgid "Category Blocked"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:375
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:849
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1151
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:860
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1162
 msgid "Content Type"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:383
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:456
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:522
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:864
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:893
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:467
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:533
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:875
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:904
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:128
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:137
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:167
@@ -4082,7 +4082,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:399
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:195
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:436
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:447
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:134
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:327
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:818
@@ -4091,7 +4091,7 @@ msgid "Application"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/sessionMonitor.js:423
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:466
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:477
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:138
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:331
 msgid "Confidence"
@@ -4134,7 +4134,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4401
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4565
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:521
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:407
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:418
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:141
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:318
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:163
@@ -4147,9 +4147,9 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:1661
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:373
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:782
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2333
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1474
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1716
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2344
 msgid "None"
 msgstr ""
 
@@ -4175,7 +4175,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/main.js:729
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:383
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:1006
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2335
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2346
 msgid "Local Directory"
 msgstr ""
 
@@ -4323,13 +4323,13 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3650
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:863
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:868
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:371
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:780
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1106
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1156
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1362
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2794
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2834
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:382
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:791
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1117
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1167
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1373
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2805
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2845
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/usr/lib/python2.7/uvmlogin.py:290
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/usr/share/untangle/mod_python/error/index.py:132
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:567
@@ -4449,7 +4449,7 @@ msgstr ""
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:17
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:36
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:13
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2440
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2451
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:105
 msgid "Destination Address"
 msgstr ""
@@ -4487,7 +4487,7 @@ msgstr ""
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:20
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:39
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:16
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2421
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2432
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:103
 msgid "Source Address"
 msgstr ""
@@ -4790,7 +4790,7 @@ msgstr ""
 #: /home/dmorris/hades/src/faild/hier/usr/share/untangle/web/webui/script/untangle-node-faild/settings.js:200
 #: /home/dmorris/hades/src/faild/hier/usr/share/untangle/web/webui/script/untangle-node-faild/settings.js:257
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:219
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2034
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2045
 #: /home/dmorris/hades/src/splitd/hier/usr/lib/python2.7/reports/node/untangle_node_splitd.py:570
 #: /home/dmorris/hades/src/splitd/hier/usr/lib/python2.7/reports/node/untangle_node_splitd.py:630
 msgid "Interface"
@@ -4812,7 +4812,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/setup.js:443
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/setup.js:444
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:152
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1537
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1548
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/node/QuotaEvent.java:82
 #: /home/dmorris/work/src/capture/src/com/untangle/node/capture/CaptureUserEvent.java:90
 #: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:75
@@ -4933,6 +4933,14 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:972
 msgid "is WAN"
+msgstr ""
+
+#: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:977
+msgid "true"
+msgstr ""
+
+#: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:977
+msgid "false"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:984
@@ -5062,8 +5070,8 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:1561
 #: /home/dmorris/hades/src/faild/hier/usr/share/untangle/web/webui/script/untangle-node-faild/settings.js:70
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1877
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1933
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1888
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1944
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:97
 msgid "Interface Name"
 msgstr ""
@@ -5418,10 +5426,10 @@ msgstr ""
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:897
 #: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:85
 #: /home/dmorris/hades/src/splitd/hier/usr/share/untangle/web/webui/script/untangle-node-splitd/settings.js:153
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:399
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:494
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:532
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:551
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:410
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:505
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:543
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:562
 msgid "Rule Id"
 msgstr ""
 
@@ -5612,14 +5620,14 @@ msgstr ""
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:429
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:434
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:424
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:913
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1421
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1444
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1467
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1528
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1948
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2304
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2922
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:924
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1432
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1455
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1478
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1539
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1959
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2315
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2933
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:498
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:564
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:95
@@ -5632,7 +5640,7 @@ msgid "Action"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3416
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2057
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2068
 msgid "Process"
 msgstr ""
 
@@ -5733,8 +5741,8 @@ msgid "[no domain]"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3641
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:803
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1523
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:814
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1534
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:99
 #: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:429
 msgid "Domain"
@@ -5907,12 +5915,12 @@ msgid "Destination IP"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4393
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2426
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2437
 msgid "Source port"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4397
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2445
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2456
 msgid "Destination port"
 msgstr ""
 
@@ -7547,12 +7555,12 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:389
 #: /home/dmorris/hades/src/sitefilter/hier/usr/share/untangle/web/webui/script/untangle-node-sitefilter/settings.js:403
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/wizard.js:167
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3041
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3052
 msgid "Close"
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/window.js:550
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1889
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1899
 msgid "Done"
 msgstr ""
 
@@ -7632,30 +7640,30 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/util.js:229
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/util.js:148
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:274
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:712
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1023
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1279
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1505
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1569
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1644
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1781
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1828
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1869
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1925
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1985
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2086
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2138
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2193
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2274
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2389
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2518
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2585
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2661
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2740
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2857
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2909
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2961
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:285
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:723
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1034
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1290
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1516
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1580
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1655
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1792
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1839
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1880
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1936
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1996
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2097
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2149
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2204
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2285
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2400
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2529
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2596
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2672
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2751
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2868
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2920
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2972
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:18
 msgid "Timestamp"
 msgstr ""
@@ -8313,7 +8321,7 @@ msgid "Scan SMTP"
 msgstr ""
 
 #: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:288
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:147
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:158
 msgid "pass message"
 msgstr ""
 
@@ -8322,7 +8330,7 @@ msgid "remove infection"
 msgstr ""
 
 #: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:290
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:150
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:161
 msgid "block message"
 msgstr ""
 
@@ -8469,13 +8477,13 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:88
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:325
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:332
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:332
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:741
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1067
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1323
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1513
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2293
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2779
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:343
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:752
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1078
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1334
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1524
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2304
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2790
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:635
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:637
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:680
@@ -8510,8 +8518,8 @@ msgid "Client"
 msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:92
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2541
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2624
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2552
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2635
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:44
 msgid "Pool Address"
 msgstr ""
@@ -8656,8 +8664,8 @@ msgstr ""
 
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:472
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:524
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2531
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2609
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2542
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2620
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:39
 msgid "Client Name"
 msgstr ""
@@ -8861,7 +8869,7 @@ msgid "User Name"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:112
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2013
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2024
 msgid "Login Time"
 msgstr ""
 
@@ -9403,12 +9411,12 @@ msgid "Host cannot be localhost address."
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:576
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2468
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2479
 msgid "UDP"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:577
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2470
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2481
 msgid "TCP"
 msgstr ""
 
@@ -9601,7 +9609,7 @@ msgstr ""
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:297
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:315
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:746
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:428
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:439
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:319
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:901
 msgid "Rule"
@@ -10195,7 +10203,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:455
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:654
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2397
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2408
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:587
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:605
 msgid "Sid"
@@ -10211,7 +10219,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:467
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:569
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2490
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2501
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:110
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:588
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:608
@@ -10220,7 +10228,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:492
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:620
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2495
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2506
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:590
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:610
 msgid "Msg"
@@ -12246,7 +12254,7 @@ msgid "Web Filter: Website is Flagged"
 msgstr ""
 
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:95
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:424
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:435
 msgid "Unknown Priority: {0}"
 msgstr ""
 
@@ -12402,8 +12410,8 @@ msgid "For optimal Bandwidth Control performance install these applications."
 msgstr ""
 
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:803
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1882
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1938
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1893
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1949
 msgid "Interface Id"
 msgstr ""
 
@@ -12927,7 +12935,7 @@ msgstr ""
 
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:50
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:539
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:433
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:444
 msgid "none"
 msgstr ""
 
@@ -13063,7 +13071,7 @@ msgid "Customize"
 msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:475
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1228
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1229
 msgid "Advanced report customization"
 msgstr ""
 
@@ -13091,8 +13099,8 @@ msgid "Not enough data to generate the chart."
 msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:625
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1150
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1514
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1151
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1528
 msgid "Add Condition"
 msgstr ""
 
@@ -13120,57 +13128,57 @@ msgstr ""
 msgid "Switch to Bar Overlapped Chart"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:954
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:955
 msgid "Refreshing report... "
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:969
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:970
 msgid "Querying Database..."
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1016
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1046
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1017
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1047
 msgid "Fetching Events..."
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1106
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1107
 msgid "Downloading Chart..."
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1133
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1134
 msgid "Exporting Events..."
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1164
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1165
 msgid "Add a condition using report data:"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1258
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1259
 msgid "Events for report: {0}"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1460
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1702
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1474
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1716
 msgid "Conditions: {0}"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1515
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1529
 msgid "Add New Condition"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1522
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1536
 msgid "Quick Add"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1526
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1540
 msgid "Delete All"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1527
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1541
 msgid "Delete All Conditions"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1862
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1872
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:632
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:677
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:723
@@ -13216,7 +13224,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1896
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1906
 msgid "Clear Value"
 msgstr ""
 
@@ -13224,170 +13232,170 @@ msgstr ""
 msgid "{0} Previous"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:129
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:140
 msgid "in Categories Block list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:130
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:141
 msgid "in Site Block list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:131
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:142
 msgid "in File Block list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:132
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:143
 msgid "in MIME Types Block list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:133
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:144
 msgid "hostname is an IP address"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:134
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:145
 msgid "in Site Pass list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:135
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:146
 msgid "referer in Site Pass list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:136
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:147
 msgid "in Clients Pass list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:137
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:148
 msgid "in Bypass list"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:138
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:139
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:149
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:150
 msgid "no rule applied"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:148
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:159
 msgid "mark message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:149
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:160
 msgid "drop message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:151
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:162
 msgid "quarantine message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:152
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:163
 msgid "pass safelist message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:153
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:164
 msgid "pass oversize message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:154
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:165
 msgid "pass outbound message"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:155
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:166
 msgid "block message (scan failure)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:156
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:167
 msgid "pass message (scan failure)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:157
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:168
 msgid "block message (greylist)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:158
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:169
 msgid "unknown action"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:269
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:726
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1042
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1287
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2754
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:280
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:737
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1053
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1298
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2765
 msgid "Session Id"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:282
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:293
 msgid "End Timestamp"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:306
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:720
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1031
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1292
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2146
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2282
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2748
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:317
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:731
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1042
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1303
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2157
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2293
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2759
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:339
 msgid "Policy Id"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:337
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:746
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1072
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1328
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2619
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:348
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:757
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1083
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1339
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2630
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:443
 msgid "Client Port"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:345
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:754
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1080
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1336
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2784
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:356
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:765
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1091
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1347
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2795
 msgid "New Client"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:350
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:759
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1085
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1341
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:361
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:770
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1096
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1352
 msgid "New Client Port"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:358
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:767
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1093
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1349
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2789
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:369
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:778
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1104
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1360
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2800
 msgid "Original Server"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:363
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:772
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1098
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1354
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:374
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:783
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1109
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1365
 msgid "Original Server Port"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:384
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:395
 msgid "Filter Prefix"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:389
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:400
 msgid "Shield Blocked"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:441
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:452
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:328
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:897
 msgid "ProtoChain"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:446
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:484
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:512
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:854
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:883
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2475
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:457
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:495
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:523
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:865
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:894
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2486
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:566
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:530
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:596
@@ -13416,83 +13424,83 @@ msgstr ""
 msgid "Blocked"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:541
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:552
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:344
 msgid "Captured"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:556
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:567
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:122
 msgid "To-Server Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:564
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:575
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:121
 msgid "From-Server Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:572
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:583
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:120
 msgid "To-Client Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:580
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:591
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:119
 msgid "From-Client Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:688
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:699
 msgid "block"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:688
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:699
 msgid "pass"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:707
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1037
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2759
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:718
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1048
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2770
 msgid "Request Id"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:813
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1124
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:824
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1135
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:353
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:378
 msgid "Uri"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:819
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1136
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2764
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:830
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1147
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2775
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:82
 msgid "Method"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:839
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1141
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:850
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1152
 msgid "Download Content Length"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:844
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1146
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:855
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1157
 msgid "Upload Content Length"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:873
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:903
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:884
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:914
 msgid "Reason For Action"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:918
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:929
 msgid "Blocked Cookie"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:923
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:933
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1406
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1416
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2829
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:934
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:944
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1417
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1427
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2840
 #: /home/dmorris/work/src/phish/hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:146
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:148
@@ -13501,64 +13509,64 @@ msgstr ""
 msgid "Clean"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:928
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:938
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:939
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:949
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:644
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:689
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
 msgid "Virus Name"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1018
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1274
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1823
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1864
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1920
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1993
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2081
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2152
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2201
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2288
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2580
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2735
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1029
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1285
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1834
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1875
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1931
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2004
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2092
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2163
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2212
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2299
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2591
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2746
 msgid "Event Id"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1130
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1141
 msgid "Query Term"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1298
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1309
 msgid "Message Id"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1375
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1386
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:91
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:392
 msgid "Receiver"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1380
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1391
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:87
 msgid "Address Name"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1385
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1396
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:88
 msgid "Address Kind"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1426
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1449
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1437
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1460
 msgid "Spam Score"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1434
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1457
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1445
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1468
 msgid "Is Spam"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1472
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1483
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:494
 #: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:560
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:150
@@ -13567,50 +13575,50 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1477
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1488
 msgid "Is Phish"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1534
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1545
 msgid "login"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1535
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1546
 msgid "update"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1536
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1547
 msgid "logout"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1553
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1816
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1564
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1827
 #: /tmp/strings:699 /tmp/strings:702 /tmp/strings:705 /tmp/strings:724
 msgid "success"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1553
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1816
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1564
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1827
 #: /home/dmorris/hades/src/faild/src/com/untangle/node/faild/FailDTestEvent.java:88
 msgid "failed"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1559
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1570
 msgid "local"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1559
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1570
 msgid "remote"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1587
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1598
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:124
 msgid "Local"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1592
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2536
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2614
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1603
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2547
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2625
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:442
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:48
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:54
@@ -13618,9 +13626,9 @@ msgstr ""
 msgid "Client Address"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1597
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2870
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2939
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1608
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2881
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2950
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:118
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:164
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:168
@@ -13629,277 +13637,277 @@ msgstr ""
 msgid "Reason"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1603
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1614
 msgid "invalid username"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1604
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1615
 msgid "invalid password"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1652
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1663
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:115
 msgid "Load (1-minute)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1660
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1671
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:116
 msgid "Load (5-minute)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1668
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1679
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:117
 msgid "Load (15-minute)"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1676
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1687
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:62
 msgid "CPU User Utilization"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1684
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1695
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:63
 msgid "CPU System Utilization"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1692
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1703
 msgid "Memory Total"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1705
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1716
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:118
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:56
 msgid "Memory Free"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1717
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1728
 msgid "Disk Total"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1729
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1740
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:119
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:65
 msgid "Disk Free"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1741
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1752
 msgid "Swap Total"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1753
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1764
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/logging/SystemStatEvent.java:120
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:67
 msgid "Swap Free"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1794
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1805
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:115
 msgid "Key"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1836
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1847
 msgid "Result"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1841
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1852
 msgid "Details"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1897
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1908
 msgid "Test Description"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1943
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1954
 msgid "Interface OS"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2021
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2032
 msgid "Logout Time"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2029
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2040
 msgid "Elapsed"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2039
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2629
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2050
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2640
 msgid "RX Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2048
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2638
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2059
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2649
 msgid "TX Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2094
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2105
 msgid "Tunnel Name"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2099
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2110
 msgid "In Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2108
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2119
 msgid "Out Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2157
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2168
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:55
 msgid "Vendor Name"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2167
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2178
 msgid "DNSBL Server"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2206
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2217
 msgid "Hit Count"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2214
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2225
 msgid "Miss Count"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2222
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2233
 msgid "Bypass Count"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2230
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2241
 msgid "System Count"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2238
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2249
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:73
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:317
 msgid "Hit Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2246
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2257
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:74
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:318
 msgid "Miss Bytes"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2311
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2322
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:37
 #: /home/dmorris/work/src/capture/src/com/untangle/node/capture/CaptureNodeImpl.java:90
 msgid "Login Success"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2313
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2324
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:38
 #: /home/dmorris/work/src/capture/src/com/untangle/node/capture/CaptureNodeImpl.java:91
 msgid "Login Failure"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2315
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2326
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:39
 msgid "Session Timeout"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2317
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2328
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:40
 #: /tmp/strings:551
 msgid "Idle Timeout"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2319
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2330
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:41
 msgid "User Logout"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2321
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2332
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:42
 msgid "Admin Logout"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2326
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2337
 msgid "Authentication"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2337
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2348
 msgid "Active Directory"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2339
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2350
 msgid "RADIUS"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2405
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2416
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:606
 msgid "Gid"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2413
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2424
 #: /home/dmorris/work/src/idps/hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:607
 msgid "Cid"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2466
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2477
 msgid "ICMP"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2601
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2884
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2612
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2895
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:41
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:47
 msgid "End Time"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2674
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2685
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:112
 msgid "Summary Text"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2680
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2691
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:628
 msgid "JSON"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2809
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2820
 #: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
 msgid "File Name"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2819
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2830
 msgid "clean"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2928
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2939
 msgid "Given"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2930
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2941
 msgid "Exceeded"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2934
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2945
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:117
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:287
 msgid "Size"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2979
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2990
 msgid "Settings File"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2988
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2999
 msgid "Differences"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2995
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3006
 msgid "Show difference between previous version"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3014
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3025
 msgid "Settings Difference"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3029
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3040
 msgid "Previous"
 msgstr ""
 
-#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3034
+#: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:3045
 msgid "Current"
 msgstr ""
 

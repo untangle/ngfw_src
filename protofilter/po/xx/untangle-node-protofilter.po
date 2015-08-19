@@ -1,60 +1,17 @@
-msgid "Status"
-msgstr "XStatusX"
+msgid "Chunks scanned"
+msgstr "XChunks scannedX"
 
-msgid ""
-"Application Control Lite logs and blocks sessions using custom signatures on "
-"the session content."
-msgstr "XApplication Control Lite logs and blocks sessions using custom signatures on the session content.X"
+msgid "Sessions logged"
+msgstr "XSessions loggedX"
 
-msgid "Total Signatures Available"
-msgstr "XTotal Signatures AvailableX"
+msgid "Sessions blocked"
+msgstr "XSessions blockedX"
 
-msgid "Total Signatures Logging"
-msgstr "XTotal Signatures LoggingX"
+msgid "blocked"
+msgstr "XblockedX"
 
-msgid "Total Signatures Blocking"
-msgstr "XTotal Signatures BlockingX"
-
-msgid "Note"
-msgstr "XNoteX"
-
-msgid ""
-"Caution and discretion is advised in configuring Application Control Lite at "
-"the the risk of harmful false positives."
-msgstr "XCaution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives.X"
-
-msgid "Signatures"
-msgstr "XSignaturesX"
-
-msgid "Protocol"
-msgstr "XProtocolX"
-
-msgid "[enter protocol]"
-msgstr "X[enter protocol]X"
-
-msgid "Category"
-msgstr "XCategoryX"
-
-msgid "[enter category]"
-msgstr "X[enter category]X"
-
-msgid "Block"
-msgstr "XBlockX"
-
-msgid "Log"
-msgstr "XLogX"
-
-msgid "Description"
-msgstr "XDescriptionX"
-
-msgid "[no description]"
-msgstr "X[no description]X"
-
-msgid "Signature"
-msgstr "XSignatureX"
-
-msgid "[enter signature]"
-msgstr "X[enter signature]X"
+msgid "identified"
+msgstr "XidentifiedX"
 
 msgid "Summary Report"
 msgstr "XSummary ReportX"
@@ -94,6 +51,9 @@ msgstr "XHitsX"
 
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "XTop Ten Blocked Protocols (by Hits)X"
+
+msgid "Protocol"
+msgstr "XProtocolX"
 
 msgid "Blocks Per Day"
 msgstr "XBlocks Per DayX"
@@ -152,77 +112,77 @@ msgstr "XServerX"
 msgid "Port"
 msgstr "XPortX"
 
-msgid "Chunks scanned"
-msgstr "XChunks scannedX"
+msgid "Status"
+msgstr "XStatusX"
 
-msgid "Sessions logged"
-msgstr "XSessions loggedX"
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr "XApplication Control Lite logs and blocks sessions using custom signatures on the session content.X"
 
-msgid "Sessions blocked"
-msgstr "XSessions blockedX"
+msgid "Total Signatures Available"
+msgstr "XTotal Signatures AvailableX"
 
-msgid "blocked"
-msgstr "XblockedX"
+msgid "Total Signatures Logging"
+msgstr "XTotal Signatures LoggingX"
 
-msgid "identified"
-msgstr "XidentifiedX"
+msgid "Total Signatures Blocking"
+msgstr "XTotal Signatures BlockingX"
 
-msgid "description"
-msgstr "XdescriptionX"
+msgid "Note"
+msgstr "XNoteX"
 
-msgid "The top logged sessions by user."
-msgstr "XThe top logged sessions by user.X"
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr "XCaution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives.X"
 
-msgid "title"
-msgstr "XtitleX"
+msgid "Signatures"
+msgstr "XSignaturesX"
 
-msgid "Top Logged Users"
-msgstr "XTop Logged UsersX"
+msgid "[enter protocol]"
+msgstr "X[enter protocol]X"
 
-msgid "The top logged sessions by protocol."
-msgstr "XThe top logged sessions by protocol.X"
+msgid "Category"
+msgstr "XCategoryX"
 
-msgid "Top Logged Protocols"
-msgstr "XTop Logged ProtocolsX"
+msgid "[enter category]"
+msgstr "X[enter category]X"
 
-msgid "The top blocked sessions by protocol."
-msgstr "XThe top blocked sessions by protocol.X"
+msgid "Block"
+msgstr "XBlockX"
 
-msgid "Top Blocked Protocols"
-msgstr "XTop Blocked ProtocolsX"
+msgid "Log"
+msgstr "XLogX"
 
-msgid "The top blocked sessions by user."
-msgstr "XThe top blocked sessions by user.X"
+msgid "Description"
+msgstr "XDescriptionX"
 
-msgid "Top Blocked Users"
-msgstr "XTop Blocked UsersX"
+msgid "[no description]"
+msgstr "X[no description]X"
 
-msgid "The top blocked sessions by host."
-msgstr "XThe top blocked sessions by host.X"
+msgid "Signature"
+msgstr "XSignatureX"
 
-msgid "Top Blocked Hosts"
-msgstr "XTop Blocked HostsX"
+msgid "[enter signature]"
+msgstr "X[enter signature]X"
 
-msgid "The top logged sessions by host."
-msgstr "XThe top logged sessions by host.X"
 
-msgid "Top Logged Hosts"
-msgstr "XTop Logged HostsX"
 
-msgid "The number of logged and blocked sessions over time."
-msgstr "XThe number of logged and blocked sessions over time.X"
 
-msgid "Detection Statistics"
-msgstr "XDetection StatisticsX"
 
-msgid "All sessions scanned by Application Control Lite."
-msgstr "XAll sessions scanned by Application Control Lite.X"
 
-msgid "All Events"
-msgstr "XAll EventsX"
 
-msgid "All sessions matching an application signature and blocked."
-msgstr "XAll sessions matching an application signature and blocked.X"
 
-msgid "Blocked Events"
-msgstr "XBlocked EventsX"
+
+
+
+
+
+
+
+
+
+
+
+

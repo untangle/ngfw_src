@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2014-03-01 06:44+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,6 +12,126 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
+
+msgid "blocked"
+msgstr "ブロックした"
+
+msgid "detected"
+msgstr ""
+
+msgid "Sessions scanned"
+msgstr "セッションをスキャン"
+
+msgid "Sessions logged"
+msgstr "セッションを記録します"
+
+msgid "Sessions blocked"
+msgstr "セッションをブロックします"
+
+msgid "Intrusion Prevention"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "attacks of which"
+msgstr "どの攻撃"
+
+msgid "were blocked"
+msgstr "ブロックされました"
+
+msgid "Top Detected Rules (by Hits)"
+msgstr ""
+
+msgid "Hits"
+msgstr "ヒット"
+
+msgid "Rules"
+msgstr "ルール"
+
+msgid "Hits Per Day"
+msgstr "1日あたりのヒット"
+
+msgid "Top Detected Categories (by Hits)"
+msgstr ""
+
+msgid "Categories"
+msgstr ""
+
+msgid "Top Detected Classtypes (by Hits)"
+msgstr ""
+
+msgid "Classtypes"
+msgstr ""
+
+msgid "Attacks Detected, Logged"
+msgstr ""
+
+msgid "Avg Attacks Detected"
+msgstr ""
+
+msgid "Logged"
+msgstr ""
+
+msgid "Max Attacks Detected"
+msgstr ""
+
+msgid "Attacks"
+msgstr "攻撃"
+
+msgid "Attacks Detected"
+msgstr ""
+
+msgid "Attacks Detected, Blocked"
+msgstr ""
+
+msgid "Blocked"
+msgstr "ブロックした"
+
+msgid "Intrusion Events"
+msgstr "侵入イベント"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "Client"
+msgstr "クライアント"
+
+msgid "User"
+msgstr "ユーザ"
+
+msgid "Protocol"
+msgstr ""
+
+msgid "Source IP Address"
+msgstr ""
+
+msgid "Source Port"
+msgstr ""
+
+msgid "Destination IP Address"
+msgstr ""
+
+msgid "Sid"
+msgstr ""
+
+msgid "Classtype"
+msgstr ""
+
+msgid "Category"
+msgstr "カテゴリ"
+
+msgid "Msg"
+msgstr ""
+
+msgid "Destination Port"
+msgstr ""
+
+msgid "Gid"
+msgstr ""
+
+msgid "Cid"
+msgstr ""
 
 msgid "Attempted Administrator Privilege Gain"
 msgstr ""
@@ -130,15 +250,15 @@ msgstr ""
 
 msgid ""
 "This category contains detection for vulnerabilities present in the Chrome "
-"browser. (This is separate from the 'browser-webkit' category, as Chrome has "
+"browser. (This is separate from the browser-webkit category, as Chrome has "
 "enough vulnerabilities to be broken out into it's own, and while it uses the "
 "Webkit rendering engine, there's a lot of other features to Chrome.)"
 msgstr ""
 
 msgid ""
 "This category contains detection for vulnerabilities present in the Firefox "
-"browser, or products that have the 'Gecko' engine. (Thunderbird email "
-"client, etc)"
+"browser, or products that have the Gecko engine. (Thunderbird email client, "
+"etc)"
 msgstr ""
 
 msgid ""
@@ -163,7 +283,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"This category containt any rule that utilizes the 'replace' functionality "
+"This category containt any rule that utilizes the replace functionality "
 "inside of Snort."
 msgstr ""
 
@@ -179,8 +299,8 @@ msgstr ""
 
 msgid ""
 "This category contains rules that are specifically tailored to detect "
-"exploit kit activity. This does not include 'post-compromise' rules (as "
-"those would be in indicator-compromise). Files that are dropped as result of "
+"exploit kit activity. This does not include post-compromise rules (as those "
+"would be in indicator-compromise). Files that are dropped as result of "
 "visiting an exploit kit would be in their respective file category."
 msgstr ""
 
@@ -242,7 +362,7 @@ msgstr ""
 msgid ""
 "This category contains rules that are simply looking for simple "
 "identification markers of shellcode in traffic. This replaces the old "
-"'shellcode.rules'."
+"shellcode.rules."
 msgstr ""
 
 msgid ""
@@ -257,8 +377,8 @@ msgstr ""
 msgid ""
 "This category contains known malicious command and control activity for "
 "identified botnet traffic. This includes call home, downloading of dropped "
-"files, and ex-filtration of data. Actual commands issued from 'Master to "
-"Zombie' type stuff will also be here."
+"files, and ex-filtration of data. Actual commands issued from Master to "
+"Zombie type stuff will also be here."
 msgstr ""
 
 msgid ""
@@ -268,7 +388,7 @@ msgstr ""
 
 msgid ""
 "This category contains rules that are malware related, but don't fit into "
-"one of the other 'malware' categories."
+"one of the other malware categories."
 msgstr ""
 
 msgid ""
@@ -350,24 +470,24 @@ msgid ""
 msgstr ""
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with adware or spyware."
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with adware or spyware."
 msgstr ""
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with p2p."
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with p2p."
 msgstr ""
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with toolbars installed on the client system. (Google Toolbar, Yahoo "
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with toolbars installed on the client system. (Google Toolbar, Yahoo "
 "Toolbar, Hotbar, etc)"
 msgstr ""
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"don't fit into one of the categories shown above."
+"This category deals with pua or Potentially Unwanted Applications that don't "
+"fit into one of the categories shown above."
 msgstr ""
 
 msgid ""
@@ -460,9 +580,6 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
-msgid "Rules"
-msgstr "ルール"
-
 msgid "{0} logging or blocking"
 msgstr ""
 
@@ -484,22 +601,10 @@ msgstr "ブロック"
 msgid "Loading..."
 msgstr ""
 
-msgid "Sid"
-msgstr ""
-
 msgid "Sid:"
 msgstr ""
 
 msgid "Gid:"
-msgstr ""
-
-msgid "Classtype"
-msgstr ""
-
-msgid "Category"
-msgstr "カテゴリ"
-
-msgid "Msg"
 msgstr ""
 
 msgid "Reference"
@@ -636,9 +741,6 @@ msgstr ""
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
 msgstr ""
 
-msgid "Classtypes"
-msgstr ""
-
 msgid ""
 "Classtypes are a generalized  grouping for rules, such as attempts to gain "
 "user access."
@@ -654,9 +756,6 @@ msgid "Custom"
 msgstr ""
 
 msgid "None.  Classtypes within selected categories will be used."
-msgstr ""
-
-msgid "Categories"
 msgstr ""
 
 msgid ""
@@ -678,290 +777,6 @@ msgstr ""
 
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr ""
-
-msgid "Intrusion Prevention"
-msgstr ""
-
-msgid "Summary Report"
-msgstr "サマリレポート"
-
-msgid "detected"
-msgstr ""
-
-msgid "attacks of which"
-msgstr "どの攻撃"
-
-msgid "were blocked"
-msgstr "ブロックされました"
-
-msgid "Top Detected Rules (by Hits)"
-msgstr ""
-
-msgid "Hits"
-msgstr "ヒット"
-
-msgid "Hits Per Day"
-msgstr "1日あたりのヒット"
-
-msgid "Top Detected Categories (by Hits)"
-msgstr ""
-
-msgid "Top Detected Classtypes (by Hits)"
-msgstr ""
-
-msgid "Attacks Detected, Logged"
-msgstr ""
-
-msgid "Avg Attacks Detected"
-msgstr ""
-
-msgid "Logged"
-msgstr ""
-
-msgid "Max Attacks Detected"
-msgstr ""
-
-msgid "Attacks"
-msgstr "攻撃"
-
-msgid "Attacks Detected"
-msgstr ""
-
-msgid "Attacks Detected, Blocked"
-msgstr ""
-
-msgid "Blocked"
-msgstr "ブロックした"
-
-msgid "Intrusion Events"
-msgstr "侵入イベント"
-
-msgid "Time"
-msgstr "時間"
-
-msgid "Client"
-msgstr "クライアント"
-
-msgid "User"
-msgstr "ユーザ"
-
-msgid "Protocol"
-msgstr ""
-
-msgid "Source IP Address"
-msgstr ""
-
-msgid "Source Port"
-msgstr ""
-
-msgid "Destination IP Address"
-msgstr ""
-
-msgid "Destination Port"
-msgstr ""
-
-msgid "Gid"
-msgstr ""
-
-msgid "Cid"
-msgstr ""
-
-msgid "blocked"
-msgstr "ブロックした"
-
-msgid "Sessions scanned"
-msgstr "セッションをスキャン"
-
-msgid "Sessions logged"
-msgstr "セッションを記録します"
-
-msgid "Sessions blocked"
-msgstr "セッションをブロックします"
-
-msgid "description"
-msgstr "説明"
-
-msgid "The amount of detected and blocked intrusions over time."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Intrusion Detection (all)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by source IP address."
-msgstr ""
-
-msgid "Top Source IP Addresses (logged)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by category."
-msgstr ""
-
-msgid "Top Categories (logged)"
-msgstr ""
-
-msgid "The number of intrusions blocked by source port."
-msgstr ""
-
-msgid "Top Source Port (blocked)"
-msgstr ""
-
-msgid "The number of intrusions blocked by rule."
-msgstr ""
-
-msgid "Top Rules (blocked)"
-msgstr ""
-
-msgid "The number of intrusions blocked by destination port."
-msgstr ""
-
-msgid "Top Destination Port (blocked)"
-msgstr ""
-
-msgid "The amount of blocked intrusions over time."
-msgstr ""
-
-msgid "Intrusion Detection (blocked)"
-msgstr ""
-
-msgid "The number of intrusions blocked by classtype."
-msgstr ""
-
-msgid "Top Classtypes (blocked)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by rule."
-msgstr ""
-
-msgid "Top Rules (logged)"
-msgstr ""
-
-msgid "The number of intrusions blocked by category."
-msgstr ""
-
-msgid "Top Categories (blocked)"
-msgstr ""
-
-msgid "The number of intrusions blocked by source IP address."
-msgstr ""
-
-msgid "Top Source IP Addresses (blocked)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by destination IP address."
-msgstr ""
-
-msgid "Top Destination IP Addresses (logged)"
-msgstr ""
-
-msgid "The amount of detected pintrusions over time."
-msgstr ""
-
-msgid "Intrusion Detection (logged)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by source port."
-msgstr ""
-
-msgid "Top Source Ports (logged)"
-msgstr ""
-
-msgid "A summary of intrusion detection and prevention actions."
-msgstr ""
-
-msgid "Intrusion Prevention Summary"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by classtype."
-msgstr ""
-
-msgid "Top Classtypes (logged)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by destination port."
-msgstr ""
-
-msgid "Top Destination Ports (logged)"
-msgstr ""
-
-msgid "The number of intrusions blocked by protocol."
-msgstr ""
-
-msgid "Top Protocols (blocked)"
-msgstr ""
-
-msgid "The number of intrusions blocked by destination IP address."
-msgstr ""
-
-msgid "Top Destination IP Addresses (blocked)"
-msgstr ""
-
-msgid "The number of intrusions detected grouped by protocol."
-msgstr ""
-
-msgid "Top Protocols (logged)"
-msgstr ""
-
-msgid "All sessions scanned by Intrusion Prevention."
-msgstr ""
-
-msgid "All Events"
-msgstr "全てのイベント"
-
-msgid "All sessions matching Intrusion Prevention signatures and blocked."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "ブロックされたイベント"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2008-11-21 22:29-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,62 +16,19 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-msgid "Status"
-msgstr "Status：状态"
+msgid "Chunks scanned"
+msgstr "块扫描"
 
-msgid ""
-"Application Control Lite logs and blocks sessions using custom signatures on "
-"the session content."
-msgstr ""
+msgid "Sessions logged"
+msgstr "已记录会话"
 
-msgid "Total Signatures Available"
-msgstr "总计签名可用"
+msgid "Sessions blocked"
+msgstr "已阻止会话"
 
-msgid "Total Signatures Logging"
-msgstr "总计签名记录"
+msgid "blocked"
+msgstr "已阻止"
 
-msgid "Total Signatures Blocking"
-msgstr "总计签名阻止"
-
-msgid "Note"
-msgstr "注释"
-
-msgid ""
-"Caution and discretion is advised in configuring Application Control Lite at "
-"the the risk of harmful false positives."
-msgstr ""
-
-msgid "Signatures"
-msgstr "签名"
-
-msgid "Protocol"
-msgstr "协议"
-
-msgid "[enter protocol]"
-msgstr ""
-
-msgid "Category"
-msgstr "分类"
-
-msgid "[enter category]"
-msgstr ""
-
-msgid "Block"
-msgstr "阻止"
-
-msgid "Log"
-msgstr "日志"
-
-msgid "Description"
-msgstr "描述"
-
-msgid "[no description]"
-msgstr "【无描述】"
-
-msgid "Signature"
-msgstr "签名"
-
-msgid "[enter signature]"
+msgid "identified"
 msgstr ""
 
 msgid "Summary Report"
@@ -112,6 +69,9 @@ msgstr "采样数"
 
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "十大封锁的协议（点击）"
+
+msgid "Protocol"
+msgstr "协议"
 
 msgid "Blocks Per Day"
 msgstr "每日块"
@@ -170,107 +130,60 @@ msgstr "服务器"
 msgid "Port"
 msgstr "端口"
 
-msgid "Chunks scanned"
-msgstr "块扫描"
+msgid "Status"
+msgstr "Status：状态"
 
-msgid "Sessions logged"
-msgstr "已记录会话"
-
-msgid "Sessions blocked"
-msgstr "已阻止会话"
-
-msgid "blocked"
-msgstr "已阻止"
-
-msgid "identified"
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
 msgstr ""
 
-msgid "description"
+msgid "Total Signatures Available"
+msgstr "总计签名可用"
+
+msgid "Total Signatures Logging"
+msgstr "总计签名记录"
+
+msgid "Total Signatures Blocking"
+msgstr "总计签名阻止"
+
+msgid "Note"
+msgstr "注释"
+
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr ""
+
+msgid "Signatures"
+msgstr "签名"
+
+msgid "[enter protocol]"
+msgstr ""
+
+msgid "Category"
+msgstr "分类"
+
+msgid "[enter category]"
+msgstr ""
+
+msgid "Block"
+msgstr "阻止"
+
+msgid "Log"
+msgstr "日志"
+
+msgid "Description"
 msgstr "描述"
 
-msgid "The top logged sessions by user."
+msgid "[no description]"
+msgstr "【无描述】"
+
+msgid "Signature"
+msgstr "签名"
+
+msgid "[enter signature]"
 msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Top Logged Users"
-msgstr ""
-
-msgid "The top logged sessions by protocol."
-msgstr ""
-
-msgid "Top Logged Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by protocol."
-msgstr ""
-
-msgid "Top Blocked Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by user."
-msgstr ""
-
-msgid "Top Blocked Users"
-msgstr ""
-
-msgid "The top blocked sessions by host."
-msgstr ""
-
-msgid "Top Blocked Hosts"
-msgstr ""
-
-msgid "The top logged sessions by host."
-msgstr ""
-
-msgid "Top Logged Hosts"
-msgstr ""
-
-msgid "The number of logged and blocked sessions over time."
-msgstr ""
-
-msgid "Detection Statistics"
-msgstr ""
-
-msgid "All sessions scanned by Application Control Lite."
-msgstr ""
-
-msgid "All Events"
-msgstr "<msg name=>所有活动</msg>"
-
-msgid "All sessions matching an application signature and blocked."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "封锁的事件"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

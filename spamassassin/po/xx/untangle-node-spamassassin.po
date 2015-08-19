@@ -1,3 +1,48 @@
+msgid "scored"
+msgstr "XscoredX"
+
+msgid "as"
+msgstr "XasX"
+
+msgid "Messages received"
+msgstr "XMessages receivedX"
+
+msgid "Messages passed"
+msgstr "XMessages passedX"
+
+msgid "Messages dropped"
+msgstr "XMessages droppedX"
+
+msgid "Messages marked"
+msgstr "XMessages markedX"
+
+msgid "Messages quarantined"
+msgstr "XMessages quarantinedX"
+
+msgid "Spam detected"
+msgstr "XSpam detectedX"
+
+msgid "tarpit"
+msgstr "XtarpitX"
+
+msgid "blocked"
+msgstr "XblockedX"
+
+msgid "Spam"
+msgstr "XSpamX"
+
+msgid "Clean"
+msgstr "XCleanX"
+
+msgid "Hourly Spam Rate"
+msgstr "XHourly Spam RateX"
+
+msgid "Spam Rate"
+msgstr "XSpam RateX"
+
+msgid "Top Ten Spammed"
+msgstr "XTop Ten SpammedX"
+
 msgid "Mark"
 msgstr "XMarkX"
 
@@ -127,95 +172,28 @@ msgstr "XneverX"
 msgid "Spam Blocker Lite was last updated"
 msgstr "XSpam Blocker Lite was last updatedX"
 
-msgid "Spam"
-msgstr "XSpamX"
 
-msgid "Clean"
-msgstr "XCleanX"
 
-msgid "Hourly Spam Rate"
-msgstr "XHourly Spam RateX"
 
-msgid "Spam Rate"
-msgstr "XSpam RateX"
 
-msgid "Top Ten Spammed"
-msgstr "XTop Ten SpammedX"
 
-msgid "description"
-msgstr "XdescriptionX"
 
-msgid "The amount of scanned, clean, and spam email over time."
-msgstr "XThe amount of scanned, clean, and spam email over time.X"
 
-msgid "title"
-msgstr "XtitleX"
 
-msgid "Email Usage (all)"
-msgstr "XEmail Usage (all)X"
 
-msgid "The amount of clean email over time."
-msgstr "XThe amount of clean email over time.X"
 
-msgid "Email Usage (clean)"
-msgstr "XEmail Usage (clean)X"
 
-msgid "The number of IP addresses sending spam."
-msgstr "XThe number of IP addresses sending spam.X"
 
-msgid "Top Spam Sender Addresses"
-msgstr "XTop Spam Sender AddressesX"
 
-msgid "The amount of spam email over time."
-msgstr "XThe amount of spam email over time.X"
 
-msgid "Email Usage (spam)"
-msgstr "XEmail Usage (spam)X"
 
-msgid "The ratio of spam (true) to ham (false)"
-msgstr "XThe ratio of spam (true) to ham (false)X"
 
-msgid "Spam Ratio"
-msgstr "XSpam RatioX"
 
-msgid "The amount of scanned email over time."
-msgstr "XThe amount of scanned email over time.X"
 
-msgid "Email Usage (scanned)"
-msgstr "XEmail Usage (scanned)X"
 
-msgid "The number of email addresses with spam."
-msgstr "XThe number of email addresses with spam.X"
 
-msgid "Top Spam Recipients"
-msgstr "XTop Spam RecipientsX"
 
-msgid "A summary of spam blocking actions for email activity."
-msgstr "XA summary of spam blocking actions for email activity.X"
 
-msgid "Spam Blocker Lite Summary"
-msgstr "XSpam Blocker Lite SummaryX"
 
-msgid "All emails marked as Spam and quarantined."
-msgstr "XAll emails marked as Spam and quarantined.X"
 
-msgid "Quarantined Events"
-msgstr "XQuarantined EventsX"
 
-msgid "All emails scanned by Spam Blocker."
-msgstr "XAll emails scanned by Spam Blocker.X"
-
-msgid "All Email Events"
-msgstr "XAll Email EventsX"
-
-msgid "All emails marked as Spam."
-msgstr "XAll emails marked as Spam.X"
-
-msgid "All Spam Events"
-msgstr "XAll Spam EventsX"
-
-msgid "All email sessions that were tarpitted."
-msgstr "XAll email sessions that were tarpitted.X"
-
-msgid "Tarpit Events"
-msgstr "XTarpit EventsX"

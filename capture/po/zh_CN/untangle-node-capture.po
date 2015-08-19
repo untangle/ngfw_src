@@ -16,6 +16,201 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
+msgid "logged in"
+msgstr ""
+
+msgid "failed to login"
+msgstr ""
+
+msgid "timed out"
+msgstr ""
+
+msgid "timed out (inactivity)"
+msgstr ""
+
+msgid "logged out"
+msgstr ""
+
+msgid "logged out (admin forced)"
+msgstr ""
+
+msgid "unknown"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Sessions Allowed"
+msgstr ""
+
+msgid "Sessions Blocked"
+msgstr ""
+
+msgid "DNS Lookups"
+msgstr ""
+
+msgid "Login Success"
+msgstr ""
+
+msgid "Login Failure"
+msgstr ""
+
+msgid "captured"
+msgstr ""
+
+msgid "passed"
+msgstr ""
+
+msgid "Invalid username or password. Please try again."
+msgstr ""
+
+msgid "You are already logged in from another location."
+msgstr ""
+
+msgid "The server returned an unexpected error."
+msgstr ""
+
+msgid "You must enable the checkbox above to continue."
+msgstr ""
+
+msgid "Invalid or missing filename in upload request"
+msgstr ""
+
+msgid "%s is not a valid ZIP file"
+msgstr ""
+
+msgid "The uploaded ZIP file does not contain custom.html or custom.py"
+msgstr ""
+
+msgid "The uploaded ZIP file could not be extracted"
+msgstr ""
+
+msgid "Extracted files and directories"
+msgstr ""
+
+msgid "Unknown error removing custom files"
+msgstr ""
+
+msgid "Removed files and directories."
+msgstr ""
+
+msgid "You were already logged out"
+msgstr ""
+
+msgid "You have successfully logged out"
+msgstr ""
+
+msgid "Session Timeout"
+msgstr ""
+
+msgid "Idle Timeout"
+msgstr ""
+
+msgid "User Logout"
+msgstr ""
+
+msgid "Admin Logout"
+msgstr ""
+
+msgid "Summary Report"
+msgstr ""
+
+msgid "processed"
+msgstr ""
+
+msgid "user login events"
+msgstr ""
+
+msgid "Usage"
+msgstr ""
+
+msgid "Average Logins"
+msgstr ""
+
+msgid "Max Logins"
+msgstr ""
+
+msgid "Average Failures"
+msgstr ""
+
+msgid "Max Failures"
+msgstr ""
+
+msgid "Average Timeouts"
+msgstr ""
+
+msgid "Max Timeouts"
+msgstr ""
+
+msgid "Average Logouts"
+msgstr ""
+
+msgid "Max Logouts"
+msgstr ""
+
+msgid "Average Events"
+msgstr ""
+
+msgid "Max Events"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Logins"
+msgstr ""
+
+msgid "Failures"
+msgstr ""
+
+msgid "Timeouts"
+msgstr ""
+
+msgid "Logouts"
+msgstr ""
+
+msgid "Top Captive Portal Users"
+msgstr ""
+
+msgid "Top Blocked Clients"
+msgstr ""
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Capture User Events"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Client"
+msgstr ""
+
+msgid "User Name"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Capture Rule Events"
+msgstr ""
+
+msgid "Client Address"
+msgstr ""
+
+msgid "Client Port"
+msgstr ""
+
+msgid "Server Address"
+msgstr ""
+
+msgid "Server Port"
+msgstr ""
+
+msgid "Rule Applied"
+msgstr ""
+
 msgid "Destination Address"
 msgstr ""
 
@@ -116,9 +311,6 @@ msgid "The Active Sessions list shows authenticated users."
 msgstr ""
 
 msgid "IP Address"
-msgstr ""
-
-msgid "User Name"
 msgstr ""
 
 msgid "Login Time"
@@ -403,283 +595,11 @@ msgstr ""
 msgid "Please correct any highlighted fields."
 msgstr ""
 
-msgid "When using 'Basic Message', 'Authentication' must be set to 'None'."
+msgid "When using Basic Message, Authentication must be set to None."
 msgstr ""
 
-msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
+msgid "When using Basic Message, Allow Concurrent Logins must be enabled."
 msgstr ""
 
-msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
-msgstr ""
-
-msgid "Login Success"
-msgstr ""
-
-msgid "Login Failure"
-msgstr ""
-
-msgid "Session Timeout"
-msgstr ""
-
-msgid "Idle Timeout"
-msgstr ""
-
-msgid "User Logout"
-msgstr ""
-
-msgid "Admin Logout"
-msgstr ""
-
-msgid "Summary Report"
-msgstr ""
-
-msgid "processed"
-msgstr ""
-
-msgid "user login events"
-msgstr ""
-
-msgid "Usage"
-msgstr ""
-
-msgid "Average Logins"
-msgstr ""
-
-msgid "Max Logins"
-msgstr ""
-
-msgid "Average Failures"
-msgstr ""
-
-msgid "Max Failures"
-msgstr ""
-
-msgid "Average Timeouts"
-msgstr ""
-
-msgid "Max Timeouts"
-msgstr ""
-
-msgid "Average Logouts"
-msgstr ""
-
-msgid "Max Logouts"
-msgstr ""
-
-msgid "Average Events"
-msgstr ""
-
-msgid "Max Events"
-msgstr ""
-
-msgid "Events"
-msgstr ""
-
-msgid "Logins"
-msgstr ""
-
-msgid "Failures"
-msgstr ""
-
-msgid "Timeouts"
-msgstr ""
-
-msgid "Logouts"
-msgstr ""
-
-msgid "Top Captive Portal Users"
-msgstr ""
-
-msgid "Top Blocked Clients"
-msgstr ""
-
-msgid "Blocked"
-msgstr ""
-
-msgid "Capture User Events"
-msgstr ""
-
-msgid "Time"
-msgstr ""
-
-msgid "Client"
-msgstr ""
-
-msgid "Type"
-msgstr ""
-
-msgid "Capture Rule Events"
-msgstr ""
-
-msgid "Client Address"
-msgstr ""
-
-msgid "Client Port"
-msgstr ""
-
-msgid "Server Address"
-msgstr ""
-
-msgid "Server Port"
-msgstr ""
-
-msgid "Rule Applied"
-msgstr ""
-
-msgid "Sessions Allowed"
-msgstr ""
-
-msgid "Sessions Blocked"
-msgstr ""
-
-msgid "DNS Lookups"
-msgstr ""
-
-msgid "captured"
-msgstr ""
-
-msgid "passed"
-msgstr ""
-
-msgid "logged in"
-msgstr ""
-
-msgid "failed to login"
-msgstr ""
-
-msgid "timed out"
-msgstr ""
-
-msgid "timed out (inactivity)"
-msgstr ""
-
-msgid "logged out"
-msgstr ""
-
-msgid "logged out (admin forced)"
-msgstr ""
-
-msgid "unknown"
-msgstr ""
-
-msgid "User"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The top active users that logged in to Captive Portal."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Top Active Users"
-msgstr ""
-
-msgid "A summary of Captive Portal activity."
-msgstr ""
-
-msgid "Activity Summary"
-msgstr ""
-
-msgid ""
-"The top clients that were blocked by Captive Portal because they were not "
-"logged in."
-msgstr ""
-
-msgid "Sessions that reached the session timeout."
-msgstr ""
-
-msgid "Session Timeout User Events"
-msgstr ""
-
-msgid "Sessions matching capture rules."
-msgstr ""
-
-msgid "Captured Session Events"
-msgstr ""
-
-msgid "Failed logins to Captive Portal."
-msgstr ""
-
-msgid "Login Failure User Events"
-msgstr ""
-
-msgid "All user logout events."
-msgstr ""
-
-msgid "User Logout User Events"
-msgstr ""
-
-msgid "Sessions logged off by the admin."
-msgstr ""
-
-msgid "Admin Logout User Events"
-msgstr ""
-
-msgid "Sessions that reached the idle timeout."
-msgstr ""
-
-msgid "Successful logins to Captive Portal."
-msgstr ""
-
-msgid "Login Success User Events"
-msgstr ""
-
-msgid "All user sessions processed by Captive Portal."
-msgstr ""
-
-msgid "All User Events"
-msgstr ""
-
-msgid "All sessions processed by Captive Portal."
-msgstr ""
-
-msgid "All Session Events"
-msgstr ""
-
-msgid "Sessions matching passed hosts."
-msgstr ""
-
-msgid "Passed Session Events"
-msgstr ""
-
-msgid "Invalid username or password. Please try again."
-msgstr ""
-
-msgid "You are already logged in from another location."
-msgstr ""
-
-msgid "The server returned an unexpected error."
-msgstr ""
-
-msgid "You must enable the checkbox above to continue."
-msgstr ""
-
-msgid "Invalid or missing filename in upload request"
-msgstr ""
-
-msgid "%s is not a valid ZIP file"
-msgstr ""
-
-msgid "The uploaded ZIP file does not contain custom.html or custom.py"
-msgstr ""
-
-msgid "The uploaded ZIP file could not be extracted"
-msgstr ""
-
-msgid "Extracted files and directories"
-msgstr ""
-
-msgid "Unknown error removing custom files"
-msgstr ""
-
-msgid "Removed files and directories."
-msgstr ""
-
-msgid "You were already logged out"
-msgstr ""
-
-msgid "You have successfully logged out"
+msgid "When using Basic Login, Authentication cannot be set to None."
 msgstr ""

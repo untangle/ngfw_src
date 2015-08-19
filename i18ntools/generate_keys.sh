@@ -69,14 +69,14 @@ case "$1" in
 
     msgcat tmp_keys.pot $WORK/src/uvm/po/fmt_keys.pot -o tmp_keys.pot
     msgmerge -U -N  $WORK/src/uvm/po/$1.pot tmp_keys.pot
-    update_po $WORK/src/uvm/po/$1
+    update_po $WORK/src/uvm/po $1
     ;;
 "untangle-apache2-config")
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot $WORK/pkgs/untangle-apache2-config/files/usr/lib/python*/*.py
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot $WORK/pkgs/untangle-apache2-config/files/usr/share/untangle/mod_python/error/*.py
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot $WORK/pkgs/untangle-apache2-config/files/usr/share/untangle/mod_python/auth/*.py
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
-    update_po $WORK/pkgs/untangle-apache2-config/po/$1
+    update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
 "untangle-node-protofilter"|"untangle-node-idps"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spamassassin"|"untangle-node-capture"|"untangle-base-webfilter"|"untangle-node-phish"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus")
     app=`echo "$1"|cut -d"-" -f3`
@@ -128,7 +128,7 @@ case "$1" in
 
     msgmerge -U -N $DIR/po/$1.pot tmp_keys.pot
     rm tmp_keys.pot
-    update_po $DIR/po/$1
+    update_po $DIR/po $1 
     ;;
 *)
     echo 1>&2 Module Name \"$1\" is invalid ...
@@ -139,16 +139,20 @@ esac
 
 function update_po( )
 {
-    echo "Updating PO file: $1.po"
+    dir=$1
+    name=$2
+    echo "Updating PO file: $dir/$name.po"
     for lang in ${OFFICIAL_LANGUAGES}
     do
-        pot=$1.pot
-        po=${lang}/$1.po
+        pot=$dir/$name.pot
+        po=$dir/$lang/$name.po
         if [ ! -e $po ]; then
             mkdir -p $(dirname $po)
             touch $po
         fi
+        #msgattrib --no-fuzzy -o $po $po
         msgmerge -U -N $po $pot
+        sed -i -e '/^#.*/d' $po
         # If its the test language, go ahead and set the values in the po file
         if [ $lang == "xx" ] ; then
             $WORK/src/i18ntools/set_test_language_strings.py $po > /tmp/xx.po

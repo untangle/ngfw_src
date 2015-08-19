@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2012-01-09 08:17-0800\n"
 "Last-Translator: Audidata Sistemas, S.L. <info@audidata.es>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -14,62 +14,19 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
-msgid "Status"
-msgstr "Estado"
-
-msgid ""
-"Application Control Lite logs and blocks sessions using custom signatures on "
-"the session content."
+msgid "Chunks scanned"
 msgstr ""
 
-msgid "Total Signatures Available"
-msgstr "Firmas totales disponibles"
+msgid "Sessions logged"
+msgstr "Sesiones registradas"
 
-msgid "Total Signatures Logging"
-msgstr "Total de registros de firmas"
+msgid "Sessions blocked"
+msgstr "Sesiones bloqueadas"
 
-msgid "Total Signatures Blocking"
-msgstr "Total de bloqueos de firmas"
+msgid "blocked"
+msgstr "bloqueado"
 
-msgid "Note"
-msgstr "Nota"
-
-msgid ""
-"Caution and discretion is advised in configuring Application Control Lite at "
-"the the risk of harmful false positives."
-msgstr ""
-
-msgid "Signatures"
-msgstr "Firmas"
-
-msgid "Protocol"
-msgstr "Protocolo"
-
-msgid "[enter protocol]"
-msgstr ""
-
-msgid "Category"
-msgstr "Categoría"
-
-msgid "[enter category]"
-msgstr ""
-
-msgid "Block"
-msgstr "Bloquear"
-
-msgid "Log"
-msgstr "Registro"
-
-msgid "Description"
-msgstr "Descripción"
-
-msgid "[no description]"
-msgstr "[sin descripción]"
-
-msgid "Signature"
-msgstr "Firma"
-
-msgid "[enter signature]"
+msgid "identified"
 msgstr ""
 
 msgid "Summary Report"
@@ -110,6 +67,9 @@ msgstr "Accesos"
 
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "Principales diez protocolos bloqueados (por acceos)"
+
+msgid "Protocol"
+msgstr "Protocolo"
 
 msgid "Blocks Per Day"
 msgstr "Bloqueos por día"
@@ -168,106 +128,60 @@ msgstr "Servidor"
 msgid "Port"
 msgstr "Puerto"
 
-msgid "Chunks scanned"
+msgid "Status"
+msgstr "Estado"
+
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
 msgstr ""
 
-msgid "Sessions logged"
-msgstr "Sesiones registradas"
+msgid "Total Signatures Available"
+msgstr "Firmas totales disponibles"
 
-msgid "Sessions blocked"
-msgstr "Sesiones bloqueadas"
+msgid "Total Signatures Logging"
+msgstr "Total de registros de firmas"
 
-msgid "blocked"
-msgstr "bloqueado"
+msgid "Total Signatures Blocking"
+msgstr "Total de bloqueos de firmas"
 
-msgid "identified"
+msgid "Note"
+msgstr "Nota"
+
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
 msgstr ""
 
-msgid "description"
-msgstr "descripción"
+msgid "Signatures"
+msgstr "Firmas"
 
-msgid "The top logged sessions by user."
+msgid "[enter protocol]"
 msgstr ""
 
-msgid "title"
+msgid "Category"
+msgstr "Categoría"
+
+msgid "[enter category]"
 msgstr ""
 
-msgid "Top Logged Users"
+msgid "Block"
+msgstr "Bloquear"
+
+msgid "Log"
+msgstr "Registro"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "[no description]"
+msgstr "[sin descripción]"
+
+msgid "Signature"
+msgstr "Firma"
+
+msgid "[enter signature]"
 msgstr ""
-
-msgid "The top logged sessions by protocol."
-msgstr ""
-
-msgid "Top Logged Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by protocol."
-msgstr ""
-
-msgid "Top Blocked Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by user."
-msgstr ""
-
-msgid "Top Blocked Users"
-msgstr ""
-
-msgid "The top blocked sessions by host."
-msgstr ""
-
-msgid "Top Blocked Hosts"
-msgstr ""
-
-msgid "The top logged sessions by host."
-msgstr ""
-
-msgid "Top Logged Hosts"
-msgstr ""
-
-msgid "The number of logged and blocked sessions over time."
-msgstr ""
-
-msgid "Detection Statistics"
-msgstr ""
-
-msgid "All sessions scanned by Application Control Lite."
-msgstr ""
-
-msgid "All Events"
-msgstr "Todos los eventos"
-
-msgid "All sessions matching an application signature and blocked."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "Eventos bloqueados"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

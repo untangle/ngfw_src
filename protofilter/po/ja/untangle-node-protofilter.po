@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2014-03-01 09:56+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,66 +13,19 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
-msgid "Status"
-msgstr "状態"
+msgid "Chunks scanned"
+msgstr "スキャンされたチャンク"
 
-msgid ""
-"Application Control Lite logs and blocks sessions using custom signatures on "
-"the session content."
-msgstr ""
-"セッション内容にカスタムシグネチャを使用してApplication Control Liteのログと"
-"セッションをブロック。"
+msgid "Sessions logged"
+msgstr "セッションがログされました"
 
-msgid "Total Signatures Available"
-msgstr "利用可能なシグネチャの総数"
+msgid "Sessions blocked"
+msgstr "セッションがブロックされました"
 
-msgid "Total Signatures Logging"
-msgstr "記録されたシグネチャの総数"
+msgid "blocked"
+msgstr "ブロックされた"
 
-msgid "Total Signatures Blocking"
-msgstr "ブロックするシグネチャの総数"
-
-msgid "Note"
-msgstr "注意"
-
-msgid ""
-"Caution and discretion is advised in configuring Application Control Lite at "
-"the the risk of harmful false positives."
-msgstr ""
-"有害には誤認のリスクがあるApplication Control Liteを設定する際に注意と判断を"
-"お勧めします。"
-
-msgid "Signatures"
-msgstr "シグネチャ"
-
-msgid "Protocol"
-msgstr "プロトコル"
-
-msgid "[enter protocol]"
-msgstr ""
-
-msgid "Category"
-msgstr "カテゴリ"
-
-msgid "[enter category]"
-msgstr ""
-
-msgid "Block"
-msgstr "ブロック"
-
-msgid "Log"
-msgstr "ログ"
-
-msgid "Description"
-msgstr "説明"
-
-msgid "[no description]"
-msgstr "[no description]"
-
-msgid "Signature"
-msgstr "シグネチャ"
-
-msgid "[enter signature]"
+msgid "identified"
 msgstr ""
 
 msgid "Summary Report"
@@ -113,6 +66,9 @@ msgstr "ヒット"
 
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "トップ10のブロックしたプロトコル（ヒット数による）"
+
+msgid "Protocol"
+msgstr "プロトコル"
 
 msgid "Blocks Per Day"
 msgstr "1日あたりのブロック"
@@ -171,114 +127,64 @@ msgstr "サーバ"
 msgid "Port"
 msgstr "ポート"
 
-msgid "Chunks scanned"
-msgstr "スキャンされたチャンク"
+msgid "Status"
+msgstr "状態"
 
-msgid "Sessions logged"
-msgstr "セッションがログされました"
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr ""
+"セッション内容にカスタムシグネチャを使用してApplication Control Liteのログと"
+"セッションをブロック。"
 
-msgid "Sessions blocked"
-msgstr "セッションがブロックされました"
+msgid "Total Signatures Available"
+msgstr "利用可能なシグネチャの総数"
 
-msgid "blocked"
-msgstr "ブロックされた"
+msgid "Total Signatures Logging"
+msgstr "記録されたシグネチャの総数"
 
-msgid "identified"
+msgid "Total Signatures Blocking"
+msgstr "ブロックするシグネチャの総数"
+
+msgid "Note"
+msgstr "注意"
+
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr ""
+"有害には誤認のリスクがあるApplication Control Liteを設定する際に注意と判断を"
+"お勧めします。"
+
+msgid "Signatures"
+msgstr "シグネチャ"
+
+msgid "[enter protocol]"
 msgstr ""
 
-msgid "description"
+msgid "Category"
+msgstr "カテゴリ"
+
+msgid "[enter category]"
+msgstr ""
+
+msgid "Block"
+msgstr "ブロック"
+
+msgid "Log"
+msgstr "ログ"
+
+msgid "Description"
 msgstr "説明"
 
-msgid "The top logged sessions by user."
+msgid "[no description]"
+msgstr "[no description]"
+
+msgid "Signature"
+msgstr "シグネチャ"
+
+msgid "[enter signature]"
 msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Top Logged Users"
-msgstr ""
-
-msgid "The top logged sessions by protocol."
-msgstr ""
-
-msgid "Top Logged Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by protocol."
-msgstr ""
-
-msgid "Top Blocked Protocols"
-msgstr ""
-
-msgid "The top blocked sessions by user."
-msgstr ""
-
-msgid "Top Blocked Users"
-msgstr ""
-
-msgid "The top blocked sessions by host."
-msgstr ""
-
-msgid "Top Blocked Hosts"
-msgstr ""
-
-msgid "The top logged sessions by host."
-msgstr ""
-
-msgid "Top Logged Hosts"
-msgstr ""
-
-msgid "The number of logged and blocked sessions over time."
-msgstr ""
-
-msgid "Detection Statistics"
-msgstr ""
-
-msgid "All sessions scanned by Application Control Lite."
-msgstr ""
-
-msgid "All Events"
-msgstr "全てのイベント"
-
-msgid "All sessions matching an application signature and blocked."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "ブロックされたイベント"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

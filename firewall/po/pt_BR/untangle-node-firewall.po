@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2010-03-26 04:54-0700\n"
 "Last-Translator: Andre Cardoso <andrecv@hsbs.com.br>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -14,136 +14,20 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
-msgid "Destination Address"
-msgstr "Endereço de destino"
+msgid "blocked"
+msgstr "bloqueado"
 
-msgid "Destination Port"
-msgstr "Porta de destino"
-
-msgid "Destination Interface"
-msgstr "Interface de destino"
-
-msgid "Source Address"
-msgstr "Endereço de fonte"
-
-msgid "Source Port"
-msgstr "Porta de origem"
-
-msgid "Source Interface"
-msgstr "Interface de origem"
-
-msgid "Protocol"
+msgid "password"
 msgstr ""
 
-msgid "any"
-msgstr ""
+msgid "Sessions passed"
+msgstr "Sessões permitidas"
 
-msgid "Username"
-msgstr ""
+msgid "Sessions flagged"
+msgstr "Sessões registradas"
 
-msgid "Client Hostname"
-msgstr ""
-
-msgid "Server Hostname"
-msgstr ""
-
-msgid "Client MAC Address"
-msgstr ""
-
-msgid "Server MAC Address"
-msgstr ""
-
-msgid "Client MAC Vendor"
-msgstr ""
-
-msgid "Server MAC Vendor"
-msgstr ""
-
-msgid "Client in Penalty Box"
-msgstr ""
-
-msgid "Server in Penalty Box"
-msgstr ""
-
-msgid "Client has no Quota"
-msgstr ""
-
-msgid "Server has no Quota"
-msgstr ""
-
-msgid "Client has exceeded Quota"
-msgstr ""
-
-msgid "Server has exceeded Quota"
-msgstr ""
-
-msgid "Client Quota Attainment"
-msgstr ""
-
-msgid "Server Quota Attainment"
-msgstr ""
-
-msgid "Directory Connector: User in Group"
-msgstr ""
-
-msgid "HTTP: Client User Agent"
-msgstr ""
-
-msgid "HTTP: Client User OS"
-msgstr ""
-
-msgid "Rules"
-msgstr "Regras"
-
-msgid "Note"
-msgstr "Nota"
-
-msgid ""
-" <b>Firewall</b> is a simple application designed to block and flag network "
-"traffic based on a set of rules. To learn more click on the <b>Help</b> "
-"button below.<br/> Routing and Port Forwarding functionality can be found "
-"elsewhere in Config->Networking."
-msgstr ""
-" <b>Firewall</b> é uma aplicação simples criada para bloquear e resgistrar o "
-"tráfego de rede baseado num conjunto de regras. Para aprender mais clique no "
-"botão <b>Ajuda</b> abaixo.<br/> Os recursos de Roteamento e Redirecionamento "
-"de Portas podem ser encontrados em outro local: Config->Rede."
-
-msgid "Rule Id"
-msgstr ""
-
-msgid "new"
-msgstr ""
-
-msgid "Enable"
-msgstr "Habilitar"
-
-msgid "Description"
-msgstr "Descrição"
-
-msgid "Block"
-msgstr "Bloquear"
-
-msgid "Flag"
-msgstr ""
-
-msgid "Enable Rule"
-msgstr "Habilitar regra"
-
-msgid "[no description]"
-msgstr "[nenhuma descrição]"
-
-msgid "If all of the following conditions are met:"
-msgstr ""
-
-msgid "Perform the following action(s):"
-msgstr ""
-
-msgid "Action Type"
-msgstr ""
-
-msgid "Pass"
-msgstr "Permitir"
+msgid "Sessions blocked"
+msgstr "Sessões bloqueadas"
 
 msgid "Summary Report"
 msgstr "Relatório Resumido"
@@ -265,161 +149,136 @@ msgstr "Regra aplicada"
 msgid "Destination Ip"
 msgstr "IP de Destino"
 
+msgid "Destination Port"
+msgstr "Porta de destino"
+
 msgid "Source Ip"
 msgstr "IP de Origem"
 
-msgid "blocked"
-msgstr "bloqueado"
+msgid "Source Port"
+msgstr "Porta de origem"
 
-msgid "password"
+msgid "Destination Address"
+msgstr "Endereço de destino"
+
+msgid "Destination Interface"
+msgstr "Interface de destino"
+
+msgid "Source Address"
+msgstr "Endereço de fonte"
+
+msgid "Source Interface"
+msgstr "Interface de origem"
+
+msgid "Protocol"
 msgstr ""
 
-msgid "Sessions passed"
-msgstr "Sessões permitidas"
-
-msgid "Sessions flagged"
-msgstr "Sessões registradas"
-
-msgid "Sessions blocked"
-msgstr "Sessões bloqueadas"
-
-msgid "description"
+msgid "any"
 msgstr ""
 
-msgid "The number of flagged session grouped by username."
+msgid "Username"
 msgstr ""
 
-msgid "title"
+msgid "Client Hostname"
 msgstr ""
 
-msgid "Top Flagged Usernames"
+msgid "Server Hostname"
 msgstr ""
 
-msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgid "Client MAC Address"
 msgstr ""
 
-msgid "Scanned Sessions"
+msgid "Server MAC Address"
 msgstr ""
 
-msgid "The number of scanned session grouped by username."
+msgid "Client MAC Vendor"
 msgstr ""
 
-msgid "Top Scanned Usernames"
+msgid "Server MAC Vendor"
 msgstr ""
 
-msgid "The number of flagged session grouped by client."
+msgid "Client in Penalty Box"
 msgstr ""
 
-msgid "Top Blocked Clients"
+msgid "Server in Penalty Box"
 msgstr ""
 
-msgid "The number of flagged session grouped by hostname."
+msgid "Client has no Quota"
 msgstr ""
 
-msgid "Top Flagged Hostnames"
+msgid "Server has no Quota"
 msgstr ""
 
-msgid "Top Blocked Usernames"
+msgid "Client has exceeded Quota"
 msgstr ""
 
-msgid "The number of flagged session grouped by server (destination) port."
+msgid "Server has exceeded Quota"
 msgstr ""
 
-msgid "Top Blocked Server Ports"
+msgid "Client Quota Attainment"
 msgstr ""
 
-msgid "The number of scanned session grouped by client."
+msgid "Server Quota Attainment"
 msgstr ""
 
-msgid "Top Scanned Clients"
+msgid "Directory Connector: User in Group"
 msgstr ""
 
-msgid "The number of scanned session grouped by server (destination) port."
+msgid "HTTP: Client User Agent"
 msgstr ""
 
-msgid "Top Scanned Server Ports"
+msgid "HTTP: Client User OS"
 msgstr ""
 
-msgid "The number of scanned session grouped by hostname."
+msgid "Rules"
+msgstr "Regras"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+" <b>Firewall</b> é uma aplicação simples criada para bloquear e resgistrar o "
+"tráfego de rede baseado num conjunto de regras. Para aprender mais clique no "
+"botão <b>Ajuda</b> abaixo.<br/> Os recursos de Roteamento e Redirecionamento "
+"de Portas podem ser encontrados em outro local: Config->Rede."
+
+msgid "Rule Id"
 msgstr ""
 
-msgid "Top Scanned Hostnames"
+msgid "new"
 msgstr ""
 
-msgid "A summary of firewall actions."
+msgid "Enable"
+msgstr "Habilitar"
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "Block"
+msgstr "Bloquear"
+
+msgid "Flag"
 msgstr ""
 
-msgid "Firewall Summary"
+msgid "Enable Rule"
+msgstr "Habilitar regra"
+
+msgid "[no description]"
+msgstr "[nenhuma descrição]"
+
+msgid "If all of the following conditions are met:"
 msgstr ""
 
-msgid "The number of blocked sessions grouped by hostname."
+msgid "Perform the following action(s):"
 msgstr ""
 
-msgid "Top Blocked Hostnames"
+msgid "Action Type"
 msgstr ""
 
-msgid "Top Flagged Clients"
-msgstr ""
-
-msgid "Top Flagged Server Ports"
-msgstr ""
-
-msgid "Events blocked by Firewall App."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr ""
-
-msgid "Events flagged by Firewall App."
-msgstr ""
-
-msgid "Flagged Events"
-msgstr ""
-
-msgid "All events scanned by Firewall App."
-msgstr ""
-
-msgid "All Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Pass"
+msgstr "Permitir"

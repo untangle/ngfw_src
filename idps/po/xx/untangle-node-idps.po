@@ -1,3 +1,123 @@
+msgid "blocked"
+msgstr "XblockedX"
+
+msgid "detected"
+msgstr "XdetectedX"
+
+msgid "Sessions scanned"
+msgstr "XSessions scannedX"
+
+msgid "Sessions logged"
+msgstr "XSessions loggedX"
+
+msgid "Sessions blocked"
+msgstr "XSessions blockedX"
+
+msgid "Intrusion Prevention"
+msgstr "XIntrusion PreventionX"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
+
+msgid "attacks of which"
+msgstr "Xattacks of whichX"
+
+msgid "were blocked"
+msgstr "Xwere blockedX"
+
+msgid "Top Detected Rules (by Hits)"
+msgstr "XTop Detected Rules (by Hits)X"
+
+msgid "Hits"
+msgstr "XHitsX"
+
+msgid "Rules"
+msgstr "XRulesX"
+
+msgid "Hits Per Day"
+msgstr "XHits Per DayX"
+
+msgid "Top Detected Categories (by Hits)"
+msgstr "XTop Detected Categories (by Hits)X"
+
+msgid "Categories"
+msgstr "XCategoriesX"
+
+msgid "Top Detected Classtypes (by Hits)"
+msgstr "XTop Detected Classtypes (by Hits)X"
+
+msgid "Classtypes"
+msgstr "XClasstypesX"
+
+msgid "Attacks Detected, Logged"
+msgstr "XAttacks Detected, LoggedX"
+
+msgid "Avg Attacks Detected"
+msgstr "XAvg Attacks DetectedX"
+
+msgid "Logged"
+msgstr "XLoggedX"
+
+msgid "Max Attacks Detected"
+msgstr "XMax Attacks DetectedX"
+
+msgid "Attacks"
+msgstr "XAttacksX"
+
+msgid "Attacks Detected"
+msgstr "XAttacks DetectedX"
+
+msgid "Attacks Detected, Blocked"
+msgstr "XAttacks Detected, BlockedX"
+
+msgid "Blocked"
+msgstr "XBlockedX"
+
+msgid "Intrusion Events"
+msgstr "XIntrusion EventsX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "Client"
+msgstr "XClientX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "Protocol"
+msgstr "XProtocolX"
+
+msgid "Source IP Address"
+msgstr "XSource IP AddressX"
+
+msgid "Source Port"
+msgstr "XSource PortX"
+
+msgid "Destination IP Address"
+msgstr "XDestination IP AddressX"
+
+msgid "Sid"
+msgstr "XSidX"
+
+msgid "Classtype"
+msgstr "XClasstypeX"
+
+msgid "Category"
+msgstr "XCategoryX"
+
+msgid "Msg"
+msgstr "XMsgX"
+
+msgid "Destination Port"
+msgstr "XDestination PortX"
+
+msgid "Gid"
+msgstr "XGidX"
+
+msgid "Cid"
+msgstr "XCidX"
+
 msgid "Attempted Administrator Privilege Gain"
 msgstr "XAttempted Administrator Privilege GainX"
 
@@ -115,16 +235,16 @@ msgstr "XThis category contains URI, USER-AGENT, DNS, and IP address rules that 
 
 msgid ""
 "This category contains detection for vulnerabilities present in the Chrome "
-"browser. (This is separate from the 'browser-webkit' category, as Chrome has "
+"browser. (This is separate from the browser-webkit category, as Chrome has "
 "enough vulnerabilities to be broken out into it's own, and while it uses the "
 "Webkit rendering engine, there's a lot of other features to Chrome.)"
-msgstr "XThis category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the 'browser-webkit' category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)X"
+msgstr "XThis category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)X"
 
 msgid ""
 "This category contains detection for vulnerabilities present in the Firefox "
-"browser, or products that have the 'Gecko' engine. (Thunderbird email "
-"client, etc)"
-msgstr "XThis category contains detection for vulnerabilities present in the Firefox browser, or products that have the 'Gecko' engine. (Thunderbird email client, etc)X"
+"browser, or products that have the Gecko engine. (Thunderbird email client, "
+"etc)"
+msgstr "XThis category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)X"
 
 msgid ""
 "This category contains detection for vulnerabilities present in the Internet "
@@ -148,9 +268,9 @@ msgid ""
 msgstr "XThis category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)X"
 
 msgid ""
-"This category containt any rule that utilizes the 'replace' functionality "
+"This category containt any rule that utilizes the replace functionality "
 "inside of Snort."
-msgstr "XThis category containt any rule that utilizes the 'replace' functionality inside of Snort.X"
+msgstr "XThis category containt any rule that utilizes the replace functionality inside of Snort.X"
 
 msgid ""
 "When a rule has been deprecated or replaced it is moved to this categories. "
@@ -164,10 +284,10 @@ msgstr "XThis is an older category which will be deprecated soon. This category 
 
 msgid ""
 "This category contains rules that are specifically tailored to detect "
-"exploit kit activity. This does not include 'post-compromise' rules (as "
-"those would be in indicator-compromise). Files that are dropped as result of "
+"exploit kit activity. This does not include post-compromise rules (as those "
+"would be in indicator-compromise). Files that are dropped as result of "
 "visiting an exploit kit would be in their respective file category."
-msgstr "XThis category contains rules that are specifically tailored to detect exploit kit activity. This does not include 'post-compromise' rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.X"
+msgstr "XThis category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.X"
 
 msgid ""
 "This category contains rules for vulnerabilities that are found or are "
@@ -227,8 +347,8 @@ msgstr "XThis category contains rules that are clearly used only for the detecti
 msgid ""
 "This category contains rules that are simply looking for simple "
 "identification markers of shellcode in traffic. This replaces the old "
-"'shellcode.rules'."
-msgstr "XThis category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old 'shellcode.rules'.X"
+"shellcode.rules."
+msgstr "XThis category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules.X"
 
 msgid ""
 "This category contains rules for the detection of traffic destined to known "
@@ -242,9 +362,9 @@ msgstr "XThis category contains rules for the detection of traffic destined to k
 msgid ""
 "This category contains known malicious command and control activity for "
 "identified botnet traffic. This includes call home, downloading of dropped "
-"files, and ex-filtration of data. Actual commands issued from 'Master to "
-"Zombie' type stuff will also be here."
-msgstr "XThis category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from 'Master to Zombie' type stuff will also be here.X"
+"files, and ex-filtration of data. Actual commands issued from Master to "
+"Zombie type stuff will also be here."
+msgstr "XThis category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here.X"
 
 msgid ""
 "This category contains rules that deal with tools that can be considered "
@@ -253,8 +373,8 @@ msgstr "XThis category contains rules that deal with tools that can be considere
 
 msgid ""
 "This category contains rules that are malware related, but don't fit into "
-"one of the other 'malware' categories."
-msgstr "XThis category contains rules that are malware related, but don't fit into one of the other 'malware' categories.X"
+"one of the other malware categories."
+msgstr "XThis category contains rules that are malware related, but don't fit into one of the other malware categories.X"
 
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Linux "
@@ -335,25 +455,25 @@ msgid ""
 msgstr "XThis category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.X"
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with adware or spyware."
-msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with adware or spyware.X"
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with adware or spyware."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with adware or spyware.X"
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with p2p."
-msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with p2p.X"
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with p2p."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with p2p.X"
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"deal with toolbars installed on the client system. (Google Toolbar, Yahoo "
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with toolbars installed on the client system. (Google Toolbar, Yahoo "
 "Toolbar, Hotbar, etc)"
-msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)X"
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)X"
 
 msgid ""
-"This category deals with 'pua' or Potentially Unwanted Applications that "
-"don't fit into one of the categories shown above."
-msgstr "XThis category deals with 'pua' or Potentially Unwanted Applications that don't fit into one of the categories shown above.X"
+"This category deals with pua or Potentially Unwanted Applications that don't "
+"fit into one of the categories shown above."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above.X"
 
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Apache "
@@ -443,9 +563,6 @@ msgstr "XNeverX"
 msgid "Last update"
 msgstr "XLast updateX"
 
-msgid "Rules"
-msgstr "XRulesX"
-
 msgid "{0} logging or blocking"
 msgstr "X{0} logging or blockingX"
 
@@ -467,23 +584,11 @@ msgstr "XBlockX"
 msgid "Loading..."
 msgstr "XLoading...X"
 
-msgid "Sid"
-msgstr "XSidX"
-
 msgid "Sid:"
 msgstr "XSid:X"
 
 msgid "Gid:"
 msgstr "XGid:X"
-
-msgid "Classtype"
-msgstr "XClasstypeX"
-
-msgid "Category"
-msgstr "XCategoryX"
-
-msgid "Msg"
-msgstr "XMsgX"
 
 msgid "Reference"
 msgstr "XReferenceX"
@@ -619,9 +724,6 @@ msgstr "XSetup Wizard ErrorX"
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
 msgstr "XUnable to obtain default settings.  Please run the Setup Wizard again.X"
 
-msgid "Classtypes"
-msgstr "XClasstypesX"
-
 msgid ""
 "Classtypes are a generalized  grouping for rules, such as attempts to gain "
 "user access."
@@ -638,9 +740,6 @@ msgstr "XCustomX"
 
 msgid "None.  Classtypes within selected categories will be used."
 msgstr "XNone.  Classtypes within selected categories will be used.X"
-
-msgid "Categories"
-msgstr "XCategoriesX"
 
 msgid ""
 "Categories are a different rule grouping that can span multiple classtypes, "
@@ -662,239 +761,59 @@ msgstr "XCongratulations!X"
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr "XIntrusion Prevention is now configured and enabled.X"
 
-msgid "Intrusion Prevention"
-msgstr "XIntrusion PreventionX"
 
-msgid "Summary Report"
-msgstr "XSummary ReportX"
 
-msgid "detected"
-msgstr "XdetectedX"
 
-msgid "attacks of which"
-msgstr "Xattacks of whichX"
 
-msgid "were blocked"
-msgstr "Xwere blockedX"
 
-msgid "Top Detected Rules (by Hits)"
-msgstr "XTop Detected Rules (by Hits)X"
 
-msgid "Hits"
-msgstr "XHitsX"
 
-msgid "Hits Per Day"
-msgstr "XHits Per DayX"
 
-msgid "Top Detected Categories (by Hits)"
-msgstr "XTop Detected Categories (by Hits)X"
 
-msgid "Top Detected Classtypes (by Hits)"
-msgstr "XTop Detected Classtypes (by Hits)X"
 
-msgid "Attacks Detected, Logged"
-msgstr "XAttacks Detected, LoggedX"
 
-msgid "Avg Attacks Detected"
-msgstr "XAvg Attacks DetectedX"
 
-msgid "Logged"
-msgstr "XLoggedX"
 
-msgid "Max Attacks Detected"
-msgstr "XMax Attacks DetectedX"
 
-msgid "Attacks"
-msgstr "XAttacksX"
 
-msgid "Attacks Detected"
-msgstr "XAttacks DetectedX"
 
-msgid "Attacks Detected, Blocked"
-msgstr "XAttacks Detected, BlockedX"
 
-msgid "Blocked"
-msgstr "XBlockedX"
 
-msgid "Intrusion Events"
-msgstr "XIntrusion EventsX"
 
-msgid "Time"
-msgstr "XTimeX"
 
-msgid "Client"
-msgstr "XClientX"
 
-msgid "User"
-msgstr "XUserX"
 
-msgid "Protocol"
-msgstr "XProtocolX"
 
-msgid "Source IP Address"
-msgstr "XSource IP AddressX"
 
-msgid "Source Port"
-msgstr "XSource PortX"
 
-msgid "Destination IP Address"
-msgstr "XDestination IP AddressX"
 
-msgid "Destination Port"
-msgstr "XDestination PortX"
 
-msgid "Gid"
-msgstr "XGidX"
 
-msgid "Cid"
-msgstr "XCidX"
 
-msgid "blocked"
-msgstr "XblockedX"
 
-msgid "Sessions scanned"
-msgstr "XSessions scannedX"
 
-msgid "Sessions logged"
-msgstr "XSessions loggedX"
 
-msgid "Sessions blocked"
-msgstr "XSessions blockedX"
 
-msgid "description"
-msgstr "XdescriptionX"
 
-msgid "The amount of detected and blocked intrusions over time."
-msgstr "XThe amount of detected and blocked intrusions over time.X"
 
-msgid "title"
-msgstr "XtitleX"
 
-msgid "Intrusion Detection (all)"
-msgstr "XIntrusion Detection (all)X"
 
-msgid "The number of intrusions detected grouped by source IP address."
-msgstr "XThe number of intrusions detected grouped by source IP address.X"
 
-msgid "Top Source IP Addresses (logged)"
-msgstr "XTop Source IP Addresses (logged)X"
 
-msgid "The number of intrusions detected grouped by category."
-msgstr "XThe number of intrusions detected grouped by category.X"
 
-msgid "Top Categories (logged)"
-msgstr "XTop Categories (logged)X"
 
-msgid "The number of intrusions blocked by source port."
-msgstr "XThe number of intrusions blocked by source port.X"
 
-msgid "Top Source Port (blocked)"
-msgstr "XTop Source Port (blocked)X"
 
-msgid "The number of intrusions blocked by rule."
-msgstr "XThe number of intrusions blocked by rule.X"
 
-msgid "Top Rules (blocked)"
-msgstr "XTop Rules (blocked)X"
 
-msgid "The number of intrusions blocked by destination port."
-msgstr "XThe number of intrusions blocked by destination port.X"
 
-msgid "Top Destination Port (blocked)"
-msgstr "XTop Destination Port (blocked)X"
 
-msgid "The amount of blocked intrusions over time."
-msgstr "XThe amount of blocked intrusions over time.X"
 
-msgid "Intrusion Detection (blocked)"
-msgstr "XIntrusion Detection (blocked)X"
 
-msgid "The number of intrusions blocked by classtype."
-msgstr "XThe number of intrusions blocked by classtype.X"
 
-msgid "Top Classtypes (blocked)"
-msgstr "XTop Classtypes (blocked)X"
 
-msgid "The number of intrusions detected grouped by rule."
-msgstr "XThe number of intrusions detected grouped by rule.X"
 
-msgid "Top Rules (logged)"
-msgstr "XTop Rules (logged)X"
 
-msgid "The number of intrusions blocked by category."
-msgstr "XThe number of intrusions blocked by category.X"
 
-msgid "Top Categories (blocked)"
-msgstr "XTop Categories (blocked)X"
 
-msgid "The number of intrusions blocked by source IP address."
-msgstr "XThe number of intrusions blocked by source IP address.X"
 
-msgid "Top Source IP Addresses (blocked)"
-msgstr "XTop Source IP Addresses (blocked)X"
-
-msgid "The number of intrusions detected grouped by destination IP address."
-msgstr "XThe number of intrusions detected grouped by destination IP address.X"
-
-msgid "Top Destination IP Addresses (logged)"
-msgstr "XTop Destination IP Addresses (logged)X"
-
-msgid "The amount of detected pintrusions over time."
-msgstr "XThe amount of detected pintrusions over time.X"
-
-msgid "Intrusion Detection (logged)"
-msgstr "XIntrusion Detection (logged)X"
-
-msgid "The number of intrusions detected grouped by source port."
-msgstr "XThe number of intrusions detected grouped by source port.X"
-
-msgid "Top Source Ports (logged)"
-msgstr "XTop Source Ports (logged)X"
-
-msgid "A summary of intrusion detection and prevention actions."
-msgstr "XA summary of intrusion detection and prevention actions.X"
-
-msgid "Intrusion Prevention Summary"
-msgstr "XIntrusion Prevention SummaryX"
-
-msgid "The number of intrusions detected grouped by classtype."
-msgstr "XThe number of intrusions detected grouped by classtype.X"
-
-msgid "Top Classtypes (logged)"
-msgstr "XTop Classtypes (logged)X"
-
-msgid "The number of intrusions detected grouped by destination port."
-msgstr "XThe number of intrusions detected grouped by destination port.X"
-
-msgid "Top Destination Ports (logged)"
-msgstr "XTop Destination Ports (logged)X"
-
-msgid "The number of intrusions blocked by protocol."
-msgstr "XThe number of intrusions blocked by protocol.X"
-
-msgid "Top Protocols (blocked)"
-msgstr "XTop Protocols (blocked)X"
-
-msgid "The number of intrusions blocked by destination IP address."
-msgstr "XThe number of intrusions blocked by destination IP address.X"
-
-msgid "Top Destination IP Addresses (blocked)"
-msgstr "XTop Destination IP Addresses (blocked)X"
-
-msgid "The number of intrusions detected grouped by protocol."
-msgstr "XThe number of intrusions detected grouped by protocol.X"
-
-msgid "Top Protocols (logged)"
-msgstr "XTop Protocols (logged)X"
-
-msgid "All sessions scanned by Intrusion Prevention."
-msgstr "XAll sessions scanned by Intrusion Prevention.X"
-
-msgid "All Events"
-msgstr "XAll EventsX"
-
-msgid "All sessions matching Intrusion Prevention signatures and blocked."
-msgstr "XAll sessions matching Intrusion Prevention signatures and blocked.X"
-
-msgid "Blocked Events"
-msgstr "XBlocked EventsX"

@@ -14,6 +14,51 @@ msgstr ""
 "X-Generator: Pootle 2.0.6\n"
 "X-Poedit-Language: German\n"
 
+msgid "scored"
+msgstr ""
+
+msgid "as"
+msgstr ""
+
+msgid "Messages received"
+msgstr ""
+
+msgid "Messages passed"
+msgstr ""
+
+msgid "Messages dropped"
+msgstr ""
+
+msgid "Messages marked"
+msgstr ""
+
+msgid "Messages quarantined"
+msgstr ""
+
+msgid "Spam detected"
+msgstr ""
+
+msgid "tarpit"
+msgstr ""
+
+msgid "blocked"
+msgstr ""
+
+msgid "Spam"
+msgstr "Spam"
+
+msgid "Clean"
+msgstr "Sauber"
+
+msgid "Hourly Spam Rate"
+msgstr "Stündliche Spam Rate"
+
+msgid "Spam Rate"
+msgstr "Spam Rate"
+
+msgid "Top Ten Spammed"
+msgstr "Top Ten Spammed"
+
 msgid "Mark"
 msgstr "Markieren"
 
@@ -143,163 +188,3 @@ msgstr ""
 
 msgid "Spam Blocker Lite was last updated"
 msgstr "Spam Blocker wurde zuletzt aktualisiert am"
-
-msgid "Spam"
-msgstr "Spam"
-
-msgid "Clean"
-msgstr "Sauber"
-
-msgid "Hourly Spam Rate"
-msgstr "Stündliche Spam Rate"
-
-msgid "Spam Rate"
-msgstr "Spam Rate"
-
-msgid "Top Ten Spammed"
-msgstr "Top Ten Spammed"
-
-msgid "description"
-msgstr ""
-
-msgid "The amount of scanned, clean, and spam email over time."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Email Usage (all)"
-msgstr ""
-
-msgid "The amount of clean email over time."
-msgstr ""
-
-msgid "Email Usage (clean)"
-msgstr ""
-
-msgid "The number of IP addresses sending spam."
-msgstr ""
-
-msgid "Top Spam Sender Addresses"
-msgstr ""
-
-msgid "The amount of spam email over time."
-msgstr ""
-
-msgid "Email Usage (spam)"
-msgstr ""
-
-msgid "The ratio of spam (true) to ham (false)"
-msgstr ""
-
-msgid "Spam Ratio"
-msgstr ""
-
-msgid "The amount of scanned email over time."
-msgstr ""
-
-msgid "Email Usage (scanned)"
-msgstr ""
-
-msgid "The number of email addresses with spam."
-msgstr ""
-
-msgid "Top Spam Recipients"
-msgstr ""
-
-msgid "A summary of spam blocking actions for email activity."
-msgstr ""
-
-msgid "Spam Blocker Lite Summary"
-msgstr ""
-
-msgid "All emails marked as Spam and quarantined."
-msgstr ""
-
-msgid "Quarantined Events"
-msgstr ""
-
-msgid "All emails scanned by Spam Blocker."
-msgstr ""
-
-msgid "All Email Events"
-msgstr ""
-
-msgid "All emails marked as Spam."
-msgstr ""
-
-msgid "All Spam Events"
-msgstr ""
-
-msgid "All email sessions that were tarpitted."
-msgstr ""
-
-msgid "Tarpit Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

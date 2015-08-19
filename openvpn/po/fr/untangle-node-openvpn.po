@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-16 11:50-0700\n"
 "PO-Revision-Date: 2011-10-28 05:35-0700\n"
 "Last-Translator: Thomas VIDAL <tvidal@inibap.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,6 +11,84 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
+
+msgid "status"
+msgstr ""
+
+msgid "event"
+msgstr ""
+
+msgid "Sessions passed"
+msgstr ""
+
+msgid "Clients Connected"
+msgstr "Clients connectés"
+
+msgid "primary network"
+msgstr ""
+
+msgid "Default Group"
+msgstr ""
+
+msgid "Invalid Settings"
+msgstr ""
+
+msgid "conflicts with address"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "Rapport sommaire"
+
+msgid "securely passed"
+msgstr "passé sécurisé"
+
+msgid "MB"
+msgstr "MB"
+
+msgid "of traffic and processed"
+msgstr "de traffic et traités"
+
+msgid "remote logins"
+msgstr "connexions à distance"
+
+msgid "Bandwidth Usage"
+msgstr "Utilisation de la bande passante"
+
+msgid "Avg Data Rate"
+msgstr "Taux moyen de données"
+
+msgid "Max Data Rate"
+msgstr "Taux max de données"
+
+msgid "Data Transferred"
+msgstr "Données transférées"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Throughput (kB/s)"
+msgstr "Débit (Kb/sec)"
+
+msgid "Usage (kB/sec)"
+msgstr "Utilisation (Ko/sec)"
+
+msgid "Top Users"
+msgstr "Top des utilisateurs"
+
+msgid "Login Events"
+msgstr "Evènements de connexion"
+
+msgid "Time"
+msgstr "Heure"
+
+msgid "Client"
+msgstr "Client"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Port"
+msgstr "Port"
 
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
@@ -22,12 +100,6 @@ msgstr ""
 
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr ""
-
-msgid "Address"
-msgstr "Adresse"
-
-msgid "Client"
-msgstr "Client"
 
 msgid "Pool Address"
 msgstr ""
@@ -256,9 +328,6 @@ msgstr ""
 msgid "Client To Client Allowed"
 msgstr ""
 
-msgid "Port"
-msgstr "Port"
-
 msgid "Protocol"
 msgstr ""
 
@@ -291,295 +360,18 @@ msgid "You must create at least one group."
 msgstr "Vous devez créer au moins un groupe."
 
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
 msgstr ""
-"Le groupe: \"{0}\" ne peut pas être supprimé car il est utilisé par le "
-"client: {1} dans la Liste des Clients du Site."
 
-msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "Le nom de groupe: \"{0}\" à la ligne: {1} existe déjà."
+msgid "The group name: {0} in row: {1} already exists."
+msgstr ""
 
 msgid "Changing name is not allowed. Create a new user."
 msgstr "Le changement de nom n'est pas autorisé. Créez un nouveau utilisateur."
 
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "Le nom de client: \"{0}\" à la ligne: {1} existe déjà."
-
-msgid "Summary Report"
-msgstr "Rapport sommaire"
-
-msgid "securely passed"
-msgstr "passé sécurisé"
-
-msgid "MB"
-msgstr "MB"
-
-msgid "of traffic and processed"
-msgstr "de traffic et traités"
-
-msgid "remote logins"
-msgstr "connexions à distance"
-
-msgid "Bandwidth Usage"
-msgstr "Utilisation de la bande passante"
-
-msgid "Avg Data Rate"
-msgstr "Taux moyen de données"
-
-msgid "Max Data Rate"
-msgstr "Taux max de données"
-
-msgid "Data Transferred"
-msgstr "Données transférées"
-
-msgid "Date"
-msgstr "Date"
-
-msgid "Throughput (kB/s)"
-msgstr "Débit (Kb/sec)"
-
-msgid "Usage (kB/sec)"
-msgstr "Utilisation (Ko/sec)"
-
-msgid "Top Users"
-msgstr "Top des utilisateurs"
-
-msgid "Login Events"
-msgstr "Evènements de connexion"
-
-msgid "Time"
-msgstr "Heure"
-
-msgid "event"
+msgid "The client name: {0} in row: {1} already exists."
 msgstr ""
-
-msgid "Sessions passed"
-msgstr ""
-
-msgid "Clients Connected"
-msgstr "Clients connectés"
-
-msgid "primary network"
-msgstr ""
-
-msgid "Default Group"
-msgstr ""
-
-msgid "Invalid Settings"
-msgstr ""
-
-msgid "conflicts with address"
-msgstr ""
-
-msgid "status"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The approximate amount of data transfered over openvpn connections."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "OpenVPN Bandwidth Usage"
-msgstr ""
-
-msgid "The number of bytes transferred grouped by remote client."
-msgstr ""
-
-msgid "Top Clients (by usage)"
-msgstr ""
-
-msgid "The amount of openvpn sessions over time."
-msgstr ""
-
-msgid "OpenVPN Sessions"
-msgstr ""
-
-msgid "The amount of login and logout events over time."
-msgstr ""
-
-msgid "OpenVPN Events"
-msgstr ""
-
-msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr ""
-
-msgid "Statistic Events"
-msgstr ""
-
-msgid "OpenVPN client connection events."
-msgstr ""
-
-msgid "Connection Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

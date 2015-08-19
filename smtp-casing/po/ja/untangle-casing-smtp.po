@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-15 21:24-0700\n"
 "PO-Revision-Date: 2010-01-03 17:31+0900\n"
 "Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,276 +12,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-msgid "Releasing..."
+msgid "sent"
 msgstr ""
 
-msgid "Release to Inbox"
+msgid "received"
 msgstr ""
 
-msgid "Release to Inbox & Add Senders to Safe List"
+msgid "involved in"
 msgstr ""
 
-msgid "Deleting..."
+msgid "email"
 msgstr ""
 
-msgid "Delete"
+msgid "subject"
 msgstr ""
 
-msgid "Please wait"
+msgid "sender"
 msgstr ""
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-msgid "An error has occurred."
-msgstr ""
-
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-msgid "The connection to the server has been lost."
-msgstr ""
-
-msgid "Press OK to return to the login page."
-msgstr ""
-
-msgid "An error has occurred"
-msgstr ""
-
-msgid "Exception name"
-msgstr ""
-
-msgid "Exception code"
-msgstr ""
-
-msgid "Exception message"
-msgstr ""
-
-msgid "Exception java stack"
-msgstr ""
-
-msgid "Exception js stack"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Deleted one Message"
-msgstr "1メッセージを削除しました"
-
-msgid "Deleted {0} Messages"
-msgstr "{0} メッセージを削除しました"
-
-msgid "Released one Message"
-msgstr "1メッセージをリリースしました"
-
-msgid "Released {0} Messages"
-msgstr "{0} メッセージをリリースしました"
-
-msgid "Safelisted one Address"
-msgstr "アドレス一つをセーフリストしました"
-
-msgid "Safelisted {0} Addresses"
-msgstr "{0} アドレスをセーフリストしました"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "このアカウント {0} は、隔離メッセージを持っていません"
-
-msgid "Please Try Again"
-msgstr "もう一度やり直してください"
-
-msgid "From"
-msgstr "差出人"
-
-msgid "Number of Attachments in the email."
-msgstr "メールの添付ファイルの数"
-
-msgid "Score"
-msgstr "スコア"
-
-msgid "Subject"
-msgstr "件名"
-
-msgid "Date"
-msgstr "日付"
-
-msgid "Size (KB)"
-msgstr "サイズ(KB)"
-
-msgid "Filter:"
-msgstr ""
-
-msgid "Case sensitive"
-msgstr ""
-
-msgid "Clear Filters"
-msgstr ""
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr ""
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr "以下のメッセージは検疫されたあと、{0} 日後に削除されます。"
-
-msgid "Quarantined Messages"
-msgstr "検疫されたメッセージ"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr ""
-
-msgid "Safe List"
-msgstr ""
-
-msgid "Email Address"
-msgstr "Eメールアドレス"
-
-msgid "Delete Addresses"
-msgstr "アドレスの削除"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "検疫メッセージの転送:"
-
-msgid "Address"
-msgstr "住所"
-
-msgid "Change Address"
-msgstr ""
-
-msgid "Received Quarantined Messages From:"
-msgstr "検疫メッセージを以下から受信："
-
-msgid "Forward or Receive Quarantines"
-msgstr "転送または受信検疫"
-
-msgid "Unable to set the forward."
-msgstr "フォワードを設定することはできません。"
-
-msgid "Unable to delete an entry."
-msgstr "エントリを削除することができません。"
-
-msgid "Delete one Remap"
-msgstr "リマップを一つ削除"
-
-msgid "Deleted {0} Remaps"
-msgstr "{0}リマップを削除しました"
-
-msgid "Unable to update remap table."
-msgstr "リマップテーブルをアップデートすることができません"
-
-msgid "Delete one Addressess"
-msgstr "アドレスを一つ削除"
-
-msgid "Delete {0} Addresses"
-msgstr "{0}アドレスを削除"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr ""
-"あなたのリモートアクセスポータルのログインは、有効なメールアドレスで構成され"
-"ていません。"
-
-msgid "Select User"
-msgstr "ユーザを選択"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr "検疫ダイジェストを希望する場合は、メールアドレスを入力してください"
-
-msgid "Request"
-msgstr "リクエスト"
-
-msgid "Requesting Digest"
-msgstr ""
-
-msgid "Please Wait"
-msgstr ""
-
-msgid "Successfully sent digest to '{0}'"
-msgstr "'{0}'　への正常送信ダイジェスト"
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr "検疫'{0}'は存在しません"
-
-msgid "Quarantine Request"
-msgstr "検疫要求"
-
-msgid "Add"
-msgstr "追加"
-
-msgid "Add an Email Address to Safelist"
-msgstr "セーフリストにメールアドレスを追加"
-
-msgid "Save"
-msgstr "保存"
-
-msgid "Cancel"
-msgstr "キャンセル"
-
-msgid "Deleted one address"
-msgstr "アドレスを一件削除しました"
-
-msgid "Deleted {0} addresses"
-msgstr "{0}アドレスを削除しました"
-
-msgid "Delete one Address"
-msgstr "アドレスを一件削除"
 
 msgid "Quarantine Digest"
 msgstr "検疫ダイジェスト"
 
-msgid "The attached message from"
-msgstr ""
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr ""
 
-msgid "where anything above"
-msgstr ""
 
-msgid "is spam."
-msgstr ""
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
 
-msgid "Quarantine Digest for {0}"
-msgstr "{0}のための検疫ダイジェスト"
 
-msgid "Click here to access your spam quarantine."
-msgstr "ここをクリックして、スパム検疫にアクセスします。"
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr ""
-"スパム検疫は、あなたの電子メールアカウントが持っている電子メールを含みます。"
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr ""
-"隔離されたメールを受信トレイに公開するか、またはスパム検疫関連を使用して削除"
-"できます。"
 
-msgid "Quarantine Digest for: {0}"
-msgstr "検疫ダイジェスト:{0}"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | 検疫ダイジェスト: {1}"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "検疫ダイジェストメールをリクエスト"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | 検疫ダイジェストメールをリクエスト"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

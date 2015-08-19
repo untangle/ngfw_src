@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 22:15-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2008-11-27 23:55-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,103 +16,70 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: CHINA\n"
 
-msgid "Web"
-msgstr "互联网（Web）"
+msgid "Documents scanned"
+msgstr "已扫描文档"
 
-msgid "Scan HTTP"
-msgstr "扫描HTTP"
+msgid "Documents blocked"
+msgstr "已阻止文档"
 
-msgid "Signatures were last updated"
-msgstr ""
+msgid "Documents passed"
+msgstr "已通过文档"
 
-msgid "never"
-msgstr ""
+msgid "Infections removed"
+msgstr "已移除感染"
 
-msgid "About"
-msgstr ""
-
-msgid "File Extensions"
-msgstr "文件扩展名"
-
-msgid "File Type"
-msgstr "文件类型"
-
-msgid "[enter file type]"
-msgstr ""
-
-msgid "Scan"
-msgstr "扫描"
-
-msgid "Description"
-msgstr "描述"
-
-msgid "[no description]"
-msgstr "【无描述】"
-
-msgid "MIME Types"
-msgstr "MIME类型"
-
-msgid "MIME Type"
-msgstr "MIME类型"
-
-msgid "[enter MIME type]"
-msgstr ""
-
-msgid "FTP"
-msgstr "FTP"
-
-msgid "Scan FTP"
-msgstr "扫描FTP"
-
-msgid "Virus Blocker signatures were last updated"
-msgstr "病毒防护签名最后更新于"
-
-msgid "Unknown"
-msgstr "未知的"
-
-msgid "Email"
-msgstr "电子邮件"
-
-msgid "Scan SMTP"
-msgstr "扫描SMTP"
-
-msgid "Action"
-msgstr "动作"
-
-msgid "pass message"
-msgstr "通过信息"
-
-msgid "remove infection"
-msgstr "删除感染"
-
-msgid "block message"
-msgstr "阻止信息"
-
-msgid "Pass Sites"
-msgstr ""
-
-msgid "Site"
-msgstr ""
-
-msgid "[enter site]"
-msgstr ""
-
-msgid "Pass"
-msgstr ""
-
-msgid "Do not scan traffic to the specified sites.  Use caution!"
-msgstr ""
-
-msgid "Advanced"
-msgstr ""
-
-msgid "Advanced settings require careful configuration."
-msgstr ""
-
-msgid "Summary Report"
-msgstr ""
+msgid "Passed by policy"
+msgstr "由策略通过"
 
 msgid "scanned"
+msgstr ""
+
+msgid "found virus"
+msgstr ""
+
+msgid "The attached message from"
+msgstr ""
+
+msgid "was found to contain the virus"
+msgstr ""
+
+msgid "The infected portion of the message was removed by Virus Blocker."
+msgstr ""
+
+msgid "Feature is not installed."
+msgstr "功能尚未安装。"
+
+msgid "This request has expired."
+msgstr "该请求已过期。"
+
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1}警告"
+
+msgid "{0} Virus Blocker"
+msgstr "{0} 病毒保护"
+
+msgid "{0}This file was blocked{1} because it contains a virus."
+msgstr ""
+
+msgid "If you have any questions, Please contact {0}."
+msgstr "如果您有任何问题，请联系{0}。"
+
+msgid "Host:"
+msgstr "主机："
+
+msgid "URL:"
+msgstr "URL:"
+
+msgid "Reason:"
+msgstr "原因："
+
+msgid "Unblock For Now"
+msgstr "从现在起解除阻止"
+
+msgid "Unblock Permanently"
+msgstr "永久性解除阻止"
+
+msgid "Summary Report"
 msgstr ""
 
 msgid "documents and detected and blocked"
@@ -138,6 +105,9 @@ msgstr ""
 
 msgid "Top Web Viruses Detected"
 msgstr ""
+
+msgid "Unknown"
+msgstr "未知的"
 
 msgid "Name"
 msgstr ""
@@ -199,92 +169,92 @@ msgstr ""
 msgid "Client Port"
 msgstr ""
 
-msgid "Feature is not installed."
-msgstr "功能尚未安装。"
+msgid "Web"
+msgstr "互联网（Web）"
 
-msgid "This request has expired."
-msgstr "该请求已过期。"
+msgid "Scan HTTP"
+msgstr "扫描HTTP"
 
-msgid "{0} | {1} Warning"
-msgstr "{0} | {1}警告"
-
-msgid "{0} Virus Blocker"
-msgstr "{0} 病毒保护"
-
-msgid "{0}This file was blocked{1} because it contains a virus."
+msgid "Signatures were last updated"
 msgstr ""
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "如果您有任何问题，请联系{0}。"
-
-msgid "found virus"
+msgid "never"
 msgstr ""
 
-msgid "Documents scanned"
-msgstr "已扫描文档"
+msgid "About"
+msgstr ""
 
-msgid "Documents blocked"
-msgstr "已阻止文档"
+msgid "File Extensions"
+msgstr "文件扩展名"
 
-msgid "Documents passed"
-msgstr "已通过文档"
+msgid "File Type"
+msgstr "文件类型"
 
-msgid "Infections removed"
-msgstr "已移除感染"
+msgid "[enter file type]"
+msgstr ""
 
-msgid "Passed by policy"
-msgstr "由策略通过"
+msgid "Scan"
+msgstr "扫描"
 
-msgid "Host:"
-msgstr "主机："
+msgid "Description"
+msgstr "描述"
 
-msgid "URL:"
-msgstr "URL:"
+msgid "[no description]"
+msgstr "【无描述】"
 
-msgid "Reason:"
-msgstr "原因："
+msgid "MIME Types"
+msgstr "MIME类型"
 
-msgid "Unblock For Now"
-msgstr "从现在起解除阻止"
+msgid "MIME Type"
+msgstr "MIME类型"
 
-msgid "Unblock Permanently"
-msgstr "永久性解除阻止"
+msgid "[enter MIME type]"
+msgstr ""
 
+msgid "FTP"
+msgstr "FTP"
 
+msgid "Scan FTP"
+msgstr "扫描FTP"
 
+msgid "Virus Blocker signatures were last updated"
+msgstr "病毒防护签名最后更新于"
 
+msgid "Email"
+msgstr "电子邮件"
 
+msgid "Scan SMTP"
+msgstr "扫描SMTP"
 
+msgid "Action"
+msgstr "动作"
 
+msgid "pass message"
+msgstr "通过信息"
 
+msgid "remove infection"
+msgstr "删除感染"
 
+msgid "block message"
+msgstr "阻止信息"
 
+msgid "Pass Sites"
+msgstr ""
 
+msgid "Site"
+msgstr ""
 
+msgid "[enter site]"
+msgstr ""
 
+msgid "Pass"
+msgstr ""
 
+msgid "Do not scan traffic to the specified sites.  Use caution!"
+msgstr ""
 
+msgid "Advanced"
+msgstr ""
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Advanced settings require careful configuration."
+msgstr ""

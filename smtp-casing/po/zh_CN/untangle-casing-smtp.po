@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-15 21:24-0700\n"
 "PO-Revision-Date: 2008-11-27 23:32-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,271 +16,54 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: CHINA\n"
 
-msgid "Releasing..."
+msgid "sent"
 msgstr ""
 
-msgid "Release to Inbox"
+msgid "received"
 msgstr ""
 
-msgid "Release to Inbox & Add Senders to Safe List"
+msgid "involved in"
 msgstr ""
 
-msgid "Deleting..."
+msgid "email"
 msgstr ""
 
-msgid "Delete"
+msgid "subject"
 msgstr ""
 
-msgid "Please wait"
+msgid "sender"
 msgstr ""
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-msgid "An error has occurred."
-msgstr ""
-
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-msgid "The connection to the server has been lost."
-msgstr ""
-
-msgid "Press OK to return to the login page."
-msgstr ""
-
-msgid "An error has occurred"
-msgstr ""
-
-msgid "Exception name"
-msgstr ""
-
-msgid "Exception code"
-msgstr ""
-
-msgid "Exception message"
-msgstr ""
-
-msgid "Exception java stack"
-msgstr ""
-
-msgid "Exception js stack"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Deleted one Message"
-msgstr "删除了一封邮件"
-
-msgid "Deleted {0} Messages"
-msgstr "删除了{0}封邮件"
-
-msgid "Released one Message"
-msgstr "释放了一封邮件"
-
-msgid "Released {0} Messages"
-msgstr "释放了{0}封邮件"
-
-msgid "Safelisted one Address"
-msgstr "添加了一个地址到安全列表"
-
-msgid "Safelisted {0} Addresses"
-msgstr "添加了{0}个地址到安全列表"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "账户{0}没有任何被隔离的邮件。"
-
-msgid "Please Try Again"
-msgstr ""
-
-msgid "From"
-msgstr "来至"
-
-msgid "Number of Attachments in the email."
-msgstr "电子邮件中的附件数。"
-
-msgid "Score"
-msgstr "积分"
-
-msgid "Subject"
-msgstr "主题"
-
-msgid "Date"
-msgstr "日期"
-
-msgid "Size (KB)"
-msgstr "大小(KB)"
-
-msgid "Filter:"
-msgstr ""
-
-msgid "Case sensitive"
-msgstr ""
-
-msgid "Clear Filters"
-msgstr ""
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr ""
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr "以下的邮件已被隔离并将在{0}日后被删除。"
-
-msgid "Quarantined Messages"
-msgstr "已隔离邮件"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr ""
-
-msgid "Safe List"
-msgstr ""
-
-msgid "Email Address"
-msgstr "电子邮件地址"
-
-msgid "Delete Addresses"
-msgstr "删除地址"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "转发被隔离邮件到："
-
-msgid "Address"
-msgstr "地址"
-
-msgid "Change Address"
-msgstr ""
-
-msgid "Received Quarantined Messages From:"
-msgstr "接收到的被隔离邮件来至于："
-
-msgid "Forward or Receive Quarantines"
-msgstr "转发或接收隔离邮件"
-
-msgid "Unable to set the forward."
-msgstr "无法设定转发。"
-
-msgid "Unable to delete an entry."
-msgstr "无法删除一个登入条目"
-
-msgid "Delete one Remap"
-msgstr "删除一个重映射"
-
-msgid "Deleted {0} Remaps"
-msgstr "删除{0}个重映射"
-
-msgid "Unable to update remap table."
-msgstr "无法更新重映射表"
-
-msgid "Delete one Addressess"
-msgstr "删除一个地址"
-
-msgid "Delete {0} Addresses"
-msgstr "删除{0}个地址"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr "您远程访问门户的登录没有配置有效的电子邮件地址。"
-
-msgid "Select User"
-msgstr "选择用户"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr "输入您希望隔离摘要发送的电子邮件地址"
-
-msgid "Request"
-msgstr "请求"
-
-msgid "Requesting Digest"
-msgstr ""
-
-msgid "Please Wait"
-msgstr ""
-
-msgid "Successfully sent digest to '{0}'"
-msgstr ""
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr ""
-
-msgid "Quarantine Request"
-msgstr ""
-
-msgid "Add"
-msgstr "添加"
-
-msgid "Add an Email Address to Safelist"
-msgstr "添加一个电子邮件地址到安全列表"
-
-msgid "Save"
-msgstr "保存"
-
-msgid "Cancel"
-msgstr "取消"
-
-msgid "Deleted one address"
-msgstr "删除了一个地址"
-
-msgid "Deleted {0} addresses"
-msgstr "删除了{0}个地址"
-
-msgid "Delete one Address"
-msgstr "删除一个地址"
 
 msgid "Quarantine Digest"
 msgstr ""
 
-msgid "The attached message from"
-msgstr ""
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr ""
 
-msgid "where anything above"
-msgstr ""
 
-msgid "is spam."
-msgstr ""
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
 
-msgid "Quarantine Digest for {0}"
-msgstr "隔离摘要为：{0}"
 
-msgid "Click here to access your spam quarantine."
-msgstr ""
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr ""
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr ""
 
-msgid "Quarantine Digest for: {0}"
-msgstr "隔离摘要为：{0}"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | 隔离摘要为：{1}"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "请求隔离摘要电子邮件"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | 请求隔离摘要电子邮件"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

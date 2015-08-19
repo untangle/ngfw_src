@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2010-03-31 07:06-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,136 +12,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-msgid "Destination Address"
-msgstr "Adresse de Destination"
+msgid "blocked"
+msgstr "bloqué(e)"
 
-msgid "Destination Port"
-msgstr "Port Destination"
-
-msgid "Destination Interface"
-msgstr "Interface de Destination"
-
-msgid "Source Address"
-msgstr "Adresse Source"
-
-msgid "Source Port"
-msgstr "Port Source"
-
-msgid "Source Interface"
-msgstr "Interface Source"
-
-msgid "Protocol"
+msgid "password"
 msgstr ""
 
-msgid "any"
-msgstr ""
+msgid "Sessions passed"
+msgstr "Sessions passées"
 
-msgid "Username"
-msgstr ""
+msgid "Sessions flagged"
+msgstr "Sessions enregistrées"
 
-msgid "Client Hostname"
-msgstr ""
-
-msgid "Server Hostname"
-msgstr ""
-
-msgid "Client MAC Address"
-msgstr ""
-
-msgid "Server MAC Address"
-msgstr ""
-
-msgid "Client MAC Vendor"
-msgstr ""
-
-msgid "Server MAC Vendor"
-msgstr ""
-
-msgid "Client in Penalty Box"
-msgstr ""
-
-msgid "Server in Penalty Box"
-msgstr ""
-
-msgid "Client has no Quota"
-msgstr ""
-
-msgid "Server has no Quota"
-msgstr ""
-
-msgid "Client has exceeded Quota"
-msgstr ""
-
-msgid "Server has exceeded Quota"
-msgstr ""
-
-msgid "Client Quota Attainment"
-msgstr ""
-
-msgid "Server Quota Attainment"
-msgstr ""
-
-msgid "Directory Connector: User in Group"
-msgstr ""
-
-msgid "HTTP: Client User Agent"
-msgstr ""
-
-msgid "HTTP: Client User OS"
-msgstr ""
-
-msgid "Rules"
-msgstr "Règles"
-
-msgid "Note"
-msgstr "Note"
-
-msgid ""
-" <b>Firewall</b> is a simple application designed to block and flag network "
-"traffic based on a set of rules. To learn more click on the <b>Help</b> "
-"button below.<br/> Routing and Port Forwarding functionality can be found "
-"elsewhere in Config->Networking."
-msgstr ""
-" <b>Firewall</b> est une application simple conçue pour bloquer et consigner "
-"le trafic réseau basé sur un ensemble de règles. Pour en savoir plus, "
-"cliquez sur le lien <b>Aide</b> ci-dessous.<br/>La fonctionnalité de routage "
-"et de Port Forwarding peut être trouvé ailleurs dans Config->Networking."
-
-msgid "Rule Id"
-msgstr ""
-
-msgid "new"
-msgstr ""
-
-msgid "Enable"
-msgstr "Activer"
-
-msgid "Description"
-msgstr "Description"
-
-msgid "Block"
-msgstr "Bloquer"
-
-msgid "Flag"
-msgstr ""
-
-msgid "Enable Rule"
-msgstr "Activer la Règle"
-
-msgid "[no description]"
-msgstr "[pas de description]"
-
-msgid "If all of the following conditions are met:"
-msgstr ""
-
-msgid "Perform the following action(s):"
-msgstr ""
-
-msgid "Action Type"
-msgstr ""
-
-msgid "Pass"
-msgstr "Passer"
+msgid "Sessions blocked"
+msgstr "Sessions bloquées"
 
 msgid "Summary Report"
 msgstr "Rapport sommaire"
@@ -263,162 +147,136 @@ msgstr "Règle appliquée"
 msgid "Destination Ip"
 msgstr "IP de Destination"
 
+msgid "Destination Port"
+msgstr "Port Destination"
+
 msgid "Source Ip"
 msgstr "IP Source "
 
-msgid "blocked"
-msgstr "bloqué(e)"
+msgid "Source Port"
+msgstr "Port Source"
 
-msgid "password"
+msgid "Destination Address"
+msgstr "Adresse de Destination"
+
+msgid "Destination Interface"
+msgstr "Interface de Destination"
+
+msgid "Source Address"
+msgstr "Adresse Source"
+
+msgid "Source Interface"
+msgstr "Interface Source"
+
+msgid "Protocol"
 msgstr ""
 
-msgid "Sessions passed"
-msgstr "Sessions passées"
-
-msgid "Sessions flagged"
-msgstr "Sessions enregistrées"
-
-msgid "Sessions blocked"
-msgstr "Sessions bloquées"
-
-msgid "description"
+msgid "any"
 msgstr ""
 
-msgid "The number of flagged session grouped by username."
+msgid "Username"
 msgstr ""
 
-msgid "title"
+msgid "Client Hostname"
 msgstr ""
 
-msgid "Top Flagged Usernames"
+msgid "Server Hostname"
 msgstr ""
 
-msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgid "Client MAC Address"
 msgstr ""
 
-msgid "Scanned Sessions"
+msgid "Server MAC Address"
 msgstr ""
 
-msgid "The number of scanned session grouped by username."
+msgid "Client MAC Vendor"
 msgstr ""
 
-msgid "Top Scanned Usernames"
+msgid "Server MAC Vendor"
 msgstr ""
 
-msgid "The number of flagged session grouped by client."
+msgid "Client in Penalty Box"
 msgstr ""
 
-msgid "Top Blocked Clients"
+msgid "Server in Penalty Box"
 msgstr ""
 
-msgid "The number of flagged session grouped by hostname."
+msgid "Client has no Quota"
 msgstr ""
 
-msgid "Top Flagged Hostnames"
+msgid "Server has no Quota"
 msgstr ""
 
-msgid "Top Blocked Usernames"
+msgid "Client has exceeded Quota"
 msgstr ""
 
-msgid "The number of flagged session grouped by server (destination) port."
+msgid "Server has exceeded Quota"
 msgstr ""
 
-msgid "Top Blocked Server Ports"
+msgid "Client Quota Attainment"
 msgstr ""
 
-msgid "The number of scanned session grouped by client."
+msgid "Server Quota Attainment"
 msgstr ""
 
-msgid "Top Scanned Clients"
+msgid "Directory Connector: User in Group"
 msgstr ""
 
-msgid "The number of scanned session grouped by server (destination) port."
+msgid "HTTP: Client User Agent"
 msgstr ""
 
-msgid "Top Scanned Server Ports"
+msgid "HTTP: Client User OS"
 msgstr ""
 
-msgid "The number of scanned session grouped by hostname."
+msgid "Rules"
+msgstr "Règles"
+
+msgid "Note"
+msgstr "Note"
+
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+" <b>Firewall</b> est une application simple conçue pour bloquer et consigner "
+"le trafic réseau basé sur un ensemble de règles. Pour en savoir plus, "
+"cliquez sur le lien <b>Aide</b> ci-dessous.<br/>La fonctionnalité de routage "
+"et de Port Forwarding peut être trouvé ailleurs dans Config->Networking."
+
+msgid "Rule Id"
 msgstr ""
 
-msgid "Top Scanned Hostnames"
+msgid "new"
 msgstr ""
 
-msgid "A summary of firewall actions."
+msgid "Enable"
+msgstr "Activer"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Block"
+msgstr "Bloquer"
+
+msgid "Flag"
 msgstr ""
 
-msgid "Firewall Summary"
+msgid "Enable Rule"
+msgstr "Activer la Règle"
+
+msgid "[no description]"
+msgstr "[pas de description]"
+
+msgid "If all of the following conditions are met:"
 msgstr ""
 
-msgid "The number of blocked sessions grouped by hostname."
+msgid "Perform the following action(s):"
 msgstr ""
 
-msgid "Top Blocked Hostnames"
+msgid "Action Type"
 msgstr ""
 
-msgid "Top Flagged Clients"
-msgstr ""
-
-msgid "Top Flagged Server Ports"
-msgstr ""
-
-msgid "Events blocked by Firewall App."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr ""
-
-msgid "Events flagged by Firewall App."
-msgstr ""
-
-msgid "Flagged Events"
-msgstr ""
-
-msgid "All events scanned by Firewall App."
-msgstr ""
-
-msgid "All Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Pass"
+msgstr "Passer"

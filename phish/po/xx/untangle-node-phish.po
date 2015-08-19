@@ -1,3 +1,59 @@
+msgid "The attached message from"
+msgstr "XThe attached message fromX"
+
+msgid ""
+"was determined by the Phish Blocker to be phish (a fraudulent email intended "
+"to steal information).  "
+msgstr "Xwas determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  X"
+
+msgid "The kind of phish that was found was"
+msgstr "XThe kind of phish that was found wasX"
+
+msgid "scored"
+msgstr "XscoredX"
+
+msgid "as"
+msgstr "XasX"
+
+msgid "Messages received"
+msgstr "XMessages receivedX"
+
+msgid "Messages passed"
+msgstr "XMessages passedX"
+
+msgid "Messages dropped"
+msgstr "XMessages droppedX"
+
+msgid "Messages marked"
+msgstr "XMessages markedX"
+
+msgid "Messages quarantined"
+msgstr "XMessages quarantinedX"
+
+msgid "Spam detected"
+msgstr "XSpam detectedX"
+
+msgid "tarpit"
+msgstr "XtarpitX"
+
+msgid "blocked"
+msgstr "XblockedX"
+
+msgid "Phish"
+msgstr "XPhishX"
+
+msgid "Clean"
+msgstr "XCleanX"
+
+msgid "Hourly Phish Rate"
+msgstr "XHourly Phish RateX"
+
+msgid "Daily Phish Rate"
+msgstr "XDaily Phish RateX"
+
+msgid "Top Ten Phishing Victims"
+msgstr "XTop Ten Phishing VictimsX"
+
 msgid "Mark"
 msgstr "XMarkX"
 
@@ -31,137 +87,32 @@ msgstr "XPhish Blocker email signatures were last updatedX"
 msgid "never"
 msgstr "XneverX"
 
-msgid "Phish"
-msgstr "XPhishX"
 
-msgid "Clean"
-msgstr "XCleanX"
 
-msgid "Hourly Phish Rate"
-msgstr "XHourly Phish RateX"
 
-msgid "Daily Phish Rate"
-msgstr "XDaily Phish RateX"
 
-msgid "Top Ten Phishing Victims"
-msgstr "XTop Ten Phishing VictimsX"
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "XIf you have any questions, Please contact {0}.X"
 
-msgid "scored"
-msgstr "XscoredX"
 
-msgid "as"
-msgstr "XasX"
 
-msgid "Messages received"
-msgstr "XMessages receivedX"
 
-msgid "Messages passed"
-msgstr "XMessages passedX"
 
-msgid "Messages dropped"
-msgstr "XMessages droppedX"
 
-msgid "Messages marked"
-msgstr "XMessages markedX"
 
-msgid "Messages quarantined"
-msgstr "XMessages quarantinedX"
 
-msgid "Spam detected"
-msgstr "XSpam detectedX"
 
-msgid "tarpit"
-msgstr "XtarpitX"
 
-msgid "blocked"
-msgstr "XblockedX"
 
-msgid "description"
-msgstr "XdescriptionX"
 
-msgid "The amount of scanned, clean, and phish email over time."
-msgstr "XThe amount of scanned, clean, and phish email over time.X"
 
-msgid "title"
-msgstr "XtitleX"
 
-msgid "Email Usage (all)"
-msgstr "XEmail Usage (all)X"
 
-msgid "The amount of clean email over time."
-msgstr "XThe amount of clean email over time.X"
 
-msgid "Email Usage (clean)"
-msgstr "XEmail Usage (clean)X"
 
-msgid "The number of IP addresses sending phish."
-msgstr "XThe number of IP addresses sending phish.X"
 
-msgid "Top Phish Sender Addresses"
-msgstr "XTop Phish Sender AddressesX"
 
-msgid "The amount of phish email over time."
-msgstr "XThe amount of phish email over time.X"
 
-msgid "Email Usage (phish)"
-msgstr "XEmail Usage (phish)X"
 
-msgid "The ratio of phish (true) to ham (false)"
-msgstr "XThe ratio of phish (true) to ham (false)X"
 
-msgid "Phish Ratio"
-msgstr "XPhish RatioX"
 
-msgid "The amount of scanned email over time."
-msgstr "XThe amount of scanned email over time.X"
 
-msgid "Email Usage (scanned)"
-msgstr "XEmail Usage (scanned)X"
-
-msgid "The number of email addresses with phish."
-msgstr "XThe number of email addresses with phish.X"
-
-msgid "Top Phish Recipients"
-msgstr "XTop Phish RecipientsX"
-
-msgid "A summary of phish blocking actions for email activity."
-msgstr "XA summary of phish blocking actions for email activity.X"
-
-msgid "Phish Blocker Summary"
-msgstr "XPhish Blocker SummaryX"
-
-msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
-
-msgid "Quarantined Events"
-msgstr "XQuarantined EventsX"
-
-msgid "All email sessions scanned by Phish Blocker."
-msgstr "XAll email sessions scanned by Phish Blocker.X"
-
-msgid "All Email Events"
-msgstr "XAll Email EventsX"
-
-msgid "All email sessions detected as phishing attempts."
-msgstr "XAll email sessions detected as phishing attempts.X"
-
-msgid "All Phish Events"
-msgstr "XAll Phish EventsX"
-
-msgid "Host:"
-msgstr "XHost:X"
-
-msgid "URL:"
-msgstr "XURL:X"
-
-msgid "Reason:"
-msgstr "XReason:X"
-
-msgid "Unblock For Now"
-msgstr "XUnblock For NowX"
-
-msgid "Unblock Permanently"
-msgstr "XUnblock PermanentlyX"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2008-11-27 21:30-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -16,135 +16,20 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-msgid "Destination Address"
-msgstr "目的地址"
+msgid "blocked"
+msgstr "已阻止"
 
-msgid "Destination Port"
-msgstr "目的端口"
-
-msgid "Destination Interface"
-msgstr "目的接口"
-
-msgid "Source Address"
-msgstr "源地址"
-
-msgid "Source Port"
-msgstr "源端口"
-
-msgid "Source Interface"
-msgstr "源接口"
-
-msgid "Protocol"
-msgstr "<msg name=>议定书</ msg>"
-
-msgid "any"
+msgid "password"
 msgstr ""
 
-msgid "Username"
-msgstr "用户名"
+msgid "Sessions passed"
+msgstr "已通过的会话"
 
-msgid "Client Hostname"
-msgstr "客户端主机名"
+msgid "Sessions flagged"
+msgstr "已记录的会话"
 
-msgid "Server Hostname"
-msgstr "服务器主机名"
-
-msgid "Client MAC Address"
-msgstr ""
-
-msgid "Server MAC Address"
-msgstr ""
-
-msgid "Client MAC Vendor"
-msgstr ""
-
-msgid "Server MAC Vendor"
-msgstr ""
-
-msgid "Client in Penalty Box"
-msgstr "客户端的罚款箱"
-
-msgid "Server in Penalty Box"
-msgstr "服务器罚款箱"
-
-msgid "Client has no Quota"
-msgstr "客户端没有配额"
-
-msgid "Server has no Quota"
-msgstr "服务器有没有配额"
-
-msgid "Client has exceeded Quota"
-msgstr "客户已超过配额"
-
-msgid "Server has exceeded Quota"
-msgstr "服务器已超出配额"
-
-msgid "Client Quota Attainment"
-msgstr ""
-
-msgid "Server Quota Attainment"
-msgstr ""
-
-msgid "Directory Connector: User in Group"
-msgstr "Directory连接器：用户组"
-
-msgid "HTTP: Client User Agent"
-msgstr "HTTP：客户端用户代理"
-
-msgid "HTTP: Client User OS"
-msgstr "HTTP：客户端用户OS"
-
-msgid "Rules"
-msgstr "规则"
-
-msgid "Note"
-msgstr "注释"
-
-msgid ""
-" <b>Firewall</b> is a simple application designed to block and flag network "
-"traffic based on a set of rules. To learn more click on the <b>Help</b> "
-"button below.<br/> Routing and Port Forwarding functionality can be found "
-"elsewhere in Config->Networking."
-msgstr ""
-"防火墙</ B>是一个简单的应用程序，旨在阻止和记录网络流量的基础上的一套规则。欲"
-"了解更多请点击</ b>按钮<b>帮助。<BR/>路由和端口转发功能可以在配置 - >网络其他"
-"地方。"
-
-msgid "Rule Id"
-msgstr "规则ID"
-
-msgid "new"
-msgstr "新"
-
-msgid "Enable"
-msgstr "启用"
-
-msgid "Description"
-msgstr "描述"
-
-msgid "Block"
-msgstr "阻止"
-
-msgid "Flag"
-msgstr "标记"
-
-msgid "Enable Rule"
-msgstr "启用规则"
-
-msgid "[no description]"
-msgstr "【无描述】"
-
-msgid "If all of the following conditions are met:"
-msgstr ""
-
-msgid "Perform the following action(s):"
-msgstr "执行下列操作（S）："
-
-msgid "Action Type"
-msgstr "<msg name=>行动键入“</msg>"
-
-msgid "Pass"
-msgstr "通过"
+msgid "Sessions blocked"
+msgstr "已阻止的会话"
 
 msgid "Summary Report"
 msgstr "总结报告"
@@ -266,154 +151,138 @@ msgstr "规则应用"
 msgid "Destination Ip"
 msgstr "目的端口"
 
+msgid "Destination Port"
+msgstr "目的端口"
+
 msgid "Source Ip"
 msgstr "源IP地址"
 
-msgid "blocked"
-msgstr "已阻止"
+msgid "Source Port"
+msgstr "源端口"
 
-msgid "password"
+msgid "Destination Address"
+msgstr "目的地址"
+
+msgid "Destination Interface"
+msgstr "目的接口"
+
+msgid "Source Address"
+msgstr "源地址"
+
+msgid "Source Interface"
+msgstr "源接口"
+
+msgid "Protocol"
+msgstr "<msg name=>议定书</ msg>"
+
+msgid "any"
 msgstr ""
 
-msgid "Sessions passed"
-msgstr "已通过的会话"
+msgid "Username"
+msgstr "用户名"
 
-msgid "Sessions flagged"
-msgstr "已记录的会话"
+msgid "Client Hostname"
+msgstr "客户端主机名"
 
-msgid "Sessions blocked"
-msgstr "已阻止的会话"
+msgid "Server Hostname"
+msgstr "服务器主机名"
 
-msgid "description"
+msgid "Client MAC Address"
 msgstr ""
 
-msgid "The number of flagged session grouped by username."
+msgid "Server MAC Address"
 msgstr ""
 
-msgid "title"
+msgid "Client MAC Vendor"
 msgstr ""
 
-msgid "Top Flagged Usernames"
+msgid "Server MAC Vendor"
 msgstr ""
 
-msgid "The amount of scanned, flagged, and blocked sessions over time."
+msgid "Client in Penalty Box"
+msgstr "客户端的罚款箱"
+
+msgid "Server in Penalty Box"
+msgstr "服务器罚款箱"
+
+msgid "Client has no Quota"
+msgstr "客户端没有配额"
+
+msgid "Server has no Quota"
+msgstr "服务器有没有配额"
+
+msgid "Client has exceeded Quota"
+msgstr "客户已超过配额"
+
+msgid "Server has exceeded Quota"
+msgstr "服务器已超出配额"
+
+msgid "Client Quota Attainment"
 msgstr ""
 
-msgid "Scanned Sessions"
+msgid "Server Quota Attainment"
 msgstr ""
 
-msgid "The number of scanned session grouped by username."
+msgid "Directory Connector: User in Group"
+msgstr "Directory连接器：用户组"
+
+msgid "HTTP: Client User Agent"
+msgstr "HTTP：客户端用户代理"
+
+msgid "HTTP: Client User OS"
+msgstr "HTTP：客户端用户OS"
+
+msgid "Rules"
+msgstr "规则"
+
+msgid "Note"
+msgstr "注释"
+
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+"防火墙</ B>是一个简单的应用程序，旨在阻止和记录网络流量的基础上的一套规则。欲"
+"了解更多请点击</ b>按钮<b>帮助。<BR/>路由和端口转发功能可以在配置 - >网络其他"
+"地方。"
+
+msgid "Rule Id"
+msgstr "规则ID"
+
+msgid "new"
+msgstr "新"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Block"
+msgstr "阻止"
+
+msgid "Flag"
+msgstr "标记"
+
+msgid "Enable Rule"
+msgstr "启用规则"
+
+msgid "[no description]"
+msgstr "【无描述】"
+
+msgid "If all of the following conditions are met:"
 msgstr ""
 
-msgid "Top Scanned Usernames"
-msgstr ""
+msgid "Perform the following action(s):"
+msgstr "执行下列操作（S）："
 
-msgid "The number of flagged session grouped by client."
-msgstr ""
+msgid "Action Type"
+msgstr "<msg name=>行动键入“</msg>"
 
-msgid "Top Blocked Clients"
-msgstr ""
-
-msgid "The number of flagged session grouped by hostname."
-msgstr ""
-
-msgid "Top Flagged Hostnames"
-msgstr ""
-
-msgid "Top Blocked Usernames"
-msgstr ""
-
-msgid "The number of flagged session grouped by server (destination) port."
-msgstr ""
-
-msgid "Top Blocked Server Ports"
-msgstr ""
-
-msgid "The number of scanned session grouped by client."
-msgstr ""
-
-msgid "Top Scanned Clients"
-msgstr ""
-
-msgid "The number of scanned session grouped by server (destination) port."
-msgstr ""
-
-msgid "Top Scanned Server Ports"
-msgstr ""
-
-msgid "The number of scanned session grouped by hostname."
-msgstr ""
-
-msgid "Top Scanned Hostnames"
-msgstr ""
-
-msgid "A summary of firewall actions."
-msgstr ""
-
-msgid "Firewall Summary"
-msgstr ""
-
-msgid "The number of blocked sessions grouped by hostname."
-msgstr ""
-
-msgid "Top Blocked Hostnames"
-msgstr ""
-
-msgid "Top Flagged Clients"
-msgstr ""
-
-msgid "Top Flagged Server Ports"
-msgstr ""
-
-msgid "Events blocked by Firewall App."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "封锁的事件"
-
-msgid "Events flagged by Firewall App."
-msgstr ""
-
-msgid "Flagged Events"
-msgstr "标记事件"
-
-msgid "All events scanned by Firewall App."
-msgstr ""
-
-msgid "All Events"
-msgstr "<msg name=>所有活动</msg>"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Pass"
+msgstr "通过"
 
 
 

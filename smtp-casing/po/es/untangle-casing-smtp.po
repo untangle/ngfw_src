@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-15 21:24-0700\n"
 "PO-Revision-Date: 2010-01-14 07:00-0800\n"
 "Last-Translator: Andrés Gatica <agatica@comdiel.cl>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -14,281 +14,54 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
-msgid "Releasing..."
+msgid "sent"
 msgstr ""
 
-msgid "Release to Inbox"
+msgid "received"
 msgstr ""
 
-msgid "Release to Inbox & Add Senders to Safe List"
+msgid "involved in"
 msgstr ""
 
-msgid "Deleting..."
+msgid "email"
 msgstr ""
 
-msgid "Delete"
+msgid "subject"
 msgstr ""
 
-msgid "Please wait"
+msgid "sender"
 msgstr ""
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-msgid "An error has occurred."
-msgstr ""
-
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-msgid "The connection to the server has been lost."
-msgstr ""
-
-msgid "Press OK to return to the login page."
-msgstr ""
-
-msgid "An error has occurred"
-msgstr ""
-
-msgid "Exception name"
-msgstr ""
-
-msgid "Exception code"
-msgstr ""
-
-msgid "Exception message"
-msgstr ""
-
-msgid "Exception java stack"
-msgstr ""
-
-msgid "Exception js stack"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Deleted one Message"
-msgstr "Se ha eliminado un mensaje"
-
-msgid "Deleted {0} Messages"
-msgstr "Se han eliminado {0} mensajes"
-
-msgid "Released one Message"
-msgstr "Se ha liberado un mensaje"
-
-msgid "Released {0} Messages"
-msgstr "Se han liberado {0} mensajes"
-
-msgid "Safelisted one Address"
-msgstr "Se ha incluido una Dirección en Lista Segura"
-
-msgid "Safelisted {0} Addresses"
-msgstr "Se han incluido {0} Direcciones en Lista Segura"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "No hay mensajes en cuarentena para la cuenta {0}."
-
-msgid "Please Try Again"
-msgstr "Inténtelo Nuevamente"
-
-msgid "From"
-msgstr "Remitente"
-
-msgid "Number of Attachments in the email."
-msgstr "Cantidad de Adjuntos en el correo."
-
-msgid "Score"
-msgstr "Puntaje"
-
-msgid "Subject"
-msgstr "Asunto"
-
-msgid "Date"
-msgstr "Fecha"
-
-msgid "Size (KB)"
-msgstr "Tamaño (KB)"
-
-msgid "Filter:"
-msgstr ""
-
-msgid "Case sensitive"
-msgstr ""
-
-msgid "Clear Filters"
-msgstr ""
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr ""
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr ""
-"Los mensajes de abajo fueron puestos en cuarentena y serán borrados depués "
-"de {0} días. "
-
-msgid "Quarantined Messages"
-msgstr "Mensajes en Cuarentena"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr ""
-
-msgid "Safe List"
-msgstr ""
-
-msgid "Email Address"
-msgstr "Dirección de Email"
-
-msgid "Delete Addresses"
-msgstr "Eliminar Direcciones"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "Reenviar Mensajes en Cuarentena a:"
-
-msgid "Address"
-msgstr "Dirección"
-
-msgid "Change Address"
-msgstr ""
-
-msgid "Received Quarantined Messages From:"
-msgstr "Mensajes en Cuarentena recibidos de:"
-
-msgid "Forward or Receive Quarantines"
-msgstr "Reenviar o Recibir Cuarentenas"
-
-msgid "Unable to set the forward."
-msgstr "Imposible configurar el reenvío."
-
-msgid "Unable to delete an entry."
-msgstr "Imposible eliminar una entrada."
-
-msgid "Delete one Remap"
-msgstr "Eliminar una Reasignación"
-
-msgid "Deleted {0} Remaps"
-msgstr "Se han eliminado {0} Reasignaciones"
-
-msgid "Unable to update remap table."
-msgstr "Imposible actualizar la tabla de reasignación."
-
-msgid "Delete one Addressess"
-msgstr "Eliminar una Dirección"
-
-msgid "Delete {0} Addresses"
-msgstr "Eliminar {0} Direcciones"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr ""
-"El login de su Portal de Acceso Remoto no está configurado con una dirección "
-"de email válida."
-
-msgid "Select User"
-msgstr "Seleccionar Usuario"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr ""
-"Escriba la dirección de email para la cual desea recibir un Resumen de "
-"Cuarentena"
-
-msgid "Request"
-msgstr "Solicitud"
-
-msgid "Requesting Digest"
-msgstr ""
-
-msgid "Please Wait"
-msgstr ""
-
-msgid "Successfully sent digest to '{0}'"
-msgstr "Se ha enviado resumen a '{0}' con éxito"
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr "No existe cuarentena para '{0}'"
-
-msgid "Quarantine Request"
-msgstr "Resumen de Cuarentena"
-
-msgid "Add"
-msgstr "Agregar"
-
-msgid "Add an Email Address to Safelist"
-msgstr "Agregar una Dirección de Email a la Lista Segura"
-
-msgid "Save"
-msgstr "Guardar"
-
-msgid "Cancel"
-msgstr "Cancelar"
-
-msgid "Deleted one address"
-msgstr "Se ha eliminado una dirección"
-
-msgid "Deleted {0} addresses"
-msgstr "Se han eliminado {0} direcciones"
-
-msgid "Delete one Address"
-msgstr "Eliminar una Dirección"
 
 msgid "Quarantine Digest"
 msgstr "Resumen de Cuarentena"
 
-msgid "The attached message from"
-msgstr ""
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr ""
 
-msgid "where anything above"
-msgstr ""
 
-msgid "is spam."
-msgstr ""
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
 
-msgid "Quarantine Digest for {0}"
-msgstr "Resumen de Cuarentena para {0}"
 
-msgid "Click here to access your spam quarantine."
-msgstr "Presione aquí para acceder su cuarentena de spam."
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr ""
-"La cuarentena de spam contiene emails que están siendo retenidos de su "
-"cuenta de email."
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr ""
-"Los emails en cuarentena pueden ser liberados a su bandeja de entrada o "
-"eliminados usando el enlace a la cuarentena de spam."
 
-msgid "Quarantine Digest for: {0}"
-msgstr "Resumen de Cuarentena para: {0}"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | Resumen de Cuarentena para: {1}"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "Solicitar Emails de Resumen de Cuarentena"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | Solicitar Email de Resumen de Cuarentena"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

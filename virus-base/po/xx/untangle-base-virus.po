@@ -1,101 +1,68 @@
-msgid "Web"
-msgstr "XWebX"
+msgid "Documents scanned"
+msgstr "XDocuments scannedX"
 
-msgid "Scan HTTP"
-msgstr "XScan HTTPX"
+msgid "Documents blocked"
+msgstr "XDocuments blockedX"
 
-msgid "Signatures were last updated"
-msgstr "XSignatures were last updatedX"
+msgid "Documents passed"
+msgstr "XDocuments passedX"
 
-msgid "never"
-msgstr "XneverX"
+msgid "Infections removed"
+msgstr "XInfections removedX"
 
-msgid "About"
-msgstr "XAboutX"
-
-msgid "File Extensions"
-msgstr "XFile ExtensionsX"
-
-msgid "File Type"
-msgstr "XFile TypeX"
-
-msgid "[enter file type]"
-msgstr "X[enter file type]X"
-
-msgid "Scan"
-msgstr "XScanX"
-
-msgid "Description"
-msgstr "XDescriptionX"
-
-msgid "[no description]"
-msgstr "X[no description]X"
-
-msgid "MIME Types"
-msgstr "XMIME TypesX"
-
-msgid "MIME Type"
-msgstr "XMIME TypeX"
-
-msgid "[enter MIME type]"
-msgstr "X[enter MIME type]X"
-
-msgid "FTP"
-msgstr "XFTPX"
-
-msgid "Scan FTP"
-msgstr "XScan FTPX"
-
-msgid "Virus Blocker signatures were last updated"
-msgstr "XVirus Blocker signatures were last updatedX"
-
-msgid "Unknown"
-msgstr "XUnknownX"
-
-msgid "Email"
-msgstr "XEmailX"
-
-msgid "Scan SMTP"
-msgstr "XScan SMTPX"
-
-msgid "Action"
-msgstr "XActionX"
-
-msgid "pass message"
-msgstr "Xpass messageX"
-
-msgid "remove infection"
-msgstr "Xremove infectionX"
-
-msgid "block message"
-msgstr "Xblock messageX"
-
-msgid "Pass Sites"
-msgstr "XPass SitesX"
-
-msgid "Site"
-msgstr "XSiteX"
-
-msgid "[enter site]"
-msgstr "X[enter site]X"
-
-msgid "Pass"
-msgstr "XPassX"
-
-msgid "Do not scan traffic to the specified sites.  Use caution!"
-msgstr "XDo not scan traffic to the specified sites.  Use caution!X"
-
-msgid "Advanced"
-msgstr "XAdvancedX"
-
-msgid "Advanced settings require careful configuration."
-msgstr "XAdvanced settings require careful configuration.X"
-
-msgid "Summary Report"
-msgstr "XSummary ReportX"
+msgid "Passed by policy"
+msgstr "XPassed by policyX"
 
 msgid "scanned"
 msgstr "XscannedX"
+
+msgid "found virus"
+msgstr "Xfound virusX"
+
+msgid "The attached message from"
+msgstr "XThe attached message fromX"
+
+msgid "was found to contain the virus"
+msgstr "Xwas found to contain the virusX"
+
+msgid "The infected portion of the message was removed by Virus Blocker."
+msgstr "XThe infected portion of the message was removed by Virus Blocker.X"
+
+msgid "Feature is not installed."
+msgstr "XFeature is not installed.X"
+
+msgid "This request has expired."
+msgstr "XThis request has expired.X"
+
+msgid "{0} | {1} Warning"
+msgstr "X{0} | {1} WarningX"
+
+msgid "{0} Virus Blocker"
+msgstr "X{0} Virus BlockerX"
+
+msgid "{0}This file was blocked{1} because it contains a virus."
+msgstr "X{0}This file was blocked{1} because it contains a virus.X"
+
+msgid "If you have any questions, Please contact {0}."
+msgstr "XIf you have any questions, Please contact {0}.X"
+
+msgid "Host:"
+msgstr "XHost:X"
+
+msgid "URL:"
+msgstr "XURL:X"
+
+msgid "Reason:"
+msgstr "XReason:X"
+
+msgid "Unblock For Now"
+msgstr "XUnblock For NowX"
+
+msgid "Unblock Permanently"
+msgstr "XUnblock PermanentlyX"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
 
 msgid "documents and detected and blocked"
 msgstr "Xdocuments and detected and blockedX"
@@ -120,6 +87,9 @@ msgstr "XVirusesX"
 
 msgid "Top Web Viruses Detected"
 msgstr "XTop Web Viruses DetectedX"
+
+msgid "Unknown"
+msgstr "XUnknownX"
 
 msgid "Name"
 msgstr "XNameX"
@@ -181,53 +151,92 @@ msgstr "XClient IpX"
 msgid "Client Port"
 msgstr "XClient PortX"
 
-msgid "Feature is not installed."
-msgstr "XFeature is not installed.X"
+msgid "Web"
+msgstr "XWebX"
 
-msgid "This request has expired."
-msgstr "XThis request has expired.X"
+msgid "Scan HTTP"
+msgstr "XScan HTTPX"
 
-msgid "{0} | {1} Warning"
-msgstr "X{0} | {1} WarningX"
+msgid "Signatures were last updated"
+msgstr "XSignatures were last updatedX"
 
-msgid "{0} Virus Blocker"
-msgstr "X{0} Virus BlockerX"
+msgid "never"
+msgstr "XneverX"
 
-msgid "{0}This file was blocked{1} because it contains a virus."
-msgstr "X{0}This file was blocked{1} because it contains a virus.X"
+msgid "About"
+msgstr "XAboutX"
 
-msgid "If you have any questions, Please contact {0}."
-msgstr "XIf you have any questions, Please contact {0}.X"
+msgid "File Extensions"
+msgstr "XFile ExtensionsX"
 
-msgid "found virus"
-msgstr "Xfound virusX"
+msgid "File Type"
+msgstr "XFile TypeX"
 
-msgid "Documents scanned"
-msgstr "XDocuments scannedX"
+msgid "[enter file type]"
+msgstr "X[enter file type]X"
 
-msgid "Documents blocked"
-msgstr "XDocuments blockedX"
+msgid "Scan"
+msgstr "XScanX"
 
-msgid "Documents passed"
-msgstr "XDocuments passedX"
+msgid "Description"
+msgstr "XDescriptionX"
 
-msgid "Infections removed"
-msgstr "XInfections removedX"
+msgid "[no description]"
+msgstr "X[no description]X"
 
-msgid "Passed by policy"
-msgstr "XPassed by policyX"
+msgid "MIME Types"
+msgstr "XMIME TypesX"
 
-msgid "Host:"
-msgstr "XHost:X"
+msgid "MIME Type"
+msgstr "XMIME TypeX"
 
-msgid "URL:"
-msgstr "XURL:X"
+msgid "[enter MIME type]"
+msgstr "X[enter MIME type]X"
 
-msgid "Reason:"
-msgstr "XReason:X"
+msgid "FTP"
+msgstr "XFTPX"
 
-msgid "Unblock For Now"
-msgstr "XUnblock For NowX"
+msgid "Scan FTP"
+msgstr "XScan FTPX"
 
-msgid "Unblock Permanently"
-msgstr "XUnblock PermanentlyX"
+msgid "Virus Blocker signatures were last updated"
+msgstr "XVirus Blocker signatures were last updatedX"
+
+msgid "Email"
+msgstr "XEmailX"
+
+msgid "Scan SMTP"
+msgstr "XScan SMTPX"
+
+msgid "Action"
+msgstr "XActionX"
+
+msgid "pass message"
+msgstr "Xpass messageX"
+
+msgid "remove infection"
+msgstr "Xremove infectionX"
+
+msgid "block message"
+msgstr "Xblock messageX"
+
+msgid "Pass Sites"
+msgstr "XPass SitesX"
+
+msgid "Site"
+msgstr "XSiteX"
+
+msgid "[enter site]"
+msgstr "X[enter site]X"
+
+msgid "Pass"
+msgstr "XPassX"
+
+msgid "Do not scan traffic to the specified sites.  Use caution!"
+msgstr "XDo not scan traffic to the specified sites.  Use caution!X"
+
+msgid "Advanced"
+msgstr "XAdvancedX"
+
+msgid "Advanced settings require careful configuration."
+msgstr "XAdvanced settings require careful configuration.X"

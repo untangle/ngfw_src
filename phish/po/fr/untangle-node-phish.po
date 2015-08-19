@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2010-03-31 07:36-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,6 +11,62 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
+
+msgid "The attached message from"
+msgstr ""
+
+msgid ""
+"was determined by the Phish Blocker to be phish (a fraudulent email intended "
+"to steal information).  "
+msgstr ""
+
+msgid "The kind of phish that was found was"
+msgstr ""
+
+msgid "scored"
+msgstr ""
+
+msgid "as"
+msgstr ""
+
+msgid "Messages received"
+msgstr "Messages reçus"
+
+msgid "Messages passed"
+msgstr "Messages passés"
+
+msgid "Messages dropped"
+msgstr "Messages omis"
+
+msgid "Messages marked"
+msgstr "Messages marqués"
+
+msgid "Messages quarantined"
+msgstr "Messages mis en quarantaine"
+
+msgid "Spam detected"
+msgstr "Spam détecté"
+
+msgid "tarpit"
+msgstr ""
+
+msgid "blocked"
+msgstr ""
+
+msgid "Phish"
+msgstr "Hameçonnage"
+
+msgid "Clean"
+msgstr "Clair"
+
+msgid "Hourly Phish Rate"
+msgstr "Vitesse d'hameçonage horaire"
+
+msgid "Daily Phish Rate"
+msgstr "Vitesse d'hameçonage quotidienne"
+
+msgid "Top Ten Phishing Victims"
+msgstr "Top Ten des victimes d'hameçonage"
 
 msgid "Mark"
 msgstr "Marquer"
@@ -45,184 +101,6 @@ msgstr ""
 
 msgid "never"
 msgstr ""
-
-msgid "Phish"
-msgstr "Hameçonnage"
-
-msgid "Clean"
-msgstr "Clair"
-
-msgid "Hourly Phish Rate"
-msgstr "Vitesse d'hameçonage horaire"
-
-msgid "Daily Phish Rate"
-msgstr "Vitesse d'hameçonage quotidienne"
-
-msgid "Top Ten Phishing Victims"
-msgstr "Top Ten des victimes d'hameçonage"
-
-msgid "If you have any questions, Please contact {0}."
-msgstr "Si vous avez des questions, SVP contactez {0}."
-
-msgid "scored"
-msgstr ""
-
-msgid "as"
-msgstr ""
-
-msgid "Messages received"
-msgstr "Messages reçus"
-
-msgid "Messages passed"
-msgstr "Messages passés"
-
-msgid "Messages dropped"
-msgstr "Messages omis"
-
-msgid "Messages marked"
-msgstr "Messages marqués"
-
-msgid "Messages quarantined"
-msgstr "Messages mis en quarantaine"
-
-msgid "Spam detected"
-msgstr "Spam détecté"
-
-msgid "tarpit"
-msgstr ""
-
-msgid "blocked"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The amount of scanned, clean, and phish email over time."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Email Usage (all)"
-msgstr ""
-
-msgid "The amount of clean email over time."
-msgstr ""
-
-msgid "Email Usage (clean)"
-msgstr ""
-
-msgid "The number of IP addresses sending phish."
-msgstr ""
-
-msgid "Top Phish Sender Addresses"
-msgstr ""
-
-msgid "The amount of phish email over time."
-msgstr ""
-
-msgid "Email Usage (phish)"
-msgstr ""
-
-msgid "The ratio of phish (true) to ham (false)"
-msgstr ""
-
-msgid "Phish Ratio"
-msgstr ""
-
-msgid "The amount of scanned email over time."
-msgstr ""
-
-msgid "Email Usage (scanned)"
-msgstr ""
-
-msgid "The number of email addresses with phish."
-msgstr ""
-
-msgid "Top Phish Recipients"
-msgstr ""
-
-msgid "A summary of phish blocking actions for email activity."
-msgstr ""
-
-msgid "Phish Blocker Summary"
-msgstr ""
-
-msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr ""
-
-msgid "Quarantined Events"
-msgstr ""
-
-msgid "All email sessions scanned by Phish Blocker."
-msgstr ""
-
-msgid "All Email Events"
-msgstr ""
-
-msgid "All email sessions detected as phishing attempts."
-msgstr ""
-
-msgid "All Phish Events"
-msgstr ""
-
-msgid "Host:"
-msgstr "Hôte:"
-
-msgid "URL:"
-msgstr "URL:"
-
-msgid "Reason:"
-msgstr "Raison:"
-
-msgid "Unblock For Now"
-msgstr "Débloquer Temporairement"
-
-msgid "Unblock Permanently"
-msgstr "Débloquer en Permanence"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

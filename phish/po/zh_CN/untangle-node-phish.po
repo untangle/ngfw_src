@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2008-11-21 22:34-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -15,6 +15,62 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+msgid "The attached message from"
+msgstr ""
+
+msgid ""
+"was determined by the Phish Blocker to be phish (a fraudulent email intended "
+"to steal information).  "
+msgstr ""
+
+msgid "The kind of phish that was found was"
+msgstr ""
+
+msgid "scored"
+msgstr ""
+
+msgid "as"
+msgstr ""
+
+msgid "Messages received"
+msgstr "收到的消息"
+
+msgid "Messages passed"
+msgstr "传递的消息"
+
+msgid "Messages dropped"
+msgstr "消息下降"
+
+msgid "Messages marked"
+msgstr "邮件标记"
+
+msgid "Messages quarantined"
+msgstr "信息隔离"
+
+msgid "Spam detected"
+msgstr "垃圾邮件检测"
+
+msgid "tarpit"
+msgstr ""
+
+msgid "blocked"
+msgstr ""
+
+msgid "Phish"
+msgstr "网络钓鱼"
+
+msgid "Clean"
+msgstr "清洁"
+
+msgid "Hourly Phish Rate"
+msgstr "每小时钓鱼率"
+
+msgid "Daily Phish Rate"
+msgstr "每日钓鱼率"
+
+msgid "Top Ten Phishing Victims"
+msgstr "十大网络钓鱼受害者"
 
 msgid "Mark"
 msgstr "标记"
@@ -48,187 +104,6 @@ msgstr "钓鱼防护电子邮件签名已是最后更新"
 
 msgid "never"
 msgstr ""
-
-msgid "Phish"
-msgstr "网络钓鱼"
-
-msgid "Clean"
-msgstr "清洁"
-
-msgid "Hourly Phish Rate"
-msgstr "每小时钓鱼率"
-
-msgid "Daily Phish Rate"
-msgstr "每日钓鱼率"
-
-msgid "Top Ten Phishing Victims"
-msgstr "十大网络钓鱼受害者"
-
-msgid "If you have any questions, Please contact {0}."
-msgstr "如果您有任何问题，请联系{0}。"
-
-msgid "scored"
-msgstr ""
-
-msgid "as"
-msgstr ""
-
-msgid "Messages received"
-msgstr "收到的消息"
-
-msgid "Messages passed"
-msgstr "传递的消息"
-
-msgid "Messages dropped"
-msgstr "消息下降"
-
-msgid "Messages marked"
-msgstr "邮件标记"
-
-msgid "Messages quarantined"
-msgstr "信息隔离"
-
-msgid "Spam detected"
-msgstr "垃圾邮件检测"
-
-msgid "tarpit"
-msgstr ""
-
-msgid "blocked"
-msgstr ""
-
-msgid "description"
-msgstr ""
-
-msgid "The amount of scanned, clean, and phish email over time."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Email Usage (all)"
-msgstr ""
-
-msgid "The amount of clean email over time."
-msgstr ""
-
-msgid "Email Usage (clean)"
-msgstr ""
-
-msgid "The number of IP addresses sending phish."
-msgstr ""
-
-msgid "Top Phish Sender Addresses"
-msgstr ""
-
-msgid "The amount of phish email over time."
-msgstr ""
-
-msgid "Email Usage (phish)"
-msgstr ""
-
-msgid "The ratio of phish (true) to ham (false)"
-msgstr ""
-
-msgid "Phish Ratio"
-msgstr ""
-
-msgid "The amount of scanned email over time."
-msgstr ""
-
-msgid "Email Usage (scanned)"
-msgstr ""
-
-msgid "The number of email addresses with phish."
-msgstr ""
-
-msgid "Top Phish Recipients"
-msgstr ""
-
-msgid "A summary of phish blocking actions for email activity."
-msgstr ""
-
-msgid "Phish Blocker Summary"
-msgstr ""
-
-msgid "All email sessions detected as phishing attempts and quarantined."
-msgstr ""
-
-msgid "Quarantined Events"
-msgstr "隔离事件"
-
-msgid "All email sessions scanned by Phish Blocker."
-msgstr ""
-
-msgid "All Email Events"
-msgstr "所有的电子邮件事件"
-
-msgid "All email sessions detected as phishing attempts."
-msgstr ""
-
-msgid "All Phish Events"
-msgstr ""
-
-msgid "Host:"
-msgstr "主机："
-
-msgid "URL:"
-msgstr "链接："
-
-msgid "Reason:"
-msgstr "原因："
-
-msgid "Unblock For Now"
-msgstr "现在开始不阻止"
-
-msgid "Unblock Permanently"
-msgstr "永远不阻止"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

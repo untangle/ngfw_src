@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2008-11-13 08:48-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -14,62 +14,19 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
-msgid "Status"
+msgid "Chunks scanned"
 msgstr ""
 
-msgid ""
-"Application Control Lite logs and blocks sessions using custom signatures on "
-"the session content."
-msgstr ""
+msgid "Sessions logged"
+msgstr "Sessões registradas"
 
-msgid "Total Signatures Available"
-msgstr ""
+msgid "Sessions blocked"
+msgstr "Sessões bloqueadas"
 
-msgid "Total Signatures Logging"
-msgstr ""
+msgid "blocked"
+msgstr "bloqueado"
 
-msgid "Total Signatures Blocking"
-msgstr ""
-
-msgid "Note"
-msgstr ""
-
-msgid ""
-"Caution and discretion is advised in configuring Application Control Lite at "
-"the the risk of harmful false positives."
-msgstr ""
-
-msgid "Signatures"
-msgstr "Assinatura"
-
-msgid "Protocol"
-msgstr "Protocolo"
-
-msgid "[enter protocol]"
-msgstr ""
-
-msgid "Category"
-msgstr "Categoria"
-
-msgid "[enter category]"
-msgstr ""
-
-msgid "Block"
-msgstr "Bloquear"
-
-msgid "Log"
-msgstr "Registrar"
-
-msgid "Description"
-msgstr "Descrição"
-
-msgid "[no description]"
-msgstr "[nenhuma descrição]"
-
-msgid "Signature"
-msgstr "Assinatura"
-
-msgid "[enter signature]"
+msgid "identified"
 msgstr ""
 
 msgid "Summary Report"
@@ -110,6 +67,9 @@ msgstr ""
 
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr ""
+
+msgid "Protocol"
+msgstr "Protocolo"
 
 msgid "Blocks Per Day"
 msgstr ""
@@ -168,102 +128,58 @@ msgstr "servidor"
 msgid "Port"
 msgstr ""
 
-msgid "Chunks scanned"
+msgid "Status"
 msgstr ""
 
-msgid "Sessions logged"
-msgstr "Sessões registradas"
-
-msgid "Sessions blocked"
-msgstr "Sessões bloqueadas"
-
-msgid "blocked"
-msgstr "bloqueado"
-
-msgid "identified"
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
 msgstr ""
 
-msgid "description"
-msgstr "descrição"
-
-msgid "The top logged sessions by user."
+msgid "Total Signatures Available"
 msgstr ""
 
-msgid "title"
+msgid "Total Signatures Logging"
 msgstr ""
 
-msgid "Top Logged Users"
+msgid "Total Signatures Blocking"
 msgstr ""
 
-msgid "The top logged sessions by protocol."
+msgid "Note"
 msgstr ""
 
-msgid "Top Logged Protocols"
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
 msgstr ""
 
-msgid "The top blocked sessions by protocol."
+msgid "Signatures"
+msgstr "Assinatura"
+
+msgid "[enter protocol]"
 msgstr ""
 
-msgid "Top Blocked Protocols"
+msgid "Category"
+msgstr "Categoria"
+
+msgid "[enter category]"
 msgstr ""
 
-msgid "The top blocked sessions by user."
+msgid "Block"
+msgstr "Bloquear"
+
+msgid "Log"
+msgstr "Registrar"
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "[no description]"
+msgstr "[nenhuma descrição]"
+
+msgid "Signature"
+msgstr "Assinatura"
+
+msgid "[enter signature]"
 msgstr ""
-
-msgid "Top Blocked Users"
-msgstr ""
-
-msgid "The top blocked sessions by host."
-msgstr ""
-
-msgid "Top Blocked Hosts"
-msgstr ""
-
-msgid "The top logged sessions by host."
-msgstr ""
-
-msgid "Top Logged Hosts"
-msgstr ""
-
-msgid "The number of logged and blocked sessions over time."
-msgstr ""
-
-msgid "Detection Statistics"
-msgstr ""
-
-msgid "All sessions scanned by Application Control Lite."
-msgstr ""
-
-msgid "All Events"
-msgstr ""
-
-msgid "All sessions matching an application signature and blocked."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

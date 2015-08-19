@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 10:31-0700\n"
+"POT-Creation-Date: 2015-08-15 21:24-0700\n"
 "PO-Revision-Date: 2009-03-11 05:23-0700\n"
 "Last-Translator: Ricardo Miguel P.M.Aroso <ricardo.aroso@ersuc.pt>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -14,276 +14,55 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
-msgid "Releasing..."
+msgid "sent"
 msgstr ""
 
-msgid "Release to Inbox"
+msgid "received"
 msgstr ""
 
-msgid "Release to Inbox & Add Senders to Safe List"
+msgid "involved in"
 msgstr ""
 
-msgid "Deleting..."
+msgid "email"
 msgstr ""
 
-msgid "Delete"
+msgid "subject"
 msgstr ""
 
-msgid "Please wait"
+msgid "sender"
 msgstr ""
-
-msgid "Releasing and adding Senders to Safe List..."
-msgstr ""
-
-msgid "An error has occurred."
-msgstr ""
-
-msgid "No sender address to be added to safelist."
-msgstr ""
-
-msgid "The connection to the server has been lost."
-msgstr ""
-
-msgid "Press OK to return to the login page."
-msgstr ""
-
-msgid "An error has occurred"
-msgstr ""
-
-msgid "Exception name"
-msgstr ""
-
-msgid "Exception code"
-msgstr ""
-
-msgid "Exception message"
-msgstr ""
-
-msgid "Exception java stack"
-msgstr ""
-
-msgid "Exception js stack"
-msgstr ""
-
-msgid "Timestamp"
-msgstr ""
-
-msgid "Deleted one Message"
-msgstr "Excluída uma mensagem"
-
-msgid "Deleted {0} Messages"
-msgstr "Excluídas {0} mensagens"
-
-msgid "Released one Message"
-msgstr "Liberada uma mensagem"
-
-msgid "Released {0} Messages"
-msgstr "Liberadas {0} mensagens"
-
-msgid "Safelisted one Address"
-msgstr "Um endereço em lista segura"
-
-msgid "Safelisted {0} Addresses"
-msgstr "Endereços {0} em lista segura"
-
-msgid "The account {0} doesn't have any quarantined messages."
-msgstr "A conta {0} não possui mensagens em quarentena."
-
-msgid "Please Try Again"
-msgstr ""
-
-msgid "From"
-msgstr "De"
-
-msgid "Number of Attachments in the email."
-msgstr "Número de anexos no e-mail."
-
-msgid "Score"
-msgstr "Pontuação"
-
-msgid "Subject"
-msgstr "Assunto"
-
-msgid "Date"
-msgstr "Data"
-
-msgid "Size (KB)"
-msgstr "Tamanho (KB)"
-
-msgid "Filter:"
-msgstr ""
-
-msgid "Case sensitive"
-msgstr ""
-
-msgid "Clear Filters"
-msgstr ""
-
-msgid ""
-"Filters can be added by clicking on column headers arrow down menu and using "
-"Filters menu"
-msgstr ""
-
-msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr ""
-"As mensagens abaixo estão de quarentena e serão apagadas após {0} dias."
-
-msgid "Quarantined Messages"
-msgstr "Mensagens em quarentena"
-
-msgid ""
-"You can use the Safe List to make sure that messages from these senders are "
-"never quarantined."
-msgstr ""
-
-msgid "Safe List"
-msgstr ""
-
-msgid "Email Address"
-msgstr "Endereço de e-mail"
-
-msgid "Delete Addresses"
-msgstr "Excluir endereços"
-
-msgid "Forward Quarantined Messages To:"
-msgstr "Encaminhar mensagens em quarentena para:"
-
-msgid "Address"
-msgstr "Endereço"
-
-msgid "Change Address"
-msgstr ""
-
-msgid "Received Quarantined Messages From:"
-msgstr "Mensagens em quarentena recebidas de:"
-
-msgid "Forward or Receive Quarantines"
-msgstr "Encaminhar ou receber quarentenas"
-
-msgid "Unable to set the forward."
-msgstr "Não é possível estabelecer o encaminhamento."
-
-msgid "Unable to delete an entry."
-msgstr "Incapaz de excluir uma entrada."
-
-msgid "Delete one Remap"
-msgstr "Excluir um "
-
-msgid "Deleted {0} Remaps"
-msgstr "Excluídos {0} remapeamentos"
-
-msgid "Unable to update remap table."
-msgstr "Não é possível atualizar a mesa de remapeamento."
-
-msgid "Delete one Addressess"
-msgstr "Exclua um dos endereços"
-
-msgid "Delete {0} Addresses"
-msgstr "Exclua {0} endereços"
-
-msgid ""
-"Your Remote Access Portal login is not configured with a valid email address."
-msgstr ""
-"Seu login do Portal de Acesso Remoto não está configurado com um endereço de "
-"e-mail válido."
-
-msgid "Select User"
-msgstr "Selecione usuário"
-
-msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr ""
-"Insira o endereço de e-mail para o qual você gostaria do Sumário de "
-"Quarentena"
-
-msgid "Request"
-msgstr "Solicitar"
-
-msgid "Requesting Digest"
-msgstr ""
-
-msgid "Please Wait"
-msgstr ""
-
-msgid "Successfully sent digest to '{0}'"
-msgstr ""
-
-msgid "A quarantine does not exist for '{0}'"
-msgstr ""
-
-msgid "Quarantine Request"
-msgstr "Resumo de Quarentena"
-
-msgid "Add"
-msgstr "Adicionar"
-
-msgid "Add an Email Address to Safelist"
-msgstr "Adicionar um endereço de e-mail à lista segura"
-
-msgid "Save"
-msgstr "Salvar"
-
-msgid "Cancel"
-msgstr "Cancelar"
-
-msgid "Deleted one address"
-msgstr "Excluir um endereço"
-
-msgid "Deleted {0} addresses"
-msgstr "Excluídos {0} endereços"
-
-msgid "Delete one Address"
-msgstr "Excluir um endereço"
 
 msgid "Quarantine Digest"
 msgstr "Resumo de Quarentena"
 
-msgid "The attached message from"
-msgstr ""
 
-msgid "was determined by the Spam Blocker to be spam based on a score of"
-msgstr ""
 
-msgid "where anything above"
-msgstr ""
 
-msgid "is spam."
-msgstr ""
 
-msgid ""
-"was determined by the Phish Blocker to be phish (a fraudulent email intended "
-"to steal information).  "
-msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
 
-msgid "Quarantine Digest for {0}"
-msgstr "Resumo de Quarentena para: {0}"
 
-msgid "Click here to access your spam quarantine."
-msgstr "Carregue aqui para aceder à quarentena de SPAM."
 
-msgid ""
-"The spam quarantine contains emails that are being held from your email "
-"account."
-msgstr ""
 
-msgid ""
-"Quarantined emails can be released to your inbox or deleted using the spam "
-"quarantine link."
-msgstr ""
 
-msgid "Quarantine Digest for: {0}"
-msgstr "Sumário de Quarentena para: {0}"
 
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | Sumário de Quarentena para: {1}"
 
-msgid "Request Quarantine Digest Emails"
-msgstr "Solicitar e-mail com Sumário de Quarentena"
 
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,129 +1,17 @@
-msgid "Destination Address"
-msgstr "XDestination AddressX"
+msgid "blocked"
+msgstr "XblockedX"
 
-msgid "Destination Port"
-msgstr "XDestination PortX"
+msgid "password"
+msgstr "XpasswordX"
 
-msgid "Destination Interface"
-msgstr "XDestination InterfaceX"
+msgid "Sessions passed"
+msgstr "XSessions passedX"
 
-msgid "Source Address"
-msgstr "XSource AddressX"
+msgid "Sessions flagged"
+msgstr "XSessions flaggedX"
 
-msgid "Source Port"
-msgstr "XSource PortX"
-
-msgid "Source Interface"
-msgstr "XSource InterfaceX"
-
-msgid "Protocol"
-msgstr "XProtocolX"
-
-msgid "any"
-msgstr "XanyX"
-
-msgid "Username"
-msgstr "XUsernameX"
-
-msgid "Client Hostname"
-msgstr "XClient HostnameX"
-
-msgid "Server Hostname"
-msgstr "XServer HostnameX"
-
-msgid "Client MAC Address"
-msgstr "XClient MAC AddressX"
-
-msgid "Server MAC Address"
-msgstr "XServer MAC AddressX"
-
-msgid "Client MAC Vendor"
-msgstr "XClient MAC VendorX"
-
-msgid "Server MAC Vendor"
-msgstr "XServer MAC VendorX"
-
-msgid "Client in Penalty Box"
-msgstr "XClient in Penalty BoxX"
-
-msgid "Server in Penalty Box"
-msgstr "XServer in Penalty BoxX"
-
-msgid "Client has no Quota"
-msgstr "XClient has no QuotaX"
-
-msgid "Server has no Quota"
-msgstr "XServer has no QuotaX"
-
-msgid "Client has exceeded Quota"
-msgstr "XClient has exceeded QuotaX"
-
-msgid "Server has exceeded Quota"
-msgstr "XServer has exceeded QuotaX"
-
-msgid "Client Quota Attainment"
-msgstr "XClient Quota AttainmentX"
-
-msgid "Server Quota Attainment"
-msgstr "XServer Quota AttainmentX"
-
-msgid "Directory Connector: User in Group"
-msgstr "XDirectory Connector: User in GroupX"
-
-msgid "HTTP: Client User Agent"
-msgstr "XHTTP: Client User AgentX"
-
-msgid "HTTP: Client User OS"
-msgstr "XHTTP: Client User OSX"
-
-msgid "Rules"
-msgstr "XRulesX"
-
-msgid "Note"
-msgstr "XNoteX"
-
-msgid ""
-" <b>Firewall</b> is a simple application designed to block and flag network "
-"traffic based on a set of rules. To learn more click on the <b>Help</b> "
-"button below.<br/> Routing and Port Forwarding functionality can be found "
-"elsewhere in Config->Networking."
-msgstr "X <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking.X"
-
-msgid "Rule Id"
-msgstr "XRule IdX"
-
-msgid "new"
-msgstr "XnewX"
-
-msgid "Enable"
-msgstr "XEnableX"
-
-msgid "Description"
-msgstr "XDescriptionX"
-
-msgid "Block"
-msgstr "XBlockX"
-
-msgid "Flag"
-msgstr "XFlagX"
-
-msgid "Enable Rule"
-msgstr "XEnable RuleX"
-
-msgid "[no description]"
-msgstr "X[no description]X"
-
-msgid "If all of the following conditions are met:"
-msgstr "XIf all of the following conditions are met:X"
-
-msgid "Perform the following action(s):"
-msgstr "XPerform the following action(s):X"
-
-msgid "Action Type"
-msgstr "XAction TypeX"
-
-msgid "Pass"
-msgstr "XPassX"
+msgid "Sessions blocked"
+msgstr "XSessions blockedX"
 
 msgid "Summary Report"
 msgstr "XSummary ReportX"
@@ -245,119 +133,165 @@ msgstr "XRule AppliedX"
 msgid "Destination Ip"
 msgstr "XDestination IpX"
 
+msgid "Destination Port"
+msgstr "XDestination PortX"
+
 msgid "Source Ip"
 msgstr "XSource IpX"
 
-msgid "blocked"
-msgstr "XblockedX"
+msgid "Source Port"
+msgstr "XSource PortX"
 
-msgid "password"
-msgstr "XpasswordX"
+msgid "Destination Address"
+msgstr "XDestination AddressX"
 
-msgid "Sessions passed"
-msgstr "XSessions passedX"
+msgid "Destination Interface"
+msgstr "XDestination InterfaceX"
 
-msgid "Sessions flagged"
-msgstr "XSessions flaggedX"
+msgid "Source Address"
+msgstr "XSource AddressX"
 
-msgid "Sessions blocked"
-msgstr "XSessions blockedX"
+msgid "Source Interface"
+msgstr "XSource InterfaceX"
 
-msgid "description"
-msgstr "XdescriptionX"
+msgid "Protocol"
+msgstr "XProtocolX"
 
-msgid "The number of flagged session grouped by username."
-msgstr "XThe number of flagged session grouped by username.X"
+msgid "any"
+msgstr "XanyX"
 
-msgid "title"
-msgstr "XtitleX"
+msgid "Username"
+msgstr "XUsernameX"
 
-msgid "Top Flagged Usernames"
-msgstr "XTop Flagged UsernamesX"
+msgid "Client Hostname"
+msgstr "XClient HostnameX"
 
-msgid "The amount of scanned, flagged, and blocked sessions over time."
-msgstr "XThe amount of scanned, flagged, and blocked sessions over time.X"
+msgid "Server Hostname"
+msgstr "XServer HostnameX"
 
-msgid "Scanned Sessions"
-msgstr "XScanned SessionsX"
+msgid "Client MAC Address"
+msgstr "XClient MAC AddressX"
 
-msgid "The number of scanned session grouped by username."
-msgstr "XThe number of scanned session grouped by username.X"
+msgid "Server MAC Address"
+msgstr "XServer MAC AddressX"
 
-msgid "Top Scanned Usernames"
-msgstr "XTop Scanned UsernamesX"
+msgid "Client MAC Vendor"
+msgstr "XClient MAC VendorX"
 
-msgid "The number of flagged session grouped by client."
-msgstr "XThe number of flagged session grouped by client.X"
+msgid "Server MAC Vendor"
+msgstr "XServer MAC VendorX"
 
-msgid "Top Blocked Clients"
-msgstr "XTop Blocked ClientsX"
+msgid "Client in Penalty Box"
+msgstr "XClient in Penalty BoxX"
 
-msgid "The number of flagged session grouped by hostname."
-msgstr "XThe number of flagged session grouped by hostname.X"
+msgid "Server in Penalty Box"
+msgstr "XServer in Penalty BoxX"
 
-msgid "Top Flagged Hostnames"
-msgstr "XTop Flagged HostnamesX"
+msgid "Client has no Quota"
+msgstr "XClient has no QuotaX"
 
-msgid "Top Blocked Usernames"
-msgstr "XTop Blocked UsernamesX"
+msgid "Server has no Quota"
+msgstr "XServer has no QuotaX"
 
-msgid "The number of flagged session grouped by server (destination) port."
-msgstr "XThe number of flagged session grouped by server (destination) port.X"
+msgid "Client has exceeded Quota"
+msgstr "XClient has exceeded QuotaX"
 
-msgid "Top Blocked Server Ports"
-msgstr "XTop Blocked Server PortsX"
+msgid "Server has exceeded Quota"
+msgstr "XServer has exceeded QuotaX"
 
-msgid "The number of scanned session grouped by client."
-msgstr "XThe number of scanned session grouped by client.X"
+msgid "Client Quota Attainment"
+msgstr "XClient Quota AttainmentX"
 
-msgid "Top Scanned Clients"
-msgstr "XTop Scanned ClientsX"
+msgid "Server Quota Attainment"
+msgstr "XServer Quota AttainmentX"
 
-msgid "The number of scanned session grouped by server (destination) port."
-msgstr "XThe number of scanned session grouped by server (destination) port.X"
+msgid "Directory Connector: User in Group"
+msgstr "XDirectory Connector: User in GroupX"
 
-msgid "Top Scanned Server Ports"
-msgstr "XTop Scanned Server PortsX"
+msgid "HTTP: Client User Agent"
+msgstr "XHTTP: Client User AgentX"
 
-msgid "The number of scanned session grouped by hostname."
-msgstr "XThe number of scanned session grouped by hostname.X"
+msgid "HTTP: Client User OS"
+msgstr "XHTTP: Client User OSX"
 
-msgid "Top Scanned Hostnames"
-msgstr "XTop Scanned HostnamesX"
+msgid "Rules"
+msgstr "XRulesX"
 
-msgid "A summary of firewall actions."
-msgstr "XA summary of firewall actions.X"
+msgid "Note"
+msgstr "XNoteX"
 
-msgid "Firewall Summary"
-msgstr "XFirewall SummaryX"
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr "X <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking.X"
 
-msgid "The number of blocked sessions grouped by hostname."
-msgstr "XThe number of blocked sessions grouped by hostname.X"
+msgid "Rule Id"
+msgstr "XRule IdX"
 
-msgid "Top Blocked Hostnames"
-msgstr "XTop Blocked HostnamesX"
+msgid "new"
+msgstr "XnewX"
 
-msgid "Top Flagged Clients"
-msgstr "XTop Flagged ClientsX"
+msgid "Enable"
+msgstr "XEnableX"
 
-msgid "Top Flagged Server Ports"
-msgstr "XTop Flagged Server PortsX"
+msgid "Description"
+msgstr "XDescriptionX"
 
-msgid "Events blocked by Firewall App."
-msgstr "XEvents blocked by Firewall App.X"
+msgid "Block"
+msgstr "XBlockX"
 
-msgid "Blocked Events"
-msgstr "XBlocked EventsX"
+msgid "Flag"
+msgstr "XFlagX"
 
-msgid "Events flagged by Firewall App."
-msgstr "XEvents flagged by Firewall App.X"
+msgid "Enable Rule"
+msgstr "XEnable RuleX"
 
-msgid "Flagged Events"
-msgstr "XFlagged EventsX"
+msgid "[no description]"
+msgstr "X[no description]X"
 
-msgid "All events scanned by Firewall App."
-msgstr "XAll events scanned by Firewall App.X"
+msgid "If all of the following conditions are met:"
+msgstr "XIf all of the following conditions are met:X"
 
-msgid "All Events"
-msgstr "XAll EventsX"
+msgid "Perform the following action(s):"
+msgstr "XPerform the following action(s):X"
+
+msgid "Action Type"
+msgstr "XAction TypeX"
+
+msgid "Pass"
+msgstr "XPassX"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

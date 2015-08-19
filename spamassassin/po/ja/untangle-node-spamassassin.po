@@ -13,6 +13,51 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
+msgid "scored"
+msgstr ""
+
+msgid "as"
+msgstr ""
+
+msgid "Messages received"
+msgstr ""
+
+msgid "Messages passed"
+msgstr ""
+
+msgid "Messages dropped"
+msgstr ""
+
+msgid "Messages marked"
+msgstr ""
+
+msgid "Messages quarantined"
+msgstr ""
+
+msgid "Spam detected"
+msgstr ""
+
+msgid "tarpit"
+msgstr ""
+
+msgid "blocked"
+msgstr ""
+
+msgid "Spam"
+msgstr "スパム"
+
+msgid "Clean"
+msgstr "クリーン"
+
+msgid "Hourly Spam Rate"
+msgstr "1時間ごとにスパムレート"
+
+msgid "Spam Rate"
+msgstr "スパムレート"
+
+msgid "Top Ten Spammed"
+msgstr "トップ10のスパム"
+
 msgid "Mark"
 msgstr "マーク"
 
@@ -141,161 +186,3 @@ msgstr "決して"
 
 msgid "Spam Blocker Lite was last updated"
 msgstr "Spam Blocker Liteを更新しました"
-
-msgid "Spam"
-msgstr "スパム"
-
-msgid "Clean"
-msgstr "クリーン"
-
-msgid "Hourly Spam Rate"
-msgstr "1時間ごとにスパムレート"
-
-msgid "Spam Rate"
-msgstr "スパムレート"
-
-msgid "Top Ten Spammed"
-msgstr "トップ10のスパム"
-
-msgid "description"
-msgstr ""
-
-msgid "The amount of scanned, clean, and spam email over time."
-msgstr ""
-
-msgid "title"
-msgstr ""
-
-msgid "Email Usage (all)"
-msgstr ""
-
-msgid "The amount of clean email over time."
-msgstr ""
-
-msgid "Email Usage (clean)"
-msgstr ""
-
-msgid "The number of IP addresses sending spam."
-msgstr ""
-
-msgid "Top Spam Sender Addresses"
-msgstr ""
-
-msgid "The amount of spam email over time."
-msgstr ""
-
-msgid "Email Usage (spam)"
-msgstr ""
-
-msgid "The ratio of spam (true) to ham (false)"
-msgstr ""
-
-msgid "Spam Ratio"
-msgstr ""
-
-msgid "The amount of scanned email over time."
-msgstr ""
-
-msgid "Email Usage (scanned)"
-msgstr ""
-
-msgid "The number of email addresses with spam."
-msgstr ""
-
-msgid "Top Spam Recipients"
-msgstr ""
-
-msgid "A summary of spam blocking actions for email activity."
-msgstr ""
-
-msgid "Spam Blocker Lite Summary"
-msgstr ""
-
-msgid "All emails marked as Spam and quarantined."
-msgstr ""
-
-msgid "Quarantined Events"
-msgstr ""
-
-msgid "All emails scanned by Spam Blocker."
-msgstr ""
-
-msgid "All Email Events"
-msgstr ""
-
-msgid "All emails marked as Spam."
-msgstr ""
-
-msgid "All Spam Events"
-msgstr ""
-
-msgid "All email sessions that were tarpitted."
-msgstr ""
-
-msgid "Tarpit Events"
-msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

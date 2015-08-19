@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-14 14:35-0700\n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
 "PO-Revision-Date: 2014-06-04 04:36+0200\n"
 "Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,137 +13,20 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
-msgid "Destination Address"
-msgstr "宛先アドレス"
-
-msgid "Destination Port"
-msgstr "宛先ポート"
-
-msgid "Destination Interface"
-msgstr "宛先インターフェース"
-
-msgid "Source Address"
-msgstr "発信元アドレス"
-
-msgid "Source Port"
-msgstr "発信元ポート"
-
-msgid "Source Interface"
-msgstr "発信元インターフェース"
-
-msgid "Protocol"
-msgstr "プロトコル"
-
-msgid "any"
-msgstr "any"
-
-msgid "Username"
-msgstr "ユーザ名"
-
-msgid "Client Hostname"
-msgstr "クライアントホスト名"
-
-msgid "Server Hostname"
-msgstr "サーバホスト名"
-
-msgid "Client MAC Address"
-msgstr ""
-
-msgid "Server MAC Address"
-msgstr ""
-
-msgid "Client MAC Vendor"
-msgstr ""
-
-msgid "Server MAC Vendor"
-msgstr ""
-
-msgid "Client in Penalty Box"
-msgstr "ペナルティーボックス内のクライアント"
-
-msgid "Server in Penalty Box"
-msgstr "ペナルティーボックス内のサーバ"
-
-msgid "Client has no Quota"
-msgstr "クライアントの割当てがありません"
-
-msgid "Server has no Quota"
-msgstr "サーバの割当てがありません"
-
-msgid "Client has exceeded Quota"
-msgstr "クライアントの割当てを超えました"
-
-msgid "Server has exceeded Quota"
-msgstr "サーバの割当てを超えました"
-
-msgid "Client Quota Attainment"
-msgstr ""
-
-msgid "Server Quota Attainment"
-msgstr ""
-
-msgid "Directory Connector: User in Group"
-msgstr "Directory Connector：グループ内のユーザー"
-
-msgid "HTTP: Client User Agent"
-msgstr "HTTP： クライアントのユーザエージェント"
-
-msgid "HTTP: Client User OS"
-msgstr "HTTP： クライアントのユーザOS"
-
-msgid "Rules"
-msgstr "ルール"
-
-msgid "Note"
-msgstr "注意"
-
-msgid ""
-" <b>Firewall</b> is a simple application designed to block and flag network "
-"traffic based on a set of rules. To learn more click on the <b>Help</b> "
-"button below.<br/> Routing and Port Forwarding functionality can be found "
-"elsewhere in Config->Networking."
-msgstr ""
-" <b>ファイアウォール</b>は、一連のルールに基づきネットワークトラフィックをブ"
-"ロックして、記録するように設計された単純なアプリケーションです。 詳しく知るた"
-"めに、下記の <b>ヘルプボタン</b>をクリックしてください。<br/> ルーティングと"
-"ポートフォワーディング機能を「Config->Networking」のどこかほかで見つかりま"
-"す。"
-
-msgid "Rule Id"
-msgstr "ルールID"
-
-msgid "new"
-msgstr "新しい"
-
-msgid "Enable"
-msgstr "有効"
-
-msgid "Description"
-msgstr "説明"
-
-msgid "Block"
+msgid "blocked"
 msgstr "ブロック"
 
-msgid "Flag"
-msgstr "フラグ"
+msgid "password"
+msgstr ""
 
-msgid "Enable Rule"
-msgstr "有効"
+msgid "Sessions passed"
+msgstr "セッションをパスする"
 
-msgid "[no description]"
-msgstr "[no description]"
+msgid "Sessions flagged"
+msgstr "フラグが付いたセッション"
 
-msgid "If all of the following conditions are met:"
-msgstr "次の全ての条件が満たされている場合："
-
-msgid "Perform the following action(s):"
-msgstr "次の操作を実行します。"
-
-msgid "Action Type"
-msgstr "アクションの種類"
-
-msgid "Pass"
-msgstr "パス"
+msgid "Sessions blocked"
+msgstr "セッションをブロックする"
 
 msgid "Summary Report"
 msgstr "サマリレポート"
@@ -265,181 +148,140 @@ msgstr "適用ルール"
 msgid "Destination Ip"
 msgstr "宛先IP"
 
+msgid "Destination Port"
+msgstr "宛先ポート"
+
 msgid "Source Ip"
 msgstr "送信元IP"
 
-msgid "blocked"
+msgid "Source Port"
+msgstr "発信元ポート"
+
+msgid "Destination Address"
+msgstr "宛先アドレス"
+
+msgid "Destination Interface"
+msgstr "宛先インターフェース"
+
+msgid "Source Address"
+msgstr "発信元アドレス"
+
+msgid "Source Interface"
+msgstr "発信元インターフェース"
+
+msgid "Protocol"
+msgstr "プロトコル"
+
+msgid "any"
+msgstr "any"
+
+msgid "Username"
+msgstr "ユーザ名"
+
+msgid "Client Hostname"
+msgstr "クライアントホスト名"
+
+msgid "Server Hostname"
+msgstr "サーバホスト名"
+
+msgid "Client MAC Address"
+msgstr ""
+
+msgid "Server MAC Address"
+msgstr ""
+
+msgid "Client MAC Vendor"
+msgstr ""
+
+msgid "Server MAC Vendor"
+msgstr ""
+
+msgid "Client in Penalty Box"
+msgstr "ペナルティーボックス内のクライアント"
+
+msgid "Server in Penalty Box"
+msgstr "ペナルティーボックス内のサーバ"
+
+msgid "Client has no Quota"
+msgstr "クライアントの割当てがありません"
+
+msgid "Server has no Quota"
+msgstr "サーバの割当てがありません"
+
+msgid "Client has exceeded Quota"
+msgstr "クライアントの割当てを超えました"
+
+msgid "Server has exceeded Quota"
+msgstr "サーバの割当てを超えました"
+
+msgid "Client Quota Attainment"
+msgstr ""
+
+msgid "Server Quota Attainment"
+msgstr ""
+
+msgid "Directory Connector: User in Group"
+msgstr "Directory Connector：グループ内のユーザー"
+
+msgid "HTTP: Client User Agent"
+msgstr "HTTP： クライアントのユーザエージェント"
+
+msgid "HTTP: Client User OS"
+msgstr "HTTP： クライアントのユーザOS"
+
+msgid "Rules"
+msgstr "ルール"
+
+msgid "Note"
+msgstr "注意"
+
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+" <b>ファイアウォール</b>は、一連のルールに基づきネットワークトラフィックをブ"
+"ロックして、記録するように設計された単純なアプリケーションです。 詳しく知るた"
+"めに、下記の <b>ヘルプボタン</b>をクリックしてください。<br/> ルーティングと"
+"ポートフォワーディング機能を「Config->Networking」のどこかほかで見つかりま"
+"す。"
+
+msgid "Rule Id"
+msgstr "ルールID"
+
+msgid "new"
+msgstr "新しい"
+
+msgid "Enable"
+msgstr "有効"
+
+msgid "Description"
+msgstr "説明"
+
+msgid "Block"
 msgstr "ブロック"
 
-msgid "password"
-msgstr ""
+msgid "Flag"
+msgstr "フラグ"
 
-msgid "Sessions passed"
-msgstr "セッションをパスする"
+msgid "Enable Rule"
+msgstr "有効"
 
-msgid "Sessions flagged"
-msgstr "フラグが付いたセッション"
+msgid "[no description]"
+msgstr "[no description]"
 
-msgid "Sessions blocked"
-msgstr "セッションをブロックする"
+msgid "If all of the following conditions are met:"
+msgstr "次の全ての条件が満たされている場合："
 
-msgid "description"
-msgstr ""
+msgid "Perform the following action(s):"
+msgstr "次の操作を実行します。"
 
-msgid "The number of flagged session grouped by username."
-msgstr ""
+msgid "Action Type"
+msgstr "アクションの種類"
 
-msgid "title"
-msgstr ""
-
-msgid "Top Flagged Usernames"
-msgstr ""
-
-msgid "The amount of scanned, flagged, and blocked sessions over time."
-msgstr ""
-
-msgid "Scanned Sessions"
-msgstr ""
-
-msgid "The number of scanned session grouped by username."
-msgstr ""
-
-msgid "Top Scanned Usernames"
-msgstr ""
-
-msgid "The number of flagged session grouped by client."
-msgstr ""
-
-msgid "Top Blocked Clients"
-msgstr ""
-
-msgid "The number of flagged session grouped by hostname."
-msgstr ""
-
-msgid "Top Flagged Hostnames"
-msgstr ""
-
-msgid "Top Blocked Usernames"
-msgstr ""
-
-msgid "The number of flagged session grouped by server (destination) port."
-msgstr ""
-
-msgid "Top Blocked Server Ports"
-msgstr ""
-
-msgid "The number of scanned session grouped by client."
-msgstr ""
-
-msgid "Top Scanned Clients"
-msgstr ""
-
-msgid "The number of scanned session grouped by server (destination) port."
-msgstr ""
-
-msgid "Top Scanned Server Ports"
-msgstr ""
-
-msgid "The number of scanned session grouped by hostname."
-msgstr ""
-
-msgid "Top Scanned Hostnames"
-msgstr ""
-
-msgid "A summary of firewall actions."
-msgstr ""
-
-msgid "Firewall Summary"
-msgstr ""
-
-msgid "The number of blocked sessions grouped by hostname."
-msgstr ""
-
-msgid "Top Blocked Hostnames"
-msgstr ""
-
-msgid "Top Flagged Clients"
-msgstr ""
-
-msgid "Top Flagged Server Ports"
-msgstr ""
-
-msgid "Events blocked by Firewall App."
-msgstr ""
-
-msgid "Blocked Events"
-msgstr "ブロックされたイベント"
-
-msgid "Events flagged by Firewall App."
-msgstr ""
-
-msgid "Flagged Events"
-msgstr "フラグが付いたイベント"
-
-msgid "All events scanned by Firewall App."
-msgstr ""
-
-msgid "All Events"
-msgstr "全てのイベント"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+msgid "Pass"
+msgstr "パス"
 
 
 

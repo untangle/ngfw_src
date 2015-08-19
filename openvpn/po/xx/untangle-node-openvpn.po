@@ -1,3 +1,81 @@
+msgid "status"
+msgstr "XstatusX"
+
+msgid "event"
+msgstr "XeventX"
+
+msgid "Sessions passed"
+msgstr "XSessions passedX"
+
+msgid "Clients Connected"
+msgstr "XClients ConnectedX"
+
+msgid "primary network"
+msgstr "Xprimary networkX"
+
+msgid "Default Group"
+msgstr "XDefault GroupX"
+
+msgid "Invalid Settings"
+msgstr "XInvalid SettingsX"
+
+msgid "conflicts with address"
+msgstr "Xconflicts with addressX"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
+
+msgid "securely passed"
+msgstr "Xsecurely passedX"
+
+msgid "MB"
+msgstr "XMBX"
+
+msgid "of traffic and processed"
+msgstr "Xof traffic and processedX"
+
+msgid "remote logins"
+msgstr "Xremote loginsX"
+
+msgid "Bandwidth Usage"
+msgstr "XBandwidth UsageX"
+
+msgid "Avg Data Rate"
+msgstr "XAvg Data RateX"
+
+msgid "Max Data Rate"
+msgstr "XMax Data RateX"
+
+msgid "Data Transferred"
+msgstr "XData TransferredX"
+
+msgid "Date"
+msgstr "XDateX"
+
+msgid "Throughput (kB/s)"
+msgstr "XThroughput (kB/s)X"
+
+msgid "Usage (kB/sec)"
+msgstr "XUsage (kB/sec)X"
+
+msgid "Top Users"
+msgstr "XTop UsersX"
+
+msgid "Login Events"
+msgstr "XLogin EventsX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "Client"
+msgstr "XClientX"
+
+msgid "Address"
+msgstr "XAddressX"
+
+msgid "Port"
+msgstr "XPortX"
+
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
@@ -8,12 +86,6 @@ msgstr "XConnected Remote ClientsX"
 
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr "XThe Connected Remote Clients list shows connected clients.X"
-
-msgid "Address"
-msgstr "XAddressX"
-
-msgid "Client"
-msgstr "XClientX"
 
 msgid "Pool Address"
 msgstr "XPool AddressX"
@@ -242,9 +314,6 @@ msgstr "XServer EnabledX"
 msgid "Client To Client Allowed"
 msgstr "XClient To Client AllowedX"
 
-msgid "Port"
-msgstr "XPortX"
-
 msgid "Protocol"
 msgstr "XProtocolX"
 
@@ -277,126 +346,32 @@ msgid "You must create at least one group."
 msgstr "XYou must create at least one group.X"
 
 msgid ""
-"The group: \"{0}\" cannot be deleted because it is being used by the client: "
-"{1} in the Client To Site List."
-msgstr "XThe group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List.X"
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
+msgstr "XThe group: {0} cannot be deleted because it is being used by the client: {1} in the Client To Site List.X"
 
-msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "XThe group name: \"{0}\" in row: {1} already exists.X"
+msgid "The group name: {0} in row: {1} already exists."
+msgstr "XThe group name: {0} in row: {1} already exists.X"
 
 msgid "Changing name is not allowed. Create a new user."
 msgstr "XChanging name is not allowed. Create a new user.X"
 
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "XThe client name: \"{0}\" in row: {1} already exists.X"
+msgid "The client name: {0} in row: {1} already exists."
+msgstr "XThe client name: {0} in row: {1} already exists.X"
 
-msgid "Summary Report"
-msgstr "XSummary ReportX"
 
-msgid "securely passed"
-msgstr "Xsecurely passedX"
 
-msgid "MB"
-msgstr "XMBX"
 
-msgid "of traffic and processed"
-msgstr "Xof traffic and processedX"
 
-msgid "remote logins"
-msgstr "Xremote loginsX"
 
-msgid "Bandwidth Usage"
-msgstr "XBandwidth UsageX"
 
-msgid "Avg Data Rate"
-msgstr "XAvg Data RateX"
 
-msgid "Max Data Rate"
-msgstr "XMax Data RateX"
 
-msgid "Data Transferred"
-msgstr "XData TransferredX"
 
-msgid "Date"
-msgstr "XDateX"
 
-msgid "Throughput (kB/s)"
-msgstr "XThroughput (kB/s)X"
 
-msgid "Usage (kB/sec)"
-msgstr "XUsage (kB/sec)X"
 
-msgid "Top Users"
-msgstr "XTop UsersX"
 
-msgid "Login Events"
-msgstr "XLogin EventsX"
 
-msgid "Time"
-msgstr "XTimeX"
 
-msgid "event"
-msgstr "XeventX"
 
-msgid "Sessions passed"
-msgstr "XSessions passedX"
-
-msgid "Clients Connected"
-msgstr "XClients ConnectedX"
-
-msgid "primary network"
-msgstr "Xprimary networkX"
-
-msgid "Default Group"
-msgstr "XDefault GroupX"
-
-msgid "Invalid Settings"
-msgstr "XInvalid SettingsX"
-
-msgid "conflicts with address"
-msgstr "Xconflicts with addressX"
-
-msgid "status"
-msgstr "XstatusX"
-
-msgid "description"
-msgstr "XdescriptionX"
-
-msgid "The approximate amount of data transfered over openvpn connections."
-msgstr "XThe approximate amount of data transfered over openvpn connections.X"
-
-msgid "title"
-msgstr "XtitleX"
-
-msgid "OpenVPN Bandwidth Usage"
-msgstr "XOpenVPN Bandwidth UsageX"
-
-msgid "The number of bytes transferred grouped by remote client."
-msgstr "XThe number of bytes transferred grouped by remote client.X"
-
-msgid "Top Clients (by usage)"
-msgstr "XTop Clients (by usage)X"
-
-msgid "The amount of openvpn sessions over time."
-msgstr "XThe amount of openvpn sessions over time.X"
-
-msgid "OpenVPN Sessions"
-msgstr "XOpenVPN SessionsX"
-
-msgid "The amount of login and logout events over time."
-msgstr "XThe amount of login and logout events over time.X"
-
-msgid "OpenVPN Events"
-msgstr "XOpenVPN EventsX"
-
-msgid "Shows all OpenVPN connection traffic statistics events."
-msgstr "XShows all OpenVPN connection traffic statistics events.X"
-
-msgid "Statistic Events"
-msgstr "XStatistic EventsX"
-
-msgid "OpenVPN client connection events."
-msgstr "XOpenVPN client connection events.X"
-
-msgid "Connection Events"
-msgstr "XConnection EventsX"

@@ -1685,9 +1685,9 @@ msgid ""
 "organization must be the legal registrant of the domain name in the "
 "certificate request. If you are enrolling as a small business/sole "
 "proprietor, please enter the certificate requester's name in the "
-"'Organization' field, and the DBA (doing business as) name in the "
+"Organization field, and the DBA (doing business as) name in the "
 "Organizational Unit field."
-msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the Organizational Unit field.X"
+msgstr "XThe name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field.X"
 
 msgid "Organizational Unit "
 msgstr "XOrganizational Unit X"
@@ -2747,6 +2747,12 @@ msgstr "XCurrent AddressX"
 
 msgid "is WAN"
 msgstr "Xis WANX"
+
+msgid "true"
+msgstr "XtrueX"
+
+msgid "false"
+msgstr "XfalseX"
 
 msgid "Remap Interfaces"
 msgstr "XRemap InterfacesX"
@@ -4882,6 +4888,3282 @@ msgstr "XThe server is unable to properly communicate with the app store.X"
 msgid "Check internet connectivity and the network/DNS configuration."
 msgstr "XCheck internet connectivity and the network/DNS configuration.X"
 
+msgid "Web"
+msgstr "XWebX"
+
+msgid "Scan HTTP"
+msgstr "XScan HTTPX"
+
+msgid "Signatures were last updated"
+msgstr "XSignatures were last updatedX"
+
+msgid "never"
+msgstr "XneverX"
+
+msgid "File Extensions"
+msgstr "XFile ExtensionsX"
+
+msgid "File Type"
+msgstr "XFile TypeX"
+
+msgid "[enter file type]"
+msgstr "X[enter file type]X"
+
+msgid "Scan"
+msgstr "XScanX"
+
+msgid "MIME Types"
+msgstr "XMIME TypesX"
+
+msgid "MIME Type"
+msgstr "XMIME TypeX"
+
+msgid "[enter MIME type]"
+msgstr "X[enter MIME type]X"
+
+msgid "Scan FTP"
+msgstr "XScan FTPX"
+
+msgid "Virus Blocker signatures were last updated"
+msgstr "XVirus Blocker signatures were last updatedX"
+
+msgid "Unknown"
+msgstr "XUnknownX"
+
+msgid "Scan SMTP"
+msgstr "XScan SMTPX"
+
+msgid "pass message"
+msgstr "Xpass messageX"
+
+msgid "remove infection"
+msgstr "Xremove infectionX"
+
+msgid "block message"
+msgstr "Xblock messageX"
+
+msgid "Pass Sites"
+msgstr "XPass SitesX"
+
+msgid "Site"
+msgstr "XSiteX"
+
+msgid "[enter site]"
+msgstr "X[enter site]X"
+
+msgid "Do not scan traffic to the specified sites.  Use caution!"
+msgstr "XDo not scan traffic to the specified sites.  Use caution!X"
+
+msgid "Advanced settings require careful configuration."
+msgstr "XAdvanced settings require careful configuration.X"
+
+msgid "Mark"
+msgstr "XMarkX"
+
+msgid "Note"
+msgstr "XNoteX"
+
+msgid "Phish Blocker email signatures were last updated"
+msgstr "XPhish Blocker email signatures were last updatedX"
+
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr "XApplication Control Lite logs and blocks sessions using custom signatures on the session content.X"
+
+msgid "Total Signatures Available"
+msgstr "XTotal Signatures AvailableX"
+
+msgid "Total Signatures Logging"
+msgstr "XTotal Signatures LoggingX"
+
+msgid "Total Signatures Blocking"
+msgstr "XTotal Signatures BlockingX"
+
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr "XCaution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives.X"
+
+msgid "Signatures"
+msgstr "XSignaturesX"
+
+msgid "[enter protocol]"
+msgstr "X[enter protocol]X"
+
+msgid "[enter category]"
+msgstr "X[enter category]X"
+
+msgid "Log"
+msgstr "XLogX"
+
+msgid "Signature"
+msgstr "XSignatureX"
+
+msgid "[enter signature]"
+msgstr "X[enter signature]X"
+
+msgid ""
+"A name should only contains numbers, letters, dashes and periods.  Spaces "
+"are not allowed."
+msgstr "XA name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.X"
+
+msgid "Connected Remote Clients"
+msgstr "XConnected Remote ClientsX"
+
+msgid "The Connected Remote Clients list shows connected clients."
+msgstr "XThe Connected Remote Clients list shows connected clients.X"
+
+msgid "Client"
+msgstr "XClientX"
+
+msgid "Pool Address"
+msgstr "XPool AddressX"
+
+msgid "Rx Data"
+msgstr "XRx DataX"
+
+msgid "Tx Data"
+msgstr "XTx DataX"
+
+msgid "Remote Server Status"
+msgstr "XRemote Server StatusX"
+
+msgid ""
+"The Remote Server Status list shows the current status of the configured "
+"remote servers."
+msgstr "XThe Remote Server Status list shows the current status of the configured remote servers.X"
+
+msgid "OpenVPN is currently running."
+msgstr "XOpenVPN is currently running.X"
+
+msgid "OpenVPN is not currently running."
+msgstr "XOpenVPN is not currently running.X"
+
+msgid "Group"
+msgstr "XGroupX"
+
+msgid "Remote Servers"
+msgstr "XRemote ServersX"
+
+msgid "Server Name"
+msgstr "XServer NameX"
+
+msgid "[enter server name]"
+msgstr "X[enter server name]X"
+
+msgid "Server name"
+msgstr "XServer nameX"
+
+msgid "only alphanumerics allowed"
+msgstr "Xonly alphanumerics allowedX"
+
+msgid "Configure a new Remote Server connection"
+msgstr "XConfigure a new Remote Server connectionX"
+
+msgid "Configuration File"
+msgstr "XConfiguration FileX"
+
+msgid "Submit"
+msgstr "XSubmitX"
+
+msgid "Select File"
+msgstr "XSelect FileX"
+
+msgid "Please choose a file to upload."
+msgstr "XPlease choose a file to upload.X"
+
+msgid "The configuration has been imported."
+msgstr "XThe configuration has been imported.X"
+
+msgid "Import failure"
+msgstr "XImport failureX"
+
+msgid ""
+"These settings configure how OpenVPN will connect to remote servers as a "
+"client."
+msgstr "XThese settings configure how OpenVPN will connect to remote servers as a client.X"
+
+msgid ""
+"Remote Servers is a list remote OpenVPN servers that OpenVPN should connect "
+"to as a client."
+msgstr "XRemote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.X"
+
+msgid "Download OpenVPN Client"
+msgstr "XDownload OpenVPN ClientX"
+
+msgid "These files can be used to configure your Remote Clients."
+msgstr "XThese files can be used to configure your Remote Clients.X"
+
+msgid ""
+"This file can be used to configure Chromebook clients.  On the target "
+"device, browse to <b>chrome://net-internals</b> and use Import ONC file."
+msgstr "XThis file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file.X"
+
+msgid "Building OpenVPN Client..."
+msgstr "XBuilding OpenVPN Client...X"
+
+msgid "Click here to download this client's Windows setup.exe file."
+msgstr "XClick here to download this client's Windows setup.exe file.X"
+
+msgid ""
+"Click here to download this client's configuration onc file for Chromebook."
+msgstr "XClick here to download this client's configuration onc file for Chromebook.X"
+
+msgid ""
+"Click here to download this client's configuration zip file for other OSs "
+"(apple/linux/etc). "
+msgstr "XClick here to download this client's configuration zip file for other OSs (apple/linux/etc). X"
+
+msgid ""
+"Click here to download this client's configuration file for remote Untangle "
+"OpenVPN clients."
+msgstr "XClick here to download this client's configuration file for remote Untangle OpenVPN clients.X"
+
+msgid "Remote Clients"
+msgstr "XRemote ClientsX"
+
+msgid "Client Name"
+msgstr "XClient NameX"
+
+msgid "[enter client name]"
+msgstr "X[enter client name]X"
+
+msgid "Download Client"
+msgstr "XDownload ClientX"
+
+msgid "Individual Client"
+msgstr "XIndividual ClientX"
+
+msgid "Remote Networks"
+msgstr "XRemote NetworksX"
+
+msgid "Exported Networks"
+msgstr "XExported NetworksX"
+
+msgid "Export Name"
+msgstr "XExport NameX"
+
+msgid "[enter export name]"
+msgstr "X[enter export name]X"
+
+msgid "Group Name"
+msgstr "XGroup NameX"
+
+msgid "[enter group name]"
+msgstr "X[enter group name]X"
+
+msgid "Full Tunnel"
+msgstr "XFull TunnelX"
+
+msgid "Push DNS"
+msgstr "XPush DNSX"
+
+msgid "Push DNS Configuration"
+msgstr "XPush DNS ConfigurationX"
+
+msgid "Push DNS Server"
+msgstr "XPush DNS ServerX"
+
+msgid "OpenVPN Server"
+msgstr "XOpenVPN ServerX"
+
+msgid "Push DNS Custom 1"
+msgstr "XPush DNS Custom 1X"
+
+msgid "Push DNS Custom 2"
+msgstr "XPush DNS Custom 2X"
+
+msgid "Push DNS Domain"
+msgstr "XPush DNS DomainX"
+
+msgid ""
+"These settings configure how OpenVPN will be a server for remote clients."
+msgstr "XThese settings configure how OpenVPN will be a server for remote clients.X"
+
+msgid "Site Name"
+msgstr "XSite NameX"
+
+msgid "You must enter a site name."
+msgstr "XYou must enter a site name.X"
+
+msgid "Site URL"
+msgstr "XSite URLX"
+
+msgid "Server Enabled"
+msgstr "XServer EnabledX"
+
+msgid "Client To Client Allowed"
+msgstr "XClient To Client AllowedX"
+
+msgid ""
+"Changing the protocol will require redistributing ALL of the openvpn clients."
+msgstr "XChanging the protocol will require redistributing ALL of the openvpn clients.X"
+
+msgid "Cipher"
+msgstr "XCipherX"
+
+msgid "Address Space"
+msgstr "XAddress SpaceX"
+
+msgid "NAT OpenVPN Traffic"
+msgstr "XNAT OpenVPN TrafficX"
+
+msgid "NAT all LAN-bound OpenVPN traffic to a local address"
+msgstr "XNAT all LAN-bound OpenVPN traffic to a local addressX"
+
+msgid "You must create at least one group."
+msgstr "XYou must create at least one group.X"
+
+msgid ""
+"The group: {0} cannot be deleted because it is being used by the client: {1} "
+"in the Client To Site List."
+msgstr "XThe group: {0} cannot be deleted because it is being used by the client: {1} in the Client To Site List.X"
+
+msgid "The group name: {0} in row: {1} already exists."
+msgstr "XThe group name: {0} in row: {1} already exists.X"
+
+msgid "Changing name is not allowed. Create a new user."
+msgstr "XChanging name is not allowed. Create a new user.X"
+
+msgid "The client name: {0} in row: {1} already exists."
+msgstr "XThe client name: {0} in row: {1} already exists.X"
+
+msgid "Client Quota Attainment"
+msgstr "XClient Quota AttainmentX"
+
+msgid "Server Quota Attainment"
+msgstr "XServer Quota AttainmentX"
+
+msgid "HTTP: Hostname"
+msgstr "XHTTP: HostnameX"
+
+msgid "HTTP: Referer"
+msgstr "XHTTP: RefererX"
+
+msgid ""
+"Captive Portal allows administrators to require network users to complete a "
+"defined process, such as logging in or accepting a network usage policy, "
+"before accessing the internet."
+msgstr "XCaptive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.X"
+
+msgid "Active Sessions"
+msgstr "XActive SessionsX"
+
+msgid "The Active Sessions list shows authenticated users."
+msgstr "XThe Active Sessions list shows authenticated users.X"
+
+msgid "User Name"
+msgstr "XUser NameX"
+
+msgid "Login Time"
+msgstr "XLogin TimeX"
+
+msgid "Last Activity"
+msgstr "XLast ActivityX"
+
+msgid "Session Count"
+msgstr "XSession CountX"
+
+msgid "Click to logout"
+msgstr "XClick to logoutX"
+
+msgid "Capture Rules"
+msgstr "XCapture RulesX"
+
+msgid ""
+"Network access is controlled based on the set of rules defined below. To "
+"learn more click on the <b>Help</b> button below."
+msgstr "XNetwork access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.X"
+
+msgid "Rules"
+msgstr "XRulesX"
+
+msgid "Capture"
+msgstr "XCaptureX"
+
+msgid "Enable Rule"
+msgstr "XEnable RuleX"
+
+msgid "Action Type"
+msgstr "XAction TypeX"
+
+msgid "Pass Listed Client Addresses"
+msgstr "XPass Listed Client AddressesX"
+
+msgid ""
+"Pass Listed Client Addresses is a list of Client IPs that are not subjected "
+"to the Captive Portal."
+msgstr "XPass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.X"
+
+msgid "Pass Listed Server Addresses"
+msgstr "XPass Listed Server AddressesX"
+
+msgid ""
+"Pass Listed Server Addresses is a list of Server IPs that unauthenticated "
+"clients can access without authentication."
+msgstr "XPass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.X"
+
+msgid "Passed Hosts"
+msgstr "XPassed HostsX"
+
+msgid ""
+"The pass lists provide a quick alternative way to allow access from specific "
+"clients, or to specific servers."
+msgstr "XThe pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.X"
+
+msgid "User Authentication"
+msgstr "XUser AuthenticationX"
+
+msgid "Configure Local Directory"
+msgstr "XConfigure Local DirectoryX"
+
+msgid "RADIUS {0}(requires Directory Connector) {1}"
+msgstr "XRADIUS {0}(requires Directory Connector) {1}X"
+
+msgid "Configure RADIUS"
+msgstr "XConfigure RADIUSX"
+
+msgid "Active Directory {0}(requires Directory Connector) {1}"
+msgstr "XActive Directory {0}(requires Directory Connector) {1}X"
+
+msgid "Configure Active Directory"
+msgstr "XConfigure Active DirectoryX"
+
+msgid "Session Settings"
+msgstr "XSession SettingsX"
+
+msgid "The Idle Timeout must be 0 or greater."
+msgstr "XThe Idle Timeout must be 0 or greater.X"
+
+msgid "Idle Timeout (minutes)"
+msgstr "XIdle Timeout (minutes)X"
+
+msgid ""
+"Clients will be unauthenticated after this amount of idle time. They may re-"
+"authenticate immediately.  Use zero to disable."
+msgstr "XClients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable.X"
+
+msgid "Timeout (minutes)"
+msgstr "XTimeout (minutes)X"
+
+msgid "The Timeout must be more than 5 minutes and less than 525600 minutes."
+msgstr "XThe Timeout must be more than 5 minutes and less than 525600 minutes.X"
+
+msgid ""
+"Clients will be unauthenticated after this amount of time regardless of "
+"activity. They may re-authenticate immediately."
+msgstr "XClients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately.X"
+
+msgid "Allow Concurrent Logins"
+msgstr "XAllow Concurrent LoginsX"
+
+msgid ""
+"This will allow multiple hosts to use the same username & password "
+"concurrently."
+msgstr "XThis will allow multiple hosts to use the same username & password concurrently.X"
+
+msgid "Allow Cookie-based authentication"
+msgstr "XAllow Cookie-based authenticationX"
+
+msgid ""
+"This will allow authenicated clients to continue to access even after "
+"session idle and timeout values."
+msgstr "XThis will allow authenicated clients to continue to access even after session idle and timeout values.X"
+
+msgid "Cookie Timeout (minutes)"
+msgstr "XCookie Timeout (minutes)X"
+
+msgid ""
+"The Cookie Timeout must be more than 5 minutes and less than 525600 minutes."
+msgstr "XThe Cookie Timeout must be more than 5 minutes and less than 525600 minutes.X"
+
+msgid "Captive Page"
+msgstr "XCaptive PageX"
+
+msgid "Basic Message"
+msgstr "XBasic MessageX"
+
+msgid "Basic Login"
+msgstr "XBasic LoginX"
+
+msgid "Captive Portal Page Configuration"
+msgstr "XCaptive Portal Page ConfigurationX"
+
+msgid "Page Title"
+msgstr "XPage TitleX"
+
+msgid "Welcome Text"
+msgstr "XWelcome TextX"
+
+msgid "Username Text"
+msgstr "XUsername TextX"
+
+msgid "Password Text"
+msgstr "XPassword TextX"
+
+msgid "Message Text"
+msgstr "XMessage TextX"
+
+msgid "Lower Text"
+msgstr "XLower TextX"
+
+msgid "Agree Checkbox"
+msgstr "XAgree CheckboxX"
+
+msgid "Agree Text"
+msgstr "XAgree TextX"
+
+msgid "Upload Custom File"
+msgstr "XUpload Custom FileX"
+
+msgid "Remove Custom File"
+msgstr "XRemove Custom FileX"
+
+msgid "HTTPS/SSL Root Certificate Detection"
+msgstr "XHTTPS/SSL Root Certificate DetectionX"
+
+msgid "Disable certificate detection."
+msgstr "XDisable certificate detection.X"
+
+msgid "Check certificate. Show warning when not detected."
+msgstr "XCheck certificate. Show warning when not detected.X"
+
+msgid "Require certificate. Prohibit login when not detected."
+msgstr "XRequire certificate. Prohibit login when not detected.X"
+
+msgid "Preview Captive Portal Page"
+msgstr "XPreview Captive Portal PageX"
+
+msgid "Captive Portal is Disabled"
+msgstr "XCaptive Portal is DisabledX"
+
+msgid "You must turn on the Captive Portal to preview the Captive Page."
+msgstr "XYou must turn on the Captive Portal to preview the Captive Page.X"
+
+msgid "Unsaved Changes"
+msgstr "XUnsaved ChangesX"
+
+msgid "You must save your settings before previewing the page."
+msgstr "XYou must save your settings before previewing the page.X"
+
+msgid "Session Redirect"
+msgstr "XSession RedirectX"
+
+msgid "Always use HTTPS for the capture page redirect"
+msgstr "XAlways use HTTPS for the capture page redirectX"
+
+msgid "Redirect URL"
+msgstr "XRedirect URLX"
+
+msgid ""
+"<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and "
+"allows you to specify a page to display immediately after user "
+"authentication.  If you leave this field blank, users will instead be "
+"forwarded to their original destination."
+msgstr "X<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.X"
+
+msgid "Missing Filename"
+msgstr "XMissing FilenameX"
+
+msgid "Click the Browse button to select a custom file to upload"
+msgstr "XClick the Browse button to select a custom file to uploadX"
+
+msgid "Please wait while uploading your custom captive portal page..."
+msgstr "XPlease wait while uploading your custom captive portal page...X"
+
+msgid "Custom Page Upload Success"
+msgstr "XCustom Page Upload SuccessX"
+
+msgid "Custom Page Upload Failure"
+msgstr "XCustom Page Upload FailureX"
+
+msgid "Please wait while the previous custom file is removed..."
+msgstr "XPlease wait while the previous custom file is removed...X"
+
+msgid "Custom Page Remove Success"
+msgstr "XCustom Page Remove SuccessX"
+
+msgid "Custom Page Remove Failure"
+msgstr "XCustom Page Remove FailureX"
+
+msgid "Please correct any highlighted fields."
+msgstr "XPlease correct any highlighted fields.X"
+
+msgid "When using Basic Message, Authentication must be set to None."
+msgstr "XWhen using Basic Message, Authentication must be set to None.X"
+
+msgid "When using Basic Message, Allow Concurrent Logins must be enabled."
+msgstr "XWhen using Basic Message, Allow Concurrent Logins must be enabled.X"
+
+msgid "When using Basic Login, Authentication cannot be set to None."
+msgstr "XWhen using Basic Login, Authentication cannot be set to None.X"
+
+msgid "Field condition"
+msgstr "XField conditionX"
+
+msgid "A password must be set to enable Online Access!"
+msgstr "XA password must be set to enable Online Access!X"
+
+msgid "The new reports."
+msgstr "XThe new reports.X"
+
+msgid "View Reports"
+msgstr "XView ReportsX"
+
+msgid "Old Reports"
+msgstr "XOld ReportsX"
+
+msgid "Reports are automatically generated each night."
+msgstr "XReports are automatically generated each night.X"
+
+msgid "View Old Reports"
+msgstr "XView Old ReportsX"
+
+msgid "Report generation for the current day can be forced with the "
+msgstr "XReport generation for the current day can be forced with the X"
+
+msgid "Generate Today's Reports"
+msgstr "XGenerate Today's ReportsX"
+
+msgid " button."
+msgstr "X button.X"
+
+msgid "Caution"
+msgstr "XCautionX"
+
+msgid "Real-time report generation may cause network slowness."
+msgstr "XReal-time report generation may cause network slowness.X"
+
+msgid "Generating today's reports... This may take a few minutes."
+msgstr "XGenerating today's reports... This may take a few minutes.X"
+
+msgid "Generation"
+msgstr "XGenerationX"
+
+msgid "Daily Reports"
+msgstr "XDaily ReportsX"
+
+msgid ""
+"Daily Reports covers the previous day. Daily reports will be generated on "
+"the selected days."
+msgstr "XDaily Reports covers the previous day. Daily reports will be generated on the selected days.X"
+
+msgid "Weekly Reports"
+msgstr "XWeekly ReportsX"
+
+msgid ""
+"Weekly Reports covers the previous week. Weekly reports will be generated on "
+"the selected days."
+msgstr "XWeekly Reports covers the previous week. Weekly reports will be generated on the selected days.X"
+
+msgid "Monthly Reports"
+msgstr "XMonthly ReportsX"
+
+msgid "Monthly Reports are generated on the 1st and cover the previous month."
+msgstr "XMonthly Reports are generated on the 1st and cover the previous month.X"
+
+msgid "Generation Time"
+msgstr "XGeneration TimeX"
+
+msgid "Scheduled time to generate the reports"
+msgstr "XScheduled time to generate the reportsX"
+
+msgid "Data Retention"
+msgstr "XData RetentionX"
+
+msgid ""
+"Keep event data for this number of days. The smaller the number the lower "
+"the disk space requirements and resource usage during report generation."
+msgstr "XKeep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.X"
+
+msgid ""
+"Depending on the server and network, increasing this value may cause "
+"performance issues."
+msgstr "XDepending on the server and network, increasing this value may cause performance issues.X"
+
+msgid "Data Retention days"
+msgstr "XData Retention daysX"
+
+msgid "Change Password"
+msgstr "XChange PasswordX"
+
+msgid "Reporting Users"
+msgstr "XReporting UsersX"
+
+msgid "Email Address (username)"
+msgstr "XEmail Address (username)X"
+
+msgid "[enter email address]"
+msgstr "X[enter email address]X"
+
+msgid "The email address cannot be blank."
+msgstr "XThe email address cannot be blank.X"
+
+msgid "Email Summaries"
+msgstr "XEmail SummariesX"
+
+msgid "Online Access"
+msgstr "XOnline AccessX"
+
+msgid "The email address name cannot be blank."
+msgstr "XThe email address name cannot be blank.X"
+
+msgid "(required for Online Access)"
+msgstr "X(required for Online Access)X"
+
+msgid "Email Attachment Settings"
+msgstr "XEmail Attachment SettingsX"
+
+msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
+msgstr "XAttach Detailed Report Logs to Email (CSV Zip File)X"
+
+msgid "Attachment size limit (MB)"
+msgstr "XAttachment size limit (MB)X"
+
+msgid "Syslog"
+msgstr "XSyslogX"
+
+msgid ""
+"If enabled logged events will be sent in real-time to a remote syslog for "
+"custom processing."
+msgstr "XIf enabled logged events will be sent in real-time to a remote syslog for custom processing.X"
+
+msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
+msgstr "X{0}Disable{1} Syslog Events. (This is the default setting.)X"
+
+msgid "{0}Enable{1} Syslog Events."
+msgstr "X{0}Enable{1} Syslog Events.X"
+
+msgid "A Host must be specified."
+msgstr "XA Host must be specified.X"
+
+msgid "Host cannot be localhost address."
+msgstr "XHost cannot be localhost address.X"
+
+msgid "UDP"
+msgstr "XUDPX"
+
+msgid "TCP"
+msgstr "XTCPX"
+
+msgid "Database"
+msgstr "XDatabaseX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "A User must be specified."
+msgstr "XA User must be specified.X"
+
+msgid "A Password must be specified."
+msgstr "XA Password must be specified.X"
+
+msgid "A Name must be specified."
+msgstr "XA Name must be specified.X"
+
+msgid "Name Map"
+msgstr "XName MapX"
+
+msgid "[enter IP address]"
+msgstr "X[enter IP address]X"
+
+msgid "Quotes and double quotes are not allowed"
+msgstr "XQuotes and double quotes are not allowedX"
+
+msgid "Manage Reports"
+msgstr "XManage ReportsX"
+
+msgid "View"
+msgstr "XViewX"
+
+msgid "Alert Rules"
+msgstr "XAlert RulesX"
+
+msgid ""
+" <b>Alert Rules</b> process all events to log and/or alert administrators "
+"when special or noteworthy events occur."
+msgstr "X <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.X"
+
+msgid "Log Alert"
+msgstr "XLog AlertX"
+
+msgid "Send Alert"
+msgstr "XSend AlertX"
+
+msgid "Limit Send Frequency"
+msgstr "XLimit Send FrequencyX"
+
+msgid "To once per"
+msgstr "XTo once perX"
+
+msgid "(minutes)"
+msgstr "X(minutes)X"
+
+msgid "Statistics"
+msgstr "XStatisticsX"
+
+msgid "Total Filters Available"
+msgstr "XTotal Filters AvailableX"
+
+msgid "Total Filters Enabled"
+msgstr "XTotal Filters EnabledX"
+
+msgid "Total Cookie Rules Available"
+msgstr "XTotal Cookie Rules AvailableX"
+
+msgid "Total Cookie Rules Enabled"
+msgstr "XTotal Cookie Rules EnabledX"
+
+msgid "Block Ads"
+msgstr "XBlock AdsX"
+
+msgid "Block Tracking & Ad Cookies"
+msgstr "XBlock Tracking & Ad CookiesX"
+
+msgid "Update filters"
+msgstr "XUpdate filtersX"
+
+msgid "Update"
+msgstr "XUpdateX"
+
+msgid "Updating filters..."
+msgstr "XUpdating filters...X"
+
+msgid ""
+"The current filter list was last modified on {1}. You are free to disable "
+"filters and add new ones, however it is not required."
+msgstr "XThe current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required.X"
+
+msgid "Standard Filters"
+msgstr "XStandard FiltersX"
+
+msgid "User Defined Filters"
+msgstr "XUser Defined FiltersX"
+
+msgid "Ad Filters"
+msgstr "XAd FiltersX"
+
+msgid "Standard Cookie Filters"
+msgstr "XStandard Cookie FiltersX"
+
+msgid "User Defined Cookie Filters"
+msgstr "XUser Defined Cookie FiltersX"
+
+msgid "Cookie Filters"
+msgstr "XCookie FiltersX"
+
+msgid "Rule"
+msgstr "XRuleX"
+
+msgid "[enter rule]"
+msgstr "X[enter rule]X"
+
+msgid "Slow"
+msgstr "XSlowX"
+
+msgid "Yes"
+msgstr "XYesX"
+
+msgid "Pass Lists"
+msgstr "XPass ListsX"
+
+msgid "URL specified cannot be passed because it uses secure http (https)"
+msgstr "XURL specified cannot be passed because it uses secure http (https)X"
+
+msgid "Invalid URL specified"
+msgstr "XInvalid URL specifiedX"
+
+msgid "Passed Sites"
+msgstr "XPassed SitesX"
+
+msgid "Passed Client IP addresses"
+msgstr "XPassed Client IP addressesX"
+
+msgid "IP Address/Range"
+msgstr "XIP Address/RangeX"
+
+msgid "[enter ip]"
+msgstr "X[enter ip]X"
+
+msgid "IP address/range"
+msgstr "XIP address/rangeX"
+
+msgid "Attempted Administrator Privilege Gain"
+msgstr "XAttempted Administrator Privilege GainX"
+
+msgid "Attempted User Privilege Gain"
+msgstr "XAttempted User Privilege GainX"
+
+msgid "Inappropriate Content was Detected"
+msgstr "XInappropriate Content was DetectedX"
+
+msgid "Potential Corporate Privacy Violation"
+msgstr "XPotential Corporate Privacy ViolationX"
+
+msgid "Executable code was detected"
+msgstr "XExecutable code was detectedX"
+
+msgid "Successful Administrator Privilege Gain"
+msgstr "XSuccessful Administrator Privilege GainX"
+
+msgid "Successful User Privilege Gain"
+msgstr "XSuccessful User Privilege GainX"
+
+msgid "A Network Trojan was detected"
+msgstr "XA Network Trojan was detectedX"
+
+msgid "Unsuccessful User Privilege Gain"
+msgstr "XUnsuccessful User Privilege GainX"
+
+msgid "Web Application Attack"
+msgstr "XWeb Application AttackX"
+
+msgid "Attempted Denial of Service"
+msgstr "XAttempted Denial of ServiceX"
+
+msgid "Attempted Information Leak"
+msgstr "XAttempted Information LeakX"
+
+msgid "Potentially Bad Traffic"
+msgstr "XPotentially Bad TrafficX"
+
+msgid "Attempt to login by a default username and password"
+msgstr "XAttempt to login by a default username and passwordX"
+
+msgid "Detection of a Denial of Service Attack"
+msgstr "XDetection of a Denial of Service AttackX"
+
+msgid "Misc Attack"
+msgstr "XMisc AttackX"
+
+msgid "Detection of a non-standard protocol or event"
+msgstr "XDetection of a non-standard protocol or eventX"
+
+msgid "Decode of an RPC Query"
+msgstr "XDecode of an RPC QueryX"
+
+msgid "Denial of Service"
+msgstr "XDenial of ServiceX"
+
+msgid "Large Scale Information Leak"
+msgstr "XLarge Scale Information LeakX"
+
+msgid "Information Leak"
+msgstr "XInformation LeakX"
+
+msgid "A suspicious filename was detected"
+msgstr "XA suspicious filename was detectedX"
+
+msgid "An attempted login using a suspicious username was detected"
+msgstr "XAn attempted login using a suspicious username was detectedX"
+
+msgid "A system call was detected"
+msgstr "XA system call was detectedX"
+
+msgid "A client was using an unusual port"
+msgstr "XA client was using an unusual portX"
+
+msgid "Access to a potentially vulnerable web application"
+msgstr "XAccess to a potentially vulnerable web applicationX"
+
+msgid "Generic ICMP event"
+msgstr "XGeneric ICMP eventX"
+
+msgid "Misc activity"
+msgstr "XMisc activityX"
+
+msgid "Detection of a Network Scan"
+msgstr "XDetection of a Network ScanX"
+
+msgid "Not Suspicious Traffic"
+msgstr "XNot Suspicious TrafficX"
+
+msgid "Generic Protocol Command Decode"
+msgstr "XGeneric Protocol Command DecodeX"
+
+msgid "A suspicious string was detected"
+msgstr "XA suspicious string was detectedX"
+
+msgid "Unknown Traffic"
+msgstr "XUnknown TrafficX"
+
+msgid "A TCP connection was detected"
+msgstr "XA TCP connection was detectedX"
+
+msgid ""
+"This category contains rules that look for, and control, the traffic of "
+"certain applications that generate network activity. This category will be "
+"used to control various aspects of how an application behaves."
+msgstr "XThis category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.X"
+
+msgid ""
+"This category contains URI, USER-AGENT, DNS, and IP address rules that have "
+"been determined to be indicators of malicious activity. These rules are "
+"based on activity from the Talos virus sandboxes, public list of malicious "
+"URLs, and other data sources."
+msgstr "XThis category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.X"
+
+msgid ""
+"This category contains detection for vulnerabilities present in the Chrome "
+"browser. (This is separate from the browser-webkit category, as Chrome has "
+"enough vulnerabilities to be broken out into it's own, and while it uses the "
+"Webkit rendering engine, there's a lot of other features to Chrome.)"
+msgstr "XThis category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)X"
+
+msgid ""
+"This category contains detection for vulnerabilities present in the Firefox "
+"browser, or products that have the Gecko engine. (Thunderbird email client, "
+"etc)"
+msgstr "XThis category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)X"
+
+msgid ""
+"This category contains detection for vulnerabilities present in the Internet "
+"Explorer browser (Trident or Tasman engines)"
+msgstr "XThis category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)X"
+
+msgid ""
+"This category contains detection of vulnerabilities present in the Webkit "
+"browser engine (aside from Chrome) this includes Apple's Safari, RIM's "
+"mobile browser, Nokia, KDE, Webkit itself, and Palm."
+msgstr "XThis category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.X"
+
+msgid ""
+"This category contains detection for vulnerabilities in other browsers not "
+"listed above."
+msgstr "XThis category contains detection for vulnerabilities in other browsers not listed above.X"
+
+msgid ""
+"This category contains detection for vulnerabilities in browsers that deal "
+"with plugins to the browser. (Example: Active-x)"
+msgstr "XThis category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)X"
+
+msgid ""
+"This category containt any rule that utilizes the replace functionality "
+"inside of Snort."
+msgstr "XThis category containt any rule that utilizes the replace functionality inside of Snort.X"
+
+msgid ""
+"When a rule has been deprecated or replaced it is moved to this categories. "
+"Rules are never totally removed from the ruleset, they are moved here."
+msgstr "XWhen a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.X"
+
+msgid ""
+"This is an older category which will be deprecated soon. This category looks "
+"for exploits against software in a generic form."
+msgstr "XThis is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.X"
+
+msgid ""
+"This category contains rules that are specifically tailored to detect "
+"exploit kit activity. This does not include post-compromise rules (as those "
+"would be in indicator-compromise). Files that are dropped as result of "
+"visiting an exploit kit would be in their respective file category."
+msgstr "XThis category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.X"
+
+msgid ""
+"This category contains rules for vulnerabilities that are found or are "
+"delivered through executable files, regardless of platform."
+msgstr "XThis category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.X"
+
+msgid ""
+"This category contains rules for vulnerabilities that are found or are "
+"delivered through flash files. Either compressed or uncompressed, regardless "
+"of delivery method platform being attacked."
+msgstr "XThis category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.X"
+
+msgid ""
+"This category contains rules for vulnerabilities that are found inside of "
+"images files. Regardless of delivery method, software being attacked, or "
+"type of image. (Examples include: jpg, png, gif, bmp, etc)"
+msgstr "XThis category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)X"
+
+msgid ""
+"This category is to identify files through file extension, the content in "
+"the file (file magic), or header found in the traffic. This information is "
+"usually used to then set a flowbit to be used in a different rule."
+msgstr "XThis category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.X"
+
+msgid ""
+"This category contains rules for vulnerabilities present inside of "
+"multimedia files (mp3, movies, wmv)"
+msgstr "XThis category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)X"
+
+msgid ""
+"This category contains rules for vulnerabilities present inside of files "
+"belonging to the Microsoft Office suite of software. (Excel, PowerPoint, "
+"Word, Visio, Access, Outlook, etc)"
+msgstr "XThis category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)X"
+
+msgid ""
+"This category contains rules for vulnerabilities found inside of PDF files. "
+"Regardless of method of creation, delivery method, or which piece of "
+"software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
+msgstr "XThis category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)X"
+
+msgid ""
+"This category contains rules for vulnerabilities present inside a file, that "
+"doesn't fit into the other categories above."
+msgstr "XThis category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.X"
+
+msgid ""
+"This category contains rules that are clearly to be used only for the "
+"detection of a positively compromised system, false positives may occur."
+msgstr "XThis category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.X"
+
+msgid ""
+"This category contains rules that are clearly used only for the detection of "
+"obfuscated content. Like encoded JavaScript rules."
+msgstr "XThis category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.X"
+
+msgid ""
+"This category contains rules that are simply looking for simple "
+"identification markers of shellcode in traffic. This replaces the old "
+"shellcode.rules."
+msgstr "XThis category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules.X"
+
+msgid ""
+"This category contains rules for the detection of traffic destined to known "
+"listening backdoor command channels. If a piece of malicious soft are opens "
+"a port and waits for incoming commands for its control functions, this type "
+"of detection will be here. A simple example would be the detection for "
+"BackOrifice as it listens on a specific port and then executes the commands "
+"sent."
+msgstr "XThis category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.X"
+
+msgid ""
+"This category contains known malicious command and control activity for "
+"identified botnet traffic. This includes call home, downloading of dropped "
+"files, and ex-filtration of data. Actual commands issued from Master to "
+"Zombie type stuff will also be here."
+msgstr "XThis category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here.X"
+
+msgid ""
+"This category contains rules that deal with tools that can be considered "
+"malicious in nature. For example, LOIC."
+msgstr "XThis category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.X"
+
+msgid ""
+"This category contains rules that are malware related, but don't fit into "
+"one of the other malware categories."
+msgstr "XThis category contains rules that are malware related, but don't fit into one of the other malware categories.X"
+
+msgid ""
+"This category contains rules that are looking for vulnerabilities in Linux "
+"based OSes. Not for browsers or any other software on it, but simply against "
+"the OS itself."
+msgstr "XThis category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.X"
+
+msgid ""
+"This category contains rules that are looking for vulnerabilities in Solaris "
+"based OSes. Not for any browsers or any other software on top of the OS."
+msgstr "XThis category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.X"
+
+msgid ""
+"This category contains rules that are looking for vulnerabilities in Windows "
+"based OSes. Not for any browsers or any other software on top of the OS."
+msgstr "XThis category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.X"
+
+msgid ""
+"This category contains rules that are looking for vulnerabilities in an OS "
+"that is not listed above."
+msgstr "XThis category contains rules that are looking for vulnerabilities in an OS that is not listed above.X"
+
+msgid ""
+"This category contains rules that detect potential violations of policy for "
+"multimedia. Examples like the detection of the use of iTunes on the network. "
+"This is not for vulnerabilities found within multimedia files, as that would "
+"be in file-multimedia."
+msgstr "XThis category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.X"
+
+msgid ""
+"This category contains rules for the detection potential violations of "
+"policy on corporate networks for the use of social media. (p2p, chat, etc)"
+msgstr "XThis category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)X"
+
+msgid ""
+"This category is for rules that may violate the end-users corporate policy "
+"bud do not fall into any of the other policy categories first."
+msgstr "XThis category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of spam on the "
+"network."
+msgstr "XThis category is for rules that may indicate the presence of spam on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of the finger "
+"protocol or vulnerabilities in the finger protocol on the network."
+msgstr "XThis category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of the ftp "
+"protocol or vulnerabilities in the ftp protocol on the network."
+msgstr "XThis category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of icmp traffic or "
+"vulnerabilities in icmp on the network."
+msgstr "XThis category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of the imap "
+"protocol or vulnerabilities in the imap protocol on the network."
+msgstr "XThis category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of the pop "
+"protocol or vulnerabilities in the pop protocol on the network."
+msgstr "XThis category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of the rservices "
+"protocol or vulnerabilities in the rservices protocols on the network."
+msgstr "XThis category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.X"
+
+msgid ""
+"This category is for rules that may indicate the presence of voip services "
+"or vulnerabilities in the voip protocol on the network."
+msgstr "XThis category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.X"
+
+msgid ""
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with adware or spyware."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with adware or spyware.X"
+
+msgid ""
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with p2p."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with p2p.X"
+
+msgid ""
+"This category deals with pua or Potentially Unwanted Applications that deal "
+"with toolbars installed on the client system. (Google Toolbar, Yahoo "
+"Toolbar, Hotbar, etc)"
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)X"
+
+msgid ""
+"This category deals with pua or Potentially Unwanted Applications that don't "
+"fit into one of the categories shown above."
+msgstr "XThis category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against the Apache "
+"Web Server."
+msgstr "XThis category deals with vulnerabilities in or attacks against the Apache Web Server.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against the Microsoft "
+"IIS Web server."
+msgstr "XThis category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against the Microsoft "
+"SQL Server."
+msgstr "XThis category deals with vulnerabilities in or attacks against the Microsoft SQL Server.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against Oracle's "
+"MySQL server."
+msgstr "XThis category deals with vulnerabilities in or attacks against Oracle's MySQL server.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against Oracle's "
+"Oracle DB Server."
+msgstr "XThis category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.X"
+
+msgid ""
+"This category deals with vulnerabilities in or attacks against Web based "
+"applications on servers."
+msgstr "XThis category deals with vulnerabilities in or attacks against Web based applications on servers.X"
+
+msgid ""
+"This category contains rules that detect vulnerabilities in mail servers. "
+"(Exchange, Courier). These are separate from the protocol categories, as "
+"those deal with the traffic going to the mail servers itself."
+msgstr "XThis category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.X"
+
+msgid ""
+"This category contains rules that detect vulnerabilities in or attacks "
+"against servers that are not detailed in the above list."
+msgstr "XThis category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.X"
+
+msgid ""
+" Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion "
+"Prevention."
+msgstr "X Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention.X"
+
+msgid "Run Intrusion Detection/Prevention Setup Wizard"
+msgstr "XRun Intrusion Detection/Prevention Setup WizardX"
+
+msgid ""
+"{0} continues to maintain the default signature settings through automatic "
+"updates. You are free to modify and add signatures, however it is not "
+"required."
+msgstr "X{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.X"
+
+msgid "Updates"
+msgstr "XUpdatesX"
+
+msgid "Last check for updates"
+msgstr "XLast check for updatesX"
+
+msgid "Last update"
+msgstr "XLast updateX"
+
+msgid "{0} logging or blocking"
+msgstr "X{0} logging or blockingX"
+
+msgid "{0} matching rules(s) found"
+msgstr "X{0} matching rules(s) foundX"
+
+msgid "{0} available rules"
+msgstr "X{0} available rulesX"
+
+msgid "Search"
+msgstr "XSearchX"
+
+msgid "Sid"
+msgstr "XSidX"
+
+msgid "Sid:"
+msgstr "XSid:X"
+
+msgid "Gid:"
+msgstr "XGid:X"
+
+msgid "Classtype"
+msgstr "XClasstypeX"
+
+msgid "Msg"
+msgstr "XMsgX"
+
+msgid "Reference"
+msgstr "XReferenceX"
+
+msgid "[enter class]"
+msgstr "X[enter class]X"
+
+msgid "Invalid Classtype"
+msgstr "XInvalid ClasstypeX"
+
+msgid "Msg contains invalid characters."
+msgstr "XMsg contains invalid characters.X"
+
+msgid "[enter sid]"
+msgstr "X[enter sid]X"
+
+msgid "Sid must be numeric"
+msgstr "XSid must be numericX"
+
+msgid "Sid already in use."
+msgstr "XSid already in use.X"
+
+msgid "Rule formatted wrong."
+msgstr "XRule formatted wrong.X"
+
+msgid "Variables"
+msgstr "XVariablesX"
+
+msgid "Definition"
+msgstr "XDefinitionX"
+
+msgid "[enter definition]"
+msgstr "X[enter definition]X"
+
+msgid "Validating..."
+msgstr "XValidating...X"
+
+msgid "Cannot Delete Variable"
+msgstr "XCannot Delete VariableX"
+
+msgid "Variable is used by one or more rules."
+msgstr "XVariable is used by one or more rules.X"
+
+msgid "Variable name already in use."
+msgstr "XVariable name already in use.X"
+
+msgid "Intrusion Prevention Setup Wizard"
+msgstr "XIntrusion Prevention Setup WizardX"
+
+msgid ""
+"You have not finished configuring Intrusion Prevention. Please run the Setup "
+"Wizard again."
+msgstr "XYou have not finished configuring Intrusion Prevention. Please run the Setup Wizard again.X"
+
+msgid "Intrusion Prevention Warning"
+msgstr "XIntrusion Prevention WarningX"
+
+msgid ""
+"Settings have been changed by rule updater.  Current changes must be "
+"discarded."
+msgstr "XSettings have been changed by rule updater.  Current changes must be discarded.X"
+
+msgid "Saving and creating settings (this may take a few minutes)..."
+msgstr "XSaving and creating settings (this may take a few minutes)...X"
+
+msgid "Error"
+msgstr "XErrorX"
+
+msgid "Unable to save settings"
+msgstr "XUnable to save settingsX"
+
+msgid "Welcome to the Intrusion Prevention Setup Wizard!"
+msgstr "XWelcome to the Intrusion Prevention Setup Wizard!X"
+
+msgid ""
+"Intrusion Prevention operates using rules to identify possible threats.  An "
+"enabled ruled performs an action, either logging or blocking traffic.  Not "
+"all rules are necessary for a given network environment and enabling all of "
+"them may negatively impact your network."
+msgstr "XIntrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network.X"
+
+msgid ""
+"This wizard is designed to help you correctly configure the appropriate "
+"amount of rules for your network by selecting rule identifiers: classtypes "
+"and categories.  The more that you select, the more rules will be enabled.  "
+"Again, too many enabled rules may negatively impact your network."
+msgstr "XThis wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network.X"
+
+msgid "It is highly suggested that you use Recommended values."
+msgstr "XIt is highly suggested that you use Recommended values.X"
+
+msgid ""
+"WARNING: Completing this setup wizard will overwrite the previous settings "
+"with new settings. All previous settings will be lost!"
+msgstr "XWARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!X"
+
+msgid "Determining recommended settings..."
+msgstr "XDetermining recommended settings...X"
+
+msgid "Setup Wizard Error"
+msgstr "XSetup Wizard ErrorX"
+
+msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
+msgstr "XUnable to obtain default settings.  Please run the Setup Wizard again.X"
+
+msgid "Classtypes"
+msgstr "XClasstypesX"
+
+msgid ""
+"Classtypes are a generalized  grouping for rules, such as attempts to gain "
+"user access."
+msgstr "XClasstypes are a generalized  grouping for rules, such as attempts to gain user access.X"
+
+msgid "Recommended (default)"
+msgstr "XRecommended (default)X"
+
+msgid "Recommended classtype Settings"
+msgstr "XRecommended classtype SettingsX"
+
+msgid "None.  Classtypes within selected categories will be used."
+msgstr "XNone.  Classtypes within selected categories will be used.X"
+
+msgid "Categories"
+msgstr "XCategoriesX"
+
+msgid ""
+"Categories are a different rule grouping that can span multiple classtypes, "
+"such as VOIP access."
+msgstr "XCategories are a different rule grouping that can span multiple classtypes, such as VOIP access.X"
+
+msgid "Select by name"
+msgstr "XSelect by nameX"
+
+msgid "None.  Categories within selected classtypes will be used."
+msgstr "XNone.  Categories within selected classtypes will be used.X"
+
+msgid "Finish"
+msgstr "XFinishX"
+
+msgid "Intrusion Prevention is now configured and enabled."
+msgstr "XIntrusion Prevention is now configured and enabled.X"
+
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and flag network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr "X <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking.X"
+
+msgid "Flag"
+msgstr "XFlagX"
+
+msgid "Low (Threshold: 5.0)"
+msgstr "XLow (Threshold: 5.0)X"
+
+msgid "Medium (Threshold: 4.3)"
+msgstr "XMedium (Threshold: 4.3)X"
+
+msgid "High (Threshold: 3.5)"
+msgstr "XHigh (Threshold: 3.5)X"
+
+msgid "Very High (Threshold: 3.3)"
+msgstr "XVery High (Threshold: 3.3)X"
+
+msgid "Extreme (Threshold: 3.0)"
+msgstr "XExtreme (Threshold: 3.0)X"
+
+msgid "Strength"
+msgstr "XStrengthX"
+
+msgid "Strength Value"
+msgstr "XStrength ValueX"
+
+msgid "Strength Value must be a number. Smaller value is higher strength."
+msgstr "XStrength Value must be a number. Smaller value is higher strength.X"
+
+msgid "Drop Super Spam"
+msgstr "XDrop Super SpamX"
+
+msgid "Super Spam Threshold"
+msgstr "XSuper Spam ThresholdX"
+
+msgid "Advanced SMTP Configuration"
+msgstr "XAdvanced SMTP ConfigurationX"
+
+msgid "Enable tarpitting"
+msgstr "XEnable tarpittingX"
+
+msgid "Add email headers"
+msgstr "XAdd email headersX"
+
+msgid "Close connection on scan failure"
+msgstr "XClose connection on scan failureX"
+
+msgid "Scan outbound (WAN) SMTP"
+msgstr "XScan outbound (WAN) SMTPX"
+
+msgid "Allow and ignore TLS sessions"
+msgstr "XAllow and ignore TLS sessionsX"
+
+msgid "CPU Load Limit"
+msgstr "XCPU Load LimitX"
+
+msgid "Value must be a float."
+msgstr "XValue must be a float.X"
+
+msgid "Concurrent Scan Limit"
+msgstr "XConcurrent Scan LimitX"
+
+msgid "Value must be a integer."
+msgstr "XValue must be a integer.X"
+
+msgid "Message Size Limit"
+msgstr "XMessage Size LimitX"
+
+msgid "Clear Bayes Data"
+msgstr "XClear Bayes DataX"
+
+msgid "This will clear all learned bayesian data!"
+msgstr "XThis will clear all learned bayesian data!X"
+
+msgid "Clearing bayes data..."
+msgstr "XClearing bayes data...X"
+
+msgid "Error: Unable to reset bayes data."
+msgstr "XError: Unable to reset bayes data.X"
+
+msgid "Bayes data cleared."
+msgstr "XBayes data cleared.X"
+
+msgid "Spam Blocker Lite last checked for updates"
+msgstr "XSpam Blocker Lite last checked for updatesX"
+
+msgid "Spam Blocker Lite was last updated"
+msgstr "XSpam Blocker Lite was last updatedX"
+
+msgid "Site cannot contain URL protocol."
+msgstr "XSite cannot contain URL protocol.X"
+
+msgid "Site cannot contain port."
+msgstr "XSite cannot contain port.X"
+
+msgid "Flag as Violation"
+msgstr "XFlag as ViolationX"
+
+msgid "Block Categories"
+msgstr "XBlock CategoriesX"
+
+msgid "Block or flag access to sites associated with the specified category."
+msgstr "XBlock or flag access to sites associated with the specified category.X"
+
+msgid "Sites"
+msgstr "XSitesX"
+
+msgid "Block Sites"
+msgstr "XBlock SitesX"
+
+msgid "Blocked Sites"
+msgstr "XBlocked SitesX"
+
+msgid "Block or flag access to the specified site."
+msgstr "XBlock or flag access to the specified site.X"
+
+msgid "File Types"
+msgstr "XFile TypesX"
+
+msgid "[enter extension]"
+msgstr "X[enter extension]X"
+
+msgid "[no category]"
+msgstr "X[no category]X"
+
+msgid "Block File Types"
+msgstr "XBlock File TypesX"
+
+msgid "Block or flag access to files associated with the specified file type."
+msgstr "XBlock or flag access to files associated with the specified file type.X"
+
+msgid "MIME type"
+msgstr "XMIME typeX"
+
+msgid "[enter mime type]"
+msgstr "X[enter mime type]X"
+
+msgid "Block Mime Types"
+msgstr "XBlock Mime TypesX"
+
+msgid "Block MIME Types"
+msgstr "XBlock MIME TypesX"
+
+msgid "Block or flag access to files associated with the specified MIME type."
+msgstr "XBlock or flag access to files associated with the specified MIME type.X"
+
+msgid ""
+"Allow access to the specified site regardless of matching block policies."
+msgstr "XAllow access to the specified site regardless of matching block policies.X"
+
+msgid "Client IP addresses"
+msgstr "XClient IP addressesX"
+
+msgid "[enter IP address/range]"
+msgstr "X[enter IP address/range]X"
+
+msgid "Pass Clients"
+msgstr "XPass ClientsX"
+
+msgid "Allow access for client networks regardless of matching block policies."
+msgstr "XAllow access for client networks regardless of matching block policies.X"
+
+msgid "Advanced Options"
+msgstr "XAdvanced OptionsX"
+
+msgid "Block pages from IP only hosts"
+msgstr "XBlock pages from IP only hostsX"
+
+msgid "Pass if referers match Pass Sites"
+msgstr "XPass if referers match Pass SitesX"
+
+msgid "Restrict Google applications"
+msgstr "XRestrict Google applicationsX"
+
+msgid "NOTE:"
+msgstr "XNOTE:X"
+
+msgid ""
+"must be installed and running with the Inspect Google Traffic configured to "
+"Inspect."
+msgstr "Xmust be installed and running with the Inspect Google Traffic configured to Inspect.X"
+
+msgid "Allowed Domain(s)"
+msgstr "XAllowed Domain(s)X"
+
+msgid ""
+"Specify the comma separated list of domains allowed to access non-search "
+"Google applications"
+msgstr "XSpecify the comma separated list of domains allowed to access non-search Google applicationsX"
+
+msgid "Domain cannot contain URL protocol."
+msgstr "XDomain cannot contain URL protocol.X"
+
+msgid "Domain cannot contain port."
+msgstr "XDomain cannot contain port.X"
+
+msgid "Invalid domain specified"
+msgstr "XInvalid domain specifiedX"
+
+msgid "Unblock"
+msgstr "XUnblockX"
+
+msgid "Temporary"
+msgstr "XTemporaryX"
+
+msgid "Permanent and Global"
+msgstr "XPermanent and GlobalX"
+
+msgid "{0} interface"
+msgstr "X{0} interfaceX"
+
+msgid ""
+"Currently, WAN Balancer is attempting to share traffic over the existing WAN "
+"interfaces with the ratio displayed below. To change this ratio click on "
+"Traffic Allocation."
+msgstr "XCurrently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.X"
+
+msgid "Current Traffic Allocation"
+msgstr "XCurrent Traffic AllocationX"
+
+msgid "Configure additional WAN interfaces"
+msgstr "XConfigure additional WAN interfacesX"
+
+msgid "Interface Weights"
+msgstr "XInterface WeightsX"
+
+msgid "Weight"
+msgstr "XWeightX"
+
+msgid "Resulting Traffic Allocation"
+msgstr "XResulting Traffic AllocationX"
+
+msgid "Traffic Allocation"
+msgstr "XTraffic AllocationX"
+
+msgid ""
+"Traffic allocation across WAN interfaces is controlled by assigning a "
+"relative weight (1-100) to each interface. After entering the weight of each "
+"interface the resulting allocation is displayed.<br/>If all WAN interfaces "
+"have the same bandwidth it is best to assign the same weight to all WAN "
+"interfaces. If the WAN interfaces vary in bandwidth enter numbers that "
+"correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/"
+"sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr "XTraffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link.X"
+
+msgid "Balance"
+msgstr "XBalanceX"
+
+msgid "Route Rules"
+msgstr "XRoute RulesX"
+
+msgid "Destination WAN"
+msgstr "XDestination WANX"
+
+msgid "Enable Route Rule"
+msgstr "XEnable Route RuleX"
+
+msgid ""
+"Route Rules are used to assign specific sessions to a specific WAN "
+"interface. Rules are evaluated in order and the WAN interface of the first "
+"matching rule is used to route the matching session. If there is no matching "
+"rule or the rule is set to <i>Balance</i> the session will be routed "
+"according to the <i>Traffic Allocation</i> settings."
+msgstr "XRoute Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings.X"
+
+msgid "{0}% of Internet traffic."
+msgstr "X{0}% of Internet traffic.X"
+
+msgid ""
+"Process HTTPS traffic by SNI (Server Name Indication) information if present"
+msgstr "XProcess HTTPS traffic by SNI (Server Name Indication) information if presentX"
+
+msgid ""
+"Process HTTPS traffic by hostname in server certificate when SNI information "
+"not present"
+msgstr "XProcess HTTPS traffic by hostname in server certificate when SNI information not presentX"
+
+msgid ""
+"Process HTTPS traffic by server IP if both SNI and certificate hostname "
+"information are not available"
+msgstr "XProcess HTTPS traffic by server IP if both SNI and certificate hostname information are not availableX"
+
+msgid "Enforce"
+msgstr "XEnforceX"
+
+msgid "for Schools."
+msgstr "Xfor Schools.X"
+
+msgid ""
+"Enter your unique Youtube for Schools indentifier provided by youtube. "
+"(Example: Jvagw07BzSxAntTxXxaBcx"
+msgstr "XEnter your unique Youtube for Schools indentifier provided by youtube. (Example: Jvagw07BzSxAntTxXxaBcxX"
+
+msgid "Enforce safe search on popular search engines"
+msgstr "XEnforce safe search on popular search enginesX"
+
+msgid "Require Password"
+msgstr "XRequire PasswordX"
+
+msgid "Clear Category URL Cache."
+msgstr "XClear Category URL Cache.X"
+
+msgid "Site Lookup"
+msgstr "XSite LookupX"
+
+msgid "Search for a site's category"
+msgstr "XSearch for a site's categoryX"
+
+msgid "Type the site's URL to find its category"
+msgstr "XType the site's URL to find its categoryX"
+
+msgid "Suggest a different category"
+msgstr "XSuggest a different categoryX"
+
+msgid "Last suggested on"
+msgstr "XLast suggested onX"
+
+msgid ""
+"NOTE: This is only a suggestion and may not be accepted. If accepted it may "
+"take a few days to become active."
+msgstr "XNOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active.X"
+
+msgid "Suggest"
+msgstr "XSuggestX"
+
+msgid "Suggestion submitted."
+msgstr "XSuggestion submitted.X"
+
+msgid "Unable to submit suggestion.  Try again later."
+msgstr "XUnable to submit suggestion.  Try again later.X"
+
+msgid "Clearing Host Cache..."
+msgstr "XClearing Host Cache...X"
+
+msgid "Error Clearing Host Cache."
+msgstr "XError Clearing Host Cache.X"
+
+msgid "There was an error clearing the host cache, please try again."
+msgstr "XThere was an error clearing the host cache, please try again.X"
+
+msgid "Cleared Host Cache"
+msgstr "XCleared Host CacheX"
+
+msgid "The Host Cache was cleared succesfully."
+msgstr "XThe Host Cache was cleared succesfully.X"
+
+msgid "Enabled IPsec Tunnels"
+msgstr "XEnabled IPsec TunnelsX"
+
+msgid "Local IP"
+msgstr "XLocal IPX"
+
+msgid "Remote Host"
+msgstr "XRemote HostX"
+
+msgid "Local Network"
+msgstr "XLocal NetworkX"
+
+msgid "Remote Network"
+msgstr "XRemote NetworkX"
+
+msgid "Inactive"
+msgstr "XInactiveX"
+
+msgid "Active"
+msgstr "XActiveX"
+
+msgid "Active VPN Sessions"
+msgstr "XActive VPN SessionsX"
+
+msgid "Connect Time"
+msgstr "XConnect TimeX"
+
+msgid "Elapsed Time"
+msgstr "XElapsed TimeX"
+
+msgid "Disconnect"
+msgstr "XDisconnectX"
+
+msgid "Click to disconnect client"
+msgstr "XClick to disconnect clientX"
+
+msgid "Disconnecting..."
+msgstr "XDisconnecting...X"
+
+msgid "IPsec Options"
+msgstr "XIPsec OptionsX"
+
+msgid ""
+"The IPsec Options tab contains common settings that apply to all IPsec "
+"traffic."
+msgstr "XThe IPsec Options tab contains common settings that apply to all IPsec traffic.X"
+
+msgid "Traffic Processing"
+msgstr "XTraffic ProcessingX"
+
+msgid "Bypass all IPsec traffic"
+msgstr "XBypass all IPsec trafficX"
+
+msgid "IPsec Tunnels"
+msgstr "XIPsec TunnelsX"
+
+msgid ""
+"The IPsec tunnels list contains all of the secure network tunnels that have "
+"been defined."
+msgstr "XThe IPsec tunnels list contains all of the secure network tunnels that have been defined.X"
+
+msgid "Connection Type"
+msgstr "XConnection TypeX"
+
+msgid ""
+"(We recommended selecting <B>Tunnel</B> unless you have a specific reason to "
+"use <B>Transport</B>)"
+msgstr "X(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)X"
+
+msgid "Auto Mode"
+msgstr "XAuto ModeX"
+
+msgid ""
+"(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-"
+"demand tunnel)"
+msgstr "X(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)X"
+
+msgid "External IP"
+msgstr "XExternal IPX"
+
+msgid "[enter external IP]"
+msgstr "X[enter external IP]X"
+
+msgid "(The external IP address of this server)"
+msgstr "X(The external IP address of this server)X"
+
+msgid "[enter remote host]"
+msgstr "X[enter remote host]X"
+
+msgid "(The public hostname or IP address of the remote IPsec gateway)"
+msgstr "X(The public hostname or IP address of the remote IPsec gateway)X"
+
+msgid "[enter local network]"
+msgstr "X[enter local network]X"
+
+msgid "(The private network attached to the local side of the tunnel)"
+msgstr "X(The private network attached to the local side of the tunnel)X"
+
+msgid "[enter remote network]"
+msgstr "X[enter remote network]X"
+
+msgid "(The private network attached to the remote side of the tunnel)"
+msgstr "X(The private network attached to the remote side of the tunnel)X"
+
+msgid "Shared Secret"
+msgstr "XShared SecretX"
+
+msgid "[enter shared secret]"
+msgstr "X[enter shared secret]X"
+
+msgid "DPD Interval"
+msgstr "XDPD IntervalX"
+
+msgid "The number of seconds between R_U_THERE messages.  Enter 0 to disable."
+msgstr "XThe number of seconds between R_U_THERE messages.  Enter 0 to disable.X"
+
+msgid "DPD Timeout"
+msgstr "XDPD TimeoutX"
+
+msgid "The number of seconds for a dead peer tunnel to be restarted"
+msgstr "XThe number of seconds for a dead peer tunnel to be restartedX"
+
+msgid "<B>Authentication and SA/Key Exchange</B>"
+msgstr "X<B>Authentication and SA/Key Exchange</B>X"
+
+msgid ""
+"Usually IPsec will automatically negotiate the encryption protocol with the "
+"remote peer when creating the tunnel."
+msgstr "XUsually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel.X"
+
+msgid ""
+"However, some peers require specific settings. To configure specific "
+"settings, enable Manual Configuration and set the appropriate values below."
+msgstr "XHowever, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.X"
+
+msgid "Phase 1 IKE/ISAKMP Manual Configuration"
+msgstr "XPhase 1 IKE/ISAKMP Manual ConfigurationX"
+
+msgid "Default = 3DES"
+msgstr "XDefault = 3DESX"
+
+msgid "Hash"
+msgstr "XHashX"
+
+msgid "Default = MD5"
+msgstr "XDefault = MD5X"
+
+msgid "DH Key Group"
+msgstr "XDH Key GroupX"
+
+msgid "Default = 2 (1024 bit)"
+msgstr "XDefault = 2 (1024 bit)X"
+
+msgid "Lifetime"
+msgstr "XLifetimeX"
+
+msgid "Default = 28800 seconds, min = 3600, max = 86400"
+msgstr "XDefault = 28800 seconds, min = 3600, max = 86400X"
+
+msgid "Phase 2 ESP Manual Configuration"
+msgstr "XPhase 2 ESP Manual ConfigurationX"
+
+msgid "PFS Key Group"
+msgstr "XPFS Key GroupX"
+
+msgid "Default = 3600 seconds, min = 3600, max = 86400"
+msgstr "XDefault = 3600 seconds, min = 3600, max = 86400X"
+
+msgid "VPN Config"
+msgstr "XVPN ConfigX"
+
+msgid ""
+"The VPN Config tab contains settings used to configure the server to support "
+"IPsec L2TP and Xauth VPN client connections."
+msgstr "XThe VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections.X"
+
+msgid "Server Configuration"
+msgstr "XServer ConfigurationX"
+
+msgid "Enable L2TP/Xauth Server"
+msgstr "XEnable L2TP/Xauth ServerX"
+
+msgid "L2TP Address Pool"
+msgstr "XL2TP Address PoolX"
+
+msgid "Xauth Address Pool"
+msgstr "XXauth Address PoolX"
+
+msgid "Custom DNS Server 1"
+msgstr "XCustom DNS Server 1X"
+
+msgid "Custom DNS Server 2"
+msgstr "XCustom DNS Server 2X"
+
+msgid ""
+"<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients "
+"automatically configured to use this server for DNS resolution."
+msgstr "X<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution.X"
+
+msgid "IPsec Secret"
+msgstr "XIPsec SecretX"
+
+msgid ""
+"In addition to the IPsec Secret configured above, VPN clients must "
+"authenticate with a valid username and password.  User authentication can be "
+"configured to use either the internal local directory, or an external RADIUS "
+"server configured in the Directory Connector application."
+msgstr "XIn addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application.X"
+
+msgid "Server Listen Addresses"
+msgstr "XServer Listen AddressesX"
+
+msgid ""
+"This is the list of IP addresses where the server will listen for incomming "
+"VPN connections. If you have a single WAN connection, you will normally only "
+"add that single address to this list.  If you have multiple WAN interfaces, "
+"you can configure the server to listen on any, or all of them."
+msgstr "XThis is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them.X"
+
+msgid "Loading information... Please wait..."
+msgstr "XLoading information... Please wait...X"
+
+msgid "IPsec State"
+msgstr "XIPsec StateX"
+
+msgid " Refresh Log Information "
+msgstr "X Refresh Log Information X"
+
+msgid "IPsec Policy"
+msgstr "XIPsec PolicyX"
+
+msgid " Refresh Policy Information "
+msgstr "X Refresh Policy Information X"
+
+msgid "IPsec Log"
+msgstr "XIPsec LogX"
+
+msgid " Refresh State Information "
+msgstr "X Refresh State Information X"
+
+msgid "L2TP Log"
+msgstr "XL2TP LogX"
+
+msgid "IPsec Configuration Warning"
+msgstr "XIPsec Configuration WarningX"
+
+msgid ""
+"One or more IPsec tunnels is configured with a hostname in the <B>Remote "
+"Host</B> field.  The use of IP addresses instead of hostname for the remote "
+"host is strongly recommended."
+msgstr "XOne or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended.X"
+
+msgid "HTTP: URI"
+msgstr "XHTTP: URIX"
+
+msgid "HTTP: URL"
+msgstr "XHTTP: URLX"
+
+msgid "HTTP: Content Type"
+msgstr "XHTTP: Content TypeX"
+
+msgid "HTTP: Content Length"
+msgstr "XHTTP: Content LengthX"
+
+msgid "Application Control: Application"
+msgstr "XApplication Control: ApplicationX"
+
+msgid "Application Control: Category"
+msgstr "XApplication Control: CategoryX"
+
+msgid "Application Control: ProtoChain"
+msgstr "XApplication Control: ProtoChainX"
+
+msgid "Application Control: Detail"
+msgstr "XApplication Control: DetailX"
+
+msgid "Application Control: Confidence"
+msgstr "XApplication Control: ConfidenceX"
+
+msgid "Application Control: Productivity"
+msgstr "XApplication Control: ProductivityX"
+
+msgid "Application Control: Risk"
+msgstr "XApplication Control: RiskX"
+
+msgid "Application Control Lite: Signature"
+msgstr "XApplication Control Lite: SignatureX"
+
+msgid "Application Control Lite: Category"
+msgstr "XApplication Control Lite: CategoryX"
+
+msgid "Application Control Lite: Description"
+msgstr "XApplication Control Lite: DescriptionX"
+
+msgid "Web Filter: Category"
+msgstr "XWeb Filter: CategoryX"
+
+msgid "Web Filter: Category Description"
+msgstr "XWeb Filter: Category DescriptionX"
+
+msgid "Web Filter: Site is Flagged"
+msgstr "XWeb Filter: Site is FlaggedX"
+
+msgid ""
+"Application Control detects many different types of network traffic, "
+"allowing each to be flagged and/or blocked."
+msgstr "XApplication Control detects many different types of network traffic, allowing each to be flagged and/or blocked.X"
+
+msgid "Traffic Statistics"
+msgstr "XTraffic StatisticsX"
+
+msgid "Sessions Scanned"
+msgstr "XSessions ScannedX"
+
+msgid "Sessions Allowed"
+msgstr "XSessions AllowedX"
+
+msgid "Sessions Flagged"
+msgstr "XSessions FlaggedX"
+
+msgid "Sessions Blocked"
+msgstr "XSessions BlockedX"
+
+msgid "Application Statistics"
+msgstr "XApplication StatisticsX"
+
+msgid "Known Applications"
+msgstr "XKnown ApplicationsX"
+
+msgid "Flagged Applications"
+msgstr "XFlagged ApplicationsX"
+
+msgid "Blocked Applications"
+msgstr "XBlocked ApplicationsX"
+
+msgid "Tarpitted Applications"
+msgstr "XTarpitted ApplicationsX"
+
+msgid "Rule Statistics"
+msgstr "XRule StatisticsX"
+
+msgid "Total Rules"
+msgstr "XTotal RulesX"
+
+msgid "Active Rules"
+msgstr "XActive RulesX"
+
+msgid "The list of known Applications."
+msgstr "XThe list of known Applications.X"
+
+msgid "Tarpit"
+msgstr "XTarpitX"
+
+msgid "Description (click for full text)"
+msgstr "XDescription (click for full text)X"
+
+msgid ""
+"Application Control rules are used to control traffic post-classification."
+msgstr "XApplication Control rules are used to control traffic post-classification.X"
+
+msgid "Rule ID"
+msgstr "XRule IDX"
+
+msgid "Allow"
+msgstr "XAllowX"
+
+msgid "Perform the following action:"
+msgstr "XPerform the following action:X"
+
+msgid ""
+"Web Cache provides HTTP content caching.  This status page allows you to "
+"monitor overall cache usage and effectiveness."
+msgstr "XWeb Cache provides HTTP content caching.  This status page allows you to monitor overall cache usage and effectiveness.X"
+
+msgid "Cache Hit Count"
+msgstr "XCache Hit CountX"
+
+msgid "Cache Miss Count"
+msgstr "XCache Miss CountX"
+
+msgid "Cache Hit Bytes"
+msgstr "XCache Hit BytesX"
+
+msgid "Cache Miss Bytes"
+msgstr "XCache Miss BytesX"
+
+msgid "User Bypass Count"
+msgstr "XUser Bypass CountX"
+
+msgid "System Bypass Count"
+msgstr "XSystem Bypass CountX"
+
+msgid "Clear Cache"
+msgstr "XClear CacheX"
+
+msgid ""
+"If content stored in the cache somehow becomes stale or corrupt, the cache "
+"can be cleared with the "
+msgstr "XIf content stored in the cache somehow becomes stale or corrupt, the cache can be cleared with the X"
+
+msgid "Clearing the cache requires restarting the caching engine. "
+msgstr "XClearing the cache requires restarting the caching engine. X"
+
+msgid ""
+"This will cause active web sessions to be dropped and may disrupt web "
+"traffic for several seconds."
+msgstr "XThis will cause active web sessions to be dropped and may disrupt web traffic for several seconds.X"
+
+msgid "I understand the risks."
+msgstr "XI understand the risks.X"
+
+msgid "You must check: "
+msgstr "XYou must check: X"
+
+msgid "I understand the risks"
+msgstr "XI understand the risksX"
+
+msgid "Clearing Cache..."
+msgstr "XClearing Cache...X"
+
+msgid "Cache Bypass"
+msgstr "XCache BypassX"
+
+msgid ""
+"The Web Cache Bypass List contains host or domain names that should never be "
+"cached."
+msgstr "XThe Web Cache Bypass List contains host or domain names that should never be cached.X"
+
+msgid "[enter hostname]"
+msgstr "X[enter hostname]X"
+
+msgid "Live Support"
+msgstr "XLive SupportX"
+
+msgid "This {0} Server is entitled to Live Support.<br/>"
+msgstr "XThis {0} Server is entitled to Live Support.<br/>X"
+
+msgid "Get Support!"
+msgstr "XGet Support!X"
+
+msgid "Support Information"
+msgstr "XSupport InformationX"
+
+msgid "User map window"
+msgstr "XUser map windowX"
+
+msgid "name"
+msgstr "XnameX"
+
+msgid "groups"
+msgstr "XgroupsX"
+
+msgid "User Notification API"
+msgstr "XUser Notification APIX"
+
+msgid ""
+"The User Notification API provides a web-based app/API to allow scripts and "
+"agents to update the server's username-to-IP address mapping in order to "
+"properly identify users for Policy Manager, Reports, and other applications."
+msgstr "XThe User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.X"
+
+msgid "Secret Key"
+msgstr "XSecret KeyX"
+
+msgid "(blank means no secret key is required)"
+msgstr "X(blank means no secret key is required)X"
+
+msgid "Download User Notification Login Script"
+msgstr "XDownload User Notification Login ScriptX"
+
+msgid "Active Directory Connector"
+msgstr "XActive Directory ConnectorX"
+
+msgid ""
+"This allows the server to connect to an {0}Active Directory Server{1} for "
+"authentication for Captive Portal."
+msgstr "XThis allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.X"
+
+msgid "AD Server IP or Hostname"
+msgstr "XAD Server IP or HostnameX"
+
+msgid "Secure"
+msgstr "XSecureX"
+
+msgid "Authentication Login"
+msgstr "XAuthentication LoginX"
+
+msgid "Authentication Password"
+msgstr "XAuthentication PasswordX"
+
+msgid "Active Directory Domain"
+msgstr "XActive Directory DomainX"
+
+msgid "(FQDN such as mycompany.local)"
+msgstr "X(FQDN such as mycompany.local)X"
+
+msgid "Active Directory Organization"
+msgstr "XActive Directory OrganizationX"
+
+msgid ""
+"The {0}Active Directory Test{1} can be used to test that your settings above "
+"are correct."
+msgstr "XThe {0}Active Directory Test{1} can be used to test that your settings above are correct.X"
+
+msgid "Active Directory Test"
+msgstr "XActive Directory TestX"
+
+msgid "Active Directory Users"
+msgstr "XActive Directory UsersX"
+
+msgid "User Group Map"
+msgstr "XUser Group MapX"
+
+msgid "Refresh group cache"
+msgstr "XRefresh group cacheX"
+
+msgid "Testing..."
+msgstr "XTesting...X"
+
+msgid "Obtaining users..."
+msgstr "XObtaining users...X"
+
+msgid "[any]"
+msgstr "X[any]X"
+
+msgid "RADIUS Connector"
+msgstr "XRADIUS ConnectorX"
+
+msgid ""
+"This allows your server to connect to a {0}RADIUS Server{1} in order to "
+"identify users for use by Captive Portal and L2TP/IPsec."
+msgstr "XThis allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.X"
+
+msgid "RADIUS Server IP or Hostname"
+msgstr "XRADIUS Server IP or HostnameX"
+
+msgid "Authentication Port"
+msgstr "XAuthentication PortX"
+
+msgid "Accounting Port"
+msgstr "XAccounting PortX"
+
+msgid "MS-CHAP v2"
+msgstr "XMS-CHAP v2X"
+
+msgid "MS-CHAP v1"
+msgstr "XMS-CHAP v1X"
+
+msgid "CHAP"
+msgstr "XCHAPX"
+
+msgid "PAP"
+msgstr "XPAPX"
+
+msgid "Authentication Method"
+msgstr "XAuthentication MethodX"
+
+msgid ""
+"<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, "
+"the best security and compatibility is achieved by selecting MS-CHAP v2.  "
+"Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients "
+"in the Windows Network Policy Server."
+msgstr "X<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.X"
+
+msgid ""
+"The {0}Radius Test{1} can be used to test that your settings above are "
+"correct."
+msgstr "XThe {0}Radius Test{1} can be used to test that your settings above are correct.X"
+
+msgid "RADIUS Test"
+msgstr "XRADIUS TestX"
+
+msgid "A Hostname must be specified if Login or Password are specified."
+msgstr "XA Hostname must be specified if Login or Password are specified.X"
+
+msgid "A Search Base must be specified."
+msgstr "XA Search Base must be specified.X"
+
+msgid "Enable greylisting"
+msgstr "XEnable greylistingX"
+
+msgid "Spam Blocker last checked for updates"
+msgstr "XSpam Blocker last checked for updatesX"
+
+msgid "Spam Blocker was last updated"
+msgstr "XSpam Blocker was last updatedX"
+
+msgid "Warning: The <i>{0}</i> needs a test configured!"
+msgstr "XWarning: The <i>{0}</i> needs a test configured!X"
+
+msgid "WAN Status"
+msgstr "XWAN StatusX"
+
+msgid "This shows the current status of each WAN Interface."
+msgstr "XThis shows the current status of each WAN Interface.X"
+
+msgid "Interface ID"
+msgstr "XInterface IDX"
+
+msgid "System Name"
+msgstr "XSystem NameX"
+
+msgid "Online Status"
+msgstr "XOnline StatusX"
+
+msgid "Current Tests Count"
+msgstr "XCurrent Tests CountX"
+
+msgid "Tests Passed"
+msgstr "XTests PassedX"
+
+msgid "Tests Failed"
+msgstr "XTests FailedX"
+
+msgid "WAN Failover"
+msgstr "XWAN FailoverX"
+
+msgid ""
+"WAN Failover maximizes your network uptime. It monitors the status of your "
+"WAN interfaces and re-routes traffic any available WANs."
+msgstr "XWAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.X"
+
+msgid ""
+"Tests must be configured using the <i>Tests</i> tab to determine the "
+"connectivity of each WAN."
+msgstr "XTests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.X"
+
+msgid "WARNING"
+msgstr "XWARNINGX"
+
+msgid ""
+"There are currently no tests configured. A test must be configured for each "
+"WAN."
+msgstr "XThere are currently no tests configured. A test must be configured for each WAN.X"
+
+msgid "{0} of 10"
+msgstr "X{0} of 10X"
+
+msgid "Ping"
+msgstr "XPingX"
+
+msgid "ARP"
+msgstr "XARPX"
+
+msgid "DNS"
+msgstr "XDNSX"
+
+msgid "Failure Detection Tests"
+msgstr "XFailure Detection TestsX"
+
+msgid "Test Type"
+msgstr "XTest TypeX"
+
+msgid "Type {0}"
+msgstr "XType {0}X"
+
+msgid "Tests"
+msgstr "XTestsX"
+
+msgid ""
+"These tests control how each WAN interface is tested to ensure that it has "
+"connectivity to the Internet."
+msgstr "XThese tests control how each WAN interface is tested to ensure that it has connectivity to the Internet.X"
+
+msgid "There should be one configured test per WAN interface."
+msgstr "XThere should be one configured test per WAN interface.X"
+
+msgid ""
+"These rules require careful configuration. Poorly chosen tests will greatly "
+"reduce the effectiveness of WAN Failover."
+msgstr "XThese rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover.X"
+
+msgid "Press Help to see a further discussion about Failure Detection Tests."
+msgstr "XPress Help to see a further discussion about Failure Detection Tests.X"
+
+msgid "Test configuration:"
+msgstr "XTest configuration:X"
+
+msgid ""
+"Design a test that likely indicates the connectivity of the chosen WAN "
+"interface."
+msgstr "XDesign a test that likely indicates the connectivity of the chosen WAN interface.X"
+
+msgid ""
+"<b>Testing Interval</b> specifies how often this test will run. (Default: 5)"
+msgstr "X<b>Testing Interval</b> specifies how often this test will run. (Default: 5)X"
+
+msgid "Testing Interval"
+msgstr "XTesting IntervalX"
+
+msgid ""
+"<b>Timeout</b> specifies how long the system waits for a response before "
+"considering the test failed. (Default: 2)"
+msgstr "X<b>Timeout</b> specifies how long the system waits for a response before considering the test failed. (Default: 2)X"
+
+msgid "Timeout"
+msgstr "XTimeoutX"
+
+msgid ""
+"<b>Failure Threshold</b> specifies how many tests failures (out of 10) are "
+"required for this WAN to be considered offline."
+msgstr "X<b>Failure Threshold</b> specifies how many tests failures (out of 10) are required for this WAN to be considered offline.X"
+
+msgid "Failure Threshold"
+msgstr "XFailure ThresholdX"
+
+msgid ""
+"Choose a destination that likely indicates the connectivity of the chosen "
+"WAN interface."
+msgstr "XChoose a destination that likely indicates the connectivity of the chosen WAN interface.X"
+
+msgid "The IP of an upstream router at your ISP is recommended."
+msgstr "XThe IP of an upstream router at your ISP is recommended.X"
+
+msgid "Generate Suggestions"
+msgstr "XGenerate SuggestionsX"
+
+msgid "ARP the default gateway for this interface."
+msgstr "XARP the default gateway for this interface.X"
+
+msgid "Generate DNS requests to the upstream DNS servers."
+msgstr "XGenerate DNS requests to the upstream DNS servers.X"
+
+msgid ""
+"Choose a URL that likely indicates the connectivity of the chosen WAN "
+"interface."
+msgstr "XChoose a URL that likely indicates the connectivity of the chosen WAN interface.X"
+
+msgid "The IP URL of an upstream website near your ISP is recommended."
+msgstr "XThe IP URL of an upstream website near your ISP is recommended.X"
+
+msgid ""
+"Using a hostname instead of an IP address URL is <b>not recommended</b> as "
+"it requires DNS which may be down."
+msgstr "XUsing a hostname instead of an IP address URL is <b>not recommended</b> as it requires DNS which may be down.X"
+
+msgid "URL"
+msgstr "XURLX"
+
+msgid "Querying Pingable Hosts..."
+msgstr "XQuerying Pingable Hosts...X"
+
+msgid "Unable to find a pingable host."
+msgstr "XUnable to find a pingable host.X"
+
+msgid "Please try again later."
+msgstr "XPlease try again later.X"
+
+msgid "Completed host list."
+msgstr "XCompleted host list.X"
+
+msgid "Select one of the recommended host<br/>from the 'IP' dropdown."
+msgstr "XSelect one of the recommended host<br/>from the 'IP' dropdown.X"
+
+msgid "Running Test..."
+msgstr "XRunning Test...X"
+
+msgid "Unable to complete test."
+msgstr "XUnable to complete test.X"
+
+msgid "Test Results"
+msgstr "XTest ResultsX"
+
+msgid ""
+"The Branding Settings are used to set the logo and contact information that "
+"will be seen by users (e.g. reports)."
+msgstr "XThe Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).X"
+
+msgid "Logo"
+msgstr "XLogoX"
+
+msgid "Use Default Logo"
+msgstr "XUse Default LogoX"
+
+msgid "Use Custom Logo. Maximum size is 166 x 100."
+msgstr "XUse Custom Logo. Maximum size is 166 x 100.X"
+
+msgid "Contact Information"
+msgstr "XContact InformationX"
+
+msgid "Company URL"
+msgstr "XCompany URLX"
+
+msgid "Contact Name"
+msgstr "XContact NameX"
+
+msgid "your network administrator"
+msgstr "Xyour network administratorX"
+
+msgid "Contact Email"
+msgstr "XContact EmailX"
+
+msgid "Banner Message"
+msgstr "XBanner MessageX"
+
+msgid "Please select an image to upload."
+msgstr "XPlease select an image to upload.X"
+
+msgid "Please wait while your logo image is uploaded..."
+msgstr "XPlease wait while your logo image is uploaded...X"
+
+msgid "Upload Logo Succeeded."
+msgstr "XUpload Logo Succeeded.X"
+
+msgid ""
+"Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, "
+"or JPG format."
+msgstr "XUpload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format.X"
+
+msgid "HTTPS: SNI Host Name"
+msgstr "XHTTPS: SNI Host NameX"
+
+msgid "HTTPS: Certificate Subject"
+msgstr "XHTTPS: Certificate SubjectX"
+
+msgid "HTTPS: Certificate Issuer"
+msgstr "XHTTPS: Certificate IssuerX"
+
+msgid ""
+"The HTTPS Inspector is an SSL decryption engine that allows other "
+"applications and services to process port 443 HTTPS traffic just like "
+"unencrypted port 80 HTTP traffic. To do this, the application generates new "
+"SSL certificates on the fly which it uses to perform a the man-in-the-middle "
+"style inspection of traffic. To eliminate certificate security warnings on "
+"client computers and devices, you should download the root certificate and "
+"add it to the list of trusted authorities on each client connected to your "
+"network."
+msgstr "XThe HTTPS Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.X"
+
+msgid "Click here to download the root certificate."
+msgstr "XClick here to download the root certificate.X"
+
+msgid "Block Invalid Traffic"
+msgstr "XBlock Invalid TrafficX"
+
+msgid ""
+"When the HTTPS Inspector detects non-HTTPS traffic on port 443, it will "
+"normally ignore this traffic and allow it to flow unimpeded.  If you enable "
+"this checkbox, non-HTTPS traffic will instead be blocked."
+msgstr "XWhen the HTTPS Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked.X"
+
+msgid "Server Trust"
+msgstr "XServer TrustX"
+
+msgid "Trust All Server Certificates"
+msgstr "XTrust All Server CertificatesX"
+
+msgid ""
+"When this check box is enabled, the inspector will blindly trust all server "
+"certificates.  When clear, the inspector will only trust server certificates "
+"signed by a well known and trusted root certificate authority, or "
+"certificates that you have added to the list below."
+msgstr "XWhen this check box is enabled, the inspector will blindly trust all server certificates.  When clear, the inspector will only trust server certificates signed by a well known and trusted root certificate authority, or certificates that you have added to the list below.X"
+
+msgid "Upload Trusted Certificate"
+msgstr "XUpload Trusted CertificateX"
+
+msgid ""
+"<b>NOTE:</b> When uploading or deleting trusted certificates, changes are "
+"applied immediately."
+msgstr "X<b>NOTE:</b> When uploading or deleting trusted certificates, changes are applied immediately.X"
+
+msgid "Inspect"
+msgstr "XInspectX"
+
+msgid "Ignore"
+msgstr "XIgnoreX"
+
+msgid "Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"
+msgstr "XTrusted Certificates &nbsp;&nbsp; (click any cell to see details)X"
+
+msgid "Alias"
+msgstr "XAliasX"
+
+msgid "Issued To"
+msgstr "XIssued ToX"
+
+msgid "Issued By"
+msgstr "XIssued ByX"
+
+msgid "Date Valid"
+msgstr "XDate ValidX"
+
+msgid "Date Expires"
+msgstr "XDate ExpiresX"
+
+msgid "Click to delete"
+msgstr "XClick to deleteX"
+
+msgid "Invalid or missing Alias"
+msgstr "XInvalid or missing AliasX"
+
+msgid "Please enter a unique alias or nickname for the certificate."
+msgstr "XPlease enter a unique alias or nickname for the certificate.X"
+
+msgid "Upload Failure"
+msgstr "XUpload FailureX"
+
+msgid ""
+"Ignore rules are used to configure traffic which should be ignored by the "
+"inspection engine."
+msgstr "XIgnore rules are used to configure traffic which should be ignored by the inspection engine.X"
+
+msgid "End of Week"
+msgstr "XEnd of WeekX"
+
+msgid "End of Day"
+msgstr "XEnd of DayX"
+
+msgid "End of Hour"
+msgstr "XEnd of HourX"
+
+msgid "Kilobytes"
+msgstr "XKilobytesX"
+
+msgid "Megabytes"
+msgstr "XMegabytesX"
+
+msgid "Gigabytes"
+msgstr "XGigabytesX"
+
+msgid "Terrabytes"
+msgstr "XTerrabytesX"
+
+msgid "Application Control: Application Category"
+msgstr "XApplication Control: Application CategoryX"
+
+msgid "Application Control: Protochain"
+msgstr "XApplication Control: ProtochainX"
+
+msgid "Web Filter: Website is Flagged"
+msgstr "XWeb Filter: Website is FlaggedX"
+
+msgid "Unknown Priority: {0}"
+msgstr "XUnknown Priority: {0}X"
+
+msgid "Bandwidth Control Setup Wizard"
+msgstr "XBandwidth Control Setup WizardX"
+
+msgid ""
+"You have not finished configuring Bandwidth Control. Please run the Setup "
+"Wizard again."
+msgstr "XYou have not finished configuring Bandwidth Control. Please run the Setup Wizard again.X"
+
+msgid ""
+"Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth "
+"Control."
+msgstr "XBandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control.X"
+
+msgid "Bandwidth Control is currently disabled."
+msgstr "XBandwidth Control is currently disabled.X"
+
+msgid ""
+"Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control "
+"requires QoS to be enabled."
+msgstr "XBandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled.X"
+
+msgid "Bandwidth Control is currently enabled and running."
+msgstr "XBandwidth Control is currently enabled and running.X"
+
+msgid " controls, monitors, and prioritizes bandwidth usage on the network."
+msgstr "X controls, monitors, and prioritizes bandwidth usage on the network.X"
+
+msgid "Run Bandwidth Control Setup Wizard"
+msgstr "XRun Bandwidth Control Setup WizardX"
+
+msgid "Bandwidth Monitor"
+msgstr "XBandwidth MonitorX"
+
+msgid ""
+"The Bandwidth Monitor shows current sessions and each session's current "
+"bandwidth usage measured on the selected interface."
+msgstr "XThe Bandwidth Monitor shows current sessions and each session's current bandwidth usage measured on the selected interface.X"
+
+msgid "Open Bandwidth Monitor"
+msgstr "XOpen Bandwidth MonitorX"
+
+msgid "Penalty Box"
+msgstr "XPenalty BoxX"
+
+msgid "View hosts currently in the Penalty Box."
+msgstr "XView hosts currently in the Penalty Box.X"
+
+msgid "View Penalty Box"
+msgstr "XView Penalty BoxX"
+
+msgid "Quotas"
+msgstr "XQuotasX"
+
+msgid "View current Quotas."
+msgstr "XView current Quotas.X"
+
+msgid "View Quotas"
+msgstr "XView QuotasX"
+
+msgid "Rules are evaluated in-order on network traffic."
+msgstr "XRules are evaluated in-order on network traffic.X"
+
+msgid "Bandwidth Rules are used to control and enforce bandwidth usage."
+msgstr "XBandwidth Rules are used to control and enforce bandwidth usage.X"
+
+msgid "Set Priority"
+msgstr "XSet PriorityX"
+
+msgid "Send Client to Penalty Box"
+msgstr "XSend Client to Penalty BoxX"
+
+msgid "Apply Penalty Priority"
+msgstr "XApply Penalty PriorityX"
+
+msgid "Give Client a Quota"
+msgstr "XGive Client a QuotaX"
+
+msgid "Penalty Time"
+msgstr "XPenalty TimeX"
+
+msgid "Quota Expiration"
+msgstr "XQuota ExpirationX"
+
+msgid "Welcome to the Bandwidth Control Setup Wizard!"
+msgstr "XWelcome to the Bandwidth Control Setup Wizard!X"
+
+msgid ""
+"This wizard will help guide you through your initial setup and configuration "
+"of Bandwidth Control."
+msgstr "XThis wizard will help guide you through your initial setup and configuration of Bandwidth Control.X"
+
+msgid ""
+"Bandwidth Control leverages information provided by other applications in "
+"the rack."
+msgstr "XBandwidth Control leverages information provided by other applications in the rack.X"
+
+msgid "Web Filter (non-Lite) provides web site categorization."
+msgstr "XWeb Filter (non-Lite) provides web site categorization.X"
+
+msgid "Application Control provides protocol profiling categorization."
+msgstr "XApplication Control provides protocol profiling categorization.X"
+
+msgid "Application Control Lite provides protocol profiling categorization."
+msgstr "XApplication Control Lite provides protocol profiling categorization.X"
+
+msgid "Directory Connector provides username/group information."
+msgstr "XDirectory Connector provides username/group information.X"
+
+msgid "For optimal Bandwidth Control performance install these applications."
+msgstr "XFor optimal Bandwidth Control performance install these applications.X"
+
+msgid "Interface Id"
+msgstr "XInterface IdX"
+
+msgid " kbps"
+msgstr "X kbpsX"
+
+msgid ""
+"{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth "
+"limits must be set for all WAN interfaces."
+msgstr "X{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.X"
+
+msgid "Configure WANs download and upload bandwidths"
+msgstr "XConfigure WANs download and upload bandwidthsX"
+
+msgid ""
+"It is suggested to set these around 95% to 100% of the actual measured "
+"bandwidth available for each WAN."
+msgstr "XIt is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.X"
+
+msgid ""
+"WARNING: These settings must be reasonably accurate for Bandwidth Control to "
+"operate properly!"
+msgstr "XWARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!X"
+
+msgid ""
+"Please set valid Download Bandwidth and Upload Bandwidth limits for the "
+"interface {0}."
+msgstr "XPlease set valid Download Bandwidth and Upload Bandwidth limits for the interface {0}.X"
+
+msgid "Configuring WAN..."
+msgstr "XConfiguring WAN...X"
+
+msgid "Choose a starting configuration"
+msgstr "XChoose a starting configurationX"
+
+msgid ""
+"Several initial default configurations are available for Bandwidth Control. "
+"Please select the environment most like yours below."
+msgstr "XSeveral initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.X"
+
+msgid "Business"
+msgstr "XBusinessX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most small "
+"and medium-sized businesses."
+msgstr "XThis initial configuration provides common settings suitable for most small and medium-sized businesses.X"
+
+msgid "Benefits:"
+msgstr "XBenefits:X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used in businesses"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businessesX"
+
+msgid ""
+"de-prioritizes traffic of greedy non-work-related activities such as peer-to-"
+"peer file sharing"
+msgstr "Xde-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharingX"
+
+msgid ""
+"de-prioritizes non-real-time background traffic, to avoid slowing your "
+"internet connection when you need it most"
+msgstr "Xde-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it mostX"
+
+msgid "Prioritizes:"
+msgstr "XPrioritizes:X"
+
+msgid "interactive traffic and services (Remote Desktop, Email, DNS, SSH)"
+msgstr "Xinteractive traffic and services (Remote Desktop, Email, DNS, SSH)X"
+
+msgid "interactive web traffic"
+msgstr "Xinteractive web trafficX"
+
+msgid "De-prioritizes:"
+msgstr "XDe-prioritizes:X"
+
+msgid ""
+"non-real-time background services (e.g. Microsoft&reg; updates, backup "
+"services)"
+msgstr "Xnon-real-time background services (e.g. Microsoft&reg; updates, backup services)X"
+
+msgid "any detected Peer-to-Peer traffic"
+msgstr "Xany detected Peer-to-Peer trafficX"
+
+msgid "all web traffic in violation of company policy"
+msgstr "Xall web traffic in violation of company policyX"
+
+msgid "School"
+msgstr "XSchoolX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most School "
+"Districts, Elementary through High Schools, or Charter Schools."
+msgstr "XThis initial configuration provides common settings suitable for most School Districts, Elementary through High Schools, or Charter Schools.X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used in schools"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schoolsX"
+
+msgid ""
+"prioritizes school-related traffic, such as traffic to Education sites or "
+"Search Engines"
+msgstr "Xprioritizes school-related traffic, such as traffic to Education sites or Search EnginesX"
+
+msgid ""
+"de-prioritizes traffic of greedy non-school-related activities such as peer-"
+"to-peer file sharing"
+msgstr "Xde-prioritizes traffic of greedy non-school-related activities such as peer-to-peer file sharingX"
+
+msgid "web traffic to download sites"
+msgstr "Xweb traffic to download sitesX"
+
+msgid "all web traffic in violation of school policy"
+msgstr "Xall web traffic in violation of school policyX"
+
+msgid "Limits:"
+msgstr "XLimits:X"
+
+msgid "heavily limits BitTorrent usage"
+msgstr "Xheavily limits BitTorrent usageX"
+
+msgid "College/University"
+msgstr "XCollege/UniversityX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most "
+"Community Colleges, Universities, and associated Campus Networks."
+msgstr "XThis initial configuration provides common settings suitable for most Community Colleges, Universities, and associated Campus Networks.X"
+
+msgid ""
+"de-prioritizes traffic of greedy non-school-related activities, peer-to-peer "
+"file sharing, or BitTorrent"
+msgstr "Xde-prioritizes traffic of greedy non-school-related activities, peer-to-peer file sharing, or BitTorrentX"
+
+msgid "Government"
+msgstr "XGovernmentX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most "
+"governmental organizations."
+msgstr "XThis initial configuration provides common settings suitable for most governmental organizations.X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used in government"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in governmentX"
+
+msgid ""
+"de-prioritizes traffic of greedy non-work-related activities, such as peer-"
+"to-peer file sharing"
+msgstr "Xde-prioritizes traffic of greedy non-work-related activities, such as peer-to-peer file sharingX"
+
+msgid "all web traffic in violation of organization's policy"
+msgstr "Xall web traffic in violation of organization's policyX"
+
+msgid "Non-Profit"
+msgstr "XNon-ProfitX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most "
+"charitable and not-for-profit organizations."
+msgstr "XThis initial configuration provides common settings suitable for most charitable and not-for-profit organizations.X"
+
+msgid "saves money by controlling bandwidth"
+msgstr "Xsaves money by controlling bandwidthX"
+
+msgid "all web traffic in violation of the organization's policy"
+msgstr "Xall web traffic in violation of the organization's policyX"
+
+msgid "Hotel"
+msgstr "XHotelX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most Hotel "
+"and Motels."
+msgstr "XThis initial configuration provides common settings suitable for most Hotel and Motels.X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used by guests"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used by guestsX"
+
+msgid ""
+"web traffic to business-related sites (Search Engines, Finance, Business/"
+"Services, etc)"
+msgstr "Xweb traffic to business-related sites (Search Engines, Finance, Business/Services, etc)X"
+
+msgid "de-prioritizes traffic of peer-to-peer file sharing"
+msgstr "Xde-prioritizes traffic of peer-to-peer file sharingX"
+
+msgid ""
+"de-prioritizes non-real-time background traffic, to avoid slowing your "
+"internet connection when it is needed most"
+msgstr "Xde-prioritizes non-real-time background traffic, to avoid slowing your internet connection when it is needed mostX"
+
+msgid "Home"
+msgstr "XHomeX"
+
+msgid ""
+"This initial configuration provides common settings suitable for most home "
+"users and households."
+msgstr "XThis initial configuration provides common settings suitable for most home users and households.X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used in households"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in householdsX"
+
+msgid ""
+"prioritizes internet radio and video so that these services run flawlessly "
+"while downloads are running"
+msgstr "Xprioritizes internet radio and video so that these services run flawlessly while downloads are runningX"
+
+msgid ""
+"internet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)"
+msgstr "Xinternet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)X"
+
+msgid ""
+"internet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, "
+"NetFlix&reg;)"
+msgstr "Xinternet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, NetFlix&reg;)X"
+
+msgid "all web traffic in violation of the household policy"
+msgstr "Xall web traffic in violation of the household policyX"
+
+msgid "Metered Internet"
+msgstr "XMetered InternetX"
+
+msgid ""
+"This initial configuration provides common settings suitable for "
+"organizations that pay variable rates for bandwidth."
+msgstr "XThis initial configuration provides common settings suitable for organizations that pay variable rates for bandwidth.X"
+
+msgid ""
+"For organizations that have to pay bandwidth rates proportional to bandwidth "
+"usage or have significant overage fees, this configuration maximizes "
+"bandwidth available to important interactive services, while minimizing "
+"bandwidth use for other less important or background tasks."
+msgstr "XFor organizations that have to pay bandwidth rates proportional to bandwidth usage or have significant overage fees, this configuration maximizes bandwidth available to important interactive services, while minimizing bandwidth use for other less important or background tasks.X"
+
+msgid ""
+"optimizes internet responsiveness by prioritizing traffic of interactive "
+"services most commonly used in organizations"
+msgstr "Xoptimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in organizationsX"
+
+msgid ""
+"de-prioritizes traffic of non-work-related activities, such as gaming, peer-"
+"to-peer file sharing, or online videos"
+msgstr "Xde-prioritizes traffic of non-work-related activities, such as gaming, peer-to-peer file sharing, or online videosX"
+
+msgid "saves money"
+msgstr "Xsaves moneyX"
+
+msgid "all web traffic to Download Sites"
+msgstr "Xall web traffic to Download SitesX"
+
+msgid "This is a basic configuration with no rules set by default."
+msgstr "XThis is a basic configuration with no rules set by default.X"
+
+msgid ""
+"This is a good option for users who wish to build their own rules "
+"configuration from scratch."
+msgstr "XThis is a good option for users who wish to build their own rules configuration from scratch.X"
+
+msgid "You must select a starting configuration."
+msgstr "XYou must select a starting configuration.X"
+
+msgid "Configuring Settings..."
+msgstr "XConfiguring Settings...X"
+
+msgid "Configure Quotas"
+msgstr "XConfigure QuotasX"
+
+msgid ""
+"Quotas for bandwidth can be set for certain hosts. This allows some hosts to "
+"be allocated high bandwidth, as long as it is remains within a certain usage "
+"quota; however, their bandwidth will be slowed if their usage is excessive."
+msgstr "XQuotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.X"
+
+msgid "Disable Quotas (default)"
+msgstr "XDisable Quotas (default)X"
+
+msgid "Enable Quotas"
+msgstr "XEnable QuotasX"
+
+msgid "Quota Clients"
+msgstr "XQuota ClientsX"
+
+msgid " controls which hosts will be given quotas."
+msgstr "X controls which hosts will be given quotas.X"
+
+msgid " (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"
+msgstr "X (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)X"
+
+msgid ""
+" controls how long a quota lasts (hourly, daily, weekly). The default is "
+"Daily."
+msgstr "X controls how long a quota lasts (hourly, daily, weekly). The default is Daily.X"
+
+msgid ""
+" configures the size of the quota given to each host. The default is 1 Gb."
+msgstr "X configures the size of the quota given to each host. The default is 1 Gb.X"
+
+msgid "Quota Exceeded Priority"
+msgstr "XQuota Exceeded PriorityX"
+
+msgid " configures the priority given to hosts that have exceeded their quota."
+msgstr "X configures the priority given to hosts that have exceeded their quota.X"
+
+msgid "You must provide an IP/netmask or range."
+msgstr "XYou must provide an IP/netmask or range.X"
+
+msgid "Configuring Quotas..."
+msgstr "XConfiguring Quotas...X"
+
+msgid "Bandwidth Control is now configured and enabled."
+msgstr "XBandwidth Control is now configured and enabled.X"
+
+msgid "Backup pending."
+msgstr "XBackup pending.X"
+
+msgid "Successfully backed up on"
+msgstr "XSuccessfully backed up onX"
+
+msgid "Last backup failed on"
+msgstr "XLast backup failed onX"
+
+msgid ""
+"Configuration Backup automatically saves your configuration settings and "
+"sends them to {0} for safe storage. If you need a backup of your "
+"configuration settings, contact {1}"
+msgstr "XConfiguration Backup automatically saves your configuration settings and sends them to {0} for safe storage. If you need a backup of your configuration settings, contact {1}X"
+
+msgid "Backup Now"
+msgstr "XBackup NowX"
+
+msgid "Force an immediate backup now."
+msgstr "XForce an immediate backup now.X"
+
+msgid "Backup now"
+msgstr "XBackup nowX"
+
+msgid "Backing up... This may take a few minutes."
+msgstr "XBacking up... This may take a few minutes.X"
+
+msgid "Time of Day"
+msgstr "XTime of DayX"
+
+msgid "Day of Week"
+msgstr "XDay of WeekX"
+
+msgid "> No Rack"
+msgstr "X> No RackX"
+
+msgid "none"
+msgstr "XnoneX"
+
+msgid "Policies"
+msgstr "XPoliciesX"
+
+msgid ""
+"<b>Policy Manager</b> allows for the creation of multiple racks (also known "
+"as policies) and controls which sessions are processed by which racks."
+msgstr "X<b>Policy Manager</b> allows for the creation of multiple racks (also known as policies) and controls which sessions are processed by which racks.X"
+
+msgid ""
+"For each new session the <b>Rules</b> are evaluated in order and the "
+"<b>Target Rack</b> for the first matching rule is used to handle the session."
+msgstr "XFor each new session the <b>Rules</b> are evaluated in order and the <b>Target Rack</b> for the first matching rule is used to handle the session.X"
+
+msgid "If no rules match, the First Rack (Id:1) is used to handle the session."
+msgstr "XIf no rules match, the First Rack (Id:1) is used to handle the session.X"
+
+msgid "Racks"
+msgstr "XRacksX"
+
+msgid "New Rack"
+msgstr "XNew RackX"
+
+msgid "Parent"
+msgstr "XParentX"
+
+msgid "Target Rack"
+msgstr "XTarget RackX"
+
 msgid ""
 "Reports application is required for this feature. Please install and enable "
 "the Reports application."
@@ -4965,9 +8247,6 @@ msgstr "XdataX"
 msgid "value"
 msgstr "XvalueX"
 
-msgid "none"
-msgstr "XnoneX"
-
 msgid "Not enough data to generate the chart."
 msgstr "XNot enough data to generate the chart.X"
 
@@ -5037,9 +8316,6 @@ msgstr "XClear ValueX"
 msgid "{0} Previous"
 msgstr "X{0} PreviousX"
 
-msgid "Finish"
-msgstr "XFinishX"
-
 msgid "in Categories Block list"
 msgstr "Xin Categories Block listX"
 
@@ -5070,17 +8346,11 @@ msgstr "Xin Bypass listX"
 msgid "no rule applied"
 msgstr "Xno rule appliedX"
 
-msgid "pass message"
-msgstr "Xpass messageX"
-
 msgid "mark message"
 msgstr "Xmark messageX"
 
 msgid "drop message"
 msgstr "Xdrop messageX"
-
-msgid "block message"
-msgstr "Xblock messageX"
 
 msgid "quarantine message"
 msgstr "Xquarantine messageX"
@@ -5115,9 +8385,6 @@ msgstr "XEnd TimestampX"
 msgid "Policy Id"
 msgstr "XPolicy IdX"
 
-msgid "Client"
-msgstr "XClientX"
-
 msgid "Client Port"
 msgstr "XClient PortX"
 
@@ -5138,12 +8405,6 @@ msgstr "XFilter PrefixX"
 
 msgid "Shield Blocked"
 msgstr "XShield BlockedX"
-
-msgid "Unknown Priority: {0}"
-msgstr "XUnknown Priority: {0}X"
-
-msgid "Rule"
-msgstr "XRuleX"
 
 msgid "ProtoChain"
 msgstr "XProtoChainX"
@@ -5307,17 +8568,11 @@ msgstr "XResultX"
 msgid "Details"
 msgstr "XDetailsX"
 
-msgid "Interface Id"
-msgstr "XInterface IdX"
-
 msgid "Test Description"
 msgstr "XTest DescriptionX"
 
 msgid "Interface OS"
 msgstr "XInterface OSX"
-
-msgid "Login Time"
-msgstr "XLogin TimeX"
 
 msgid "Logout Time"
 msgstr "XLogout TimeX"
@@ -5391,9 +8646,6 @@ msgstr "XActive DirectoryX"
 msgid "RADIUS"
 msgstr "XRADIUSX"
 
-msgid "Sid"
-msgstr "XSidX"
-
 msgid "Gid"
 msgstr "XGidX"
 
@@ -5402,24 +8654,6 @@ msgstr "XCidX"
 
 msgid "ICMP"
 msgstr "XICMPX"
-
-msgid "UDP"
-msgstr "XUDPX"
-
-msgid "TCP"
-msgstr "XTCPX"
-
-msgid "Classtype"
-msgstr "XClasstypeX"
-
-msgid "Msg"
-msgstr "XMsgX"
-
-msgid "Client Name"
-msgstr "XClient NameX"
-
-msgid "Pool Address"
-msgstr "XPool AddressX"
 
 msgid "End Time"
 msgstr "XEnd TimeX"
@@ -5463,11 +8697,8 @@ msgstr "XPreviousX"
 msgid "Current"
 msgstr "XCurrentX"
 
-msgid "javaClass"
-msgstr "XjavaClassX"
-
-msgid "{0} Server"
-msgstr "X{0} ServerX"
+msgid "%s Server"
+msgstr "X%s ServerX"
 
 msgid "Bad Request"
 msgstr "XBad RequestX"
@@ -5523,6 +8754,9 @@ msgstr "XRequested Range Not SatisfiableX"
 msgid "Expectation Failed"
 msgstr "XExpectation FailedX"
 
+msgid "Server is starting. Please wait."
+msgstr "XServer is starting. Please wait.X"
+
 msgid "Internal Server Error"
 msgstr "XInternal Server ErrorX"
 
@@ -5541,8 +8775,29 @@ msgstr "XGateway TimeoutX"
 msgid "HTTP Version Not Supported"
 msgstr "XHTTP Version Not SupportedX"
 
-msgid "Error"
-msgstr "XErrorX"
+msgid "Administrator Login"
+msgstr "XAdministrator LoginX"
+
+msgid "%s Administrator Login"
+msgstr "X%s Administrator LoginX"
+
+msgid "Error: Username and Password do not match"
+msgstr "XError: Username and Password do not matchX"
+
+msgid "Server:"
+msgstr "XServer:X"
+
+msgid "Username:"
+msgstr "XUsername:X"
+
+msgid "Password:"
+msgstr "XPassword:X"
+
+msgid "javaClass"
+msgstr "XjavaClassX"
+
+msgid "{0} Server"
+msgstr "X{0} ServerX"
 
 msgid ""
 "The restore procedure is running. This may take several minutes. The server "
@@ -5756,9 +9011,6 @@ msgstr "XVirusesX"
 msgid "Top Web Viruses Detected"
 msgstr "XTop Web Viruses DetectedX"
 
-msgid "Unknown"
-msgstr "XUnknownX"
-
 msgid "Count"
 msgstr "XCountX"
 
@@ -5773,9 +9025,6 @@ msgstr "XTop Viruses DetectedX"
 
 msgid "Web Events"
 msgstr "XWeb EventsX"
-
-msgid "User"
-msgstr "XUserX"
 
 msgid "Url"
 msgstr "XUrlX"
@@ -6080,9 +9329,6 @@ msgstr "XTop Blocked ClientsX"
 msgid "Capture User Events"
 msgstr "XCapture User EventsX"
 
-msgid "User Name"
-msgstr "XUser NameX"
-
 msgid "Capture Rule Events"
 msgstr "XCapture Rule EventsX"
 
@@ -6149,9 +9395,6 @@ msgstr "XRemote AddressX"
 msgid "Remote Port"
 msgstr "XRemote PortX"
 
-msgid "Connect Time"
-msgstr "XConnect TimeX"
-
 msgid "Client Protocol"
 msgstr "XClient ProtocolX"
 
@@ -6163,9 +9406,6 @@ msgstr "XNet ProcessX"
 
 msgid "Net Interface"
 msgstr "XNet InterfaceX"
-
-msgid "Elapsed Time"
-msgstr "XElapsed TimeX"
 
 msgid "Memory Cache"
 msgstr "XMemory CacheX"
@@ -6218,9 +9458,6 @@ msgstr "XMessage IDX"
 msgid "Search Term"
 msgstr "XSearch TermX"
 
-msgid "Interface ID"
-msgstr "XInterface IDX"
-
 msgid "Interface O/S Name"
 msgstr "XInterface O/S NameX"
 
@@ -6239,14 +9476,8 @@ msgstr "XMessageX"
 msgid "JSON Text"
 msgstr "XJSON TextX"
 
-msgid "Rule ID"
-msgstr "XRule IDX"
-
 msgid "Spam"
 msgstr "XSpamX"
-
-msgid "Tests"
-msgstr "XTestsX"
 
 msgid "Cookie"
 msgstr "XCookieX"
@@ -6575,23 +9806,14 @@ msgstr "Xattacks of whichX"
 msgid "Top Detected Rules (by Hits)"
 msgstr "XTop Detected Rules (by Hits)X"
 
-msgid "Rules"
-msgstr "XRulesX"
-
 msgid "Hits Per Day"
 msgstr "XHits Per DayX"
 
 msgid "Top Detected Categories (by Hits)"
 msgstr "XTop Detected Categories (by Hits)X"
 
-msgid "Categories"
-msgstr "XCategoriesX"
-
 msgid "Top Detected Classtypes (by Hits)"
 msgstr "XTop Detected Classtypes (by Hits)X"
-
-msgid "Classtypes"
-msgstr "XClasstypesX"
 
 msgid "Attacks Detected, Logged"
 msgstr "XAttacks Detected, LoggedX"
@@ -6704,14 +9926,29 @@ msgstr "XFirewall EventsX"
 msgid "Source Ip"
 msgstr "XSource IpX"
 
-msgid "backed up settings"
-msgstr "Xbacked up settingsX"
+msgid "Hourly Spam Rate"
+msgstr "XHourly Spam RateX"
 
-msgid "times"
-msgstr "XtimesX"
+msgid "Spam Rate"
+msgstr "XSpam RateX"
 
-msgid "Backup Events"
-msgstr "XBackup EventsX"
+msgid "Top Ten Spammed"
+msgstr "XTop Ten SpammedX"
+
+msgid "Top Shield Blocked Hosts By Hits"
+msgstr "XTop Shield Blocked Hosts By HitsX"
+
+msgid "Top Ten Shield Blocked Hosts (by Hits)"
+msgstr "XTop Ten Shield Blocked Hosts (by Hits)X"
+
+msgid "Top Shield Blocked Users By Hits"
+msgstr "XTop Shield Blocked Users By HitsX"
+
+msgid "Top Ten Shield Blocked Users (by Hits)"
+msgstr "XTop Ten Shield Blocked Users (by Hits)X"
+
+msgid "Shield Events"
+msgstr "XShield EventsX"
 
 msgid "web hits and detected"
 msgstr "Xweb hits and detectedX"
@@ -6812,9 +10049,6 @@ msgstr "XAll EventsX"
 msgid "Site Events"
 msgstr "XSite EventsX"
 
-msgid "Site"
-msgstr "XSiteX"
-
 msgid "Size (MB)"
 msgstr "XSize (MB)X"
 
@@ -6842,9 +10076,6 @@ msgstr "X(avg)X"
 msgid "(max)"
 msgstr "X(max)X"
 
-msgid "Active Sessions"
-msgstr "XActive SessionsX"
-
 msgid "Sessions By WAN"
 msgstr "XSessions By WANX"
 
@@ -6857,122 +10088,20 @@ msgstr "XTotal Sessions By WANX"
 msgid "Bandwidth By WAN Interface"
 msgstr "XBandwidth By WAN InterfaceX"
 
-msgid "WAN failures and saved the network from"
-msgstr "XWAN failures and saved the network fromX"
+msgid "Top Query Terms"
+msgstr "XTop Query TermsX"
 
-msgid "seconds of downtime"
-msgstr "Xseconds of downtimeX"
+msgid "Top Query Hosts"
+msgstr "XTop Query HostsX"
 
-msgid "WAN Availability"
-msgstr "XWAN AvailabilityX"
+msgid "Top Query Users"
+msgstr "XTop Query UsersX"
 
-msgid "Full Connectivity"
-msgstr "XFull ConnectivityX"
+msgid "Unblock Events"
+msgstr "XUnblock EventsX"
 
-msgid "Partial Connectivity"
-msgstr "XPartial ConnectivityX"
-
-msgid "No Connectivity"
-msgstr "XNo ConnectivityX"
-
-msgid "Connectivity"
-msgstr "XConnectivityX"
-
-msgid "%"
-msgstr "X%X"
-
-msgid "WAN Interfaces With Downtime"
-msgstr "XWAN Interfaces With DowntimeX"
-
-msgid "Seconds"
-msgstr "XSecondsX"
-
-msgid "Downtime For"
-msgstr "XDowntime ForX"
-
-msgid "WAN Interface Failures"
-msgstr "XWAN Interface FailuresX"
-
-msgid "Failure For"
-msgstr "XFailure ForX"
-
-msgid "Hourly Spam Rate"
-msgstr "XHourly Spam RateX"
-
-msgid "Spam Rate"
-msgstr "XSpam RateX"
-
-msgid "Top Ten Spammed"
-msgstr "XTop Ten SpammedX"
-
-msgid "mapped"
-msgstr "XmappedX"
-
-msgid "sessions across"
-msgstr "Xsessions acrossX"
-
-msgid "racks"
-msgstr "XracksX"
-
-msgid "%(rack)s Avg"
-msgstr "X%(rack)s AvgX"
-
-msgid "%(rack)s Total"
-msgstr "X%(rack)s TotalX"
-
-msgid "Sessions By Policy"
-msgstr "XSessions By PolicyX"
-
-msgid "Traffic By Policy"
-msgstr "XTraffic By PolicyX"
-
-msgid "Top Policies By Sessions"
-msgstr "XTop Policies By SessionsX"
-
-msgid "Top Policies By Bandwidth"
-msgstr "XTop Policies By BandwidthX"
-
-msgid "handled"
-msgstr "XhandledX"
-
-msgid "of traffic, of which "
-msgstr "Xof traffic, of which X"
-
-msgid "were obtained directly from the cache"
-msgstr "Xwere obtained directly from the cacheX"
-
-msgid "Avg Cached"
-msgstr "XAvg CachedX"
-
-msgid "Max Cached"
-msgstr "XMax CachedX"
-
-msgid "Avg Not Cached"
-msgstr "XAvg Not CachedX"
-
-msgid "Max Not Cached"
-msgstr "XMax Not CachedX"
-
-msgid "Avg Bypassed"
-msgstr "XAvg BypassedX"
-
-msgid "Max Bypassed"
-msgstr "XMax BypassedX"
-
-msgid "Cached"
-msgstr "XCachedX"
-
-msgid "Not Cached"
-msgstr "XNot CachedX"
-
-msgid "Usage by size"
-msgstr "XUsage by sizeX"
-
-msgid "Web Cache Events"
-msgstr "XWeb Cache EventsX"
-
-msgid "Systems"
-msgstr "XSystemsX"
+msgid "Query Events"
+msgstr "XQuery EventsX"
 
 msgid "identified"
 msgstr "XidentifiedX"
@@ -7049,59 +10178,47 @@ msgstr "XTop Bandwidth ApplicationsX"
 msgid "Top Bandwidth Protochains"
 msgstr "XTop Bandwidth ProtochainsX"
 
-msgid "analyzed"
-msgstr "XanalyzedX"
+msgid "handled"
+msgstr "XhandledX"
 
-msgid "Sessions by Priority"
-msgstr "XSessions by PriorityX"
+msgid "of traffic, of which "
+msgstr "Xof traffic, of which X"
 
-msgid "Bandwidth by Priority"
-msgstr "XBandwidth by PriorityX"
+msgid "were obtained directly from the cache"
+msgstr "Xwere obtained directly from the cacheX"
 
-msgid "Top Bandwidth Hosts"
-msgstr "XTop Bandwidth HostsX"
+msgid "Avg Cached"
+msgstr "XAvg CachedX"
 
-msgid "Top Bandwidth Ports"
-msgstr "XTop Bandwidth PortsX"
+msgid "Max Cached"
+msgstr "XMax CachedX"
 
-msgid "Top Bandwidth Users"
-msgstr "XTop Bandwidth UsersX"
+msgid "Avg Not Cached"
+msgstr "XAvg Not CachedX"
 
-msgid "Quota Events"
-msgstr "XQuota EventsX"
+msgid "Max Not Cached"
+msgstr "XMax Not CachedX"
 
-msgid "Top Shield Blocked Hosts By Hits"
-msgstr "XTop Shield Blocked Hosts By HitsX"
+msgid "Avg Bypassed"
+msgstr "XAvg BypassedX"
 
-msgid "Top Ten Shield Blocked Hosts (by Hits)"
-msgstr "XTop Ten Shield Blocked Hosts (by Hits)X"
+msgid "Max Bypassed"
+msgstr "XMax BypassedX"
 
-msgid "Top Shield Blocked Users By Hits"
-msgstr "XTop Shield Blocked Users By HitsX"
+msgid "Cached"
+msgstr "XCachedX"
 
-msgid "Top Ten Shield Blocked Users (by Hits)"
-msgstr "XTop Ten Shield Blocked Users (by Hits)X"
+msgid "Not Cached"
+msgstr "XNot CachedX"
 
-msgid "Shield Events"
-msgstr "XShield EventsX"
+msgid "Usage by size"
+msgstr "XUsage by sizeX"
 
-msgid "Top Query Terms"
-msgstr "XTop Query TermsX"
+msgid "Web Cache Events"
+msgstr "XWeb Cache EventsX"
 
-msgid "Top Query Hosts"
-msgstr "XTop Query HostsX"
-
-msgid "Top Query Users"
-msgstr "XTop Query UsersX"
-
-msgid "Unblock Events"
-msgstr "XUnblock EventsX"
-
-msgid "Query Events"
-msgstr "XQuery EventsX"
-
-msgid "Update"
-msgstr "XUpdateX"
+msgid "Systems"
+msgstr "XSystemsX"
 
 msgid "AD events"
 msgstr "XAD eventsX"
@@ -7117,9 +10234,6 @@ msgstr "XMax UpdatesX"
 
 msgid "AD Authentication Events"
 msgstr "XAD Authentication EventsX"
-
-msgid "Updates"
-msgstr "XUpdatesX"
 
 msgid "Identified"
 msgstr "XIdentifiedX"
@@ -7141,6 +10255,45 @@ msgstr "XAverage UnidentifiedX"
 
 msgid "Max Unidentified"
 msgstr "XMax UnidentifiedX"
+
+msgid "WAN failures and saved the network from"
+msgstr "XWAN failures and saved the network fromX"
+
+msgid "seconds of downtime"
+msgstr "Xseconds of downtimeX"
+
+msgid "WAN Availability"
+msgstr "XWAN AvailabilityX"
+
+msgid "Full Connectivity"
+msgstr "XFull ConnectivityX"
+
+msgid "Partial Connectivity"
+msgstr "XPartial ConnectivityX"
+
+msgid "No Connectivity"
+msgstr "XNo ConnectivityX"
+
+msgid "Connectivity"
+msgstr "XConnectivityX"
+
+msgid "%"
+msgstr "X%X"
+
+msgid "WAN Interfaces With Downtime"
+msgstr "XWAN Interfaces With DowntimeX"
+
+msgid "Seconds"
+msgstr "XSecondsX"
+
+msgid "Downtime For"
+msgstr "XDowntime ForX"
+
+msgid "WAN Interface Failures"
+msgstr "XWAN Interface FailuresX"
+
+msgid "Failure For"
+msgstr "XFailure ForX"
 
 msgid "inspected"
 msgstr "XinspectedX"
@@ -7165,6 +10318,63 @@ msgstr "XTop Untrusted SitesX"
 
 msgid "Inspected Vs Ignored Vs Abandoned"
 msgstr "XInspected Vs Ignored Vs AbandonedX"
+
+msgid "analyzed"
+msgstr "XanalyzedX"
+
+msgid "Sessions by Priority"
+msgstr "XSessions by PriorityX"
+
+msgid "Bandwidth by Priority"
+msgstr "XBandwidth by PriorityX"
+
+msgid "Top Bandwidth Hosts"
+msgstr "XTop Bandwidth HostsX"
+
+msgid "Top Bandwidth Ports"
+msgstr "XTop Bandwidth PortsX"
+
+msgid "Top Bandwidth Users"
+msgstr "XTop Bandwidth UsersX"
+
+msgid "Quota Events"
+msgstr "XQuota EventsX"
+
+msgid "backed up settings"
+msgstr "Xbacked up settingsX"
+
+msgid "times"
+msgstr "XtimesX"
+
+msgid "Backup Events"
+msgstr "XBackup EventsX"
+
+msgid "mapped"
+msgstr "XmappedX"
+
+msgid "sessions across"
+msgstr "Xsessions acrossX"
+
+msgid "racks"
+msgstr "XracksX"
+
+msgid "%(rack)s Avg"
+msgstr "X%(rack)s AvgX"
+
+msgid "%(rack)s Total"
+msgstr "X%(rack)s TotalX"
+
+msgid "Sessions By Policy"
+msgstr "XSessions By PolicyX"
+
+msgid "Traffic By Policy"
+msgstr "XTraffic By PolicyX"
+
+msgid "Top Policies By Sessions"
+msgstr "XTop Policies By SessionsX"
+
+msgid "Top Policies By Bandwidth"
+msgstr "XTop Policies By BandwidthX"
 
 msgid "description"
 msgstr "XdescriptionX"
@@ -7849,74 +11059,6 @@ msgstr "XThe number of blocked sessions grouped by hostname.X"
 msgid "Top Flagged Server Ports"
 msgstr "XTop Flagged Server PortsX"
 
-msgid "The top IPsec users grouped by amount of data downloaded."
-msgstr "XThe top IPsec users grouped by amount of data downloaded.X"
-
-msgid "Top Download Users"
-msgstr "XTop Download UsersX"
-
-msgid "The amount of IPsec tunnel traffic over time."
-msgstr "XThe amount of IPsec tunnel traffic over time.X"
-
-msgid "Hourly Tunnel Traffic"
-msgstr "XHourly Tunnel TrafficX"
-
-msgid "The top IPsec VPN users by number of sessions."
-msgstr "XThe top IPsec VPN users by number of sessions.X"
-
-msgid "The top IPsec VPN connections by protocol."
-msgstr "XThe top IPsec VPN connections by protocol.X"
-
-msgid "Top Protocols"
-msgstr "XTop ProtocolsX"
-
-msgid "The amount of traffic for each IPsec tunnel."
-msgstr "XThe amount of traffic for each IPsec tunnel.X"
-
-msgid "Top Tunnel Traffic"
-msgstr "XTop Tunnel TrafficX"
-
-msgid "The top IPsec users grouped by amount of data uploaded."
-msgstr "XThe top IPsec users grouped by amount of data uploaded.X"
-
-msgid "Top Upload Users"
-msgstr "XTop Upload UsersX"
-
-msgid "The number of cache hits, misses, and sessions bypassed over time."
-msgstr "XThe number of cache hits, misses, and sessions bypassed over time.X"
-
-msgid "Cache Hit/Miss Statistics"
-msgstr "XCache Hit/Miss StatisticsX"
-
-msgid "The amount of cached and uncached web data over time."
-msgstr "XThe amount of cached and uncached web data over time.X"
-
-msgid "Cache Size Statistics"
-msgstr "XCache Size StatisticsX"
-
-msgid ""
-"The amount of login, update and logout user notification API events over "
-"time."
-msgstr "XThe amount of login, update and logout user notification API events over time.X"
-
-msgid "User Notification API Events"
-msgstr "XUser Notification API EventsX"
-
-msgid "The amount of scanned and blocked sessions over time."
-msgstr "XThe amount of scanned and blocked sessions over time.X"
-
-msgid "The number of blocked sessions grouped by client."
-msgstr "XThe number of blocked sessions grouped by client.X"
-
-msgid "The amount of blocked sessions over time."
-msgstr "XThe amount of blocked sessions over time.X"
-
-msgid "Blocked Sessions"
-msgstr "XBlocked SessionsX"
-
-msgid "The number of blocked sessions grouped by username."
-msgstr "XThe number of blocked sessions grouped by username.X"
-
 msgid "The amount of scanned, clean, and spam email over time."
 msgstr "XThe amount of scanned, clean, and spam email over time.X"
 
@@ -7950,45 +11092,20 @@ msgstr "XA summary of spam blocking actions for email activity.X"
 msgid "Spam Blocker Lite Summary"
 msgstr "XSpam Blocker Lite SummaryX"
 
-msgid "Virus Blocker Web Summary"
-msgstr "XVirus Blocker Web SummaryX"
+msgid "The amount of scanned and blocked sessions over time."
+msgstr "XThe amount of scanned and blocked sessions over time.X"
 
-msgid "Virus Blocker FTP Summary"
-msgstr "XVirus Blocker FTP SummaryX"
+msgid "The number of blocked sessions grouped by client."
+msgstr "XThe number of blocked sessions grouped by client.X"
 
-msgid "Virus Blocker Email Summary"
-msgstr "XVirus Blocker Email SummaryX"
+msgid "The amount of blocked sessions over time."
+msgstr "XThe amount of blocked sessions over time.X"
 
-msgid ""
-"The amount of successes, and failures of configuration backup over time."
-msgstr "XThe amount of successes, and failures of configuration backup over time.X"
+msgid "Blocked Sessions"
+msgstr "XBlocked SessionsX"
 
-msgid "Backup Usage (all)"
-msgstr "XBackup Usage (all)X"
-
-msgid "The amount of successful configuration backups over time."
-msgstr "XThe amount of successful configuration backups over time.X"
-
-msgid "Backup Usage (success)"
-msgstr "XBackup Usage (success)X"
-
-msgid "The amount of failed configuration backups over time."
-msgstr "XThe amount of failed configuration backups over time.X"
-
-msgid "Backup Usage (failed)"
-msgstr "XBackup Usage (failed)X"
-
-msgid "A summary of configuration backup actions."
-msgstr "XA summary of configuration backup actions.X"
-
-msgid "Configuration Backup Summary"
-msgstr "XConfiguration Backup SummaryX"
-
-msgid "The amount of traffic for each policy."
-msgstr "XThe amount of traffic for each policy.X"
-
-msgid "The number of sessions for each policy."
-msgstr "XThe number of sessions for each policy.X"
+msgid "The number of blocked sessions grouped by username."
+msgstr "XThe number of blocked sessions grouped by username.X"
 
 msgid "The number of sessions destined to each interface."
 msgstr "XThe number of sessions destined to each interface.X"
@@ -8002,8 +11119,127 @@ msgstr "XThe number of bytes destined to each interface.X"
 msgid "Bytes By Interface"
 msgstr "XBytes By InterfaceX"
 
+msgid "A summary of web filter actions."
+msgstr "XA summary of web filter actions.X"
+
+msgid "Web Filter Summary"
+msgstr "XWeb Filter SummaryX"
+
+msgid "The top IPsec users grouped by amount of data downloaded."
+msgstr "XThe top IPsec users grouped by amount of data downloaded.X"
+
+msgid "Top Download Users"
+msgstr "XTop Download UsersX"
+
+msgid "The amount of IPsec tunnel traffic over time."
+msgstr "XThe amount of IPsec tunnel traffic over time.X"
+
+msgid "Hourly Tunnel Traffic"
+msgstr "XHourly Tunnel TrafficX"
+
+msgid "The top IPsec VPN users by number of sessions."
+msgstr "XThe top IPsec VPN users by number of sessions.X"
+
+msgid "The top IPsec VPN connections by protocol."
+msgstr "XThe top IPsec VPN connections by protocol.X"
+
+msgid "Top Protocols"
+msgstr "XTop ProtocolsX"
+
+msgid "The amount of traffic for each IPsec tunnel."
+msgstr "XThe amount of traffic for each IPsec tunnel.X"
+
+msgid "Top Tunnel Traffic"
+msgstr "XTop Tunnel TrafficX"
+
+msgid "The top IPsec users grouped by amount of data uploaded."
+msgstr "XThe top IPsec users grouped by amount of data uploaded.X"
+
+msgid "Top Upload Users"
+msgstr "XTop Upload UsersX"
+
+msgid "The number of flagged sessions grouped by application."
+msgstr "XThe number of flagged sessions grouped by application.X"
+
+msgid "Top Flagged Applications"
+msgstr "XTop Flagged ApplicationsX"
+
+msgid "The number of flagged sessions grouped by username."
+msgstr "XThe number of flagged sessions grouped by username.X"
+
+msgid "Scanned Sessions (all)"
+msgstr "XScanned Sessions (all)X"
+
+msgid "The amount of flagged, and blocked sessions over time."
+msgstr "XThe amount of flagged, and blocked sessions over time.X"
+
+msgid "Scanned Sessions (blocked)"
+msgstr "XScanned Sessions (blocked)X"
+
+msgid "The number of flagged sessions grouped by hostname."
+msgstr "XThe number of flagged sessions grouped by hostname.X"
+
+msgid "The number of blocked sessions grouped by application."
+msgstr "XThe number of blocked sessions grouped by application.X"
+
+msgid "Top Blocked Applications"
+msgstr "XTop Blocked ApplicationsX"
+
+msgid "The number of bytes grouped by application."
+msgstr "XThe number of bytes grouped by application.X"
+
+msgid "Top Applications (by size)"
+msgstr "XTop Applications (by size)X"
+
+msgid "The number of sessions grouped by application."
+msgstr "XThe number of sessions grouped by application.X"
+
+msgid "Top Applications (by sessions)"
+msgstr "XTop Applications (by sessions)X"
+
+msgid "Scanned Sessions (flagged)"
+msgstr "XScanned Sessions (flagged)X"
+
+msgid "The number of flagged sessions grouped by client."
+msgstr "XThe number of flagged sessions grouped by client.X"
+
+msgid "The number of cache hits, misses, and sessions bypassed over time."
+msgstr "XThe number of cache hits, misses, and sessions bypassed over time.X"
+
+msgid "Cache Hit/Miss Statistics"
+msgstr "XCache Hit/Miss StatisticsX"
+
+msgid "The amount of cached and uncached web data over time."
+msgstr "XThe amount of cached and uncached web data over time.X"
+
+msgid "Cache Size Statistics"
+msgstr "XCache Size StatisticsX"
+
+msgid "Virus Blocker Web Summary"
+msgstr "XVirus Blocker Web SummaryX"
+
+msgid "Virus Blocker FTP Summary"
+msgstr "XVirus Blocker FTP SummaryX"
+
+msgid "Virus Blocker Email Summary"
+msgstr "XVirus Blocker Email SummaryX"
+
+msgid ""
+"The amount of login, update and logout user notification API events over "
+"time."
+msgstr "XThe amount of login, update and logout user notification API events over time.X"
+
+msgid "User Notification API Events"
+msgstr "XUser Notification API EventsX"
+
 msgid "Spam Blocker Summary"
 msgstr "XSpam Blocker SummaryX"
+
+msgid "The number of disconnect events grouped by WAN."
+msgstr "XThe number of disconnect events grouped by WAN.X"
+
+msgid "WAN Disconnect Events"
+msgstr "XWAN Disconnect EventsX"
 
 msgid "The number of ignored sessions grouped by site."
 msgstr "XThe number of ignored sessions grouped by site.X"
@@ -8028,18 +11264,6 @@ msgstr "XA summary of HTTPS Inspector actions.X"
 
 msgid "HTTPS Inspector Summary"
 msgstr "XHTTPS Inspector SummaryX"
-
-msgid "The number of disconnect events grouped by WAN."
-msgstr "XThe number of disconnect events grouped by WAN.X"
-
-msgid "WAN Disconnect Events"
-msgstr "XWAN Disconnect EventsX"
-
-msgid "A summary of web filter actions."
-msgstr "XA summary of web filter actions.X"
-
-msgid "Web Filter Summary"
-msgstr "XWeb Filter SummaryX"
 
 msgid "The sum of the data sent grouped by Application Control application."
 msgstr "XThe sum of the data sent grouped by Application Control application.X"
@@ -8137,50 +11361,36 @@ msgstr "XThe sum of the data received grouped by client address.X"
 msgid "Top Clients (by received bytes)"
 msgstr "XTop Clients (by received bytes)X"
 
-msgid "The number of flagged sessions grouped by application."
-msgstr "XThe number of flagged sessions grouped by application.X"
+msgid ""
+"The amount of successes, and failures of configuration backup over time."
+msgstr "XThe amount of successes, and failures of configuration backup over time.X"
 
-msgid "Top Flagged Applications"
-msgstr "XTop Flagged ApplicationsX"
+msgid "Backup Usage (all)"
+msgstr "XBackup Usage (all)X"
 
-msgid "The number of flagged sessions grouped by username."
-msgstr "XThe number of flagged sessions grouped by username.X"
+msgid "The amount of successful configuration backups over time."
+msgstr "XThe amount of successful configuration backups over time.X"
 
-msgid "Scanned Sessions (all)"
-msgstr "XScanned Sessions (all)X"
+msgid "Backup Usage (success)"
+msgstr "XBackup Usage (success)X"
 
-msgid "The amount of flagged, and blocked sessions over time."
-msgstr "XThe amount of flagged, and blocked sessions over time.X"
+msgid "The amount of failed configuration backups over time."
+msgstr "XThe amount of failed configuration backups over time.X"
 
-msgid "Scanned Sessions (blocked)"
-msgstr "XScanned Sessions (blocked)X"
+msgid "Backup Usage (failed)"
+msgstr "XBackup Usage (failed)X"
 
-msgid "The number of flagged sessions grouped by hostname."
-msgstr "XThe number of flagged sessions grouped by hostname.X"
+msgid "A summary of configuration backup actions."
+msgstr "XA summary of configuration backup actions.X"
 
-msgid "The number of blocked sessions grouped by application."
-msgstr "XThe number of blocked sessions grouped by application.X"
+msgid "Configuration Backup Summary"
+msgstr "XConfiguration Backup SummaryX"
 
-msgid "Top Blocked Applications"
-msgstr "XTop Blocked ApplicationsX"
+msgid "The amount of traffic for each policy."
+msgstr "XThe amount of traffic for each policy.X"
 
-msgid "The number of bytes grouped by application."
-msgstr "XThe number of bytes grouped by application.X"
-
-msgid "Top Applications (by size)"
-msgstr "XTop Applications (by size)X"
-
-msgid "The number of sessions grouped by application."
-msgstr "XThe number of sessions grouped by application.X"
-
-msgid "Top Applications (by sessions)"
-msgstr "XTop Applications (by sessions)X"
-
-msgid "Scanned Sessions (flagged)"
-msgstr "XScanned Sessions (flagged)X"
-
-msgid "The number of flagged sessions grouped by client."
-msgstr "XThe number of flagged sessions grouped by client.X"
+msgid "The number of sessions for each policy."
+msgstr "XThe number of sessions for each policy.X"
 
 msgid "All email sessions detected as phishing attempts and quarantined."
 msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
@@ -8290,8 +11500,8 @@ msgstr "XShows all scanned web requests.X"
 msgid "All Web Events"
 msgstr "XAll Web EventsX"
 
-msgid "Shows all 'unblocked' web requests"
-msgstr "XShows all 'unblocked' web requestsX"
+msgid "Shows all unblocked web requests"
+msgstr "XShows all unblocked web requestsX"
 
 msgid "Unblocked Web Events"
 msgstr "XUnblocked Web EventsX"
@@ -8466,30 +11676,6 @@ msgstr "XFlagged EventsX"
 msgid "All events scanned by Firewall App."
 msgstr "XAll events scanned by Firewall App.X"
 
-msgid "Shows all user L2TP/Xauth events."
-msgstr "XShows all user L2TP/Xauth events.X"
-
-msgid "L2TP/Xauth Events"
-msgstr "XL2TP/Xauth EventsX"
-
-msgid "Shows all IPsec tunnel traffic statistics events."
-msgstr "XShows all IPsec tunnel traffic statistics events.X"
-
-msgid "Tunnel Traffic Events"
-msgstr "XTunnel Traffic EventsX"
-
-msgid "All HTTP events processed by Web Cache."
-msgstr "XAll HTTP events processed by Web Cache.X"
-
-msgid "Events from the user notification API."
-msgstr "XEvents from the user notification API.X"
-
-msgid "All sessions blocked by Shield."
-msgstr "XAll sessions blocked by Shield.X"
-
-msgid "All sessions scanned by Shield."
-msgstr "XAll sessions scanned by Shield.X"
-
 msgid "All emails marked as Spam and quarantined."
 msgstr "XAll emails marked as Spam and quarantined.X"
 
@@ -8507,6 +11693,63 @@ msgstr "XAll email sessions that were tarpitted.X"
 
 msgid "Tarpit Events"
 msgstr "XTarpit EventsX"
+
+msgid "All sessions blocked by Shield."
+msgstr "XAll sessions blocked by Shield.X"
+
+msgid "All sessions scanned by Shield."
+msgstr "XAll sessions scanned by Shield.X"
+
+msgid "Shows all encrypted HTTPS requests."
+msgstr "XShows all encrypted HTTPS requests.X"
+
+msgid "All HTTPS Events"
+msgstr "XAll HTTPS EventsX"
+
+msgid "Shows all search querires processed by Web Filter."
+msgstr "XShows all search querires processed by Web Filter.X"
+
+msgid "All Query Events"
+msgstr "XAll Query EventsX"
+
+msgid "Shows all scanned unencrypted HTTP requests."
+msgstr "XShows all scanned unencrypted HTTP requests.X"
+
+msgid "All HTTP Events"
+msgstr "XAll HTTP EventsX"
+
+msgid "Shows all user L2TP/Xauth events."
+msgstr "XShows all user L2TP/Xauth events.X"
+
+msgid "L2TP/Xauth Events"
+msgstr "XL2TP/Xauth EventsX"
+
+msgid "Shows all IPsec tunnel traffic statistics events."
+msgstr "XShows all IPsec tunnel traffic statistics events.X"
+
+msgid "Tunnel Traffic Events"
+msgstr "XTunnel Traffic EventsX"
+
+msgid "All sessions scanned by Application Control."
+msgstr "XAll sessions scanned by Application Control.X"
+
+msgid "All sessions matching an application control signature."
+msgstr "XAll sessions matching an application control signature.X"
+
+msgid "Classified Sessions"
+msgstr "XClassified SessionsX"
+
+msgid "All sessions matching an application control signature and blocked."
+msgstr "XAll sessions matching an application control signature and blocked.X"
+
+msgid "All sessions matching an application control signature and flagged."
+msgstr "XAll sessions matching an application control signature and flagged.X"
+
+msgid "Flagged Sessions"
+msgstr "XFlagged SessionsX"
+
+msgid "All HTTP events processed by Web Cache."
+msgstr "XAll HTTP events processed by Web Cache.X"
 
 msgid "All FTP sessions scanned by Virus Blocker."
 msgstr "XAll FTP sessions scanned by Virus Blocker.X"
@@ -8526,12 +11769,37 @@ msgstr "XInfected FTP sessions blocked by Virus Blocker.X"
 msgid "All email sessions scanned by Virus Blocker."
 msgstr "XAll email sessions scanned by Virus Blocker.X"
 
-msgid "All Configuration Backup events."
-msgstr "XAll Configuration Backup events.X"
+msgid "Events from the user notification API."
+msgstr "XEvents from the user notification API.X"
 
 msgid ""
-"Lists all sessions with the policy manager rack that handled the session."
-msgstr "XLists all sessions with the policy manager rack that handled the session.X"
+"Events where the failure threshold was exceeded and the WAN was considered "
+"offline."
+msgstr "XEvents where the failure threshold was exceeded and the WAN was considered offline.X"
+
+msgid "Outage Events"
+msgstr "XOutage EventsX"
+
+msgid "interface_id"
+msgstr "Xinterface_idX"
+
+msgid "All tests that resulted in success."
+msgstr "XAll tests that resulted in success.X"
+
+msgid "Success Test Events"
+msgstr "XSuccess Test EventsX"
+
+msgid "All test events and their outcome."
+msgstr "XAll test events and their outcome.X"
+
+msgid "Test Events"
+msgstr "XTest EventsX"
+
+msgid "All tests that resulted in failure."
+msgstr "XAll tests that resulted in failure.X"
+
+msgid "Failed Test Events"
+msgstr "XFailed Test EventsX"
 
 msgid ""
 "Events where traffic was blocked due to an underlying problems with the SSL "
@@ -8570,56 +11838,6 @@ msgid ""
 "was passed through all the other applications and services."
 msgstr "XEvents where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services.X"
 
-msgid ""
-"Events where the failure threshold was exceeded and the WAN was considered "
-"offline."
-msgstr "XEvents where the failure threshold was exceeded and the WAN was considered offline.X"
-
-msgid "Outage Events"
-msgstr "XOutage EventsX"
-
-msgid "interface_id"
-msgstr "Xinterface_idX"
-
-msgid "name"
-msgstr "XnameX"
-
-msgid "All tests that resulted in success."
-msgstr "XAll tests that resulted in success.X"
-
-msgid "Success Test Events"
-msgstr "XSuccess Test EventsX"
-
-msgid "All test events and their outcome."
-msgstr "XAll test events and their outcome.X"
-
-msgid "Test Events"
-msgstr "XTest EventsX"
-
-msgid "All tests that resulted in failure."
-msgstr "XAll tests that resulted in failure.X"
-
-msgid "Failed Test Events"
-msgstr "XFailed Test EventsX"
-
-msgid "Shows all encrypted HTTPS requests."
-msgstr "XShows all encrypted HTTPS requests.X"
-
-msgid "All HTTPS Events"
-msgstr "XAll HTTPS EventsX"
-
-msgid "Shows all search querires processed by Web Filter."
-msgstr "XShows all search querires processed by Web Filter.X"
-
-msgid "All Query Events"
-msgstr "XAll Query EventsX"
-
-msgid "Shows all scanned unencrypted HTTP requests."
-msgstr "XShows all scanned unencrypted HTTP requests.X"
-
-msgid "All HTTP Events"
-msgstr "XAll HTTP EventsX"
-
 msgid "All sessions processed by Bandwidth Control."
 msgstr "XAll sessions processed by Bandwidth Control.X"
 
@@ -8629,32 +11847,197 @@ msgstr "XAll sessions prioritized by Bandwidth Control.X"
 msgid "Prioritized Sessions"
 msgstr "XPrioritized SessionsX"
 
-msgid "All sessions scanned by Application Control."
-msgstr "XAll sessions scanned by Application Control.X"
+msgid "All Configuration Backup events."
+msgstr "XAll Configuration Backup events.X"
 
-msgid "All sessions matching an application control signature."
-msgstr "XAll sessions matching an application control signature.X"
+msgid ""
+"Lists all sessions with the policy manager rack that handled the session."
+msgstr "XLists all sessions with the policy manager rack that handled the session.X"
 
-msgid "Classified Sessions"
-msgstr "XClassified SessionsX"
+msgid "Documents scanned"
+msgstr "XDocuments scannedX"
 
-msgid "All sessions matching an application control signature and blocked."
-msgstr "XAll sessions matching an application control signature and blocked.X"
+msgid "Documents blocked"
+msgstr "XDocuments blockedX"
 
-msgid "All sessions matching an application control signature and flagged."
-msgstr "XAll sessions matching an application control signature and flagged.X"
+msgid "Documents passed"
+msgstr "XDocuments passedX"
 
-msgid "Flagged Sessions"
-msgstr "XFlagged SessionsX"
+msgid "Infections removed"
+msgstr "XInfections removedX"
+
+msgid "Passed by policy"
+msgstr "XPassed by policyX"
+
+msgid "found virus"
+msgstr "Xfound virusX"
+
+msgid "Chunks scanned"
+msgstr "XChunks scannedX"
+
+msgid "Sessions logged"
+msgstr "XSessions loggedX"
+
+msgid "Sessions blocked"
+msgstr "XSessions blockedX"
+
+msgid "blocked"
+msgstr "XblockedX"
+
+msgid "status"
+msgstr "XstatusX"
+
+msgid "event"
+msgstr "XeventX"
+
+msgid "Sessions passed"
+msgstr "XSessions passedX"
+
+msgid "Clients Connected"
+msgstr "XClients ConnectedX"
+
+msgid "primary network"
+msgstr "Xprimary networkX"
+
+msgid "Default Group"
+msgstr "XDefault GroupX"
+
+msgid "Invalid Settings"
+msgstr "XInvalid SettingsX"
+
+msgid "conflicts with address"
+msgstr "Xconflicts with addressX"
+
+msgid "tarpit"
+msgstr "XtarpitX"
+
+msgid "scored"
+msgstr "XscoredX"
+
+msgid "as"
+msgstr "XasX"
+
+msgid "Messages received"
+msgstr "XMessages receivedX"
+
+msgid "Messages passed"
+msgstr "XMessages passedX"
+
+msgid "Messages dropped"
+msgstr "XMessages droppedX"
+
+msgid "Messages marked"
+msgstr "XMessages markedX"
+
+msgid "Messages quarantined"
+msgstr "XMessages quarantinedX"
+
+msgid "Spam detected"
+msgstr "XSpam detectedX"
+
+msgid "logged in"
+msgstr "Xlogged inX"
+
+msgid "failed to login"
+msgstr "Xfailed to loginX"
+
+msgid "timed out"
+msgstr "Xtimed outX"
+
+msgid "timed out (inactivity)"
+msgstr "Xtimed out (inactivity)X"
+
+msgid "logged out"
+msgstr "Xlogged outX"
+
+msgid "logged out (admin forced)"
+msgstr "Xlogged out (admin forced)X"
+
+msgid "DNS Lookups"
+msgstr "XDNS LookupsX"
+
+msgid "captured"
+msgstr "XcapturedX"
+
+msgid "passed"
+msgstr "XpassedX"
+
+msgid "sent"
+msgstr "XsentX"
+
+msgid "received"
+msgstr "XreceivedX"
+
+msgid "involved in"
+msgstr "Xinvolved inX"
+
+msgid "email"
+msgstr "XemailX"
+
+msgid "subject"
+msgstr "XsubjectX"
+
+msgid "sender"
+msgstr "XsenderX"
+
+msgid "Alert!"
+msgstr "XAlert!X"
+
+msgid "An following event occurred on the"
+msgstr "XAn following event occurred on theX"
+
+msgid ""
+"This is an automated message sent because the event matched the configured "
+"Alert Rules."
+msgstr "XThis is an automated message sent because the event matched the configured Alert Rules.X"
+
+msgid "has online access, but no password is set."
+msgstr "Xhas online access, but no password is set.X"
+
+msgid "Alert Event"
+msgstr "XAlert EventX"
+
+msgid "requested"
+msgstr "XrequestedX"
+
+msgid "downloaded"
+msgstr "XdownloadedX"
+
+msgid "cookie"
+msgstr "XcookieX"
+
+msgid "on"
+msgstr "XonX"
+
+msgid "client in pass list"
+msgstr "Xclient in pass listX"
+
+msgid "Pages scanned"
+msgstr "XPages scannedX"
+
+msgid "Ads blocked"
+msgstr "XAds blockedX"
+
+msgid "Pages passed"
+msgstr "XPages passedX"
+
+msgid "Sessions scanned"
+msgstr "XSessions scannedX"
+
+msgid "Sessions flagged"
+msgstr "XSessions flaggedX"
+
+msgid "The shield"
+msgstr "XThe shieldX"
+
+msgid "Pages blocked"
+msgstr "XPages blockedX"
 
 msgid "Sessions on {0}"
 msgstr "XSessions on {0}X"
 
 msgid "searched for"
 msgstr "Xsearched forX"
-
-msgid "on"
-msgstr "XonX"
 
 msgid " sent "
 msgstr "X sent X"
@@ -8677,20 +12060,8 @@ msgstr "XEnabled TunnelsX"
 msgid "L2TP Clients"
 msgstr "XL2TP ClientsX"
 
-msgid "as"
-msgstr "XasX"
-
 msgid "Session scanned"
 msgstr "XSession scannedX"
-
-msgid "Sessions passed"
-msgstr "XSessions passedX"
-
-msgid "Sessions flagged"
-msgstr "XSessions flaggedX"
-
-msgid "Sessions blocked"
-msgstr "XSessions blockedX"
 
 msgid "Cache hits"
 msgstr "XCache hitsX"
@@ -8718,9 +12089,6 @@ msgstr "Xrefreshed onX"
 
 msgid "logged out of"
 msgstr "Xlogged out ofX"
-
-msgid "passed"
-msgstr "XpassedX"
 
 msgid "test"
 msgstr "XtestX"
@@ -8755,9 +12123,6 @@ msgstr "Xcame onlineX"
 msgid "went offline"
 msgstr "Xwent offlineX"
 
-msgid "your network administrator"
-msgstr "Xyour network administratorX"
-
 msgid "Sessions inspected"
 msgstr "XSessions inspectedX"
 
@@ -8775,9 +12140,6 @@ msgstr "XTotal sessionsX"
 
 msgid "ignored"
 msgstr "XignoredX"
-
-msgid "blocked"
-msgstr "XblockedX"
 
 msgid "disallowed (untrusted)"
 msgstr "Xdisallowed (untrusted)X"
@@ -8812,71 +12174,20 @@ msgstr "Xsuccessfully backed upX"
 msgid "failed to back up"
 msgstr "Xfailed to back upX"
 
-msgid "Sessions scanned"
-msgstr "XSessions scannedX"
+msgid "Host:"
+msgstr "XHost:X"
 
-msgid "Sessions logged"
-msgstr "XSessions loggedX"
+msgid "URL:"
+msgstr "XURL:X"
 
-msgid "Clients Connected"
-msgstr "XClients ConnectedX"
+msgid "Reason:"
+msgstr "XReason:X"
 
-msgid "primary network"
-msgstr "Xprimary networkX"
+msgid "Unblock For Now"
+msgstr "XUnblock For NowX"
 
-msgid "Default Group"
-msgstr "XDefault GroupX"
-
-msgid "Invalid Settings"
-msgstr "XInvalid SettingsX"
-
-msgid "conflicts with address"
-msgstr "Xconflicts with addressX"
-
-msgid "Chunks scanned"
-msgstr "XChunks scannedX"
-
-msgid "Messages received"
-msgstr "XMessages receivedX"
-
-msgid "Messages passed"
-msgstr "XMessages passedX"
-
-msgid "Messages dropped"
-msgstr "XMessages droppedX"
-
-msgid "Messages marked"
-msgstr "XMessages markedX"
-
-msgid "Messages quarantined"
-msgstr "XMessages quarantinedX"
-
-msgid "Spam detected"
-msgstr "XSpam detectedX"
-
-msgid "Documents scanned"
-msgstr "XDocuments scannedX"
-
-msgid "Documents blocked"
-msgstr "XDocuments blockedX"
-
-msgid "Documents passed"
-msgstr "XDocuments passedX"
-
-msgid "Infections removed"
-msgstr "XInfections removedX"
-
-msgid "Passed by policy"
-msgstr "XPassed by policyX"
-
-msgid "Pages scanned"
-msgstr "XPages scannedX"
-
-msgid "Pages blocked"
-msgstr "XPages blockedX"
-
-msgid "Pages passed"
-msgstr "XPages passedX"
+msgid "Unblock Permanently"
+msgstr "XUnblock PermanentlyX"
 
 msgid "decimal_sep"
 msgstr ","
@@ -8889,43 +12200,5 @@ msgstr "Y|m|d"
 
 msgid "timestamp_fmt"
 msgstr "Y|m|d g:i:s a"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
