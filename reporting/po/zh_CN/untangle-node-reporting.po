@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -20,1674 +16,1087 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:34
 msgid "Field condition"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:63
 msgid "Passwords do not match"
 msgstr "<msg name=>密码不匹配</msg>"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:68
 msgid "A password must be set to enable Online Access!"
 msgstr "必须设置一个密码，以使在线访问！"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:78
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:84
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:144
 msgid "Status"
 msgstr "状态"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:88
 msgid "The new reports."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:93
 msgid "View Reports"
 msgstr "查看报告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:103
 msgid "Old Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:107
 msgid "Reports are automatically generated each night."
 msgstr "报告自动生成的每个夜晚。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:112
 msgid "View Old Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
 msgid "Report generation for the current day can be forced with the "
 msgstr "报告生成可以被强制为当前日期与"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:129
-#, fuzzy
 msgid "Generate Today's Reports"
 msgstr "生成每日报告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:123
 msgid " button."
 msgstr "按钮"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:124
 msgid "Caution"
 msgstr "注意"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:124
 msgid "Real-time report generation may cause network slowness."
 msgstr "实时生成报告可能会导致网络缓慢。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:133
 msgid "Generating today's reports... This may take a few minutes."
 msgstr "生成的报告...这可能需要几分钟的时间。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:133
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:156
 msgid "Generation"
 msgstr "生成"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:163
 msgid "Daily Reports"
 msgstr "每日报告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:167
 msgid ""
 "Daily Reports covers the previous day. Daily reports will be generated on "
 "the selected days."
 msgstr "每日报告涵盖的前一天。每日报告将在选定的日期产生。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:182
 msgid "Weekly Reports"
 msgstr "每周报告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:186
 msgid ""
 "Weekly Reports covers the previous week. Weekly reports will be generated on "
 "the selected days."
 msgstr "每周报告涵盖了前一周。每周报告，将产生在选定的日期。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
 msgid "Monthly Reports"
 msgstr "每周报告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:205
 msgid "Monthly Reports are generated on the 1st and cover the previous month."
 msgstr "月度报告的第一，并覆盖前一个月。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:209
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:774
 msgid "Enabled"
 msgstr "已激活"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:221
 msgid "Generation Time"
 msgstr "代时间"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:225
 msgid "Scheduled time to generate the reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:243
 msgid "Data Retention"
 msgstr "数据保持"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:248
 msgid ""
 "Keep event data for this number of days. The smaller the number the lower "
 "the disk space requirements and resource usage during report generation."
 msgstr ""
 "将事件数据，此天数。数量越少，较低的磁盘空间需求和资源的使用过程中生成报告。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 msgid "Warning"
 msgstr "警告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 msgid ""
 "Depending on the server and network, increasing this value may cause "
 "performance issues."
 msgstr "根据服务器和网络，增加这个值可能会导致性能问题。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:255
 msgid "Data Retention days"
 msgstr "数据保留天数"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:283
 msgid "Change Password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:296
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:303
 msgid "Email"
 msgstr "电子邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:307
 msgid "Reporting Users"
 msgstr "报告用户"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:333
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:360
 msgid "Email Address (username)"
 msgstr "电子邮件地址（用户名）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:339
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:362
 msgid "[enter email address]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:341
 msgid "The email address cannot be blank."
 msgstr "电子邮件地址不能为空。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:346
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:369
 msgid "Email Summaries"
 msgstr "电子邮件摘要"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:352
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:375
 msgid "Online Access"
 msgstr "在线访问"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:364
-#, fuzzy
 msgid "The email address name cannot be blank."
 msgstr "电子邮件地址不能为空。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:388
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:464
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:643
 msgid "Password"
 msgstr "密码"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:391
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:467
 msgid "The password is shorter than the minimum {0} characters."
 msgstr "密码是小于最小{0}个字符。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:395
 msgid "(required for 'Online Access')"
 msgstr "（所需的“在线访问”）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:404
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:476
 msgid "Confirm Password"
 msgstr "确认密码"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:410
 msgid "Email Attachment Settings"
 msgstr "电子邮件附件设置"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:414
 msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
 msgstr "附上详细的报告日志，以电子邮件（CSV Zip文件）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:427
 msgid "Attachment size limit (MB)"
 msgstr "附件大小限制（MB）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:488
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:495
 msgid "Syslog"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:500
 msgid ""
 "If enabled logged events will be sent in real-time to a remote syslog for "
 "custom processing."
 msgstr "如果启用记录的事件将被实时发送到远程syslog自定义处理。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:503
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
 msgstr "{0} {1} Syslog事件禁用。 （这是默认设置）。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:521
 msgid "{0}Enable{1} Syslog Events."
 msgstr "{0} {1} Syslog事件使。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:542
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:601
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:92
-#: ../hier/usr/lib/python2.7/reports/__init__.py:351
-#: ../hier/usr/lib/python2.7/reports/__init__.py:376
 msgid "Host"
 msgstr "主机"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:548
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:606
 msgid "A \"Host\" must be specified."
 msgstr "主机A \\“\\”必须被指定。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:553
 msgid "Host cannot be localhost address."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:559
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:614
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:530
 msgid "Port"
 msgstr "端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:567
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:621
 msgid "You must provide a valid port."
 msgstr "您必须提供一个有效的端口。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:574
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:107
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:130
-#: ../hier/usr/lib/python2.7/reports/__init__.py:334
 msgid "Protocol"
 msgstr "<msg name=>议定书</ msg>"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:576
 msgid "UDP"
 msgstr "UDP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:577
 msgid "TCP"
 msgstr "<msg name=>的TCP </msg>"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:590
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:597
 msgid "Database"
 msgstr "数据库"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:630
 msgid "User"
 msgstr "用户"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:635
 msgid "A \"User\" must be specified."
 msgstr "A \\“用户\\”必须被指定。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:648
 msgid "A \"Password\" must be specified."
 msgstr "A \\“密码\\”必须被指定。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:656
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:728
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:147
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:149
 msgid "Name"
 msgstr "名称"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:661
 msgid "A \"Name\" must be specified."
 msgstr "A \\“名称\\”必须被指定。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:677
 msgid "Name Map"
 msgstr "名称地图"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:693
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:719
 msgid "IP Address"
 msgstr "IP地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:699
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:720
 msgid "[enter IP address]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:709
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:729
 msgid "[enter name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:711
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:731
 msgid "Quotes and double quotes are not allowed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Pie Graph"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:739
 msgid "Time Graph"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:750
 msgid "Manage Reports"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:769
 msgid "Title"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:779
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:45
 msgid "Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:784
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:914
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:941
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:626
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:789
 msgid "Units"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:793
 msgid "Display Order"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:797
 msgid "View"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:802
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:816
 msgid "View Report"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:820
 msgid "Cancel"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:851
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:865
 msgid "Alert Rules"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:856
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:858
 msgid ""
 " <b>Alert Rules</b> process all events to log and/or alert administrators "
 "when special or noteworthy events occur."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:897
 msgid "Rule Id"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:902
 msgid "new"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:909
 msgid "Enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:920
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:961
 msgid "Log Alert"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:925
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:966
 msgid "Send Alert"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:936
 msgid "Enable Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:942
 msgid "[no description]"
 msgstr "【无描述】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:946
 msgid "If all of the following conditions are met:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:956
 msgid "Perform the following action(s):"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:981
 msgid "Limit Send Frequency"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:995
 msgid "To once per"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:998
 msgid "(minutes)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:61
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:96
 msgid "Summary Report"
 msgstr "总结报告"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:94
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:138
 msgid "Free Memory"
 msgstr "<msg name=>释放内存</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:128
 msgid "Avg Free Memory"
 msgstr "平均可用内存"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:135
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:210
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:269
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:331
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:391
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:592
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:624
-#: ../hier/usr/lib/python2.7/reports/__init__.py:317
-#: ../hier/usr/lib/python2.7/reports/__init__.py:348
-#: ../hier/usr/lib/python2.7/reports/__init__.py:373
-#: ../hier/usr/lib/python2.7/reports/__init__.py:386
 msgid "Time"
 msgstr "Time：时间"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:135
 msgid "Memory (MB)"
 msgstr "<msg name=>内存（MB）</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:144
 msgid "Cpu Load"
 msgstr "CPU负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:188
 msgid "Avg 1-min Load"
 msgstr "平均1分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:191
 msgid "Max 1-min Load"
 msgstr "最大1分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:194
 msgid "Avg 5-min Load"
 msgstr "平均5分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:197
 msgid "Max 5-min Load"
 msgstr "最多5分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:200
 msgid "Avg 15-min Load"
 msgstr "平均15分钟的负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:203
 msgid "Max 15-min Load"
 msgstr "最多15 min负荷"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:210
 msgid "Load"
 msgstr "加载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:213
 msgid "1-min Load"
 msgstr "1分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:214
 msgid "5-min Load"
 msgstr "5分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:215
 msgid "15-min Load"
 msgstr "15分钟负载"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:221
 msgid "Cpu Usage"
 msgstr "<msg name=> CPU使用率</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:259
 msgid "Avg Cpu User"
 msgstr "平均CPU的用户"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:262
 msgid "Avg Cpu System"
 msgstr "平均CPU系统"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:269
 msgid "CPU (%)"
 msgstr "CPU"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:272
 msgid "Cpu User"
 msgstr "CPU的用户"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:273
 msgid "Cpu System"
 msgstr "CPU系统"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:279
-#: /tmp/strings:5
 msgid "Disk Usage"
 msgstr "|磁盘使用|"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:319
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:322
 msgid "Avg Disk Free"
 msgstr "平均磁盘免费"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:331
 msgid "Disk (GB)"
 msgstr "磁盘（GB）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:335
 msgid "Free Disk"
 msgstr "可用磁盘空间"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:341
 msgid "Swap Usage"
 msgstr "交换区使用情况"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:380
 msgid "Avg Swap Free"
 msgstr "平均交换免费"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:383
 msgid "Avg Swap Used"
 msgstr "平均已使用​​的交换"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:391
 msgid "Swap (MB)"
 msgstr "交换（MB）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_server.py:395
 msgid "Swap Used"
 msgstr "已使用的交换"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:43
-#: ../src/com/untangle/node/reporting/AlertHandler.java:72
-#: ../hier/usr/lib/python2.7/reports/__init__.py:323
-#: ../hier/usr/lib/python2.7/reports/__init__.py:325
-#: ../hier/usr/lib/python2.7/reports/__init__.py:363
-#: ../hier/usr/lib/python2.7/reports/__init__.py:380
-#: ../hier/usr/lib/python2.7/reports/__init__.py:388
-#: ../hier/usr/lib/python2.7/reports/__init__.py:389
 msgid "Server"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:306
 msgid "scanned"
 msgstr "扫描"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:308
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1053
 msgid "GB"
 msgstr "GB"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:309
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:311
 msgid "and"
 msgstr "和"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:310
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:466
 msgid "sessions"
 msgstr "Sessions会话，"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:312
 msgid "logged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:313
 msgid "alerts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:351
 msgid "Bandwidth Usage"
 msgstr "<msg name=>带宽使用</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:394
 msgid "Avg Data Rate"
 msgstr "平均数据传输速率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:400
 msgid "Data Transferred"
 msgstr "传输的数据"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:408
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:472
 msgid "Date"
 msgstr "日期:"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:408
 msgid "Throughput (kB/s)"
 msgstr "吞吐量（KB / S）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:411
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:475
 msgid "Usage"
 msgstr "使用频率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:417
 msgid "Sessions per Minute"
 msgstr "每分钟的会议"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:459
 msgid "Avg Sessions/Min"
 msgstr "平均会话/分钟"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:461
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:464
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:472
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:524
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:531
 msgid "Sessions"
 msgstr "Sessions"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:463
 msgid "Max Sessions/Min"
 msgstr "最大会话数/分"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:466
 msgid "Total Sessions"
 msgstr "总会话数"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:481
 msgid "Top Destination Ports"
 msgstr "首选目的地端口"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:539
 msgid "Top Penalty Box Hosts"
 msgstr "热门禁区主机"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:572
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:578
 msgid "seconds"
 msgstr "Seconds."
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:578
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:86
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:114
 msgid "Address"
 msgstr "地址"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:586
-#, fuzzy
 msgid "Administrative Login Events"
 msgstr "管理登录活动"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:594
 msgid "Client IP"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:595
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:123
 msgid "Login"
 msgstr "登录"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:596
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:75
 msgid "Success"
 msgstr "$SUCCESS$"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:597
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:118
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:164
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:168
 msgid "Reason"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:618 /tmp/strings:14
 msgid "Alert Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:627
 msgid "Summary"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_vm.py:628
 msgid "JSON"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/AlertEvent.java:68
 msgid "Alert Event"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/AlertHandler.java:75
 msgid "Alert!"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/AlertHandler.java:78
 msgid "An following event occurred on the"
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/AlertHandler.java:85
 msgid ""
 "This is an automated message sent because the event matched the configured "
 "Alert Rules."
 msgstr ""
 
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:459
 msgid "Invalid Settings"
 msgstr "无效的设置"
 
-#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:459
 msgid "has online access, but no password is set."
 msgstr "在线访问，但没有设置密码。"
 
-#: /tmp/strings:1 /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8
-#: /tmp/strings:10 /tmp/strings:12 /tmp/strings:13
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The top alerts."
 msgstr ""
 
-#: /tmp/strings:2
 msgid "pieGroupColumn"
 msgstr ""
 
-#: /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9 /tmp/strings:11
-#: /tmp/strings:14
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "Top Alerts"
 msgstr ""
 
-#: /tmp/strings:4
 msgid "The disk utilization over time."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "The CPU load over time."
 msgstr ""
 
-#: /tmp/strings:7
 msgid "CPU Load"
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Alerts over time."
 msgstr ""
 
-#: /tmp/strings:9
 msgid "Alerts"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "The amount of free memory over time."
 msgstr ""
 
-#: /tmp/strings:11
 msgid "Memory Usage"
 msgstr ""
 
-#: /tmp/strings:12
 msgid "defaultColumns"
 msgstr ""
 
-#: /tmp/strings:12
 msgid "time_stamp"
 msgstr ""
 
-#: /tmp/strings:12
 msgid "summary_text"
 msgstr ""
 
-#: /tmp/strings:12
 msgid "json"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "Log of all alerts created by alert rules."
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:17
 msgid "Event ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:18
 msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:19
 msgid "Session ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:20
 msgid "Client Interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:21
 msgid "Server Interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:22
 msgid "Client-side Client Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:23
 msgid "Server-side Client Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:24
 msgid "Client-side Server Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:25
 msgid "Server-side Server Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:26
 msgid "Client-side Client Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:27
 msgid "Server-side Client Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:28
 msgid "Client-side Server Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:29
 msgid "Server-side Server Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:30
 msgid "Policy ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:31
-#: ../hier/usr/lib/python2.7/reports/__init__.py:320
-#: ../hier/usr/lib/python2.7/reports/__init__.py:350
-#: ../hier/usr/lib/python2.7/reports/__init__.py:375
 msgid "Username"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:32
-#: ../hier/usr/lib/python2.7/reports/__init__.py:352
-#: ../hier/usr/lib/python2.7/reports/__init__.py:377
 msgid "Hostname"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:33
 msgid "Filter Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:34
 msgid "Client-to-server Content Length"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:35
 msgid "Server-to-client Content Length"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:36
 msgid "Server-to-client Content Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:37
 msgid "Bytes Received"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:38
 msgid "Bytes Sent"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:39
 msgid "Client Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:40
 msgid "Start Time"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:41
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:47
 msgid "End Time"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:42
 msgid "Remote Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:43
 msgid "Remote Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:44
 msgid "Pool Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:46
 msgid "Connect Time"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:48
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:54
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:80
 msgid "Client Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:49
 msgid "Client Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:50
 msgid "Client Username"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:51
 msgid "Net Process"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:52
 msgid "Net Interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:53
 msgid "Elapsed Time"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:55
 msgid "Vendor Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:56
 msgid "Memory Free"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:57
 msgid "Memory Cache"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:58
 msgid "Memory Buffers"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:59
 msgid "CPU load (1-min)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:60
 msgid "CPU load (5-min)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:61
 msgid "CPU load (15-min)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:62
 msgid "CPU User Utilization"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:63
 msgid "CPU System Utilization"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:64
 msgid "Disk Size"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:65
 msgid "Disk Free"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:66
 msgid "Swap Size"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:67
 msgid "Swap Free"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:68
 msgid "Hits"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:69
 msgid "Misses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:70
 msgid "Bypasses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:71
 msgid "Bypassed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:72
 msgid "System bypasses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:73
 msgid "Hit Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:74
 msgid "Miss Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:76
 msgid "Text detail of the event"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:77
 msgid "Login Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:78
 msgid "Event Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:79
 msgid "Authorization Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:81
 msgid "Request ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:82
 msgid "Method"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:83
 msgid "URI"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:84
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:90
 msgid "Message ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:85
-#: ../hier/usr/lib/python2.7/reports/__init__.py:394
 msgid "Subject"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:87
 msgid "Address Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:88
 msgid "Address Kind"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:89
-#: ../hier/usr/lib/python2.7/reports/__init__.py:393
 msgid "Sender"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:91
-#: ../hier/usr/lib/python2.7/reports/__init__.py:392
 msgid "Receiver"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:93
 msgid "Search Term"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:94
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:98
 msgid "Interface ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:95
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:152
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:156
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:160
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:163
 msgid "Action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:96
 msgid "Interface O/S Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:97
 msgid "Interface Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:99
 msgid "Domain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:100
 msgid "Signature ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:101
 msgid "Grouping ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:102
 msgid "Classtype ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:103
 msgid "Source Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:104
 msgid "Source Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:105
 msgid "Destination Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:106
 msgid "Destination Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:108
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:126
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:127
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:131
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:132
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:136
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:166
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:170
 msgid "Blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:109
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:165
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:169
 msgid "Category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:110
 msgid "Classtype"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:111
 msgid "Message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:112
 msgid "Summary Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:113
 msgid "JSON Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:115
 msgid "Key"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:116
 msgid "Value"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:117
 msgid "Size"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:119
 msgid "From-Client Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:120
 msgid "To-Client Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:121
 msgid "From-Server Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:122
 msgid "To-Server Bytes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:124
 msgid "Local"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:125
 msgid "Succeeded"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:128
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:137
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:167
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:171
 msgid "Flagged"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:129
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:133
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:139
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:142
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:143
-#: ../hier/usr/lib/python2.7/reports/__init__.py:335
 msgid "Rule ID"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:134
-#: ../hier/usr/lib/python2.7/reports/__init__.py:327
 msgid "Application"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:135
 msgid "Protochain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:138
-#: ../hier/usr/lib/python2.7/reports/__init__.py:331
 msgid "Confidence"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:140
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:145
-#: ../hier/usr/lib/python2.7/reports/__init__.py:332
 msgid "Detail"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:141
-#: ../hier/usr/lib/python2.7/reports/__init__.py:318
 msgid "Priority"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:146
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:148
 msgid "Clean"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:150
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:154
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:158
 msgid "Score"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:151
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:155
 msgid "Spam"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:153
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:157
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:161
 msgid "Tests"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:159
 msgid "Phish"
 msgstr ""
 
-#: ../hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:162
-#: ../hier/usr/lib/python2.7/reports/__init__.py:366
 msgid "Cookie"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/mailer.py:138
 msgid "Report Summary"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/mailer.py:254
 msgid "This report has no detail data."
 msgstr "该报告没有详细的数据。"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:193
 msgid "Title Page"
 msgstr "标题页！！！ "
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:197
-#: ../hier/usr/lib/python2.7/reports/pdf.py:218
 msgid "Table of Contents"
 msgstr "目录"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:256
-#, python-format
 msgid "Page %d"
 msgstr "页%d"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:268
 msgid "day"
 msgstr " 日"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:270
 msgid "days"
 msgstr "天"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:272
 msgid "Report for"
 msgstr "报告"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:292
 msgid "Report"
 msgstr "汇报"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:317
 msgid "Highlights Summary"
 msgstr "摘要摘要"
 
-#: ../hier/usr/lib/python2.7/reports/pdf.py:318
-#: ../hier/usr/lib/python2.7/reports/__init__.py:585
 msgid "Highlights"
 msgstr "重要事项"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:319
 msgid "Rule"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:321
-#: ../hier/usr/lib/python2.7/reports/__init__.py:349
-#: ../hier/usr/lib/python2.7/reports/__init__.py:374
-#: ../hier/usr/lib/python2.7/reports/__init__.py:387
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:322
 msgid "Client port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:324
-#: ../hier/usr/lib/python2.7/reports/__init__.py:326
-#: ../hier/usr/lib/python2.7/reports/__init__.py:364
-#: ../hier/usr/lib/python2.7/reports/__init__.py:381
 msgid "Server Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:328
 msgid "ProtoChain"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:329
 msgid "Flagged (Application Control)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:330
 msgid "Blocked (Application Control)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:333
 msgid "Blocked (Application Control Lite)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:336
 msgid "Status (Https)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:337
 msgid "Detail (Https)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:338
 msgid "Rule ID (Https)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:339
 msgid "Policy Id"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:340
 msgid "Blocked (Firewall)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:341
 msgid "Flagged (Firewall)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:342
 msgid "Rule Id (Firewall)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:343
 msgid "Rule ID (Captive Portal)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:344
 msgid "Captured"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:353
-#: ../hier/usr/lib/python2.7/reports/__init__.py:378
 msgid "Uri"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:354
 msgid "Url"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:355
 msgid "Blocked (Webfilter Lite)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:356
 msgid "Flagged (Webfilter Lite)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:357
 msgid "Reason For Action (Webfilter Lite)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:358
 msgid "Category (Webfilter Lite)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:359
 msgid "Blocked  (Webfilter)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:360
 msgid "Flagged (Webfilter)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:361
 msgid "Reason For Action (Webfilter)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:362
 msgid "Category (Webfilter)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:365
 msgid "Action (Ad Blocker)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:367
-#: ../hier/usr/lib/python2.7/reports/__init__.py:390
 msgid "Virus Name (Clam)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:368
-#: ../hier/usr/lib/python2.7/reports/__init__.py:391
 msgid "Virus Name (Virus Blocker)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:379
 msgid "Term"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:395
 msgid "Action (Spamassassin)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:396
 msgid "Spam score (Spamassassin)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:397
 msgid "Action (Spam Blocker)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:398
 msgid "Spam score (Spam Blocker)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:399
 msgid "Action (Phish)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:765
-#: ../hier/usr/lib/python2.7/reports/__init__.py:769
 msgid "Key Statistics"
 msgstr "主要统计指标"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "slice"
 msgstr "水平"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1010
 msgid "value"
 msgstr "值"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1028
 msgid "Unknown"
 msgstr "不出名"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1045
 msgid "KB"
 msgstr "KB"
 
-#: ../hier/usr/lib/python2.7/reports/__init__.py:1049
 msgid "MB"
 msgstr "<msg name=> MB</msg>"
 
-#~ msgid "Scheduled time to generate the reports."
-#~ msgstr "预定时间生成报告。"
 
-#~ msgid "change password"
-#~ msgstr "更改密码"
 
-#~ msgid "[no name]"
-#~ msgstr "【无名称】"
 
-#~ msgid "Avg Cached Memory"
-#~ msgstr "平均快取记忆体"
 
-#~ msgid "Cached Memory"
-#~ msgstr "快取记忆体"
 
-#~ msgid "Max Data Rate"
-#~ msgstr "最大数据传输率"
 
-#~ msgid "Client Ip"
-#~ msgstr "客户端IP"
 
-#~ msgid "%s %s Report [%s]"
-#~ msgstr "%s %s报告[ %s ]"
 
-#, fuzzy
-#~ msgid "Email Reports"
-#~ msgstr "每日报告"
 
-#~ msgid ""
-#~ "Daily Reports are generated at midnight and covers events from the "
-#~ "previous 24 hours, up to, but not including the day of generation."
-#~ msgstr ""
-#~ "每日报告将会在每天午夜生成并包含之前的24小时（昨天）发生的事件，但不会包含"
-#~ "报告生成当天的信息。"
 
-#~ msgid "Generate Daily Reports"
-#~ msgstr "生成每日报告"
 
-#~ msgid "Every Day"
-#~ msgstr "每天"
 
-#~ msgid ""
-#~ "Weekly Reports are generated at midnight and covers events from the "
-#~ "previous 7 days, up to, but not including the day of generation."
-#~ msgstr ""
-#~ "每周报告将会在每周最后一天午夜生成并包含之前的7天（上周）发生的事件，但不"
-#~ "会包含报告生成当天的信息。"
 
-#~ msgid "Generate Weekly Reports"
-#~ msgstr "生成每周报告"
 
-#~ msgid "Sunday"
-#~ msgstr "星期日"
 
-#~ msgid "Monday"
-#~ msgstr "星期一"
 
-#~ msgid "Tuesday"
-#~ msgstr "星期二"
 
-#~ msgid "Wednesday"
-#~ msgstr "星期三"
 
-#~ msgid "Thursday"
-#~ msgstr "星期四"
 
-#~ msgid "Friday"
-#~ msgstr "星期五"
 
-#~ msgid "Saturday"
-#~ msgstr "星期六"
 
-#~ msgid ""
-#~ "Monthly Reports are generated at midnight and covers events from the "
-#~ "previous 30 days, up to, but not including the day of generation."
-#~ msgstr ""
-#~ "每月报告将会在每月最后一天午夜生成并包含之前的30天（上月）发生的事件，但不"
-#~ "会包含报告生成当天的信息。"
 
-#~ msgid "Never"
-#~ msgstr "从未"
 
-#~ msgid "First Day of Month"
-#~ msgstr "一月的第一天"
 
-#~ msgid "Everyday"
-#~ msgstr "每天"
 
-#~ msgid "Once Per Week"
-#~ msgstr "每周一次"
 
-#, fuzzy
-#~ msgid "Limit Data Retention"
-#~ msgstr "限制数据保持"
 
-#~ msgid "name"
-#~ msgstr "名称"
 
-#~ msgid "Invalid \"IP address\" specified"
-#~ msgstr "指定了无效的“IP地址”"
 
-#~ msgid "Validation failed"
-#~ msgstr "验证失败"
 
-#~ msgid "Failed"
-#~ msgstr "失败"
 
-#~ msgid "Saving..."
-#~ msgstr "正在保存..."
 
-#~ msgid "Recipients"
-#~ msgstr "收件人"
 
-#~ msgid "email address"
-#~ msgstr "电子邮件地址"
 
-#~ msgid "Archived Reports"
-#~ msgstr "已存档的报告"
 
-#~ msgid "Include {0}Incident Reports{1} in emailed reports"
-#~ msgstr "将{0}关联报告{1}包含在邮件报告中"
 
-#~ msgid ""
-#~ "This makes emailed reports larger, but includes information about each "
-#~ "incident/violation."
-#~ msgstr "这将使邮件报告增大，但每一项关联/违反的信息都会包含在内。"
 
-#~ msgid ""
-#~ "Limits data retention to one week, this allows reports to run faster on "
-#~ "high traffic sites."
-#~ msgstr "将数据保持限制在一周，这将允许高数据流量的站更快的运行报告。"
 
-#~ msgid "Keep One Week's Data"
-#~ msgstr "保持一周的数据"
 
-#~ msgid "IP Addresses"
-#~ msgstr "IP地址"
 
-#~ msgid "IP address"
-#~ msgstr "IP地址"

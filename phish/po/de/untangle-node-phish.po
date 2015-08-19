@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -18,420 +14,228 @@ msgstr ""
 "X-Generator: Pootle 2.0.6\n"
 "X-Poedit-Language: German\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "Markieren"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "Zulassen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "Verwerfen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "Quarantäne"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "Email"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "Durchsuche SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "Aktion"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "Notiz"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr "Phish Blocker Email Signaturen wurden zuletzt aktualisiert am"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "Phish"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "Clean"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "Stündliche Phish Rate"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "Tägliche Phish Rate"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "Top Ten Phishing Opfer"
 
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Bei Fragen wenden sie sich bitte an {0}."
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
 msgid "Messages received"
 msgstr "Erhaltene Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "Zugelassene Nachrichten "
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "Verworfene Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "Markierte Nachrichten"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "Nachrichten in Quarantäne"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "Entdeckte Spam"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and phish email over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending phish."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Phish Sender Addresses"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of phish email over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Email Usage (phish)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The ratio of phish (true) to ham (false)"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Phish Ratio"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of email addresses with phish."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Phish Recipients"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "A summary of phish blocking actions for email activity."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Phish Blocker Summary"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All email sessions detected as phishing attempts and quarantined."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr "Quarantäne-Ereignisse"
 
-#: /tmp/strings:19
 msgid "All email sessions scanned by Phish Blocker."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr "Alle Mailereignisse"
 
-#: /tmp/strings:21
 msgid "All email sessions detected as phishing attempts."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "All Phish Events"
 msgstr ""
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "Grund:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "Entsperre vorläufig"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "Entsperre dauerhaft"
 
-#~ msgid "All"
-#~ msgstr "Alle"
 
-#~ msgid "Events"
-#~ msgstr "Ereignisse"
 
-#~ msgid "Tarpit Events"
-#~ msgstr "Tarpit-Ereignisse"
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "Scan POP3"
-#~ msgstr "Durchsuche POP3"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "Durchsuche IMAP"
 
-#~ msgid "unknown"
-#~ msgstr "unbekannt"
 
-#~ msgid "Web"
-#~ msgstr "Web"
 
-#~ msgid "Enable Phish web filtering"
-#~ msgstr "Aktiviere Phish Web Filterung"
 
-#~ msgid "Phish Blocker web signatures were last updated "
-#~ msgstr "Phish Blocker Web Signaturen wurden zuletzt aktualisiert am"
 
-#~ msgid "Web Event Log"
-#~ msgstr "Web Ereignisprotokoll"
 
-#~ msgid "pass"
-#~ msgstr "zulassen"
 
-#~ msgid "block"
-#~ msgstr "sperren"
 
-#~ msgid "Timestamp"
-#~ msgstr "Zeitstempel"
 
-#~ msgid "Client"
-#~ msgstr "Client"
 
-#~ msgid "Username"
-#~ msgstr "Benutzername"
 
-#~ msgid "Uost"
-#~ msgstr "Host"
 
-#~ msgid "Uri"
-#~ msgstr "URI"
 
-#~ msgid "Email Event Log"
-#~ msgstr "Email Ereignisprotokoll"
 
-#~ msgid "pass message"
-#~ msgstr "Nachricht zulassen"
 
-#~ msgid "mark message"
-#~ msgstr "Nachricht markieren"
 
-#~ msgid "drop message"
-#~ msgstr "Nachricht verwerfen"
 
-#~ msgid "quarantine message"
-#~ msgstr "Nachricht in Quarantäne"
 
-#~ msgid "pass safelist message"
-#~ msgstr "Nachricht von Safe-Liste zulassen"
 
-#~ msgid "pass oversize message"
-#~ msgstr "Nachricht mit Übergröße zulassen"
 
-#~ msgid "pass outbound message"
-#~ msgstr "Ausgehende Nachricht zulassen"
 
-#~ msgid "unknown action"
-#~ msgstr "Unbekannte Aktion"
 
-#~ msgid "Receiver"
-#~ msgstr "Empfänger"
 
-#~ msgid "Sender"
-#~ msgstr "Versender"
 
-#~ msgid "Subject"
-#~ msgstr "Betreff"
 
-#~ msgid "Server"
-#~ msgstr "Server"
 
-#~ msgid "Feature is not installed."
-#~ msgstr "Feature ist nicht installiert."
 
-#~ msgid "{0} | Phish Blocker Warning"
-#~ msgstr "{0} | Phish Blocker Warnungen"
 
-#~ msgid "{0}  Phish Blocker"
-#~ msgstr "{0}  Phish Blocker"
 
-#~ msgid ""
-#~ "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
-#~ "imitation of another website, designed to trick users into sharing "
-#~ "personal or financial information. Entering any personal information on "
-#~ "this page may result in identity theft or other abuse. "
-#~ msgstr ""
-#~ "{0}Warnung - Vermutliche Phishing Seite.{1} Diese Seite könnte eine "
-#~ "Fälschung oder Nachahmung einer anderen Webseite sein, die erstellt wurde "
-#~ "um Benutzer zu täuschen und persönliche oder finanzwirtschaftliche "
-#~ "Informationen weiter zu geben. Die Eingabe von persönlichen Daten auf "
-#~ "dieser Seite könnte zu Identitätsdiebstahl oder anderem Missbrauch führen."
 
-#~ msgid "Blocked Web Events"
-#~ msgstr "Blockierte Webereignisse"
 
-#~ msgid "action"
-#~ msgstr "Aktion"
 
-#~ msgid "request"
-#~ msgstr "Anfrage"
 
-#~ msgid "Saving..."
-#~ msgstr "Speichern..."
 
-#~ msgid "Please wait"
-#~ msgstr "Bitte warten"
 
-#~ msgid "PASS"
-#~ msgstr "ZULASSEN"
 
-#~ msgid "DROP"
-#~ msgstr "VERWERFEN"
 
-#~ msgid "MARK"
-#~ msgstr "MARKIEREN"
 
-#~ msgid "QUARANTINE"
-#~ msgstr "QUARANTÄNE"
 
-#~ msgid "All Events"
-#~ msgstr "Alle Ereignisse"
 
-#~ msgid "Skipped Events"
-#~ msgstr "Übersprungene Ereignisse"
 
-#~ msgid "Spam Events"
-#~ msgstr "Spam Ereignisse"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "POP/IMAP Ereignisse"
 
-#~ msgid "SMTP Events"
-#~ msgstr "SMTP Ereignisse"
 
-#~ msgid "Identity Theft Events"
-#~ msgstr "Identifizierte Diebstähle"
 
-#~ msgid "All Phish HTTP Traffic"
-#~ msgstr "Kompletter Phish HTTP Datenverkehr"
 
-#~ msgid "Blocked Phish HTTP Traffic"
-#~ msgstr "Gesperrter Phish HTTP Datenverkehr"
 
-#~ msgid "Passed Phish HTTP Traffic"
-#~ msgstr "Zugelassener Phish HTTP Datenverkehr"
 
-#~ msgid "mark infection"
-#~ msgstr "Infektion markieren"
 
-#~ msgid "block message"
-#~ msgstr "Nachricht sperren"
 
-#~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal "
-#~ "personal information."
-#~ msgstr ""
-#~ "{0}Diese Webseite wurde blockiert{1}, da sie eventuell konstruiert wurde "
-#~ "um persönliche Informationen zu stehlen."
 
-#~ msgid "Block"
-#~ msgstr "Sperren"

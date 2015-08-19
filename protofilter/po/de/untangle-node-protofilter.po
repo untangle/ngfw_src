@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -18,440 +14,260 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: German\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:20
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
 msgid "Status"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
 msgid ""
 "Application Control Lite logs and blocks sessions using custom signatures on "
 "the session content."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
 msgid "Total Signatures Available"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
 msgid "Total Signatures Logging"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
 msgid "Total Signatures Blocking"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:48
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:49
 msgid ""
 "Caution and discretion is advised in configuring Application Control Lite at "
 "the the risk of harmful false positives."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
-#, fuzzy
 msgid "Signatures"
 msgstr "Signatur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:99
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:245
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:304
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:565
 msgid "Protocol"
 msgstr "Protokoll"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:104
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:143
 msgid "[enter protocol]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:113
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
 msgid "[enter category]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:118
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:158
 msgid "Block"
 msgstr "Sperre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:163
 msgid "Log"
 msgstr "Log"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:129
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:168
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:135
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:169
 msgid "[no description]"
 msgstr "[keine Beschreibung]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:176
 msgid "Signature"
 msgstr "Signatur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:177
 msgid "[enter signature]"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:54
 msgid "Summary Report"
 msgstr "Zusammenfassender Bericht"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:77
 msgid "scanned"
 msgstr "durchsuchte"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:78
 msgid "sessions and detected"
 msgstr "Sitzungen und erkannte"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:79
 msgid "protocols of which"
 msgstr "Protokolle von welchen"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:80
 msgid "were blocked"
 msgstr "blockiert wurden"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:125
 msgid "Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:175
 msgid "Avg Detections"
 msgstr "Durchschnittliche Erkennungen"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:177
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:180
-#, fuzzy
 msgid "Blocks"
 msgstr "Sperre"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:179
 msgid "Max Detections"
 msgstr "Max Erkennungen"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:185
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:189
-#, fuzzy
 msgid "Detections"
 msgstr "Erkennungen"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:198
-#, fuzzy
 msgid "Top Blocked Protocols By Hits"
 msgstr "Top Ten gesperrte Protokolle per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:237
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:296
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:356
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:416
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:476
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:535
-#, fuzzy
 msgid "Hits"
 msgstr "Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:244
-#, fuzzy
 msgid "Top Ten Blocked Protocols (by Hits)"
 msgstr "Top Ten gesperrte Protokolle (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:246
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:305
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:366
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:425
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:485
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:544
-#, fuzzy
 msgid "Blocks Per Day"
 msgstr "Sperren pro Tag"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:254
-#, fuzzy
 msgid "Top Detected Protocols By Hits"
 msgstr "Top Ten entdeckte Protokolle per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:303
-#, fuzzy
 msgid "Top Ten Detected Protocols (by Hits)"
 msgstr "Top Ten entdeckte Protokolle (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:313
-#, fuzzy
 msgid "Top Blocked Hosts By Hits"
 msgstr "Top Ten gesperrte Hosts per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:364
-#, fuzzy
 msgid "Top Ten Blocked Hosts (by Hits)"
 msgstr "Top Ten gesperrte Hosts (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:365
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:424
 msgid "Host"
 msgstr "Host"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:375
-#, fuzzy
 msgid "Top Logged Hosts By Hits"
 msgstr "Top Ten protokollierte Hosts per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:423
-#, fuzzy
 msgid "Top Ten Logged Hosts (by Hits)"
 msgstr "Top Ten protokollierte Hosts (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:433
-#, fuzzy
 msgid "Top Blocked Users By Hits"
 msgstr "Top Ten gesperrte Benutzer per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:483
-#, fuzzy
 msgid "Top Ten Blocked Users (by Hits)"
 msgstr "Top Ten gesperrte Benutzer (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:484
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:543
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:563
 msgid "User"
 msgstr "Benutzer"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:493
-#, fuzzy
 msgid "Top Logged Users By Hits"
 msgstr "Top Ten protokollierte Benutzer per Hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:542
-#, fuzzy
 msgid "Top Ten Logged Users (by Hits)"
 msgstr "Top Ten protokollierte Benutzer (per Hits)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:552
 msgid "Detection Events"
 msgstr "Erkennung Ereignisse"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:558
 msgid "Time"
 msgstr "Zeit"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:561
 msgid "Client"
 msgstr "Client"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:566
 msgid "Blocked"
 msgstr "Gesperrt"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:567
 msgid "Server"
 msgstr "Server"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:568
 msgid "Port"
 msgstr "Port"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:47
 msgid "Chunks scanned"
 msgstr ""
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:48
 msgid "Sessions logged"
 msgstr "Protokollierte Sitzungen"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:49
 msgid "Sessions blocked"
 msgstr "Gesperrte Sitzungen"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:69
 msgid "blocked"
 msgstr "gesperrt"
 
-#: ../src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:71
 msgid "identified"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
 msgid "description"
 msgstr "Beschreibung"
 
-#: /tmp/strings:1
 msgid "The top logged sessions by user."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Top Logged Users"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The top logged sessions by protocol."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Top Logged Protocols"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The top blocked sessions by protocol."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Blocked Protocols"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The top blocked sessions by user."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Top Blocked Users"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The top blocked sessions by host."
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Top Blocked Hosts"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The top logged sessions by host."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Top Logged Hosts"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of logged and blocked sessions over time."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Detection Statistics"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "All sessions scanned by Application Control Lite."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "All Events"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All sessions matching an application signature and blocked."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Blocked Events"
 msgstr ""
 
-#~ msgid "[no protocol]"
-#~ msgstr "[kein Protokoll]"
 
-#~ msgid "[no category]"
-#~ msgstr "[keine Kategorie]"
 
-#~ msgid "[no signature]"
-#~ msgstr "[keine Signatur]"
 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "Zeitstempel"
 
-#~ msgid "block"
-#~ msgstr "sperre"
 
-#~ msgid "log"
-#~ msgstr "Log"
 
-#~ msgid "protocol"
-#~ msgstr "Protokoll"
 
-#~ msgid "category"
-#~ msgstr "Kategorie"
 
-#~ msgid "client"
-#~ msgstr "Client"
 
-#~ msgid "server"
-#~ msgstr "Server"
 
-#~ msgid "Saving..."
-#~ msgstr "Speichern..."
 
-#~ msgid "Please wait"
-#~ msgstr "Bitte warten"
 
-#~ msgid "SCAN"
-#~ msgstr "DURCHSUCHEN"
 
-#~ msgid "BLOCK"
-#~ msgstr "SPERREN"
 
-#~ msgid "Sessions scanned"
-#~ msgstr "Durchsuchte Sitzungen"
 
-#~ msgid "passed"
-#~ msgstr "zugelassen"
 
-#~ msgid "blocked in block list"
-#~ msgstr "gesperrt in Sperr-Liste"
 
-#~ msgid "not blocked in block list"
-#~ msgstr "nicht gesperrt in Sperr-Liste"
 
-#~ msgid "action"
-#~ msgstr "Aktion"
 
-#~ msgid "request"
-#~ msgstr "Anfrage"
 
-#~ msgid "reason for action"
-#~ msgstr "Grund der Aktion"
 
-#~ msgid "Protocol Events"
-#~ msgstr "Protokoll Ereignisse"
 
-#~ msgid "Blocked Protocol Events"
-#~ msgstr "Geperrte Protokoll Ereignisse"
 
-#~ msgid "Protocol List"
-#~ msgstr "Protokoll Liste"
 
-#~ msgid "Daily Usage"
-#~ msgstr "Daily Usage"
 
-#~ msgid "detections/day"
-#~ msgstr "Erkennungen/Tag"
 
-#~ msgid "Date"
-#~ msgstr "Datum"
 
-#~ msgid "Detections per Day"
-#~ msgstr "Erkennungen pro Tag"
 
-#~ msgid "DETECT"
-#~ msgstr "ENTDECKEN"

@@ -1,301 +1,221 @@
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Mark"
 msgstr "XMarkX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Pass"
 msgstr "XPassX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Drop"
 msgstr "XDropX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Quarantine"
 msgstr "XQuarantineX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Low (Threshold: 5.0)"
 msgstr "XLow (Threshold: 5.0)X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Medium (Threshold: 4.3)"
 msgstr "XMedium (Threshold: 4.3)X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "High (Threshold: 3.5)"
 msgstr "XHigh (Threshold: 3.5)X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Very High (Threshold: 3.3)"
 msgstr "XVery High (Threshold: 3.3)X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Extreme (Threshold: 3.0)"
 msgstr "XExtreme (Threshold: 3.0)X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Custom"
 msgstr "XCustomX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Email"
 msgstr "XEmailX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
 msgid "SMTP"
 msgstr "XSMTPX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
 msgid "Scan SMTP"
 msgstr "XScan SMTPX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:132
 msgid "Strength"
 msgstr "XStrengthX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:154
 msgid "Strength Value"
 msgstr "XStrength ValueX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:161
 msgid "Strength Value must be a number. Smaller value is higher strength."
 msgstr "XStrength Value must be a number. Smaller value is higher strength.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Action"
 msgstr "XActionX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:205
 msgid "Drop Super Spam"
 msgstr "XDrop Super SpamX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:225
 msgid "Super Spam Threshold"
 msgstr "XSuper Spam ThresholdX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:263
 msgid "Advanced SMTP Configuration"
 msgstr "XAdvanced SMTP ConfigurationX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:273
 msgid "Enable tarpitting"
 msgstr "XEnable tarpittingX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:286
 msgid "Add email headers"
 msgstr "XAdd email headersX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:299
 msgid "Close connection on scan failure"
 msgstr "XClose connection on scan failureX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:312
 msgid "Scan outbound (WAN) SMTP"
 msgstr "XScan outbound (WAN) SMTPX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:325
 msgid "Allow and ignore TLS sessions"
 msgstr "XAllow and ignore TLS sessionsX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:337
 msgid "CPU Load Limit"
 msgstr "XCPU Load LimitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:344
 msgid "Value must be a float."
 msgstr "XValue must be a float.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:357
 msgid "Concurrent Scan Limit"
 msgstr "XConcurrent Scan LimitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:384
 msgid "Value must be a integer."
 msgstr "XValue must be a integer.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:377
 msgid "Message Size Limit"
 msgstr "XMessage Size LimitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:399
 msgid "Clear Bayes Data"
 msgstr "XClear Bayes DataX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
 msgid "Warning"
 msgstr "XWarningX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:403
 msgid "This will clear all learned bayesian data!"
 msgstr "XThis will clear all learned bayesian data!X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Clearing bayes data..."
 msgstr "XClearing bayes data...X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Please wait"
 msgstr "XPlease waitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Failure"
 msgstr "XFailureX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Error: Unable to reset bayes data."
 msgstr "XError: Unable to reset bayes data.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Success"
 msgstr "XSuccessX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Bayes data cleared."
 msgstr "XBayes data cleared.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
 msgid "Note"
 msgstr "XNoteX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
 msgid "Spam Blocker Lite last checked for updates"
 msgstr "XSpam Blocker Lite last checked for updatesX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:429
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:431
 msgid "never"
 msgstr "XneverX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:430
 msgid "Spam Blocker Lite was last updated"
 msgstr "XSpam Blocker Lite was last updatedX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
 msgstr "XSpamX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
 msgstr "XCleanX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
 msgstr "XHourly Spam RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam Rate"
 msgstr "XSpam RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
 msgstr "XTop Ten SpammedX"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23
 msgid "description"
 msgstr "XdescriptionX"
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and spam email over time."
 msgstr "XThe amount of scanned, clean, and spam email over time.X"
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24
 msgid "title"
 msgstr "XtitleX"
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr "XEmail Usage (all)X"
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr "XThe amount of clean email over time.X"
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr "XEmail Usage (clean)X"
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending spam."
 msgstr "XThe number of IP addresses sending spam.X"
 
-#: /tmp/strings:6
 msgid "Top Spam Sender Addresses"
 msgstr "XTop Spam Sender AddressesX"
 
-#: /tmp/strings:7
 msgid "The amount of spam email over time."
 msgstr "XThe amount of spam email over time.X"
 
-#: /tmp/strings:8
 msgid "Email Usage (spam)"
 msgstr "XEmail Usage (spam)X"
 
-#: /tmp/strings:9
 msgid "The ratio of spam (true) to ham (false)"
 msgstr "XThe ratio of spam (true) to ham (false)X"
 
-#: /tmp/strings:10
 msgid "Spam Ratio"
 msgstr "XSpam RatioX"
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr "XThe amount of scanned email over time.X"
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr "XEmail Usage (scanned)X"
 
-#: /tmp/strings:13
 msgid "The number of email addresses with spam."
 msgstr "XThe number of email addresses with spam.X"
 
-#: /tmp/strings:14
 msgid "Top Spam Recipients"
 msgstr "XTop Spam RecipientsX"
 
-#: /tmp/strings:15
 msgid "A summary of spam blocking actions for email activity."
 msgstr "XA summary of spam blocking actions for email activity.X"
 
-#: /tmp/strings:16
 msgid "Spam Blocker Lite Summary"
 msgstr "XSpam Blocker Lite SummaryX"
 
-#: /tmp/strings:17
 msgid "All emails marked as Spam and quarantined."
 msgstr "XAll emails marked as Spam and quarantined.X"
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr "XQuarantined EventsX"
 
-#: /tmp/strings:19
 msgid "All emails scanned by Spam Blocker."
 msgstr "XAll emails scanned by Spam Blocker.X"
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr "XAll Email EventsX"
 
-#: /tmp/strings:21
 msgid "All emails marked as Spam."
 msgstr "XAll emails marked as Spam.X"
 
-#: /tmp/strings:22
 msgid "All Spam Events"
 msgstr "XAll Spam EventsX"
 
-#: /tmp/strings:23
 msgid "All email sessions that were tarpitted."
 msgstr "XAll email sessions that were tarpitted.X"
 
-#: /tmp/strings:24
 msgid "Tarpit Events"
 msgstr "XTarpit EventsX"

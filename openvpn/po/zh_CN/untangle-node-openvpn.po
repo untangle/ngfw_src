@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -20,1180 +16,577 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:18
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:61
 msgid "Connected Remote Clients"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:62
-#, fuzzy
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr "活动用户列表显示已连接用户"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:84
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:262
 msgid "Address"
 msgstr "地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:88
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:325
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:332
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:261
-#, fuzzy
 msgid "Client"
 msgstr "客户端"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:92
 msgid "Pool Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:96
-#, fuzzy
 msgid "Start Time"
 msgstr "开始时间"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:101
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:148
 msgid "Rx Data"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:106
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:153
 msgid "Tx Data"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:125
 msgid "Remote Server Status"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:126
 msgid ""
 "The Remote Server Status list shows the current status of the configured "
 "remote servers."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:140
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:144
 msgid "Connected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:168
 msgid "OpenVPN is currently running."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:170
 msgid "OpenVPN is not currently running."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:176
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:184
 msgid "Status"
 msgstr "状态"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:192
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:538
 msgid "Group"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:217
 msgid "Remote Servers"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:234
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:254
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:515
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:605
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:633
 msgid "Enabled"
 msgstr "已启用"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:239
 msgid "Server Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:245
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:264
 msgid "[enter server name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:263
 msgid "Server name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:270
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:531
 msgid "only alphanumerics allowed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:285
 msgid "Configure a new Remote Server connection"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:289
 msgid "Configuration File"
 msgstr "<msg name=>配置文件“</msg>来提供所需。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:297
 msgid "Submit"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:302
 msgid "Select File"
 msgstr "选择文件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:302
 msgid "Please choose a file to upload."
 msgstr "请选择一个上传的文件。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:309
 msgid "Success"
 msgstr "成功"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:309
 msgid "The configuration has been imported."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:315
 msgid "Failure"
 msgstr "失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:315
 msgid "Import failure"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:335
 msgid ""
 "These settings configure how OpenVPN will connect to remote servers as a "
 "client."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:338
 msgid ""
 "Remote Servers is a list remote OpenVPN servers that OpenVPN should connect "
 "to as a client."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:346
 msgid "Download OpenVPN Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:353
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:486
 msgid "Download"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:360
-#, fuzzy
 msgid "These files can be used to configure your Remote Clients."
 msgstr "这些文件可用于配置远程VPN客户端"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:378
 msgid ""
 "This file can be used to configure Chromebook clients.  On the target "
 "device, browse to <b>chrome://net-internals</b> and use Import ONC file."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:389
 msgid "Close"
 msgstr "关闭"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:403
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:404
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:405
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:406
 msgid "Loading..."
 msgstr "载入......."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:408
 msgid "Building OpenVPN Client..."
 msgstr "建立OpenVPN客户端..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:408
-#, fuzzy
 msgid "Please Wait"
 msgstr "请等待"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:414
 msgid "Click here to download this client's Windows setup.exe file."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:420
 msgid ""
 "Click here to download this client's configuration onc file for Chromebook."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:426
 msgid ""
 "Click here to download this client's configuration zip file for other OSs "
 "(apple/linux/etc). "
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:427
 msgid ""
 "Click here to download this client's configuration file for remote Untangle "
 "OpenVPN clients."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:440
 msgid "Remote Clients"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:472
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:524
-#, fuzzy
 msgid "Client Name"
 msgstr "客户名称"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:478
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:525
 msgid "[enter client name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:495
 msgid "Download Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:549
 msgid "Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:552
 msgid "Individual Client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:552
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:619
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:646
 msgid "Network"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:567
 msgid "Remote Networks"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:587
 msgid "Exported Networks"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:610
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:638
 msgid "Export Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:615
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:639
 msgid "[enter export name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:658
 msgid "Groups"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:685
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:711
 msgid "Group Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:691
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:712
 msgid "[enter group name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:696
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:719
 msgid "Full Tunnel"
 msgstr "全隧道"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:702
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:724
 msgid "Push DNS"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:750
 msgid "Push DNS Configuration"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:759
 msgid "Push DNS Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:762
 msgid "OpenVPN Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:762
 msgid "Custom"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:792
 msgid "Push DNS Custom 1"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:799
 msgid "Push DNS Custom 2"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:806
 msgid "Push DNS Domain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:863
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:868
 msgid "Server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:875
 msgid ""
 "These settings configure how OpenVPN will be a server for remote clients."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:880
 msgid "Site Name"
 msgstr "站点名称"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:886
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1046
 msgid "You must enter a site name."
 msgstr "您必须输入一个站点名称。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:897
 msgid "Site URL"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:904
 msgid "Server Enabled"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:923
 msgid "Client To Client Allowed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:937
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:263
 msgid "Port"
 msgstr "端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:955
 msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:964
 msgid "Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:965
 msgid ""
 "Changing the protocol will require redistributing ALL of the openvpn clients."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:966
 msgid "Do you want to continue anyway?"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:979
 msgid "Cipher"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:994
 msgid "Address Space"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1015
 msgid "NAT OpenVPN Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1028
 msgid "NAT all LAN-bound OpenVPN traffic to a local address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1046
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1063
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1078
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1120
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1129
 msgid "Failed"
 msgstr "失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1063
 msgid "You must create at least one group."
 msgstr "您必须至少创建一个组。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1079
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
 msgstr "无法删除组“{0}”，因为其已被在客户到站点列表中的用户：{1}使用。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
 msgid "The group name: \"{0}\" in row: {1} already exists."
 msgstr "{1}行中的组名称：“{0}”已经存在。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1120
 msgid "Changing name is not allowed. Create a new user."
 msgstr "更改名称是不允许的。创建一个新的用户。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1130
 msgid "The client name: \"{0}\" in row: {1} already exists."
 msgstr "{1}行中的用户名称：“{0}”已经存在。"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:62
 msgid "Summary Report"
 msgstr "总结报告"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:107
 msgid "securely passed"
 msgstr "安全地传送"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:108
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:240
 msgid "MB"
 msgstr "<msg name=> MB</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:108
 msgid "of traffic and processed"
 msgstr "的流量和处理"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:109
 msgid "remote logins"
 msgstr "远程登录"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:142
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:196
 msgid "Bandwidth Usage"
 msgstr "<msg name=>带宽使用</msg>"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:185
 msgid "Avg Data Rate"
 msgstr "平均数据传输速率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:189
 msgid "Max Data Rate"
 msgstr "最大数据传输率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:192
 msgid "Data Transferred"
 msgstr "传输的数据"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:197
 msgid "Date"
 msgstr "日期:"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:198
 msgid "Throughput (kB/s)"
 msgstr "吞吐量（KB / S）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:201
 msgid "Usage (kB/sec)"
 msgstr "使用量（KB /秒）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:209
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:245
 msgid "Top Users"
 msgstr "用户排行"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:253
 msgid "Login Events"
 msgstr "登录活动"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:259
 msgid "Time"
 msgstr "Time：时间"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnEvent.java:87
 msgid "event"
 msgstr ""
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:66
 msgid "Sessions passed"
 msgstr "会议通过"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:67
-#, fuzzy
 msgid "Clients Connected"
 msgstr "已连接客户端"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:408
 msgid "primary network"
 msgstr ""
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:420
 msgid "Default Group"
 msgstr ""
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:486
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:488
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:498
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:505
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:522
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:529
 msgid "Invalid Settings"
 msgstr ""
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:522
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:529
 msgid "conflicts with address"
 msgstr ""
 
-#: ../src/com/untangle/node/openvpn/OpenVpnStatusEvent.java:156
 msgid "status"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The approximate amount of data transfered over openvpn connections."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "OpenVPN Bandwidth Usage"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The number of bytes transferred grouped by remote client."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Top Clients (by usage)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The amount of openvpn sessions over time."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "OpenVPN Sessions"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of login and logout events over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "OpenVPN Events"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "Shows all OpenVPN connection traffic statistics events."
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Statistic Events"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "OpenVPN client connection events."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Connection Events"
 msgstr ""
 
-#~ msgid ""
-#~ "A client name should only contains numbers, letters, dashes and periods.  "
-#~ "Spaces are not allowed."
-#~ msgstr "客户端名称只能包含数字、字母、短划线和\".\"。空格是不允许的。"
 
-#~ msgid "Refresh"
-#~ msgstr "刷新"
 
-#, fuzzy
-#~ msgid "End Time"
-#~ msgstr "结束时间"
 
-#, fuzzy
-#~ msgid "Client Address"
-#~ msgstr "客户地址"
 
-#, fuzzy
-#~ msgid "KB Sent"
-#~ msgstr "KB 已发送"
 
-#, fuzzy
-#~ msgid "KB Received"
-#~ msgstr "KB 已接收"
 
-#~ msgid "newClient"
-#~ msgstr "newClient"
 
-#~ msgid "[no name]"
-#~ msgstr "【无名称】"
 
-#~ msgid "Reloading..."
-#~ msgstr "重装..."
 
-#~ msgid "Please wait"
-#~ msgstr "请等待"
 
-#~ msgid "Connections"
-#~ msgstr "连接."
 
-#~ msgid "Distribute VPN Client"
-#~ msgstr "分发VPN客户端"
 
-#~ msgid "Download Client Config"
-#~ msgstr "下载客户端配置文件"
 
-#~ msgid ""
-#~ "This configuration file can be used to configure the remote VPN Site."
-#~ msgstr "该配置文件可用于配置远程VPN站点"
 
-#~ msgid "or Distribute Client Config via Email"
-#~ msgstr "或通过邮件分发客户端配置文件"
 
-#~ msgid ""
-#~ "Click \"Send Email\" to send an email to \"Email Address\" with "
-#~ "information to retrieve the OpenVPN Client."
-#~ msgstr "点击“发送邮件”以发送邮件到“电子邮件地址”来重新恢复OpenVPN客户端。"
 
-#~ msgid ""
-#~ "Note: Clients can only download the client linked in the email if HTTPS "
-#~ "remote administration is enabled!"
-#~ msgstr "如果启用了https远程管理，那么用户只能下载邮件中链接的客户端"
 
-#~ msgid "Email Address"
-#~ msgstr "电子邮件地址"
 
-#~ msgid "Send Email"
-#~ msgstr "发送电子邮件"
 
-#, fuzzy
-#~ msgid "You must specify valid an email address to send the key to."
-#~ msgstr "您必须指定一个接受密钥的电子邮件地址。"
 
-#~ msgid "Distributing Client Installer..."
-#~ msgstr "分发客户端安装程序..."
 
-#~ msgid "Error saving/sending key"
-#~ msgstr "保存/发送密钥出错"
 
-#, fuzzy
-#~ msgid ""
-#~ "OpenVPN was not able to send your client installer via email.  Please try "
-#~ "again."
-#~ msgstr "OpenVPN无法通过电子邮件发送您的数字密钥。请再试。"
 
-#, fuzzy
-#~ msgid "OpenVPN successfully sent your Client Installer via email."
-#~ msgstr "OpenVPN成功的通过电子邮件向您发送了您的数字密钥。"
 
-#~ msgid "Download VPN Site configuration."
-#~ msgstr "下载VPN站点配置"
 
-#, fuzzy
-#~ msgid "Click here to download an installer for Windows clients."
-#~ msgstr "点击这里下载一个可用于Windows客户端的密钥。"
 
-#~ msgid "Click here to download a configuration file for all OSs."
-#~ msgstr "点击这里下载一个可用于所有操作系统的配置文件"
 
-#~ msgid "Welcome"
-#~ msgstr "欢迎光临"
 
-#~ msgid "Welcome to the OpenVPN Setup Wizard!"
-#~ msgstr "欢迎来到OpenVPN的安装向导！"
 
-#~ msgid ""
-#~ "This wizard will help guide you through your initial setup and "
-#~ "configuration of OpenVPN as a VPN Client."
-#~ msgstr "本向导将帮助您完成初始设置以及配置OpenVPN成为一个VPN客户。"
 
-#~ msgid ""
-#~ "Warning: Completing this wizard will overwrite any previous OpenVPN "
-#~ "settings with new settings. All previous settings will be lost!"
-#~ msgstr ""
-#~ "警告：结束本向导将导致您之前的OpenVPN设置会被新设置所覆盖。您将丢失所有之"
-#~ "前的设置！"
 
-#~ msgid "Install Configuration"
-#~ msgstr "安装配置"
 
-#~ msgid "Download Configuration"
-#~ msgstr "下载配置"
 
-#~ msgid "Upload the Client Configuration file downloaded from the VPN Server."
-#~ msgstr "上传从VPN服务器下载的客户端配置文件"
 
-#~ msgid "Invalid Server Address"
-#~ msgstr "无效的服务器地址"
 
-#, fuzzy
-#~ msgid "Uploading Configuration... (This may take a minute)"
-#~ msgstr "正在上传配置。。。（可能需要1分钟左右）"
 
-#~ msgid "Unable to load VPN Client"
-#~ msgstr "无法载入VPN客户端"
 
-#~ msgid "Unable to install OpenVPN client."
-#~ msgstr "无法安装OpenVPN客户端。"
 
-#~ msgid "Unable to verify connection to server."
-#~ msgstr "无法校验到服务器的连接。"
 
-#~ msgid "The selected configuration file is invalid."
-#~ msgstr "选择的配置文件无效。"
 
-#~ msgid "Installed OpenVPN client."
-#~ msgstr "已安装OpneVPN客户端。"
 
-#~ msgid "Finished!"
-#~ msgstr "已完成！"
 
-#~ msgid "Congratulations! OpenVPN is configured as a VPN Client."
-#~ msgstr "祝贺您！OpenVPN已经配置为一个VPN客户端。"
 
-#~ msgid "Active Clients"
-#~ msgstr "活跃​​客户"
 
-#~ msgid "Rx Bytes"
-#~ msgstr "已接收字节"
 
-#~ msgid "Tx Bytes"
-#~ msgstr "已发送字节"
 
-#~ msgid "Unconfigured: Use buttons below."
-#~ msgstr "尚未配置：使用下面的按钮。"
 
-#~ msgid "VPN Client: Connected to {0}"
-#~ msgstr "VPN客户：连接到{0}"
 
-#~ msgid "VPN Server"
-#~ msgstr "VPN服务器"
 
-#~ msgid "Current Mode"
-#~ msgstr "当前模式"
 
-#~ msgid "Mode"
-#~ msgstr "模式"
 
-#~ msgid ""
-#~ "To reconfigure the current OpenVPN mode remove the application from the "
-#~ "rack and reinstall."
-#~ msgstr "要重新配置OpenVPN的模式从机架中删除该应用程序，并重新安装。"
 
-#~ msgid "Wizard"
-#~ msgstr "向导"
 
-#~ msgid "Configure as VPN Server"
-#~ msgstr "配置成VPN服务器"
 
-#~ msgid ""
-#~ "This configures OpenVPN so remote users and networks can connect and "
-#~ "access exported hosts and networks."
-#~ msgstr "配置OpenVPN，远程用户和网络可以连接到输出的主机和网络。"
 
-#~ msgid "Configure as VPN Client"
-#~ msgstr "配置成VPN客户端"
 
-#~ msgid ""
-#~ "This configures OpenVPN so it connects to a remote OpenVPN Server and can "
-#~ "access exported hosts and networks."
-#~ msgstr "配置OpenVPN，连接到远程OpenVPN服务器并可访问输出的主机和网络。"
 
-#~ msgid "Connection Event Log"
-#~ msgstr "连接事件日志"
 
-#, fuzzy
-#~ msgid "Distribute"
-#~ msgstr "分发"
 
-#~ msgid "Distribute Client"
-#~ msgstr "分发客户端"
 
-#, fuzzy
-#~ msgid "Address Pool"
-#~ msgstr "地址池"
 
-#~ msgid "VPN Clients"
-#~ msgstr "VPN客户"
 
-#, fuzzy
-#~ msgid "Virtual Address"
-#~ msgstr "虚拟地址"
 
-#~ msgid "unassigned"
-#~ msgstr "未分配"
 
-#~ msgid "Client name"
-#~ msgstr "客户名称"
 
-#~ msgid "Address pool"
-#~ msgstr "地址池"
 
-#~ msgid "newSite"
-#~ msgstr "newSite"
 
-#~ msgid "VPN Sites"
-#~ msgstr "VPN站点"
 
-#, fuzzy
-#~ msgid "Network Address"
-#~ msgstr "网络地址"
 
-#, fuzzy
-#~ msgid "Network Mask"
-#~ msgstr "网络掩码"
 
-#~ msgid ""
-#~ "Traffic to the below network will be routed over the VPN to the remote "
-#~ "site."
-#~ msgstr "下面的网络流量将在VPN传送到远程站点。"
 
-#~ msgid ""
-#~ "The remote site network IP/netmask must be separate from the local "
-#~ "network IP/netmask."
-#~ msgstr "来自本地网络的IP /掩码的远程站点网络的IP /子网掩码必须是独立的。"
 
-#~ msgid "Network address"
-#~ msgstr "网络地址"
 
-#~ msgid "Internal address of remote site (eg: 192.168.1.1)"
-#~ msgstr "远程站点的内部地址（例如：192.168.1.1）"
 
-#~ msgid "Network mask"
-#~ msgstr "网络掩码"
 
-#~ msgid "Internal netmask of remote site (eg: 255.255.255.0)"
-#~ msgstr "远程站点（如内部网络掩码：255.255.255.0）"
 
-#~ msgid "Clients"
-#~ msgstr "客户端"
 
-#~ msgid "Exported Hosts and Networks"
-#~ msgstr "导出的主机和网络"
 
-#, fuzzy
-#~ msgid "Host/Network Name"
-#~ msgstr "主机/网络名称"
 
-#, fuzzy
-#~ msgid "IP Address"
-#~ msgstr "IP地址"
 
-#~ msgid "Netmask"
-#~ msgstr "网络掩码"
 
-#~ msgid "Host/network name"
-#~ msgstr "主机/网络名称"
 
-#~ msgid "IP address"
-#~ msgstr "IP地址"
 
-#~ msgid "Address Pools"
-#~ msgstr "地址池"
 
-#, fuzzy
-#~ msgid "Pool Name"
-#~ msgstr "池名称"
 
-#, fuzzy
-#~ msgid "Export DNS"
-#~ msgstr "导出DNS"
 
-#~ msgid "Advanced"
-#~ msgstr "高级的"
 
-#~ msgid "DNS Override"
-#~ msgstr "DNS覆写"
 
-#~ msgid "Disabled"
-#~ msgstr "被禁用"
 
-#~ msgid "Primary IP"
-#~ msgstr "基本IP"
 
-#~ msgid "A Valid Primary IP Address must be specified."
-#~ msgstr "必须指定一个有效的基本IP。"
 
-#~ msgid "Secondary IP (optional)"
-#~ msgstr "次级IP（可选）"
 
-#~ msgid "A valid Primary IP Address must be specified."
-#~ msgstr "必须指定一个有效的基本IP。"
 
-#~ msgid "A valid Secondary IP Address must be specified."
-#~ msgstr "必须指定一个有效的次级IP。"
 
-#~ msgid ""
-#~ "The group: \"{0}\" cannot be deleted because it is being used by the "
-#~ "site: {1} in the Site To Site List."
-#~ msgstr "无法删除组“{0}”，因为其已被在站点到站点列表中的站点：{1}使用。"
 
-#~ msgid "Changing name is not allowed. Create a new group."
-#~ msgstr "更改名称是不允许的。创建一个新的组。"
 
-#~ msgid "The site name: \"{0}\" in row: {1} already exists."
-#~ msgstr "{1}行中的站点名称：“{0}”已经存在。"
 
-#~ msgid "OpenVPN Client Setup Wizard"
-#~ msgstr "OpenVPN客户端安装向导"
 
-#~ msgid "Setup Wizard Warning"
-#~ msgstr "安装向导警告"
 
-#~ msgid ""
-#~ "You have not finished configuring OpenVPN. Please run the Setup Wizard "
-#~ "again."
-#~ msgstr "您尚未完成OpenVPN的配置。请再次运行安装向导。"
 
-#, fuzzy
-#~ msgid ""
-#~ "This wizard will help guide you through your initial setup and "
-#~ "configuration of OpenVPN as a VPN Server."
-#~ msgstr "本向导将帮助您完成初始设置以及配置OpenVPN成为一个VPN客户。"
 
-#~ msgid "Step 1 - Certificate"
-#~ msgstr "步骤1 - 证书"
 
-#~ msgid ""
-#~ "Please specify some information about your location. This information "
-#~ "will be used to generate a secure digital certificate."
-#~ msgstr "请指定有关您位置的信息。该信息将用于生成一个安全的数字证书。"
 
-#~ msgid "This information is required."
-#~ msgstr "该信息是必须的。"
 
-#~ msgid "Organization"
-#~ msgstr "组织"
 
-#~ msgid "Country"
-#~ msgstr "国家"
 
-#~ msgid "State/Province"
-#~ msgstr "省"
 
-#~ msgid "City"
-#~ msgstr "城市"
 
-#~ msgid "You must fill out the name of your organization."
-#~ msgstr "您必须填写组织名称。"
 
-#~ msgid "You must fill out the name of your state."
-#~ msgstr "您必须填写省（州）名。"
 
-#~ msgid "You must fill out the name of your locality."
-#~ msgstr "您必须填写您的位置。"
 
-#~ msgid "Generating Certificate..."
-#~ msgstr "正在生成证书。。。"
 
-#~ msgid "Step 2 - Exports"
-#~ msgstr "步骤2 - 导出"
 
-#~ msgid ""
-#~ "Please complete the list of exports. This is a list of hosts and networks "
-#~ "which remote VPN users and networks will be able to contact."
-#~ msgstr ""
-#~ "请完成出口列表。这是一个主机和网络列表能让远程VPN用户和网络可以联系。"
 
-#~ msgid "By default the entire internal network is exported."
-#~ msgstr "默认状态下，整个内部网络已经导出。"
 
-#~ msgid "Adding Exports..."
-#~ msgstr "正在添加出口。。。"
 
-#~ msgid "Congratulations!"
-#~ msgstr "祝贺您！"
 
-#~ msgid ""
-#~ "You are now ready to begin adding remote clients and sites you wish to "
-#~ "have access to your VPN."
-#~ msgstr "您现在已经准备好开始添加您希望能够访问您VPN的远程客户端和站点了。"
 
-#~ msgid ""
-#~ "To add remote users, click on the Clients tab and add to the VPN Clients "
-#~ "table.<br/>To add remote networks, click on the Clients tab and add to "
-#~ "the VPN Sites table."
-#~ msgstr ""
-#~ "添加远程用户，点击“客户端”页并添加到VPN客户端表。<br/>添加远程网络，点"
-#~ "击“客户端”页并添加到VPN站点表。"
 
-#~ msgid "OpenVPN Server Setup Wizard"
-#~ msgstr "OpenVPN服务器安装向导"
 
-#~ msgid ""
-#~ "Please input the following information into the \"VPN Client\" wizard."
-#~ msgstr "请输入以下信息到\\“VPN客户端\\”向导。"
 
-#, fuzzy
-#~ msgid "Server Address:"
-#~ msgstr "服务器IP地址"
 
-#~ msgid "Passphrase:"
-#~ msgstr "通关密语："
 
-#~ msgid "Click here to download the OpenVPN client."
-#~ msgstr "点击这里下载OpenVPN客户端。"
 
-#~ msgid "Or copy and paste the following link into your Web Browser."
-#~ msgstr "以下链接复制并粘贴到您的Web浏览器。"
 
-#~ msgid "default"
-#~ msgstr "默认"
 
-#~ msgid "OpenVPN Client"
-#~ msgstr "OpenVPN客户端"
 
-#~ msgid ""
-#~ "You must configure OpenVPN as either a VPN Server or a VPN Client before "
-#~ "you can turn it on.  You may do this through its Setup Wizard (in its "
-#~ "settings)."
-#~ msgstr ""
-#~ "您必须配置的OpenVPN之前，你可以把它作为一个VPN服务器或VPN客户端。你可以这"
-#~ "样做，通过设置向导“（设置）。"
 
-#~ msgid "Distributing digital key..."
-#~ msgstr "正在分发数字密钥。。。"
 
-#~ msgid "Error creating client."
-#~ msgstr "客户端生成时出错"
 
-#~ msgid "start time"
-#~ msgstr "开始时间"
 
-#~ msgid "client name"
-#~ msgstr "客户名称"
 
-#~ msgid "address pool"
-#~ msgstr "地址池"
 
-#~ msgid "enabled"
-#~ msgstr "已启用"
 
-#~ msgid "site name"
-#~ msgstr "站点名称"
 
-#~ msgid "network address"
-#~ msgstr "网络地址"
 
-#~ msgid "network mask"
-#~ msgstr "网络掩码"
 
-#~ msgid "host/network name"
-#~ msgstr "主机/网络名称"
 
-#~ msgid "netmask"
-#~ msgstr "网络掩码"
 
-#~ msgid "pool name"
-#~ msgstr "池名称"
 
-#~ msgid "Server Port (UDP)"
-#~ msgstr "服务器端口(UDP)"
 
-#~ msgid "You must provide a valid port."
-#~ msgstr "您必须提供一个可用的端口。"
 
-#~ msgid "The two networks: {0} and {1} cannot overlap"
-#~ msgstr "{0}和{1}这两个网络不能重叠"
 
-#~ msgid "Validation failed"
-#~ msgstr "验证错误"
 
-#~ msgid "Saving..."
-#~ msgstr "正在保存。。。"
 
-#~ msgid ""
-#~ "This wizard will help guide you through your initial setup and "
-#~ "configuration of OpenVPN as a VPN Routing Server."
-#~ msgstr ""
-#~ "本向导将帮助您完成初始设置以及配置OpenVPN成为一个VPN路由选择服务器。"
 
-#~ msgid "Clients blocked"
-#~ msgstr "已阻止客户端"
 
-#~ msgid "BLOCK"
-#~ msgstr "阻止"
 
-#~ msgid "Clients passed"
-#~ msgstr "已通过客户端"
 
-#~ msgid "PASS"
-#~ msgstr "通过"
 
-#~ msgid "CONNECT"
-#~ msgstr "连接"
 
-#~ msgid "Closed Sessions"
-#~ msgstr "已结束会话"
 
-#~ msgid "internal network"
-#~ msgstr "内部网络"
 
-#~ msgid "active connection"
-#~ msgstr "活动连接"
 
-#~ msgid "Active Sessions"
-#~ msgstr "活动会话"
 
-#~ msgid "All Sessions"
-#~ msgstr "所有会话"
 
-#~ msgid "Download Key"
-#~ msgstr "下载密钥"
 
-#~ msgid "Click here to download a key for all other clients."
-#~ msgstr "点击这里下载一个可用于所有其他客户端的密钥。"
 
-#~ msgid "Distribute via Email"
-#~ msgstr "通过电子邮件分发"
 
-#~ msgid "Please specify where your VPN Client configuration should come from."
-#~ msgstr "请指明从何处得到您的VPN客户端配置。"
 
-#~ msgid "Download from Server"
-#~ msgstr "从服务器下载"
 
-#~ msgid "Server IP Address"
-#~ msgstr "服务器IP地址"
 
-#~ msgid "Password"
-#~ msgstr "密码"
 
-#~ msgid "Upload Configuration"
-#~ msgstr "上传配置"
 
-#~ msgid "Select a value"
-#~ msgstr "选择一个值"
 
-#~ msgid "Please choose 'Download from Server' or 'Upload Configuration'."
-#~ msgstr "请选择“从服务器下载”或“上传配置”。"
 
-#~ msgid "Downloading Configuration... (This may take up to one minute)"
-#~ msgstr "正在下载配置。。。（可能需要1分钟左右）"
 
-#~ msgid "Error downloading configuration from server."
-#~ msgstr "从服务器下载配置时错误。"
 
-#~ msgid ""
-#~ "Your VPN Client configuration could not be downloaded from the server.  "
-#~ "Please try again."
-#~ msgstr "无法从服务器下载您的VPN客户端配置。请重试。"
 
-#~ msgid "Site name"
-#~ msgstr "站点名称"
 
-#~ msgid ""
-#~ "Unable to change name once you've saved. Create a new user. Client name "
-#~ "should be {0}."
-#~ msgstr "您无法在保存后更改名称。创建一个新的用户。客户端名称应该是{0}。"
 
-#~ msgid "Kbytes<br>sent"
-#~ msgstr "已发送<br>千字节"

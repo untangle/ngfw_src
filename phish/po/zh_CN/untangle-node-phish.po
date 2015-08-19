@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -20,411 +16,224 @@ msgstr ""
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "标记"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "“放下。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "隔离"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "电子邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "扫描SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "注释"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr "钓鱼防护电子邮件签名已是最后更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "网络钓鱼"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "清洁"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "每小时钓鱼率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "每日钓鱼率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "十大网络钓鱼受害者"
 
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "如果您有任何问题，请联系{0}。"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
 msgid "Messages received"
 msgstr "收到的消息"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "传递的消息"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "消息下降"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "邮件标记"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "信息隔离"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "垃圾邮件检测"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and phish email over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending phish."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Phish Sender Addresses"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of phish email over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Email Usage (phish)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The ratio of phish (true) to ham (false)"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Phish Ratio"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of email addresses with phish."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Phish Recipients"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "A summary of phish blocking actions for email activity."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Phish Blocker Summary"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All email sessions detected as phishing attempts and quarantined."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr "隔离事件"
 
-#: /tmp/strings:19
 msgid "All email sessions scanned by Phish Blocker."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr "所有的电子邮件事件"
 
-#: /tmp/strings:21
 msgid "All email sessions detected as phishing attempts."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "All Phish Events"
 msgstr ""
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "主机："
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "链接："
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "原因："
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "现在开始不阻止"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "永远不阻止"
 
-#~ msgid "All"
-#~ msgstr "[all ] "
 
-#~ msgid "Events"
-#~ msgstr "events {"
 
-#~ msgid "Tarpit Events"
-#~ msgstr "Tarpit活动"
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "Scan POP3"
-#~ msgstr "扫描POP3"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "扫描IMAP"
 
-#~ msgid "unknown"
-#~ msgstr "未知"
 
-#~ msgid "Web"
-#~ msgstr "互联网(Web)"
 
-#~ msgid "Enable Phish web filtering"
-#~ msgstr "启用Web钓鱼过滤"
 
-#~ msgid "Phish Blocker web signatures were last updated "
-#~ msgstr "钓鱼防护Web签名已是最后更新"
 
-#~ msgid "Web Event Log"
-#~ msgstr "Web事件日志"
 
-#~ msgid "pass"
-#~ msgstr "通过"
 
-#~ msgid "block"
-#~ msgstr "阻止"
 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "时间戳"
 
-#, fuzzy
-#~ msgid "Client"
-#~ msgstr "客户端"
 
-#~ msgid "Username"
-#~ msgstr "用户名"
 
-#~ msgid "Uost"
-#~ msgstr "Uost"
 
-#~ msgid "Uri"
-#~ msgstr "<msg name=>的URI </msg>"
 
-#~ msgid "Email Event Log"
-#~ msgstr "电子邮件事件日志"
 
-#~ msgid "pass message"
-#~ msgstr "通过邮件"
 
-#, fuzzy
-#~ msgid "mark message"
-#~ msgstr "通过邮件"
 
-#~ msgid "drop message"
-#~ msgstr "下降的消息"
 
-#~ msgid "quarantine message"
-#~ msgstr "隔离邮件"
 
-#~ msgid "pass safelist message"
-#~ msgstr "通过安全列表信息"
 
-#~ msgid "pass oversize message"
-#~ msgstr "通过特大型消息"
 
-#~ msgid "pass outbound message"
-#~ msgstr "通过出站邮件"
 
-#~ msgid "unknown action"
-#~ msgstr "未知的行动"
 
-#, fuzzy
-#~ msgid "Receiver"
-#~ msgstr "收件人"
 
-#, fuzzy
-#~ msgid "Sender"
-#~ msgstr "发件人"
 
-#, fuzzy
-#~ msgid "Subject"
-#~ msgstr "主题"
 
-#, fuzzy
-#~ msgid "Server"
-#~ msgstr "服务器"
 
-#~ msgid "Feature is not installed."
-#~ msgstr "功能尚未安装。"
 
-#~ msgid "{0} | Phish Blocker Warning"
-#~ msgstr "{0} |钓鱼防护警告"
 
-#~ msgid "{0}  Phish Blocker"
-#~ msgstr "{0}钓鱼防护"
 
-#~ msgid ""
-#~ "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
-#~ "imitation of another website, designed to trick users into sharing "
-#~ "personal or financial information. Entering any personal information on "
-#~ "this page may result in identity theft or other abuse. "
-#~ msgstr ""
-#~ "{0}警告-涉嫌诈骗的。 {1}在这一页可能是伪造的或仿的另一个网站，诱骗用户透露"
-#~ "个人信息或财务信息。此页面上输入任何个人信息，可能会导致身份盗窃或其他虐"
-#~ "待。"
 
-#~ msgid "Blocked Web Events"
-#~ msgstr "阻止的Web活动"
 
-#~ msgid "action"
-#~ msgstr "动作"
 
-#~ msgid "request"
-#~ msgstr "请求"
 
-#~ msgid "Saving..."
-#~ msgstr "正在保存。。。"
 
-#~ msgid "Please wait"
-#~ msgstr "请等候"
 
-#~ msgid "All Events"
-#~ msgstr "所有事件"
 
-#~ msgid "Spam Events"
-#~ msgstr "垃圾信息事件"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "POP/IMAP事件"
 
-#~ msgid "SMTP Events"
-#~ msgstr "SMTP事件"
 
-#~ msgid "Identity Theft Events"
-#~ msgstr "身份偷窃事件"
 
-#~ msgid "All Phish HTTP Traffic"
-#~ msgstr "所有的钓鱼HTTP流量"
 
-#~ msgid "Blocked Phish HTTP Traffic"
-#~ msgstr "已阻止的钓鱼HTTP流量"
 
-#~ msgid "Passed Phish HTTP Traffic"
-#~ msgstr "已通过的钓鱼HTTP流量"
 
-#~ msgid "mark infection"
-#~ msgstr "感染标记"
 
-#~ msgid "block message"
-#~ msgstr "阻止邮件"
 
-#~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal "
-#~ "personal information."
-#~ msgstr "{0}该网页已被阻止{1}因为它可能是专门设计来盗取您的私人信息的。"
 
-#~ msgid "Block"
-#~ msgstr "阻止"
 
-#~ msgid "Failed"
-#~ msgstr "失败"

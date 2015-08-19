@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,499 +13,289 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Mark"
 msgstr "マーク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Pass"
 msgstr "パス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Drop"
 msgstr "破棄"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Quarantine"
 msgstr "隔離"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Low (Threshold: 5.0)"
 msgstr "低（閾値： 5.0 ）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Medium (Threshold: 4.3)"
 msgstr "中（閾値： 4.3 ）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "High (Threshold: 3.5)"
 msgstr "高（閾値： 3.5 ）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Very High (Threshold: 3.3)"
 msgstr "非常に高（閾値： 3.3 ）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Extreme (Threshold: 3.0)"
 msgstr "エクストリーム（閾値： 3.0 ）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Custom"
 msgstr "カスタム"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Email"
 msgstr "Eメール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
 msgid "Scan SMTP"
 msgstr "SMTPをスキャンする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:132
 msgid "Strength"
 msgstr "強度"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:154
 msgid "Strength Value"
 msgstr "強度値"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:161
 msgid "Strength Value must be a number. Smaller value is higher strength."
 msgstr "強度値は数字でなけれならない。小さい値は高い強度を意味します。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Action"
 msgstr "アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:205
 msgid "Drop Super Spam"
 msgstr "破棄したスーパースパム"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:225
 msgid "Super Spam Threshold"
 msgstr "スーパースパム閾値"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:263
 msgid "Advanced SMTP Configuration"
 msgstr "高度なSMTP設定"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:273
 msgid "Enable tarpitting"
 msgstr "タールピットを有効にする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:286
 msgid "Add email headers"
 msgstr "Eメールのヘッダを追加"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:299
 msgid "Close connection on scan failure"
 msgstr "スキャン失敗により接続を閉じる"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:312
 msgid "Scan outbound (WAN) SMTP"
 msgstr "アウトバウンド (WAN) SMTPをスキャンする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:325
 msgid "Allow and ignore TLS sessions"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:337
 msgid "CPU Load Limit"
 msgstr "CPU負荷の制限"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:344
 msgid "Value must be a float."
 msgstr "値を実数（小数点）する必要があります。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:357
 msgid "Concurrent Scan Limit"
 msgstr "同時スキャンの制限"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:384
 msgid "Value must be a integer."
 msgstr "値は整数でなければなりません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:377
 msgid "Message Size Limit"
 msgstr "メッセージサイズの制限"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:399
 msgid "Clear Bayes Data"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
 msgid "Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:403
 msgid "This will clear all learned bayesian data!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Clearing bayes data..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Please wait"
 msgstr "しばらくお待ちください"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Failure"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Error: Unable to reset bayes data."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Success"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Bayes data cleared."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
 msgid "Note"
 msgstr "注意"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
 msgid "Spam Blocker Lite last checked for updates"
 msgstr "Spam Blocker Liteが最後の更新をチェック"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:429
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:431
 msgid "never"
 msgstr "決して"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:430
 msgid "Spam Blocker Lite was last updated"
 msgstr "Spam Blocker Liteを更新しました"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
 msgstr "スパム"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
 msgstr "クリーン"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
 msgstr "1時間ごとにスパムレート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam Rate"
 msgstr "スパムレート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
 msgstr "トップ10のスパム"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and spam email over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending spam."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Spam Sender Addresses"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of spam email over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Email Usage (spam)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The ratio of spam (true) to ham (false)"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Spam Ratio"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of email addresses with spam."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Spam Recipients"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "A summary of spam blocking actions for email activity."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Spam Blocker Lite Summary"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All emails marked as Spam and quarantined."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr ""
 
-#: /tmp/strings:19
 msgid "All emails scanned by Spam Blocker."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr ""
 
-#: /tmp/strings:21
 msgid "All emails marked as Spam."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "All Spam Events"
 msgstr ""
 
-#: /tmp/strings:23
 msgid "All email sessions that were tarpitted."
 msgstr ""
 
-#: /tmp/strings:24
 msgid "Tarpit Events"
 msgstr ""
 
-#~ msgid "Event Log"
-#~ msgstr "イベントログ"
 
-#~ msgid "Tarpit Event Log"
-#~ msgstr "タールピットイベントログ"
 
-#~ msgid "skipped"
-#~ msgstr "スキップ"
 
-#~ msgid "blocked"
-#~ msgstr "ブロック"
 
-#~ msgid "Timestamp"
-#~ msgstr "タイムスタンプ"
 
-#~ msgid "Sender"
-#~ msgstr "送信者"
 
-#~ msgid "DNSBL Server"
-#~ msgstr "DNSBLサーバ"
 
-#~ msgid "Failed"
-#~ msgstr "失敗"
 
-#~ msgid "The value of Strength Value field is invalid."
-#~ msgstr "強度値フィールドの値は無効です。"
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "Scan POP3"
-#~ msgstr "POP3をスキャンする"
 
-#~ msgid "Advanced POP Configuration"
-#~ msgstr "高度な POP設定"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "IMAPをスキャンする"
 
-#~ msgid "Advanced IMAP Configuration"
-#~ msgstr "高度な IMAP設定"
 
-#~ msgid "unknown"
-#~ msgstr "不明"
 
-#~ msgid "pass message"
-#~ msgstr "メッセージをパス"
 
-#~ msgid "mark message"
-#~ msgstr "メッセージをマーク"
 
-#~ msgid "drop message"
-#~ msgstr "メッセージを破棄"
 
-#~ msgid "quarantine message"
-#~ msgstr "メッセージを隔離"
 
-#~ msgid "pass safelist message"
-#~ msgstr "セーフリストメッセージをパス"
 
-#~ msgid "pass oversize message"
-#~ msgstr "オーバーサイズメッセージを渡す"
 
-#~ msgid "pass outbound message"
-#~ msgstr "アウトバウンドメッセージを渡す"
 
-#~ msgid "unknown action"
-#~ msgstr "不明なアクション"
 
-#~ msgid "Receiver"
-#~ msgstr "受信者"
 
-#~ msgid "Subject"
-#~ msgstr "件名"
 
-#~ msgid "Spam score"
-#~ msgstr "スパムスコア"
 
-#~ msgid "Client"
-#~ msgstr "クライアント"
 
-#~ msgid "Server"
-#~ msgstr "サーバ"
 
-#~ msgid "action"
-#~ msgstr "アクション"
 
-#~ msgid "Saving..."
-#~ msgstr "保存中..."
 
-#~ msgid "Current Version:"
-#~ msgstr "現在のバージョン:"
 
-#~ msgid "All Events"
-#~ msgstr "全てのイベント"
 
-#~ msgid "Skipped Events"
-#~ msgstr "スキップしたイベント"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "POP/IMAPイベント"
 
-#~ msgid "Messages passed"
-#~ msgstr "メッセージはパスしました"
 
-#~ msgid "PASS"
-#~ msgstr "パス"
 
-#~ msgid "Messages dropped"
-#~ msgstr "メッセージを破棄しました"
 
-#~ msgid "DROP"
-#~ msgstr "破棄"
 
-#~ msgid "Messages marked"
-#~ msgstr "メッセージをマークしました"
 
-#~ msgid "MARK"
-#~ msgstr "マーク"
 
-#~ msgid "Messages quarantined"
-#~ msgstr "メッセージを隔離しました"
 
-#~ msgid "QUARANTINE"
-#~ msgstr "隔離"
 
-#~ msgid "Spam detected"
-#~ msgstr "スパムを検出しました"
 
-#~ msgid "Messages received"
-#~ msgstr "受信メッセージ"
 
-#~ msgid "SMTP Events"
-#~ msgstr "SMTPイベント"
 
-#~ msgid "Spam Events"
-#~ msgstr "スパムイベント"
 
-#~ msgid "Identity Theft Events"
-#~ msgstr "なりすましイベント"
 
-#~ msgid "Daily Spam Rate"
-#~ msgstr "毎日のスパムレート"
 
-#~ msgid "ham"
-#~ msgstr "ハム"
 
-#~ msgid "Drop Super Spam from Quarantine"
-#~ msgstr "スーパースパムを隔離して、破棄してください"
 
-#~ msgid "Enable Spam Headers"
-#~ msgstr "スパムヘッダーを有効にする"
 
-#~ msgid "mark infection"
-#~ msgstr "感染をマーク"
 
-#~ msgid "block message"
-#~ msgstr "メッセージをブロック"
 
-#~ msgid "SPAM score"
-#~ msgstr "SPAMスコア"
 
-#~ msgid "Block"
-#~ msgstr "ブロック"
 
-#~ msgid "Low (Strength: 5.0)"
-#~ msgstr "低（強度：5.0）"
 
-#~ msgid "Medium (Strength: 4.3)"
-#~ msgstr "中（強度：4.3)"
 
-#~ msgid "High (Strength: 3.5)"
-#~ msgstr "高（強度：3.5）"
 
-#~ msgid "Very High (Strength: 3.3)"
-#~ msgstr "やや高（強度:3.３)"
 
-#~ msgid "Extreme (Strength: 3.0)"
-#~ msgstr "最高（強度：3.0）"
 
-#~ msgid "BLOCK"
-#~ msgstr "ブロック"
 
-#~ msgid "Enable Super Spam Blocking"
-#~ msgstr "スーパースパムブロッキングをイネーブルにする"
 
-#~ msgid "Super Spam Level"
-#~ msgstr "スーパースパムレベル"
 
-#~ msgid "Fail Closed"
-#~ msgstr "Fail Closed"

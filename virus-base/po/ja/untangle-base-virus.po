@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -16,539 +12,289 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:45
 msgid "Web"
 msgstr "ウェブ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:52
 msgid "Scan HTTP"
 msgstr "HTTPをスキャン"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:66
 msgid "Signatures were last updated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:67
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:71
 msgid "About"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:83
 msgid "File Extensions"
 msgstr "ファイル拡張子"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:94
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:124
 msgid "File Type"
 msgstr "ファイルタイプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:99
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:125
 msgid "[enter file type]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:105
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:172
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:200
 msgid "Scan"
 msgstr "スキャン"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:139
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:177
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:205
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:339
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:365
 msgid "Description"
 msgstr "記述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:116
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:140
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:206
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:345
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:366
 msgid "[no description]"
 msgstr "[説明無し]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:151
 msgid "MIME Types"
 msgstr "MIMEタイプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:192
 msgid "MIME Type"
 msgstr "MIMEタイプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:193
 msgid "[enter MIME type]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:219
 msgid "FTP"
 msgstr "FTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:228
 msgid "Scan FTP"
 msgstr "FTPをスキャン"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:302
 msgid "Virus Blocker signatures were last updated"
 msgstr "ウィルスブロッカーシグネチャーは前回アップデートされました"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:242
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:303
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:392
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:455
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:608
 msgid "Unknown"
 msgstr "不明"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
 msgid "Email"
 msgstr "Eメール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:267
 msgid "Scan SMTP"
 msgstr "SMTPをスキャン"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:286
 msgid "Action"
 msgstr "アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:288
 msgid "pass message"
 msgstr "メッセージをパス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:289
 msgid "remove infection"
 msgstr "感染を除去"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:290
 msgid "block message"
 msgstr "メッセージをブロック"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:313
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:377
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:388
 msgid "Pass Sites"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:324
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:352
 msgid "Site"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:329
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:353
 msgid "[enter site]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:334
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:360
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:389
 msgid "Do not scan traffic to the specified sites.  Use caution!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:401
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:407
 msgid "Advanced"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:408
 msgid "Advanced settings require careful configuration."
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:127
 msgid "Summary Report"
 msgstr "サマリーレポート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:150
-#: ../src/com/untangle/node/virus/VirusFtpEvent.java:91
-#: ../src/com/untangle/node/virus/VirusHttpEvent.java:77
-#: ../src/com/untangle/node/virus/VirusSmtpEvent.java:109
 msgid "scanned"
 msgstr "スキャンする"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:151
 msgid "documents and detected and blocked"
 msgstr "文書化し、検出し、ブロックする"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:152
 msgid "viruses"
 msgstr "ウィルス"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:236
 msgid "Viruses Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:324
 msgid "Avg Viruses Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:326
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:329
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:335
 msgid "Blocks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:328
 msgid "Max Viruses Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:339
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:394
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:457
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:516
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:522
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:610
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:618
 msgid "Viruses"
 msgstr "ウイルス"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:348
 msgid "Top Web Viruses Detected"
 msgstr "ウェブウイルス検出トップ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:402
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:465
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:403
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:466
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:523
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
 msgid "Count"
 msgstr "カウント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:411
 msgid "Top Ftp Viruses Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:474
 msgid "Top Email Viruses Detected"
 msgstr "Eメールウィルス検出トップ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:531
 msgid "Top Viruses Detected"
 msgstr "ウイルス検出トップ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:628
 msgid "Web Events"
 msgstr "ウェブイベント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:632
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:677
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:723
 msgid "Time"
 msgstr "時間"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:635
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:637
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:680
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:682
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:726
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:728
-#, fuzzy
 msgid "Client"
 msgstr "クライアント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:640
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:642
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:685
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:687
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:731
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:733
 msgid "User"
 msgstr "ユーザ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:644
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:689
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
 msgid "Virus Name"
 msgstr "ウイルス名"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:645
 msgid "Url"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:646
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:691
 msgid "Server Ip"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
 msgid "Server Port"
 msgstr "サーバーポート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:673
 msgid "Ftp Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
 msgid "File Name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:719
 msgid "Mail Events"
 msgstr "メールイベント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
 msgid "Subject"
 msgstr "件名"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:737
 msgid "Recipient"
 msgstr "受信者"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:738
 msgid "Client Ip"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
 msgid "Client Port"
 msgstr "クライアントポート"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:41
 msgid "Feature is not installed."
 msgstr "機能がインストールされていません。"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:49
 msgid "This request has expired."
 msgstr "このリクエストは切れました"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:78
-#, java-format
 msgid "{0} | {1} Warning"
 msgstr "{0} | {1} 警告"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:89
-#, java-format
 msgid "{0} Virus Blocker"
 msgstr "{0}ウィルスブロッカー"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:106
-#, java-format
 msgid "{0}This file was blocked{1} because it contains a virus."
 msgstr ""
 
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "質問がありましたら、{0}に連絡してください。"
 
-#: ../src/com/untangle/node/virus/VirusFtpEvent.java:93
-#: ../src/com/untangle/node/virus/VirusHttpEvent.java:79
-#: ../src/com/untangle/node/virus/VirusSmtpEvent.java:111
 msgid "found virus"
 msgstr ""
 
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:120
 msgid "Documents scanned"
 msgstr "ドキュメントがスキャンされました"
 
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:121
 msgid "Documents blocked"
 msgstr "ドキュメントがブロックされました"
 
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:122
 msgid "Documents passed"
 msgstr "ドキュメントばパスしました"
 
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:123
 msgid "Infections removed"
 msgstr "感染が除去されました"
 
-#: ../src/com/untangle/node/virus/VirusNodeImpl.java:124
 msgid "Passed by policy"
 msgstr "ポリシーによりパスしました"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "ホスト："
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "理由:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "ブロックを解除する"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "永久にブロックしない"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "アドバンスセッティング"
 
-#~ msgid "Saving..."
-#~ msgstr "保存中..."
 
-#~ msgid "Please wait"
-#~ msgstr "お待ちください"
 
-#~ msgid "Disable HTTP Resume"
-#~ msgstr "HTTPレジュームをディセーブル"
 
-#~ msgid "Scan trickle rate (1-99)"
-#~ msgstr "スキャントリクル率（1-99）"
 
-#~ msgid "scan"
-#~ msgstr "スキャン"
 
-#~ msgid "file type"
-#~ msgstr "ファイルタイプ"
 
-#~ msgid "description"
-#~ msgstr "記述"
 
-#~ msgid "MIME type"
-#~ msgstr "MIMEタイプ"
 
-#~ msgid "Disable FTP Resume"
-#~ msgstr "FTPレジュームを無効"
 
-#~ msgid "Scan trickle rate"
-#~ msgstr "スキャントリクル率"
 
-#~ msgid "Scan POP3"
-#~ msgstr "POP3をスキャン"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "IMAPをスキャン"
 
-#~ msgid "clean"
-#~ msgstr "クリーン"
 
-#~ msgid "cleaned"
-#~ msgstr "クリーンした"
 
-#~ msgid "blocked"
-#~ msgstr "ブロックした"
 
-#~ msgid "virus found"
-#~ msgstr "ウィルスが見つかりました"
 
-#~ msgid "no virus found"
-#~ msgstr "ウィルスは見つかりませんでした"
 
-#~ msgid "timestamp"
-#~ msgstr "タイムスタンプ"
 
-#~ msgid "action"
-#~ msgstr "アクション"
 
-#~ msgid "client"
-#~ msgstr "クライアント"
 
-#~ msgid "traffic"
-#~ msgstr "トラフィック"
 
-#~ msgid "reason for action"
-#~ msgstr "アクションの理由"
 
-#~ msgid "server"
-#~ msgstr "サーバー"
 
-#~ msgid "Warning"
-#~ msgstr "警告"
 
-#~ msgid "Scan trickle rate should be between 1 and 99!"
-#~ msgstr "スキャントリクル率1と99の間にする必要があります！"
 
-#~ msgid "{0}This file was blocked{1} because it contained a virus."
-#~ msgstr "{0}このファイルはブロックされました{1}ウィルスが含まれているため"
 
-#~ msgid "All Events"
-#~ msgstr "全てのイベント"
 
-#~ msgid "HTTP Events"
-#~ msgstr "HTTPイベント"
 
-#~ msgid "Infected Events"
-#~ msgstr "感染したイベント"
 
-#~ msgid "FTP Events"
-#~ msgstr "FTPイベント"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "POP/IMAPイベント"
 
-#~ msgid "SCAN"
-#~ msgstr "スキャン"
 
-#~ msgid "BLOCK"
-#~ msgstr "ブロック"
 
-#~ msgid "PASS"
-#~ msgstr "パス"
 
-#~ msgid "REMOVE"
-#~ msgstr "除去"
 
-#~ msgid "SMTP Events"
-#~ msgstr "SMTPイベント"
 
-#~ msgid "Daily Viruses Blocked"
-#~ msgstr "日ごとにブロックされたウイルス"
 
-#~ msgid "Avg"
-#~ msgstr "平均"
 
-#~ msgid "viruses/day"
-#~ msgstr "ウィルス/日"
 
-#~ msgid "Max"
-#~ msgstr "最大"
 
-#~ msgid "Day"
-#~ msgstr "日"
 
-#~ msgid "viruses blocked"
-#~ msgstr "ブロックされたウイルス"
 
-#~ msgid "Hourly Viruses Blocked"
-#~ msgstr "時間毎にブロックされたウイルス"
 
-#~ msgid "viruses/hour"
-#~ msgstr "ウイルス/時"
 
-#~ msgid "name"
-#~ msgstr "名前"
 
-#~ msgid "count"
-#~ msgstr "カウント"
 
-#, fuzzy
-#~ msgid "URL"
-#~ msgstr "URL:"
 
-#~ msgid "Server IP"
-#~ msgstr "サーバーIPアドレス"
 
-#~ msgid "Client IP"
-#~ msgstr "クライアントIPアドレス"
 
-#~ msgid "max (7-day)"
-#~ msgstr "最大 (7日間)"
 
-#~ msgid "avg (7-day)"
-#~ msgstr "平均（7日間）"
 
-#~ msgid "hour"
-#~ msgstr "時"

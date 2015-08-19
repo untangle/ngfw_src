@@ -1,8 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,506 +12,289 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Mark"
 msgstr "Marquer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:81
 msgid "Pass"
 msgstr "Passer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Drop"
 msgstr "Omettre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:82
 msgid "Quarantine"
 msgstr "Quarantaine"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Low (Threshold: 5.0)"
 msgstr "Bas (Seuil: 5.0)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "Medium (Threshold: 4.3)"
 msgstr "Moyen (Seuil: 4.3)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:83
 msgid "High (Threshold: 3.5)"
 msgstr "Haut (Seuil: 3.5)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Very High (Threshold: 3.3)"
 msgstr "Très Haut (Seuil: 3.3)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Extreme (Threshold: 3.0)"
 msgstr "Extreme (Seuil: 3.0)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:84
 msgid "Custom"
 msgstr "Personnalisé(e)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Email"
 msgstr "Courrier"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:94
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
 msgid "Scan SMTP"
 msgstr "Scanner le SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:132
 msgid "Strength"
 msgstr "Force"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:154
 msgid "Strength Value"
 msgstr "Valeur de la force"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:161
 msgid "Strength Value must be a number. Smaller value is higher strength."
 msgstr ""
 "La valeur de la force doit être un nombre. Plus la valeur est petite plus la "
 "force est grande."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Action"
 msgstr "Action"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:205
 msgid "Drop Super Spam"
 msgstr "Omettre le Super Spam"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:225
 msgid "Super Spam Threshold"
 msgstr "Seuil du Super Spam"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:263
 msgid "Advanced SMTP Configuration"
 msgstr "Configuration SMTP avancée"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:273
 msgid "Enable tarpitting"
 msgstr "Activer les listes noires DNS (DNSBL)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:286
 msgid "Add email headers"
 msgstr "Ajouter les en-têtes de courriel"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:299
 msgid "Close connection on scan failure"
 msgstr "Fermer la connexion sur l'échec de scan"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:312
 msgid "Scan outbound (WAN) SMTP"
 msgstr "SMTP Scan sortants (WAN)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:325
 msgid "Allow and ignore TLS sessions"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:337
 msgid "CPU Load Limit"
 msgstr "Limite de Charge CPU"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:344
 msgid "Value must be a float."
 msgstr "La valeur doit être un flotteur."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:357
 msgid "Concurrent Scan Limit"
 msgstr "Limite de Scan concurrents"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:384
 msgid "Value must be a integer."
 msgstr "La valeur doit être un entier."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:377
 msgid "Message Size Limit"
 msgstr "Limite de taille de message"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:399
 msgid "Clear Bayes Data"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
 msgid "Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:403
 msgid "This will clear all learned bayesian data!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Clearing bayes data..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:412
 msgid "Please wait"
 msgstr "SVP attendez"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Failure"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:415
 msgid "Error: Unable to reset bayes data."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Success"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:417
 msgid "Bayes data cleared."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
 msgid "Note"
 msgstr "Note"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
-#, fuzzy
 msgid "Spam Blocker Lite last checked for updates"
 msgstr "dernière vérification de mise à jour Spam Blocker"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:429
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:431
 msgid "never"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:430
-#, fuzzy
 msgid "Spam Blocker Lite was last updated"
 msgstr "Le Bloqueur de Spam a été mis à jour"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
 msgstr "Spam"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
 msgstr "Vitesse de Spam horaire"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
 msgstr "Top Ten des spammé(es)"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and spam email over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending spam."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Spam Sender Addresses"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of spam email over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Email Usage (spam)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The ratio of spam (true) to ham (false)"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Spam Ratio"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of email addresses with spam."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Spam Recipients"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "A summary of spam blocking actions for email activity."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Spam Blocker Lite Summary"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All emails marked as Spam and quarantined."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr ""
 
-#: /tmp/strings:19
 msgid "All emails scanned by Spam Blocker."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr ""
 
-#: /tmp/strings:21
 msgid "All emails marked as Spam."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "All Spam Events"
 msgstr ""
 
-#: /tmp/strings:23
 msgid "All email sessions that were tarpitted."
 msgstr ""
 
-#: /tmp/strings:24
 msgid "Tarpit Events"
 msgstr ""
 
-#~ msgid "Tarpit Event Log"
-#~ msgstr "Enregistrement des évènements de listes noires (DNSBL)"
 
-#~ msgid "skipped"
-#~ msgstr "sauté(e)"
 
-#~ msgid "blocked"
-#~ msgstr "bloqué(e)"
 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "référence temporelle"
 
-#, fuzzy
-#~ msgid "Sender"
-#~ msgstr "expéditeur"
 
-#, fuzzy
-#~ msgid "DNSBL Server"
-#~ msgstr "serveur de listes noires DNSBL"
 
-#~ msgid "Failed"
-#~ msgstr "Echec"
 
-#~ msgid "The value of Strength Value field is invalid."
-#~ msgstr "La valeur du champ Valeur de la Force est invalide."
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "Scan POP3"
-#~ msgstr "Scanner POP3"
 
-#~ msgid "Advanced POP Configuration"
-#~ msgstr "Configuration POP avancée"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "Scanner IMAP"
 
-#~ msgid "Advanced IMAP Configuration"
-#~ msgstr "Configuration IMAP avancée"
 
-#~ msgid "unknown"
-#~ msgstr "inconnu"
 
-#~ msgid "pass message"
-#~ msgstr "passer le message"
 
-#~ msgid "mark message"
-#~ msgstr "marquer le message"
 
-#~ msgid "drop message"
-#~ msgstr "omettre le message"
 
-#~ msgid "quarantine message"
-#~ msgstr "mettre le message en quarantaine"
 
-#, fuzzy
-#~ msgid "pass safelist message"
-#~ msgstr "message de la liste de confiance"
 
-#~ msgid "pass oversize message"
-#~ msgstr "passer message trop grand"
 
-#~ msgid "unknown action"
-#~ msgstr "action inconnue"
 
-#, fuzzy
-#~ msgid "Receiver"
-#~ msgstr "destinataire"
 
-#, fuzzy
-#~ msgid "Subject"
-#~ msgstr "sujet"
 
-#, fuzzy
-#~ msgid "Spam score"
-#~ msgstr "score de spam"
 
-#, fuzzy
-#~ msgid "Client"
-#~ msgstr "client"
 
-#, fuzzy
-#~ msgid "Server"
-#~ msgstr "serveur"
 
-#~ msgid "action"
-#~ msgstr "action"
 
-#~ msgid "Saving..."
-#~ msgstr "Sauvegarde en cours..."
 
-#~ msgid "Current Version:"
-#~ msgstr "Version Actuelle:"
 
-#~ msgid "All Events"
-#~ msgstr "Tous les évènements"
 
-#~ msgid "Skipped Events"
-#~ msgstr "Evènements sautés"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "Evènements POP/IMAP"
 
-#~ msgid "Messages passed"
-#~ msgstr "Messages passés"
 
-#~ msgid "PASS"
-#~ msgstr "PASSER"
 
-#~ msgid "Messages dropped"
-#~ msgstr "Messages omis"
 
-#~ msgid "DROP"
-#~ msgstr "OMETTRE"
 
-#~ msgid "Messages marked"
-#~ msgstr "Messages marqués"
 
-#~ msgid "MARK"
-#~ msgstr "MARQUER"
 
-#~ msgid "Messages quarantined"
-#~ msgstr "Messages mis en quarantaine"
 
-#~ msgid "QUARANTINE"
-#~ msgstr "QUARANTAINE"
 
-#~ msgid "Spam detected"
-#~ msgstr "Spam détecté"
 
-#~ msgid "Messages received"
-#~ msgstr "Messages reçus"
 
-#~ msgid "SMTP Events"
-#~ msgstr "Evènements SMTP"
 
-#~ msgid "Spam Events"
-#~ msgstr "Evènements de Spam"
 
-#~ msgid "Identity Theft Events"
-#~ msgstr "Evènements d'usurpation d'identité"
 
-#~ msgid "Daily Spam Rate"
-#~ msgstr "Vitesse de Spam quotidienne"
 
-#~ msgid "ham"
-#~ msgstr "ham"
 
-#~ msgid "Drop Super Spam from Quarantine"
-#~ msgstr "Omettre le Super Spam de la quarantaine"
 
-#~ msgid "Enable Spam Headers"
-#~ msgstr "Activer les entêtes de spam"
 
-#~ msgid "mark infection"
-#~ msgstr "marquer l'infection"
 
-#~ msgid "block message"
-#~ msgstr "bloquer le message"
 
-#~ msgid "SPAM score"
-#~ msgstr "score de SPAM"
 
-#~ msgid "Block"
-#~ msgstr "Bloquer"
 
-#~ msgid "Low (Strength: 5.0)"
-#~ msgstr "Bas (Force: 5,0)"
 
-#~ msgid "Medium (Strength: 4.3)"
-#~ msgstr "Moyen (Force: 4,3)"
 
-#~ msgid "High (Strength: 3.5)"
-#~ msgstr "Haute (Force: 3,5)"
 
-#~ msgid "Very High (Strength: 3.3)"
-#~ msgstr "Très Haute (Force: 3,3)"
 
-#~ msgid "Extreme (Strength: 3.0)"
-#~ msgstr "Extrême (Force: 3,0)"
 
-#~ msgid "BLOCK"
-#~ msgstr "BLOQUER"
 
-#~ msgid "Enable Super Spam Blocking"
-#~ msgstr "Activer le Bloqueur de Super Spam"
 
-#~ msgid "Super Spam Level"
-#~ msgstr "Niveau de Super Spam"
 
-#~ msgid "Fail Closed"
-#~ msgstr "Échec fermé"

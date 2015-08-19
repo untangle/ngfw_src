@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,428 +13,231 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.6\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "マーク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "パス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "破棄"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "隔離"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "Eメール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "SMTPをスキャンする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "注意"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr "Eメールシグネチャの最終更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr "決して"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "フィッシング"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "クリーン"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "1時間毎のフィッシュレート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "１日毎のフィッシュレート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "トップ10のフィッシング詐欺被害"
 
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "ご質問があれば、{0}にお問い合わせください。"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
 msgid "Messages received"
 msgstr "メッセージは受信されました"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "メッセージはパスしました"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "メッセージは破棄しました"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "メッセージをマーク"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "メッセージが隔離されました"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "スパムを検出しました"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and phish email over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending phish."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Phish Sender Addresses"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The amount of phish email over time."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Email Usage (phish)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The ratio of phish (true) to ham (false)"
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Phish Ratio"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The number of email addresses with phish."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Phish Recipients"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "A summary of phish blocking actions for email activity."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Phish Blocker Summary"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "All email sessions detected as phishing attempts and quarantined."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr "隔離されたイベント"
 
-#: /tmp/strings:19
 msgid "All email sessions scanned by Phish Blocker."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr "全てのEメールイベント"
 
-#: /tmp/strings:21
 msgid "All email sessions detected as phishing attempts."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "All Phish Events"
 msgstr ""
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "ホスト："
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "理由:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "すぐにブロックを解除"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "永久にブロックを解除"
 
-#~ msgid "Event Log"
-#~ msgstr "イベントログ"
 
-#~ msgid "All"
-#~ msgstr "全て"
 
-#~ msgid "Events"
-#~ msgstr "イベント"
 
-#~ msgid "Tarpit Events"
-#~ msgstr "タールピットイベント"
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "Scan POP3"
-#~ msgstr "POP3をスキャンする"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "Scan IMAP"
-#~ msgstr "IMAPをスキャンする"
 
-#~ msgid "unknown"
-#~ msgstr "不明"
 
-#~ msgid "Web"
-#~ msgstr "Web"
 
-#~ msgid "Enable Phish web filtering"
-#~ msgstr "Phish Web フィルタリングを有効にする"
 
-#~ msgid "Phish Blocker web signatures were last updated "
-#~ msgstr "Phish BlockerのWeb署名が最終更新されました"
 
-#~ msgid "Web Event Log"
-#~ msgstr "Webイベントログ"
 
-#~ msgid "pass"
-#~ msgstr "パス"
 
-#~ msgid "block"
-#~ msgstr "ブロック"
 
-#~ msgid "Timestamp"
-#~ msgstr "タイムスタンプ"
 
-#~ msgid "Client"
-#~ msgstr "クライアント"
 
-#~ msgid "Username"
-#~ msgstr "ユーザ名"
 
-#~ msgid "Uost"
-#~ msgstr "ホスト"
 
-#~ msgid "Uri"
-#~ msgstr "Uri"
 
-#~ msgid "Email Event Log"
-#~ msgstr "Eメールイベントログ"
 
-#~ msgid "pass message"
-#~ msgstr "メッセージをパス"
 
-#~ msgid "mark message"
-#~ msgstr "メッセージをマーク"
 
-#~ msgid "drop message"
-#~ msgstr "メッセージを破棄"
 
-#~ msgid "quarantine message"
-#~ msgstr "メッセージを隔離"
 
-#~ msgid "pass safelist message"
-#~ msgstr "パスセーフリストメッセージ"
 
-#~ msgid "pass oversize message"
-#~ msgstr "サイズが大きいメッセージを渡す"
 
-#~ msgid "pass outbound message"
-#~ msgstr "アウトバンドメッセージを渡す"
 
-#~ msgid "unknown action"
-#~ msgstr "未知のアクション"
 
-#~ msgid "Receiver"
-#~ msgstr "受信者"
 
-#~ msgid "Sender"
-#~ msgstr "送信者"
 
-#~ msgid "Subject"
-#~ msgstr "件名"
 
-#~ msgid "Server"
-#~ msgstr "サーバ"
 
-#~ msgid "Feature is not installed."
-#~ msgstr "機能がインストールされていません。"
 
-#~ msgid "{0} | Phish Blocker Warning"
-#~ msgstr "{0}Phish Blocker警告"
 
-#~ msgid "{0}  Phish Blocker"
-#~ msgstr "{0}Phish Blocker"
 
-#~ msgid ""
-#~ "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
-#~ "imitation of another website, designed to trick users into sharing "
-#~ "personal or financial information. Entering any personal information on "
-#~ "this page may result in identity theft or other abuse. "
-#~ msgstr ""
-#~ "{0}警告-疑わしいフィッシングページ。{1} このページには、偽造、または別の"
-#~ "Webサイトは、個人情報や財務情報の共有にユーザをトリックするように設計の模"
-#~ "倣されることがあります。を入力するすべての個人情報をこのページでは個人情報"
-#~ "の盗難や他の乱用につながる可能性があります。"
 
-#~ msgid "Blocked Web Events"
-#~ msgstr "ブロックされたWebイベント"
 
-#~ msgid "Phish Blocker last checked for updates"
-#~ msgstr "フィッシュブロッカーが最後の更新をチェック"
 
-#~ msgid "Current Version:"
-#~ msgstr "現在のバージョン："
 
-#~ msgid "action"
-#~ msgstr "アクション"
 
-#~ msgid "request"
-#~ msgstr "要求"
 
-#~ msgid "Saving..."
-#~ msgstr "保存中..."
 
-#~ msgid "Please wait"
-#~ msgstr "しばらくお待ちください"
 
-#~ msgid "PASS"
-#~ msgstr "PASS"
 
-#~ msgid "DROP"
-#~ msgstr "DROP"
 
-#~ msgid "MARK"
-#~ msgstr "MARK"
 
-#~ msgid "QUARANTINE"
-#~ msgstr "QUARANTINE"
 
-#~ msgid "All Events"
-#~ msgstr "全てのイベント"
 
-#~ msgid "Skipped Events"
-#~ msgstr "スキップしたイベント"
 
-#~ msgid "Spam Events"
-#~ msgstr "スパムイベント"
 
-#~ msgid "POP/IMAP Events"
-#~ msgstr "POP/IMAPイベント"
 
-#~ msgid "SMTP Events"
-#~ msgstr "SMTPイベント"
 
-#~ msgid "Identity Theft Events"
-#~ msgstr "Identity Theft（なりすまし）イベント　"
 
-#~ msgid "All Phish HTTP Traffic"
-#~ msgstr "全てのPhish HTTPトラフィック"
 
-#~ msgid "Blocked Phish HTTP Traffic"
-#~ msgstr "Phish HTTPトラフィックをブロックする"
 
-#~ msgid "Passed Phish HTTP Traffic"
-#~ msgstr "Phish HTTPトラフィックをパスする"
 
-#~ msgid "mark infection"
-#~ msgstr "感染にマーク"
 
-#~ msgid "block message"
-#~ msgstr "メッセージをブロックする"
 
-#~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal "
-#~ "personal information."
-#~ msgstr ""
-#~ "{0}このwebはブロックされました{1}個人情報を盗むようにデザインされている恐"
-#~ "れがあります。"
 
-#~ msgid "Block"
-#~ msgstr "ブロック"

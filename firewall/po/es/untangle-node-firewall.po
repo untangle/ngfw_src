@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -18,124 +14,90 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:13
 msgid "Destination Address"
 msgstr "Dirección de destino"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:14
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:574
 msgid "Destination Port"
 msgstr "Puerto de destino"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:15
 msgid "Destination Interface"
 msgstr "Interfaz de destino"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:16
 msgid "Source Address"
 msgstr "Dirección de origen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:17
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:576
 msgid "Source Port"
 msgstr "Puerto de origen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:18
 msgid "Source Interface"
 msgstr "Interfaz de origen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:19
 msgid "any"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
-#, fuzzy
 msgid "Username"
 msgstr "nombre de usuario"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
 msgid "Client Hostname"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:22
 msgid "Server Hostname"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
 msgid "Client MAC Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
 msgid "Server MAC Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:25
 msgid "Client MAC Vendor"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
 msgid "Server MAC Vendor"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:27
 msgid "Client in Penalty Box"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:28
 msgid "Server in Penalty Box"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
 msgid "Client has no Quota"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:30
 msgid "Server has no Quota"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
 msgid "Client has exceeded Quota"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:32
 msgid "Server has exceeded Quota"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:33
 msgid "Client Quota Attainment"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:34
 msgid "Server Quota Attainment"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:35
 msgid "Directory Connector: User in Group"
 msgstr "Conector de Directorio: El usuario en el grupo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:36
 msgid "HTTP: Client User Agent"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
 msgid "HTTP: Client User OS"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:45
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:59
 msgid "Rules"
 msgstr "Reglas"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:50
 msgid "Note"
 msgstr "Nota"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:52
-#, fuzzy
 msgid ""
 " <b>Firewall</b> is a simple application designed to block and flag network "
 "traffic based on a set of rules. To learn more click on the <b>Help</b> "
@@ -148,553 +110,323 @@ msgstr ""
 "funcionalidad de enrutamiento y reenvío de puertos se pueden encontrar en "
 "otros lugares en: Configuración-> Redes."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:85
 msgid "Rule Id"
 msgstr "Regla Id"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:89
 msgid "new"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:93
 msgid "Enable"
 msgstr "Habilitar"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:98
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:124
 msgid "Description"
 msgstr "Descripción"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:104
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Block"
 msgstr "Bloquear"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:110
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
 msgid "Flag"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:119
 msgid "Enable Rule"
 msgstr "Habilitar regla"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:125
 msgid "[no description]"
 msgstr "[sin descripción]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
 msgid "If all of the following conditions are met:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:139
 msgid "Perform the following action(s):"
 msgstr "Realizar la acción siguiente(s):"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:145
 msgid "Action Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
 msgid "Pass"
 msgstr "Permitir"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:55
 msgid "Summary Report"
 msgstr "Resumen del informe"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:77
 msgid "scanned"
 msgstr "Analizado"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:78
 msgid "sessions and blocked"
 msgstr "Sesiones y bloqueos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:79
 msgid "according to the rules"
 msgstr "de acuerdo a las normas"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:122
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:201
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:203
 msgid "Sessions"
 msgstr "Sesiones"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
 msgid "Avg Scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:187
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Scans"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:189
 msgid "Max Scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
 msgid "Avg Flagged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:191
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 msgid "Flags"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:193
 msgid "Max Flagged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
 msgid "Avg Blocked"
 msgstr "Promedio de bloqueos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:195
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 msgid "Blocks"
 msgstr "Bloqueos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:197
 msgid "Max Blocked"
 msgstr "Máximo bloqueos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:207
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:571
 msgid "Blocked"
 msgstr "bloqueado"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:208
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:572
 msgid "Flagged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:209
-#, fuzzy
 msgid "Scanned"
 msgstr "Analizado"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:218
-#, fuzzy
 msgid "Top Firewall Flagging Rules By Hits"
 msgstr "Principales reglas de bloqueo del cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:259
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:315
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:371
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:428
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:484
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:540
 msgid "Hits"
 msgstr "Accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:266
-#, fuzzy
 msgid "Top Ten Firewall Flagging Rules (by Hits)"
 msgstr "Principales diez reglas de bloqueo del cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:267
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:436
 msgid "Rule #"
 msgstr "Regla #"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:268
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:324
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:380
 msgid "Flags Per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:276
-#, fuzzy
 msgid "Top Firewall Flagged Hosts By Hits"
 msgstr "Principales equipos bloqueados por el cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:322
-#, fuzzy
 msgid "Top Ten Firewall Flagged Hosts (by Hits)"
 msgstr "Principales diez equipos bloqueados por el cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:323
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:492
 msgid "Host"
 msgstr "Equipos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:331
-#, fuzzy
 msgid "Top Firewall Flagged Users By Hits"
 msgstr "Principales usuarios bloqueados por el cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:378
-#, fuzzy
 msgid "Top Ten Firewall Flagged Users (by Hits)"
 msgstr "Principales diez usuarios bloqueados por el cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:379
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:548
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:568
 msgid "User"
 msgstr "Usuario"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:388
 msgid "Top Firewall Blocking Rules By Hits"
 msgstr "Principales reglas de bloqueo del cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:435
 msgid "Top Ten Firewall Blocking Rules (by Hits)"
 msgstr "Principales diez reglas de bloqueo del cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:437
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:493
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:549
 msgid "Blocks Per Day"
 msgstr "Bloqueos por día"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:445
 msgid "Top Firewall Blocked Hosts By Hits"
 msgstr "Principales equipos bloqueados por el cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:491
 msgid "Top Ten Firewall Blocked Hosts (by Hits)"
 msgstr "Principales diez equipos bloqueados por el cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:500
 msgid "Top Firewall Blocked Users By Hits"
 msgstr "Principales usuarios bloqueados por el cortafuegos por accesos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:547
 msgid "Top Ten Firewall Blocked Users (by Hits)"
 msgstr "Principales diez usuarios bloqueados por el cortafuegos (por accesos)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:557
 msgid "Firewall Events"
 msgstr "Eventos del cortafuegos"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:563
 msgid "Time"
 msgstr "Hora"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:566
 msgid "Client"
 msgstr "Cliente"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:570
 msgid "Rule Applied"
 msgstr "Regla aplicada"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:573
 msgid "Destination Ip"
 msgstr "IP de destino"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:575
 msgid "Source Ip"
 msgstr "IP de origen"
 
-#: ../src/com/untangle/node/firewall/FirewallEvent.java:69
 msgid "blocked"
 msgstr "bloqueado"
 
-#: ../src/com/untangle/node/firewall/FirewallEvent.java:71
 msgid "password"
 msgstr ""
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:88
 msgid "Sessions passed"
 msgstr "Sesiones permitidas"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:89
-#, fuzzy
 msgid "Sessions flagged"
 msgstr "Sesiones registradas"
 
-#: ../src/com/untangle/node/firewall/FirewallImpl.java:90
 msgid "Sessions blocked"
 msgstr "Sesiones bloqueadas"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
-#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
 msgid "description"
 msgstr ""
 
-#: /tmp/strings:1 /tmp/strings:11
 msgid "The number of flagged session grouped by username."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
-#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Top Flagged Usernames"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The amount of scanned, flagged, and blocked sessions over time."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Scanned Sessions"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of scanned session grouped by username."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Scanned Usernames"
 msgstr ""
 
-#: /tmp/strings:7 /tmp/strings:25
 msgid "The number of flagged session grouped by client."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Top Blocked Clients"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The number of flagged session grouped by hostname."
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Top Flagged Hostnames"
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Top Blocked Usernames"
 msgstr ""
 
-#: /tmp/strings:13 /tmp/strings:27
 msgid "The number of flagged session grouped by server (destination) port."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Top Blocked Server Ports"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "The number of scanned session grouped by client."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Top Scanned Clients"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "The number of scanned session grouped by server (destination) port."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Top Scanned Server Ports"
 msgstr ""
 
-#: /tmp/strings:19
 msgid "The number of scanned session grouped by hostname."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "Top Scanned Hostnames"
 msgstr ""
 
-#: /tmp/strings:21
 msgid "A summary of firewall actions."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "Firewall Summary"
 msgstr ""
 
-#: /tmp/strings:23
 msgid "The number of blocked sessions grouped by hostname."
 msgstr ""
 
-#: /tmp/strings:24
 msgid "Top Blocked Hostnames"
 msgstr ""
 
-#: /tmp/strings:26
 msgid "Top Flagged Clients"
 msgstr ""
 
-#: /tmp/strings:28
 msgid "Top Flagged Server Ports"
 msgstr ""
 
-#: /tmp/strings:29
 msgid "Events blocked by Firewall App."
 msgstr ""
 
-#: /tmp/strings:30
 msgid "Blocked Events"
 msgstr "Eventos bloqueados"
 
-#: /tmp/strings:31
 msgid "Events flagged by Firewall App."
 msgstr ""
 
-#: /tmp/strings:32
 msgid "Flagged Events"
 msgstr ""
 
-#: /tmp/strings:33
 msgid "All events scanned by Firewall App."
 msgstr ""
 
-#: /tmp/strings:34
 msgid "All Events"
 msgstr "Todos los eventos"
 
-#~ msgid "Rule"
-#~ msgstr "Regla"
 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "fecha y hora"
 
-#, fuzzy
-#~ msgid "Client Port"
-#~ msgstr "puerto cliente"
 
-#, fuzzy
-#~ msgid "Server"
-#~ msgstr "servidor"
 
-#, fuzzy
-#~ msgid "Server Port"
-#~ msgstr "puerto servidor"
 
-#~ msgid "Avg Logged"
-#~ msgstr "Promedio registrado"
 
-#~ msgid "Logs"
-#~ msgstr "Registros"
 
-#~ msgid "Max Logged"
-#~ msgstr "Máximo registrado"
 
-#~ msgid "Logged"
-#~ msgstr "Registrado"
 
-#~ msgid "Directory Connector: Username"
-#~ msgstr "Conector de Directorio: Nombre de usuario"
 
-#~ msgid "Log"
-#~ msgstr "Registro"
 
-#~ msgid "Add"
-#~ msgstr "Anadir"
 
-#~ msgid "and"
-#~ msgstr "y"
 
-#~ msgid "Type"
-#~ msgstr "Tipo"
 
-#~ msgid "Value"
-#~ msgstr "Valor"
 
-#~ msgid "Warning"
-#~ msgstr "Advertencia"
 
-#~ msgid "client"
-#~ msgstr "cliente"
 
-#~ msgid "rule Id"
-#~ msgstr "Regla Id"
 
-#~ msgid "Saving..."
-#~ msgstr "Guardando..."
 
-#~ msgid "Please wait"
-#~ msgstr "Espere"
 
-#~ msgid "PASS"
-#~ msgstr "PERMITIR"
 
-#~ msgid "LOG"
-#~ msgstr "REGISTRO"
 
-#~ msgid "BLOCK"
-#~ msgstr "BLOQUEAR"
 
-#~ msgid "(pre-NAT)"
-#~ msgstr "(pre-NAT)"
 
-#~ msgid "Remove"
-#~ msgstr "Eliminar"
 
-#~ msgid "Help"
-#~ msgstr "Ayuda"
 
-#~ msgid "Cancel"
-#~ msgstr "Cancelar"
 
-#~ msgid "Save"
-#~ msgstr "Guardar"
 
-#~ msgid "[no name]"
-#~ msgstr "[sin nombre]"
 
-#~ msgid "[no category]"
-#~ msgstr "[sin categoría]"
 
-#~ msgid "The form is not valid!"
-#~ msgstr "¡El formulario no es válido!"
 
-#~ msgid "Action"
-#~ msgstr "Medida"
 
-#~ msgid "Traffic Type"
-#~ msgstr "Tipo de tráfico"
 
-#~ msgid "Default Action"
-#~ msgstr "Medida predeterminada"
 
-#~ msgid "passed"
-#~ msgstr "permitido"
 
-#~ msgid "action"
-#~ msgstr "medida"
 
-#~ msgid "reason for action"
-#~ msgstr "motivo de la medida tomada"
 
-#~ msgid "rule #{0}"
-#~ msgstr "regla #{0}"
 
-#~ msgid "Invalid address specified for Source Address"
-#~ msgstr ""
-#~ "Ha especificado una dirección no válida para la dirección de origen."
 
-#~ msgid "Invalid address specified for Destination Address"
-#~ msgstr ""
-#~ "Ha especificado una dirección no válida para la dirección de destino."
 
-#~ msgid "Invalid port specified for Source Port"
-#~ msgstr "Ha especificado un puerto no válido para el puerto de origen."
 
-#~ msgid "Invalid port specified for Destination Port"
-#~ msgstr "Ha especificado un puerto no válido para el puerto de destino."
 
-#~ msgid "Validation failed"
-#~ msgstr "Error de validación"
 
-#~ msgid "Please Try Again"
-#~ msgstr "Por favor intentelo de nuevo"
 
-#~ msgid "Failed"
-#~ msgstr "Falló"
 
-#~ msgid "Firewall Block Events"
-#~ msgstr "Eventos de bloqueo del cortafuegos"
 
-#~ msgid "Rule Description"
-#~ msgstr "Descripción de la regla"
 
-#~ msgid "Category"
-#~ msgstr "Categoría"

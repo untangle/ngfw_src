@@ -1,7 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -345,7 +341,6 @@ msgstr "ヘルプ"
 msgid "Buy Now"
 msgstr "今購入する"
 
-#, fuzzy
 msgid ""
 "The <B>Status Indicator</B> shows the current operating condition of a "
 "particular application."
@@ -370,7 +365,6 @@ msgstr "アプリケーションがONであることが、異常が発生した�
 msgid "Yellow"
 msgstr "イエロー"
 
-#, fuzzy
 msgid "indicates that the application is saving or refreshing settings."
 msgstr "アプリケーションが保存中か、設定を更新中を示しています。"
 
@@ -426,7 +420,6 @@ msgstr "ネットワーク"
 msgid "Sessions"
 msgstr "セッション"
 
-#, fuzzy
 msgid "Hosts"
 msgstr "ホスト"
 
@@ -478,7 +471,6 @@ msgstr "ホストビューアを開きます"
 msgid "Number of Processors / Type / Speed:"
 msgstr "プロセッサーの数/タイプ/スピード"
 
-#, fuzzy
 msgid "Load average (1 min , 5 min , 15 min):"
 msgstr "Load 平均 (1 分 / 5 分 / 15 分):"
 
@@ -1836,7 +1828,6 @@ msgstr "組織]フィールドは空にすることはできません"
 msgid "The Common Name field must not be empty"
 msgstr "Common Nameフィールドが空にすることはできません"
 
-#, fuzzy
 msgid "Success"
 msgstr "成功！"
 
@@ -1855,7 +1846,6 @@ msgstr ""
 msgid "Generating server certificate and restarting web server..."
 msgstr "サーバ証明書を生成し、Webサーバを再起動します..."
 
-#, fuzzy
 msgid "Please Wait"
 msgstr "お待ちください"
 
@@ -2447,7 +2437,6 @@ msgstr "合計KB /秒"
 msgid "Priority"
 msgstr "優先"
 
-#, fuzzy
 msgid "None"
 msgstr "なし"
 
@@ -3960,11 +3949,9 @@ msgstr ""
 "{0}サーバーがシャットダウンしようとしています。これは、すべてのネットワーク運"
 "用を停止します。"
 
-#, fuzzy
 msgid "Manual Shutdown Failure Warning"
 msgstr "マニュアル再起動失敗警告"
 
-#, fuzzy
 msgid "Error: Unable to shutdown {0} Server"
 msgstr "エラー: {0} サーバーを起動することができません"
 
@@ -4107,7 +4094,6 @@ msgstr "SMTP経由でTLS暗号化を許可します。"
 msgid "Stop TLS encryption over SMTP."
 msgstr "SMTP経由でTLS暗号化を停止します。"
 
-#, fuzzy
 msgid "Protocols"
 msgstr "プロトコル"
 
@@ -4671,7 +4657,6 @@ msgstr "リロード..."
 msgid "Close"
 msgstr "閉じる"
 
-#, fuzzy
 msgid "Done"
 msgstr "完了"
 
@@ -5215,7 +5200,6 @@ msgstr "スキャンFTP"
 msgid "Virus Blocker signatures were last updated"
 msgstr "ウイルスブロッカーの署名が最後に更新されました"
 
-#, fuzzy
 msgid "Unknown"
 msgstr "不明"
 
@@ -6014,7 +5998,6 @@ msgstr "TCP"
 msgid "Database"
 msgstr "データベース"
 
-#, fuzzy
 msgid "User"
 msgstr "ユーザー"
 
@@ -10273,15 +10256,12 @@ msgstr "目次"
 msgid "Page %d"
 msgstr "%d ページ"
 
-#, fuzzy
 msgid "day"
 msgstr "日"
 
-#, fuzzy
 msgid "days"
 msgstr "日"
 
-#, fuzzy
 msgid "Report for"
 msgstr "%sのレポート"
 
@@ -11487,7 +11467,6 @@ msgstr "アラート"
 msgid "The amount of free memory over time."
 msgstr "時間をかけて空きメモリの量。"
 
-#, fuzzy
 msgid "Memory Usage"
 msgstr "使用されたメモリ："
 
@@ -12741,7 +12720,6 @@ msgstr "メッセージが受信されました"
 msgid "Messages passed"
 msgstr "メッセージがパスしました"
 
-#, fuzzy
 msgid "Messages dropped"
 msgstr "メッセージが破棄されました"
 
@@ -13019,1805 +12997,476 @@ msgstr ","
 msgid "date_fmt"
 msgstr "m/d/y"
 
-#, fuzzy
 msgid "timestamp_fmt"
 msgstr "Y-m-d g:i:s a"
 
-#, fuzzy
-#~ msgid "timestamp"
-#~ msgstr "Y-m-d g:i:s a"
-
-#, fuzzy
-#~ msgid ""
-#~ "indicates that the application is \"off\", and may be turned \"on\" by "
-#~ "the user."
-#~ msgstr ""
-#~ "アプリケーションが\"off\"状態で、ユーザーによって \"on\" に切り替えられる"
-#~ "ことを示しています。"
 
-#~ msgid "An SNMP \"Community\" must be specified."
-#~ msgstr "SNMP \"コミュニティ\" を特定する必要があります"
 
-#, fuzzy
-#~ msgid "indicates that the application is \"on\" and operating normally."
-#~ msgstr "アプリケーションが \"on\"状態で、正常に動作しています。"
 
-#, fuzzy
-#~ msgid ""
-#~ "indicates that the application is \"on\", but that an abnormal condition "
-#~ "has occurred."
-#~ msgstr "アプリケーションが \"on\"状態ですが、異常な状態が発生しました。"
 
-#, fuzzy
-#~ msgid ""
-#~ "The <B>Power Button</B> allows you to turn a application \"on\" and \"off"
-#~ "\"."
-#~ msgstr ""
-#~ "<B>パワーボタン</B> で製品を \"on\" と \"off\"に切り替えることができます。"
 
-#~ msgid "An Trap \"Community\" must be specified."
-#~ msgstr "Trap \"Community\" は指定されなければいけません"
 
-#~ msgid "An Trap \"Host\" must be specified."
-#~ msgstr " Trap \"Host\" は特定されなければいけません"
 
-#~ msgid "A \"Password\" must be specified if a \"Login\" is specified."
-#~ msgstr ""
-#~ "\"Login\" が指定されていれば、\"Password\" も指定されなければいけません。"
 
-#~ msgid "A \"Login\" must be specified if a \"Password\" is specified."
-#~ msgstr ""
-#~ "\"Password\"が指定されていれば、\"Login\"  も指定されなければいけません。"
 
-#~ msgid "A \"From Address\" must be specified."
-#~ msgstr " \"From Address\" は指定されていなければいけません。"
 
-#~ msgid "The login name \"{0}\" at row {1} has already been taken."
-#~ msgstr "ログイン名 \"{0}\" 行にある{1}使用されています"
 
-#~ msgid "The login name at row {0} must not contain forward slash character."
-#~ msgstr "行にあるログイン名は {0} は\"/\"を含むことができません"
-
-#~ msgid "The first name at row {0} must not contain any space characters."
-#~ msgstr "行にある名は{0} スペースを含むことができません"
-
-#~ msgid "The last name at row {0} must not contain any space characters."
-#~ msgstr "行にある姓は{0}スペースを含むことができません"
-
-#~ msgid "The password at row {0} must be at least 1 character long."
-#~ msgstr "行にあるパスワードは {0}最低一文字以上でなければいけません"
-
-#~ msgid "The password at row {0} must not contain any space characters."
-#~ msgstr "行にあるパスワードは {0} スペースを含むことができません"
-
-#~ msgid ""
-#~ "{0} is about to be removed from the rack.\n"
-#~ "Its settings will be lost and it will stop processing network traffic.\n"
-#~ "\n"
-#~ "Would you like to continue removing?"
-#~ msgstr ""
-#~ "{0} はラックから除去されます.\n"
-#~ "その設定が失われ、ネットワークトラフィクの処理が停止します。\n"
-#~ "\n"
-#~ "除去を続けますか?"
-
-#~ msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
-#~ msgstr "ノードには{0} あります {1} メトリックが. 最大メトリックは {2}."
-
-#~ msgid "on line"
-#~ msgstr "オンライン"
-
-#~ msgid "in file"
-#~ msgstr "ファイル内"
-
-#, fuzzy
-#~ msgid "Emails"
-#~ msgstr "Eメール"
-
-#~ msgid "Application List"
-#~ msgstr "アプリケーションリスト"
-
-#~ msgid "User List"
-#~ msgstr "ユーザリスト"
-
-#~ msgid "Host List"
-#~ msgstr "ホストリスト"
-
-#, fuzzy
-#~ msgid "Email List"
-#~ msgstr "Eメールテスト"
-
-#~ msgid "Export Excel"
-#~ msgstr "EXECLで出力"
-
-#~ msgid "Default Rack"
-#~ msgstr "デフォルトラック"
-
-#~ msgid "Services & Utilities"
-#~ msgstr "サービス＆ユーティリティ"
-
-#~ msgid "Event Log"
-#~ msgstr "イベントログ"
-
-#~ msgid "Save"
-#~ msgstr "保存"
-
-#~ msgid "Displaying topics {0} - {1} of {2}"
-#~ msgstr "トピックを表示中{0} - {1} of{2}"
-
-#~ msgid "No topics to display"
-#~ msgstr "ディスプレイするトピックがありません"
 
-#~ msgid "Step {0}"
-#~ msgstr "ステップ{0}"
 
-#~ msgid "Unable to save password."
-#~ msgstr "パスワードを保存できません"
 
-#~ msgid "Proceed"
-#~ msgstr "処理"
 
-#~ msgid "Warning!  Test failed.  Check your settings."
-#~ msgstr "警告！テスト失敗。設定をチェックしてください。"
 
-#, fuzzy
-#~ msgid ""
-#~ "The Outgoing Email Server settings determine how the {0} Server sends "
-#~ "emails such as reports, quarantine digests, etc. <br/>In most cases the "
-#~ "default setting should work. If not, specify an valid SMTP server that "
-#~ "will relay mail for the {0} Server."
-#~ msgstr ""
-#~ "Outgoing Email Serverはどのように {0} サーバーがreports, quarantine "
-#~ "digestsなどのようなメールを送信するか決めます。だいたいにおいては、デフォ"
-#~ "ルトセッティングが機能しますが、もししない場合、{0} サーバーにメールをリ"
-#~ "レーするSMTP サーバーを指定してください。"
 
-#~ msgid ""
-#~ "{0}Warning:{1} Clicking this button will reboot the {2} Server, "
-#~ "temporarily interrupting network activity."
-#~ msgstr ""
-#~ "{0}警告:{1}このボタンをクリックすると再起動します{2} 一時的にネットワーク"
-#~ "アクティビティを中断し、サーバーを"
 
-#~ msgid ""
-#~ "{0}Warning:{1} Clicking this button will shutdown the {2} Server, "
-#~ "stopping all network activity."
-#~ msgstr ""
-#~ "{0}警告:{1} このボタンをクリックすることは {2} サーバーをシャットダウン"
-#~ "し。そして、全てのネットワーク動作を止めます。"
 
-#~ msgid "Initializing..."
-#~ msgstr "初期化中..."
 
-#~ msgid "Checking for available upgrades..."
-#~ msgstr "利用可能なアップグレードをチェック中..."
 
-#~ msgid "Upgrades warning"
-#~ msgstr "アップグレード警告"
 
-#~ msgid ""
-#~ "Upgrades are available. You must perform all possible upgrades before "
-#~ "downloading from the library. Please click OK to open Upgrade panel."
-#~ msgstr ""
-#~ "アップグレードができます。ライブラリからダウンロードする前に可能なアップグ"
-#~ "レードをすべて実行する必要があります。ＯＫをクリックしてUpgradeパネルを"
-#~ "オープンしてください。"
 
-#~ msgid "What Apps should I use?"
-#~ msgstr "どのAppsを使用するか？"
 
-#~ msgid "Click {1}here{2} or disable your pop-up blocker and try again."
-#~ msgstr ""
-#~ "クリックしてください{1}ここを{2} もしくはpop-up blockerを無効にし、再度試"
-#~ "してください。"
 
-#~ msgid "Unable to open a new window"
-#~ msgstr "新しいウィンドウを開くことができません"
 
-#~ msgid "Downloading updates..."
-#~ msgstr "アップデートをダウンロード中..."
 
-#~ msgid ""
-#~ "{0} cannot be removed because it is being used by the following rack:{1}"
-#~ "You must remove the product from all racks first."
-#~ msgstr ""
-#~ "{0} は除去できません、以下のラックに使用されているため:{1}プロダクトを全て"
-#~ "のラックからまず除去する必要があります。"
 
-#~ msgid "Loading Rack..."
-#~ msgstr "ラックをロード中..."
 
-#~ msgid "Networking"
-#~ msgstr "ネットワーキング"
 
-#, fuzzy
-#~ msgid "Congratulations"
-#~ msgstr "おめでとうございます"
 
-#~ msgid "The Session has expired. You will be redirected to the start page."
-#~ msgstr "セッションが切れました。スタートページにリダイレクトされます。"
 
-#~ msgid "External"
-#~ msgstr "外部"
 
-#~ msgid "Internal"
-#~ msgstr "内部"
 
-#~ msgid "DMZ"
-#~ msgstr "DMZ"
 
-#~ msgid "VPN"
-#~ msgstr "VPN"
 
-#~ msgid "TCP & UDP"
-#~ msgstr "TCP&UDP"
 
-#~ msgid "ANY"
-#~ msgstr "ANY"
 
-#~ msgid "Apps Error"
-#~ msgstr "Appsエラー"
 
-#~ msgid "Error in Rack View applications list."
-#~ msgstr "ラックビューアプリケーションのリストにエラーがあります。"
 
-#~ msgid "More Info"
-#~ msgstr "詳細情報"
 
-#~ msgid "Trial Install"
-#~ msgstr "トライアルインストール"
 
-#~ msgid "Buy"
-#~ msgstr "購入"
 
-#~ msgid "Unactivating..."
-#~ msgstr "アンアクティベイト中..."
 
-#~ msgid "Downloading..."
-#~ msgstr "ダウンロード中..."
 
-#~ msgid "{0} Packages"
-#~ msgstr "{0}パッケージ"
 
-#~ msgid "Pkg {0}/{1} done"
-#~ msgstr "Pkg {0}/{1}終了"
 
-#~ msgid "Installing..."
-#~ msgstr "インストール中..."
 
-#~ msgid "Activate timeout."
-#~ msgstr "タイムアウトを有効にする。"
 
-#~ msgid "Free Trial Ended"
-#~ msgstr "フリートライアル終了"
 
-#~ msgid "Free Trial Expires Today"
-#~ msgstr "フリートライアルの期限が今日で切れます"
 
-#~ msgid "Free Limited Trial"
-#~ msgstr "無料の限定トライアル"
 
-#~ msgid "Free Trial. {0} days remain"
-#~ msgstr "フリートライアル. 残り{0}日 "
 
-#~ msgid "Error downloading packages. Install Aborted."
-#~ msgstr "パッケージのダウンロードにエラー。インストールが中止されました。"
 
-#~ msgid "Upgrade Failed"
-#~ msgstr "アップグレード失敗"
 
-#~ msgid ""
-#~ "The Upgrade failed. You will be redirected to the start page now. After "
-#~ "an upgrade the UVM may restart making the console temporary unavailable. "
-#~ "So you might have to wait a few minutes before you can log in again."
-#~ msgstr ""
-#~ "アップグレードに失敗しました。スタートページにリダイレクトされます。アップ"
-#~ "グレード後、ＵＶＭが再起動するため、コンソールが一時的に利用不可になりま"
-#~ "す。再度ログインするまでに数分お待ちいただく必要があります。"
 
-#~ msgid "Upgrade Timeout"
-#~ msgstr "アップグレードタイムアウト"
 
-#~ msgid "CPU Utilization by User:"
-#~ msgstr "ユーザーのCPU使用率"
 
-#~ msgid "CPU Utilization by System:"
-#~ msgstr "システムによるCPU使用率"
 
-#~ msgid "Memory Pages:"
-#~ msgstr "メモリページ："
 
-#~ msgid "active"
-#~ msgstr "アクティブ"
 
-#~ msgid "inactive"
-#~ msgstr "イナクティブ"
 
-#~ msgid "VM Statistics:"
-#~ msgstr "VM統計："
 
-#~ msgid "pageins"
-#~ msgstr "ページイン"
 
-#~ msgid "pageouts"
-#~ msgstr "ページアウト"
 
-#~ msgid "activity"
-#~ msgstr "アクティビティ"
 
-#~ msgid "system"
-#~ msgstr "システム"
 
-#~ msgid "The form is not valid!"
-#~ msgstr "フォームが無効です！"
 
-#~ msgid "Loading ..."
-#~ msgstr "ロード中..."
 
-#~ msgid "Portal Question"
-#~ msgstr "入口での質問"
 
-#~ msgid "UNKNOWN"
-#~ msgstr "UNKNOWN（不明）"
 
-#, fuzzy
-#~ msgid " User"
-#~ msgstr "ユーザー"
 
-#~ msgid " Group"
-#~ msgstr "グループ"
 
-#~ msgid "user"
-#~ msgstr "ユーザー"
 
-#~ msgid "users and groups"
-#~ msgstr "ユーザーとグループ"
 
-#~ msgid "Select User"
-#~ msgstr "ユーザーを選んでください"
 
-#~ msgid "Select Users"
-#~ msgstr "ユーザーを選んでください"
 
-#, fuzzy
-#~ msgid "Select a User."
-#~ msgstr "ユーザーを選んでください。"
 
-#~ msgid "Choose Active Directory users and/or groups."
-#~ msgstr "Active Directoryユーザーおよび/またはグループを選択してください。"
 
-#~ msgid "Select an existing user"
-#~ msgstr "既存のユーザーを選択してください"
 
-#~ msgid "Add a new user"
-#~ msgstr "新しいユーザーを追加"
 
-#~ msgid "Open Local Directory"
-#~ msgstr "ローカルディレクトリをオープン"
 
-#~ msgid "Open Active Directory"
-#~ msgstr "Active Directoryをオープン"
 
-#~ msgid ""
-#~ "There was a problem refreshing Active Directory users.  Please check your "
-#~ "Active Directory settings and then try again."
-#~ msgstr ""
-#~ "アクティブディレクトリユーザーを更新中に問題があります。あなたのActive "
-#~ "Directoryの設定をチェックして、再度試してください。"
 
-#, fuzzy
-#~ msgid ""
-#~ "There was a problem refreshing Active Directory groups.  Please check "
-#~ "your Active Directory settings and then try again."
-#~ msgstr ""
-#~ "アクティブディレクトリユーザーを更新中に問題があります。あなたのアクティブ"
-#~ "ディレクトリセッティングをチェックして、再度試してください。"
 
-#~ msgid ""
-#~ "There was a problem refreshing Local Directory users.  Please check your "
-#~ "Local Directory settings and try again."
-#~ msgstr ""
-#~ "アクティブディレクトリユーザーを更新中に問題があります。あなたのローカル"
-#~ "ディレクトリの設定をチェックして、再度試してください。"
 
-#~ msgid "Please choose a user id/login or press Cancel!"
-#~ msgstr "ユーザーID／ログインを選ぶか、キャンセルを押してください。"
 
-#~ msgid ""
-#~ "Enter an email address which you would like to send a test message to, "
-#~ "and then press \"Proceed\".  You should receive an email shortly after "
-#~ "running the test.  If not, your email settings may not be correct."
-#~ msgstr ""
-#~ "テストメッセージを送りたいEメールアドレスを入力して、\"続行\"を押してくだ"
-#~ "さい。テスト後、まもなくEメールを受信します。もし受信しなければ、あなたのE"
-#~ "メールセッティングが正しくありません。"
 
-#~ msgid "Sending..."
-#~ msgstr "送信中..."
 
-#~ msgid "Configure your Server"
-#~ msgstr "サーバーを設定"
 
-#~ msgid "<b>Choose a password for the admin account</b>"
-#~ msgstr "<b>管理アカウントのパスワードを選んでください</b>"
 
-#~ msgid "<b>Select a timezone</b>"
-#~ msgstr "<b>タイムゾーンを選んでください</b>"
 
-#~ msgid "Registration"
-#~ msgstr "登録"
 
-#~ msgid "Please provide administrator contact info."
-#~ msgstr "お問い合わせ先情報を、管理者に提供してください。"
 
-#~ msgid "Last Name/Surname"
-#~ msgstr "名字/姓"
 
-#~ msgid "Organization Name"
-#~ msgstr "団体名"
 
-#~ msgid "(if applicable)"
-#~ msgstr "(該当する場合)"
 
-#~ msgid "Number of PCs on your network"
-#~ msgstr "あなたのネットワーク上にあるPCの数"
 
-#~ msgid "(approximate; include Windows, Linux and Mac)"
-#~ msgstr "（類似のWindows、LinuxおよびMac含む）"
 
-#~ msgid "My Business"
-#~ msgstr "自分のビジネス"
 
-#~ msgid "A Client's Business"
-#~ msgstr "お客様のビジネス"
 
-#~ msgid "<span class=\"required-star\">*</span> Required"
-#~ msgstr "<span class=\"required-star\">*</span> 必須"
 
-#~ msgid "Saving Registration Info"
-#~ msgstr "登録情報を保存中"
 
-#~ msgid ""
-#~ "This step can help you identify your external, internal, and other "
-#~ "network cards. Plug an active cable into each network card one at a time "
-#~ "and hit refresh to determine which network card is which. You can also "
-#~ "drag and drop the interfaces to remap them at this time."
-#~ msgstr ""
-#~ "この手順は、あなたの、内部、外部および他のネットワークカードを特定すること"
-#~ "ができます。有効なネットワークカードをそれぞれのネットワークに一度にひとつ"
-#~ "ずつ接続し、どのネットワークカードがどのケーブルか特定するためにリフレッ"
-#~ "シュしてください。この際、再配置するためにインターフェースをドラッグしてド"
-#~ "ロップすることもできます。"
 
-#~ msgid "Remapping Network Interfaces"
-#~ msgstr "ネットワークインターフェースを再マッピング"
 
-#~ msgid "Unable to remap the interfaces."
-#~ msgstr "インターネットを再マップできません。"
 
-#~ msgid "Dynamic (DHCP)"
-#~ msgstr "ダイナミック(DHCP)"
 
-#~ msgid "Secondary DNS(optional)"
-#~ msgstr "セカンダリ DNS(オプショナル)"
 
-#~ msgid "Configure your Internet Connection"
-#~ msgstr "インターネット接続を設定"
 
-#~ msgid "Saving Internet Connection Settings"
-#~ msgstr "インターネット接続の設定を保存する"
 
-#~ msgid "Warning! Internet and DNS failed."
-#~ msgstr "警告！インターネットとDNSが失敗しました"
 
-#~ msgid "Warning! DNS succeeded, but Internet failed."
-#~ msgstr "警告！DNSは成功しましたが、インターネットが失敗しました"
 
-#~ msgid "Warning! Internet succeeded, but DNS failed."
-#~ msgstr "警告！インターネットは成功しましたが、DNSが失敗しました"
 
-#~ msgid "Configure your Internal Network Interface"
-#~ msgstr "内部ネットワークインターフェースを設定"
 
-#~ msgid ""
-#~ "This is recommended if the external port is plugged into your internet  "
-#~ "connection. This enables NAT on the Internal Interface and DHCP."
-#~ msgstr ""
-#~ "外部ポートがインターネットに接続されている場合、これを推奨します。内部イン"
-#~ "ターフェース上にあるNATとDHCPを有効にします。"
 
-#~ msgid "Email Configuration"
-#~ msgstr "Eメール設定"
 
-#~ msgid "This test is optional"
-#~ msgstr "このテストはオプショナルです"
 
-#~ msgid "Send Test Email"
-#~ msgstr "テストEメールを送信"
 
-#~ msgid "Advanced Email Configuration"
-#~ msgstr "高度なＥメール設定"
 
-#~ msgid "From Address"
-#~ msgstr "アドレスから"
 
-#~ msgid "<b>SMTP Configuration</b>"
-#~ msgstr "<b>SMTP コンフィギュレーション</b>"
 
-#~ msgid "Send Email Directly (default)."
-#~ msgstr "Ｅメールを直接送信 (デフォルト)."
 
-#~ msgid "Send Email using the specified SMTP server."
-#~ msgstr "特定の SMTP サーバーを利用してＥメールを送信"
 
-#~ msgid "SMTP Server"
-#~ msgstr "SMTP サーバー"
 
-#~ msgid "Server Requires Authentication."
-#~ msgstr "サーバーは認証が必要です"
 
-#~ msgid "Saving Email Settings"
-#~ msgstr "Eメールセッティングを保存中"
 
-#~ msgid "Mail Settings"
-#~ msgstr "メールセッティング"
 
-#~ msgid "Unable to save settings."
-#~ msgstr "セッティングを保存することができません"
 
-#~ msgid "Congrats!"
-#~ msgstr "祝！"
 
-#~ msgid "Loading User Interface"
-#~ msgstr "ユーザーインターフェースをロード中"
 
-#~ msgid "[no login]"
-#~ msgstr "[ログイン無し]"
 
-#~ msgid "The login name cannot be blank."
-#~ msgstr "ログイン名は空白ではならない"
 
-#~ msgid "Read-only"
-#~ msgstr "読み込み専用"
 
-#~ msgid "External Administration"
-#~ msgstr "エクスターナル　アドミニストレーション"
 
-#~ msgid "Enable External Administration."
-#~ msgstr "エクスターナル　アドミニストレーションをイネーブル"
 
-#~ msgid "Enable External Report Viewing."
-#~ msgstr "エクスターナル　レポートビューをイネーブル"
 
-#~ msgid "Enable External Quarantine Viewing."
-#~ msgstr "エクスターナル検疫ビューをイネーブル"
 
-#~ msgid "External HTTPS port"
-#~ msgstr "エクスターナル HTTPS ポート"
 
-#~ msgid "Allow external access from any IP address."
-#~ msgstr "いかなるIPアドレスからのエクスターナルアクセスを許可"
 
-#~ msgid "Restrict external access to these external IP address(es)."
-#~ msgstr "これらのIPアドレスへのエクスターナルアクセスを制限"
 
-#~ msgid "A \"IP Address\" must be specified."
-#~ msgstr " \"IP アドレス\" を特定する必要があります"
 
-#~ msgid "A \"Netmask\" must be specified."
-#~ msgstr " \"ネットマスク\" を特定する必要があります"
 
-#~ msgid "Internal Administration"
-#~ msgstr "インターナルアドミニストレーション"
 
-#~ msgid "Enable HTTP administration inside the local network (default)"
-#~ msgstr ""
-#~ " ローカルネットワーク内のHTTP アドミニストレーション をイネーブル(デフォル"
-#~ "ト)"
 
-#~ msgid "Disable HTTP administration inside the local network"
-#~ msgstr ""
-#~ "ローカルネットワーク内のHTTP アドミニストレーション をディセーブル(デフォ"
-#~ "ルト)"
 
-#~ msgid "Note: HTTPS administration is always enabled internally"
-#~ msgstr "Note: HTTPS アドミニストレーションは内部で常にイネーブルです"
 
-#~ msgid ""
-#~ "{0}The current hostname is not a qualified hostname, click {1}here{2} to "
-#~ "fix it{3}"
-#~ msgstr ""
-#~ "{0}カレントホストネームが不適当です。クリック {1}ここを{2} 修復するために"
-#~ "{3}"
 
-#~ msgid ""
-#~ "The Public Address is the address or hostname that provides a public "
-#~ "routable address for the {0} Server. This address will be used in emails "
-#~ "sent by the {0} Server to link back to services hosted on the {0} Server "
-#~ "such as Quarantine Digests and OpenVPN Client emails."
-#~ msgstr ""
-#~ "パブリックアドレスは{0} サーバーのパブリックルーターブルアドレスを与えるア"
-#~ "ドレスかホストネームです。このアドレスは利用されます。{0} サービスにリンク"
-#~ "バックするサーバー に送信されたEメールで{0} Quarantine Digests と OpenVPN "
-#~ "クライアントEメールのようなサーバー上にホストされてる"
 
-#~ msgid "Use External IP address (default)"
-#~ msgstr "エクスターナルIPアドレスを使用（デフォルト）"
 
-#~ msgid "This works if your {0} Server has a public static IP address."
-#~ msgstr ""
-#~ " あなたの {0} サーバーにパブリックスタティックIPアドレスがあれば、これが稼"
-#~ "働します"
 
-#~ msgid "Use Manually Specified IP"
-#~ msgstr "指定したIPを手動で利用"
 
-#~ msgid ""
-#~ "This is recommended if the {0} Server is installed behind another "
-#~ "firewall with a port forward from the specified IP that redirects traffic "
-#~ "to the {0} Server."
-#~ msgstr ""
-#~ "This is recommended if the {0} サーバーにnトラフィックをリダイレクトする"
-#~ "{0} 指定したIPからポートフォワードした他のファイアウォールの後ろでサーバー"
-#~ "がインストールされた場合、これを推奨します。"
 
-#~ msgid "You must provide a valid IP Address."
-#~ msgstr "有効なIPアドレスを提示する必要があります"
 
-#~ msgid "Generate a {0}CSR{1}"
-#~ msgstr "作成 {0}CSR{1}"
 
-#~ msgid ""
-#~ "Click this button to generate a Certificate Signature Request (CSR), "
-#~ "which you can then copy and paste for use by certificate authorities such "
-#~ "as Thawte, Verisign, etc."
-#~ msgstr ""
-#~ "Certificate Signature リクエスト（CSR）を作成するためにこのボタンをクリッ"
-#~ "クしてください、これにより Thawte, Verisign, などの証明認証によりコピーや"
-#~ "ペーストができるなるようになります。"
 
-#~ msgid "Import a {0}Signed Certificate{1}"
-#~ msgstr "インポートする{0}Signed Certificate{1}"
 
-#~ msgid ""
-#~ "Click this button to import a signed certificate which has been generated "
-#~ "by a certificate authority, and was based on a previous signature request "
-#~ "from {0}."
-#~ msgstr ""
-#~ "ここをクリックして、認証機関により作成され、前回の{0}からのrequestフォーム"
-#~ "に基づいて署名済されたcertificateをインポートしてください。"
 
-#~ msgid "Generate a Self-Signed Certificate"
-#~ msgstr " Self-Signed Certificateを作成"
 
-#~ msgid "Generating Certificate..."
-#~ msgstr " Certificateを作成中..."
 
-#~ msgid "You must specify an organization."
-#~ msgstr "団体名を特定する必要があります"
 
-#~ msgid "You must specify an organization unit."
-#~ msgstr "団体ユニットを特定する必要があります"
 
-#~ msgid "You must specify a city."
-#~ msgstr "市町村を特定する必要があります"
 
-#~ msgid "You must specify a state."
-#~ msgstr "都道府県を特定する必要があります"
 
-#~ msgid "You must specify a country."
-#~ msgstr "国を特定する必要があります"
 
-#~ msgid "Certificate Successfully Generated"
-#~ msgstr "証明書の作成が成功"
 
-#~ msgid "Error generating self-signed certificate"
-#~ msgstr "self-signed certificateの作成にエラー"
 
-#~ msgid "Generate a Certificate Signature Request"
-#~ msgstr "Certificate Signatureリクエストを作成"
 
-#~ msgid "Certificate Signature Request Successfully Generated"
-#~ msgstr "Certificate Signature リクエストの作成に成功"
 
-#~ msgid "Error generating certificate signature request"
-#~ msgstr "generating certificate リクエストの作成にエラー"
 
-#~ msgid "Import Signed Certificate"
-#~ msgstr "Signed Certificateインポート"
 
-#~ msgid "Importing Certificate..."
-#~ msgstr "Certificateをインポート中..."
 
-#~ msgid "Certificate Successfully Imported"
-#~ msgstr "Certificate のインポート成功"
 
-#~ msgid "Error importing certificate"
-#~ msgstr "certificateのインポートにエラー"
 
-#~ msgid ""
-#~ "Please fill out the following fields, which will be used to generate your "
-#~ "self-signed certificate."
-#~ msgstr ""
-#~ "あなたのself-signed certificateの作成に使われるため、以下のフィールドを記"
-#~ "入してください。"
 
-#~ msgid "Organization Unit"
-#~ msgstr "団体ユニット"
 
-#~ msgid ""
-#~ "Click the Proceed button to generate a signature below. Copy the "
-#~ "signature (Control-C), and paste it into the necessary form from your "
-#~ "Certificate Authority (Verisign, Thawte, etc.)."
-#~ msgstr ""
-#~ "Proceed ボタンをクリックして、下記の署名を作成してください。署名をコピー"
-#~ "し、(Control-C), あなたの認証機関(Verisign, Thawte, など)からの必要な"
-#~ "フォームにペーストしてください。"
 
-#~ msgid ""
-#~ "When your Certificate Authority (Verisign, Thawte, etc.) has sent your "
-#~ "Signed Certificate, copy and paste it below (Control-V) then press the "
-#~ "Proceed button."
-#~ msgstr ""
-#~ "あなたの認証機関 (Verisign, Thawte, など) が Signed Certificateを送信した"
-#~ "ら、コピーそして、ペースト(Control-V) をして、Proceed ボタンを押してくださ"
-#~ "い"
 
-#~ msgid ""
-#~ "If your Certificate Authority (Verisign, Thawte, etc.) also send you an "
-#~ "Intermediate Certificate, paste it below. Otherwise, do not paste "
-#~ "anything below."
-#~ msgstr ""
-#~ "また、あなたの認証機関 (Verisign, Thawte, など) が Intermediate "
-#~ "Certificateを送信した場合は, 以下にペーストしてください. そうでない場合"
-#~ "は、以下にペーストしないでください。"
 
-#~ msgid "Monitoring"
-#~ msgstr "モニタリング"
 
-#~ msgid "{0}Disable{1} SNMP Monitoring. (This is the default setting.)"
-#~ msgstr ""
-#~ "{0}ディセーブル{1} SNMP モニタリング. (これはデフォルトセッティングです)"
 
-#~ msgid "{0}Enable{1} SNMP Monitoring."
-#~ msgstr "{0}イネーブル{1} SNMP モニタリング."
 
-#~ msgid ""
-#~ "{0}Disable Traps{1} so no trap events are generated.  (This is the "
-#~ "default setting.)"
-#~ msgstr ""
-#~ "{0}Trapsをディセーブル{1} トラップイベントが作成されないように  (これはデ"
-#~ "フォルトセッティングです)"
 
-#~ msgid "{0}Enable Traps{1} so trap events are sent when they are generated."
-#~ msgstr ""
-#~ "{0}Trapsをイネーブル{1}トラップが作成された際、トラップイベントが送信され"
-#~ "るように"
 
-#~ msgid "{0}Disable{1} Syslog Monitoring. (This is the default setting.)"
-#~ msgstr ""
-#~ "{0}ディセーブル{1} Syslog モニタリング. (これはデフォルトセッティングです)"
 
-#~ msgid "{0}Enable{1} Syslog Monitoring."
-#~ msgstr "{0}イネーブル{1} Syslog モニタリング"
 
-#~ msgid "A \"Host\" must be specified."
-#~ msgstr "\"Host\" は指定されなければいけません"
 
-#~ msgid "Facility"
-#~ msgstr "ファシリィティ"
 
-#~ msgid "kernel"
-#~ msgstr "カーネル"
 
-#~ msgid "mail"
-#~ msgstr "メール"
 
-#~ msgid "daemon"
-#~ msgstr "daemon"
 
-#~ msgid "security 0"
-#~ msgstr "セキュリティ 0"
 
-#~ msgid "syslog"
-#~ msgstr "syslog"
 
-#~ msgid "printer"
-#~ msgstr "プリンター"
 
-#~ msgid "news"
-#~ msgstr "ニュース"
 
-#~ msgid "UUCP"
-#~ msgstr "UUCP"
 
-#~ msgid "clock 0"
-#~ msgstr "時計 0"
 
-#~ msgid "security 1"
-#~ msgstr "セキュリティ 1"
 
-#~ msgid "NTP"
-#~ msgstr "NTP"
 
-#~ msgid "log audit"
-#~ msgstr "ログ監査"
 
-#~ msgid "log alert"
-#~ msgstr "ログアラート"
 
-#~ msgid "clock 1"
-#~ msgstr "時計 1"
 
-#~ msgid "local 0"
-#~ msgstr "ローカル 0"
 
-#~ msgid "local 1"
-#~ msgstr "ローカル 1"
 
-#~ msgid "local 2"
-#~ msgstr "ローカル 2"
 
-#~ msgid "local 3"
-#~ msgstr "ローカル 3"
 
-#~ msgid "local 4"
-#~ msgstr "ローカル 4"
 
-#~ msgid "local 5"
-#~ msgstr "ローカル 5"
 
-#~ msgid "local 6"
-#~ msgstr "ローカル 6"
 
-#~ msgid "local 7"
-#~ msgstr "ローカル 7"
 
-#~ msgid "Threshold"
-#~ msgstr "閾値"
 
-#~ msgid "emergency"
-#~ msgstr "緊急"
 
-#~ msgid "alert"
-#~ msgstr "アラート"
 
-#~ msgid "critical"
-#~ msgstr "クリティカル"
 
-#~ msgid "error"
-#~ msgstr "エラー"
 
-#~ msgid "warning"
-#~ msgstr "警告"
 
-#~ msgid "notice"
-#~ msgstr "通知"
 
-#~ msgid "informational"
-#~ msgstr "情報"
 
-#~ msgid "debug"
-#~ msgstr "デバッグ"
 
-#~ msgid "This skin will used in the administration client"
-#~ msgstr "このスキンはアドミニストレーションクライアントで利用されます。"
 
-#~ msgid "The login name: \"{0}\" in row: {1}  already exists."
-#~ msgstr "ログインネーム: \"{0}\" 行に: {1}  既存"
 
-#~ msgid "Invalid External Remote Administration \"IP Address\" specified."
-#~ msgstr ""
-#~ "無効なエクスターナルリモートアドミニストレーション\"IP Address\" が特定さ"
-#~ "れました。"
 
-#~ msgid "Invalid External Remote Administration \"Netmask\" specified."
-#~ msgstr ""
-#~ "無効なエクスターナルリモートアドミニストレーション\"Netmask\"が特定されま"
-#~ "した。 "
 
-#~ msgid "Outgoing Email Server (SMTP)"
-#~ msgstr "OutgoingEメールサーバー (SMTP)"
 
-#~ msgid "Send Email using the specified SMTP Server"
-#~ msgstr "指定 SMTP サーバーを利用してEメールを送信"
 
-#, fuzzy
-#~ msgid "Use Authentication."
-#~ msgstr "認証を利用"
 
-#~ msgid "From-Safe List"
-#~ msgstr "セーフリストから"
 
-#~ msgid "Global"
-#~ msgstr "グローバル"
 
-#~ msgid "[no email address]"
-#~ msgstr "[Eメールアドレスが無い]"
 
-#~ msgid "Per User"
-#~ msgstr "ユーザーにつき"
 
-#~ msgid "Email From-SafeList Details for: "
-#~ msgstr "セーフリスト詳細からEメールの送信先："
 
-#~ msgid "Maximum Holding Time (days) (max 36)"
-#~ msgstr "最大保持時間（日数）（最大３６）"
 
-#~ msgid "Maximum Holding Time must be a number in range 0-36"
-#~ msgstr "最大保持期間は0-36の間でなければいけません。"
 
-#~ msgid "All addresses have quarantines"
-#~ msgstr "すべてのアドレスに検疫があります"
 
-#~ msgid "Identity Theft"
-#~ msgstr "アイデンティティーセフト"
 
-#~ msgid ""
-#~ "A \"Hostname\" must be specified if \"Login\" or \"Password\" are "
-#~ "specified."
-#~ msgstr ""
-#~ "\"Login\" もしくは \"Password\" が指定されていれば、\"Hostname\" も指定さ"
-#~ "れなければいけません。"
 
-#~ msgid "[no ID/login]"
-#~ msgstr "[ID/login無し]"
 
-#~ msgid "Local Groups"
-#~ msgstr "ローカルグループ"
 
-#, fuzzy
-#~ msgid "The field name can have only alphanumeric characters."
-#~ msgstr "フィールドユーザー／ログインIDは英数字でなければいけません"
 
-#, fuzzy
-#~ msgid "The field name can have only alphanumeric character."
-#~ msgstr "フィールドユーザー／ログインIDは英数字でなければいけません。"
 
-#~ msgid "Policy Manager"
-#~ msgstr "ポリシーマネジャー"
 
-#~ msgid "Policy Management"
-#~ msgstr "ポリシーマネジメント"
 
-#~ msgid "The policy name cannot be blank."
-#~ msgstr "ポリシーネームは空白ではいけません"
 
-#~ msgid "> No rack"
-#~ msgstr "> ラックが無い"
 
-#~ msgid "live"
-#~ msgstr "ライブ"
 
-#~ msgid "<b>Use this rack</b> when the <br/>next colums are matched..."
-#~ msgstr "<b>このラックを利用</b> の時<br/>次のコラムがマッチした"
 
-#~ msgid "client <br/>interface"
-#~ msgstr "クライアント <br/>インターフェース"
 
-#~ msgid "server <br/>interface"
-#~ msgstr "サーバー <br/>インターフェース"
 
-#~ msgid "protocol"
-#~ msgstr "プロトコル"
 
-#~ msgid "client <br/>address"
-#~ msgstr "クライアント <br/>アドレス"
 
-#~ msgid "server <br/>address"
-#~ msgstr "サーバー <br/>アドレス"
 
-#~ msgid "server<br/>port"
-#~ msgstr "サーバー<br/>ポート"
 
-#~ msgid "start time"
-#~ msgstr "開始時間"
 
-#~ msgid "end time"
-#~ msgstr "終了時間"
 
-#~ msgid "day of week"
-#~ msgstr "曜日"
 
-#~ msgid "Policy Wizard"
-#~ msgstr "ポリシーウィザード"
 
-#~ msgid "The protocol you would like this policy to handle."
-#~ msgstr "このポリシーを利用したいプロトコル"
 
-#~ msgid "The ethernet interface (NIC) you would like this policy to handle."
-#~ msgstr "エターネッとインターフェース (NIC) このポリシーを利用したい"
 
-#~ msgid "The IP address which you would like this policy to handle."
-#~ msgstr "このポリシーを利用したいIP アドレス"
 
-#~ msgid "The port which you would like this policy to handle."
-#~ msgstr "このポリシーを利用したいポート"
 
-#~ msgid "The users you would like to apply this policy to."
-#~ msgstr "このポリシーを適用したいユーザー"
 
-#~ msgid "Change Users"
-#~ msgstr "ユーザーを変更"
 
-#~ msgid "The time of day you would like this policy active."
-#~ msgstr "このポリシーをアクティブにしたい時間"
 
-#~ msgid "Days of Week"
-#~ msgstr "曜日"
 
-#~ msgid "The days of the week you would like this policy active."
-#~ msgstr "このポリシーをアクティブにしたい曜日"
 
-#~ msgid "Rack"
-#~ msgstr "ラック"
 
-#~ msgid "The rack you would like to use to handle this policy."
-#~ msgstr "このポリシーを利用したいラック"
 
-#~ msgid "Enable this Policy"
-#~ msgstr "このポリシーをイネーブル"
 
-#~ msgid "There must always be at least one available rack."
-#~ msgstr "最低一つのラックが常に利用可能でなければいけません。"
 
-#~ msgid "The rack named {0} already exists."
-#~ msgstr "ラック名 {0} 既に存在してます"
 
-#~ msgid ""
-#~ "The rack named {0} cannot be removed because it is not empty.  Please "
-#~ "remove all products first."
-#~ msgstr ""
-#~ "ラック名 {0} 空でないため、削除できません。すべてのプロダクトを先に削除し"
-#~ "てください。"
 
-#~ msgid "Invalid address specified for Client Address"
-#~ msgstr "無効なクライアントアドレスが特定されました"
 
-#~ msgid "Invalid address specified for Server Address"
-#~ msgstr "無効なサーバーアドレスが特定されました"
 
-#~ msgid "Invalid port specified for Server Port"
-#~ msgstr "無効なサーバーポートが特定されました"
 
-#~ msgid "Validation failed"
-#~ msgstr "バリデーション失敗"
 
-#~ msgid "Version"
-#~ msgstr "バージョン"
 
-#~ msgid "Java"
-#~ msgstr "Java"
 
-#~ msgid "You must complete all required fields."
-#~ msgstr "必要事項をすべて記入してください"
 
-#~ msgid ""
-#~ "{0}Send{1} data about your server for support purposes. This will send "
-#~ "status updates and an email if any unexpected problems occur, but will "
-#~ "not allow support secure access to your server. No personal information "
-#~ "about the network will be transmitted."
-#~ msgstr ""
-#~ "{0}送信{1} サポート目的の為にあなたのサーバーについてデータを。もし予期し"
-#~ "ない問題が発生した場合、これがステータスアップデートとメールを送信します"
-#~ "が、あなたのサーバーへセキュアアクセスのサポートを許可しません。ネットワー"
-#~ "クについての個人情報はいっさい送られません。"
 
-#~ msgid ""
-#~ "You are about to manually reboot.  This will interrupt normal network "
-#~ "operations until the {0} Server is finished automatically restarting. "
-#~ "This may take up to several minutes to complete."
-#~ msgstr ""
-#~ "マニュアルで再起動をこれからします。 これはノーマルネットワークオペレー"
-#~ "ションを中断します。{0} サーバーが自動的に再起動を終了するまで。 終了まで"
-#~ "にこのプロセスは数分かかります。"
 
-#~ msgid ""
-#~ "You are about to shutdown the {0} Server.  This will stop all network "
-#~ "operations."
-#~ msgstr ""
-#~ "あなたは、  {0} サーバーをシャットダウンしているます。これは、すべてのネッ"
-#~ "トワーク操作が停止されます。"
 
-#~ msgid "Backup Failure Warning"
-#~ msgstr "バックアップ失敗警告"
 
-#~ msgid "Error:  The local file backup procedure failed.  Please try again."
-#~ msgstr ""
-#~ "エラー:  ローカルバックアップ手続きが失敗しました。再度トライしてくださ"
-#~ "い。"
 
-#~ msgid ""
-#~ "You can backup your current system configuration to a file on your local "
-#~ "computer for later restoration, in the event that you would like to "
-#~ "replace new settings with your current settings.  The file name will end "
-#~ "with \".backup\""
-#~ msgstr ""
-#~ "将来、今のセッティングを新しいセッティングにリプレイスしたい場合に修復する"
-#~ "ために、今のコンフィギュレーションシステムをあなたのローカルコンピュターの"
-#~ "ファイルにバックアップすることができます。ファイル名の最後は\".backup\"で"
-#~ "す。"
 
-#~ msgid ""
-#~ "After backing up your current system configuration to a file, you can "
-#~ "then restore that configuration through this dialog by going to \"Restore"
-#~ "\" -> \"From Local File\"."
-#~ msgstr ""
-#~ "ファイルへ現在のシステムコンフィギュレーションをバックアップしたあと、その"
-#~ "コンフィギュレーションを以下のダイアログを通して修元することができます。 "
-#~ "\"Restore\" -> \"From Local File\"."
 
-#~ msgid "Please wait while Restoring..."
-#~ msgstr "修復している間、お待ちください。"
 
-#~ msgid "The Local File restore procedure failed."
-#~ msgstr "ローカルファイル修復手続きが失敗"
 
-#~ msgid "File does not seem to be valid {0} backup"
-#~ msgstr "有効な {0} バックアップのファイルでないようです"
 
-#~ msgid "Error in processing restore itself (yet file seems valid)"
-#~ msgstr "修復プロセス中にエラー(ファイルは有効)"
 
-#~ msgid "File is from an older version of {0} and cannot be used"
-#~ msgstr "ファイルが古いバージョン{0} 使用できません"
 
-#~ msgid "Unknown error in local processing"
-#~ msgstr "ローカルプロセスに不明なエラー"
 
-#~ msgid "From File"
-#~ msgstr "ファイルから"
 
-#~ msgid ""
-#~ "You can restore a previous system configuration from a backup file on "
-#~ "your local computer.  The backup file name ends with \".backup\""
-#~ msgstr ""
-#~ "ローカルコンピューターにバックアップファイルから過去のシステムコンフィギュ"
-#~ "レーションを復元できます。バックアップファイル名の最後は\".backup\"でなけ"
-#~ "ればいけません。"
 
-#~ msgid ""
-#~ "Warning: These settings should not be changed unless instructed to do so "
-#~ "by support."
-#~ msgstr ""
-#~ "警告：これらのセッティングはサポートに指示されない限り変更してはなりません"
-#~ "l。"
 
-#~ msgid "Web Override"
-#~ msgstr "Web Override"
 
-#~ msgid ""
-#~ "{0}Enable Processing{1} of web traffic.  (This is the default setting)"
-#~ msgstr ""
-#~ "ウェブトラフィックの{0}イネーブル　プロセッシング{1}   (これはデフォルト"
-#~ "セッティングです)"
 
-#~ msgid "{0}Disable Processing{1} of web traffic."
-#~ msgstr "ウェブトラフィックの{0}ディセーブル　プロセッシング{1}"
 
-#~ msgid "Long URIs"
-#~ msgstr "Long URIs"
 
-#~ msgid ""
-#~ "{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-"
-#~ "Http\".  (This is the default setting)"
-#~ msgstr ""
-#~ "長いURIsの{0}イネーブル　プロセッシング{1} トラフィックは \"Non-Http\"とさ"
-#~ "れています.  (これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable Processing{1} of long URIs."
-#~ msgstr "長い URIsの{0}ディセーブル　プロセッシング{1}"
 
-#~ msgid "Max URI Length (characters)"
-#~ msgstr "最長 URI （文字)"
 
-#~ msgid "Long Headers"
-#~ msgstr "長いヘッダ"
 
-#~ msgid ""
-#~ "{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-"
-#~ "Http\".  (This is the default setting)"
-#~ msgstr ""
-#~ "長いヘッダの{0}イネーブル　プロセッシング{1} このトラフィックは \"Non-Http"
-#~ "\"とされます.  (これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable Processing{1} of long headers."
-#~ msgstr "長いヘッダの{0}ディセーブル　プロセッシング{1}　　 "
 
-#~ msgid "Max Header Length (characters)"
-#~ msgstr "最長ヘッダ (文字)"
 
-#~ msgid "Non-Http Blocking"
-#~ msgstr "Non-Http ブロッキング"
 
-#~ msgid ""
-#~ "{0}Allow{1} non-Http traffic to travel over port 80.  (This is the "
-#~ "default setting)"
-#~ msgstr ""
-#~ " non-Http トラフィックをポート８０上でトラベルすることを.{0}許可{1} (これ"
-#~ "はデフォルトセッティングです)"
 
-#~ msgid "{0}Stop{1} non-Http traffic to travel over port 80."
-#~ msgstr "non-Httpトラフィックをポート８０上でトラベルすることを{0}停止{1} "
 
-#~ msgid ""
-#~ "{0}Enable Processing{1} of File Transfer traffic.  (This is the default "
-#~ "setting)"
-#~ msgstr ""
-#~ "フィアル　トランスファー　トラフィックを{0}イネーブル　プロセッシング{1}  "
-#~ "(これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable Processing{1} of File Transfer traffic."
-#~ msgstr ""
-#~ "ファイル　トランスファー　トラフィックを{0}ディセーブル　プロセッシング"
-#~ "{1} "
 
-#~ msgid "{0}Enable SMTP{1} email processing.  (This is the default setting)"
-#~ msgstr ""
-#~ "{0} SMTPイネーブル{1} Eメール処理中.  (これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable SMTP{1} email processing."
-#~ msgstr "{0}SMTPディセーブル{1} Eメール処理中"
 
-#~ msgid "{0}Allow TLS{1} encryption over SMTP."
-#~ msgstr "{0}TLS許可{1} SMTPに暗号"
 
-#~ msgid "{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"
-#~ msgstr "{0}TLS停止{1} SMTPに暗号(これはデフォルトセッティングです)"
 
-#~ msgid "POP3"
-#~ msgstr "POP3"
 
-#~ msgid "{0}Enable POP3{1} email processing.  (This is the default setting)"
-#~ msgstr ""
-#~ "{0}POP3イネーブル{1} Eメール処理中(これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable POP3{1} email processing."
-#~ msgstr "{0}POP３をディセーブル{1}Eメール処理中"
 
-#~ msgid "POP3 timeout (seconds)"
-#~ msgstr "POP3 タイムアウト (秒)"
 
-#~ msgid "IMAP"
-#~ msgstr "IMAP"
 
-#~ msgid "{0}Enable IMAP{1} email processing.  (This is the default setting)"
-#~ msgstr ""
-#~ "{0}IMAPイネーブル{1} Eメール処理中(これはデフォルトセッティングです)"
 
-#~ msgid "{0}Disable IMAP{1} email processing."
-#~ msgstr "{0}IMAPをディセーブル{1} Ｅメール処理中"
 
-#~ msgid "IMAP timeout (seconds)"
-#~ msgstr "IMAP タイムアウト (秒)"
 
-#~ msgid "Protocol Settings"
-#~ msgstr "プロトコルセッティング"
 
-#~ msgid "Regional Settings"
-#~ msgstr "リージョンセッティング"
 
-#~ msgid "time is automatically synced via NTP"
-#~ msgstr " NTPを介して時間が自動的に調整されます"
 
-#~ msgid "Max URI Length should be between 1024 and 4096!"
-#~ msgstr "最長 URI は1024 から 4096の間でなければいけません!"
 
-#~ msgid "Max Header Length should be between 1024 and 8192!"
-#~ msgstr "最長ヘッダは1024 から 8192の間でなければいけません!"
 
-#~ msgid "SMTP timeout should be between 0 and 86400!"
-#~ msgstr "SMTP タイムアウトは0から86400の間でなければいけません!"
 
-#~ msgid "POP timeout should be between 0 and 86400!"
-#~ msgstr "POP タイムアウトは0から86400の間でなければいけません!"
 
-#~ msgid "IMAP timeout should be between 0 and 86400!"
-#~ msgstr "IMAP タイムアウトは0から86400の間でなければいけません!"
 
-#~ msgid "Upgrade in progress."
-#~ msgstr "アップブレード中です"
 
-#~ msgid "System Component"
-#~ msgstr "システムコンポーネント"
 
-#~ msgid "Product"
-#~ msgstr "プロダクト"
 
-#~ msgid "Various Updates"
-#~ msgstr "色々なアップデート"
 
-#~ msgid "N/A"
-#~ msgstr "N/A"
 
-#~ msgid "Misc."
-#~ msgstr "Misc."
 
-#~ msgid ""
-#~ "Upgrades are available. There are {0} packages. Total size is {1} MBs."
-#~ msgstr ""
-#~ "アップグレードが利用できます。{0} パッケージがあります. トータルサイズは"
-#~ "{1} MB。"
 
-#~ msgid "new version"
-#~ msgstr "新しいバージョン"
 
-#~ msgid "type"
-#~ msgstr "タイプ"
 
-#~ msgid "size (kb)"
-#~ msgstr "サイズ (kb)"
 
-#~ msgid "Upgrade Setup"
-#~ msgstr "セットアップをアップグレード"
 
-#~ msgid "Upgrade Time"
-#~ msgstr "アップグレード時間"
 
-#~ msgid "October"
-#~ msgstr "１０月"
 
-#~ msgid "Export Printer"
-#~ msgstr "プリンターに出力"
 
-#~ msgid "could not resolve host"
-#~ msgstr "ホストを決めることができませんでした。"
 
-#~ msgid "request timed out"
-#~ msgstr "リクエストタイムアウト"
 
-#~ msgid "Off-site administration is disabled."
-#~ msgstr "オフサイトアドミニストレーションをディセーブル"
 
-#~ msgid "standard access"
-#~ msgstr "スタンダードアクセス"
 
-#~ msgid "off-site access to reporting is not allowed"
-#~ msgstr "レポートへのオフサイトアクセスが許可されません"
 
-#~ msgid "standard access to reporting"
-#~ msgstr "レポートへのスタンダードアクセス"
 
-#~ msgid "UDP sessions"
-#~ msgstr "UDP セッション"
 
-#~ msgid "TCP sessions"
-#~ msgstr "TCP セッション"
 
-#~ msgid "UDP session requests"
-#~ msgstr "UDP セッションリクエスト"
 
-#~ msgid "TCP session requests"
-#~ msgstr "TCP セッションリクエスト"
 
-#~ msgid "Server to node chunks"
-#~ msgstr "ノードchunksへのサーバー"
 
-#~ msgid "Client to node chunks"
-#~ msgstr "ノードchunksへのクライアント"
 
-#~ msgid "Node to server chunks"
-#~ msgstr "サーバー chunksへのノード"
 
-#~ msgid "Server to node bytes"
-#~ msgstr "ノードバイトへのサーバー"
 
-#~ msgid "Client to node bytes"
-#~ msgstr "ノードバイトへのクライアント"
 
-#~ msgid "Node to server bytes"
-#~ msgstr "サーバーバイトへのノード"
 
-#~ msgid "Node to client bytes"
-#~ msgstr "クライアントバイトへのノード"
 
-#~ msgid "PASS"
-#~ msgstr "PASS"
 
-#~ msgid "BLOCK"
-#~ msgstr "BLOCK"
 
-#~ msgid "SCAN"
-#~ msgstr "SCAN"
 
-#~ msgid "Clients blocked"
-#~ msgstr "クライアントがブロックされました"
 
-#~ msgid "Clients passed"
-#~ msgstr "クライアントがパスしました"
 
-#~ msgid "Clients connected"
-#~ msgstr "クライアントが接続しました"
 
-#~ msgid "CONNECT"
-#~ msgstr "CONNECT"
 
-#~ msgid "DROP"
-#~ msgstr "破棄"
 
-#~ msgid "MARK"
-#~ msgstr "MARK"
 
-#~ msgid "QUARANTINE"
-#~ msgstr "QUARANTINE"
 
-#~ msgid "REMOVE"
-#~ msgstr "REMOVE"
 
-#, fuzzy
-#~ msgid "Reconnected"
-#~ msgstr "接続"
 
-#, fuzzy
-#~ msgid "Disconnected"
-#~ msgstr "接続"
 
-#, fuzzy
-#~ msgid "Avg Active Sessions"
-#~ msgstr "アクティブセッション"
 
-#, fuzzy
-#~ msgid "Max Active Sessions"
-#~ msgstr "アクティブセッション"
 
-#~ msgid "Service busy or timed out."
-#~ msgstr "サービスがビジー、もしくはタイムアウト"
 
-#~ msgid "More Trusted"
-#~ msgstr "より信頼性の高い"
 
-#~ msgid "Less Trusted"
-#~ msgstr "より信頼性の低い"
 
-#~ msgid "Any WAN Interface"
-#~ msgstr "全てのWANインタフェース"
 
-#~ msgid "Any non-WAN Interface"
-#~ msgstr "全てのWAN以外のインタフェース"
 
-#~ msgid "Get@{0}"
-#~ msgstr "取得@{0}"
 
-#~ msgid "Error downloading package {0}. Install Aborted."
-#~ msgstr ""
-#~ "パッケージのダウンロードにエラー {0}. インストールが中止されました。"
 
-#~ msgid "Error installing package {0}. Install Aborted."
-#~ msgstr ""
-#~ "パッケージのインストールにエラー {0}. インストールが中止されました。"
 
-#~ msgid ""
-#~ "Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."
-#~ msgstr ""
-#~ "ダウンロード中 {0}. <br/>状態: {1} KB/{2} KB ダウンロードされました. <br/>"
-#~ "スピード: {3}."
 
-#~ msgid "<br/>Package {0}/{1}."
-#~ msgstr "<br/>パッケージ {0}/{1}."
 
-#~ msgid "Updating... Please wait"
-#~ msgstr "アップグレード中...お待ちください"
 
-#~ msgid "Test email sent.  Check your mailbox to for successful delivery."
-#~ msgstr ""
-#~ "テストメールを送信しました。成功しているかあなたのメールボックスの配信を確"
-#~ "認してください。"
 
-#~ msgid "Thanks for using Untangle"
-#~ msgstr "Untangleをご利用いただきありがとうございます"
 
-#~ msgid ""
-#~ "This wizard will guide you through the initial setup and configuration of "
-#~ "your Untangle Server."
-#~ msgstr ""
-#~ "このウィザードは初期セットアップとUntangleサーバーの設定を案内します"
 
-#~ msgid "Where will you be using Untangle"
-#~ msgstr "Untangleをご使用になる場所"
 
-#~ msgid ""
-#~ "Your Untangle Server sends email for Quarantine Digests, Reports, etc."
-#~ msgstr ""
-#~ "あなたのUntangle Server は検疫ダイジェスト、レポート などをＥメールで送信"
-#~ "します。"
 
-#~ msgid ""
-#~ "<b>Please choose a <i>From Address</i> for emails originating from the "
-#~ "Untangle Server</b>"
-#~ msgstr ""
-#~ "<b>選択してください <i>アドレスから</i> Untangle サーバーから作成されるE"
-#~ "メールを</b>"
 
-#~ msgid ""
-#~ "<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready "
-#~ "to login and download some applications."
-#~ msgstr ""
-#~ "<b> Untangle Server はただ今設定されました</b><br/><br/>ログインしてアプリ"
-#~ "ケーションをダウンロードができるようになりました"
 
-#~ msgid "Branding"
-#~ msgstr "ブランド"
 
-#~ msgid "Block Page Skin"
-#~ msgstr "ページスキンをブロック"
 
-#~ msgid ""
-#~ "This skin will used in the user pages like quarantine and block pages"
-#~ msgstr ""
-#~ "このスキンは検疫やページをブロックするようなユーザーページで利用されます。"
 
-#~ msgid ""
-#~ "Changing the administration settings may disconnect you from the {0} box. "
-#~ "Do you want to proceed?"
-#~ msgstr ""
-#~ "アドミニストレーションセッティングの変更は {0} ボックスからディスコネクト"
-#~ "する可能性があります。続行しますか？"
 
-#~ msgid "Send"
-#~ msgstr "送信"
 
-#~ msgid ""
-#~ "Need to create network-access policies by username or time of the week? "
-#~ "Click on \"More Info\" to learn more."
-#~ msgstr ""
-#~ "ユーザー名もしくは特定時間によってネットワークアクセスポリシーを作成する必"
-#~ "要がありますか？ 詳細については \"More Info\" をクリックしてください。"
 
-#~ msgid ""
-#~ "You must install the policy manager in order to add additional racks."
-#~ msgstr ""
-#~ "ラックを追加するために、ポリシーマネジャーをインストールする必要があります"
 
-#~ msgid "Professional Package Feature"
-#~ msgstr "プロフェッショナル　パッケージ　フィーチャー"
 
-#~ msgid ""
-#~ "The rack named {0} cannot be removed because it is currently being used "
-#~ "in \"Custom Policies\"."
-#~ msgstr ""
-#~ "ラック名 {0}  \"Custom Policies\"で利用されているため、削除できません"
 
-#~ msgid "Backing Up..."
-#~ msgstr "バックアップ中..."
 
-#~ msgid ""
-#~ "Error:  The Hard Disk backup procedure failed.  Contact support for "
-#~ "further direction."
-#~ msgstr ""
-#~ "エラー:  ハードディスクバックアップ手続きが失敗しました。先の手続きをサ"
-#~ "ポートに問い合わせてください。"
 
-#~ msgid "Backup Success"
-#~ msgstr "バックアップ成功"
 
-#~ msgid "Success:  The Hard Disk backup procedure completed."
-#~ msgstr "成功:  ハードディスクバックアップ手続きが終了しました。"
 
-#~ msgid "Backup to Hard Disk"
-#~ msgstr "ハードディスクにバックアップ"
 
-#~ msgid ""
-#~ "You can backup your current system configuration to Hard Disk for later "
-#~ "restoration, in the event that you would like to replace new settings "
-#~ "with your current settings."
-#~ msgstr ""
-#~ "将来、今のセッティングを新しいセッティングにリプレイスしたい場合に修復する"
-#~ "ために、ハードディスクに現在のシステムコンフィギュレーションをバックアップ"
-#~ "することができます。"
 
-#~ msgid ""
-#~ "After backing up your current system configuration to Hard Disk, you can "
-#~ "then restore that configuration through the {0}Backup and Restore "
-#~ "Utilities{1}.  To access the Backup and Restore Utilities, you must have "
-#~ "a monitor and keyboard physically plugged into your server when it is "
-#~ "turned on, and then select \"Backup and Restore Utilities\" from the boot "
-#~ "prompt."
-#~ msgstr ""
-#~ "今のシステムコンフィギュレーションをハードディスクにバックアップした後、"
-#~ "{0}バックアップとリストアユーティリティ{1}を通してコンフィギュレーションを"
-#~ "リストアすることができます。バックアップとリストアユーティリティにアクセス"
-#~ "するためには、 モニターとキーボードをオンにしてからサーバーに直接プラグし"
-#~ "て、ブートプロンプトから\"Backup and Restore Utilities\" を選択しなければ"
-#~ "いけません。"
 
-#~ msgid "Restore Succes"
-#~ msgstr "修復成功"
 
-#~ msgid ""
-#~ "Success:  The Local File restore procedure completed. You will be "
-#~ "redirected to the start page now. The {0} Server will restart making the "
-#~ "console temporary unavailable. So you might have to wait a few minutes "
-#~ "before you can log in again."
-#~ msgstr ""
-#~ "成功：ローカルファイル修復が終了しました。スタートページにリダイレクトされ"
-#~ "ます。{0}コンソールを一時的に利用不可にして、サーバーが再起動します。次回"
-#~ "ログインできるまでに、数分待つ必要があります。"
 
-#~ msgid "From Hard Disk"
-#~ msgstr "ハードディスクから"
 
-#~ msgid ""
-#~ "After backing up your system configuration, you can restore that "
-#~ "configuration through the {0}Recovery Utilities{1} on your server once it "
-#~ "is done booting."
-#~ msgstr ""
-#~ "システムコンフィギュレーションをバックアップした後 、再起動後、コンフィ"
-#~ "ギュレーションを修復することができます。{0}Recovery Utilitiesを通して{1}"
-#~ "サーバー上にある　"
 
-#~ msgid ""
-#~ "To access the {0}Recovery Utilities{1}, you must have a monitor and "
-#~ "keyboard physically plugged into your server, and then click on the "
-#~ "Recovery Utilities toolbar button when it is done booting."
-#~ msgstr ""
-#~ "{0}リカバリ　ユーティリティ{1}にアクセスするには、 モニターとキーボードを"
-#~ "直接サーバにつなげて、再起動が終了したらRecovery Utilities ツールバーボタ"
-#~ "ンをクリックしてください。"
 
-#~ msgid "Language pack uploaded with errors"
-#~ msgstr "言語パックアップーロードにエラー"
 
-#~ msgid "DETECT"
-#~ msgstr "DETECT"
 
-#~ msgid "Upgrade Successful"
-#~ msgstr "アップグレード成功"
 
-#~ msgid ""
-#~ "The Upgrade succeeded. You will be redirected to the start page now. "
-#~ "After an upgrade the UVM may restart making the console temporary "
-#~ "unavailable. So you might have to wait a few minutes before you can log "
-#~ "in again."
-#~ msgstr ""
-#~ "アップグレードに成功しました。スタートページにリダイレクトされます。アップ"
-#~ "グレード後、ＵＶＭが再起動するため、コンソールが一時的に利用不可になりま"
-#~ "す。再度ログインするまで数分お待ちいただく必要があります。"
 
-#~ msgid ""
-#~ "You may choose user ID/Login that exists in the User Directory (either "
-#~ "local or remote Active Directory), or you can add a new user to the User "
-#~ "Directory, and then choose that user."
-#~ msgstr ""
-#~ "ユーザーディレクトリにある（ローカルかリモートActive Directory）のユーザー"
-#~ "ID／ログインを選ぶか、ユーザーディレクトリに新しいユーザーを追加してその"
-#~ "ユーザーを選べます。"
 
-#~ msgid ""
-#~ "You may choose user IDs/Logins that exist in the User Directory (either "
-#~ "local or remote Active Directory), or you can add a new user to the User "
-#~ "Directory, and then choose that user."
-#~ msgstr ""
-#~ "ユーザーディレクトリにある（ローカルかリモートActive Directory）のユーザー"
-#~ "ID／ログインを選ぶか、ユーザーディレクトリに新しいユーザーを追加し、その"
-#~ "ユーザーを選べます。"
 
-#~ msgid "Select an existing user or users"
-#~ msgstr "既存のユーザーまたはユーザーを選択してください"
 
-#~ msgid "group"
-#~ msgstr "グループ"
 
-#~ msgid "Select Group"
-#~ msgstr "グループを選択してください"
 
-#~ msgid "Select Groups"
-#~ msgstr "グループを選択してください"
 
-#, fuzzy
-#~ msgid ""
-#~ "You may choose group ID/Login that exists in the Group Directory (either "
-#~ "local or remote Active Directory), or you can add a new group to the "
-#~ "Group Directory, and then choose that group."
-#~ msgstr ""
-#~ "ユーザーディレクトリにある（ローカルかリモートActive Directory）でユーザー"
-#~ "ID／ログインを選ぶか、ユーザーディレクトリに新しいユーザーを追加してその"
-#~ "ユーザーを選べます。"
 
-#, fuzzy
-#~ msgid ""
-#~ "You may choose group IDs/Logins that exist in the Group Directory (either "
-#~ "local or remote Active Directory), or you can add a new group to the "
-#~ "Group Directory, and then choose that group."
-#~ msgstr ""
-#~ "ユーザーディレクトリにある（ローカルかリモートActive Directory）ユーザーID"
-#~ "／ログインを選ぶか、ユーザーディレクトリに新しいユーザーを追加し、そのユー"
-#~ "ザーを選べます。"
 
-#, fuzzy
-#~ msgid "Select an existing group"
-#~ msgstr "既存のユーザーを選ぶ"
 
-#~ msgid "Select an existing group or groups"
-#~ msgstr "既存のグループまたはグループを選択してください"
 
-#~ msgid "Add a new group"
-#~ msgstr "新しいグループを追加"
 
-#, fuzzy
-#~ msgid ""
-#~ "There was a problem refreshing Local Directory groups.  Please check your "
-#~ "Local Directory settings and try again."
-#~ msgstr ""
-#~ "アクティブディレクトリユーザーを更新中に問題があります。あなたのローカル"
-#~ "ディレクトリセッティングをチェックして、再度試してください。"
 
-#~ msgid "Please choose a group id/login or press Cancel!"
-#~ msgstr "ユーザーID／ログインを選ぶか、キャンセルを押してください。"
 
-#~ msgid "read-only"
-#~ msgstr "読み込み専用"
 
-#~ msgid "Generate a {0}Self-Signed Certificate{1}"
-#~ msgstr "作成する{0}Self-Signed Certificate{1}"
 
-#~ msgid ""
-#~ "Click this button if you have been using a signed certificate, and you "
-#~ "want to go back to using a self-signed certificate."
-#~ msgstr ""
-#~ "署名した証明書を使用しているならば、このボタンをクリックしてください、そし"
-#~ "てself-signed certirficateを使用するために戻ってください"
 
-#, fuzzy
-#~ msgid "The groups you would like to apply this policy to."
-#~ msgstr "このポリシーを適用したいユーザー"
 
-#~ msgid "Change Groups"
-#~ msgstr "グループを変更する"
 
-#~ msgid "Avg active sessions (1-day)"
-#~ msgstr "平均アクティブセッション数 (１日)"
 
-#~ msgid "Number of Sessions"
-#~ msgstr "セッション数"
 
-#~ msgid "Threads"
-#~ msgstr "スレッド"
 
-#~ msgid "page faults"
-#~ msgstr "ページフォルト"
 
-#~ msgid "Confirm Email"
-#~ msgstr "Eメールを確認"
 
-#~ msgid "(Approximate)"
-#~ msgstr "(約)"
 
-#~ msgid ""
-#~ "Answering these questions will help us build a better product - for you!"
-#~ msgstr ""
-#~ "これらの質問のお答えは、弊社のよりよい製品向上の開発に役に立てられます"
 
-#~ msgid "DHCP Settings"
-#~ msgstr "DHCP セッティング"
 
-#~ msgid ""
-#~ "Enter an email address which you would like to send a test message to, "
-#~ "and then press \"Proceed\". You should receive an email shortly after "
-#~ "running the test. If not, your email settings may not be correct."
-#~ msgstr ""
-#~ "テストメッセージを送信したいメールアドレスを入力し,\"Proceed\"を押してくだ"
-#~ "さい。テスト試行後まもなくメールを受信します。もし受信しなければ、あなたの"
-#~ "メールセッティングが間違っています。"
 
-#~ msgid "Digest Sending Time"
-#~ msgstr "ダイジェスト送信時間"
 
-#~ msgid "Test email sent."
-#~ msgstr "テストEメールが送信されました"
 
-#~ msgid "Configuring Internet Connection"
-#~ msgstr "インターネット接続を設定中"
 
-#~ msgid "Configuring Internal Network"
-#~ msgstr "インターナル練っとーワークを設定中"
 
-#~ msgid ""
-#~ "The currently configured skin is not marked as compatible with the "
-#~ "current version of this software. The Default skin is now being used. <a "
-#~ "href=\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Click "
-#~ "here for more information."
-#~ msgstr ""
-#~ "現在設定されたスキンはこのソフトウエアの最近のバージョンとの互換性がありま"
-#~ "せん。デフォルトスキンが現在使用されています。<a href=\"http://wiki."
-#~ "untangle.com/index.php/Skins\" target=\"_blank\">詳細はここをクリックして"
-#~ "ください。"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,578 +1,402 @@
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:18
 msgid ""
 "A name should only contains numbers, letters, dashes and periods.  Spaces "
 "are not allowed."
 msgstr "XA name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:61
 msgid "Connected Remote Clients"
 msgstr "XConnected Remote ClientsX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:62
 msgid "The Connected Remote Clients list shows connected clients."
 msgstr "XThe Connected Remote Clients list shows connected clients.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:84
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:262
 msgid "Address"
 msgstr "XAddressX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:88
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:325
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:332
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:261
 msgid "Client"
 msgstr "XClientX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:92
 msgid "Pool Address"
 msgstr "XPool AddressX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:96
 msgid "Start Time"
 msgstr "XStart TimeX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:101
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:148
 msgid "Rx Data"
 msgstr "XRx DataX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:106
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:153
 msgid "Tx Data"
 msgstr "XTx DataX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:125
 msgid "Remote Server Status"
 msgstr "XRemote Server StatusX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:126
 msgid ""
 "The Remote Server Status list shows the current status of the configured "
 "remote servers."
 msgstr "XThe Remote Server Status list shows the current status of the configured remote servers.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:140
 msgid "Name"
 msgstr "XNameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:144
 msgid "Connected"
 msgstr "XConnectedX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:168
 msgid "OpenVPN is currently running."
 msgstr "XOpenVPN is currently running.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:170
 msgid "OpenVPN is not currently running."
 msgstr "XOpenVPN is not currently running.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:176
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:184
 msgid "Status"
 msgstr "XStatusX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:192
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:538
 msgid "Group"
 msgstr "XGroupX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:217
 msgid "Remote Servers"
 msgstr "XRemote ServersX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:234
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:254
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:515
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:605
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:633
 msgid "Enabled"
 msgstr "XEnabledX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:239
 msgid "Server Name"
 msgstr "XServer NameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:245
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:264
 msgid "[enter server name]"
 msgstr "X[enter server name]X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:263
 msgid "Server name"
 msgstr "XServer nameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:270
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:531
 msgid "only alphanumerics allowed"
 msgstr "Xonly alphanumerics allowedX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:285
 msgid "Configure a new Remote Server connection"
 msgstr "XConfigure a new Remote Server connectionX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:289
 msgid "Configuration File"
 msgstr "XConfiguration FileX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:297
 msgid "Submit"
 msgstr "XSubmitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:302
 msgid "Select File"
 msgstr "XSelect FileX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:302
 msgid "Please choose a file to upload."
 msgstr "XPlease choose a file to upload.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:309
 msgid "Success"
 msgstr "XSuccessX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:309
 msgid "The configuration has been imported."
 msgstr "XThe configuration has been imported.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:315
 msgid "Failure"
 msgstr "XFailureX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:315
 msgid "Import failure"
 msgstr "XImport failureX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:335
 msgid ""
 "These settings configure how OpenVPN will connect to remote servers as a "
 "client."
 msgstr "XThese settings configure how OpenVPN will connect to remote servers as a client.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:338
 msgid ""
 "Remote Servers is a list remote OpenVPN servers that OpenVPN should connect "
 "to as a client."
 msgstr "XRemote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:346
 msgid "Download OpenVPN Client"
 msgstr "XDownload OpenVPN ClientX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:353
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:486
 msgid "Download"
 msgstr "XDownloadX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:360
 msgid "These files can be used to configure your Remote Clients."
 msgstr "XThese files can be used to configure your Remote Clients.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:378
 msgid ""
 "This file can be used to configure Chromebook clients.  On the target "
 "device, browse to <b>chrome://net-internals</b> and use Import ONC file."
 msgstr "XThis file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:389
 msgid "Close"
 msgstr "XCloseX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:403
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:404
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:405
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:406
 msgid "Loading..."
 msgstr "XLoading...X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:408
 msgid "Building OpenVPN Client..."
 msgstr "XBuilding OpenVPN Client...X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:408
 msgid "Please Wait"
 msgstr "XPlease WaitX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:414
 msgid "Click here to download this client's Windows setup.exe file."
 msgstr "XClick here to download this client's Windows setup.exe file.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:420
 msgid ""
 "Click here to download this client's configuration onc file for Chromebook."
 msgstr "XClick here to download this client's configuration onc file for Chromebook.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:426
 msgid ""
 "Click here to download this client's configuration zip file for other OSs "
 "(apple/linux/etc). "
 msgstr "XClick here to download this client's configuration zip file for other OSs (apple/linux/etc). X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:427
 msgid ""
 "Click here to download this client's configuration file for remote Untangle "
 "OpenVPN clients."
 msgstr "XClick here to download this client's configuration file for remote Untangle OpenVPN clients.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:440
 msgid "Remote Clients"
 msgstr "XRemote ClientsX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:472
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:524
 msgid "Client Name"
 msgstr "XClient NameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:478
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:525
 msgid "[enter client name]"
 msgstr "X[enter client name]X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:495
 msgid "Download Client"
 msgstr "XDownload ClientX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:549
 msgid "Type"
 msgstr "XTypeX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:552
 msgid "Individual Client"
 msgstr "XIndividual ClientX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:552
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:619
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:646
 msgid "Network"
 msgstr "XNetworkX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:567
 msgid "Remote Networks"
 msgstr "XRemote NetworksX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:587
 msgid "Exported Networks"
 msgstr "XExported NetworksX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:610
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:638
 msgid "Export Name"
 msgstr "XExport NameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:615
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:639
 msgid "[enter export name]"
 msgstr "X[enter export name]X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:658
 msgid "Groups"
 msgstr "XGroupsX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:685
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:711
 msgid "Group Name"
 msgstr "XGroup NameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:691
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:712
 msgid "[enter group name]"
 msgstr "X[enter group name]X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:696
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:719
 msgid "Full Tunnel"
 msgstr "XFull TunnelX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:702
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:724
 msgid "Push DNS"
 msgstr "XPush DNSX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:750
 msgid "Push DNS Configuration"
 msgstr "XPush DNS ConfigurationX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:759
 msgid "Push DNS Server"
 msgstr "XPush DNS ServerX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:762
 msgid "OpenVPN Server"
 msgstr "XOpenVPN ServerX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:762
 msgid "Custom"
 msgstr "XCustomX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:792
 msgid "Push DNS Custom 1"
 msgstr "XPush DNS Custom 1X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:799
 msgid "Push DNS Custom 2"
 msgstr "XPush DNS Custom 2X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:806
 msgid "Push DNS Domain"
 msgstr "XPush DNS DomainX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:863
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:868
 msgid "Server"
 msgstr "XServerX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:875
 msgid ""
 "These settings configure how OpenVPN will be a server for remote clients."
 msgstr "XThese settings configure how OpenVPN will be a server for remote clients.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:880
 msgid "Site Name"
 msgstr "XSite NameX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:886
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1046
 msgid "You must enter a site name."
 msgstr "XYou must enter a site name.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:897
 msgid "Site URL"
 msgstr "XSite URLX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:904
 msgid "Server Enabled"
 msgstr "XServer EnabledX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:923
 msgid "Client To Client Allowed"
 msgstr "XClient To Client AllowedX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:937
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:263
 msgid "Port"
 msgstr "XPortX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:955
 msgid "Protocol"
 msgstr "XProtocolX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:964
 msgid "Warning"
 msgstr "XWarningX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:965
 msgid ""
 "Changing the protocol will require redistributing ALL of the openvpn clients."
 msgstr "XChanging the protocol will require redistributing ALL of the openvpn clients.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:966
 msgid "Do you want to continue anyway?"
 msgstr "XDo you want to continue anyway?X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:979
 msgid "Cipher"
 msgstr "XCipherX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:994
 msgid "Address Space"
 msgstr "XAddress SpaceX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1015
 msgid "NAT OpenVPN Traffic"
 msgstr "XNAT OpenVPN TrafficX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1028
 msgid "NAT all LAN-bound OpenVPN traffic to a local address"
 msgstr "XNAT all LAN-bound OpenVPN traffic to a local addressX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1046
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1063
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1078
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1120
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1129
 msgid "Failed"
 msgstr "XFailedX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1063
 msgid "You must create at least one group."
 msgstr "XYou must create at least one group.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1079
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
 msgstr "XThe group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1098
 msgid "The group name: \"{0}\" in row: {1} already exists."
 msgstr "XThe group name: \"{0}\" in row: {1} already exists.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1120
 msgid "Changing name is not allowed. Create a new user."
 msgstr "XChanging name is not allowed. Create a new user.X"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1130
 msgid "The client name: \"{0}\" in row: {1} already exists."
 msgstr "XThe client name: \"{0}\" in row: {1} already exists.X"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:62
 msgid "Summary Report"
 msgstr "XSummary ReportX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:107
 msgid "securely passed"
 msgstr "Xsecurely passedX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:108
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:240
 msgid "MB"
 msgstr "XMBX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:108
 msgid "of traffic and processed"
 msgstr "Xof traffic and processedX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:109
 msgid "remote logins"
 msgstr "Xremote loginsX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:142
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:196
 msgid "Bandwidth Usage"
 msgstr "XBandwidth UsageX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:185
 msgid "Avg Data Rate"
 msgstr "XAvg Data RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:189
 msgid "Max Data Rate"
 msgstr "XMax Data RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:192
 msgid "Data Transferred"
 msgstr "XData TransferredX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:197
 msgid "Date"
 msgstr "XDateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:198
 msgid "Throughput (kB/s)"
 msgstr "XThroughput (kB/s)X"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:201
 msgid "Usage (kB/sec)"
 msgstr "XUsage (kB/sec)X"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:209
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:245
 msgid "Top Users"
 msgstr "XTop UsersX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:253
 msgid "Login Events"
 msgstr "XLogin EventsX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:259
 msgid "Time"
 msgstr "XTimeX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnEvent.java:87
 msgid "event"
 msgstr "XeventX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:66
 msgid "Sessions passed"
 msgstr "XSessions passedX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:67
 msgid "Clients Connected"
 msgstr "XClients ConnectedX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:408
 msgid "primary network"
 msgstr "Xprimary networkX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:420
 msgid "Default Group"
 msgstr "XDefault GroupX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:486
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:488
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:498
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:505
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:522
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:529
 msgid "Invalid Settings"
 msgstr "XInvalid SettingsX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:522
-#: ../src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:529
 msgid "conflicts with address"
 msgstr "Xconflicts with addressX"
 
-#: ../src/com/untangle/node/openvpn/OpenVpnStatusEvent.java:156
 msgid "status"
 msgstr "XstatusX"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11
 msgid "description"
 msgstr "XdescriptionX"
 
-#: /tmp/strings:1
 msgid "The approximate amount of data transfered over openvpn connections."
 msgstr "XThe approximate amount of data transfered over openvpn connections.X"
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12
 msgid "title"
 msgstr "XtitleX"
 
-#: /tmp/strings:2
 msgid "OpenVPN Bandwidth Usage"
 msgstr "XOpenVPN Bandwidth UsageX"
 
-#: /tmp/strings:3
 msgid "The number of bytes transferred grouped by remote client."
 msgstr "XThe number of bytes transferred grouped by remote client.X"
 
-#: /tmp/strings:4
 msgid "Top Clients (by usage)"
 msgstr "XTop Clients (by usage)X"
 
-#: /tmp/strings:5
 msgid "The amount of openvpn sessions over time."
 msgstr "XThe amount of openvpn sessions over time.X"
 
-#: /tmp/strings:6
 msgid "OpenVPN Sessions"
 msgstr "XOpenVPN SessionsX"
 
-#: /tmp/strings:7
 msgid "The amount of login and logout events over time."
 msgstr "XThe amount of login and logout events over time.X"
 
-#: /tmp/strings:8
 msgid "OpenVPN Events"
 msgstr "XOpenVPN EventsX"
 
-#: /tmp/strings:9
 msgid "Shows all OpenVPN connection traffic statistics events."
 msgstr "XShows all OpenVPN connection traffic statistics events.X"
 
-#: /tmp/strings:10
 msgid "Statistic Events"
 msgstr "XStatistic EventsX"
 
-#: /tmp/strings:11
 msgid "OpenVPN client connection events."
 msgstr "XOpenVPN client connection events.X"
 
-#: /tmp/strings:12
 msgid "Connection Events"
 msgstr "XConnection EventsX"

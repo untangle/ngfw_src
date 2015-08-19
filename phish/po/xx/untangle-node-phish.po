@@ -1,230 +1,167 @@
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Mark"
 msgstr "XMarkX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 msgid "Pass"
 msgstr "XPassX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Drop"
 msgstr "XDropX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:37
 msgid "Quarantine"
 msgstr "XQuarantineX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 msgid "Email"
 msgstr "XEmailX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "SMTP"
 msgstr "XSMTPX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 msgid "Scan SMTP"
 msgstr "XScan SMTPX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 msgid "Action"
 msgstr "XActionX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:80
 msgid "Note"
 msgstr "XNoteX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:81
 msgid "Phish Blocker email signatures were last updated"
 msgstr "XPhish Blocker email signatures were last updatedX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 msgid "never"
 msgstr "XneverX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr "XPhishX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr "XCleanX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr "XHourly Phish RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr "XDaily Phish RateX"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr "XTop Ten Phishing VictimsX"
 
-#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
-#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "XIf you have any questions, Please contact {0}.X"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr "XscoredX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr "XasX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
 msgid "Messages received"
 msgstr "XMessages receivedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
 msgid "Messages passed"
 msgstr "XMessages passedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
 msgid "Messages dropped"
 msgstr "XMessages droppedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
 msgid "Messages marked"
 msgstr "XMessages markedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
 msgid "Messages quarantined"
 msgstr "XMessages quarantinedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
 msgid "Spam detected"
 msgstr "XSpam detectedX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr "XtarpitX"
 
-#: ../../spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr "XblockedX"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21
 msgid "description"
 msgstr "XdescriptionX"
 
-#: /tmp/strings:1
 msgid "The amount of scanned, clean, and phish email over time."
 msgstr "XThe amount of scanned, clean, and phish email over time.X"
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22
 msgid "title"
 msgstr "XtitleX"
 
-#: /tmp/strings:2
 msgid "Email Usage (all)"
 msgstr "XEmail Usage (all)X"
 
-#: /tmp/strings:3
 msgid "The amount of clean email over time."
 msgstr "XThe amount of clean email over time.X"
 
-#: /tmp/strings:4
 msgid "Email Usage (clean)"
 msgstr "XEmail Usage (clean)X"
 
-#: /tmp/strings:5
 msgid "The number of IP addresses sending phish."
 msgstr "XThe number of IP addresses sending phish.X"
 
-#: /tmp/strings:6
 msgid "Top Phish Sender Addresses"
 msgstr "XTop Phish Sender AddressesX"
 
-#: /tmp/strings:7
 msgid "The amount of phish email over time."
 msgstr "XThe amount of phish email over time.X"
 
-#: /tmp/strings:8
 msgid "Email Usage (phish)"
 msgstr "XEmail Usage (phish)X"
 
-#: /tmp/strings:9
 msgid "The ratio of phish (true) to ham (false)"
 msgstr "XThe ratio of phish (true) to ham (false)X"
 
-#: /tmp/strings:10
 msgid "Phish Ratio"
 msgstr "XPhish RatioX"
 
-#: /tmp/strings:11
 msgid "The amount of scanned email over time."
 msgstr "XThe amount of scanned email over time.X"
 
-#: /tmp/strings:12
 msgid "Email Usage (scanned)"
 msgstr "XEmail Usage (scanned)X"
 
-#: /tmp/strings:13
 msgid "The number of email addresses with phish."
 msgstr "XThe number of email addresses with phish.X"
 
-#: /tmp/strings:14
 msgid "Top Phish Recipients"
 msgstr "XTop Phish RecipientsX"
 
-#: /tmp/strings:15
 msgid "A summary of phish blocking actions for email activity."
 msgstr "XA summary of phish blocking actions for email activity.X"
 
-#: /tmp/strings:16
 msgid "Phish Blocker Summary"
 msgstr "XPhish Blocker SummaryX"
 
-#: /tmp/strings:17
 msgid "All email sessions detected as phishing attempts and quarantined."
 msgstr "XAll email sessions detected as phishing attempts and quarantined.X"
 
-#: /tmp/strings:18
 msgid "Quarantined Events"
 msgstr "XQuarantined EventsX"
 
-#: /tmp/strings:19
 msgid "All email sessions scanned by Phish Blocker."
 msgstr "XAll email sessions scanned by Phish Blocker.X"
 
-#: /tmp/strings:20
 msgid "All Email Events"
 msgstr "XAll Email EventsX"
 
-#: /tmp/strings:21
 msgid "All email sessions detected as phishing attempts."
 msgstr "XAll email sessions detected as phishing attempts.X"
 
-#: /tmp/strings:22
 msgid "All Phish Events"
 msgstr "XAll Phish EventsX"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "XHost:X"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "XURL:X"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "XReason:X"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "XUnblock For NowX"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "XUnblock PermanentlyX"

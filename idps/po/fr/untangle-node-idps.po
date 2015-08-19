@@ -1,8 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,150 +12,114 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:120
 msgid "Attempted Administrator Privilege Gain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:121
 msgid "Attempted User Privilege Gain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:122
 msgid "Inappropriate Content was Detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:123
 msgid "Potential Corporate Privacy Violation"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:124
 msgid "Executable code was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:125
 msgid "Successful Administrator Privilege Gain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:126
 msgid "Successful User Privilege Gain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:127
 msgid "A Network Trojan was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:128
 msgid "Unsuccessful User Privilege Gain"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:129
 msgid "Web Application Attack"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:131
 msgid "Attempted Denial of Service"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:132
 msgid "Attempted Information Leak"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:133
 msgid "Potentially Bad Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:134
 msgid "Attempt to login by a default username and password"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:135
 msgid "Detection of a Denial of Service Attack"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:136
 msgid "Misc Attack"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:137
 msgid "Detection of a non-standard protocol or event"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:138
 msgid "Decode of an RPC Query"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:139
 msgid "Denial of Service"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:140
 msgid "Large Scale Information Leak"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:141
 msgid "Information Leak"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:142
 msgid "A suspicious filename was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:143
 msgid "An attempted login using a suspicious username was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:144
 msgid "A system call was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:145
 msgid "A client was using an unusual port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:146
 msgid "Access to a potentially vulnerable web application"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:148
 msgid "Generic ICMP event"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:149
 msgid "Misc activity"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:150
 msgid "Detection of a Network Scan"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:151
 msgid "Not Suspicious Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:152
 msgid "Generic Protocol Command Decode"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:153
 msgid "A suspicious string was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:154
 msgid "Unknown Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:156
 msgid "A TCP connection was detected"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:165
 msgid ""
 "This category contains rules that look for, and control, the traffic of "
 "certain applications that generate network activity. This category will be "
 "used to control various aspects of how an application behaves."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:166
 msgid ""
 "This category contains URI, USER-AGENT, DNS, and IP address rules that have "
 "been determined to be indicators of malicious activity. These rules are "
@@ -168,7 +127,6 @@ msgid ""
 "URLs, and other data sources."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:167
 msgid ""
 "This category contains detection for vulnerabilities present in the Chrome "
 "browser. (This is separate from the 'browser-webkit' category, as Chrome has "
@@ -176,57 +134,48 @@ msgid ""
 "Webkit rendering engine, there's a lot of other features to Chrome.)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:168
 msgid ""
 "This category contains detection for vulnerabilities present in the Firefox "
 "browser, or products that have the 'Gecko' engine. (Thunderbird email "
 "client, etc)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:169
 msgid ""
 "This category contains detection for vulnerabilities present in the Internet "
 "Explorer browser (Trident or Tasman engines)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:170
 msgid ""
 "This category contains detection of vulnerabilities present in the Webkit "
 "browser engine (aside from Chrome) this includes Apple's Safari, RIM's "
 "mobile browser, Nokia, KDE, Webkit itself, and Palm."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:171
 msgid ""
 "This category contains detection for vulnerabilities in other browsers not "
 "listed above."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:172
 msgid ""
 "This category contains detection for vulnerabilities in browsers that deal "
 "with plugins to the browser. (Example: Active-x)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:173
 msgid ""
 "This category containt any rule that utilizes the 'replace' functionality "
 "inside of Snort."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:174
 msgid ""
 "When a rule has been deprecated or replaced it is moved to this categories. "
 "Rules are never totally removed from the ruleset, they are moved here."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:175
 msgid ""
 "This is an older category which will be deprecated soon. This category looks "
 "for exploits against software in a generic form."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:176
 msgid ""
 "This category contains rules that are specifically tailored to detect "
 "exploit kit activity. This does not include 'post-compromise' rules (as "
@@ -234,79 +183,67 @@ msgid ""
 "visiting an exploit kit would be in their respective file category."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:177
 msgid ""
 "This category contains rules for vulnerabilities that are found or are "
 "delivered through executable files, regardless of platform."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:178
 msgid ""
 "This category contains rules for vulnerabilities that are found or are "
 "delivered through flash files. Either compressed or uncompressed, regardless "
 "of delivery method platform being attacked."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:179
 msgid ""
 "This category contains rules for vulnerabilities that are found inside of "
 "images files. Regardless of delivery method, software being attacked, or "
 "type of image. (Examples include: jpg, png, gif, bmp, etc)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:180
 msgid ""
 "This category is to identify files through file extension, the content in "
 "the file (file magic), or header found in the traffic. This information is "
 "usually used to then set a flowbit to be used in a different rule."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:181
 msgid ""
 "This category contains rules for vulnerabilities present inside of "
 "multimedia files (mp3, movies, wmv)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:182
 msgid ""
 "This category contains rules for vulnerabilities present inside of files "
 "belonging to the Microsoft Office suite of software. (Excel, PowerPoint, "
 "Word, Visio, Access, Outlook, etc)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:183
 msgid ""
 "This category contains rules for vulnerabilities found inside of PDF files. "
 "Regardless of method of creation, delivery method, or which piece of "
 "software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:184
 msgid ""
 "This category contains rules for vulnerabilities present inside a file, that "
 "doesn't fit into the other categories above."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:185
 msgid ""
 "This category contains rules that are clearly to be used only for the "
 "detection of a positively compromised system, false positives may occur."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:186
 msgid ""
 "This category contains rules that are clearly used only for the detection of "
 "obfuscated content. Like encoded JavaScript rules."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:187
 msgid ""
 "This category contains rules that are simply looking for simple "
 "identification markers of shellcode in traffic. This replaces the old "
 "'shellcode.rules'."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:188
 msgid ""
 "This category contains rules for the detection of traffic destined to known "
 "listening backdoor command channels. If a piece of malicious soft are opens "
@@ -316,7 +253,6 @@ msgid ""
 "sent."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:189
 msgid ""
 "This category contains known malicious command and control activity for "
 "identified botnet traffic. This includes call home, downloading of dropped "
@@ -324,44 +260,37 @@ msgid ""
 "Zombie' type stuff will also be here."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:190
 msgid ""
 "This category contains rules that deal with tools that can be considered "
 "malicious in nature. For example, LOIC."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:191
 msgid ""
 "This category contains rules that are malware related, but don't fit into "
 "one of the other 'malware' categories."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:192
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Linux "
 "based OSes. Not for browsers or any other software on it, but simply against "
 "the OS itself."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:193
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Solaris "
 "based OSes. Not for any browsers or any other software on top of the OS."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:194
 msgid ""
 "This category contains rules that are looking for vulnerabilities in Windows "
 "based OSes. Not for any browsers or any other software on top of the OS."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:195
 msgid ""
 "This category contains rules that are looking for vulnerabilities in an OS "
 "that is not listed above."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:196
 msgid ""
 "This category contains rules that detect potential violations of policy for "
 "multimedia. Examples like the detection of the use of iTunes on the network. "
@@ -369,179 +298,147 @@ msgid ""
 "be in file-multimedia."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:197
 msgid ""
 "This category contains rules for the detection potential violations of "
 "policy on corporate networks for the use of social media. (p2p, chat, etc)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:198
 msgid ""
 "This category is for rules that may violate the end-users corporate policy "
 "bud do not fall into any of the other policy categories first."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:199
 msgid ""
 "This category is for rules that may indicate the presence of spam on the "
 "network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:200
 msgid ""
 "This category is for rules that may indicate the presence of the finger "
 "protocol or vulnerabilities in the finger protocol on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:201
 msgid ""
 "This category is for rules that may indicate the presence of the ftp "
 "protocol or vulnerabilities in the ftp protocol on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:202
 msgid ""
 "This category is for rules that may indicate the presence of icmp traffic or "
 "vulnerabilities in icmp on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:203
 msgid ""
 "This category is for rules that may indicate the presence of the imap "
 "protocol or vulnerabilities in the imap protocol on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:204
 msgid ""
 "This category is for rules that may indicate the presence of the pop "
 "protocol or vulnerabilities in the pop protocol on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:205
 msgid ""
 "This category is for rules that may indicate the presence of the rservices "
 "protocol or vulnerabilities in the rservices protocols on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:206
 msgid ""
 "This category is for rules that may indicate the presence of voip services "
 "or vulnerabilities in the voip protocol on the network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:207
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with adware or spyware."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:208
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with p2p."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:209
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "deal with toolbars installed on the client system. (Google Toolbar, Yahoo "
 "Toolbar, Hotbar, etc)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:210
 msgid ""
 "This category deals with 'pua' or Potentially Unwanted Applications that "
 "don't fit into one of the categories shown above."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:211
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Apache "
 "Web Server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:212
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Microsoft "
 "IIS Web server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:213
 msgid ""
 "This category deals with vulnerabilities in or attacks against the Microsoft "
 "SQL Server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:214
 msgid ""
 "This category deals with vulnerabilities in or attacks against Oracle's "
 "MySQL server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:215
 msgid ""
 "This category deals with vulnerabilities in or attacks against Oracle's "
 "Oracle DB Server."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:216
 msgid ""
 "This category deals with vulnerabilities in or attacks against Web based "
 "applications on servers."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:217
 msgid ""
 "This category contains rules that detect vulnerabilities in mail servers. "
 "(Exchange, Courier). These are separate from the protocol categories, as "
 "those deal with the traffic going to the mail servers itself."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:218
 msgid ""
 "This category contains rules that detect vulnerabilities in or attacks "
 "against servers that are not detailed in the above list."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:247
 msgid "Status"
 msgstr "Etat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:254
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:260
 msgid "Total Signatures Available"
 msgstr "Nombre total de Signatures Disponibles"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:264
 msgid "Total Signatures Logging"
 msgstr "Nombre total de Signatures Enregistrables"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:268
 msgid "Total Signatures Blocking"
 msgstr "Nombre total de Signatures Bloquantes"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:273
 msgid "Setup Wizard"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:276
 msgid ""
 " Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion "
 "Prevention."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:283
 msgid "Run Intrusion Detection/Prevention Setup Wizard"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:290
 msgid "Note"
 msgstr "Note"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:291
 msgid ""
 "{0} continues to maintain the default signature settings through automatic "
 "updates. You are free to modify and add signatures, however it is not "
@@ -551,240 +448,160 @@ msgstr ""
 "biais de mises à jour automatiques. Vous êtes libre de les modifier et "
 "d'ajouter des signatures, mais ce n'est pas obligatoire."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:293
 msgid "Updates"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:296
 msgid "Last check for updates"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:299
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:305
 msgid "Never"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:302
 msgid "Last update"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:319
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:219
 msgid "Rules"
 msgstr "Règles"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:337
 msgid "{0} logging or blocking"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:340
 msgid "{0} matching rules(s) found"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:345
 msgid "{0} available rules"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:365
 msgid "Search"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:383
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:533
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:718
 msgid "Log"
 msgstr "Enregistre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:400
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:550
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:732
 msgid "Block"
 msgstr "Bloque"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:417
 msgid "Loading..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:455
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:654
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:587
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:605
 msgid "Sid"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:463
 msgid "Sid:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:463
 msgid "Gid:"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:569
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:588
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:608
 msgid "Classtype"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:480
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:606
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:589
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:609
 msgid "Category"
 msgstr "Catégorie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:492
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:620
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:590
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:610
 msgid "Msg"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:500
 msgid "Reference"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:570
 msgid "[enter class]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:581
 msgid "Invalid Classtype"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:608
 msgid "[enter category]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:621
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:925
 msgid "[enter name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:627
 msgid "Msg contains invalid characters."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:655
 msgid "[enter sid]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:664
 msgid "Sid must be numeric"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:691
 msgid "Sid already in use."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:746
 msgid "Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:747
 msgid "[enter rule]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:755
 msgid "Rule formatted wrong."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:850
 msgid "Variables"
 msgstr "Variables"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:877
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:924
 msgid "Name"
 msgstr "Nom"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:882
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:953
 msgid "Definition"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:887
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:954
 msgid "[enter definition]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:891
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:961
 msgid "Description"
 msgstr "Description"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:897
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:962
 msgid "[enter description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:902
 msgid "Validating..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:902
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1075
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1184
 msgid "Please wait"
 msgstr "SVP attendez"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:906
 msgid "Cannot Delete Variable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:906
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:946
 msgid "Variable is used by one or more rules."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:938
 msgid "Variable name already in use."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1008
 msgid "Intrusion Prevention Setup Wizard"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1036
 msgid "Setup Wizard Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1036
 msgid ""
 "You have not finished configuring Intrusion Prevention. Please run the Setup "
 "Wizard again."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1053
 msgid "Intrusion Prevention Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1053
 msgid ""
 "Settings have been changed by rule updater.  Current changes must be "
 "discarded."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1075
 msgid "Saving and creating settings (this may take a few minutes)..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1121
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1138
 msgid "Error"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1121
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1138
 msgid "Unable to save settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1151
 msgid "Welcome to the Intrusion Prevention Setup Wizard!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1154
 msgid ""
 "Intrusion Prevention operates using rules to identify possible threats.  An "
 "enabled ruled performs an action, either logging or blocking traffic.  Not "
@@ -792,7 +609,6 @@ msgid ""
 "them may negatively impact your network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1158
 msgid ""
 "This wizard is designed to help you correctly configure the appropriate "
 "amount of rules for your network by selecting rule identifiers: classtypes "
@@ -800,564 +616,343 @@ msgid ""
 "Again, too many enabled rules may negatively impact your network."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1162
 msgid "It is highly suggested that you use Recommended values."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1169
 msgid ""
 "WARNING: Completing this setup wizard will overwrite the previous settings "
 "with new settings. All previous settings will be lost!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1175
 msgid "Welcome"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1184
 msgid "Determining recommended settings..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Setup Wizard Error"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1249
 msgid "Unable to obtain default settings.  Please run the Setup Wizard again."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1263
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1288
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1292
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:357
 msgid "Classtypes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1295
 msgid ""
 "Classtypes are a generalized  grouping for rules, such as attempts to gain "
 "user access."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1301
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1443
 msgid "Recommended (default)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1311
 msgid "Recommended classtype Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1316
 msgid "Custom"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1368
 msgid "None.  Classtypes within selected categories will be used."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1405
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1430
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1434
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:288
 msgid "Categories"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1437
 msgid ""
 "Categories are a different rule grouping that can span multiple classtypes, "
 "such as VOIP access."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1457
 msgid "Select by name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1508
 msgid "None.  Categories within selected classtypes will be used."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1543
 msgid "Finish"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1547
 msgid "Congratulations!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:1550
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:40
 msgid "Intrusion Prevention"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:85
 msgid "Summary Report"
 msgstr "Rapport sommaire"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:111
-#: ../src/com/untangle/node/idps/IdpsLogEvent.java:66
 msgid "detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:112
 msgid "attacks of which"
 msgstr "attaques, dont"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:113
 msgid "were blocked"
 msgstr "ont été bloquées"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:166
 msgid "Top Detected Rules (by Hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:210
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:279
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:348
-#, fuzzy
 msgid "Hits"
 msgstr "hits"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:220
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:289
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:358
-#, fuzzy
 msgid "Hits Per Day"
 msgstr "Hits par Jour"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:235
 msgid "Top Detected Categories (by Hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:304
 msgid "Top Detected Classtypes (by Hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:373
 msgid "Attacks Detected, Logged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:434
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:530
 msgid "Avg Attacks Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:436
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:442
 msgid "Logged"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:440
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:536
 msgid "Max Attacks Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:449
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:544
 msgid "Attacks"
 msgstr "Attaques"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:454
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:549
 msgid "Attacks Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:469
 msgid "Attacks Detected, Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:532
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:538
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:586
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:604
 msgid "Blocked"
 msgstr "Bloqué(es)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:564
 msgid "Intrusion Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:573
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:598
 msgid "Time"
 msgstr "Heure"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:576
 msgid "Client"
 msgstr "Client"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:578
 msgid "User"
 msgstr "Utilisateur"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:581
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:599
 msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:582
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:600
 msgid "Source IP Address"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:583
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:585
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:601
 msgid "Source Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:584
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:602
 msgid "Destination IP Address"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:603
 msgid "Destination Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:606
 msgid "Gid"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_idps.py:607
 msgid "Cid"
 msgstr ""
 
-#: ../src/com/untangle/node/idps/IdpsLogEvent.java:64
-#, fuzzy
 msgid "blocked"
 msgstr "Bloqué(es)"
 
-#: ../src/com/untangle/node/idps/IdpsNodeImpl.java:84
 msgid "Sessions scanned"
 msgstr "Sessions scannées"
 
-#: ../src/com/untangle/node/idps/IdpsNodeImpl.java:85
 msgid "Sessions logged"
 msgstr "Sessions enregistrées"
 
-#: ../src/com/untangle/node/idps/IdpsNodeImpl.java:86
 msgid "Sessions blocked"
 msgstr "Sessions bloquées"
 
-#: /tmp/strings:1 /tmp/strings:3 /tmp/strings:5 /tmp/strings:7 /tmp/strings:9
-#: /tmp/strings:11 /tmp/strings:13 /tmp/strings:15 /tmp/strings:17
-#: /tmp/strings:19 /tmp/strings:21 /tmp/strings:23 /tmp/strings:25
-#: /tmp/strings:27 /tmp/strings:29 /tmp/strings:31 /tmp/strings:33
-#: /tmp/strings:35 /tmp/strings:37 /tmp/strings:39 /tmp/strings:41
-#: /tmp/strings:43
 msgid "description"
 msgstr "description"
 
-#: /tmp/strings:1
 msgid "The amount of detected and blocked intrusions over time."
 msgstr ""
 
-#: /tmp/strings:2 /tmp/strings:4 /tmp/strings:6 /tmp/strings:8 /tmp/strings:10
-#: /tmp/strings:12 /tmp/strings:14 /tmp/strings:16 /tmp/strings:18
-#: /tmp/strings:20 /tmp/strings:22 /tmp/strings:24 /tmp/strings:26
-#: /tmp/strings:28 /tmp/strings:30 /tmp/strings:32 /tmp/strings:34
-#: /tmp/strings:36 /tmp/strings:38 /tmp/strings:40 /tmp/strings:42
-#: /tmp/strings:44
 msgid "title"
 msgstr ""
 
-#: /tmp/strings:2
 msgid "Intrusion Detection (all)"
 msgstr ""
 
-#: /tmp/strings:3
 msgid "The number of intrusions detected grouped by source IP address."
 msgstr ""
 
-#: /tmp/strings:4
 msgid "Top Source IP Addresses (logged)"
 msgstr ""
 
-#: /tmp/strings:5
 msgid "The number of intrusions detected grouped by category."
 msgstr ""
 
-#: /tmp/strings:6
 msgid "Top Categories (logged)"
 msgstr ""
 
-#: /tmp/strings:7
 msgid "The number of intrusions blocked by source port."
 msgstr ""
 
-#: /tmp/strings:8
 msgid "Top Source Port (blocked)"
 msgstr ""
 
-#: /tmp/strings:9
 msgid "The number of intrusions blocked by rule."
 msgstr ""
 
-#: /tmp/strings:10
 msgid "Top Rules (blocked)"
 msgstr ""
 
-#: /tmp/strings:11
 msgid "The number of intrusions blocked by destination port."
 msgstr ""
 
-#: /tmp/strings:12
 msgid "Top Destination Port (blocked)"
 msgstr ""
 
-#: /tmp/strings:13
 msgid "The amount of blocked intrusions over time."
 msgstr ""
 
-#: /tmp/strings:14
 msgid "Intrusion Detection (blocked)"
 msgstr ""
 
-#: /tmp/strings:15
 msgid "The number of intrusions blocked by classtype."
 msgstr ""
 
-#: /tmp/strings:16
 msgid "Top Classtypes (blocked)"
 msgstr ""
 
-#: /tmp/strings:17
 msgid "The number of intrusions detected grouped by rule."
 msgstr ""
 
-#: /tmp/strings:18
 msgid "Top Rules (logged)"
 msgstr ""
 
-#: /tmp/strings:19
 msgid "The number of intrusions blocked by category."
 msgstr ""
 
-#: /tmp/strings:20
 msgid "Top Categories (blocked)"
 msgstr ""
 
-#: /tmp/strings:21
 msgid "The number of intrusions blocked by source IP address."
 msgstr ""
 
-#: /tmp/strings:22
 msgid "Top Source IP Addresses (blocked)"
 msgstr ""
 
-#: /tmp/strings:23
 msgid "The number of intrusions detected grouped by destination IP address."
 msgstr ""
 
-#: /tmp/strings:24
 msgid "Top Destination IP Addresses (logged)"
 msgstr ""
 
-#: /tmp/strings:25
 msgid "The amount of detected pintrusions over time."
 msgstr ""
 
-#: /tmp/strings:26
 msgid "Intrusion Detection (logged)"
 msgstr ""
 
-#: /tmp/strings:27
 msgid "The number of intrusions detected grouped by source port."
 msgstr ""
 
-#: /tmp/strings:28
 msgid "Top Source Ports (logged)"
 msgstr ""
 
-#: /tmp/strings:29
 msgid "A summary of intrusion detection and prevention actions."
 msgstr ""
 
-#: /tmp/strings:30
 msgid "Intrusion Prevention Summary"
 msgstr ""
 
-#: /tmp/strings:31
 msgid "The number of intrusions detected grouped by classtype."
 msgstr ""
 
-#: /tmp/strings:32
 msgid "Top Classtypes (logged)"
 msgstr ""
 
-#: /tmp/strings:33
 msgid "The number of intrusions detected grouped by destination port."
 msgstr ""
 
-#: /tmp/strings:34
 msgid "Top Destination Ports (logged)"
 msgstr ""
 
-#: /tmp/strings:35
 msgid "The number of intrusions blocked by protocol."
 msgstr ""
 
-#: /tmp/strings:36
 msgid "Top Protocols (blocked)"
 msgstr ""
 
-#: /tmp/strings:37
 msgid "The number of intrusions blocked by destination IP address."
 msgstr ""
 
-#: /tmp/strings:38
 msgid "Top Destination IP Addresses (blocked)"
 msgstr ""
 
-#: /tmp/strings:39
 msgid "The number of intrusions detected grouped by protocol."
 msgstr ""
 
-#: /tmp/strings:40
 msgid "Top Protocols (logged)"
 msgstr ""
 
-#: /tmp/strings:41
 msgid "All sessions scanned by Intrusion Prevention."
 msgstr ""
 
-#: /tmp/strings:42
 msgid "All Events"
 msgstr "Tous les évènements"
 
-#: /tmp/strings:43
 msgid "All sessions matching Intrusion Prevention signatures and blocked."
 msgstr ""
 
-#: /tmp/strings:44
 msgid "Blocked Events"
 msgstr "Evènements bloqués"
 
-#~ msgid "[no category]"
-#~ msgstr "[pas de catégorie]"
 
-#~ msgid "[no name]"
-#~ msgstr "[pas de nom]"
 
-#~ msgid "[no signature]"
-#~ msgstr "[pas de signature]"
 
-#~ msgid "[no description]"
-#~ msgstr "[pas de description]"
 
-#~ msgid "category"
-#~ msgstr "catégorie"
 
-#~ msgid "block"
-#~ msgstr "bloque"
 
-#~ msgid "log"
-#~ msgstr "enregistre"
 
-#~ msgid "id"
-#~ msgstr "id"
 
-#~ msgid "info"
-#~ msgstr "information"
 
-#~ msgid "Signature"
-#~ msgstr "Signature"
 
-#~ msgid "SID"
-#~ msgstr "SID"
 
-#~ msgid "[no definition]"
-#~ msgstr "[pas de definition]"
 
-#~ msgid "name"
-#~ msgstr "nom"
 
-#~ msgid "pass"
-#~ msgstr "passe"
 
-#~ msgid "Pass"
-#~ msgstr "Passe"
 
-#~ msgid "scanned"
-#~ msgstr "a scanné"
 
-#~ msgid "sessions and detected"
-#~ msgstr "sessions et détecté"
 
-#, fuzzy
-#~ msgid "Blocks"
-#~ msgstr "Bloque"
 
-#~ msgid "Server"
-#~ msgstr "Serveur"
 
-#~ msgid "Port"
-#~ msgstr "Port"
 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "référence temporelle"
 
-#~ msgid "Attack Events"
-#~ msgstr "Evènements d'Attaques"
 
-#~ msgid "SID:description"
-#~ msgstr "SID:description"
 
-#~ msgid "client"
-#~ msgstr "client"
 
-#~ msgid "server"
-#~ msgstr "serveur"
 
-#~ msgid "Saving..."
-#~ msgstr "Sauvegarde en cours..."
 
-#~ msgid "SCAN"
-#~ msgstr "SCANNER"
 
-#~ msgid "BLOCK"
-#~ msgstr "BLOQUER"
 
-#~ msgid "action"
-#~ msgstr "action"
 
-#~ msgid "reason for action"
-#~ msgstr "raison de l'action"
 
-#~ msgid "Top Ten Attacks By Hits"
-#~ msgstr "Top 10 des Attaques par Hits"
 
-#~ msgid "Daily Attacks"
-#~ msgstr "Attaques quotidiennes"
 
-#~ msgid "Avg Attacks"
-#~ msgstr "Moyenne d'attaques"
 
-#~ msgid "attacks/day"
-#~ msgstr "attaques/jour"
 
-#~ msgid "Max Attacks"
-#~ msgstr "Max d'attaques"
 
-#~ msgid "Date"
-#~ msgstr "Date"
 
-#~ msgid "Attacks per Day"
-#~ msgstr "Attaques par jour"
 
-#~ msgid "attacks"
-#~ msgstr "attaques"
 
-#~ msgid "DETECT"
-#~ msgstr "DETECTER"
 
-#~ msgid "max attacks (7-days)"
-#~ msgstr "max attaques (7 jours)"
 
-#~ msgid "avg attacks (7-days)"
-#~ msgstr "moy attaques (7 jours)"
