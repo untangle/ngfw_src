@@ -30,16 +30,17 @@
 static struct nfct_handle *cth;
 
 struct netcap_ct_entry {
-        uint32_t mark;
-        uint32_t ct_id ;
-        uint8_t  l3_proto, l4_proto;
-        uint32_t ip4_src_addr, ip4_dst_addr;  /*original direction*/
-        uint32_t r_ip4_src_addr, r_ip4_dst_addr; /*reply direction*/
-        uint16_t port_src, port_dst;
-        uint16_t r_port_src, r_port_dst;
-        uint64_t counter_pkts, counter_bytes;
-        uint64_t r_counter_pkts, r_counter_bytes;
-        uint64_t timestamp_start, timestamp_stop;
+    uint32_t mark;
+    uint32_t ct_id;
+    uint8_t  l3_proto, l4_proto;
+    uint8_t  icmp_type;
+    uint32_t ip4_src_addr, ip4_dst_addr;  /*original direction*/
+    uint32_t r_ip4_src_addr, r_ip4_dst_addr; /*reply direction*/
+    uint16_t port_src, port_dst;
+    uint16_t r_port_src, r_port_dst;
+    uint64_t counter_pkts, counter_bytes;
+    uint64_t r_counter_pkts, r_counter_bytes;
+    uint64_t timestamp_start, timestamp_stop;
 };
 
 static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct );
@@ -81,7 +82,7 @@ void* netcap_conntrack_listen ( void* arg )
 }
 
 void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, u_int64_t session_id, 
-                                  int l3_proto, int l4_proto,
+                                  int l3_proto, int l4_proto, int icmp_type,
                                   long c_client_addr, long c_server_addr,
                                   int  c_client_port, int c_server_port,
                                   long s_client_addr, long s_server_addr,
@@ -151,7 +152,7 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         }
 
         global_conntrack_hook( type, netcap_ct.mark, netcap_ct.ct_id, session_id,
-                               netcap_ct.l3_proto, netcap_ct.l4_proto,
+                               netcap_ct.l3_proto, netcap_ct.l4_proto, netcap_ct.icmp_type,
                                netcap_ct.ip4_src_addr, netcap_ct.ip4_dst_addr,
                                netcap_ct.port_src, netcap_ct.port_dst,
                                netcap_ct.r_ip4_dst_addr, netcap_ct.r_ip4_src_addr,
@@ -179,6 +180,8 @@ void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntr
         GET_CT_ITEM(r_ip4_src_addr, ATTR_REPL_IPV4_SRC, 32);
         GET_CT_ITEM(r_ip4_dst_addr, ATTR_REPL_IPV4_DST, 32);
 
+        GET_CT_ITEM(icmp_type, ATTR_ICMP_TYPE, 8);
+        
         GET_CT_ITEM(r_port_src, ATTR_REPL_PORT_SRC, 16);
         GET_CT_ITEM(r_port_dst, ATTR_REPL_PORT_DST, 16);
         n->r_port_src = ntohs(n->r_port_src);

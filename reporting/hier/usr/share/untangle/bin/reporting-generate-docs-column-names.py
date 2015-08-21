@@ -105,6 +105,7 @@ dict = {
     'dest_addr' : i18n._('Destination Address'),
     'dest_port' : i18n._('Destination Port'),
     'protocol' : i18n._('Protocol'),
+    'icmp_type' : i18n._('ICMP Type'),
     'blocked' : i18n._('Blocked'),
     'category' : i18n._('Category'),
     'classtype' : i18n._('Classtype'),

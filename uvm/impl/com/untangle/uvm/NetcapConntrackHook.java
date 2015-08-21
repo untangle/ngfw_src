@@ -41,7 +41,7 @@ public class NetcapConntrackHook implements NetcapCallback
     public void event( long sessionId ) {}
 
     public void event( int type, long mark, long conntrack_id, long session_id, 
-                       int l3_proto, int l4_proto,
+                       int l3_proto, int l4_proto, int icmp_type,
                        long c_client_addr, long c_server_addr,
                        int  c_client_port, int c_server_port,
                        long s_client_addr, long s_server_addr,
@@ -105,6 +105,7 @@ public class NetcapConntrackHook implements NetcapCallback
             sessionEvent.setSessionId( session_id );
             sessionEvent.setBypassed( true );
             sessionEvent.setProtocol( (short)l4_proto ); 
+            if ( l4_proto == 1 ) sessionEvent.setIcmpType( (short)icmp_type );
             sessionEvent.setClientIntf( sourceIntf ); 
             sessionEvent.setServerIntf( destIntf ); 
             sessionEvent.setUsername( username ); 

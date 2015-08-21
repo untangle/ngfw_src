@@ -20,6 +20,7 @@ public class SessionEvent extends LogEvent
     private Long sessionId = -1L;
     private boolean bypassed = false;
     private Short protocol;
+    private Short icmpType = null;
     private Integer clientIntf;
     private Integer serverIntf;
     private InetAddress cClientAddr;
@@ -58,6 +59,12 @@ public class SessionEvent extends LogEvent
     public Short getProtocol() { return protocol; }
     public void setProtocol(Short protocol) { this.protocol = protocol; }
 
+    /**
+     * ICMP type. Only used for bypassde ICMP sessions (required by ICSA)
+     */
+    public Short getIcmpType() { return icmpType; }
+    public void setIcmpType(Short newValue) { this.icmpType = newValue; }
+    
     /**
      * Client interface number (at client).
      */
@@ -156,9 +163,9 @@ public class SessionEvent extends LogEvent
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, time_stamp, protocol, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
@@ -167,6 +174,7 @@ public class SessionEvent extends LogEvent
         pstmt.setBoolean(++i,getBypassed());
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setInt(++i,getProtocol());
+        pstmt.setObject(++i,getIcmpType(), java.sql.Types.OTHER);
         pstmt.setTimestamp(++i,timeStampPlusSeconds(1)); // default end_time
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getUsername());

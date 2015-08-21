@@ -296,6 +296,7 @@ dict['sessions'] = copy.deepcopy(generic)
 dict['sessions'].update({
     'table_description' : 'This table stores all scanned TCP/UDP sessions.',
     'protocol' : 'The IP protocol of session',
+    'icmp_type' : 'The ICMP type of session if ICMP',
     'end_time' : 'The time the session ended',
     'bypassed' : 'True if the session was bypassed, false otherwise',
     'c2p_bytes' : 'The number of bytes the client sent to Untangle (client-to-pipeline)',
