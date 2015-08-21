@@ -36,7 +36,9 @@ import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.BypassRuleMatcher;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleMatcher;
 import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.PortForwardRuleMatcher;
 import com.untangle.uvm.network.FilterRule;
 import com.untangle.uvm.network.FilterRuleMatcher;
 import com.untangle.uvm.network.QosSettings;
@@ -48,6 +50,7 @@ import com.untangle.uvm.network.DnsStaticEntry;
 import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.RuleMatcher;
 import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
@@ -1044,6 +1047,49 @@ public class NetworkManagerImpl implements NetworkManager
                     if ( maskedAddr1.getMaskedAddress().equals(maskedAddr2.getMaskedAddress()) && route.getPrefix() == maskedAddr2.getPrefixLength() ) {
                         throw new RuntimeException( route.getDescription() + " & " + intf.getName() + " route & address conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
                     }
+                }
+            }
+
+            for ( PortForwardRule rule : networkSettings.getPortForwardRules() ) {
+                List<PortForwardRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                }
+            }
+            for ( NatRule rule : networkSettings.getNatRules() ) {
+                List<NatRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                }
+            }
+            for ( BypassRule rule : networkSettings.getBypassRules() ) {
+                List<BypassRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                }
+            }
+            for ( QosRule rule : networkSettings.getQosSettings().getQosRules() ) {
+                List<QosRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                }
+            }
+            for ( FilterRule rule : networkSettings.getForwardFilterRules() ) {
+                List<FilterRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                }
+            }
+            for ( FilterRule rule : networkSettings.getInputFilterRules() ) {
+                List<FilterRuleMatcher> matchers = rule.getMatchers();
+                for ( RuleMatcher matcher : matchers ) {
+                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                 }
             }
         }
