@@ -126,6 +126,7 @@ CREATE TABLE reports.sessions (
         end_time timestamp NOT NULL,
         bypassed boolean,
         protocol int2,
+        icmp_type int2,
         hostname text,
         username text,
         policy_id int2,
@@ -185,6 +186,7 @@ CREATE TABLE reports.sessions (
         sql_helper.drop_column('sessions','ips_description') # 11.2 - drop unused column
 
         sql_helper.add_column('sessions','protocol','int2') # 11.2
+        sql_helper.add_column('sessions','icmp_type','int2') # 11.2
         sql_helper.add_column('sessions','bypassed','boolean') # 11.2
         sql_helper.add_column('sessions','filter_prefix','text') #11.2
 
