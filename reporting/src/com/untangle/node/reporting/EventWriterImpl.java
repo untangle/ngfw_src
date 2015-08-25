@@ -269,7 +269,7 @@ public class EventWriterImpl implements Runnable
         /**
          * If too few datapoints, just return 0.0
          */
-        if (totalEventsWritten < 50)
+        if (totalEventsWritten < 500)
             return 0.0;
                          
         return this.avgWriteTimePerEvent;
@@ -280,7 +280,7 @@ public class EventWriterImpl implements Runnable
         /**
          * If too few datapoints, just return 0
          */
-        if (totalEventsWritten < 100)
+        if (totalEventsWritten < 500)
             return 0;
                          
         return this.writeDelaySec;
