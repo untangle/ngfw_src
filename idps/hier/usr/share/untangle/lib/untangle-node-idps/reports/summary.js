@@ -2,7 +2,7 @@
     "uniqueId": "intrusion-prevention-kt095LB6",
     "category": "Intrusion Prevention",
     "description": "A summary of intrusion detection and prevention actions.",
-    "displayOrder": 10,
+    "displayOrder": 19,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

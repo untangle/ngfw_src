@@ -2,7 +2,7 @@
     "uniqueId": "virus-blocker-lite-pi3IfwzM",
     "category": "Virus Blocker Lite",
     "description": "A summary of virus blocking actions for FTP activity.",
-    "displayOrder": 200,
+    "displayOrder": 4,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

@@ -2,7 +2,7 @@
     "uniqueId": "spam-blocker-lite-DniRBEni",
     "category": "Spam Blocker Lite",
     "description": "A summary of spam blocking actions for email activity.",
-    "displayOrder": 100,
+    "displayOrder": 6,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

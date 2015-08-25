@@ -2,7 +2,7 @@
     "uniqueId": "virus-blocker-lite-CRxmUhVM",
     "category": "Virus Blocker Lite",
     "description": "A summary of virus blocking actions for Email activity.",
-    "displayOrder": 300,
+    "displayOrder": 4,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [
