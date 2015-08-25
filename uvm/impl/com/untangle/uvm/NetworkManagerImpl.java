@@ -1125,10 +1125,32 @@ public class NetworkManagerImpl implements NetworkManager
              * build a list of all addresses for this interface
              * check that dhcp start and end are in this range
              */
-            IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
-            if ( ! intfma.contains( intf.getDhcpRangeStart() ) )
+            LinkedList<IPMaskedAddress> addrs = new LinkedList<IPMaskedAddress>();
+            addrs.add( new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() ) );
+            for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) { 
+                addrs.add( new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() ) );
+            }
+
+            boolean found;
+            
+            found = false;
+            for( IPMaskedAddress maskedAddr : addrs ) {
+                if ( maskedAddr.contains( intf.getDhcpRangeStart() ) ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
                 throw new RuntimeException( "Invalid DHCP Range Start: " + intf.getDhcpRangeStart().getHostAddress() );
-            if ( ! intfma.contains( intf.getDhcpRangeEnd() ) )
+
+            found = false;
+            for( IPMaskedAddress maskedAddr : addrs ) {
+                if ( maskedAddr.contains( intf.getDhcpRangeEnd() ) ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
                 throw new RuntimeException( "Invalid DHCP Range End: " + intf.getDhcpRangeEnd().getHostAddress() );
         } while ( false );
     }
