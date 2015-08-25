@@ -2,7 +2,7 @@
     "uniqueId": "virus-blocker-lite-omMJnSjI",
     "category": "Virus Blocker Lite",
     "description": "A summary of virus blocking actions for web activity.",
-    "displayOrder": 100,
+    "displayOrder": 4,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

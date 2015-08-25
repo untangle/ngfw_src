@@ -2,7 +2,7 @@
     "uniqueId": "firewall-upl31dqKb1",
     "category": "Firewall",
     "description": "A summary of firewall actions.",
-    "displayOrder": 10,
+    "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

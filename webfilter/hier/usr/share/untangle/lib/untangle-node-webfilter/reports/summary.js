@@ -2,7 +2,7 @@
     "uniqueId": "web-filter-lite-q97vptQHbv",
     "category": "Web Filter Lite",
     "description": "A summary of web filter lite actions.",
-    "displayOrder": 10,
+    "displayOrder": 2,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [

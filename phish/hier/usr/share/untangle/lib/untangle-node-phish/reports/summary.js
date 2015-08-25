@@ -2,7 +2,7 @@
     "uniqueId": "phish-blocker-DniRBEni",
     "category": "Phish Blocker",
     "description": "A summary of phish blocking actions for email activity.",
-    "displayOrder": 100,
+    "displayOrder": 7,
     "enabled": true,
     "javaClass": "com.untangle.node.reporting.ReportEntry",
     "textColumns": [
