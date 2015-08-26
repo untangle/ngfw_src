@@ -34,7 +34,6 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client can exec commands and return code
     def test_11_clientShellReturnCode(self):
-        assert ( remote_control.runCommand("/bin/true") == 0 )
         assert ( remote_control.runCommand("/bin/false") == 1 )
 
     # verify client can exec commands and return code
