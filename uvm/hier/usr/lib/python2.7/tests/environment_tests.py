@@ -44,6 +44,8 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client has necessary tools
     def test_13_clientHasNecessaryTools(self):
+        # on jessie:
+        #   apt-get install host netcat-openbsd python curl wget nmap mime-construct sysvinit-utils
         assert ( remote_control.runCommand("which wget") == 0 )
         assert ( remote_control.runCommand("which curl") == 0 )
         assert ( remote_control.runCommand("which netcat") == 0 )
@@ -51,6 +53,7 @@ class TestEnvironmentTests(unittest2.TestCase):
         assert ( remote_control.runCommand("which python") == 0 )
         assert ( remote_control.runCommand("which mime-construct") == 0 )
         assert ( remote_control.runCommand("which pidof") == 0 )
+        assert ( remote_control.runCommand("which host") == 0 )
         # check for netcat options
         assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
         assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
