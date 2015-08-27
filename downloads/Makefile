@@ -28,7 +28,7 @@ tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip jradius-client-1.1.4-release.zip
 
-jars=gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar dnsjava-2.1.6.jar\
+jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar dnsjava-2.1.6.jar\
 
 ###############################################################################
 ###############################################################################

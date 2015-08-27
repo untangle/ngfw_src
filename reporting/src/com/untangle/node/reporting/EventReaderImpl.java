@@ -76,7 +76,7 @@ public class EventReaderImpl
                 }
             
                 ResultSet resultSet = statement.executeQuery();
-                return new ResultSetReader( resultSet, dbConnection );
+                return new ResultSetReader( resultSet, dbConnection, statement );
             } catch (InterruptedException e) {
                 logger.warn("Interrupted",e);
                 throw e;
@@ -90,22 +90,19 @@ public class EventReaderImpl
         } 
     }
     
-    public ResultSetReader getEventsResultSet( final PreparedStatement statement, final String table, final SqlCondition[] conditions, final int limit )
+    public ResultSetReader getEventsResultSet( final Connection dbConnection, final PreparedStatement statement, final String table, final SqlCondition[] conditions, final int limit )
     {
-        Connection dbConnection = null;
-
-        try {
-            dbConnection = this.node.getDbConnection();
-            dbConnection.setAutoCommit(false);
-        } catch (Exception e) {
-            logger.warn("Unable to create connection to DB",e);
-        }
-
         if ( dbConnection == null) {
             logger.warn("Unable to connect to DB.");
             throw new RuntimeException("Unable to connect to DB.");
         }
 
+        try {
+            dbConnection.setAutoCommit(false);
+        } catch (Exception e) {
+            logger.warn("Unable to set auto-commit.",e);
+        }
+        
         SqlCondition.setPreparedStatementValues( statement, conditions, table );
 
         logger.debug("getEventsResultSet( " + statement + " )");
@@ -141,7 +138,7 @@ public class EventReaderImpl
             java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
             statement.setFetchDirection( ResultSet.FETCH_FORWARD );
             
-            return getEventsResultSet( statement, table, conditions, limit );
+            return getEventsResultSet( dbConnection, statement, table, conditions, limit );
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database. query: " + sql, e );
@@ -199,9 +196,9 @@ public class EventReaderImpl
         return resultSetReader.getAllEvents();
     }
 
-    public ArrayList<JSONObject> getEvents( final PreparedStatement statement, final String table, final int limit )
+    public ArrayList<JSONObject> getEvents( final Connection dbConnection, final PreparedStatement statement, final String table, final int limit )
     {
-        ResultSetReader resultSetReader = getEventsResultSet( statement, table, null, -1 );
+        ResultSetReader resultSetReader = getEventsResultSet( dbConnection, statement, table, null, -1 );
         return resultSetReader.getAllEvents();
     }
     

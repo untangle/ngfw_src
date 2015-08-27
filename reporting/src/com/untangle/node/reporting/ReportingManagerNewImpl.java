@@ -252,16 +252,17 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
-        PreparedStatement sql = entry.toSql( getDbConnection(), startDate, endDate, extraConditions );
+        Connection conn = node.getDbConnection();
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions );
 
         if ( node != null ) 
             node.flushEvents();
 
         logger.info("Getting Data for : " + entry.getTitle());
-        logger.info("SQL              : " + sql);
+        logger.info("Statement        : " + statement);
 
         long t0 = System.currentTimeMillis();
-        ArrayList<JSONObject> results = ReportingNodeImpl.eventReader.getEvents( sql, entry.getTable(), limit );
+        ArrayList<JSONObject> results = ReportingNodeImpl.eventReader.getEvents( conn, statement, entry.getTable(), limit );
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
@@ -331,10 +332,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     public String[] getTables()
     {
         ArrayList<String> tableNames = new ArrayList<String>();        
+        Connection conn = node.getDbConnection();
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
-                cacheTablesResults = getDbConnection().getMetaData().getTables( null, "reports", null, null );
+                cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
                 rs = cacheTablesResults;
             } else {
                 rs.first();
@@ -357,6 +359,10 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         } catch ( Exception e ) {
             logger.warn("Failed to retrieve column names", e);
             return null;
+        } finally {
+            try { conn.close(); } catch (Exception e) {
+                logger.warn("Close Exception",e);
+            }
         }
 
         String[] array = new String[tableNames.size()];
@@ -588,33 +594,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return;
     }
 
-    protected Connection getDbConnection()
-    {
-        if ( node == null ) {
-            throw new RuntimeException("Reporting node not found");
-        }
-        ReportingSettings settings = node.getSettings();
-        if ( settings == null ) {
-            throw new RuntimeException("Reporting settings not found");
-        }
-        
-        try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
-            Properties props = new Properties();
-            props.setProperty( "user", settings.getDbUser() );
-            props.setProperty( "password", settings.getDbPassword() );
-            props.setProperty( "charset", "unicode" );
-            //props.setProperty( "logUnclosedConnections", "true" );
-
-            return DriverManager.getConnection(url,props);
-        }
-        catch (Exception e) {
-            logger.warn("Failed to connect to DB", e);
-            return null;
-        }
-    }
-
     private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
@@ -689,18 +668,28 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     private ResultSet getColumnMetaData( String tableName )
     {
+        Connection conn = node.getDbConnection();
+        if ( conn == null ) {
+            logger.warn("Failed to get DB Connection");
+            return null;
+        }
+        
         try {
             ResultSet rs = cacheColumnsResults.get( tableName );
             if ( rs != null ) {
                 return rs;
             }
 
-            rs = getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
+            rs = conn.getMetaData().getColumns( null, "reports", tableName, null );
             cacheColumnsResults.put( tableName, rs );
             return rs;
         } catch ( Exception e ) {
             logger.warn("Failed to fetch column meta data", e);
             return null;
+        } finally {
+            try { conn.close(); } catch (Exception e) {
+                logger.warn("Close Exception",e);
+            }
         }
     }
 
