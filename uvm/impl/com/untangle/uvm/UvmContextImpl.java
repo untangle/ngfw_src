@@ -607,7 +607,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("languageManager", this.languageManager());
             json.put("skinManager", this.skinManager());
             json.put("nodeManager", this.nodeManager());
-            json.put("policyManager", this.nodeManager().node("untangle-node-policy"));
             json.put("rackManager", this.rackManager());
             json.put("alertManager", this.alertManager());
             json.put("adminManager", this.adminManager());
@@ -618,6 +617,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("metricManager", this.metricManager());
             json.put("brandingManager", this.brandingManager());
             json.put("execManager", this.execManager());
+            json.put("settingsManager", this.settingsManager());
 
             json.put("languageSettings", this.languageManager().getLanguageSettings());
             json.put("version", this.version());

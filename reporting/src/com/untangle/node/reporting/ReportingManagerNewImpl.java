@@ -464,11 +464,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return 0;
     }
     
-    public String getSettingsDiff(String fileName) throws SettingsException
-    {
-        return UvmContextFactory.context().settingsManager().getDiff(fileName);
-    }
-    
     public List<JSONObject> getPoliciesInfo() {
         ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
