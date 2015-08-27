@@ -101,7 +101,6 @@ public interface ReportingManagerNew
     
     Integer getTimeZoneOffset();
     
-    String getSettingsDiff(String fileName) throws SettingsException;
     /**
      * Get current application categories that should be displayed
      */

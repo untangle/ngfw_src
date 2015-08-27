@@ -14,6 +14,7 @@ var testMode = false;
 // Main object class
 Ext.define("Ung.Main", {
     singleton: true,
+    webuiMode: true,
     debugMode: false,
     buildStamp: null,
     disableThreads: false, // in development environment is useful to disable threads.
