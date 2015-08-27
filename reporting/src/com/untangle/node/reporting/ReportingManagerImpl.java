@@ -332,7 +332,7 @@ public class ReportingManagerImpl implements ReportingManager
                 }
             }
         }
-        return new ResultSetReader( rs, conn );
+        return new ResultSetReader( rs, conn, null );
     }
     
     private ArrayList<JSONObject> doGetDetailData(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)

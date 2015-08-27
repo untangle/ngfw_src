@@ -4,6 +4,7 @@
 package com.untangle.node.reporting;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -29,12 +30,14 @@ public class ResultSetReader implements Runnable
 
     private ResultSet resultSet;
     private Connection connection;
+    private Statement statement;
     private Thread thread;
     
-    public ResultSetReader( ResultSet resultSet, Connection connection )
+    public ResultSetReader( ResultSet resultSet, Connection connection, Statement statement )
     {
         this.resultSet = resultSet;
         this.connection = connection;
+        this.statement = statement;
 
         Thread thread = UvmContextFactory.context().newThread( this, "ResultSetReader" );
         thread.start();
@@ -129,9 +132,19 @@ public class ResultSetReader implements Runnable
     
     public void closeConnection()
     {
+        if ( this.statement != null ) {
+            try { this.statement.close(); } catch (Exception e) {
+                logger.warn("Close Exception",e);
+            }
+            this.statement = null;
+        }
         if ( this.connection != null ) {
-            try { this.connection.commit(); } catch (Exception e) {}
-            try { this.connection.close(); } catch (Exception e) {}
+            try { this.connection.commit(); } catch (Exception e) {
+                logger.warn("Commit Exception",e);
+            }
+            try { this.connection.close(); } catch (Exception e) {
+                logger.warn("Close Exception",e);
+            }
             this.connection = null;
         }
         if ( this.thread != null )
@@ -187,7 +200,7 @@ public class ResultSetReader implements Runnable
             logger.warn("Exception in ResultSetReader", e);
             closeConnection();
             return;
-        }
+        } 
     }
     
 }
