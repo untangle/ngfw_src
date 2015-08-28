@@ -16,7 +16,7 @@
         "#396c2b"
     ],
     "timeDataInterval": "HOUR",
-    "timeStyle": "LINE",
+    "timeStyle": "AREA",
     "title": "Swap Usage",
     "type": "TIME_GRAPH"
 }
