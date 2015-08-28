@@ -889,6 +889,7 @@ Ext.define('Ung.RowEditorWindow', {
             }
         }
         this.hide();
+        this.grid.reconfigure();
         return true;
     },
     updateActionRecursive: function(component, data, depth) {
