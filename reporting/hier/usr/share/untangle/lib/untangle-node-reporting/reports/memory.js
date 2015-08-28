@@ -16,7 +16,7 @@
         "#396c2b"
     ],
     "timeDataInterval": "MINUTE",
-    "timeStyle": "LINE",
+    "timeStyle": "AREA",
     "title": "Memory Usage",
     "type": "TIME_GRAPH"
 }
