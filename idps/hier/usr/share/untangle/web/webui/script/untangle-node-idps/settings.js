@@ -72,12 +72,21 @@ Ext.define('Webui.untangle-node-idps.settings', {
         return isUsed;
     },
 
+    massageSettings: function(){
+        var rules = this.getSettings().rules.list , rule, i;
+        for(i=0; i<rules.length; i++) {
+            rule = rules[i];
+            rule.originalId = this.getRuleId( rule.rule );
+        }
+
+    },
+
     initComponent: function() {
+        this.massageSettings();
         var categories = [], categoriesMap = {}, classtypes=[], classtypesMap = {};
         var rules = this.getSettings().rules.list , rule, category, classtype, i;
         for(i=0; i<rules.length; i++) {
             rule = rules[i];
-            rule.originalId = this.getRuleId( rule.rule );
             category = rule.category;
             classtype = rule.classtype;
             if(!categoriesMap[category]) {
@@ -251,25 +260,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-            //     title: this.i18n._('Statistics'),
-            //     defaults: {
-            //         xtype: "displayfield",
-            //         labelWidth:200
-            //     },
-            //     items: [{
-            //         fieldLabel: this.i18n._('Total Signatures Available'),
-            //         name: 'Total Signatures Available',
-            //         value: this.statistics.totalAvailable
-            //     }, {
-            //         fieldLabel: this.i18n._('Total Signatures Logging'),
-            //         name: 'Total Signatures Logging',
-            //         value: this.statistics.totalLogging
-            //     }, {
-            //         fieldLabel: this.i18n._('Total Signatures Blocking'),
-            //         name: 'Total Signatures Blocking',
-            //         value: this.statistics.totalBlocking
-            //     }]
-            // }, {
                 title: this.i18n._("Setup Wizard"),
                 items: [{
                     xtype: 'component',
@@ -310,7 +300,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
     // Rules Panel
     buildRules: function() {
         var me = this;
-        //this.gridRules = Ext.create('Webui.untangle-node-idps.grid.Rules', {
         this.gridRules = Ext.create('Ung.grid.Panel', {
             // helpXXXSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             name: 'Rules',
@@ -417,6 +406,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     html: me.i18n._('Loading...')
                 }];
                 Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
+
                 this.searchField = this.down('textfield[name=searchField]');
                 this.findLog = this.down('checkbox[name=searchLog]');
                 this.findBlock = this.down('checkbox[name=searchBlock]');
@@ -426,6 +416,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }, this));
             },
             emptyRow: {
+                "originalId": "1_1",
                 "classtype": "unknown",
                 "category": "app-detect",
                 "msg" : "new rule",
@@ -459,8 +450,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 editor: null,
                 menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var id = record.get("originalId").split("_");
-                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
+                    var id = record.get("originalId");
+                    if(id != null){
+                        id = id.split("_");
+                        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
+                    }
                     return value;
                 }
             },{
@@ -601,6 +595,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         rule.setRawValue(ruleValue);
                     }
                 }
+            },{
+                dataIndex: "original_id",
+                xtype: 'hidden'
             },{
                 name: "Category",
                 fieldLabel: this.i18n._("Category"),
@@ -1122,14 +1119,38 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 } else {
                     this.getRpcNode().reconfigure(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        Ext.MessageBox.hide();
                         if (!isApply) {
+                            Ext.MessageBox.hide();
                             this.closeWindow();
                         } else {
-                            this.clearDirty();
-                            if(Ext.isFunction(this.afterSave)) {
-                                this.afterSave.call(this);
-                            }
+                            var me = this;
+                            Ext.Ajax.request({
+                                url: "/webui/download",
+                                method: 'POST',
+                                params: {
+                                    type: "IdpsSettings",
+                                    arg1: "load",
+                                    arg2: this.nodeId
+                                },
+                                scope: this,
+                                timeout: 600000,
+                                success: function(response){
+                                    me.settings = Ext.decode( response.responseText );
+                                    me.massageSettings();
+                                    me.clearDirty();
+                                    Ext.MessageBox.hide();
+                                    if(Ext.isFunction(me.afterSave)) {
+                                        me.afterSave.call(me);
+                                    }
+                                },
+                                failure: function(response){
+                                    me.clearDirty();
+                                    Ext.MessageBox.hide();
+                                    if(Ext.isFunction(me.afterSave)) {
+                                        me.afterSave.call(me);
+                                    }
+                                }
+                            });
                         }
                     }, this));
                 }
