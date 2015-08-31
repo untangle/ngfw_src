@@ -375,7 +375,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                             html: '<BR>'
                         }, {
                             xtype: 'component',
-                            html: this.i18n._('This file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file.')
+                            html: this.i18n._('This file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals#chromeos</b> and use Import ONC file.')
                         }, {
                             xtype: 'component',
                             name: 'downloadChromebookConfigurationFile',
