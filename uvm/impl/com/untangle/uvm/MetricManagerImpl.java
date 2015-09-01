@@ -94,11 +94,6 @@ public class MetricManagerImpl implements MetricManager
         return json;
     }
 
-    public Map<String, Object> getSystemStats()
-    {
-        return this.systemStats;
-    }
-
     public List<NodeMetric> getMetrics( Long nodeId )
     {
         Node node = UvmContextFactory.context().nodeManager().node( nodeId );

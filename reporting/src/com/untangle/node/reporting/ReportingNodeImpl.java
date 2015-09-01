@@ -123,6 +123,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().execManager().execResult("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
         UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
 
+        // table the tablefunc module
+        UvmContextFactory.context().execManager().execResult("psql -U postgres -c \"CREATE EXTENSION tablefunc\" uvm >/dev/null 2>&1");
+
         synchronized (this) {
             String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
             ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
@@ -316,6 +319,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
+
+        testMethod();
     }
 
     protected void preStart()
@@ -462,6 +467,48 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         }
     }
 
+    private void testMethod()
+    {
+        ReportEntry entry = new ReportEntry();
+        entry.setType( ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC );
+        entry.setTitle( "TEST" );
+        entry.setEnabled( true );
+        entry.setUniqueId( "TEST" );
+        entry.setCategory( "Network" );
+        entry.setOrderDesc( false );
+
+        entry.setTable( "nic_stats" );
+        entry.setTimeDataInterval( ReportEntry.TimeDataInterval.MINUTE );
+        entry.setTimeDataDynamicValue( "rate" );
+        entry.setTimeDataDynamicColumn( "intf" );
+        entry.setTimeDataDynamicLimit( 10 );
+        entry.setTimeDataDynamicAggregationFunction( "avg" );
+
+        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
+        logger.warn( entry.toSql( getDbConnection(), null, null ) );
+        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+        entry = new ReportEntry();
+        entry.setType( ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC );
+        entry.setTitle( "TEST2" );
+        entry.setEnabled( true );
+        entry.setUniqueId( "TEST2" );
+        entry.setCategory( "Web Filter" );
+        entry.setOrderDesc( false );
+
+        entry.setTable( "http_events" );
+        entry.setTimeDataInterval( ReportEntry.TimeDataInterval.MINUTE );
+        entry.setTimeDataDynamicValue( "request_id" );
+        entry.setTimeDataDynamicColumn( "domain" );
+        entry.setTimeDataDynamicLimit( 10 );
+        entry.setTimeDataDynamicAggregationFunction( "count" );
+
+        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
+        logger.warn( entry.toSql( getDbConnection(), null, null ) );
+        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
+    }
+
+    
     private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler
     {
         @Override

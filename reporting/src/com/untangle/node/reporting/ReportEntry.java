@@ -31,7 +31,8 @@ public class ReportEntry implements Serializable, JSONString
     public static enum ReportEntryType {
         TEXT, /* A text entry */
         PIE_GRAPH, /* A top X pie chart graph */
-        TIME_GRAPH /* A graph with time (minutes) on the x-axis */
+        TIME_GRAPH, /* A graph with time (minutes) on the x-axis */
+        TIME_GRAPH_DYNAMIC /* A graph with time (minutes) on the x-axis with dynamic columns */
     };
 
     public static enum TimeDataInterval {
@@ -80,7 +81,12 @@ public class ReportEntry implements Serializable, JSONString
     
     private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
     private TimeStyle timeStyle; /* The time chart type (line/bar/etc) */
-    private String[] timeDataColumns; /* The data to graph by time */
+    private String[] timeDataColumns; /* The column/data to graph by time */
+
+    private String timeDataDynamicValue; /* The value to graph (the column in "table") */
+    private String timeDataDynamicColumn;  /* The columns to create the dynamic column based on (the distinct values) */
+    private Integer timeDataDynamicLimit;  /* The columns to create the dynamic column based on (the distinct values) */
+    private String timeDataDynamicAggregationFunction; /* The way to aggregate multiple values per date_trun (max, avg, etc) */
     
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
@@ -168,6 +174,18 @@ public class ReportEntry implements Serializable, JSONString
     
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
+
+    public String getTimeDataDynamicValue() { return this.timeDataDynamicValue; }
+    public void setTimeDataDynamicValue( String newValue ) { this.timeDataDynamicValue = newValue; }
+
+    public String getTimeDataDynamicColumn() { return this.timeDataDynamicColumn; }
+    public void setTimeDataDynamicColumn( String newValue ) { this.timeDataDynamicColumn = newValue; }
+
+    public Integer getTimeDataDynamicLimit() { return this.timeDataDynamicLimit; }
+    public void setTimeDataDynamicLimit( Integer newValue ) { this.timeDataDynamicLimit = newValue; }
+    
+    public String getTimeDataDynamicAggregationFunction() { return this.timeDataDynamicAggregationFunction; }
+    public void setTimeDataDynamicAggregationFunction( String newValue ) { this.timeDataDynamicAggregationFunction = newValue; }
     
     public String[] getColors() { return this.colors; }
     public void setColors( String[] newValue ) { this.colors = newValue; }
@@ -192,87 +210,19 @@ public class ReportEntry implements Serializable, JSONString
         if ( extraConditions != null )
             allConditions.addAll( Arrays.asList(extraConditions) );
         
-        String dateCondition =
-            " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " +
-            " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
-        
         switch ( this.type ) {
 
         case PIE_GRAPH:
-
-            String pieQuery = "SELECT " +
-                getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
-                " FROM " +
-                " reports." + getTable() +
-                " WHERE " + dateCondition;
-
-            pieQuery += conditionsToString( allConditions );
-
-            pieQuery += " GROUP BY " + getPieGroupColumn() + 
-                ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
-            return sqlToStatement( conn, pieQuery, allConditions );
+            return toSqlPieGraph( conn, startDate, endDate, allConditions );
 
         case TIME_GRAPH:
-            String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
-            
-            String generate_series;
-            if ( dataInterval.equals("tenminute") )
-                generate_series = " SELECT generate_series( " +
-                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
-                " '10 minute' ) as time_trunc ";
-            else
-                generate_series = " SELECT generate_series( " +
-                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
-                " '1 " + dataInterval + "' ) as time_trunc ";
-            
-            String timeQuery;
-            if ( dataInterval.equals("tenminute") )
-                timeQuery = "SELECT " +
-                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
-            else
-                timeQuery = "SELECT " +
-                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
+            return toSqlTimeGraph( conn, startDate, endDate, allConditions );
 
-            for ( String s : getTimeDataColumns() )
-                timeQuery += ", " + s;
-
-            timeQuery += " FROM " +
-                " reports." + getTable() +
-                " WHERE " + dateCondition;
-
-            timeQuery += conditionsToString( allConditions );
-                
-            timeQuery += " GROUP BY time_trunc ";
-
-            String final_query = "SELECT * FROM " +
-                " ( " + generate_series + " ) as t1 " +
-                "LEFT JOIN " +
-                " ( " + timeQuery + " ) as t2 " +
-                " USING (time_trunc) " +
-                " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
-            return sqlToStatement( conn, final_query, allConditions );
+        case TIME_GRAPH_DYNAMIC:
+            return toSqlTimeGraphDynamic( conn, startDate, endDate, allConditions );
             
         case TEXT:
-            String textQuery = "SELECT ";
-
-            boolean first = true;
-            for ( String s : getTextColumns() ) {
-                if ( !first )
-                    textQuery += ", ";
-                else
-                    first = false;
-                textQuery += s;
-            }
-
-            textQuery += " FROM " +
-                " reports." + getTable() +
-                " WHERE " + dateCondition;
-            
-            textQuery += conditionsToString( allConditions );
-
-            return sqlToStatement( conn, textQuery, allConditions );
+            return toSqlText( conn, startDate, endDate, allConditions );
         }
 
         throw new RuntimeException("Unknown Graph type: " + this.type);
@@ -293,7 +243,156 @@ public class ReportEntry implements Serializable, JSONString
         else
             return TimeDataInterval.MINUTE;
     }
-   
+
+    private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    {
+        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        String pieQuery = "SELECT " +
+            getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
+            " FROM " +
+            " reports." + getTable() +
+            " WHERE " + dateCondition;
+
+        pieQuery += conditionsToString( allConditions );
+
+        pieQuery += " GROUP BY " + getPieGroupColumn() + 
+            ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
+        return sqlToStatement( conn, pieQuery, allConditions );
+    }
+
+    private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    {
+        String textQuery = "SELECT ";
+        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+
+        boolean first = true;
+        for ( String s : getTextColumns() ) {
+            if ( !first )
+                textQuery += ", ";
+            else
+                first = false;
+            textQuery += s;
+        }
+
+        textQuery += " FROM " +
+            " reports." + getTable() +
+            " WHERE " + dateCondition;
+            
+        textQuery += conditionsToString( allConditions );
+
+        return sqlToStatement( conn, textQuery, allConditions );
+    }
+
+    private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    {
+        String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
+        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+            
+        String generate_series;
+        if ( dataInterval.equals("tenminute") )
+            generate_series = " SELECT generate_series( " +
+                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '10 minute' ) as time_trunc ";
+        else
+            generate_series = " SELECT generate_series( " +
+                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '1 " + dataInterval + "' ) as time_trunc ";
+            
+        String timeQuery;
+        if ( dataInterval.equals("tenminute") )
+            timeQuery = "SELECT " +
+                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
+        else
+            timeQuery = "SELECT " +
+                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
+
+        for ( String s : getTimeDataColumns() )
+            timeQuery += ", " + s;
+
+        timeQuery += " FROM " +
+            " reports." + getTable() +
+            " WHERE " + dateCondition;
+
+        timeQuery += conditionsToString( allConditions );
+                
+        timeQuery += " GROUP BY time_trunc ";
+
+        String final_query = "SELECT * FROM " +
+            " ( " + generate_series + " ) as t1 " +
+            "LEFT JOIN " +
+            " ( " + timeQuery + " ) as t2 " +
+            " USING (time_trunc) " +
+            " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
+        return sqlToStatement( conn, final_query, allConditions );
+    }
+
+    private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    {
+        String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
+        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+            
+        String generate_series;
+        if ( dataInterval.equals("tenminute") )
+            generate_series = " SELECT generate_series( " +
+                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '10 minute' ) as time_trunc ";
+        else
+            generate_series = " SELECT generate_series( " +
+                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '1 " + dataInterval + "' ) as time_trunc ";
+            
+
+        String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") FROM " + "reports." + getTable() + " WHERE " + dateCondition + ( getTimeDataDynamicLimit() != null ? " ORDER BY 1 LIMIT " + getTimeDataDynamicLimit() : "" );
+        String[] distinctValues = getDistinctValues( conn, distinctQuery );
+        if ( distinctValues == null ) {
+            throw new RuntimeException("Unable to find unique values: " + distinctQuery);
+        }
+        // if there are no distinct values, nothing to show
+        if ( distinctValues.length == 0 ) {
+            return sqlToStatement( conn, "select null", null);
+        }
+        
+        String timeQuery;
+        if ( dataInterval.equals("tenminute") )
+            timeQuery = "SELECT " +
+                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
+        else
+            timeQuery = "SELECT " +
+                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
+
+        timeQuery += ", " + getTimeDataDynamicColumn() + ", " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")";
+
+        timeQuery += " FROM " +
+            " reports." + getTable() +
+            " WHERE " + dateCondition;
+
+        timeQuery += conditionsToString( allConditions );
+                
+        timeQuery += " GROUP BY time_trunc, " + getTimeDataDynamicColumn() + " ";
+
+        String final_time_query = "SELECT * FROM " +
+            " ( " + generate_series + " ) as t1 " +
+            "LEFT JOIN " +
+            " ( " + timeQuery + " ) as t2 " +
+            " USING (time_trunc) " +
+            " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
+
+        String final_crosstab_query = "SELECT * FROM crosstab( " +
+            "$$" + final_time_query + "$$" + " , " +
+            "$$" + distinctQuery + "$$" + ") " + " as " +
+            "( \"time_stamp\" timestamp ";
+        for ( String s : distinctValues ) {
+            final_crosstab_query = final_crosstab_query + ", \"" + s + "\" numeric ";
+        }
+        final_crosstab_query = final_crosstab_query + ")";
+            
+        return sqlToStatement( conn, final_crosstab_query, allConditions );
+    }
+    
     /**
      * takes a sql string and substitutes the condition arguments into and returns a prepared statement
      */
@@ -334,6 +433,29 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         return str;
+    }
+
+    private String[] getDistinctValues( Connection conn, String querySql )
+    {
+        try {
+            java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
+            java.sql.ResultSet resultSet = statement.executeQuery();
+
+            LinkedList<String> values = new LinkedList<String>();
+            int i = 0;
+            while (resultSet.next()) {
+                values.add( resultSet.getString(1) );
+                i++;
+            }
+
+            String[] array = new String[values.size()];
+            array = values.toArray(array);
+        
+            return array;
+        } catch (Exception e) {
+            logger.warn("Exception:",e);
+            return null;
+        }
     }
 
 }
