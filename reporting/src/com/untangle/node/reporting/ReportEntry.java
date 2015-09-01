@@ -346,7 +346,14 @@ public class ReportEntry implements Serializable, JSONString
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
 
-        String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") FROM " + "reports." + getTable() + " WHERE " + dateCondition + ( getTimeDataDynamicLimit() != null ? " ORDER BY 1 LIMIT " + getTimeDataDynamicLimit() : "" );
+        String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
+            " FROM " + "reports." + getTable() +
+            " WHERE " + dateCondition +
+            " GROUP BY " + getTimeDataDynamicColumn() + 
+            " ORDER BY 2 DESC " + 
+            ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
+        distinctQuery = "SELECT value FROM (" + distinctQuery + ") as data";
+        
         String[] distinctValues = getDistinctValues( conn, distinctQuery );
         if ( distinctValues == null ) {
             throw new RuntimeException("Unable to find unique values: " + distinctQuery);
