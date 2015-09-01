@@ -8,6 +8,7 @@
 package com.untangle.node.idps;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -16,10 +17,12 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +66,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
     private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
 
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
@@ -468,6 +472,83 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     out.close();
                 } catch (Exception e) {
                     logger.warn("Failed to send IDPS save response");
+                }
+            }else if(action.equals("export")){
+                SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+                String tempPatchName = "/tmp/changedDataSet_untangle-node-idps_settings_" + nodeId + ".js";
+                String tempSettingsName = "/tmp/untangle-node-idps_settings_" + nodeId + ".js";
+                int verifyResult = 1;
+
+                String changedSet = req.getParameter("arg4");
+                BufferedWriter writer = null;
+                try{
+                    /*
+                     * Create a patch based on the currently changed dataset as export does elsewhere.
+                     */
+                    writer = new BufferedWriter( new FileWriter(tempPatchName));
+                    writer.write(changedSet);
+                    writer.close();
+
+                    /*
+                     * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
+                     */
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
+                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
+
+                    String configCmd = new String(
+                        System.getProperty("uvm.bin.dir") + 
+                        "/idps-sync-settings.py" + 
+                        " --node_id " + nodeId +
+                        " --rules /usr/share/untangle-snort-config/current" +
+                        " --settings " + tempSettingsName + 
+                        " --patch " + tempPatchName + 
+                        " --export"
+                    );
+                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+                    try{
+                        String lines[] = result.split("\\r?\\n");
+                        for ( String line : lines ){
+                            if( line.trim().length() > 1 ){
+                                logger.warn("DownloadHandler: export, idps-sync-settings: " + line);
+                            }
+                        }
+                    }catch( Exception e ){
+                        logger.warn("Unable to sync export settings: ", e );
+                    }
+
+                    File fp = new File( tempPatchName );
+                    fp.delete();
+
+                }catch( IOException e ){
+                    logger.warn("Failed to synchronize export IDPS settings");
+                }
+
+                try{
+                    String oemName = UvmContextFactory.context().oemManager().getOemName();
+                    String version = UvmContextFactory.context().version().replace(".","_");
+                    String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
+                    String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
+                    String gridName = req.getParameter("arg3");
+
+                    String filename = oemName + "-" + version + "-" + gridName + "-" + hostName + "-" + dateStr + ".json";
+                    resp.setCharacterEncoding(CHARACTER_ENCODING);
+                    resp.setHeader("Content-Disposition","attachment; filename="+filename);
+
+                    byte[] buffer = new byte[1024];
+                    int read;
+                    FileInputStream fis = new FileInputStream(tempSettingsName);
+                    OutputStream out = resp.getOutputStream();
+                
+                    while ( ( read = fis.read( buffer ) ) > 0 ) {
+                        out.write( buffer, 0, read);
+                    }
+
+                    fis.close();
+                    out.flush();
+                    out.close();
+
+                } catch (Exception e) {
+                    logger.warn("Failed to export IDPS settings",e);
                 }
             }
         }

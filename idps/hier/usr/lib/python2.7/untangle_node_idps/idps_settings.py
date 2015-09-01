@@ -105,7 +105,7 @@ class IdpsSettings:
                 if not key in settings_keys:
                     self.settings[key] = IdpsSettings.default_settings[key]
                 
-    def save(self, file_name=None):
+    def save(self, file_name=None, key=None):
         """
         Save settings
         """
@@ -129,6 +129,15 @@ class IdpsSettings:
                 "rule": rule.build(),
                 "path": rule.path
             } )
+
+        if key != None:
+            # Only keep settings with the specified key and deferefenced from list.
+            # This is only intended for export functions on a functional grid-level
+            # basis (eg.,"rules" or "variables")
+            for settings_key in self.settings.keys():
+                if settings_key == key:
+                    self.settings = self.settings[settings_key]["list"]
+                    break
         
         settings_file = open( file_name, "w" )
         json.dump( 
@@ -141,13 +150,26 @@ class IdpsSettings:
         """
         Processing settings patch from UI
         """
+        # List deletes first
         for key in patch.settings:
             if key == "rules":
                 for rule_id in patch.settings[key]:
-                    self.set_patch_rule(patch.settings[key][rule_id])
+                    if patch.settings[key][rule_id]["op"] == "deleted":
+                        self.set_patch_rule(patch.settings[key][rule_id])
             elif key == "variables":
                 for var_id in patch.settings[key]:
-                    self.set_patch_variable(patch.settings[key][var_id])
+                    if patch.settings[key][var_id]["op"] == "deleted":
+                        self.set_patch_variable(patch.settings[key][var_id])
+
+        for key in patch.settings:
+            if key == "rules":
+                for rule_id in patch.settings[key]:
+                    if patch.settings[key][rule_id]["op"] != "deleted":
+                        self.set_patch_rule(patch.settings[key][rule_id])
+            elif key == "variables":
+                for var_id in patch.settings[key]:
+                    if patch.settings[key][var_id]["op"] != "deleted":
+                        self.set_patch_variable(patch.settings[key][var_id])
             elif key == "activeGroups":
                 self.set_patch_active_groups(patch.settings[key], defaults_profile)
                 self.settings[key] = patch.settings[key] 
@@ -167,7 +189,6 @@ class IdpsSettings:
             snort_rule = SnortRule( match_rule, rule["recData"]["category"] )
 
         if snort_rule == None:
-            ## !! error message
             return
 
         operation = rule["op"] 
