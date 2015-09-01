@@ -81,6 +81,140 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
     },
 
+    /*
+     * Import/export functions for Rules and Variables.
+     * Instead of creating new classes for grids and import settings window,
+     * just attach these appropriately when the objects are created.
+     */
+     /*
+      * Grid's onImportContinue override.
+      */
+    gridOnImportContinue: function (importMode, importedRows) {
+        var invalidRecords=0;
+        if(importedRows == null) {
+            importedRows=[];
+        }
+        var records=[];
+
+        /*
+         * Validate fields.
+         * Unlike import verification elsewhere, IDPS variables are not associated with
+         * classes so creating a record and letting it fail won't neccessarily work.
+         * To play it safe, verify that the keys from the first record in the store
+         * match the imported row set.
+         */
+        var keysMatch = true;
+        var recordKeys = Object.keys(this.getStore().getAt(0).data);
+        /*
+         * From the record key list, remove unneccessary fields.
+         */
+        var fpos = recordKeys.indexOf("internalId");
+        if( fpos != -1){
+            recordKeys.splice(fpos,1);
+        }
+        fpos = recordKeys.indexOf("originalId");
+        if( fpos != -1){
+            recordKeys.splice(fpos,1);
+        }
+        fpos = recordKeys.indexOf("id");
+        if( fpos != -1){
+            recordKeys.splice(fpos,1);
+        }
+        var importKeys = Object.keys(importedRows[0]);  
+        if( recordKeys.length != importKeys.length){
+            keysMatch = false;
+        }else{
+            for( var j = 0; j < recordKeys.length; j++){
+                if(recordKeys[j] == "internalId"){
+                    continue;
+                }
+                if(importKeys.indexOf(recordKeys[j]) == -1){
+                    keysMatch = false;
+                }
+            }
+        }
+
+        if( keysMatch == false){
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Imported file has no records for this data."));
+            return;
+        }
+
+        for (var i = 0; i < importedRows.length; i++) {
+            try {
+                var record= Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), importedRows[i]);
+                record.set("internalId", this.genAddedId());
+                if( this.name == "Rules"){
+                    this.updateRule(record, null);
+                }
+                records.push(record);
+            } catch(e) {
+                invalidRecords++;
+            }
+        }
+
+        var validRecords=records.length;
+        if(validRecords > 0) {
+            if(importMode=='replace' ) {
+                this.deleteAllRecords();
+                this.getStore().insert(0, records);
+                this.updateChangedDataOnImport(records, "added");
+            } else {
+                if(importMode=='append') {
+                    this.getStore().add(records);
+                } else if(importMode=='prepend') { //replace or prepend mode
+                    this.getStore().insert(0, records);
+                }
+                this.updateChangedDataOnImport(records, "added");
+            }
+        }
+        this.reconfigure();
+        this.importSettingsWindow.close();
+        if(validRecords > 0) {
+            if(invalidRecords==0) {
+                Ext.MessageBox.alert(i18n._('Import successful'), Ext.String.format(i18n._("Imported file contains {0} valid records."), validRecords));
+            } else {
+                Ext.MessageBox.alert(i18n._('Import successful'), Ext.String.format(i18n._("Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
+            }
+        } else {
+            if(invalidRecords==0) {
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Imported file has no records."));
+            } else {
+                Ext.MessageBox.alert(i18n._('Warning'), Ext.String.format(i18n._("Import failed. Imported file contains {0} invalid records and no valid records."), invalidRecords));
+            }
+        }
+    },
+
+    /*
+     * ImportSettingsWindow's updateAction override.
+     */
+    importSettingsWindowUpdateAction: function(){
+        Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
+        var me = this;
+
+        /* Setup event for reading uploaded file directly into browser. */
+        var fileField = this.down("[name=import_settings_textfield]");
+        var file = fileField.eventFiles[0];
+        var reader = new FileReader();
+        reader.onload = function(event){
+            var fileContents = atob(event.target.result.substr(event.target.result.indexOf("base64,") + 7));
+            var json = null;
+            try{
+                json = Ext.decode(fileContents);
+            }catch(e){
+                console.log("json conversion failed");
+            }
+            if( json == null ){
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Settings must be formatted as a JSON Array."));
+                return;
+            }
+            Ext.Function.defer(me.grid.onImportContinue, 1, me.grid, [me.importMode, json]);
+        };
+        reader.onerror = function(){
+            console.log('On Error Event');
+        };
+        reader.readAsDataURL(file);
+    },
+
     initComponent: function() {
         this.massageSettings();
         var categories = [], categoriesMap = {}, classtypes=[], classtypesMap = {};
@@ -414,6 +548,26 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 this.getStore().getFilters().on('endupdate', Ext.bind(function(eOpts) {
                     this.updateRulesStatus();
                 }, this));
+
+                this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{
+                    grid: this
+                });
+                this.importSettingsWindow.updateAction = this.settingsCmp.importSettingsWindowUpdateAction;
+            },
+            onImportContinue: this.gridOnImportContinue,
+            exportHandler: function(){
+                Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
+                var changedDataSet = {};
+                changedDataSet.rules = this.changedData;
+
+                var downloadForm = document.getElementById('downloadForm'); 
+                downloadForm["type"].value = "IdpsSettings";
+                downloadForm["arg1"].value = "export";
+                downloadForm["arg2"].value = this.up("window").nodeId;
+                downloadForm["arg3"].value = this.name;
+                downloadForm["arg4"].value = Ext.encode(changedDataSet);
+                downloadForm.submit();
+                Ext.MessageBox.hide();
             },
             emptyRow: {
                 "originalId": "1_1",
@@ -466,7 +620,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 editor: null,
                 menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var description = me.classtypesInfoMap[value];
+                    var description = value;
+                    if( this.up("window") ){
+                        description = this.up("window").classtypesInfoMap[value];
+                    }
                     metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(description!=null?description: value ) + '"';
                     return value;
                 }
@@ -478,7 +635,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 flex:1,
                 menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var description = me.categoriesInfoMap[value];
+                    var description = value;
+                    if( this.up("window") ){
+                        description = this.up("window").categoriesInfoMap[value];
+                    }
                     metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(description!=null?description: value) + '"';
                     return value;
                 }
@@ -498,18 +658,21 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 flex:1,
                 menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var matches = value.match(me.regexRuleReference);
+                    var matches = null;
+                    if(this.up("window")){
+                        matches = value.match(this.up("window").regexRuleReference);
+                    }
                     if( matches == null ){
                         return "";
                     }
                     var references = [];
                     for( var i = 0; i < matches.length; i++ ){
-                        var rmatches = me.regexRuleReference.exec( matches[i] );
-                        me.regexRuleReference.lastIndex = 0;
+                        var rmatches = this.up("window").regexRuleReference.exec( matches[i] );
+                        this.up("window").regexRuleReference.lastIndex = 0;
 
                         var url = "";
                         var referenceFields = rmatches[1].split(",");
-                        var prefix = me.referencesMap[referenceFields[0]];
+                        var prefix = this.up("window").referencesMap[referenceFields[0]];
                         if( prefix != null ){
                             referenceFields[1] = referenceFields[1].trim();
                             if((referenceFields[1].charAt(0) == '"') && 
@@ -849,6 +1012,28 @@ Ext.define('Webui.untangle-node-idps.settings', {
             settingsCmp: this,
             dataProperty: 'variables',
             recordJavaClass: "com.untangle.node.idps.IpsVariable",
+            initComponent: function() {
+                Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
+                this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{
+                    grid: this
+                });
+                this.importSettingsWindow.updateAction = this.settingsCmp.importSettingsWindowUpdateAction;
+            },
+            onImportContinue: this.gridOnImportContinue,
+            exportHandler: function(){
+                Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
+                var changedDataSet = {};
+                changedDataSet.variables = this.changedData;
+
+                var downloadForm = document.getElementById('downloadForm'); 
+                downloadForm["type"].value = "IdpsSettings";
+                downloadForm["arg1"].value = "export";
+                downloadForm["arg2"].value = this.up("window").nodeId;
+                downloadForm["arg3"].value = this.name;
+                downloadForm["arg4"].value = Ext.encode(changedDataSet);
+                downloadForm.submit();
+                Ext.MessageBox.hide();
+            },
             emptyRow: {
                 "variable": "",
                 "definition": "",

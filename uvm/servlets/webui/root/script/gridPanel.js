@@ -1012,7 +1012,18 @@ Ext.define('Ung.ImportSettingsWindow', {
                     width: 450,
                     labelWidth: 50,
                     allowBlank: false,
-                    validateOnBlur: false
+                    validateOnBlur: false,
+                    listeners: {
+                        afterrender: function(field){
+                            document.getElementById(field.getId()).addEventListener(
+                                'change',
+                                function(event){
+                                    Ext.getCmp(this.id).eventFiles = event.target.files;
+                                }, 
+                                false
+                            );
+                        }
+                    }
                 },{
                     xtype: 'hidden',
                     name: 'type',

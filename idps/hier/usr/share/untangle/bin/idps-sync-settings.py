@@ -48,9 +48,10 @@ def main(argv):
     node_id = None
     patch_file_name = None
     settings_file_name = None
+    export_mode = False
 	
     try:
-        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "export", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -73,6 +74,8 @@ def main(argv):
             status_file_name = arg
         elif opt in ( "-p", "--patch"):
             patch_file_name = arg
+        elif opt in ( "-e", "--export"):
+            export_mode = True
 
     if node_id == None:
         print "Missing node_id"
@@ -148,7 +151,10 @@ def main(argv):
             else:
                 settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
 
-    settings.save( settings_file_name )
+    if export_mode:
+        settings.save( settings_file_name, key=patch.settings.keys()[0] )
+    else:
+        settings.save( settings_file_name)
     
     sys.exit()
 
