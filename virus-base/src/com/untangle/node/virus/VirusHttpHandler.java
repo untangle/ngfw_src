@@ -576,7 +576,9 @@ class VirusHttpHandler extends HttpEventHandler
 
         public int hashCode()
         {
-            return host.hashCode() + uri.hashCode();
+            int hashCode1 = ( host == null ? 1 : host.hashCode() );
+            int hashCode2 = ( uri == null ? 3 : uri.hashCode() );
+            return hashCode1 + hashCode2;
         }
         
     }
