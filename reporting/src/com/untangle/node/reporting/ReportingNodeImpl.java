@@ -477,12 +477,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         entry.setCategory( "Network" );
         entry.setOrderDesc( false );
 
-        entry.setTable( "nic_stats" );
+        entry.setTable( "interface_stat_events" );
         entry.setTimeDataInterval( ReportEntry.TimeDataInterval.MINUTE );
-        entry.setTimeDataDynamicValue( "rate" );
-        entry.setTimeDataDynamicColumn( "intf" );
+        entry.setTimeDataDynamicValue( "rx_rate" );
+        entry.setTimeDataDynamicColumn( "interface_id" );
         entry.setTimeDataDynamicLimit( 10 );
-        entry.setTimeDataDynamicAggregationFunction( "avg" );
+        entry.setTimeDataDynamicAggregationFunction( "max" );
 
         logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
         logger.warn( entry.toSql( getDbConnection(), null, null ) );
