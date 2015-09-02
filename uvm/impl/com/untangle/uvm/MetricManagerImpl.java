@@ -25,6 +25,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.MetricManager;
 import com.untangle.uvm.logging.SystemStatEvent;
+import com.untangle.uvm.logging.InterfaceStatEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -51,7 +52,7 @@ public class MetricManagerImpl implements MetricManager
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
-    private final Map<String,Long> rxtxBytes0 = new HashMap<String,Long>();
+    private final Map<String,Long> rxtxBytesStore = new HashMap<String,Long>();
 
     private long lastNetDevUpdate = System.currentTimeMillis();
 
@@ -124,7 +125,7 @@ public class MetricManagerImpl implements MetricManager
     {
         private int LOG_DELAY = 60; // in seconds
         private long ONE_BILLION = 1000000000l;
-        private long timeStamp = 0;
+        private long lastLogTimeStamp = 0;
 
         private long user0 = 0;
         private long nice0 = 0;
@@ -146,29 +147,45 @@ public class MetricManagerImpl implements MetricManager
                 getCpuUsage(m);
                 getNetDevUsage(m);
                 getDiskUsage(m);
-            } catch (IOException exn) {
-                logger.warn("could not get memory information", exn);
-            }
 
-            long time = System.nanoTime();
-            if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
-                SystemStatEvent sse = new SystemStatEvent();
-                sse.setMemTotal(Long.parseLong(m.get("MemTotal").toString()));
-                sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
-                sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
-                sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
-                sse.setLoad1(Float.parseFloat(m.get("oneMinuteLoadAvg").toString()));
-                sse.setLoad5(Float.parseFloat(m.get("fiveMinuteLoadAvg").toString()));
-                sse.setLoad15(Float.parseFloat(m.get("fifteenMinuteLoadAvg").toString()));
-                sse.setCpuUser(Float.parseFloat(m.get("userCpuUtilization").toString()));
-                sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
-                sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
-                sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
-                sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
-                sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
-                logger.debug("Logging SystemStatEvent");
-                UvmContextFactory.context().logEvent(sse);
-                timeStamp = time;
+                long time = System.nanoTime();
+                if ((time - lastLogTimeStamp)/ONE_BILLION >= LOG_DELAY) {
+                    SystemStatEvent sse = new SystemStatEvent();
+                    sse.setMemTotal(Long.parseLong(m.get("MemTotal").toString()));
+                    sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
+                    sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
+                    sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
+                    sse.setLoad1(Float.parseFloat(m.get("oneMinuteLoadAvg").toString()));
+                    sse.setLoad5(Float.parseFloat(m.get("fiveMinuteLoadAvg").toString()));
+                    sse.setLoad15(Float.parseFloat(m.get("fifteenMinuteLoadAvg").toString()));
+                    sse.setCpuUser(Float.parseFloat(m.get("userCpuUtilization").toString()));
+                    sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
+                    sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
+                    sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
+                    sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
+                    sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
+                    logger.debug("Logging SystemStatEvent");
+                    UvmContextFactory.context().logEvent(sse);
+
+                    for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+                        String key = "interface_" + intfSettings.getInterfaceId() + "_";
+                        Object rxBps_o = m.get(key + "rxBps");
+                        Object txBps_o = m.get(key + "txBps");
+                        if ( rxBps_o == null || txBps_o == null )
+                            continue;
+                        float rxBps = Float.parseFloat( rxBps_o.toString() );
+                        float txBps = Float.parseFloat( txBps_o.toString() );
+                        InterfaceStatEvent event = new InterfaceStatEvent();
+                        event.setInterfaceId( intfSettings.getInterfaceId() );
+                        event.setRxRate( rxBps );
+                        event.setTxRate( txBps );
+                        UvmContextFactory.context().logEvent(event);
+                    }
+
+                    lastLogTimeStamp = time;
+                }
+            } catch (Exception e) {
+                logger.warn("Exception:",e);
             }
 
             systemStats = Collections.unmodifiableMap(m);
@@ -185,16 +202,14 @@ public class MetricManagerImpl implements MetricManager
             }
 
             Long i = (Long)m.get("Cached");
-            if (null != i) {
+            if ( i != null ) {
                 memFree += i;
             }
-            //            m.remove("Cached");
 
             i = (Long)m.get("Buffers");
-            if (null != i) {
+            if ( i != null ) {
                 memFree += i;
             }
-            //            m.remove("Buffers");
 
             m.put("MemFree", memFree);
         }
@@ -390,15 +405,16 @@ public class MetricManagerImpl implements MetricManager
 
         private synchronized void getNetDevUsage(Map<String, Object> m) throws IOException
         {
-            long rxBytes0 = 0, rxBytes1 = 0;
-            long txBytes0 = 0, txBytes1 = 0;
+            long totalRxBytesOldValue = 0, totalRxBytesNewValue = 0;
+            long totalTxBytesOldValue = 0, totalTxBytesNewValue = 0;
+            long wansRxBytesOldValue = 0, wansRxBytesNewValue = 0;
+            long wansTxBytesOldValue = 0, wansTxBytesNewValue = 0;
 
             NetcapManager nm = UvmContextImpl.getInstance().netcapManager();
 
-            m.put("uvmSessions",nm.getSessionCount());
-            m.put("uvmTCPSessions",nm.getSessionCount(SessionTuple.PROTO_TCP));
-            m.put("uvmUDPSessions",nm.getSessionCount(SessionTuple.PROTO_UDP));
-
+            m.put( "uvmSessions", nm.getSessionCount() );
+            m.put( "uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP) );
+            m.put( "uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP) );
             m.put( "hosts", UvmContextImpl.getInstance().hostTable().getCurrentSize() );
             
             long currentTime = System.currentTimeMillis();
@@ -415,31 +431,53 @@ public class MetricManagerImpl implements MetricManager
                         
                         InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( iface );
                         // Restrict to only the WAN interfaces (bug 5616)
-                        if ( intfSettings == null || !intfSettings.getIsWan() )
+                        if ( intfSettings == null )
                             continue;
+                        int intfId = intfSettings.getInterfaceId();
 
                         // get stored previous values or initialize them to 0
-                        Long rxbytes0 = rxtxBytes0.get("rx"+i);
-                        if (rxbytes0 == null) rxbytes0 = 0L;
-                        Long txbytes0 = rxtxBytes0.get("tx"+i);
-                        if (txbytes0 == null) txbytes0 = 0L;
+                        Long rxBytesOld = rxtxBytesStore.get("rx"+intfId);
+                        if (rxBytesOld == null) rxBytesOld = 0L;
+                        Long txBytesOld = rxtxBytesStore.get("tx"+intfId);
+                        if (txBytesOld == null) txBytesOld = 0L;
 
                         try {
                             // accumulate previous values
-                            rxBytes0 += rxbytes0;
-                            txBytes0 += txbytes0;
+                            totalRxBytesOldValue += rxBytesOld;
+                            totalTxBytesOldValue += txBytesOld;
+                            if (intfSettings.getIsWan()) {
+                                wansRxBytesOldValue += rxBytesOld;
+                                wansTxBytesOldValue += txBytesOld;
+                            }
+                            
                             // parse new incoming values w/64-bit correction for 32-bit rollover
-                            long rxbytes1 = incrementCount(rxbytes0.longValue(), Long.parseLong(matcher.group(2)));
-                            long txbytes1 = incrementCount(txbytes0.longValue(), Long.parseLong(matcher.group(3)));
+                            long rxBytesNew = incrementCount(rxBytesOld.longValue(), Long.parseLong(matcher.group(2)));
+                            long txBytesNew = incrementCount(txBytesOld.longValue(), Long.parseLong(matcher.group(3)));
+
                             // accumulate 64-bit corrected values
-                            rxBytes1 += rxbytes1;
-                            txBytes1 += txbytes1;
+                            totalRxBytesNewValue += rxBytesNew;
+                            totalTxBytesNewValue += txBytesNew;
+                            if (intfSettings.getIsWan()) {
+                                wansRxBytesNewValue += rxBytesNew;
+                                wansTxBytesNewValue += txBytesNew;
+                            }
+
                             // update stored previous values w/new 64 corrected values
-                            rxtxBytes0.put("rx"+i, rxbytes1);
-                            rxtxBytes0.put("tx"+i, txbytes1);
+                            rxtxBytesStore.put("rx"+intfId, rxBytesNew);
+                            rxtxBytesStore.put("tx"+intfId, txBytesNew);
+
+                            // store the new values
+                            String key = "interface_" + intfSettings.getInterfaceId() + "_";
+                            double dt = (currentTime - lastNetDevUpdate) / 1000.0;
+                            if (Math.abs(dt) < 5.0e-5) {
+                                m.put(key + "rxBps", 0.0);
+                                m.put(key + "txBps", 0.0);
+                            } else {
+                                m.put(key + "rxBps", (rxBytesNew - rxBytesOld) / dt);
+                                m.put(key + "txBps", (txBytesNew - txBytesOld) / dt);
+                            }
                         } catch (NumberFormatException exn) {
-                            logger.warn("could not add interface info for: "
-                                        + iface, exn);
+                            logger.warn("could not add interface info for: " + iface, exn);
                         }
                     }
                 }
@@ -451,11 +489,18 @@ public class MetricManagerImpl implements MetricManager
 
             double dt = (currentTime - lastNetDevUpdate) / 1000.0;
             if (Math.abs(dt) < 5.0e-5) {
-                m.put("rxBps", 0.0);
-                m.put("txBps", 0.0);
+                m.put("interface_wans_rxBps", 0.0);
+                m.put("interface_wans_txBps", 0.0);
             } else {
-                m.put("rxBps", (rxBytes1 - rxBytes0) / dt);
-                m.put("txBps", (txBytes1 - txBytes0) / dt);
+                m.put("interface_wans_rxBps", (wansRxBytesNewValue - wansRxBytesOldValue) / dt);
+                m.put("interface_wans_txBps", (wansTxBytesNewValue - wansTxBytesOldValue) / dt);
+            }
+            if (Math.abs(dt) < 5.0e-5) {
+                m.put("interface_total_rxBps", 0.0);
+                m.put("interface_total_txBps", 0.0);
+            } else {
+                m.put("interface_total_rxBps", (totalRxBytesNewValue - totalRxBytesOldValue) / dt);
+                m.put("interface_total_txBps", (totalTxBytesNewValue - totalTxBytesOldValue) / dt);
             }
             lastNetDevUpdate = currentTime;
         }

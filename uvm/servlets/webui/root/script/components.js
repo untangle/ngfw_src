@@ -979,8 +979,8 @@ Ext.define("Ung.SystemStats", {
         }
         this.getEl().down("div[class=cpu]").dom.innerHTML=loadText;
 
-        var txSpeed=(stats.txBps<1000000) ? { value: Math.round(stats.txBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.txBps/10000)/100, unit:"MB/s"};
-        var rxSpeed=(stats.rxBps<1000000) ? { value: Math.round(stats.rxBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.rxBps/10000)/100, unit:"MB/s"};
+        var txSpeed=(stats.interface_wans_txBps<1000000) ? { value: Math.round(stats.interface_wans_txBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.interface_wans_txBps/10000)/100, unit:"MB/s"};
+        var rxSpeed=(stats.interface_wans_rxBps<1000000) ? { value: Math.round(stats.interface_wans_rxBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.interface_wans_rxBps/10000)/100, unit:"MB/s"};
         this.getEl().down("div[class=tx-value]").dom.innerHTML=txSpeed.value+txSpeed.unit;
         this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed.value+rxSpeed.unit;
         var memoryFree=Ung.Util.bytesToMBs(stats.MemFree);

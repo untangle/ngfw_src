@@ -51,6 +51,7 @@ class ServerNode(Node):
 
     def create_tables(self):
         self.__create_server_events()
+        self.__create_interface_stat_events()
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("server_events", cutoff)
@@ -85,6 +86,15 @@ CREATE TABLE reports.server_events (
         sql_helper.add_column('server_events','mem_total','int8') # 11.2
         sql_helper.drop_column('server_events','mem_cache') #11.2
         sql_helper.drop_column('server_events','mem_buffers') #11.2
+
+    @sql_helper.print_timing
+    def __create_interface_stat_events(self):
+        sql_helper.create_table("""\
+CREATE TABLE reports.interface_stat_events (
+    time_stamp  TIMESTAMP,
+    interface_id INT,
+    rx_rate 	FLOAT,
+    tx_rate 	FLOAT)""")
 
     def teardown(self):
         pass
