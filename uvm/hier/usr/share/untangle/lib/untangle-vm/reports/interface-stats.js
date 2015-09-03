@@ -1,0 +1,20 @@
+{
+    "uniqueId": "network-2nx8FA4VCB",
+    "category": "Network",
+    "description": "The RX rate of each interface over time.",
+    "displayOrder": 315,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "interface_stat_events",
+    "timeDataInterval": "MINUTE",
+    "timeDataDynamicValue": "rx_rate",
+    "timeDataDynamicColumn": "interface_id",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "max",
+    "timeStyle": "LINE",
+    "title": "Interface Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}
