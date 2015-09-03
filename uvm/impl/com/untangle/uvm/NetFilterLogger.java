@@ -185,14 +185,14 @@ public class NetFilterLogger
 
     protected void HandleLoggerMessage(ByteBuffer logMessage) throws Exception
     {
-        if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions() )
-            return;
+        if (!UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions()) return;
 
         String message = new String(logMessage.array(), 0, logMessage.position());
         String srcAddressStr, dstAddressStr;
         String logPrefix;
         int netProto, srcIntf, dstIntf;
         int srcPort, dstPort;
+        int icmpType;
         int counter = 0;
 
         // we may get more than one message so split on end of line markers
@@ -201,6 +201,7 @@ public class NetFilterLogger
             try {
                 // extract all of the fields from the message
                 netProto = Integer.valueOf(extractField(item, "PROTO:", "0"));
+                icmpType = Integer.valueOf(extractField(item, "ICMP:", "999"));
                 srcIntf = Integer.valueOf(extractField(item, "SINTF:", "0"));
                 srcAddressStr = extractField(item, "SADDR:", "0.0.0.0");
                 srcPort = Integer.valueOf(extractField(item, "SPORT:", "0"));
@@ -211,25 +212,31 @@ public class NetFilterLogger
 
                 InetAddress srcAddress = InetAddress.getByName(srcAddressStr);
                 InetAddress dstAddress = InetAddress.getByName(dstAddressStr);
-                
+
                 // create a new session event and fill it with our data
                 SessionEvent event = new SessionEvent();
                 event.setSessionId(new Long(com.untangle.jnetcap.Netcap.nextSessionId()));
                 event.setProtocol(new Short((short) netProto));
-                
-                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(srcAddress);
                 String username = null;
                 String hostname = null;
-                if ( entry != null ) {
+                if (entry != null) {
                     username = entry.getUsername();
                     hostname = entry.getHostname();
                 }
 
-                if ((hostname == null || hostname.length() == 0))
-                    hostname = srcAddress.getHostAddress();
-                
-                event.setUsername(username); 
-                event.setHostname(hostname); 
+                if ((hostname == null || hostname.length() == 0)) hostname = srcAddress.getHostAddress();
+
+                // Since zero is a valid ICMP type, both the untangle-nflogd daemon as well
+                // as this code use the value 999 to indicate empty or unknown.  If icmpType
+                // is any other value, we set it in the event, otherwise we leave it null.
+                if (icmpType != 999) {
+                    event.setIcmpType(new Short((short) icmpType));
+                }
+
+                event.setUsername(username);
+                event.setHostname(hostname);
 
                 event.setCClientAddr(srcAddress);
                 event.setSClientAddr(srcAddress);
