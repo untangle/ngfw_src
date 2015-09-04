@@ -231,6 +231,8 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     int                ret;
     int                tos_len =0;
     int                ttl_len =0;
+    u_int              tos_val =0;
+    u_int              ttl_val =0;
 
     /**
      * mark packet with:  MARK_BYPASS + whatever packet marks are specified 
@@ -259,21 +261,29 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
     }
-    if ( IS_NEW_KERNEL() == 16 ) 
-        tos_len   = CMSG_LEN(sizeof(int));
-    else
-        tos_len   = CMSG_LEN(sizeof(pkt->tos));
-    cmsg->cmsg_len   = tos_len;
+
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TOS;
-    memcpy( CMSG_DATA(cmsg), &pkt->tos, ttl_len );
+    if ( IS_NEW_KERNEL() == 16 ) {
+        tos_len   = CMSG_LEN(sizeof(int));
+        cmsg->cmsg_len   = tos_len;
+        tos_val   = pkt->tos;
+        memcpy( CMSG_DATA(cmsg), &tos_val, tos_len );
+    }
+    else {
+        cmsg->cmsg_len   = CMSG_LEN(sizeof(pkt->tos));
+        memcpy( CMSG_DATA(cmsg), &pkt->tos, sizeof(pkt->tos) );
+    }
 
     /* ttl ancillary */
-    if ( IS_NEW_KERNEL() == 16 )
+    if ( IS_NEW_KERNEL() == 16 ) {
         ttl_len   = CMSG_LEN(sizeof(int));
-    else
+        cmsg = my__cmsg_nxthdr(&msg, cmsg, sizeof(int));
+    }
+    else {
         ttl_len   = CMSG_LEN(sizeof(pkt->ttl));
-    cmsg = my__cmsg_nxthdr(&msg, cmsg, ttl_len);
+        cmsg = my__cmsg_nxthdr(&msg, cmsg, sizeof(pkt->ttl));
+    }
     if( !cmsg ) {
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
@@ -281,7 +291,14 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     cmsg->cmsg_len   = ttl_len;
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TTL;
-    memcpy( CMSG_DATA(cmsg), &pkt->ttl, ttl_len );
+
+    if ( IS_NEW_KERNEL() == 16 ) {
+        ttl_val = pkt->ttl;
+        memcpy( CMSG_DATA(cmsg), &ttl_val, sizeof(int) );
+    }
+    else
+        memcpy( CMSG_DATA(cmsg), &pkt->ttl, sizeof(pkt->ttl) );
+
 
     /* src port ancillary */
     cmsg =  my__cmsg_nxthdr(&msg, cmsg, sizeof(pkt->src.port));
@@ -322,12 +339,20 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     if ( ((char*)cmsg) > control + MAX_CONTROL_MSG)
         errlog(ERR_CRITICAL,"CMSG overrun");
 
-    msg.msg_controllen =
-        CMSG_SPACE(sizeof(pkt->tos)) +
-        CMSG_SPACE(sizeof(pkt->ttl)) +
-        CMSG_SPACE(sizeof(pkt->src.port)) +
-        CMSG_SPACE(sizeof(nfmark)) +
-        CMSG_SPACE(sizeof(pkt->src.host));
+    if ( IS_NEW_KERNEL() == 16 ) 
+        msg.msg_controllen =
+            CMSG_SPACE(sizeof(int)) +
+            CMSG_SPACE(sizeof(int)) +
+            CMSG_SPACE(sizeof(pkt->src.port)) +
+            CMSG_SPACE(sizeof(nfmark)) +
+            CMSG_SPACE(sizeof(pkt->src.host));
+    else
+        msg.msg_controllen =
+            CMSG_SPACE(sizeof(pkt->tos)) +
+            CMSG_SPACE(sizeof(pkt->ttl)) +
+            CMSG_SPACE(sizeof(pkt->src.port)) +
+            CMSG_SPACE(sizeof(nfmark)) +
+            CMSG_SPACE(sizeof(pkt->src.host));
 
     /* Send Packet */
     debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:0x%08x\n",
