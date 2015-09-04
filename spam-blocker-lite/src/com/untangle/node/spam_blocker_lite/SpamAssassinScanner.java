@@ -30,7 +30,7 @@ public class SpamAssassinScanner implements SpamScanner
 
     public String getVendorName()
     {
-        return "SpamAssassin";
+        return "SpamBlockerLite";
     }
 
     public int getActiveScanCount()

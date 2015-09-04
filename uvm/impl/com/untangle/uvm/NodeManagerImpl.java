@@ -56,7 +56,49 @@ public class NodeManagerImpl implements NodeManager
     
     private boolean live = true;
 
-    public NodeManagerImpl() { }
+    public NodeManagerImpl()
+    {
+        convertToNewNames();
+    }
+
+    /* 12.0 conversion */
+    private void convertToNewNames()
+    {
+        String dirName;
+        String oldName;
+        String newName;
+        String oldClassName;
+        String newClassName;
+        String oldSettingsName;
+        String newSettingsName;
+        File dir;
+        
+        // remove old IPS settings
+        oldName = "untangle-node-ips";
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/rm -rf " + dirName);
+        }
+
+        // rename spamassassin to spam-blocker-lite
+        oldName = "untangle-node-spamassassin";
+        newName = "untangle-node-spam-blocker-lite";
+        oldClassName = "com.untangle.node.spamassassin.SpamAssassinNode";
+        newClassName = "com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp";
+        oldSettingsName = null;
+        newSettingsName = null;
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldClassName + "/" + newClassName + "/' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            if ( oldSettingsName != null && newSettingsName != null )
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldSettingsName + "/" + newSettingsName + "/' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+        }
+
+    }
+        
 
     public NodeManagerSettings getSettings()
     {
