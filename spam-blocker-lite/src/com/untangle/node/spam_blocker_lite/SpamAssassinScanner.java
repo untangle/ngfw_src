@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.spamassassin;
+package com.untangle.node.spam_blocker_lite;
 
 import java.io.File;
 import java.util.Date;
@@ -23,8 +23,8 @@ public class SpamAssassinScanner implements SpamScanner
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spamassassin-get-last-update";
-    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/spamassassin-get-last-update-check";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spam-blocker-lite-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/spam-blocker-lite-get-last-update-check";
 
     public SpamAssassinScanner() { }
 

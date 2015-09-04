@@ -1,8 +1,8 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeProperties",
-        "className" : "com.untangle.node.spamassassin.SpamAssassinNode",
+        "className" : "com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp",
         "nodeBase" : "untangle-base-spam",
-        "name" : "untangle-node-spamassassin",
+        "name" : "untangle-node-spam-blocker-lite",
         "displayName" : "Spam Blocker Lite",
         "type" : "FILTER",
         "viewPosition" : 61,

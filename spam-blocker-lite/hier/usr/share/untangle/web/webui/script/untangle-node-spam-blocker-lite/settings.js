@@ -1,4 +1,4 @@
-Ext.define('Webui.untangle-node-spamassassin.settings', {
+Ext.define('Webui.untangle-node-spam-blocker-lite.settings', {
     extend:'Ung.NodeWin',
     emailPanel: null,
     gridEventLog: null,
@@ -437,4 +437,4 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
         return this.validateComponents(components);
     }
 });
-//# sourceURL=spamassassin-settings.js
+//# sourceURL=spam-blocker-lite-settings.js

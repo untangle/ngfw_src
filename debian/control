@@ -66,8 +66,11 @@ Depends: untangle-vm
 Description: Firewall
  The Firewall application.
 
-Package: untangle-node-spamassassin
+Package: untangle-node-spam-blocker-lite
 Architecture: all
+Conflicts: untangle-node-spamassassin
+Replaces: untangle-node-spamassassin
+Provides: untangle-node-spamassassin
 Depends: untangle-vm, untangle-base-spam, untangle-casing-smtp, untangle-spamassassin-update
 Description: Spam Blocker Lite
  The Spam Blocker Lite application.

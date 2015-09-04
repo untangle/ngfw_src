@@ -93,8 +93,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-sitefilter)
             d=$hades/src/sitefilter
             ;;
-        untangle-node-spamassassin)
-            d=$work/src/spamassassin
+        untangle-node-spam-blocker-lite)
+            d=$work/src/spam-blocker-lite
             ;;
         untangle-node-splitd)
             d=$hades/src/splitd

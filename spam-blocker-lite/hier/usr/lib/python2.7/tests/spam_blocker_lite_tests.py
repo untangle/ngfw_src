@@ -13,15 +13,15 @@ import test_registry
 #
 # Just extends the spam base tests
 #
-class SpamassassinTests(SpamTests):
+class SpamBlockerLiteTests(SpamTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-spamassassin"
+        return "untangle-node-spam-blocker-lite"
 
     @staticmethod
     def shortName():
-        return "spamassassin"
+        return "spam-blocker-lite"
 
     @staticmethod
     def displayName():
@@ -32,4 +32,4 @@ class SpamassassinTests(SpamTests):
         result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
 
-test_registry.registerNode("spamassassin", SpamassassinTests)
+test_registry.registerNode("spam-blocker-lite", SpamBlockerLiteTests)

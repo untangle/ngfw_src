@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.node.spamassassin;
+package com.untangle.node.spam_blocker_lite;
 
 import java.io.File;
 import java.io.BufferedOutputStream;

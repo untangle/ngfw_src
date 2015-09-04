@@ -83,7 +83,7 @@
     <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spam-blocker-lite/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
 </c:if>
 

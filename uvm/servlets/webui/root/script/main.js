@@ -1133,7 +1133,7 @@ Ext.define("Ung.Main", {
                         { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
                         //{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'},
                         { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
-                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spamassassin'},
+                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
                         //{ displayName: "Phish Blocker", name: 'untangle-node-phish'},
                         //{ displayName: "Web Cache", name: 'untangle-node-webcache'},
                         { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.spamassassin;
+package com.untangle.node.spam_blocker_lite;
 
 import org.apache.log4j.Logger;
 
@@ -11,11 +11,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.DaemonManager;
 
-public class SpamAssassinNode extends SpamNodeImpl
+public class SpamBlockerLiteApp extends SpamNodeImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SpamAssassinNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public SpamBlockerLiteApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties, new SpamAssassinScanner() );
     }
@@ -24,7 +24,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
         SpamSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
@@ -57,7 +57,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings);

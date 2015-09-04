@@ -267,7 +267,7 @@ public class AlertManagerImpl implements AlertManager
          */
         List<Node> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
         List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
-        List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
 
         for (Node node1 : webfilterList) {
@@ -280,7 +280,7 @@ public class AlertManagerImpl implements AlertManager
             }
         }
 
-        for (Node node1 : spamassassinList) {
+        for (Node node1 : spamBlockerLiteList) {
             for (Node node2 : spamblockerList) {
                 if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;
@@ -491,13 +491,13 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testSpamDNSServers(List<String> alertList)
     {
-        List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
         String nodeName = "Spam Blocker";
 
-        if (spamassassinList.size() == 0 && spamblockerList.size() == 0)
+        if (spamBlockerLiteList.size() == 0 && spamblockerList.size() == 0)
             return;
-        if (spamassassinList.size() > 0)
+        if (spamBlockerLiteList.size() > 0)
             nodeName = "Spam Blocker Lite";
         if (spamblockerList.size() > 0)
             nodeName = "Spam Blocker";
