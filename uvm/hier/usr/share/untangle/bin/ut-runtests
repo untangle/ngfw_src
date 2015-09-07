@@ -120,9 +120,9 @@ def printUsage():
     -l <file>  : log file
     -d <int>   : interface ID of the external interface (outside) default: 1
     -s <int>   : interface ID of the internal interface (client) default: 2
-    -t <suite> : comma seperated list test suites to run (default: "all") (exm: "webfilter,adblocker")
+    -t <suite> : comma seperated list test suites to run (default: "all") (exm: "web-filter,ad-blocker")
     -T <test>  : comma seperated list tests within suites to run (default: "all") (exm: "test_010_clientOnline")
-    -e <suite> : comma seperated list test suites to EXCLUDE (default: "all") (exm: "webfilter,adblocker")
+    -e <suite> : comma seperated list test suites to EXCLUDE (default: "all") (exm: "web-filter,ad-blocker")
     -E <test>  : comma seperated list tests within suites to EXCLUDE (default: "all") (exm: "test_010_clientOnline")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure

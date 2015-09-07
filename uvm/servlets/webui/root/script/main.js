@@ -1143,7 +1143,7 @@ Ext.define("Ung.Main", {
                         { displayName: "Captive Portal", name: 'untangle-node-capture'},
                         { displayName: "Firewall", name: 'untangle-node-firewall'},
                         //{ displayName: "Intrusion Prevention", name: 'untangle-node-idps'},
-                        //{ displayName: "Ad Blocker", name: 'untangle-node-adblocker'},
+                        //{ displayName: "Ad Blocker", name: 'untangle-node-ad-blocker'},
                         { displayName: "Reports", name: 'untangle-node-reporting'},
                         { displayName: "Policy Manager", name: 'untangle-node-policy'},
                         { displayName: "Directory Connector", name: 'untangle-node-adconnector'},

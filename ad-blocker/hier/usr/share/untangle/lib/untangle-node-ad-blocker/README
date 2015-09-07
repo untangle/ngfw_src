@@ -1,0 +1,12 @@
+easylist source:
+
+https://easylist-downloads.adblockplus.org/easylist.txt
+
+ghostery-lsos.json source:
+
+http://codeembed.com/source/ff/8480/chrome%2Fcontent%2Fghostery-lsos.json
+remove the brackets from the beginning and end
+
+it appears this has been renamed bugs.js 
+https://www.ghostery.com/ghosteries/chrome/data/bugs.json
+but it now carries a non-GPL license.

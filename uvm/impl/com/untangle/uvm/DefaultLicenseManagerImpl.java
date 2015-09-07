@@ -85,7 +85,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     
     private boolean isGPLApp(String identifier)
     {
-        if ("untangle-node-adblocker".equals(identifier)) return true;
+        if ("untangle-node-ad-blocker".equals(identifier)) return true;
         else if ("untangle-node-clam".equals(identifier)) return true;
         else if ("untangle-node-capture".equals(identifier)) return true;
         else if ("untangle-node-firewall".equals(identifier)) return true;

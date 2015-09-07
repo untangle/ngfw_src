@@ -1,0 +1,261 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"PO-Revision-Date: 2014-03-08 14:06+0200\n"
+"Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "blocked"
+msgstr ""
+
+msgid "cookie"
+msgstr ""
+
+msgid "on"
+msgstr ""
+
+msgid "client in pass list"
+msgstr "パスするクライアントリスト"
+
+msgid "passed"
+msgstr ""
+
+msgid "scanned"
+msgstr "スキャンする"
+
+msgid "Pages scanned"
+msgstr "ページをスキャン"
+
+msgid "Ads blocked"
+msgstr "ブロックされた広告"
+
+msgid "Pages passed"
+msgstr "パスしたページ"
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "web hits and blocked"
+msgstr "Webヒット数とブロック数"
+
+msgid "ads and"
+msgstr "広告と"
+
+msgid "cookies"
+msgstr "クッキー"
+
+msgid "Blocked Ads"
+msgstr "ブロックされた広告"
+
+msgid "Avg Ads Blocked"
+msgstr "ブロックした広告の平均"
+
+msgid "Blocks"
+msgstr "ブロック"
+
+msgid "Max Ads Blocked"
+msgstr "ブロックした広告の最大"
+
+msgid "Avg Ads Logged"
+msgstr "記録した広告の平均"
+
+msgid "Logs"
+msgstr "ログ"
+
+msgid "Max Ads Logged"
+msgstr "記録した広告の最大"
+
+msgid "Ads"
+msgstr "広告"
+
+msgid "Ads Blocked"
+msgstr "広告をブロック"
+
+msgid "Ads Logged"
+msgstr "広告を記録"
+
+msgid "Blocked Cookies"
+msgstr "クッキーをブロック"
+
+msgid "Avg Cookies Blocked"
+msgstr "平均のブロックしたクッキー"
+
+msgid "Max Cookies Blocked"
+msgstr "最大のブロックしたクッキー"
+
+msgid "Cookies"
+msgstr "クッキー"
+
+msgid "Top Blocked Ad Sites"
+msgstr "トップのブロックされた広告サイト"
+
+msgid "Hosts"
+msgstr "ホスト"
+
+msgid "Blocks Per Day"
+msgstr "1日あたりのブロック数"
+
+msgid "Top Ten Blocked Cookies"
+msgstr "トップ10のブロックしたクッキー"
+
+msgid "Hits"
+msgstr "ヒット"
+
+msgid "Cookie"
+msgstr "クッキー"
+
+msgid "Cookie Events"
+msgstr "クッキーイベント"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "Client"
+msgstr "クライアント"
+
+msgid "User"
+msgstr "ユーザ"
+
+msgid "Server Ip"
+msgstr "サーバIPアドレス"
+
+msgid "Server Port"
+msgstr "サーバポート"
+
+msgid "Status"
+msgstr "状態"
+
+msgid "Statistics"
+msgstr "統計"
+
+msgid "Total Filters Available"
+msgstr "利用可能なフィルタ総数"
+
+msgid "Total Filters Enabled"
+msgstr "有効なフィルタ総数"
+
+msgid "Total Cookie Rules Available"
+msgstr "使用可能な全クッキールール"
+
+msgid "Total Cookie Rules Enabled"
+msgstr "有効な全クッキールール"
+
+msgid "Block Ads"
+msgstr "ブロックされた広告"
+
+msgid "Block Tracking & Ad Cookies"
+msgstr "ブロックのトラッキング＆広告クッキー"
+
+msgid "Update filters"
+msgstr "フィルタ更新"
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Updating filters..."
+msgstr "フィルタを更新中..."
+
+msgid "Please wait"
+msgstr "しばらくお待ちください"
+
+msgid "Note"
+msgstr "注意"
+
+msgid ""
+"The current filter list was last modified on {1}. You are free to disable "
+"filters and add new ones, however it is not required."
+msgstr ""
+"現在のフィルタリストには、{1}に最終更新されました。ただし、それが必要でなけれ"
+"ばフィルタを無効にするのも、新しいものを追加するのも自由です。"
+
+msgid "unknown"
+msgstr "unknown"
+
+msgid "Standard Filters"
+msgstr "標準フィルタ"
+
+msgid "User Defined Filters"
+msgstr "ユーザ定義のフィルタ"
+
+msgid "Ad Filters"
+msgstr "広告フィルタ"
+
+msgid "Standard Cookie Filters"
+msgstr "標準クッキーフィルタ"
+
+msgid "User Defined Cookie Filters"
+msgstr "ユーザ定義のクッキーフィルタ"
+
+msgid "Cookie Filters"
+msgstr "クッキーフィルタ"
+
+msgid "Enable"
+msgstr "有効"
+
+msgid "Rule"
+msgstr "ルール"
+
+msgid "[enter rule]"
+msgstr ""
+
+msgid "Action"
+msgstr "アクション"
+
+msgid "Block"
+msgstr "ブロック"
+
+msgid "Pass"
+msgstr "パス"
+
+msgid "Slow"
+msgstr "遅い"
+
+msgid "Yes"
+msgstr "はい"
+
+msgid "Pass Lists"
+msgstr "パスリスト"
+
+msgid "URL specified cannot be passed because it uses secure http (https)"
+msgstr ""
+
+msgid "Invalid URL specified"
+msgstr ""
+
+msgid "Passed Sites"
+msgstr ""
+
+msgid "Site"
+msgstr "サイト"
+
+msgid "[enter site]"
+msgstr ""
+
+msgid "Description"
+msgstr "説明"
+
+msgid "[no description]"
+msgstr "[説明がない]"
+
+msgid "Passed Client IP addresses"
+msgstr ""
+
+msgid "IP Address/Range"
+msgstr "IP アドレス/範囲"
+
+msgid "[enter ip]"
+msgstr ""
+
+msgid "IP address/range"
+msgstr "IP アドレス/範囲"
+
+
+

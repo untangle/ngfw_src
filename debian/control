@@ -108,8 +108,11 @@ Depends: untangle-vm, untangle-postgresql-config
 Description: Reports
  The Reports application.
 
-Package: untangle-node-adblocker
+Package: untangle-node-ad-blocker
 Architecture: all
+Conflicts: untangle-node-adblocker
+Replaces: untangle-node-adblocker
+Provides: untangle-node-adblocker
 Depends: untangle-vm, untangle-casing-http
 Description: Ad Blocker
  The Ad Blocker application.
