@@ -62,7 +62,7 @@ task :targets => :download do
   require "#{SRC_HOME}/shield/package.rb"
   require "#{SRC_HOME}/firewall/package.rb"
   require "#{SRC_HOME}/openvpn/package.rb"
-  require "#{SRC_HOME}/protofilter/package.rb"
+  require "#{SRC_HOME}/application-control-lite/package.rb"
   require "#{SRC_HOME}/idps/package.rb"
   # Base Nodes
   require "#{SRC_HOME}/spam-base/package.rb"

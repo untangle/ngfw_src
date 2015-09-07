@@ -48,8 +48,11 @@ Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casi
 Description: Virus Blocker Lite
  The Virus Blocker Lite application.
 
-Package: untangle-node-protofilter
+Package: untangle-node-application-control-lite
 Architecture: all
+Conflicts: untangle-node-protofilter
+Replaces: untangle-node-protofilter
+Provides: untangle-node-protofilter
 Depends: untangle-vm
 Description: Application Control Lite
  The Application Control Lite application.

@@ -81,8 +81,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-policy)
             d=$hades/src/policy
             ;;
-        untangle-node-protofilter)
-            d=$work/src/protofilter
+        untangle-node-application-control-lite)
+            d=$work/src/application-control-lite
             ;;
         untangle-node-reporting)
             d=$work/src/reporting

@@ -1139,7 +1139,7 @@ Ext.define("Ung.Main", {
                         { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},
                         { displayName: "HTTPS Inspector", name: 'untangle-casing-https'},
                         { displayName: "Application Control", name: 'untangle-node-classd'},
-                        //{ displayName: "Application Control Lite", name: 'untangle-node-protofilter'},
+                        //{ displayName: "Application Control Lite", name: 'untangle-node-application-control-lite'},
                         { displayName: "Captive Portal", name: 'untangle-node-capture'},
                         { displayName: "Firewall", name: 'untangle-node-firewall'},
                         //{ displayName: "Intrusion Prevention", name: 'untangle-node-idps'},

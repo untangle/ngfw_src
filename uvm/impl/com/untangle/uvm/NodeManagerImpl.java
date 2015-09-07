@@ -67,11 +67,10 @@ public class NodeManagerImpl implements NodeManager
         String dirName;
         String oldName;
         String newName;
-        String oldClassName;
-        String newClassName;
-        String oldSettingsName;
-        String newSettingsName;
+        String[] oldNames;
+        String[] newNames;
         File dir;
+        int i;
         
         // remove old IPS settings
         oldName = "untangle-node-ips";
@@ -84,19 +83,39 @@ public class NodeManagerImpl implements NodeManager
         // rename spamassassin to spam-blocker-lite
         oldName = "untangle-node-spamassassin";
         newName = "untangle-node-spam-blocker-lite";
-        oldClassName = "com.untangle.node.spamassassin.SpamAssassinNode";
-        newClassName = "com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp";
-        oldSettingsName = null;
-        newSettingsName = null;
+        oldNames = new String[] {"com.untangle.node.spamassassin.SpamAssassinNode"};
+        newNames = new String[] {"com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
             UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldClassName + "/" + newClassName + "/' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            if ( oldSettingsName != null && newSettingsName != null )
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldSettingsName + "/" + newSettingsName + "/' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
         }
 
+        // rename protofilter to application-control-lite
+        oldName = "untangle-node-protofilter";
+        newName = "untangle-node-application-control-lite";
+        oldNames = new String[] {"com.untangle.node.protofilter.ProtoFilterImpl",
+                                 "com.untangle.node.protofilter.ProtoFilterSettings",
+                                 "com.untangle.node.protofilter.ProtoFilterPattern"};
+        newNames = new String[] {"com.untangle.node.application_control_lite.ApplicationControlLiteApp",
+                                 "com.untangle.node.application_control_lite.ApplicationControlLiteSettings",
+                                 "com.untangle.node.application_control_lite.ApplicationControlLitePattern"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
     }
         
 

@@ -123,10 +123,10 @@ public interface NodeSession extends SessionTuple
     public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
     public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */
 
-    public final String KEY_PROTOFILTER_SIGNATURE = "protofilter-protocol"; /* String */
-    public final String KEY_PROTOFILTER_SIGNATURE_CATEGORY = "protofilter-category"; /* String */
-    public final String KEY_PROTOFILTER_SIGNATURE_DESCRIPTION = "protofilter-description"; /* String */
-    public final String KEY_PROTOFILTER_SIGNATURE_MATCHED = "protofilter-matched";  /* Boolean */
+    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE = "application-control-lite-protocol"; /* String */
+    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY = "application-control-lite-category"; /* String */
+    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION = "application-control-lite-description"; /* String */
+    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED = "application-control-lite-matched";  /* Boolean */
 
     public final String KEY_HTTP_HOSTNAME = "http-hostname";  /* String */
     public final String KEY_HTTP_REFERER = "http-referer";  /* String */

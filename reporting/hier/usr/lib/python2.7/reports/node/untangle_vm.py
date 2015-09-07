@@ -190,8 +190,6 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','bypassed','boolean') # 11.2
         sql_helper.add_column('sessions','filter_prefix','text') #11.2
 
-        sql_helper.rename_column('sessions','protofilter_protocol','application_control_lite_protocol') # 11.2
-        sql_helper.rename_column('sessions','protofilter_blocked','application_control_lite_blocked') # 11.2
         sql_helper.rename_column('sessions','capture_blocked','captive_portal_blocked') # 11.2
         sql_helper.rename_column('sessions','capture_rule_index','captive_portal_rule_index') # 11.2
         sql_helper.rename_column('sessions','classd_application','application_control_application') # 11.2

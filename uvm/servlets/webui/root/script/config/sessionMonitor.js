@@ -54,7 +54,7 @@ Ext.define('Webui.config.sessionMonitor', {
                         "attachments": {
                             "map": {
                                 "web_filter-best-category-name": "Social Networking",
-                                "protofilter-matched": (ii%3==0),
+                                "application-control-lite-matched": (ii%3==0),
                                 "web_filter-best-category-description": "Social Networking",
                                 "web_filter-best-category-blocked": false,
                                 "web_filter-flagged": false,
@@ -287,7 +287,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Protocol") + this.i18n._(" (Application Control Lite)"),
-            dataIndex: "protofilter-protocol",
+            dataIndex: "application-control-lite-protocol",
             width: 100,
             filter: {
                 type: 'string'
@@ -295,7 +295,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category") + this.i18n._(" (Application Control Lite)"),
-            dataIndex: "protofilter-category",
+            dataIndex: "application-control-lite-category",
             width: 100,
             filter: {
                 type: 'string'
@@ -303,7 +303,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Description") + this.i18n._(" (Application Control Lite)"),
-            dataIndex: "protofilter-description",
+            dataIndex: "application-control-lite-description",
             width: 100,
             filter: {
                 type: 'string'
@@ -311,7 +311,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Matched?") + this.i18n._(" (Application Control Lite)"),
-            dataIndex: "protofilter-matched",
+            dataIndex: "application-control-lite-matched",
             width: 100,
             filter: {
                 type: 'boolean',
@@ -592,17 +592,17 @@ Ext.define('Webui.config.sessionMonitor', {
                 name: "platform-username",
                 convert: this.fieldConvert
             },{
-                name: "protofilter-protocol",
+                name: "application-control-lite-protocol",
                 convert: this.fieldConvert
             },{
-                name: "protofilter-category",
+                name: "application-control-lite-category",
                 convert: this.fieldConvert
             },{
-                name: "protofilter-description",
+                name: "application-control-lite-description",
                 type: 'string',
                 convert: this.fieldConvert
             },{
-                name: "protofilter-matched",
+                name: "application-control-lite-matched",
                 type: 'string',
                 convert: this.fieldConvert
             },{

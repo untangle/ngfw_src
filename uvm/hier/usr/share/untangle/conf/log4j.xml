@@ -222,7 +222,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.protofilter">
+  <category name="com.untangle.node.application_control_lite">
     <priority value="INFO"/>
   </category>
 
@@ -246,7 +246,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spamassassin">
+  <category name="com.untangle.node.spam_blocker_lite">
     <priority value="INFO"/>
   </category>
 

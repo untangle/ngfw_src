@@ -93,7 +93,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         else if ("untangle-node-idps".equals(identifier)) return true;
         else if ("untangle-node-openvpn".equals(identifier)) return true;
         else if ("untangle-node-phish".equals(identifier)) return true;
-        else if ("untangle-node-protofilter".equals(identifier)) return true;
+        else if ("untangle-node-application-control-lite".equals(identifier)) return true;
         else if ("untangle-node-reporting".equals(identifier)) return true;
         else if ("untangle-node-router".equals(identifier)) return true;
         else if ("untangle-node-shield".equals(identifier)) return true;

@@ -577,19 +577,19 @@ public class RuleMatcher implements JSONString, Serializable
             return this.intMatcher.isMatch( attachmentLong );
             
         case PROTOCOL_CONTROL_SIGNATURE:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE);
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
                                                  
         case PROTOCOL_CONTROL_CATEGORY:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE_CATEGORY);
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
 
         case PROTOCOL_CONTROL_DESCRIPTION:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_PROTOFILTER_SIGNATURE_DESCRIPTION);
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
