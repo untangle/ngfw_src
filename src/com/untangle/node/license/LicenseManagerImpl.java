@@ -751,7 +751,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         else if ("untangle-node-ips".equals(identifier)) return true;
         else if ("untangle-node-idps".equals(identifier)) return true;
         else if ("untangle-node-openvpn".equals(identifier)) return true;
-        else if ("untangle-node-phish".equals(identifier)) return true;
+        else if ("untangle-node-phish-blocker".equals(identifier)) return true;
         else if ("untangle-node-application-control-lite".equals(identifier)) return true;
         else if ("untangle-node-router".equals(identifier)) return true;
         else if ("untangle-node-reporting".equals(identifier)) return true;
