@@ -6,4 +6,4 @@ deps = []
   deps << BuildEnv::SRC[c]['src']
 end
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-clam', 'clam', deps, { 'clam-base' => BuildEnv::SRC['untangle-base-clam'] })
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-virus-blocker-lite', 'virus-blocker-lite', deps, { 'clam-base' => BuildEnv::SRC['untangle-base-clam'] })

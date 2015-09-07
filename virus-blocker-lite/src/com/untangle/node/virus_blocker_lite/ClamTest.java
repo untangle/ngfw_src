@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.clam;
+package com.untangle.node.virus_blocker_lite;
 
 import java.io.File;
 

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.clam;
+package com.untangle.node.virus_blocker_lite;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
@@ -24,9 +24,9 @@ public class ClamNode extends VirusNodeImpl
         return "virus_blocker_lite";
     }
 
-    public String getOldName()
+    public String getAppName()
     {
-        return "clam";
+        return "virus-blocker-lite";
     }
     
     @Override

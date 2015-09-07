@@ -77,7 +77,7 @@ task :targets => :download do
   # Ad Blocker node
   require "#{SRC_HOME}/ad-blocker/package.rb"
   # Virus based nodes
-  require "#{SRC_HOME}/clam/package.rb"
+  require "#{SRC_HOME}/virus-blocker-lite/package.rb"
   # New captive portal
   require "#{SRC_HOME}/capture/package.rb"
 end

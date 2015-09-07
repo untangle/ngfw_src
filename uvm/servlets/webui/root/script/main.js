@@ -1131,7 +1131,7 @@ Ext.define("Ung.Main", {
                         { displayName: "Web Filter", name: 'untangle-node-sitefilter'},
                         //{ displayName: "Web Filter Lite", name: 'untangle-node-webfilter'},
                         { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
-                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'},
+                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
                         { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
                         //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
                         //{ displayName: "Phish Blocker", name: 'untangle-node-phish'},
@@ -1158,7 +1158,7 @@ Ext.define("Ung.Main", {
                     // only install this on 1gig+ machines
                     if ( Ung.Main.totalMemoryMb > 900 ) {
                         apps.splice(4,0,{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'});
-                        apps.splice(2,0,{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'});
+                        apps.splice(2,0,{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'});
                     }
 
                     var fn = function( appsToInstall ) {

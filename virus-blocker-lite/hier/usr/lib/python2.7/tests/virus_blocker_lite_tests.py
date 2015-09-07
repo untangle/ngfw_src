@@ -17,7 +17,7 @@ class ClamTests(VirusTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-clam"
+        return "untangle-node-virus-blocker-lite"
 
     @staticmethod
     def shortName():
@@ -34,4 +34,4 @@ class ClamTests(VirusTests):
         result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 
-test_registry.registerNode("clam", ClamTests)
+test_registry.registerNode("virus-blocker-lite", ClamTests)

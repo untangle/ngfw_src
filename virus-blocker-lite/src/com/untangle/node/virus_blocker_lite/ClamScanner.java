@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.clam;
+package com.untangle.node.virus_blocker_lite;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus.VirusScanner;
 import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.node.clam.ClamScannerClientLauncher;
 import org.apache.log4j.Logger;
 
 public class ClamScanner implements VirusScanner
@@ -21,7 +22,7 @@ public class ClamScanner implements VirusScanner
 
     private static final int timeout = 29500; /* XXX should be user configurable */
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/clam-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/virus-blocker-lite-get-last-update";
 
     private static final String VERSION_ARG = "-V";
 

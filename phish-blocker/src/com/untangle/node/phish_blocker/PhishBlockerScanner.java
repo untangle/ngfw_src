@@ -26,8 +26,8 @@ public class PhishBlockerScanner implements SpamScanner
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/phish-get-last-update";
-    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/phish-get-last-update-check";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/phish-blocker-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/phish-blocker-get-last-update-check";
 
     public PhishBlockerScanner() { }
 

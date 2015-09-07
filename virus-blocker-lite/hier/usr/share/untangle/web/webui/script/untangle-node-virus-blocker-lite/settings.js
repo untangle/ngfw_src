@@ -1,4 +1,4 @@
-Ext.define('Webui.untangle-node-clam.settings', {
+Ext.define('Webui.untangle-node-virus-blocker-lite.settings', {
     extend:'Webui.untangle-base-virus.settings',
     helpSourceName: 'virus_blocker_lite',
     aboutInfo: null,
@@ -6,4 +6,4 @@ Ext.define('Webui.untangle-node-clam.settings', {
         this.callParent(arguments);
     }
 });
-//# sourceURL=clam-settings.js
+//# sourceURL=virus-blocker-lite-settings.js

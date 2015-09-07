@@ -14,19 +14,19 @@ Description: Untangle Core Library
 
 Package: untangle-casing-ftp
 Architecture: all
-Depends: untangle-libuvm
+Depends: untangle-vm
 Description: The FTP Casing
  The FTP Casing Application
 
 Package: untangle-casing-http
 Architecture: all
-Depends: untangle-libuvm
+Depends: untangle-vm
 Description: The HTTP Casing
  The HTTP Casing Application
 
 Package: untangle-casing-smtp
 Architecture: all
-Depends: untangle-libuvm
+Depends: untangle-vm
 Description: The SMTP Casing
  The SMTP Casing Application.
 
@@ -42,8 +42,11 @@ Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-we
 Description: Web Filter Lite
  The Web Filter Lite application.
 
-Package: untangle-node-clam
+Package: untangle-node-virus-blocker-lite
 Architecture: all
+Conflicts: untangle-node-clam
+Replaces: untangle-node-clam
+Provides: untangle-node-clam
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp
 Description: Virus Blocker Lite
  The Virus Blocker Lite application.
@@ -125,19 +128,19 @@ Description: Captive Portal
 
 Package: untangle-base-virus
 Architecture: all
-Depends: untangle-libuvm, untangle-casing-http, untangle-casing-smtp
+Depends: untangle-vm, untangle-casing-http, untangle-casing-smtp
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
 Package: untangle-base-spam
 Architecture: all
-Depends: untangle-libuvm, untangle-casing-smtp
+Depends: untangle-vm, untangle-casing-smtp
 Description: Spam Blocker Base
  The Spam Blocker Base.
 
 Package: untangle-base-webfilter
 Architecture: all
-Depends: untangle-libuvm, untangle-casing-http
+Depends: untangle-vm, untangle-casing-http
 Description: WebFilter Base
  The WebFilter Base.
 
@@ -150,7 +153,7 @@ Description: Platform Thirdparty Libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: conntrack, untangle-keyring, oracle-j2sdk1.7 | oracle-java7-jdk | oracle-java7-jre | openjdk-7-jdk, untangle-libuvm, untangle-libuvmcore (>= 11.1), untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-config, untangle-hardware-config, untangle-ntp-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd (>= 11.1), untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, python-py | python-codespeak-lib, python-reportlab, python-imaging, untangle-nflogd
+Depends: untangle-libuvm, conntrack, untangle-keyring, oracle-j2sdk1.7 | oracle-java7-jdk | oracle-java7-jre | openjdk-7-jdk, untangle-libuvm, untangle-libuvmcore (>= 11.1), untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-config, untangle-hardware-config, untangle-ntp-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd (>= 11.1), untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, python-py | python-codespeak-lib, python-reportlab, python-imaging, untangle-nflogd
 Description: Platform
  The Platform.
 
