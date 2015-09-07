@@ -1157,7 +1157,7 @@ Ext.define("Ung.Main", {
 
                     // only install this on 1gig+ machines
                     if ( Ung.Main.totalMemoryMb > 900 ) {
-                        apps.splice(4,0,{ displayName: "Phish Blocker", name: 'untangle-node-phish'});
+                        apps.splice(4,0,{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'});
                         apps.splice(2,0,{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'});
                     }
 

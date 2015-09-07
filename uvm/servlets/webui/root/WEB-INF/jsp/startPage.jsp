@@ -80,7 +80,7 @@
     <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-idps/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-phish-blocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-application-control-lite/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spam-blocker-lite/settings.js?s=${buildStamp}"></script>

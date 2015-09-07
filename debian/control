@@ -78,8 +78,11 @@ Depends: untangle-vm, untangle-base-spam, untangle-casing-smtp, untangle-spamass
 Description: Spam Blocker Lite
  The Spam Blocker Lite application.
 
-Package: untangle-node-phish
+Package: untangle-node-phish-blocker
 Architecture: all
+Conflicts: untangle-node-phish
+Replaces: untangle-node-phish
+Provides: untangle-node-phish
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-smtp
 Description: Phish Blocker
  The Phish Blocker application.

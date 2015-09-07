@@ -80,6 +80,9 @@ public class NodeManagerImpl implements NodeManager
             UvmContextFactory.context().execManager().execResult("/bin/rm -rf " + dirName);
         }
 
+        // FIXME use version to detect if conversion is needed
+        // FIXME need to fix names in nodes.js
+        
         // rename spamassassin to spam-blocker-lite
         oldName = "untangle-node-spamassassin";
         newName = "untangle-node-spam-blocker-lite";
@@ -115,6 +118,25 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
+
+        // rename phish to phish-blocker
+        oldName = "untangle-node-phish";
+        newName = "untangle-node-phish-blocker";
+        oldNames = new String[] {"com.untangle.node.phish.PhishNode",
+                                 "com.untangle.node.phish.PhishSettings"};
+        newNames = new String[] {"com.untangle.node.phish_blocker.PhishBlockerApp",
+                                 "com.untangle.node.phish_blocker.PhishBlockerSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
         
     }
         

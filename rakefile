@@ -70,7 +70,7 @@ task :targets => :download do
   require "#{SRC_HOME}/clam-base/package.rb"
   require "#{SRC_HOME}/webfilter-base/package.rb"
   # Spam based nodes
-  require "#{SRC_HOME}/phish/package.rb"
+  require "#{SRC_HOME}/phish-blocker/package.rb"
   require "#{SRC_HOME}/spam-blocker-lite/package.rb"
   # Webfilter based nodes
   require "#{SRC_HOME}/webfilter/package.rb"
