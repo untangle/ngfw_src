@@ -201,7 +201,7 @@ public class NodeManagerImpl implements NodeManager
                                  "com.untangle.node.reporting.EventEntry",
                                  "com.untangle.node.reporting.SqlCondition",
                                  "com.untangle.node.reporting.AlertRule",
-                                 "com.untangle.node.reporting.AlertRuleMatcher"
+                                 "com.untangle.node.reporting.AlertRuleMatcher",
                                  "com.untangle.node.reporting"
         };
         newNames = new String[] {"com.untangle.node.reports.ReportsApp",
@@ -211,7 +211,7 @@ public class NodeManagerImpl implements NodeManager
                                  "com.untangle.node.reports.EventEntry",
                                  "com.untangle.node.reports.SqlCondition",
                                  "com.untangle.node.reports.AlertRule",
-                                 "com.untangle.node.reports.AlertRuleMatcher"
+                                 "com.untangle.node.reports.AlertRuleMatcher",
                                  "com.untangle.node.reports"
         };
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
