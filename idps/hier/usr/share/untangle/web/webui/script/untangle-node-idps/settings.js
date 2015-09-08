@@ -481,6 +481,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     value: true
                 });
                 this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {
+                    useVisibleColumns: false,
                     searchFields: ['category', 'rule']
                 });
                 this.features.push(this.filterFeature);
@@ -540,6 +541,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     html: me.i18n._('Loading...')
                 }];
                 Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
+                this.getStore().addFilter(this.filterFeature.globalFilter);
 
                 this.searchField = this.down('textfield[name=searchField]');
                 this.findLog = this.down('checkbox[name=searchLog]');
@@ -548,6 +550,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 this.getStore().getFilters().on('endupdate', Ext.bind(function(eOpts) {
                     this.updateRulesStatus();
                 }, this));
+                this.updateRulesStatus();
 
                 this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{
                     grid: this
