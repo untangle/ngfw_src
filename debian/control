@@ -105,9 +105,6 @@ Conflicts: untangle-node-idps
 Replaces: untangle-node-idps
 Provides: untangle-node-idps
 Depends: untangle-vm, untangle-snort-config, snort
-Conflicts: untangle-node-ips
-Replaces: untangle-node-ips
-Provides: untangle-node-ips
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
