@@ -7,9 +7,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
 import com.untangle.node.virus.VirusNodeImpl;
 
-public class ClamNode extends VirusNodeImpl
+public class VirusBlockerLiteApp extends VirusNodeImpl
 {
-    public ClamNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public VirusBlockerLiteApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties, new ClamScanner() );
     }
