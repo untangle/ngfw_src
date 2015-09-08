@@ -94,7 +94,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ExecManagerImpl execManager;
     private SystemManagerImpl systemManager;
     private JSONSerializer serializer;
-    private Reporting reportingNode = null;
+    private Reporting reportsNode = null;
     private HostTableImpl hostTableImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -568,12 +568,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public void logEvent(LogEvent evt)
     {
-        if (this.reportingNode == null)
-            getReportingNode();
-        if (this.reportingNode == null)
+        if (this.reportsNode == null)
+            getReportsNode();
+        if (this.reportsNode == null)
             return;
 
-        this.reportingNode.logEvent(evt);
+        this.reportsNode.logEvent(evt);
     }
 
     public String getServerUID()
@@ -949,31 +949,31 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
-    private void getReportingNode()
+    private void getReportsNode()
     {
         synchronized (this) {
-            if (this.reportingNode == null) {
+            if (this.reportsNode == null) {
                 try {
                     // nodeManager not initialized yet
                     if ( this.nodeManager == null ) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reporting node not found, discarding event(s)");
+                            logger.warn("Reports node not found, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
                     }
                     
-                    this.reportingNode = (Reporting) this.nodeManager.node("untangle-node-reporting");
-                    // no reporting node
-                    if (this.reportingNode == null) {
+                    this.reportsNode = (Reporting) this.nodeManager.node("untangle-node-reports");
+                    // no reports node
+                    if (this.reportsNode == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reporting node not found, discarding event(s)");
+                            logger.warn("Reports node not found, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to initialize reportingNode", e);
+                    logger.warn("Unable to initialize reports Node", e);
                     return;
                 }
             }

@@ -4,14 +4,14 @@
     "description": "The number of total, successful, and failed admin logins over time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "sessions",
     "readOnly": true,
     "table": "admin_logins",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "column": "login",
             "operator": "!=",
             "value": "localadmin"

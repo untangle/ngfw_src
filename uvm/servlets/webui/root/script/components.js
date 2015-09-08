@@ -460,7 +460,7 @@ Ext.define("Ung.Node", {
                 alert("Unknown runState: " + runState);
             }
         }
-        if(this.name=="untangle-node-reporting") {
+        if(this.name=="untangle-node-reports") {
             delete rpc.reportsAppInstalledAndEnabled;
         }
     },

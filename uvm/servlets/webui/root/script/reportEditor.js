@@ -53,7 +53,7 @@ Ext.define("Ung.window.ReportEditor", {
                         this.record.set("uniqueId", this.getUniqueId());
                         var entry = this.record.getData();
                         
-                        Ung.Main.getReportingManagerNew().saveReportEntry(Ext.bind(function(result, exception) {
+                        Ung.Main.getReportsManagerNew().saveReportEntry(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.closeWindow();
                             this.parentCmp.loadReportEntries(entry.uniqueId);
@@ -86,7 +86,7 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["name"],
             data: []
         });
-        Ung.Main.getReportingManagerNew().getTables(Ext.bind(function(result, exception) {
+        Ung.Main.getReportsManagerNew().getTables(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var tables = [];
             for (var i=0; i< result.length; i++) {
@@ -111,7 +111,7 @@ Ext.define("Ung.window.ReportEditor", {
             hasImportExport: false,
             dataIndex: 'conditions',
             columnsDefaultSortable: false,
-            recordJavaClass: "com.untangle.node.reporting.SqlCondition",
+            recordJavaClass: "com.untangle.node.reports.SqlCondition",
             emptyRow: {
                 "column": "",
                 "operator": "=",

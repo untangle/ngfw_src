@@ -4,7 +4,7 @@
     "description": "The amount of scanned and blocked email over time.",
     "displayOrder": 301,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,
@@ -16,7 +16,7 @@
     "conditions": [
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

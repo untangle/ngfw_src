@@ -690,12 +690,12 @@ public class AlertManagerImpl implements AlertManager
     {
         final double MAX_AVG_TIME_WARN = 15.0;
 
-        Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        Reporting reports = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
         /* if reports not installed - no events - just return */
-        if (reporting == null)
+        if (reports == null)
             return;
 
-        double avgTime = reporting.getAvgWriteTimePerEvent();
+        double avgTime = reports.getAvgWriteTimePerEvent();
         if (avgTime > MAX_AVG_TIME_WARN) {
             String alertText = "";
             alertText += i18nUtil.tr("Event processing is slow");
@@ -714,12 +714,12 @@ public class AlertManagerImpl implements AlertManager
     {
         final long MAX_TIME_DELAY_SEC = 600; /* 10 minutes */
 
-        Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        Reporting reports = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
         /* if reports not installed - no events - just return */
-        if (reporting == null)
+        if (reports == null)
             return;
 
-        long delay = reporting.getWriteDelaySec();
+        long delay = reports.getWriteDelaySec();
         if (delay > MAX_TIME_DELAY_SEC) {
             String alertText = "";
             alertText += i18nUtil.tr("Event processing is behind");

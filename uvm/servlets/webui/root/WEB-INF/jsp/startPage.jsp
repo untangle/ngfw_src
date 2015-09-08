@@ -75,16 +75,16 @@
     <script type="text/javascript" src="script/untangle-node-webcache/settings.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/untangle-node-ad-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-capture/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-captive-portal/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-virus-blocker-lite/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-idps/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-intrusion-prevention/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-phish-blocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-application-control-lite/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-reports/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spam-blocker-lite/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-web-filter-lite/settings.js?s=${buildStamp}"></script>
 </c:if>
 
 <%--

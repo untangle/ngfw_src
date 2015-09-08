@@ -4,7 +4,7 @@
     "description": "The number of blocked sessions grouped by client.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

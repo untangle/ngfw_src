@@ -4,7 +4,7 @@
     "description": "The number of scanned session grouped by hostname.",
     "displayOrder": 400,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "column": "firewall_rule_index",
             "operator": "is",
             "value": "not null"

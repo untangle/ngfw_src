@@ -4,7 +4,7 @@
     "description": "The amount of phish email over time.",
     "displayOrder": 104,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "msgs",
     "readOnly": true,
@@ -15,7 +15,7 @@
     "conditions": [
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

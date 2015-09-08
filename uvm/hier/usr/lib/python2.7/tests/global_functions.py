@@ -104,21 +104,21 @@ def getDownloadSpeed():
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
-    reporting = Uvm().getUvmContext().nodeManager().node("untangle-node-reporting")
-    if reporting == None:
-        print "WARNING: reporting node not found"
+    reports = Uvm().getUvmContext().nodeManager().node("untangle-node-reports")
+    if reports == None:
+        print "WARNING: reports app not found"
         return None
 
-    reporting.flushEvents()
+    reports.flushEvents()
 
-    reportingManager = reporting.getReportingManagerNew()
+    reportsManager = reports.getReportsManagerNew()
 
-    eventEntry = reportingManager.getEventEntry( eventEntryCategory, eventEntryTitle )
+    eventEntry = reportsManager.getEventEntry( eventEntryCategory, eventEntryTitle )
     if eventEntryTitle == None:
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
 
-    return reportingManager.getEvents( eventEntry, conditions, limit)
+    return reportsManager.getEvents( eventEntry, conditions, limit)
 
 def check_events( events, num_events, *args, **kwargs):
     if events == None:

@@ -4,7 +4,7 @@
     "description": "The number of blocked viruses by Email activity.",
     "displayOrder": 304,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -13,13 +13,13 @@
     "conditions": [
         {
             "column": "virus_blocker_lite_clean",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
             "value": "false"
         },
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

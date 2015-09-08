@@ -20,11 +20,11 @@ class TestEnvironmentTests(unittest2.TestCase):
     # verify reports is installed (needed for event log tests)
     def test_02_reportsIsInstalled(self):
         global uvmContext
-        assert (uvmContext.nodeManager().isInstantiated('untangle-node-reporting'))
+        assert (uvmContext.nodeManager().isInstantiated('untangle-node-reports'))
 
     # verify reports flush events works
     def test_03_reportsFlushEvents(self):
-        reports = uvmContext.nodeManager().node("untangle-node-reporting")
+        reports = uvmContext.nodeManager().node("untangle-node-reports")
         assert (reports != None)
         reports.flushEvents()
 

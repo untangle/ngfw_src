@@ -4,7 +4,7 @@
     "description": "The number of sessions grouped by server (destination) port.",
     "displayOrder": 201,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",

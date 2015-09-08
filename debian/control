@@ -36,8 +36,11 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
-Package: untangle-node-webfilter
+Package: untangle-node-web-filter-lite
 Architecture: all
+Conflicts: untangle-node-webfilter
+Replaces: untangle-node-webfilter
+Provides: untangle-node-webfilter
 Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 Description: Web Filter Lite
  The Web Filter Lite application.
@@ -96,8 +99,11 @@ Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 Description: OpenVPN
  The OpenVPN application.
 
-Package: untangle-node-idps
+Package: untangle-node-intrusion-prevention
 Architecture: all
+Conflicts: untangle-node-idps
+Replaces: untangle-node-idps
+Provides: untangle-node-idps
 Depends: untangle-vm, untangle-snort-config, snort
 Conflicts: untangle-node-ips
 Replaces: untangle-node-ips
@@ -105,8 +111,11 @@ Provides: untangle-node-ips
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
-Package: untangle-node-reporting
+Package: untangle-node-reports
 Architecture: all
+Conflicts: untangle-node-reporting
+Replaces: untangle-node-reporting
+Provides: untangle-node-reporting
 Depends: untangle-vm, untangle-postgresql-config
 Description: Reports
  The Reports application.
@@ -120,8 +129,11 @@ Depends: untangle-vm, untangle-casing-http
 Description: Ad Blocker
  The Ad Blocker application.
 
-Package: untangle-node-capture
+Package: untangle-node-captive-portal
 Architecture: all
+Conflicts: untangle-node-capture
+Replaces: untangle-node-capture
+Provides: untangle-node-capture
 Depends: untangle-vm, untangle-casing-http
 Description: Captive Portal
  The Captive Portal application.
@@ -138,8 +150,11 @@ Depends: untangle-vm, untangle-casing-smtp
 Description: Spam Blocker Base
  The Spam Blocker Base.
 
-Package: untangle-base-webfilter
+Package: untangle-base-web-filter-lite
 Architecture: all
+Conflicts: untangle-node-webfilter
+Replaces: untangle-node-webfilter
+Provides: untangle-node-webfilter
 Depends: untangle-vm, untangle-casing-http
 Description: WebFilter Base
  The WebFilter Base.

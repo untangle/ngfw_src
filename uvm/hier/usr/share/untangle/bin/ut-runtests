@@ -242,9 +242,9 @@ remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;
-if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-reporting')):
-    print "== Installing untangle-node-reporting =="
-    reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiate('untangle-node-reporting', None)
+if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-reports')):
+    print "== Installing untangle-node-reports =="
+    reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiate('untangle-node-reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -279,7 +279,7 @@ while True:
 
 # if reports was added earlier, revert to original settings
 if reportsNode != None:
-    print "== UnInstalling untangle-node-reporting =="
+    print "== UnInstalling untangle-node-reports =="
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""

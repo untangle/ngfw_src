@@ -4341,7 +4341,7 @@ msgstr ""
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:388
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:389
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:894
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/AlertHandler.java:72
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/AlertHandler.java:72
 msgid "Server"
 msgstr ""
 
@@ -18812,7 +18812,7 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:505
 #: /home/dmorris/work/src/openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:522
 #: /home/dmorris/work/src/openvpn/src/com/untangle/node/openvpn/OpenVpnNodeImpl.java:529
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/ReportingNodeImpl.java:459
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/ReportingNodeImpl.java:459
 msgid "Invalid Settings"
 msgstr ""
 
@@ -18927,25 +18927,25 @@ msgstr ""
 msgid "sender"
 msgstr ""
 
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/AlertHandler.java:75
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/AlertHandler.java:75
 msgid "Alert!"
 msgstr ""
 
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/AlertHandler.java:78
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/AlertHandler.java:78
 msgid "An following event occurred on the"
 msgstr ""
 
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/AlertHandler.java:85
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/AlertHandler.java:85
 msgid ""
 "This is an automated message sent because the event matched the configured "
 "Alert Rules."
 msgstr ""
 
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/ReportingNodeImpl.java:459
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/ReportingNodeImpl.java:459
 msgid "has online access, but no password is set."
 msgstr ""
 
-#: /home/dmorris/work/src/reporting/src/com/untangle/node/reporting/AlertEvent.java:68
+#: /home/dmorris/work/src/reporting/src/com.untangle.node.reports/AlertEvent.java:68
 msgid "Alert Event"
 msgstr ""
 

@@ -4,7 +4,7 @@
     "description": "The amount of blocked sessions over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

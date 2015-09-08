@@ -4,7 +4,7 @@
     "description": "The ratio of phish (true) to ham (false)",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "phish_blocker_is_spam",
     "orderDesc": true,
     "units": "msg",
@@ -13,13 +13,13 @@
     "conditions": [
         {
             "column": "phish_blocker_is_spam",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
             "value": "not null"
         },
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

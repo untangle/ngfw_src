@@ -4,7 +4,7 @@
     "description": "The amount of hosts add and removed from the host table over time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hosts",
     "readOnly": true,

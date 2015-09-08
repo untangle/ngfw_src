@@ -427,6 +427,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print "unBlockParameters %s" % unBlockParameters
+        print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock"
         remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
         resultUnBlock = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         

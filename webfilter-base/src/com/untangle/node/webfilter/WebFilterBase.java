@@ -36,9 +36,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     private static final String STAT_BLOCK = "block";
     private static final String STAT_PASS = "pass";
     
-    protected static int deployCount = 0;
-
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
     
     protected final PipelineConnector connector;
     protected final PipelineConnector[] connectors;
@@ -231,7 +229,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     public abstract String getNodeTitle();
 
     public abstract String getName();
-    public abstract String getOldName();
+    public abstract String getAppName();
 
     public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken header )
     {
@@ -283,7 +281,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         WebFilterSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
         
         try {
             readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
@@ -319,8 +317,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     @Override
     protected void preStart()
     {
-        deployWebAppIfRequired(logger);
-
         getDecisionEngine().removeAllUnblockedSites();
         unblockedSitesMonitor.start();
     }
@@ -330,8 +326,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     {
         unblockedSitesMonitor.stop();
         getDecisionEngine().removeAllUnblockedSites();
-
-        unDeployWebAppIfRequired(logger);
     }
 
     protected String generateNonce( WebFilterBlockDetails details )
@@ -342,34 +336,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     protected Token[] generateResponse( String nonce, NodeTCPSession session )
     {
         return replacementGenerator.generateResponse( nonce, session );
-    }
-
-    protected static synchronized void deployWebAppIfRequired( Logger logger )
-    {
-        if ( deployCount == 0 ) {
-            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/webfilter", "webfilter")) {
-                logger.debug("Deployed WebFilter WebApp");
-            } else {
-                logger.error("Unable to deploy WebFilter WebApp");
-            }
-        }
-
-        deployCount++;
-    
-    }
-
-    protected static synchronized void unDeployWebAppIfRequired( Logger logger )
-    {
-        deployCount--;
-        if (deployCount > 0) {
-            return;
-        }
-
-        if (UvmContextFactory.context().tomcatManager().unloadServlet("/webfilter")) {
-            logger.debug("Unloaded WebFilter WebApp");
-        } else {
-            logger.warn("Unable to unload WebFilter WebApp");
-        }
     }
 
     /**
@@ -409,7 +375,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

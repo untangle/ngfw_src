@@ -3,7 +3,7 @@
     "conditions": [
         {
             "column": "application_control_lite_protocol",
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
             "value": "NOT NULL"
         }
@@ -11,7 +11,7 @@
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","application_control_lite_protocol","application_control_lite_blocked"],
     "description": "All sessions scanned by Application Control Lite.",
     "displayOrder": 10,
-    "javaClass": "com.untangle.node.reporting.EventEntry",
+    "javaClass": "com.untangle.node.reports.EventEntry",
     "table": "sessions",
     "title": "All Events",
     "uniqueId": "application-control-lite-EKULKEVEKE"

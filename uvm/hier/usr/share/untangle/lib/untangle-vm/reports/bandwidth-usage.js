@@ -4,7 +4,7 @@
     "description": "The approximate averaged data transfer rate (total, sent, received) over time grouped by session creation time.",
     "displayOrder": 103,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "KB/s",
     "readOnly": true,

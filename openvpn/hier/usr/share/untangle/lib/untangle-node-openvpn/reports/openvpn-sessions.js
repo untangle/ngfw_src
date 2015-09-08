@@ -4,7 +4,7 @@
     "description": "The amount of openvpn sessions over time.",
     "displayOrder": 102,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "sessions",
     "readOnly": true,

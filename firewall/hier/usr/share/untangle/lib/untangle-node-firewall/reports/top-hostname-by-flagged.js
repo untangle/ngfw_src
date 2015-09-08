@@ -4,7 +4,7 @@
     "description": "The number of flagged session grouped by hostname.",
     "displayOrder": 401,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "column": "firewall_flagged",
             "operator": "=",
             "value": "true"

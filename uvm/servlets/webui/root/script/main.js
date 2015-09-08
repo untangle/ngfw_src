@@ -422,35 +422,35 @@ Ext.define("Ung.Main", {
         }
         return rpc.networkSettings;
     },
-    getReportingManagerNew: function(forceReload) {
-        if (forceReload || rpc.reportingManagerNew === undefined) {
+    getReportsManagerNew: function(forceReload) {
+        if (forceReload || rpc.reportsManagerNew === undefined) {
             try {
-                rpc.reportingManagerNew = this.getNodeReporting().getReportingManagerNew();
+                rpc.reportsManagerNew = this.getNodeReports().getReportsManagerNew();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return rpc.reportingManagerNew;
+        return rpc.reportsManagerNew;
     },
-    // get node reporting
-    getNodeReporting: function(forceReload) {
-        if (forceReload || rpc.nodeReporting === undefined) {
+    // get node reports
+    getNodeReports: function(forceReload) {
+        if (forceReload || rpc.nodeReports === undefined) {
             try {
-                rpc.nodeReporting = rpc.nodeManager.node("untangle-node-reporting");
+                rpc.nodeReports = rpc.nodeManager.node("untangle-node-reports");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return rpc.nodeReporting;
+        return rpc.nodeReports;
     },
     // is reports node installed
     isReportsAppInstalled: function(forceReload) {
         if (forceReload || rpc.reportsAppInstalledAndEnabled === undefined) {
             try {
-                if (!Ung.Main.getNodeReporting(true)) {
+                if (!Ung.Main.getNodeReports(true)) {
                     rpc.reportsAppInstalledAndEnabled = false;
                 } else {
-                    if (rpc.nodeReporting.getRunState() == "RUNNING"){
+                    if (rpc.nodeReports.getRunState() == "RUNNING"){
                         rpc.reportsAppInstalledAndEnabled = true;
                     } else {
                         rpc.reportsAppInstalledAndEnabled = false;
@@ -876,7 +876,7 @@ Ext.define("Ung.Main", {
                 Ext.getCmp('policyManagerMenuItem').enable();
             }, this),"untangle-node-policy");
         }
-        if ( node.name == 'untangle-node-reporting') {
+        if ( node.name == 'untangle-node-reports') {
             Ext.getCmp('reportsMenuItem').enable();
         }
     },
@@ -1129,22 +1129,22 @@ Ext.define("Ung.Main", {
                 handler: Ext.bind(function() {
                     var apps = [
                         { displayName: "Web Filter", name: 'untangle-node-sitefilter'},
-                        //{ displayName: "Web Filter Lite", name: 'untangle-node-webfilter'},
+                        //{ displayName: "Web Filter Lite", name: 'untangle-node-web-filter-lite'},
                         { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
                         //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
                         { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
                         //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
-                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish'},
+                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'},
                         //{ displayName: "Web Cache", name: 'untangle-node-webcache'},
                         { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},
                         { displayName: "HTTPS Inspector", name: 'untangle-casing-https'},
                         { displayName: "Application Control", name: 'untangle-node-classd'},
                         //{ displayName: "Application Control Lite", name: 'untangle-node-application-control-lite'},
-                        { displayName: "Captive Portal", name: 'untangle-node-capture'},
+                        { displayName: "Captive Portal", name: 'untangle-node-captive-portal'},
                         { displayName: "Firewall", name: 'untangle-node-firewall'},
-                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-idps'},
+                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-intrusion-prevention'},
                         //{ displayName: "Ad Blocker", name: 'untangle-node-ad-blocker'},
-                        { displayName: "Reports", name: 'untangle-node-reporting'},
+                        { displayName: "Reports", name: 'untangle-node-reports'},
                         { displayName: "Policy Manager", name: 'untangle-node-policy'},
                         { displayName: "Directory Connector", name: 'untangle-node-adconnector'},
                         { displayName: "WAN Failover", name: 'untangle-node-faild'},

@@ -165,10 +165,10 @@ public abstract class NetcapHook implements Runnable
                 }
                 /* lookup the hostname information */
                 HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
-                HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
                 hostname = entry.getHostname();
-                if ((hostname == null || hostname.length() == 0) && reporting != null)
-                    hostname = reporting.lookupHostname( clientAddr );
+                if ((hostname == null || hostname.length() == 0) && reports != null)
+                    hostname = reports.lookupHostname( clientAddr );
                 if ((hostname == null || hostname.length() == 0) && router != null)
                     hostname = router.lookupHostname( clientAddr );
                 if ((hostname == null || hostname.length() == 0))

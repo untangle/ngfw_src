@@ -4,7 +4,7 @@
     "description": "A summary of virus blocking actions for FTP activity.",
     "displayOrder": 4,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
         "sum(case when virus_blocker_lite_clean is not null then 1 else null end::int) as scanned",
         "sum(case when virus_blocker_lite_clean is false then 1 else null end::int) as blocked"

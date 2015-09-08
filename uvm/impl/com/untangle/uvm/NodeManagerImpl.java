@@ -169,6 +169,94 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
+        // rename capture to captive-portal
+        oldName = "untangle-node-capture";
+        newName = "untangle-node-captive-portal";
+        oldNames = new String[] {"com.untangle.node.capture.CaptureNodeImpl",
+                                 "com.untangle.node.capture.CaptureSettings"};
+        newNames = new String[] {"com.untangle.node.captive_portal.CaptivePortalApp",
+                                 "com.untangle.node.captive_portal.CaptivePortalSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+
+            // rewrite .py files
+            UvmContextFactory.context().execManager().execResult("find /usr/share/untangle/web/capture -type f | xargs /bin/sed -e 's/untangle-node-capture/untangle-node-captive-portal/g' -i ");
+
+        }
+
+        // rename reporting to reports
+        oldName = "untangle-node-reporting";
+        newName = "untangle-node-reports";
+        oldNames = new String[] {"com.untangle.node.reporting.ReportingNodeImpl",
+                                 "com.untangle.node.reporting.ReportingSettings",
+                                 "com.untangle.node.reporting.ReportingUser",
+                                 "com.untangle.node.reporting.ReportEntry",
+                                 "com.untangle.node.reporting.EventEntry",
+                                 "com.untangle.node.reporting.SqlCondition",
+                                 "com.untangle.node.reporting.AlertRule",
+                                 "com.untangle.node.reporting.AlertRuleMatcher"
+                                 "com.untangle.node.reporting"
+        };
+        newNames = new String[] {"com.untangle.node.reports.ReportsApp",
+                                 "com.untangle.node.reports.ReportsSettings",
+                                 "com.untangle.node.reports.ReportsUser",
+                                 "com.untangle.node.reports.ReportEntry",
+                                 "com.untangle.node.reports.EventEntry",
+                                 "com.untangle.node.reports.SqlCondition",
+                                 "com.untangle.node.reports.AlertRule",
+                                 "com.untangle.node.reports.AlertRuleMatcher"
+                                 "com.untangle.node.reports"
+        };
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename webfilter to web-filter-lite
+        oldName = "untangle-node-webfilter";
+        newName = "untangle-node-web-filter-lite";
+        oldNames = new String[] {"com.untangle.node.webfilter.WebFilterImpl"};
+        newNames = new String[] {"com.untangle.node.web_filter_lite.WebFilterLiteApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename idps to intrusion-prevention
+        oldName = "untangle-node-idps";
+        newName = "untangle-node-intrusion-prevention";
+        oldNames = new String[] {"com.untangle.node.idps.IdpsNode"};
+        newNames = new String[] {"com.untangle.node.intrusion_prevention.IntrusionPreventionApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
         
     }
         

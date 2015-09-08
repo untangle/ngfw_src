@@ -4,7 +4,7 @@
     "description": "A summary of firewall actions.",
     "displayOrder": 11,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned",
         "sum(firewall_flagged::int) as flagged",
@@ -12,7 +12,7 @@
     ],
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "column": "firewall_rule_index",
             "operator": "is",
             "value": "not null"

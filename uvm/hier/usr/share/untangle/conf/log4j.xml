@@ -226,7 +226,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.reporting">
+  <category name="com.untangle.node.reports">
     <priority value="INFO"/>
   </category>
 

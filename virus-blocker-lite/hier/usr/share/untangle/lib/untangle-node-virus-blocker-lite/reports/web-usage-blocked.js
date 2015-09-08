@@ -4,7 +4,7 @@
     "description": "The amount of blocked web requests over time.",
     "displayOrder": 103,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

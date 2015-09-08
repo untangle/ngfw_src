@@ -4,7 +4,7 @@
     "description": "The amount of detected and blocked ads over time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

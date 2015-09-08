@@ -4,14 +4,14 @@
     "description": "The amount of scanned and blocked sessions over time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,
     "table": "sessions",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reporting.SqlCondition",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
             "column": "bypassed",
             "operator": "=",
             "value": "false"

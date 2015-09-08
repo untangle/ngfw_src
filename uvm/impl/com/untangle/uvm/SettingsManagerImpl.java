@@ -433,10 +433,10 @@ public class SettingsManagerImpl implements SettingsManager
                 if((UvmContextImpl.getInstance().threadRequest() != null) &&
                    (UvmContextImpl.getInstance().threadRequest().get() != null)){
                     username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
-                    HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
                     hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
-                    if( reporting != null && hostname != null){
-                        hostname = reporting.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));
+                    if( reports != null && hostname != null){
+                        hostname = reports.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));
                     }
                     if( hostname == null ){
                         hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();

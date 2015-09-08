@@ -4,7 +4,7 @@
     "description": "The amount of scanned FTP requests over time.",
     "displayOrder": 202,
     "enabled": true,
-    "javaClass": "com.untangle.node.reporting.ReportEntry",
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,
