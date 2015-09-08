@@ -746,18 +746,17 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         if ("untangle-node-ad-blocker".equals(identifier)) return true;
         else if ("untangle-node-virus-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-capture".equals(identifier)) return true;
+        else if ("untangle-node-captive-portal".equals(identifier)) return true;
         else if ("untangle-node-firewall".equals(identifier)) return true;
-        else if ("untangle-node-ips".equals(identifier)) return true;
-        else if ("untangle-node-idps".equals(identifier)) return true;
+        else if ("untangle-node-intrusion-prevention".equals(identifier)) return true;
         else if ("untangle-node-openvpn".equals(identifier)) return true;
         else if ("untangle-node-phish-blocker".equals(identifier)) return true;
         else if ("untangle-node-application-control-lite".equals(identifier)) return true;
         else if ("untangle-node-router".equals(identifier)) return true;
-        else if ("untangle-node-reporting".equals(identifier)) return true;
+        else if ("untangle-node-reports".equals(identifier)) return true;
         else if ("untangle-node-shield".equals(identifier)) return true;
         else if ("untangle-node-spam-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-webfilter".equals(identifier)) return true;
+        else if ("untangle-node-web-filter-lite".equals(identifier)) return true;
 
         if ("untangle-node-license".equals(identifier)) return true;
         else if ("untangle-casing-http".equals(identifier)) return true;
