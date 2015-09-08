@@ -386,7 +386,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildStatus: function() {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
-            // helpXXXSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            helpSource: 'intrusion_prevention_status',
             title: this.i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -435,7 +435,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildRules: function() {
         var me = this;
         this.gridRules = Ext.create('Ung.grid.Panel', {
-            // helpXXXSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            helpSource: 'intrusion_prevention_rules',
             name: 'Rules',
             groupField: 'classtype',
             settingsCmp: this,
@@ -1009,7 +1009,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildVariables: function() {
         var me = this;
         this.gridVariables = Ext.create('Ung.grid.Panel', {
-            //helpXXXSource: 'intrusion_detection_prevention_variables', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist            
+            helpSource: 'intrusion_prevention_variables',
             title: this.i18n._("Variables"),
             name: 'Variables',
             settingsCmp: this,
