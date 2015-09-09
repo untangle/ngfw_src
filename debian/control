@@ -41,7 +41,7 @@ Architecture: all
 Conflicts: untangle-node-webfilter
 Replaces: untangle-node-webfilter
 Provides: untangle-node-webfilter
-Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
+Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter-lite, untangle-webfilter-init
 Description: Web Filter Lite
  The Web Filter Lite application.
 
