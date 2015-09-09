@@ -15,7 +15,7 @@ cp ../gui/po/$1/untangle-install-wizard.po ./$1/
 cp ../../pkgs/untangle-apache2-config/po/$1/untangle-apache2-config.po ./$1/
 cp ../smtp-casing/po/$1/untangle-casing-smtp.po ./$1/
 cp ../virus-base/po/$1/untangle-base-virus.po ./$1/
-cp ../webfilter-base/po/$1/untangle-base-webfilter.po ./$1/
+cp ../web-filter-base-lite/po/$1/untangle-base-web-filter-lite.po ./$1/
 
 for module in untangle-node-phish untangle-node-spam-blocker-lite untangle-node-shield untangle-node-application-control-lite untangle-node-idps untangle-node-firewall untangle-node-reporting untangle-node-openvpn untangle-node-adblocker
 do

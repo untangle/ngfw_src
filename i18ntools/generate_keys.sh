@@ -1,7 +1,7 @@
 #!/bin/bash
-# untangle-node-webfiter and untangle-node-virusblocker are not needed since they rely on base-webfilter and base-virus
+# untangle-node-webfiter and untangle-node-virusblocker are not needed since they rely on base-web-filter-lite and base-virus
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-smtp
-    untangle-base-virus untangle-base-webfilter untangle-node-adblocker
+    untangle-base-virus untangle-base-web-filter-lite untangle-node-adblocker
     untangle-node-firewall
     untangle-node-idps untangle-node-openvpn untangle-node-phish
     untangle-node-application-control-lite untangle-node-reporting
@@ -78,7 +78,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-"untangle-node-application-control-lite"|"untangle-node-idps"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spam-blocker-lite"|"untangle-node-capture"|"untangle-base-webfilter"|"untangle-node-phish"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus")
+"untangle-node-application-control-lite"|"untangle-node-idps"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spam-blocker-lite"|"untangle-node-capture"|"untangle-base-web-filter-lite"|"untangle-node-phish"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus")
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""
@@ -102,7 +102,7 @@ case "$1" in
     find $DIR -type f -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot
 
     # http casing
-    if [ $1 = "untangle-base-webfilter" ] || [ $1 == "untangle-node-sitefilter" ] || [ $1 = "untangle-base-virus" ] ; then
+    if [ $1 = "untangle-base-web-filter-lite" ] || [ $1 == "untangle-node-sitefilter" ] || [ $1 = "untangle-base-virus" ] ; then
         # block page
         xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot $WORK/src/http-casing/src/com/untangle/node/http/BlockPageUtil.java
 

@@ -26,8 +26,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-base-virus)
             d=$work/src/virus-base
             ;;
-        untangle-base-webfilter)
-            d=$work/src/webfilter-base
+        untangle-base-web-filter-lite)
+            d=$work/src/web-filter-base-lite
             ;;
         untangle-casing-smtp)
             d=$work/src/smtp-casing
@@ -111,8 +111,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-classd)
             d=$hades/src/classd
             ;;
-        untangle-node-webfilter)
-            d=$work/src/webfilter
+        untangle-node-web-filter-lite)
+            d=$work/src/web-filter-lite
             ;;
         untangle-system-stats*)
             d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian
