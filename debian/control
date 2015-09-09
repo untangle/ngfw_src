@@ -101,9 +101,9 @@ Description: OpenVPN
 
 Package: untangle-node-intrusion-prevention
 Architecture: all
-Conflicts: untangle-node-idps
-Replaces: untangle-node-idps
-Provides: untangle-node-idps
+Conflicts: untangle-node-idps, untangle-node-ips
+Replaces: untangle-node-idps, untangle-node-ips
+Provides: untangle-node-idps, untangle-node-ips
 Depends: untangle-vm, untangle-snort-config, snort
 Description: Intrusion Prevention
  The Intrusion Prevention application.
