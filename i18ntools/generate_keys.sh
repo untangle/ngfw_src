@@ -1,7 +1,7 @@
 #!/bin/bash
 # untangle-node-webfiter and untangle-node-virusblocker are not needed since they rely on base-web-filter-lite and base-virus
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-smtp
-    untangle-base-virus untangle-base-web-filter-lite untangle-node-adblocker
+    untangle-base-virus untangle-base-web-filter-lite untangle-node-ad-blocker
     untangle-node-firewall
     untangle-node-intrusion-prevention untangle-node-openvpn untangle-node-phish-blocker
     untangle-node-application-control-lite untangle-node-reporting
@@ -78,7 +78,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-adblocker"|"untangle-node-spam-blocker-lite"|"untangle-node-capture"|"untangle-base-web-filter-lite"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-capture"|"untangle-base-web-filter-lite"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus")
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""

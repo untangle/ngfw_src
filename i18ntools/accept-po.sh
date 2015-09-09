@@ -38,8 +38,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-libuvm)
             d=$work/src/uvm
             ;;
-        untangle-node-adblocker)
-            d=$work/src/adblocker
+        untangle-node-ad-blocker)
+            d=$work/src/ad-blocker
             ;;
         untangle-node-adconnector)
             d=$hades/src/adconnector
