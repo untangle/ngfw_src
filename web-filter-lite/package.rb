@@ -5,7 +5,7 @@ deps = []
 http = BuildEnv::SRC['untangle-casing-http']
 deps << http['src']
 
-webfilter_base = BuildEnv::SRC['untangle-base-webfilter']
+webfilter_base = BuildEnv::SRC['untangle-base-web-filter-lite']
 deps << webfilter_base['src']
 
 web_filter_lite = BuildEnv::SRC['untangle-node-web-filter-lite']
