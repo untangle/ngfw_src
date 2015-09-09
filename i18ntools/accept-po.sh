@@ -75,8 +75,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-openvpn)
             d=$work/src/openvpn
             ;;
-        untangle-node-phish)
-            d=$work/src/phish
+        untangle-node-phish-blocker)
+            d=$work/src/phish-blocker
             ;;
         untangle-node-policy)
             d=$hades/src/policy
