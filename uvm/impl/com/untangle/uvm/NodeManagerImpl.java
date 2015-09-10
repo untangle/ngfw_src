@@ -228,7 +228,7 @@ public class NodeManagerImpl implements NodeManager
         // rename webfilter to web-filter-lite
         oldName = "untangle-node-webfilter";
         newName = "untangle-node-web-filter-lite";
-        oldNames = new String[] {"com.untangle.node.webfilter.WebFilterImpl"};
+        oldNames = new String[] {"com.untangle.node.web_filter.WebFilterImpl"};
         newNames = new String[] {"com.untangle.node.web_filter_lite.WebFilterLiteApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);

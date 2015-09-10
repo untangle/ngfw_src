@@ -26,8 +26,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-base-virus)
             d=$work/src/virus-base
             ;;
-        untangle-base-web-filter-lite)
-            d=$work/src/web-filter-base-lite
+        untangle-base-web-filter)
+            d=$work/src/web-filter-base
             ;;
         untangle-casing-smtp)
             d=$work/src/smtp-casing

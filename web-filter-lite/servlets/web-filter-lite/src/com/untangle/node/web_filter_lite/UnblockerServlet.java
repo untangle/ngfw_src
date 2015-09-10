@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.node.webfilter.WebFilter;
+import com.untangle.node.web_filter.WebFilter;
 
 @SuppressWarnings("serial")
 public class UnblockerServlet extends HttpServlet

@@ -12,9 +12,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.node.webfilter.DecisionEngine;
-import com.untangle.node.webfilter.WebFilterBase;
-import com.untangle.node.webfilter.WebFilterSettings;
+import com.untangle.node.web_filter.DecisionEngine;
+import com.untangle.node.web_filter.WebFilterBase;
+import com.untangle.node.web_filter.WebFilterSettings;
 
 public class WebFilterLiteApp extends WebFilterBase
 {

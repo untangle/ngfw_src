@@ -265,12 +265,12 @@ public class AlertManagerImpl implements AlertManager
         /**
          * Check for redundant apps
          */
-        List<Node> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
+        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
         List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
         List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
 
-        for (Node node1 : webfilterList) {
+        for (Node node1 : webFilterList) {
             for (Node node2 : sitefilterList) {
                 if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;

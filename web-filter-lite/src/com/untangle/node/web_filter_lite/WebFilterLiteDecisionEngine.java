@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.UrlMatchingUtil;
-import com.untangle.node.webfilter.DecisionEngine;
-import com.untangle.node.webfilter.WebFilterBase;
+import com.untangle.node.web_filter.DecisionEngine;
+import com.untangle.node.web_filter.WebFilterBase;
 
 /**
  * This class has the Web Filter Lite (web-filter-lite) specifics for the decision engine
