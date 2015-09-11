@@ -482,29 +482,25 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             },
             this.getGroupsColumn(),
             {
+                header: this.i18n._("Download Client"),
+                xtype: 'actioncolumn',
                 width: 120,
-                header: this.i18n._("Download"),
-                dataIndex: null,
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    var out= '';
-                    if(record.data.internalId>=0) {
-                        var id = Ext.id();
-                        Ext.defer(function () {
-                            var button = Ext.widget('button', {
-                                renderTo: id,
-                                text: this.i18n._("Download Client"),
-                                disabled: !this.isNodeRunning,
-                                width: 110,
-                                handler: Ext.bind(function () {
-                                    this.getDistributeWindow().populate(record);
-                                }, this)
-                            });
-                            this.subCmps.push(button);
-                        }, 50, this);
-                        out=  Ext.String.format('<div id="{0}"></div>', id);
-                    }
-                    return out;
-                }, this)
+                items: [{
+                    id: 'certRemove',
+                    tooltip: this.i18n._("Click to download client"),
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        if(this.isNodeRunning && record.data.internalId>=0) {
+                            this.getDistributeWindow().populate(record);
+                        }
+                    }, this),
+                    getClass: Ext.bind(function(value, metadata, record) {
+                        if(this.isNodeRunning && record.data.internalId>=0) {
+                            return 'icon-download-row';
+                        } else {
+                            return 'x-hide-display';
+                        }
+                    }, this)
+                }]
             }]
         });
         this.gridRemoteClients.setRowEditor( Ext.create('Ung.RowEditorWindow',{
