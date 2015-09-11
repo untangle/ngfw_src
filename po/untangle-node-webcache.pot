@@ -1,0 +1,264 @@
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheApp.java:69
+msgid "Cache hits"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheApp.java:70
+msgid "Cache misses"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheApp.java:71
+msgid "User Bypass"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheApp.java:72
+msgid "System Bypass"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheEvent.java:97
+msgid "cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/src/com.untangle.node.web_cache/WebCacheEvent.java:97
+msgid "pages"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:54
+msgid "Summary Report"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:83
+msgid "handled"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:84
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:85
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:274
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:277
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:280
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:283
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:289
+msgid "MB"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:84
+msgid "of traffic, of which "
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:86
+msgid "were obtained directly from the cache"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:117
+msgid "Usage"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:176
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:273
+msgid "Avg Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:177
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:180
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:183
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:186
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:189
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:192
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:197
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:199
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:313
+msgid "Hits"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:179
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:276
+msgid "Max Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:182
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:279
+msgid "Avg Not Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:185
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:282
+msgid "Max Not Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:188
+msgid "Avg Bypassed"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:191
+msgid "Max Bypassed"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:203
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:293
+msgid "Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:205
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:295
+msgid "Not Cached"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:207
+msgid "Bypassed"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:217
+msgid "Usage by size"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:287
+msgid "Size"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:305
+msgid "Web Cache Events"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:311
+msgid "Time"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:314
+msgid "Misses"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:315
+msgid "Bypasses"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:316
+msgid "Systems"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:317
+msgid "Hit Bytes"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/lib/python2.7/reports/node/untangle_node_web-cache.py:318
+msgid "Miss Bytes"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:30
+msgid "Status"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:40
+msgid "Note"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:41
+msgid ""
+"Web Cache provides HTTP content caching.  This status page allows you to "
+"monitor overall cache usage and effectiveness."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:43
+msgid "Statistics"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:49
+msgid "Cache Hit Count"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:53
+msgid "Cache Miss Count"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:57
+msgid "Cache Hit Bytes"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:61
+msgid "Cache Miss Bytes"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:65
+msgid "User Bypass Count"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:69
+msgid "System Bypass Count"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:74
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:78
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:94
+msgid "Clear Cache"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:77
+msgid ""
+"If content stored in the cache somehow becomes stale or corrupt, the cache "
+"can be cleared with the "
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:78
+msgid " button."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:79
+msgid "Caution"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:79
+msgid "Clearing the cache requires restarting the caching engine. "
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:80
+msgid ""
+"This will cause active web sessions to be dropped and may disrupt web "
+"traffic for several seconds."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:87
+msgid "I understand the risks."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:100
+msgid "Error"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:100
+msgid "You must check: "
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:100
+msgid "I understand the risks"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:103
+msgid "Clearing Cache..."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:103
+msgid "Please wait"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:120
+msgid "Cache Bypass"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:121
+msgid ""
+"The Web Cache Bypass List contains host or domain names that should never be "
+"cached."
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:138
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:156
+msgid "Enable"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:143
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:160
+msgid "Hostname"
+msgstr ""
+
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:149
+#: /home/dmorris/hades/src/web-cache/hier/usr/share/untangle/web/webui/script/untangle-node-web-cache/settings.js:161
+msgid "[enter hostname]"
+msgstr ""

@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:11+0200\n"
+"PO-Revision-Date: 2012-01-09 09:17-0800\n"
+"Last-Translator: Audidata Sistemas, S.L. <info@audidata.es>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+msgid "Cache hits"
+msgstr "Contadores Caché"
+
+msgid "Cache misses"
+msgstr "Fallos de caché"
+
+msgid "User Bypass"
+msgstr "Usuarios pasados por alto"
+
+msgid "System Bypass"
+msgstr "Sistema pasado por alto"
+
+msgid "cached"
+msgstr ""
+
+msgid "pages"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "Resumen del informe"
+
+msgid "handled"
+msgstr "manejado"
+
+msgid "MB"
+msgstr "MB"
+
+msgid "of traffic, of which "
+msgstr "del tráfico, de los cuales "
+
+msgid "were obtained directly from the cache"
+msgstr "se obtuvieron directamente de la caché"
+
+msgid "Usage"
+msgstr "Usado"
+
+msgid "Avg Cached"
+msgstr "Media en caché"
+
+msgid "Hits"
+msgstr "Contador"
+
+msgid "Max Cached"
+msgstr "Máxima en caché"
+
+msgid "Avg Not Cached"
+msgstr "Media no en caché"
+
+msgid "Max Not Cached"
+msgstr "Máxima no en caché"
+
+msgid "Avg Bypassed"
+msgstr "Media pasado por alto"
+
+msgid "Max Bypassed"
+msgstr "Máxima pasado por alto"
+
+msgid "Cached"
+msgstr "En caché"
+
+msgid "Not Cached"
+msgstr "No en caché"
+
+msgid "Bypassed"
+msgstr "Pasar por alto"
+
+msgid "Usage by size"
+msgstr "Usado por tamaño"
+
+msgid "Size"
+msgstr "Tamaño"
+
+msgid "Web Cache Events"
+msgstr "Eventos de caché Web"
+
+msgid "Time"
+msgstr "Hora"
+
+msgid "Misses"
+msgstr "Perdidos"
+
+msgid "Bypasses"
+msgstr "Pasados por alto"
+
+msgid "Systems"
+msgstr "Sistemas"
+
+msgid "Hit Bytes"
+msgstr "Bytes de contactos"
+
+msgid "Miss Bytes"
+msgstr "Byte perdídos"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid ""
+"Web Cache provides HTTP content caching.  This status page allows you to "
+"monitor overall cache usage and effectiveness."
+msgstr ""
+"Web Cache ofrece almacenamiento en caché de contenido HTTP.  Esta página de "
+"estado le permite controlar el uso de caché y la eficacia general."
+
+msgid "Statistics"
+msgstr "Estadísticas"
+
+msgid "Cache Hit Count"
+msgstr ""
+
+msgid "Cache Miss Count"
+msgstr ""
+
+msgid "Cache Hit Bytes"
+msgstr "Fallos de caché"
+
+msgid "Cache Miss Bytes"
+msgstr "Fallos de caché"
+
+msgid "User Bypass Count"
+msgstr ""
+
+msgid "System Bypass Count"
+msgstr ""
+
+msgid "Clear Cache"
+msgstr "Borrar la caché"
+
+msgid ""
+"If content stored in the cache somehow becomes stale or corrupt, the cache "
+"can be cleared with the "
+msgstr ""
+"Si el contenido almacenado en la caché de alguna manera se convierte en "
+"obsoleto o está dañado, la caché se puede borrar con el"
+
+msgid " button."
+msgstr " botón."
+
+msgid "Caution"
+msgstr "Precaución"
+
+msgid "Clearing the cache requires restarting the caching engine. "
+msgstr ""
+"Para borrar la memoria caché requiere reiniciar el motor de almacenamiento "
+"en caché."
+
+msgid ""
+"This will cause active web sessions to be dropped and may disrupt web "
+"traffic for several seconds."
+msgstr ""
+"Esto hará que las sesiones activas web se omitan y puede interrumpir el "
+"tráfico web durante varios segundos."
+
+msgid "I understand the risks."
+msgstr "Entiendo los riegos."
+
+msgid "Error"
+msgstr "Error"
+
+msgid "You must check: "
+msgstr ""
+
+msgid "I understand the risks"
+msgstr ""
+
+msgid "Clearing Cache..."
+msgstr "Borrando Caché..."
+
+msgid "Please wait"
+msgstr "Por favor espere"
+
+msgid "Cache Bypass"
+msgstr "Pasar por alto caché"
+
+msgid ""
+"The Web Cache Bypass List contains host or domain names that should never be "
+"cached."
+msgstr ""
+"La caché Web de lista de omisión contiene los nombres de equipo o de dominio "
+"que nunca debe ser almacenado en caché."
+
+msgid "Enable"
+msgstr "Activar"
+
+msgid "Hostname"
+msgstr "Nombre de equipo"
+
+msgid "[enter hostname]"
+msgstr ""
+

@@ -1,0 +1,24 @@
+#! /bin/dash
+
+# Extract the cache directory from the Squid configuration file
+CACHE_DIR=$(awk '/^cache_dir/ {print $3}' /etc/squid/squid.conf)
+
+# Make sure the directory is valid
+if [ ! -d "$CACHE_DIR" ]; then
+  echo "For some reason the cache dir does not exist, giving up"
+  exit 0
+fi
+
+# Stop the Squid process
+/etc/init.d/squid stop
+
+# Wipe everything in the cache directory
+/bin/rm -r -f "$CACHE_DIR"/*
+
+# Regenerate the swap files
+/usr/sbin/squid -z
+
+# Start the Squid process
+/etc/init.d/squid start
+
+exit 0
