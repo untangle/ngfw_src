@@ -1,0 +1,193 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-18 16:03-0700\n"
+"PO-Revision-Date: 2009-05-27 14:26-0700\n"
+"Last-Translator: Marcus Lumpp <ml@m2lp-consult.de>\n"
+"Language-Team: German\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
+"X-Poedit-Language: German\n"
+
+msgid "scored"
+msgstr ""
+
+msgid "as"
+msgstr ""
+
+msgid "Messages received"
+msgstr ""
+
+msgid "Messages passed"
+msgstr ""
+
+msgid "Messages dropped"
+msgstr ""
+
+msgid "Messages marked"
+msgstr ""
+
+msgid "Messages quarantined"
+msgstr ""
+
+msgid "Spam detected"
+msgstr ""
+
+msgid "tarpit"
+msgstr ""
+
+msgid "blocked"
+msgstr ""
+
+msgid "Spam"
+msgstr ""
+
+msgid "Clean"
+msgstr ""
+
+msgid "Hourly Spam Rate"
+msgstr ""
+
+msgid "Spam Rate"
+msgstr ""
+
+msgid "Top Ten Spammed"
+msgstr ""
+
+msgid "Mark"
+msgstr "Markieren"
+
+msgid "Pass"
+msgstr "Zulassen"
+
+msgid "Drop"
+msgstr "Verwerfen"
+
+msgid "Quarantine"
+msgstr "Quarantäne"
+
+msgid "Low (Threshold: 5.0)"
+msgstr "Low (Threshold: 5.0)"
+
+msgid "Medium (Threshold: 4.3)"
+msgstr "Medium (Threshold: 4.3)"
+
+msgid "High (Threshold: 3.5)"
+msgstr "High (Threshold: 3.5)"
+
+msgid "Very High (Threshold: 3.3)"
+msgstr "Very High (Threshold: 3.3)"
+
+msgid "Extreme (Threshold: 3.0)"
+msgstr "Extreme (Threshold: 3.0)"
+
+msgid "Custom"
+msgstr "Benutzerspezifisch"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "SMTP"
+msgstr "SMTP"
+
+msgid "Scan SMTP"
+msgstr "Durchsuche SMTP"
+
+msgid "Strength"
+msgstr "Strenge"
+
+msgid "Strength Value"
+msgstr "Strengewert"
+
+msgid "Strength Value must be a number. Smaller value is higher strength."
+msgstr ""
+"Strengewert muß eine Zahl sein. Niedriger Wert bedeutet höhere Strenge."
+
+msgid "Action"
+msgstr "Aktion"
+
+msgid "Drop Super Spam"
+msgstr ""
+
+msgid "Super Spam Threshold"
+msgstr "Super Spam Schwellwert"
+
+msgid "Advanced SMTP Configuration"
+msgstr ""
+
+msgid "Enable tarpitting"
+msgstr "Aktiviere SMTP Tarpitting"
+
+msgid "Enable greylisting"
+msgstr ""
+
+msgid "Add email headers"
+msgstr ""
+
+msgid "Close connection on scan failure"
+msgstr ""
+
+msgid "Scan outbound (WAN) SMTP"
+msgstr ""
+
+msgid "Allow and ignore TLS sessions"
+msgstr ""
+
+msgid "CPU Load Limit"
+msgstr ""
+
+msgid "Value must be a float."
+msgstr ""
+
+msgid "Concurrent Scan Limit"
+msgstr ""
+
+msgid "Value must be a integer."
+msgstr ""
+
+msgid "Message Size Limit"
+msgstr ""
+
+msgid "Clear Bayes Data"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "This will clear all learned bayesian data!"
+msgstr ""
+
+msgid "Clearing bayes data..."
+msgstr ""
+
+msgid "Please wait"
+msgstr "Bitte warten"
+
+msgid "Failure"
+msgstr ""
+
+msgid "Error: Unable to reset bayes data."
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Bayes data cleared."
+msgstr ""
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid "Spam Blocker last checked for updates"
+msgstr ""
+
+msgid "never"
+msgstr ""
+
+msgid "Spam Blocker was last updated"
+msgstr "Spam Blocker wurde zuletzt aktualisiert am"
