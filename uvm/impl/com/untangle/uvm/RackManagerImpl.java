@@ -139,7 +139,11 @@ public class RackManagerImpl implements RackManager
             installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            License sitefilterLicense = lm.getLicense(License.SITEFILTER);
+            License sitefilterLicense = lm.getLicense(License.WEB_FILTER);
+            if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
+                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+            }
+            sitefilterLicense = lm.getLicense(License.WEB_FILTER_OLDNAME);
             if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
                 installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
@@ -153,7 +157,11 @@ public class RackManagerImpl implements RackManager
             installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            License spamBlockerLicense = lm.getLicense(License.SPAMBLOCKER);
+            License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
+            if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
+                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+            }
+            spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER_OLDNAME);
             if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
                 installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }

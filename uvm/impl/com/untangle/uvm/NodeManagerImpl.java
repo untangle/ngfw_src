@@ -101,6 +101,24 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
+        // rename spamblocker to spam-blocker
+        oldName = "untangle-node-spamblocker";
+        newName = "untangle-node-spam-blocker";
+        oldNames = new String[] {"com.untangle.node.spamblocker.SpamBlockerNode",
+                                 "com.untangle.node.spam."};
+        newNames = new String[] {"com.untangle.node.spam_blocker.SpamBlockerApp",
+                                 "com.untangle.node.spam_blocker."};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
         // rename protofilter to application-control-lite
         oldName = "untangle-node-protofilter";
         newName = "untangle-node-application-control-lite";
@@ -158,8 +176,10 @@ public class NodeManagerImpl implements NodeManager
         // rename clam to virus-blocker-lite
         oldName = "untangle-node-clam";
         newName = "untangle-node-virus-blocker-lite";
-        oldNames = new String[] {"com.untangle.node.clam.ClamNode"};
-        newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp"};
+        oldNames = new String[] {"com.untangle.node.clam.ClamNode",
+                                 "com.untangle.node.virusblocker."        };
+        newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp",
+                                 "com.untangle.node.virus_blocker."};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -171,6 +191,24 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
+        // rename virusblocker to virus-blocker
+        oldName = "untangle-node-virusblocker";
+        newName = "untangle-node-virus-blocker";
+        oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
+                                 "com.untangle.node.virusblocker."        };
+        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
+                                 "com.untangle.node.virus_blocker."};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
         // rename capture to captive-portal
         oldName = "untangle-node-capture";
         newName = "untangle-node-captive-portal";
