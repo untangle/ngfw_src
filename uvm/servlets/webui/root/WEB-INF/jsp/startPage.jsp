@@ -68,10 +68,10 @@
     <script type="text/javascript" src="script/untangle-node-ipsec/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-sitefilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spamblocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spam-blocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-splitd/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-support/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-virusblocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-virus-blocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-webcache/settings.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/untangle-node-ad-blocker/settings.js?s=${buildStamp}"></script>

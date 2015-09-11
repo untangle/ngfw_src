@@ -53,11 +53,11 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-branding)
             d=$hades/src/branding
             ;;
-        untangle-node-spamblocker)
-            d=$hades/src/spamblocker
+        untangle-node-spam-blocker)
+            d=$hades/src/spam-blocker
             ;;
-        untangle-node-virusblocker)
-            d=$hades/src/virusblocker
+        untangle-node-virus-blocker)
+            d=$hades/src/virus-blocker
             ;;
         untangle-node-faild)
             d=$hades/src/faild

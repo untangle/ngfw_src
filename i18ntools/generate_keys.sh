@@ -1,5 +1,5 @@
 #!/bin/bash
-# untangle-node-webfiter and untangle-node-virusblocker are not needed since they rely on base-web-filter and base-virus-blocker
+# untangle-node-webfiter and untangle-node-virus-blocker are not needed since they rely on base-web-filter and base-virus-blocker
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing-smtp
     untangle-base-virus-blocker untangle-base-web-filter untangle-node-ad-blocker
     untangle-node-firewall
@@ -7,7 +7,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-application-control-lite untangle-node-reporting
     untangle-node-spam-blocker-lite
     untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup
-    untangle-node-branding untangle-node-spamblocker
+    untangle-node-branding untangle-node-spam-blocker
     untangle-node-faild untangle-node-ipsec
     untangle-node-policy untangle-node-sitefilter untangle-node-splitd
     untangle-node-support untangle-node-webcache untangle-node-classd
@@ -78,7 +78,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spamblocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""
@@ -110,7 +110,7 @@ case "$1" in
         find $WORK/src/uvm/servlets -type f -name '*.jspx' | xargs ruby $WORK/src/i18ntools/xi18ntags.rb >> ./tmp_keys.pot
     fi
     # spam-blocker-base
-    if [ $1 = "untangle-node-phish-blocker" ] || [ $1 = "untangle-node-spam-blocker-lite" ] || [ $1 = "untangle-node-spamblocker" ] ; then
+    if [ $1 = "untangle-node-phish-blocker" ] || [ $1 = "untangle-node-spam-blocker-lite" ] || [ $1 = "untangle-node-spam-blocker" ] ; then
         xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot $WORK/src/spam-blocker-base/src/com/untangle/node/spam/*.java
     fi
 

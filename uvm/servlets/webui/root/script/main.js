@@ -1130,9 +1130,9 @@ Ext.define("Ung.Main", {
                     var apps = [
                         { displayName: "Web Filter", name: 'untangle-node-sitefilter'},
                         //{ displayName: "Web Filter Lite", name: 'untangle-node-web-filter-lite'},
-                        { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
+                        { displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'},
                         //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
-                        { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
+                        { displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'},
                         //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
                         //{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'},
                         //{ displayName: "Web Cache", name: 'untangle-node-webcache'},

@@ -170,11 +170,11 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spamblocker">
+  <category name="com.untangle.node.spam_blocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.virusblocker">
+  <category name="com.untangle.node.virus_blocker">
     <priority value="INFO"/>
   </category>
 
