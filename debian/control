@@ -136,12 +136,18 @@ Description: Captive Portal
  The Captive Portal application.
 
 Package: untangle-base-virus-blocker
+Conflicts: untangle-base-virus
+Replaces: untangle-base-virus
+Provides: untangle-base-virus
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-casing-smtp
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
 Package: untangle-base-spam-blocker
+Conflicts: untangle-base-spam
+Replaces: untangle-base-spam
+Provides: untangle-base-spam
 Architecture: all
 Depends: untangle-vm, untangle-casing-smtp
 Description: Spam Blocker Base
