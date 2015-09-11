@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.virus.VirusScanner;
-import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.node.virus_blocker.VirusScanner;
+import com.untangle.node.virus_blocker.VirusScannerResult;
 import com.untangle.node.clam.ClamScannerClientLauncher;
 import org.apache.log4j.Logger;
 

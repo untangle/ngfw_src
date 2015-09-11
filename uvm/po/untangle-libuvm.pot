@@ -456,12 +456,12 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4823
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/system.js:1106
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/system.js:1135
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:139
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:177
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:205
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:339
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:365
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:110
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:139
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:177
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:205
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:339
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:365
 #: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:129
 #: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:168
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:202
@@ -535,12 +535,12 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4824
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/system.js:1112
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/system.js:1134
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:116
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:140
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:206
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:345
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:366
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:116
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:140
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:183
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:206
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:345
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:366
 #: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:135
 #: /home/dmorris/work/src/protofilter/hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:169
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:223
@@ -831,8 +831,8 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1422
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2825
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2835
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:402
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:465
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:402
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:465
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:147
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:149
 msgid "Name"
@@ -2617,7 +2617,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/administration.js:265
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:23
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/main.js:723
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:254
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:40
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:296
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:303
@@ -3435,7 +3435,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1122
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1172
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1378
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:445
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:324
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:326
@@ -3715,9 +3715,9 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1105
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1406
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:496
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:562
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:496
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:562
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:85
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:394
 msgid "Subject"
@@ -4315,7 +4315,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/about.js:13
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/about.js:45
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/main.js:747
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:71
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:71
 msgid "About"
 msgstr ""
 
@@ -5607,7 +5607,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3414
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4799
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4844
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:286
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:286
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:67
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:226
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:258
@@ -5628,8 +5628,8 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1959
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2315
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2933
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:498
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:564
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:498
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:564
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:95
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:152
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:156
@@ -5788,8 +5788,8 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3855
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:5403
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:5511
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:401
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:407
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:401
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:407
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:684
 msgid "Advanced"
 msgstr ""
@@ -6045,8 +6045,8 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4801
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:4846
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:334
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:360
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:334
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:360
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:36
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:38
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:245
@@ -6776,7 +6776,7 @@ msgid "Disable processing of HTTP traffic."
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/system.js:523
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:219
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:219
 msgid "FTP"
 msgstr ""
 
@@ -8228,19 +8228,19 @@ msgstr ""
 msgid "Check internet connectivity and the network/DNS configuration."
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:45
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:45
 msgid "Web"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:52
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:52
 msgid "Scan HTTP"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:66
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:66
 msgid "Signatures were last updated"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:67
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:67
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:82
 #: /home/dmorris/work/src/spamassassin/hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:429
 #: /home/dmorris/work/src/spamassassin/hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:431
@@ -8249,60 +8249,60 @@ msgstr ""
 msgid "never"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:83
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:83
 msgid "File Extensions"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:94
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:124
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:94
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:124
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:287
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:330
 msgid "File Type"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:99
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:125
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:99
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:125
 msgid "[enter file type]"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:105
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:172
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:200
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:105
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:133
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:172
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:200
 msgid "Scan"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:151
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:151
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:390
 msgid "MIME Types"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:192
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:162
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:192
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:446
 msgid "MIME Type"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:193
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:167
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:193
 msgid "[enter MIME type]"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:228
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:228
 msgid "Scan FTP"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:302
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:241
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:302
 msgid "Virus Blocker signatures were last updated"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:242
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:303
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:242
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:303
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:104
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:392
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:455
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:608
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:392
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:455
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:608
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:1028
 #: /home/dmorris/hades/src/splitd/hier/usr/lib/python2.7/reports/node/untangle_node_splitd.py:212
 #: /home/dmorris/hades/src/splitd/hier/usr/lib/python2.7/reports/node/untangle_node_splitd.py:299
@@ -8313,37 +8313,37 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:267
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:267
 #: /home/dmorris/work/src/phish/hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:53
 #: /home/dmorris/work/src/spamassassin/hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
 #: /home/dmorris/hades/src/spamblocker/hier/usr/share/untangle/web/webui/script/untangle-node-spamblocker/settings.js:98
 msgid "Scan SMTP"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:288
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:288
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:158
 msgid "pass message"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:289
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:289
 msgid "remove infection"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:290
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:290
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:161
 msgid "block message"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:313
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:377
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:388
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:313
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:377
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:388
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:571
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:582
 msgid "Pass Sites"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:324
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:352
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:324
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:352
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:373
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:403
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:183
@@ -8354,8 +8354,8 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:329
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:353
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:329
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:353
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:379
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:404
 #: /home/dmorris/work/src/webfilter-base/hier/usr/share/untangle/web/webui/script/untangle-base-web-filter/settings.js:188
@@ -8365,11 +8365,11 @@ msgstr ""
 msgid "[enter site]"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:389
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:389
 msgid "Do not scan traffic to the specified sites.  Use caution!"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:408
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/share/untangle/web/webui/script/untangle-base-virus-blocker/settings.js:408
 msgid "Advanced settings require careful configuration."
 msgstr ""
 
@@ -8484,16 +8484,16 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1524
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2304
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2790
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:635
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:637
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:680
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:682
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:726
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:728
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:635
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:637
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:680
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:682
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:726
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:728
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:561
 #: /home/dmorris/work/src/openvpn/hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:261
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:492
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:558
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:492
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:558
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:403
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:321
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:349
@@ -9426,12 +9426,12 @@ msgid "Database"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:630
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:640
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:642
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:685
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:687
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:731
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:733
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:640
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:642
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:685
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:687
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:731
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:733
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:484
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:543
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:563
@@ -13179,13 +13179,13 @@ msgid "Delete All Conditions"
 msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1872
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:632
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:677
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:723
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:632
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:677
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:723
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:558
 #: /home/dmorris/work/src/openvpn/hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:259
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:490
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:556
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:490
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:556
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:402
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:441
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:135
@@ -13341,7 +13341,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1083
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1339
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2630
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:443
 msgid "Client Port"
 msgstr ""
@@ -13397,8 +13397,8 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:894
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2486
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:566
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:530
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:596
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:530
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:596
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:380
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:447
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:108
@@ -13511,9 +13511,9 @@ msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:939
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:949
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:644
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:689
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:644
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:689
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
 msgid "Virus Name"
 msgstr ""
 
@@ -13567,8 +13567,8 @@ msgid "Is Spam"
 msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1483
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:494
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:560
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:494
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:560
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:150
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:154
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:158
@@ -13865,7 +13865,7 @@ msgid "JSON"
 msgstr ""
 
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2820
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
 msgid "File Name"
 msgstr ""
 
@@ -14329,10 +14329,10 @@ msgstr ""
 msgid "No License Found"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:127
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:127
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:54
 #: /home/dmorris/work/src/openvpn/hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:62
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:72
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:72
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:90
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_server.py:61
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:96
@@ -14353,40 +14353,40 @@ msgstr ""
 msgid "Summary Report"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:150
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:150
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:77
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:120
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:120
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:306
 #: /home/dmorris/work/src/adblocker/hier/usr/lib/python2.7/reports/node/untangle_node_adblocker.py:75
 #: /home/dmorris/work/src/firewall/hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:77
 #: /home/dmorris/work/src/shield/hier/usr/lib/python2.7/reports/node/untangle_node_shield.py:70
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:117
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusFtpEvent.java:91
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusHttpEvent.java:77
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusSmtpEvent.java:109
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusFtpEvent.java:91
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusHttpEvent.java:77
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusSmtpEvent.java:109
 #: /home/dmorris/work/src/adblocker/src/com/untangle/node/adblocker/AdBlockerEvent.java:67
 msgid "scanned"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:151
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:151
 msgid "documents and detected and blocked"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:152
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:152
 msgid "viruses"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:236
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:236
 msgid "Viruses Blocked"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:324
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:324
 msgid "Avg Viruses Blocked"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:326
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:329
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:335
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:326
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:329
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:335
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:177
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:180
 #: /home/dmorris/work/src/adblocker/hier/usr/lib/python2.7/reports/node/untangle_node_adblocker.py:184
@@ -14407,48 +14407,48 @@ msgstr ""
 msgid "Blocks"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:328
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:328
 msgid "Max Viruses Blocked"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:339
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:394
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:457
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:516
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:522
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:610
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:618
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:339
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:394
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:457
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:516
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:522
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:610
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:618
 msgid "Viruses"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:348
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:348
 msgid "Top Web Viruses Detected"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:403
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:466
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:523
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:403
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:466
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:523
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
 msgid "Count"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:411
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:411
 msgid "Top Ftp Viruses Detected"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:474
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:474
 msgid "Top Email Viruses Detected"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:531
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:531
 msgid "Top Viruses Detected"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:628
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:628
 msgid "Web Events"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:645
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:645
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/__init__.py:354
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1005
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1059
@@ -14456,8 +14456,8 @@ msgstr ""
 msgid "Url"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:646
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:691
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:646
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:691
 #: /home/dmorris/work/src/adblocker/hier/usr/lib/python2.7/reports/node/untangle_node_adblocker.py:426
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1006
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1060
@@ -14466,19 +14466,19 @@ msgstr ""
 msgid "Server Ip"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:673
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:673
 msgid "Ftp Events"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:719
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:719
 msgid "Mail Events"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:737
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:737
 msgid "Recipient"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:738
+#: /home/dmorris/work/src/virus-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:738
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1007
 #: /home/dmorris/work/src/webfilter-base/hier/usr/lib/python2.7/reports/node/untangle_base_webfilter.py:1061
 #: /home/dmorris/hades/src/sitefilter/hier/usr/lib/python2.7/reports/node/untangle_node_sitefilter.py:301
@@ -14767,135 +14767,135 @@ msgstr ""
 msgid "Login Events"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:122
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:122
 msgid "messages and detected and processed"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:124
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:124
 msgid " messages"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:165
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:165
 msgid "Total Email"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:207
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:207
 msgid "Total"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:207
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:209
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:211
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:387
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:389
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:392
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:395
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:398
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:401
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:207
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:209
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:211
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:387
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:389
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:392
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:395
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:398
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:401
 msgid "Messages"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:271
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:271
 msgid "Mail Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:271
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:274
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:277
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:271
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:274
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:277
 msgid "Messages/hour"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:273
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:276
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:273
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:276
 #, python-format
 msgid "%s Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:311
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:311
 msgid "Hour Of Day"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:312
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:312
 msgid "Emails Per Hour"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:387
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:387
 msgid "Avg Mail Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:389
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:389
 msgid "Max Mail Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:391
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:397
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:391
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:397
 #, python-format
 msgid "Avg %s Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:394
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:400
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:394
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:400
 #, python-format
 msgid "Max %s Rate"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:412
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:412
 msgid "Emails per "
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:484
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:484
 #, python-format
 msgid "%s Events"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:495
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:561
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:495
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:561
 msgid "Msg Sender"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:497
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:563
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:497
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:563
 #: /home/dmorris/work/src/firewall/hier/usr/lib/python2.7/reports/node/untangle_node_firewall.py:573
 #: /home/dmorris/work/src/shield/hier/usr/lib/python2.7/reports/node/untangle_node_shield.py:327
 msgid "Destination Ip"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:499
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:565
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:499
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:565
 msgid "Msg Receiver"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:528
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:594
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:528
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:594
 msgid "Passed"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:529
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:595
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:529
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:595
 msgid "Dropped"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:531
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:597
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:531
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:597
 msgid "Marked"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:532
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:598
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:532
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:598
 msgid "Quarantined"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:533
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:599
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:533
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:599
 msgid "Safelisted"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:534
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:600
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:534
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:600
 msgid "Oversize"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:550
+#: /home/dmorris/work/src/spam-blocker-base/hier/usr/lib/python2.7/reports/node/untangle_base_spam.py:550
 #, python-format
 msgid "%s Events (all)"
 msgstr ""
@@ -18725,29 +18725,29 @@ msgid ""
 "Lists all sessions with the policy manager rack that handled the session."
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusNodeImpl.java:120
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusBlockerBaseApp.java:120
 msgid "Documents scanned"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusNodeImpl.java:121
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusBlockerBaseApp.java:121
 msgid "Documents blocked"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusNodeImpl.java:122
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusBlockerBaseApp.java:122
 msgid "Documents passed"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusNodeImpl.java:123
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusBlockerBaseApp.java:123
 msgid "Infections removed"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusNodeImpl.java:124
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusBlockerBaseApp.java:124
 msgid "Passed by policy"
 msgstr ""
 
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusFtpEvent.java:93
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusHttpEvent.java:79
-#: /home/dmorris/work/src/virus-base/src/com/untangle/node/virus/VirusSmtpEvent.java:111
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusFtpEvent.java:93
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusHttpEvent.java:79
+#: /home/dmorris/work/src/virus-blocker-base/src/com/untangle/node/virus/VirusSmtpEvent.java:111
 msgid "found virus"
 msgstr ""
 
@@ -18769,7 +18769,7 @@ msgid "Sessions blocked"
 msgstr ""
 
 #: /home/dmorris/work/src/protofilter/src/com/untangle/node/protofilter/ProtoFilterLogEvent.java:69
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 #: /home/dmorris/work/src/adblocker/src/com/untangle/node/adblocker/cookies/CookieEvent.java:69
 #: /home/dmorris/work/src/adblocker/src/com/untangle/node/adblocker/AdBlockerEvent.java:66
 #: /home/dmorris/work/src/idps/src/com/untangle/node/idps/IdpsLogEvent.java:64
@@ -18821,40 +18821,40 @@ msgstr ""
 msgid "conflicts with address"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 #: /home/dmorris/hades/src/classd/src/com/untangle/node/classd/ClassDLogEvent.java:143
 msgid "as"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:78
 msgid "Messages received"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:79
 msgid "Messages passed"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:80
 msgid "Messages dropped"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:81
 msgid "Messages marked"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:82
 msgid "Messages quarantined"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:83
 msgid "Spam detected"
 msgstr ""
 

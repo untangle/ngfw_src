@@ -1,7 +1,7 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.phish_blocker.PhishBlockerApp",
-        "nodeBase" : "untangle-base-spam",
+        "nodeBase" : "untangle-base-spam-blocker",
         "name" : "untangle-node-phish-blocker",
         "displayName" : "Phish Blocker",
         "type" : "FILTER",

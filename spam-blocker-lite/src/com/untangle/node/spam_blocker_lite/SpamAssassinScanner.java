@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Date;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.spam.SpamReport;
-import com.untangle.node.spam.SpamScanner;
+import com.untangle.node.spam_blocker.SpamReport;
+import com.untangle.node.spam_blocker.SpamScanner;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 

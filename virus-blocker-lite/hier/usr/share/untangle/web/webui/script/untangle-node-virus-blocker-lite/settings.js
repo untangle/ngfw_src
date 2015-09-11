@@ -1,5 +1,5 @@
 Ext.define('Webui.untangle-node-virus-blocker-lite.settings', {
-    extend:'Webui.untangle-base-virus.settings',
+    extend:'Webui.untangle-base-virus-blocker.settings',
     helpSourceName: 'virus_blocker_lite',
     aboutInfo: null,
     initComponent: function() {

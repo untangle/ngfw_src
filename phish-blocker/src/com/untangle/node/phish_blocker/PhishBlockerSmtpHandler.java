@@ -8,8 +8,8 @@ import java.util.Map;
 import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
-import com.untangle.node.spam.SpamReport;
-import com.untangle.node.spam.SpamSmtpConfig;
+import com.untangle.node.spam_blocker.SpamReport;
+import com.untangle.node.spam_blocker.SpamSmtpConfig;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * Protocol Handler which is called-back as scanable messages
  * are encountered.
  */
-public class PhishBlockerSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
+public class PhishBlockerSmtpHandler extends com.untangle.node.spam_blocker.SpamSmtpHandler
 {
     private static final String MOD_SUB_TEMPLATE = "[PHISH] $MIMEMessage:SUBJECT$";
    

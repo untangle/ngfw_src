@@ -67,7 +67,7 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     
     /**
      * The nodeBase is the name of the base node. For example
-     * clam-node's nodeBase is untangle-base-virus.
+     * clam-node's nodeBase is untangle-base-virus-blocker.
      */
     public String getNodeBase() { return nodeBase; }
     public void setNodeBase( String nodeBase ) { this.nodeBase = nodeBase; }

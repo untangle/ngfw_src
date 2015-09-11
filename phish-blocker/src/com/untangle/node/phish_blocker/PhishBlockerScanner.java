@@ -10,10 +10,10 @@ import java.util.List;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.clam.ClamScannerClientLauncher;
-import com.untangle.node.spam.ReportItem;
-import com.untangle.node.spam.SpamReport;
-import com.untangle.node.spam.SpamScanner;
-import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.node.spam_blocker.ReportItem;
+import com.untangle.node.spam_blocker.SpamReport;
+import com.untangle.node.spam_blocker.SpamScanner;
+import com.untangle.node.virus_blocker.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 public class PhishBlockerScanner implements SpamScanner

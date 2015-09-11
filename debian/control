@@ -50,7 +50,7 @@ Architecture: all
 Conflicts: untangle-node-clam
 Replaces: untangle-node-clam
 Provides: untangle-node-clam
-Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp
+Depends: untangle-vm, untangle-base-virus-blocker, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp
 Description: Virus Blocker Lite
  The Virus Blocker Lite application.
 
@@ -80,7 +80,7 @@ Architecture: all
 Conflicts: untangle-node-spamassassin
 Replaces: untangle-node-spamassassin
 Provides: untangle-node-spamassassin
-Depends: untangle-vm, untangle-base-spam, untangle-casing-smtp, untangle-spamassassin-update
+Depends: untangle-vm, untangle-base-spam-blocker, untangle-casing-smtp, untangle-spamassassin-update
 Description: Spam Blocker Lite
  The Spam Blocker Lite application.
 
@@ -89,7 +89,7 @@ Architecture: all
 Conflicts: untangle-node-phish
 Replaces: untangle-node-phish
 Provides: untangle-node-phish
-Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-smtp
+Depends: untangle-vm, untangle-base-spam-blocker, untangle-clamav-config, untangle-casing-smtp
 Description: Phish Blocker
  The Phish Blocker application.
 
@@ -135,13 +135,13 @@ Depends: untangle-vm, untangle-casing-http
 Description: Captive Portal
  The Captive Portal application.
 
-Package: untangle-base-virus
+Package: untangle-base-virus-blocker
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-casing-smtp
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
-Package: untangle-base-spam
+Package: untangle-base-spam-blocker
 Architecture: all
 Depends: untangle-vm, untangle-casing-smtp
 Description: Spam Blocker Base

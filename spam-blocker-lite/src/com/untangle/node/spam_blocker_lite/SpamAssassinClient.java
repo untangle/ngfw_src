@@ -19,8 +19,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.node.spam.ReportItem;
-import com.untangle.node.spam.SpamReport;
+import com.untangle.node.spam_blocker.ReportItem;
+import com.untangle.node.spam_blocker.SpamReport;
 import org.apache.log4j.Logger;
 
 public final class SpamAssassinClient implements Runnable

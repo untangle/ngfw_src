@@ -5,7 +5,7 @@ package com.untangle.node.virus_blocker_lite;
 
 import java.io.File;
 
-import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.node.virus_blocker.VirusScannerResult;
 
 public class ClamTest
 {

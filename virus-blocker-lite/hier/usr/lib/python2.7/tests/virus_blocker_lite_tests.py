@@ -7,13 +7,13 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from tests.virus_tests import VirusTests
+from tests.virus_blocker_base_tests import VirusBlockerBaseTests
 import test_registry
 
 #
 # Just extends the virus base tests
 #
-class ClamTests(VirusTests):
+class ClamTests(VirusBlockerBaseTests):
 
     @staticmethod
     def nodeName():

@@ -32,43 +32,43 @@ msgstr ""
 msgid "The kind of phish that was found was"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "scored"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamLogEvent.java:245
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamLogEvent.java:245
 msgid "as"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:78
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:78
 msgid "Messages received"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:79
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:79
 msgid "Messages passed"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:80
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:80
 msgid "Messages dropped"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:81
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:81
 msgid "Messages marked"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:82
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:82
 msgid "Messages quarantined"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamNodeImpl.java:83
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamBlockerBaseApp.java:83
 msgid "Spam detected"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "tarpit"
 msgstr ""
 
-#: /home/dmorris/work/src/spam-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
+#: /home/dmorris/work/src/spam-blocker-base/src/com/untangle/node/spam/SpamSmtpTarpitEvent.java:93
 msgid "blocked"
 msgstr ""
 

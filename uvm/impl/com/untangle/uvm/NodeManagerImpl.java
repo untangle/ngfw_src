@@ -86,8 +86,10 @@ public class NodeManagerImpl implements NodeManager
         // rename spamassassin to spam-blocker-lite
         oldName = "untangle-node-spamassassin";
         newName = "untangle-node-spam-blocker-lite";
-        oldNames = new String[] {"com.untangle.node.spamassassin.SpamAssassinNode"};
-        newNames = new String[] {"com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp"};
+        oldNames = new String[] {"com.untangle.node.spamassassin.SpamAssassinNode",
+                                 "com.untangle.node.spam."};
+        newNames = new String[] {"com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp",
+                                 "com.untangle.node.spam_blocker."};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {

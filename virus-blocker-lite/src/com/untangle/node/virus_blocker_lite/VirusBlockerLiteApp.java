@@ -5,9 +5,9 @@ package com.untangle.node.virus_blocker_lite;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
-import com.untangle.node.virus.VirusNodeImpl;
+import com.untangle.node.virus_blocker.VirusBlockerBaseApp;
 
-public class VirusBlockerLiteApp extends VirusNodeImpl
+public class VirusBlockerLiteApp extends VirusBlockerBaseApp
 {
     public VirusBlockerLiteApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {

@@ -1,7 +1,7 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp",
-        "nodeBase" : "untangle-base-spam",
+        "nodeBase" : "untangle-base-spam-blocker",
         "name" : "untangle-node-spam-blocker-lite",
         "displayName" : "Spam Blocker Lite",
         "type" : "FILTER",

@@ -7,13 +7,13 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from tests.spam_tests import SpamTests
+from tests.spam_blocker_base_tests import SpamBlockerBaseTests
 import test_registry
 
 #
 # Just extends the spam base tests
 #
-class SpamBlockerLiteTests(SpamTests):
+class SpamBlockerLiteTests(SpamBlockerBaseTests):
 
     @staticmethod
     def nodeName():

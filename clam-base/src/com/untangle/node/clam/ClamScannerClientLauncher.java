@@ -6,10 +6,10 @@ package com.untangle.node.clam;
 import java.io.File;
 import java.lang.Thread;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.virus.VirusClientContext;
-import com.untangle.node.virus.VirusClientSocket;
-import com.untangle.node.virus.VirusScannerClientLauncher;
-import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.node.virus_blocker.VirusClientContext;
+import com.untangle.node.virus_blocker.VirusClientSocket;
+import com.untangle.node.virus_blocker.VirusScannerClientLauncher;
+import com.untangle.node.virus_blocker.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 public class ClamScannerClientLauncher extends VirusScannerClientLauncher

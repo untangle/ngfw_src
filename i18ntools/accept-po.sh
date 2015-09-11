@@ -23,8 +23,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-apache2-config)
             d=$work/pkgs/untangle-apache2-config
             ;;
-        untangle-base-virus)
-            d=$work/src/virus-base
+        untangle-base-virus-blocker)
+            d=$work/src/virus-blocker-base
             ;;
         untangle-base-web-filter)
             d=$work/src/web-filter-base

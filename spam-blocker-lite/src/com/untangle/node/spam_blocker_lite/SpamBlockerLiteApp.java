@@ -5,13 +5,13 @@ package com.untangle.node.spam_blocker_lite;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.spam.SpamNodeImpl;
-import com.untangle.node.spam.SpamSettings;
+import com.untangle.node.spam_blocker.SpamBlockerBaseApp;
+import com.untangle.node.spam_blocker.SpamSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.DaemonManager;
 
-public class SpamBlockerLiteApp extends SpamNodeImpl
+public class SpamBlockerLiteApp extends SpamBlockerBaseApp
 {
     private final Logger logger = Logger.getLogger(getClass());
 

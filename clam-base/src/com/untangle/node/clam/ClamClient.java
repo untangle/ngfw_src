@@ -14,9 +14,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.node.virus.VirusClient;
-import com.untangle.node.virus.VirusClientContext;
-import com.untangle.node.virus.VirusClientSocket;
+import com.untangle.node.virus_blocker.VirusClient;
+import com.untangle.node.virus_blocker.VirusClientContext;
+import com.untangle.node.virus_blocker.VirusClientSocket;
 import org.apache.log4j.Logger;
 
 public class ClamClient extends VirusClient
