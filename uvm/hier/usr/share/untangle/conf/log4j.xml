@@ -150,7 +150,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.boxbackup">
+  <category name="com.untangle.node.configuration-backup">
     <priority value="INFO"/>
   </category>
 

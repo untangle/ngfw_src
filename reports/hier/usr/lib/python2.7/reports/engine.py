@@ -25,7 +25,7 @@ TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
-MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
+MAIL_REPORT_BLACKLIST = ('untangle-node-configuration-backup',)
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))

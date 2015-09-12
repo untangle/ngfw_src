@@ -60,7 +60,7 @@
 
     <script type="text/javascript" src="script/untangle-node-directory-connector/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-configuration-backup/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-classd/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-faild/settings.js?s=${buildStamp}"></script>

@@ -260,7 +260,7 @@ msgstr ""
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:909
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:1226
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:1366
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:73
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:73
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1107
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/reports.js:1134
 msgid "Please wait"
@@ -512,7 +512,7 @@ msgstr ""
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:249
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2680
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:626
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:121
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:121
 msgid "Description"
 msgstr ""
 
@@ -1601,8 +1601,8 @@ msgstr ""
 #: /home/dmorris/hades/src/faild/hier/usr/share/untangle/web/webui/script/untangle-node-faild/settings.js:109
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:230
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:244
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:45
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:52
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:45
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:52
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:513
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:144
 #: /home/dmorris/hades/src/https-casing/hier/usr/lib/python2.7/reports/untangle_casing_https.py:294
@@ -3022,7 +3022,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1898
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:75
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:596
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:122
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:122
 msgid "Success"
 msgstr ""
 
@@ -8392,7 +8392,7 @@ msgstr ""
 #: /home/dmorris/hades/src/spamblocker/hier/usr/share/untangle/web/webui/script/untangle-node-spamblocker/settings.js:436
 #: /home/dmorris/hades/src/faild/hier/usr/share/untangle/web/webui/script/untangle-node-faild/settings.js:236
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:368
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:56
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:56
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:76
 msgid "Note"
 msgstr ""
@@ -12886,38 +12886,38 @@ msgstr ""
 msgid "Bandwidth Control is now configured and enabled."
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:27
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:27
 msgid "Backup pending."
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:29
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:29
 msgid "Successfully backed up on"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:31
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:31
 msgid "Last backup failed on"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:57
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:57
 msgid ""
 "Configuration Backup automatically saves your configuration settings and "
 "sends them to {0} for safe storage. If you need a backup of your "
 "configuration settings, contact {1}"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:61
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:61
 msgid "Backup Now"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:66
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:66
 msgid "Force an immediate backup now."
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:69
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:69
 msgid "Backup now"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/share/untangle/web/webui/script/untangle-node-boxbackup/settings.js:73
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:73
 msgid "Backing up... This may take a few minutes."
 msgstr ""
 
@@ -13216,7 +13216,7 @@ msgstr ""
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:311
 #: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:426
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:455
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:119
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:119
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:174
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:246
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:320
@@ -14348,7 +14348,7 @@ msgstr ""
 #: /home/dmorris/hades/src/faild/hier/usr/lib/python2.7/reports/node/untangle_node_faild.py:65
 #: /home/dmorris/hades/src/https-casing/hier/usr/lib/python2.7/reports/untangle_casing_https.py:62
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:67
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:49
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:49
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:61
 msgid "Summary Report"
 msgstr ""
@@ -16520,15 +16520,15 @@ msgstr ""
 msgid "Quota Events"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:77
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:77
 msgid "backed up settings"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:78
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:78
 msgid "times"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:113
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:113
 #: /tmp/strings:726
 msgid "Backup Events"
 msgstr ""
@@ -19181,15 +19181,15 @@ msgstr ""
 msgid "Penalty boxed"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/src/com/untangle/node/boxbackup/BoxBackupImpl.java:199
+#: /home/dmorris/hades/src/configuration-backup/src/com/untangle/node/configuration-backup/BoxBackupImpl.java:199
 msgid "Successfully uploaded."
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/src/com/untangle/node/boxbackup/BoxBackupEvent.java:54
+#: /home/dmorris/hades/src/configuration-backup/src/com/untangle/node/configuration-backup/BoxBackupEvent.java:54
 msgid "successfully backed up"
 msgstr ""
 
-#: /home/dmorris/hades/src/boxbackup/src/com/untangle/node/boxbackup/BoxBackupEvent.java:56
+#: /home/dmorris/hades/src/configuration-backup/src/com/untangle/node/configuration-backup/BoxBackupEvent.java:56
 msgid "failed to back up"
 msgstr ""
 

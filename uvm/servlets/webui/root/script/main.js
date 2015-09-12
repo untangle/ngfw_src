@@ -1151,7 +1151,7 @@ Ext.define("Ung.Main", {
                         { displayName: "WAN Balancer", name: 'untangle-node-splitd'},
                         { displayName: "IPsec VPN", name: 'untangle-node-ipsec'},
                         { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
-                        { displayName: "Configuration Backup", name: 'untangle-node-boxbackup'},
+                        { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
                         { displayName: "Branding Manager", name: 'untangle-node-branding'},
                         { displayName: "Live Support", name: 'untangle-node-support'}];
 

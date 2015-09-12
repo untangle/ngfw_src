@@ -47,8 +47,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-bandwidth)
             d=$hades/src/bandwidth
             ;;
-        untangle-node-boxbackup)
-            d=$hades/src/boxbackup
+        untangle-node-configuration-backup)
+            d=$hades/src/configuration-backup
             ;;
         untangle-node-branding)
             d=$hades/src/branding
