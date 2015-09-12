@@ -453,12 +453,12 @@ public class CaptivePortalApp extends NodeBase
                 // we always want to use the stripped version internally
                 username = strippedUsername;
 
-                DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                if (adconnector == null) break;
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                if (directoryConnector == null) break;
 
                 // try the original first and then the stripped version
-                isAuthenticated = adconnector.activeDirectoryAuthenticate(originalUsername, password);
-                if (isAuthenticated == false) isAuthenticated = adconnector.activeDirectoryAuthenticate(strippedUsername, password);
+                isAuthenticated = directoryConnector.activeDirectoryAuthenticate(originalUsername, password);
+                if (isAuthenticated == false) isAuthenticated = directoryConnector.activeDirectoryAuthenticate(strippedUsername, password);
             } catch (Exception e) {
                 logger.warn("Active Directory failure", e);
                 isAuthenticated = false;
@@ -476,8 +476,8 @@ public class CaptivePortalApp extends NodeBase
 
         case RADIUS:
             try {
-                DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                if (adconnector != null) isAuthenticated = adconnector.radiusAuthenticate(username, password);
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.radiusAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Radius Directory failure", e);
                 isAuthenticated = false;

@@ -631,14 +631,14 @@ public class RuleMatcher implements JSONString, Serializable
             if (username == null)
                 return false;
 
-            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
             boolean isMemberOf = false;
 
-            if (adconnector.isMemberOf( username, value )) 
+            if (directoryConnector.isMemberOf( username, value )) 
                 isMemberOf = true;
 
             if (!isMemberOf) {
-                List<String> groupNames = adconnector.memberOf( username );
+                List<String> groupNames = directoryConnector.memberOf( username );
                 for (String groupName : groupNames) {
                     if ( this.groupMatcher.isMatch( groupName ) ) {
                         isMemberOf = true;
@@ -956,14 +956,14 @@ public class RuleMatcher implements JSONString, Serializable
             if ( attachment == null )
                 return false;
 
-            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
             boolean isMemberOf = false;
 
-            if (adconnector.isMemberOf( attachment, value )) 
+            if (directoryConnector.isMemberOf( attachment, value )) 
                 isMemberOf = true;
 
             if (!isMemberOf) {
-                List<String> groupNames = adconnector.memberOf( attachment );
+                List<String> groupNames = directoryConnector.memberOf( attachment );
                 for (String groupName : groupNames) {
                     if ( this.groupMatcher.isMatch(groupName) ) {
                         isMemberOf = true;

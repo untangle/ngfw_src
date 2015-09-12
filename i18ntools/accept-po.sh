@@ -41,8 +41,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-ad-blocker)
             d=$work/src/ad-blocker
             ;;
-        untangle-node-adconnector)
-            d=$hades/src/adconnector
+        untangle-node-directory-connector)
+            d=$hades/src/directory-connector
             ;;
         untangle-node-bandwidth)
             d=$hades/src/bandwidth

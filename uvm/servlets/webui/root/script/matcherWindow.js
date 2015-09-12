@@ -334,7 +334,7 @@ Ext.define('Ung.UserEditorWindow', {
         var data = [];
         var node;
         try {
-            node = rpc.nodeManager.node("untangle-node-adconnector");
+            node = rpc.nodeManager.node("untangle-node-directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -478,7 +478,7 @@ Ext.define('Ung.GroupEditorWindow', {
         var data = [];
         var node;
         try {
-            node = rpc.nodeManager.node("untangle-node-adconnector");
+            node = rpc.nodeManager.node("untangle-node-directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }

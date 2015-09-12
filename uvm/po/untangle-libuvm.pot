@@ -176,11 +176,11 @@ msgstr ""
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1029
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
 #: /home/dmorris/work/src/spamassassin/hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:694
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:705
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:713
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:724
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:735
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:694
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:705
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:713
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:724
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:735
 #: /home/dmorris/hades/src/spamblocker/hier/usr/share/untangle/web/webui/script/untangle-node-spamblocker/settings.js:411
 msgid "Warning"
 msgstr ""
@@ -584,9 +584,9 @@ msgstr ""
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:412
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:294
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:330
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:126
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:222
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:534
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:126
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:222
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:534
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:372
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:402
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:403
@@ -624,7 +624,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:2537
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:405
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:45
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:430
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:430
 msgid "Type"
 msgstr ""
 
@@ -1015,8 +1015,8 @@ msgstr ""
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:142
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:221
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:223
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:338
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:406
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:338
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:406
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:157
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:164
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:246
@@ -1225,7 +1225,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/window.js:458
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/window.js:542
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:820
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:41
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:41
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:294
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/wizard.js:45
 msgid "Cancel"
@@ -1393,7 +1393,7 @@ msgstr ""
 #: /home/dmorris/work/src/firewall/hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:20
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:157
 #: /home/dmorris/hades/src/classd/hier/usr/share/untangle/web/webui/script/untangle-node-classd/settings.js:29
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:642
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:642
 #: /home/dmorris/hades/src/https-casing/hier/usr/share/untangle/web/webui/script/untangle-casing-https/settings.js:24
 #: /home/dmorris/hades/src/bandwidth/hier/usr/share/untangle/web/webui/script/untangle-node-bandwidth/settings.js:43
 #: /home/dmorris/hades/src/policy/hier/usr/share/untangle/web/webui/script/untangle-node-policy/settings.js:20
@@ -2648,7 +2648,7 @@ msgstr ""
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:388
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:464
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:643
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:651
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:651
 msgid "Password"
 msgstr ""
 
@@ -2755,7 +2755,7 @@ msgstr ""
 #: /home/dmorris/work/src/openvpn/hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:937
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:559
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:614
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:269
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:269
 #: /home/dmorris/work/src/protofilter/hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:568
 #: /home/dmorris/work/src/openvpn/hier/usr/lib/python2.7/reports/node/untangle_node_openvpn.py:263
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:530
@@ -3356,7 +3356,7 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/administration.js:1492
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/administration.js:1551
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/extOverrides.js:242
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:694
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:694
 msgid "The port must be an integer number between {0} and {1}."
 msgstr ""
 
@@ -3469,7 +3469,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/usr/share/untangle/mod_python/auth/index.py:155
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:123
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:595
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:38
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:38
 msgid "Login"
 msgstr ""
 
@@ -3752,12 +3752,12 @@ msgid "The port must be an integer number between 1 and 65535."
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1172
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:705
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:705
 msgid "A Password must be specified if a Login is specified."
 msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/email.js:1181
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:713
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:713
 msgid "A Login must be specified if a Password is specified."
 msgstr ""
 
@@ -4815,7 +4815,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1548
 #: /home/dmorris/work/src/uvm/api/com/untangle/uvm/node/QuotaEvent.java:82
 #: /home/dmorris/work/src/capture/src/com/untangle/node/capture/CaptureUserEvent.java:90
-#: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:75
+#: /home/dmorris/hades/src/directory-connector/src/com/untangle/node/directory-connector/LoginEvent.java:75
 #: /home/dmorris/hades/src/faild/src/com/untangle/node/faild/FailDEvent.java:82
 #: /home/dmorris/hades/src/https-casing/src/com/untangle/node/https/HttpsLogEvent.java:88
 msgid "unknown"
@@ -4921,9 +4921,9 @@ msgstr ""
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:958
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:1600
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:1967
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:110
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:189
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:507
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:110
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:189
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:507
 msgid "Disabled"
 msgstr ""
 
@@ -5536,7 +5536,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/config/network.js:3146
 #: /home/dmorris/work/src/uvm/servlets/setup/root/script/setup.js:736
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:354
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:354
 msgid "(optional)"
 msgstr ""
 
@@ -5744,7 +5744,7 @@ msgstr ""
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:814
 #: /home/dmorris/work/pkgs/untangle-apache2-config/files/var/www/script/tableConfig.js:1534
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:99
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:429
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:429
 msgid "Domain"
 msgstr ""
 
@@ -7381,7 +7381,7 @@ msgstr ""
 
 #: /home/dmorris/work/src/uvm/servlets/webui/root/script/main.js:176
 #: /home/dmorris/work/src/capture/hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:129
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:40
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:40
 msgid "Logout"
 msgstr ""
 
@@ -9459,7 +9459,7 @@ msgstr ""
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:892
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:440
 #: /home/dmorris/work/src/capture/src/com/untangle/node/capture/CaptureUserEvent.java:93
-#: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:78
+#: /home/dmorris/hades/src/directory-connector/src/com/untangle/node/directory-connector/LoginEvent.java:78
 msgid "User"
 msgstr ""
 
@@ -9566,7 +9566,7 @@ msgid "Update filters"
 msgstr ""
 
 #: /home/dmorris/work/src/adblocker/hier/usr/share/untangle/web/webui/script/untangle-node-adblocker/settings.js:113
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:39
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:39
 msgid "Update"
 msgstr ""
 
@@ -10172,7 +10172,7 @@ msgid ""
 msgstr ""
 
 #: /home/dmorris/work/src/idps/hier/usr/share/untangle/web/webui/script/untangle-node-idps/settings.js:293
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:222
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:222
 msgid "Updates"
 msgstr ""
 
@@ -11098,7 +11098,7 @@ msgid "(The private network attached to the remote side of the tunnel)"
 msgstr ""
 
 #: /home/dmorris/hades/src/ipsec/hier/usr/share/untangle/web/webui/script/untangle-node-ipsec/settings.js:577
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:591
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:591
 msgid "Shared Secret"
 msgstr ""
 
@@ -11596,165 +11596,165 @@ msgstr ""
 msgid "Support Information"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:37
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:37
 msgid "User map window"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:71
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:71
 #: /tmp/strings:699 /tmp/strings:702 /tmp/strings:705
 msgid "name"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:79
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:79
 msgid "groups"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:98
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:103
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:98
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:103
 msgid "User Notification API"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:107
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:107
 msgid ""
 "The User Notification API provides a web-based app/API to allow scripts and "
 "agents to update the server's username-to-IP address mapping in order to "
 "properly identify users for Policy Manager, Reports, and other applications."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:138
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:138
 msgid "Secret Key"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:151
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:151
 msgid "(blank means no secret key is required)"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:161
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:161
 msgid "Download User Notification Login Script"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:177
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:181
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:177
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:181
 msgid "Active Directory Connector"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:186
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:186
 msgid ""
 "This allows the server to connect to an {0}Active Directory Server{1} for "
 "authentication for Captive Portal."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:230
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:230
 msgid "AD Server IP or Hostname"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:244
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:244
 msgid "Secure"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:285
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:285
 msgid "Authentication Login"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:300
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:300
 msgid "Authentication Password"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:318
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:318
 msgid "Active Directory Domain"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:331
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:331
 msgid "(FQDN such as mycompany.local)"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:341
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:341
 msgid "Active Directory Organization"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:363
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:363
 msgid ""
 "The {0}Active Directory Test{1} can be used to test that your settings above "
 "are correct."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:367
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:438
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:442
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:367
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:438
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:442
 msgid "Active Directory Test"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:390
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:447
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:390
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:447
 msgid "Active Directory Users"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:414
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:414
 msgid "User Group Map"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:423
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:423
 msgid "Refresh group cache"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:438
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:670
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:438
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:670
 msgid "Testing..."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:447
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:447
 msgid "Obtaining users..."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:458
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:477
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:458
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:477
 msgid "[any]"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:494
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:498
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:494
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:498
 msgid "RADIUS Connector"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:504
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:504
 msgid ""
 "This allows your server to connect to a {0}RADIUS Server{1} in order to "
 "identify users for use by Captive Portal and L2TP/IPsec."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:542
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:542
 msgid "RADIUS Server IP or Hostname"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:557
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:557
 msgid "Authentication Port"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:574
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:574
 msgid "Accounting Port"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:608
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:608
 msgid "MS-CHAP v2"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:609
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:609
 msgid "MS-CHAP v1"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:610
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:610
 msgid "CHAP"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:611
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:611
 msgid "PAP"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:616
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:616
 msgid "Authentication Method"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:629
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:629
 msgid ""
 "<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, "
 "the best security and compatibility is achieved by selecting MS-CHAP v2.  "
@@ -11762,23 +11762,23 @@ msgid ""
 "in the Windows Network Policy Server."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:636
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:636
 msgid ""
 "The {0}Radius Test{1} can be used to test that your settings above are "
 "correct."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:659
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:670
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:677
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:659
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:670
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:677
 msgid "RADIUS Test"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:724
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:724
 msgid "A Hostname must be specified if Login or Password are specified."
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/share/untangle/web/webui/script/untangle-node-adconnector/settings.js:735
+#: /home/dmorris/hades/src/directory-connector/hier/usr/share/untangle/web/webui/script/untangle-node-directory-connector/settings.js:735
 msgid "A Search Base must be specified."
 msgstr ""
 
@@ -13214,7 +13214,7 @@ msgstr ""
 #: /home/dmorris/hades/src/sitefilter/hier/usr/lib/python2.7/reports/node/untangle_node_sitefilter.py:338
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:887
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:311
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:426
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:426
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:455
 #: /home/dmorris/hades/src/boxbackup/hier/usr/lib/python2.7/reports/node/untangle_node_boxbackup.py:119
 #: /home/dmorris/hades/src/policy/hier/usr/lib/python2.7/reports/node/untangle_node_policy.py:174
@@ -14344,7 +14344,7 @@ msgstr ""
 #: /home/dmorris/hades/src/splitd/hier/usr/lib/python2.7/reports/node/untangle_node_splitd.py:63
 #: /home/dmorris/hades/src/classd/hier/usr/lib/python2.7/reports/node/untangle_node_classd.py:63
 #: /home/dmorris/hades/src/webcache/hier/usr/lib/python2.7/reports/node/untangle_node_webcache.py:54
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:66
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:66
 #: /home/dmorris/hades/src/faild/hier/usr/lib/python2.7/reports/node/untangle_node_faild.py:65
 #: /home/dmorris/hades/src/https-casing/hier/usr/lib/python2.7/reports/untangle_casing_https.py:62
 #: /home/dmorris/hades/src/bandwidth/hier/usr/lib/python2.7/reports/node/untangle_node_bandwidth.py:67
@@ -14955,7 +14955,7 @@ msgid "You have successfully logged out"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:122
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:99
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:99
 msgid "processed"
 msgstr ""
 
@@ -14964,12 +14964,12 @@ msgid "user login events"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:249
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:190
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:190
 msgid "Average Logins"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:252
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:193
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:193
 msgid "Max Logins"
 msgstr ""
 
@@ -14990,27 +14990,27 @@ msgid "Max Timeouts"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:267
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:195
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:195
 msgid "Average Logouts"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:270
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:198
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:198
 msgid "Max Logouts"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:273
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:207
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:207
 msgid "Average Events"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:276
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:210
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:210
 msgid "Max Events"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:289
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:220
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:220
 msgid "Logins"
 msgstr ""
 
@@ -15024,7 +15024,7 @@ msgid "Timeouts"
 msgstr ""
 
 #: /home/dmorris/work/src/capture/hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:295
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:224
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:224
 msgid "Logouts"
 msgstr ""
 
@@ -15194,7 +15194,7 @@ msgid "Text detail of the event"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/share/untangle/bin/reporting-generate-docs-column-names.py:77
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:428
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:428
 msgid "Login Name"
 msgstr ""
 
@@ -15457,7 +15457,7 @@ msgid "Max Sessions/Min"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:466
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:233
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:233
 msgid "Total Sessions"
 msgstr ""
 
@@ -15479,7 +15479,7 @@ msgid "Administrative Login Events"
 msgstr ""
 
 #: /home/dmorris/work/src/reporting/hier/usr/lib/python2.7/reports/node/untangle_vm.py:594
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:427
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:427
 msgid "Client IP"
 msgstr ""
 
@@ -16346,59 +16346,59 @@ msgstr ""
 msgid "Systems"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:100
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:100
 msgid "AD events"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:132
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:132
 #: /tmp/strings:688
 msgid "AD Events"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:201
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:201
 msgid "Average Updates"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:204
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:204
 msgid "Max Updates"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:217
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:420
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:217
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:420
 msgid "AD Authentication Events"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:274
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:276
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:284
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:409
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:274
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:276
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:284
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:409
 msgid "Identified"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:277
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:279
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:285
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:411
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:277
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:279
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:285
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:411
 msgid "Unidentified"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:291
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:291
 msgid "Top AD Users"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:391
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:391
 msgid "Average Identified"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:394
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:394
 msgid "Max Identified"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:396
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:396
 msgid "Average Unidentified"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/hier/usr/lib/python2.7/reports/node/untangle_node_adconnector.py:399
+#: /home/dmorris/hades/src/directory-connector/hier/usr/lib/python2.7/reports/node/untangle_node_directory-connector.py:399
 msgid "Max Unidentified"
 msgstr ""
 
@@ -19066,15 +19066,15 @@ msgstr ""
 msgid "pages"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:72
+#: /home/dmorris/hades/src/directory-connector/src/com/untangle/node/directory-connector/LoginEvent.java:72
 msgid "logged in to"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:73
+#: /home/dmorris/hades/src/directory-connector/src/com/untangle/node/directory-connector/LoginEvent.java:73
 msgid "refreshed on"
 msgstr ""
 
-#: /home/dmorris/hades/src/adconnector/src/com/untangle/node/adconnector/LoginEvent.java:74
+#: /home/dmorris/hades/src/directory-connector/src/com/untangle/node/directory-connector/LoginEvent.java:74
 msgid "logged out of"
 msgstr ""
 

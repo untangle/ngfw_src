@@ -6,7 +6,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-intrusion-prevention untangle-node-openvpn untangle-node-phish-blocker
     untangle-node-application-control-lite untangle-node-reporting
     untangle-node-spam-blocker-lite
-    untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup
+    untangle-node-directory-connector untangle-node-bandwidth untangle-node-boxbackup
     untangle-node-branding untangle-node-spam-blocker
     untangle-node-faild untangle-node-ipsec
     untangle-node-policy untangle-node-sitefilter untangle-node-splitd
@@ -78,7 +78,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-https"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""

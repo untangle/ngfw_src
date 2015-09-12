@@ -76,14 +76,14 @@ def createADSettings():
             "OUFilter": "",
             "domain": "adtesting.int",
             "enabled": True,
-            "javaClass": "com.untangle.node.adconnector.ActiveDirectorySettings",
+            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
             "superuser": "ATSadmin",
             "superuserPass": "passwd"},
         "radiusSettings": {
             "port": 1812, 
             "enabled": False, 
             "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.adconnector.RadiusSettings", 
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": radiusHost, 
             "sharedSecret": "mysharedsecret"}
     }
@@ -96,14 +96,14 @@ def createRadiusSettings():
             "LDAPPort": "389", 
             "OUFilter": "", 
             "domain": "adtest.metaloft.com", 
-            "javaClass": "com.untangle.node.adconnector.ActiveDirectorySettings", 
+            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": adHost, 
             "superuser": "Administrator"}, 
         "radiusSettings": {
             "port": 1812, 
             "enabled": True, 
             "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.adconnector.RadiusSettings", 
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": radiusHost, 
             "sharedSecret": "chakas"}
         }
@@ -133,7 +133,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def nodeNameAD():
-        return "untangle-node-adconnector"
+        return "untangle-node-directory-connector"
 
     @staticmethod
     def vendorName():

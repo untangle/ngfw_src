@@ -58,7 +58,7 @@
     <script type="text/javascript" src="script/untangle-base-web-filter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus-blocker/settings.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-directory-connector/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>

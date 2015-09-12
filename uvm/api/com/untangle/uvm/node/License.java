@@ -19,8 +19,8 @@ public class License implements Serializable
     /**
      * Various Names
      */
-    public static final String DIRECTORY_CONNECTOR = "untangle-node-adconnector";
-    public static final String DIRECTORY_CONNECTOR_OLDNAME = "untangle-node-adconnector";
+    public static final String DIRECTORY_CONNECTOR = "untangle-node-directory-connector";
+    public static final String DIRECTORY_CONNECTOR_OLDNAME = "untangle-node-directory-connector";
     public static final String BANDWIDTH_CONTROL = "untangle-node-bandwidth-control";
     public static final String BANDWIDTH_CONTROL_OLDNAME = "untangle-node-bandwidth";
     public static final String CONFIGURATION_BACKUP = "untangle-node-configuration-backup";

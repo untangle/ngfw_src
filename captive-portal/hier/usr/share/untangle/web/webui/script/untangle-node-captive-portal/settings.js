@@ -352,9 +352,9 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             elem.setValue(this.settings.authenticationType);
             elem.clearDirty();
         }, this);
-        var adconnectorLicense;
+        var directoryConnectorLicense;
         try {
-            adconnectorLicense = rpc.nodeManager.node("untangle-node-adconnector") && Ung.Main.getLicenseManager().getLicense("untangle-node-adconnector");
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-adconnector") || Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -398,7 +398,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     style: {marginTop: '15px'},
                     boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
-                    disabled: !adconnectorLicense,
+                    disabled: !directoryConnectorLicense,
                     name: "authenticationType",
                     inputValue: "RADIUS",
                     listeners: {
@@ -407,7 +407,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     }
                 },{
                     xtype: "button",
-                    disabled: !adconnectorLicense,
+                    disabled: !directoryConnectorLicense,
                     name: "configureRadiusServer",
                     text: this.i18n._("Configure RADIUS"),
                     handler: Ext.bind(this.configureRadius, this )
@@ -416,7 +416,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     style: {marginTop: '15px'},
                     boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
-                    disabled: !adconnectorLicense,
+                    disabled: !directoryConnectorLicense,
                     name: "authenticationType",
                     inputValue: "ACTIVE_DIRECTORY",
                     listeners: {
@@ -425,7 +425,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     }
                 },{
                     xtype: "button",
-                    disabled: !adconnectorLicense,
+                    disabled: !directoryConnectorLicense,
                     name: "configureActiveDirectory",
                     text: this.i18n._("Configure Active Directory"),
                     handler: Ext.bind(this.configureActiveDirectory, this )
@@ -1044,7 +1044,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
     },
     // There is no way to select the radius tab because we don't get a callback once the settings are loaded.
     configureRadius: function() {
-        var node = Ung.Main.getNode("untangle-node-adconnector");
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
@@ -1053,7 +1053,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
         }
     },
     configureActiveDirectory: function() {
-        var node = Ung.Main.getNode("untangle-node-adconnector");
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {

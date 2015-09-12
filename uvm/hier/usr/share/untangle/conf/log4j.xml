@@ -142,7 +142,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.adconnector">
+  <category name="com.untangle.node.directory_connector">
     <priority value="INFO"/>
   </category>
 
