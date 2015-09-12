@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: /home/dmorris/hades/src/configuration-backup/src/com.untangle.node.configuration_backup/BoxBackupImpl.java:199
+msgid "Successfully uploaded."
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/src/com.untangle.node.configuration_backup/BoxBackupEvent.java:54
+msgid "successfully backed up"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/src/com.untangle.node.configuration_backup/BoxBackupEvent.java:56
+msgid "failed to back up"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:49
+msgid "Summary Report"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:77
+msgid "backed up settings"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:78
+msgid "times"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:113
+msgid "Backup Events"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:119
+msgid "Time"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:121
+msgid "Description"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/lib/python2.7/reports/node/untangle_node_configuration-backup.py:122
+msgid "Success"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:27
+msgid "Backup pending."
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:29
+msgid "Successfully backed up on"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:31
+msgid "Last backup failed on"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:45
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:52
+msgid "Status"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:56
+msgid "Note"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:57
+msgid ""
+"Configuration Backup automatically saves your configuration settings and "
+"sends them to {0} for safe storage. If you need a backup of your "
+"configuration settings, contact {1}"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:61
+msgid "Backup Now"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:66
+msgid "Force an immediate backup now."
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:69
+msgid "Backup now"
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:73
+msgid "Backing up... This may take a few minutes."
+msgstr ""
+
+#: /home/dmorris/hades/src/configuration-backup/hier/usr/share/untangle/web/webui/script/untangle-node-configuration-backup/settings.js:73
+msgid "Please wait"
+msgstr ""

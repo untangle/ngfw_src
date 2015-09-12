@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
+"PO-Revision-Date: 2009-11-02 02:15-0800\n"
+"Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+msgid "Successfully uploaded."
+msgstr ""
+
+msgid "successfully backed up"
+msgstr ""
+
+msgid "failed to back up"
+msgstr ""
+
+msgid "Summary Report"
+msgstr ""
+
+msgid "backed up settings"
+msgstr ""
+
+msgid "times"
+msgstr ""
+
+msgid "Backup Events"
+msgstr "Evènements de Sauvegarde"
+
+msgid "Time"
+msgstr "Heure"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Success"
+msgstr "Succès"
+
+msgid "Backup pending."
+msgstr ""
+
+msgid "Successfully backed up on"
+msgstr "sauvegardé(e)s avec succès"
+
+msgid "Last backup failed on"
+msgstr ""
+
+msgid "Status"
+msgstr "Etat"
+
+msgid "Note"
+msgstr "Note"
+
+msgid ""
+"Configuration Backup automatically saves your configuration settings and "
+"sends them to {0} for safe storage. If you need a backup of your "
+"configuration settings, contact {1}"
+msgstr ""
+"La Configuration de Sauvegarde sauvegarde automatiquement vos paramètres de "
+"configuration et les envoie à {0} pour un stockage sûr. Si vous avez besoin "
+"d'une sauvegarde de votre configuration, veuillez contacter {1} à {2}"
+
+msgid "Backup Now"
+msgstr ""
+
+msgid "Force an immediate backup now."
+msgstr ""
+
+msgid "Backup now"
+msgstr ""
+
+msgid "Backing up... This may take a few minutes."
+msgstr ""
+
+msgid "Please wait"
+msgstr ""
+

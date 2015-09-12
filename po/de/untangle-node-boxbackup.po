@@ -1,0 +1,85 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-15 22:34-0700\n"
+"PO-Revision-Date: 2012-08-20 12:35+0200\n"
+"Last-Translator: Rainer <rh@webkom.net>\n"
+"Language-Team: German\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.6\n"
+"X-Poedit-Language: German\n"
+
+msgid "Successfully uploaded."
+msgstr "Erfolgreich hochgeladen"
+
+msgid "successfully backed up"
+msgstr ""
+
+msgid "failed to back up"
+msgstr ""
+
+msgid "Summary Report"
+msgstr "Zusammenfassender Bericht"
+
+msgid "backed up settings"
+msgstr "gesicherte Einstellungen"
+
+msgid "times"
+msgstr "times"
+
+msgid "Backup Events"
+msgstr "Ereignisse Sicherung"
+
+msgid "Time"
+msgstr "Uhrzeit"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Success"
+msgstr "erfolgreich"
+
+msgid "Backup pending."
+msgstr ""
+
+msgid "Successfully backed up on"
+msgstr "erfolgreich gesichert"
+
+msgid "Last backup failed on"
+msgstr ""
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid ""
+"Configuration Backup automatically saves your configuration settings and "
+"sends them to {0} for safe storage. If you need a backup of your "
+"configuration settings, contact {1}"
+msgstr ""
+"Die Sicherung der Konfiguration speichert die Einstellungen und sendet diese "
+"nach {0} zur sicheren Aufbewahrung. Wer ein Backup der "
+"Konfigurationseinstellungen benötigt wendet sich an {1}"
+
+msgid "Backup Now"
+msgstr ""
+
+msgid "Force an immediate backup now."
+msgstr ""
+
+msgid "Backup now"
+msgstr ""
+
+msgid "Backing up... This may take a few minutes."
+msgstr ""
+
+msgid "Please wait"
+msgstr ""
+
