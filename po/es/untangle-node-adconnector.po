@@ -1,0 +1,308 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"PO-Revision-Date: 2012-01-09 04:14-0800\n"
+"Last-Translator: Audidata Sistemas, S.L. <info@audidata.es>\n"
+"Language-Team: Spanish <dprussi@qwest.net>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
+"X-Poedit-Language: Spanish\n"
+
+msgid "logged in to"
+msgstr ""
+
+msgid "refreshed on"
+msgstr ""
+
+msgid "logged out of"
+msgstr ""
+
+msgid "unknown"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Login"
+msgstr "Iniciar sesión"
+
+msgid "Update"
+msgstr "Actualizar"
+
+msgid "Logout"
+msgstr "Desconectarse"
+
+msgid "Summary Report"
+msgstr "Resumen del informe"
+
+msgid "processed"
+msgstr "procesados"
+
+msgid "AD events"
+msgstr "Eventos de anuncios"
+
+msgid "AD Events"
+msgstr "Eventos de anuncios"
+
+msgid "Average Logins"
+msgstr "Promedios de inicios de sesión"
+
+msgid "Max Logins"
+msgstr "Máximo inicios de sesión"
+
+msgid "Average Logouts"
+msgstr "Promedios de cierres de sesión"
+
+msgid "Max Logouts"
+msgstr "Máximo cierres de sesión"
+
+msgid "Average Updates"
+msgstr "Promedio de actualizaciones"
+
+msgid "Max Updates"
+msgstr "Máximo de actualizaciones"
+
+msgid "Average Events"
+msgstr "Promedio de eventos"
+
+msgid "Max Events"
+msgstr "Máximo de eventos"
+
+msgid "AD Authentication Events"
+msgstr ""
+
+msgid "Logins"
+msgstr "Inicios de sesión"
+
+msgid "Updates"
+msgstr "Actualizaciones"
+
+msgid "Logouts"
+msgstr "Cierres de sesión"
+
+msgid "Total Sessions"
+msgstr "Total de sesiones"
+
+msgid "Identified"
+msgstr "Identificado"
+
+msgid "Unidentified"
+msgstr "No identificado"
+
+msgid "Top AD Users"
+msgstr "Principales usuarios"
+
+msgid "Sessions"
+msgstr "Sesiones"
+
+msgid "Average Identified"
+msgstr "Promedio identificados"
+
+msgid "Max Identified"
+msgstr "Máximo identificados"
+
+msgid "Average Unidentified"
+msgstr "Promedio no identificados"
+
+msgid "Max Unidentified"
+msgstr "Máximo no identificados"
+
+msgid "Time"
+msgstr "Hora"
+
+msgid "Client IP"
+msgstr "IP Cliente"
+
+msgid "Login Name"
+msgstr "Nombre de usuario"
+
+msgid "Domain"
+msgstr "Dominio"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "User map window"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "groups"
+msgstr ""
+
+msgid "User Notification API"
+msgstr ""
+
+msgid ""
+"The User Notification API provides a web-based app/API to allow scripts and "
+"agents to update the server's username-to-IP address mapping in order to "
+"properly identify users for Policy Manager, Reports, and other applications."
+msgstr ""
+
+msgid "Disabled"
+msgstr "Desactivado"
+
+msgid "Enabled"
+msgstr "Activado"
+
+msgid "Secret Key"
+msgstr ""
+
+msgid "(blank means no secret key is required)"
+msgstr ""
+
+msgid "Download User Notification Login Script"
+msgstr ""
+
+msgid "Active Directory Connector"
+msgstr "Conector de directorio activo"
+
+msgid ""
+"This allows the server to connect to an {0}Active Directory Server{1} for "
+"authentication for Captive Portal."
+msgstr ""
+
+msgid "AD Server IP or Hostname"
+msgstr "Dirección IP o nombre de equipo o servidor de directorio activo"
+
+msgid "Secure"
+msgstr ""
+
+msgid "Port"
+msgstr "Puerto"
+
+msgid "Authentication Login"
+msgstr "Inicio de sesión de autenticación"
+
+msgid "Authentication Password"
+msgstr "Contraseña de autenticación"
+
+msgid "Active Directory Domain"
+msgstr "Dominio del directorio activo"
+
+msgid "(FQDN such as mycompany.local)"
+msgstr "(FQDN como miempresa.local)"
+
+msgid "Active Directory Organization"
+msgstr "Organización de directorio activo"
+
+msgid "(optional)"
+msgstr "(opcional)"
+
+msgid ""
+"The {0}Active Directory Test{1} can be used to test that your settings above "
+"are correct."
+msgstr ""
+"Puede usar la {0}Prueba de directorio activo{1} para averiguar si la "
+"configuración anterior es correcta."
+
+msgid "Active Directory Test"
+msgstr "Prueba de directorio activo"
+
+msgid "Active Directory Users"
+msgstr "Usuarios de directorio activo"
+
+msgid "User Group Map"
+msgstr ""
+
+msgid "Refresh group cache"
+msgstr ""
+
+msgid "Testing..."
+msgstr "Probando..."
+
+msgid "Obtaining users..."
+msgstr ""
+
+msgid "[any]"
+msgstr "[cualquiera]"
+
+msgid "RADIUS Connector"
+msgstr "Conector RADIUS"
+
+msgid ""
+"This allows your server to connect to a {0}RADIUS Server{1} in order to "
+"identify users for use by Captive Portal and L2TP/IPsec."
+msgstr ""
+
+msgid "RADIUS Server IP or Hostname"
+msgstr "Dirección IP o nombre de equipo del servidor RADIUS"
+
+msgid "Authentication Port"
+msgstr ""
+
+msgid "Accounting Port"
+msgstr ""
+
+msgid "Shared Secret"
+msgstr "Secreto compartido"
+
+msgid "MS-CHAP v2"
+msgstr ""
+
+msgid "MS-CHAP v1"
+msgstr ""
+
+msgid "CHAP"
+msgstr "CHAP"
+
+msgid "PAP"
+msgstr "PAP"
+
+msgid "Authentication Method"
+msgstr "Metodo de autenticación"
+
+msgid ""
+"<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, "
+"the best security and compatibility is achieved by selecting MS-CHAP v2.  "
+"Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients "
+"in the Windows Network Policy Server."
+msgstr ""
+
+msgid ""
+"The {0}Radius Test{1} can be used to test that your settings above are "
+"correct."
+msgstr ""
+"Puede usar la {0}Prueba de directorio activo{1} para averiguar si la "
+"configuración anterior es correcta."
+
+msgid "Username"
+msgstr "Nombre de usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "RADIUS Test"
+msgstr "Prueba RADIUS"
+
+msgid "Warning"
+msgstr "Advertencia"
+
+msgid "The port must be an integer number between {0} and {1}."
+msgstr "El puerto debe ser un número entero entre {0} y {1}."
+
+msgid "A Password must be specified if a Login is specified."
+msgstr ""
+
+msgid "A Login must be specified if a Password is specified."
+msgstr ""
+
+msgid "A Hostname must be specified if Login or Password are specified."
+msgstr ""
+
+msgid "A Search Base must be specified."
+msgstr ""
+
+
+
+

@@ -1,0 +1,303 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-16 11:26-0700\n"
+"PO-Revision-Date: 2013-01-05 13:16+0200\n"
+"Last-Translator: Jupiter Technology Corp\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "logged in to"
+msgstr ""
+
+msgid "refreshed on"
+msgstr ""
+
+msgid "logged out of"
+msgstr ""
+
+msgid "unknown"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Login"
+msgstr "ログイン"
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Logout"
+msgstr "ログアウト"
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "processed"
+msgstr "処理"
+
+msgid "AD events"
+msgstr "ADイベント"
+
+msgid "AD Events"
+msgstr "ADイベント"
+
+msgid "Average Logins"
+msgstr "平均ログイン"
+
+msgid "Max Logins"
+msgstr "最大ログイン"
+
+msgid "Average Logouts"
+msgstr "平均ログアウト"
+
+msgid "Max Logouts"
+msgstr "最大ログアウト"
+
+msgid "Average Updates"
+msgstr "平均更新"
+
+msgid "Max Updates"
+msgstr "最大更新"
+
+msgid "Average Events"
+msgstr "平均イベント"
+
+msgid "Max Events"
+msgstr "最大イベント"
+
+msgid "AD Authentication Events"
+msgstr "AD認証イベント"
+
+msgid "Logins"
+msgstr "ログイン"
+
+msgid "Updates"
+msgstr "更新"
+
+msgid "Logouts"
+msgstr "ログアウト"
+
+msgid "Total Sessions"
+msgstr "総セッション数"
+
+msgid "Identified"
+msgstr "識別"
+
+msgid "Unidentified"
+msgstr "不明"
+
+msgid "Top AD Users"
+msgstr "トップADユーザ"
+
+msgid "Sessions"
+msgstr "セッション"
+
+msgid "Average Identified"
+msgstr "平均識別"
+
+msgid "Max Identified"
+msgstr "最大識別"
+
+msgid "Average Unidentified"
+msgstr "平均不明"
+
+msgid "Max Unidentified"
+msgstr "最大不明"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "Client IP"
+msgstr "クライアントIPアドレス"
+
+msgid "Login Name"
+msgstr "ログイン名"
+
+msgid "Domain"
+msgstr "ドメイン"
+
+msgid "Type"
+msgstr "タイプ"
+
+msgid "User map window"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "groups"
+msgstr ""
+
+msgid "User Notification API"
+msgstr ""
+
+msgid ""
+"The User Notification API provides a web-based app/API to allow scripts and "
+"agents to update the server's username-to-IP address mapping in order to "
+"properly identify users for Policy Manager, Reports, and other applications."
+msgstr ""
+
+msgid "Disabled"
+msgstr "無効"
+
+msgid "Enabled"
+msgstr "有効"
+
+msgid "Secret Key"
+msgstr ""
+
+msgid "(blank means no secret key is required)"
+msgstr ""
+
+msgid "Download User Notification Login Script"
+msgstr ""
+
+msgid "Active Directory Connector"
+msgstr "Active Directory連携"
+
+msgid ""
+"This allows the server to connect to an {0}Active Directory Server{1} for "
+"authentication for Captive Portal."
+msgstr ""
+
+msgid "AD Server IP or Hostname"
+msgstr "ADサーバIPまたはホスト名"
+
+msgid "Secure"
+msgstr ""
+
+msgid "Port"
+msgstr "ポート"
+
+msgid "Authentication Login"
+msgstr "認証ログイン"
+
+msgid "Authentication Password"
+msgstr "認証パスワード"
+
+msgid "Active Directory Domain"
+msgstr "Active Directory ドメイン"
+
+msgid "(FQDN such as mycompany.local)"
+msgstr "(mycompany.localのようなFQDN)"
+
+msgid "Active Directory Organization"
+msgstr "Active Directory 組織"
+
+msgid "(optional)"
+msgstr "（任意）"
+
+msgid ""
+"The {0}Active Directory Test{1} can be used to test that your settings above "
+"are correct."
+msgstr "{0}Active Directory テスト{1} 上の設定が正しいかテストします。"
+
+msgid "Active Directory Test"
+msgstr "Active Directoryテスト"
+
+msgid "Active Directory Users"
+msgstr "Active Directoryユーザ"
+
+msgid "User Group Map"
+msgstr "ユーザーグループマップ"
+
+msgid "Refresh group cache"
+msgstr "グループキャッシュを更新"
+
+msgid "Testing..."
+msgstr "テスト中..."
+
+msgid "Obtaining users..."
+msgstr ""
+
+msgid "[any]"
+msgstr "[any]"
+
+msgid "RADIUS Connector"
+msgstr "RADIUS連携"
+
+msgid ""
+"This allows your server to connect to a {0}RADIUS Server{1} in order to "
+"identify users for use by Captive Portal and L2TP/IPsec."
+msgstr ""
+
+msgid "RADIUS Server IP or Hostname"
+msgstr "RADIUSサーバのIPまたははホスト名"
+
+msgid "Authentication Port"
+msgstr ""
+
+msgid "Accounting Port"
+msgstr ""
+
+msgid "Shared Secret"
+msgstr "共有暗号鍵"
+
+msgid "MS-CHAP v2"
+msgstr ""
+
+msgid "MS-CHAP v1"
+msgstr ""
+
+msgid "CHAP"
+msgstr "CHAP"
+
+msgid "PAP"
+msgstr "PAP"
+
+msgid "Authentication Method"
+msgstr "認証方式"
+
+msgid ""
+"<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, "
+"the best security and compatibility is achieved by selecting MS-CHAP v2.  "
+"Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients "
+"in the Windows Network Policy Server."
+msgstr ""
+
+msgid ""
+"The {0}Radius Test{1} can be used to test that your settings above are "
+"correct."
+msgstr "{0}Radius テスト{1} 上の設定が正しいかテストします。"
+
+msgid "Username"
+msgstr "ユーザ名"
+
+msgid "Password"
+msgstr "パスワード"
+
+msgid "RADIUS Test"
+msgstr "RADIUSテスト"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "The port must be an integer number between {0} and {1}."
+msgstr "ポートは{0}と{1}の間の整数でなければなりません"
+
+msgid "A Password must be specified if a Login is specified."
+msgstr ""
+
+msgid "A Login must be specified if a Password is specified."
+msgstr ""
+
+msgid "A Hostname must be specified if Login or Password are specified."
+msgstr ""
+
+msgid "A Search Base must be specified."
+msgstr ""
+
+
+
+

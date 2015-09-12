@@ -1,0 +1,293 @@
+msgid "logged in to"
+msgstr "Xlogged in toX"
+
+msgid "refreshed on"
+msgstr "Xrefreshed onX"
+
+msgid "logged out of"
+msgstr "Xlogged out ofX"
+
+msgid "unknown"
+msgstr "XunknownX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "Login"
+msgstr "XLoginX"
+
+msgid "Update"
+msgstr "XUpdateX"
+
+msgid "Logout"
+msgstr "XLogoutX"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
+
+msgid "processed"
+msgstr "XprocessedX"
+
+msgid "AD events"
+msgstr "XAD eventsX"
+
+msgid "AD Events"
+msgstr "XAD EventsX"
+
+msgid "Average Logins"
+msgstr "XAverage LoginsX"
+
+msgid "Max Logins"
+msgstr "XMax LoginsX"
+
+msgid "Average Logouts"
+msgstr "XAverage LogoutsX"
+
+msgid "Max Logouts"
+msgstr "XMax LogoutsX"
+
+msgid "Average Updates"
+msgstr "XAverage UpdatesX"
+
+msgid "Max Updates"
+msgstr "XMax UpdatesX"
+
+msgid "Average Events"
+msgstr "XAverage EventsX"
+
+msgid "Max Events"
+msgstr "XMax EventsX"
+
+msgid "AD Authentication Events"
+msgstr "XAD Authentication EventsX"
+
+msgid "Logins"
+msgstr "XLoginsX"
+
+msgid "Updates"
+msgstr "XUpdatesX"
+
+msgid "Logouts"
+msgstr "XLogoutsX"
+
+msgid "Total Sessions"
+msgstr "XTotal SessionsX"
+
+msgid "Identified"
+msgstr "XIdentifiedX"
+
+msgid "Unidentified"
+msgstr "XUnidentifiedX"
+
+msgid "Top AD Users"
+msgstr "XTop AD UsersX"
+
+msgid "Sessions"
+msgstr "XSessionsX"
+
+msgid "Average Identified"
+msgstr "XAverage IdentifiedX"
+
+msgid "Max Identified"
+msgstr "XMax IdentifiedX"
+
+msgid "Average Unidentified"
+msgstr "XAverage UnidentifiedX"
+
+msgid "Max Unidentified"
+msgstr "XMax UnidentifiedX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "Client IP"
+msgstr "XClient IPX"
+
+msgid "Login Name"
+msgstr "XLogin NameX"
+
+msgid "Domain"
+msgstr "XDomainX"
+
+msgid "Type"
+msgstr "XTypeX"
+
+msgid "User map window"
+msgstr "XUser map windowX"
+
+msgid "Cancel"
+msgstr "XCancelX"
+
+msgid "name"
+msgstr "XnameX"
+
+msgid "groups"
+msgstr "XgroupsX"
+
+msgid "User Notification API"
+msgstr "XUser Notification APIX"
+
+msgid ""
+"The User Notification API provides a web-based app/API to allow scripts and "
+"agents to update the server's username-to-IP address mapping in order to "
+"properly identify users for Policy Manager, Reports, and other applications."
+msgstr "XThe User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.X"
+
+msgid "Disabled"
+msgstr "XDisabledX"
+
+msgid "Enabled"
+msgstr "XEnabledX"
+
+msgid "Secret Key"
+msgstr "XSecret KeyX"
+
+msgid "(blank means no secret key is required)"
+msgstr "X(blank means no secret key is required)X"
+
+msgid "Download User Notification Login Script"
+msgstr "XDownload User Notification Login ScriptX"
+
+msgid "Active Directory Connector"
+msgstr "XActive Directory ConnectorX"
+
+msgid ""
+"This allows the server to connect to an {0}Active Directory Server{1} for "
+"authentication for Captive Portal."
+msgstr "XThis allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.X"
+
+msgid "AD Server IP or Hostname"
+msgstr "XAD Server IP or HostnameX"
+
+msgid "Secure"
+msgstr "XSecureX"
+
+msgid "Port"
+msgstr "XPortX"
+
+msgid "Authentication Login"
+msgstr "XAuthentication LoginX"
+
+msgid "Authentication Password"
+msgstr "XAuthentication PasswordX"
+
+msgid "Active Directory Domain"
+msgstr "XActive Directory DomainX"
+
+msgid "(FQDN such as mycompany.local)"
+msgstr "X(FQDN such as mycompany.local)X"
+
+msgid "Active Directory Organization"
+msgstr "XActive Directory OrganizationX"
+
+msgid "(optional)"
+msgstr "X(optional)X"
+
+msgid ""
+"The {0}Active Directory Test{1} can be used to test that your settings above "
+"are correct."
+msgstr "XThe {0}Active Directory Test{1} can be used to test that your settings above are correct.X"
+
+msgid "Active Directory Test"
+msgstr "XActive Directory TestX"
+
+msgid "Active Directory Users"
+msgstr "XActive Directory UsersX"
+
+msgid "User Group Map"
+msgstr "XUser Group MapX"
+
+msgid "Refresh group cache"
+msgstr "XRefresh group cacheX"
+
+msgid "Testing..."
+msgstr "XTesting...X"
+
+msgid "Obtaining users..."
+msgstr "XObtaining users...X"
+
+msgid "[any]"
+msgstr "X[any]X"
+
+msgid "RADIUS Connector"
+msgstr "XRADIUS ConnectorX"
+
+msgid ""
+"This allows your server to connect to a {0}RADIUS Server{1} in order to "
+"identify users for use by Captive Portal and L2TP/IPsec."
+msgstr "XThis allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.X"
+
+msgid "RADIUS Server IP or Hostname"
+msgstr "XRADIUS Server IP or HostnameX"
+
+msgid "Authentication Port"
+msgstr "XAuthentication PortX"
+
+msgid "Accounting Port"
+msgstr "XAccounting PortX"
+
+msgid "Shared Secret"
+msgstr "XShared SecretX"
+
+msgid "MS-CHAP v2"
+msgstr "XMS-CHAP v2X"
+
+msgid "MS-CHAP v1"
+msgstr "XMS-CHAP v1X"
+
+msgid "CHAP"
+msgstr "XCHAPX"
+
+msgid "PAP"
+msgstr "XPAPX"
+
+msgid "Authentication Method"
+msgstr "XAuthentication MethodX"
+
+msgid ""
+"<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, "
+"the best security and compatibility is achieved by selecting MS-CHAP v2.  "
+"Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients "
+"in the Windows Network Policy Server."
+msgstr "X<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.X"
+
+msgid ""
+"The {0}Radius Test{1} can be used to test that your settings above are "
+"correct."
+msgstr "XThe {0}Radius Test{1} can be used to test that your settings above are correct.X"
+
+msgid "Username"
+msgstr "XUsernameX"
+
+msgid "Password"
+msgstr "XPasswordX"
+
+msgid "RADIUS Test"
+msgstr "XRADIUS TestX"
+
+msgid "Warning"
+msgstr "XWarningX"
+
+msgid "The port must be an integer number between {0} and {1}."
+msgstr "XThe port must be an integer number between {0} and {1}.X"
+
+msgid "A Password must be specified if a Login is specified."
+msgstr "XA Password must be specified if a Login is specified.X"
+
+msgid "A Login must be specified if a Password is specified."
+msgstr "XA Login must be specified if a Password is specified.X"
+
+msgid "A Hostname must be specified if Login or Password are specified."
+msgstr "XA Hostname must be specified if Login or Password are specified.X"
+
+msgid "A Search Base must be specified."
+msgstr "XA Search Base must be specified.X"
+
+
+
+
+
+
+
+
+
