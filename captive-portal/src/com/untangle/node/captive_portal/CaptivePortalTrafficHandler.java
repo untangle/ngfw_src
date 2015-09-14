@@ -45,7 +45,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // if the https inspector has attached the session manager then
         // we can allow the traffic since it will come later as http
-        if (sessreq.globalAttachment(NodeSession.KEY_HTTPS_SERVER_MANAGER) != null) {
+        if (sessreq.globalAttachment(NodeSession.KEY_SSL_SERVER_MANAGER) != null) {
             sessreq.release();
             return;
         }
@@ -91,7 +91,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             return;
         }
 
-        // the traffic needs to be blocked but we have detected HTTPS traffic
+        // the traffic needs to be blocked but we have detected SSL traffic
         // so we add a special global attachment that the https handler uses
         // to detect sessions that need https-->http redirection
         if (sessreq.getNewServerPort() == 443) {

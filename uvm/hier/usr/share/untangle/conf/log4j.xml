@@ -194,7 +194,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.https">
+  <category name="com.untangle.node.ssl">
     <priority value="INFO"/>
   </category>
 

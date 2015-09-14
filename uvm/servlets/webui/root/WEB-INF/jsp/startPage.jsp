@@ -64,7 +64,7 @@
     <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-classd/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-faild/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-casing-https/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-casing-ssl/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-ipsec/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-sitefilter/settings.js?s=${buildStamp}"></script>

@@ -96,9 +96,9 @@ public class RuleMatcher implements JSONString, Serializable
             SITEFILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             SITEFILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
             SITEFILTER_FLAGGED, /* boolean */
-            HTTPS_SNI_HOSTNAME, /* "microsoft.com" */
-            HTTPS_SUBJECT_DN, /* "CN=dropbox.com" */
-            HTTPS_ISSUER_DN, /* "O=Thawte" */
+            SSL_SNI_HOSTNAME, /* "microsoft.com" */
+            SSL_SUBJECT_DN, /* "CN=dropbox.com" */
+            SSL_ISSUER_DN, /* "O=Thawte" */
             /* DEPRECATED */
             /* DEPRECATED */
             /* DEPRECATED */
@@ -340,9 +340,9 @@ public class RuleMatcher implements JSONString, Serializable
         case CLASSD_CATEGORY:
         case CLASSD_PROTOCHAIN:
         case CLASSD_DETAIL:
-        case HTTPS_SNI_HOSTNAME:
-        case HTTPS_SUBJECT_DN:
-        case HTTPS_ISSUER_DN:
+        case SSL_SNI_HOSTNAME:
+        case SSL_SUBJECT_DN:
+        case SSL_ISSUER_DN:
             this.regexValue = GlobUtil.globToRegex(value);
             break;
 
@@ -735,20 +735,20 @@ public class RuleMatcher implements JSONString, Serializable
         case SERVER_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getServerAddr() );
 
-        case HTTPS_SNI_HOSTNAME:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTPS_SNI_HOSTNAME);
+        case SSL_SNI_HOSTNAME:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_SNI_HOSTNAME);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
 
-        case HTTPS_SUBJECT_DN:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTPS_SUBJECT_DN);
+        case SSL_SUBJECT_DN:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_SUBJECT_DN);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
 
-        case HTTPS_ISSUER_DN:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTPS_ISSUER_DN);
+        case SSL_ISSUER_DN:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_ISSUER_DN);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);

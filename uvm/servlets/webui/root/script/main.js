@@ -1137,7 +1137,7 @@ Ext.define("Ung.Main", {
                         //{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'},
                         //{ displayName: "Web Cache", name: 'untangle-node-webcache'},
                         { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},
-                        { displayName: "HTTPS Inspector", name: 'untangle-casing-https'},
+                        { displayName: "SSL Inspector", name: 'untangle-casing-ssl'},
                         { displayName: "Application Control", name: 'untangle-node-classd'},
                         //{ displayName: "Application Control Lite", name: 'untangle-node-application-control-lite'},
                         { displayName: "Captive Portal", name: 'untangle-node-captive-portal'},

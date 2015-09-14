@@ -163,11 +163,11 @@ public interface NodeSession extends SessionTuple
     public final String KEY_CLASSD_PRODUCTIVITY = "classd-productivity"; /* Integer */
     public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
 
-    public final String KEY_HTTPS_SNI_HOSTNAME = "https-sni-host"; /* String */
-    public final String KEY_HTTPS_SUBJECT_DN = "https-subject-dn"; /* String */
-    public final String KEY_HTTPS_ISSUER_DN = "https-issuer-dn"; /* String */
-    public final String KEY_HTTPS_CLIENT_MANAGER = "https-client-manager"; /* HttpsManager */
-    public final String KEY_HTTPS_SERVER_MANAGER = "https-server-manager"; /* HttpsManager */
+    public final String KEY_SSL_SNI_HOSTNAME = "ssl-sni-host"; /* String */
+    public final String KEY_SSL_SUBJECT_DN = "ssl-subject-dn"; /* String */
+    public final String KEY_SSL_ISSUER_DN = "ssl-issuer-dn"; /* String */
+    public final String KEY_SSL_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
+    public final String KEY_SSL_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
 
     public final String KEY_CAPTURE_REDIRECT = "capture-redirect-client"; /* InetAddress */
     public final String KEY_SITEFILTER_SSL_ENGINE = "sitefilter-ssl-engine"; /* SiteFilterSSLEngine */

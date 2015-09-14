@@ -2,7 +2,7 @@
 
 OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
-CERT_PATH="/var/cache/untangle-https"
+CERT_PATH="/var/cache/untangle-ssl"
 TEMP="/dev/shm"
 
 UT_ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
@@ -15,7 +15,7 @@ RANDFILE="/dev/urandom"
 show_usage()
 {
 echo " "
-echo "  USAGE: https-certgen certfile subject [ alternates ]"
+echo "  USAGE: ut-certgen certfile subject [ alternates ]"
 echo " "
 echo "  certfile = www.domain.com"
 echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.domain.com"

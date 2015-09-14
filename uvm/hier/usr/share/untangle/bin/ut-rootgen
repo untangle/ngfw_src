@@ -7,7 +7,7 @@
 
 OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
-CERT_PATH="/var/cache/untangle-https"
+CERT_PATH="/var/cache/untangle-ssl"
 SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
 
 # Even though these aren't used when creating the root certificate
@@ -30,7 +30,7 @@ export RANDFILE
 show_usage()
 {
 echo " "
-echo "  USAGE: https-rootgen subject"
+echo "  USAGE: ut-rootgen subject"
 echo " "
 echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
 echo " "
