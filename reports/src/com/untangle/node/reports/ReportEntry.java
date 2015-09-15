@@ -391,7 +391,7 @@ public class ReportEntry implements Serializable, JSONString
         String final_crosstab_query = "SELECT * FROM crosstab( " +
             "$$" + final_time_query + "$$" + " , " +
             "$$" + distinctQuery + "$$" + ") " + " as " +
-            "( \"time_stamp\" timestamp ";
+            "( \"time_trunc\" timestamp ";
         for ( String s : distinctValues ) {
             final_crosstab_query = final_crosstab_query + ", \"" + s + "\" numeric ";
         }

@@ -448,9 +448,26 @@ Ext.define('Ung.panel.Reports', {
         } else if(this.entry.type == 'TIME_GRAPH') {
             chart.getStore().loadData(data);
             this.reportDataGrid.getStore().loadData(data);
+        } else if(this.entry.type == 'TIME_GRAPH_DYNAMIC') {
+            var columnsMap = {}, columns=[], values={};
+            for(i=0; i<data.length; i++) {
+                for(column in data[i]) {
+                    columnsMap[column]=true;
+                }
+            }
+            for(column in columnsMap) {
+                if(column!='time_trunc') {
+                    columns.push(column);
+                }
+            }
+            this.entry.timeDataColumns = columns;
+            this.buildReportEntry(this.entry);
+            chart = this.chartContainer.down("[name=chart]");
+            chart.getStore().loadData(data);
+            this.reportDataGrid.getStore().loadData(data);
         }
     },
-    loadReportEntry: function(entry) {
+    buildReportEntry: function(entry) {
         var me = this;
         this.entry = entry;
         if(this.autoRefreshEnabled) {
@@ -461,7 +478,6 @@ Ext.define('Ung.panel.Reports', {
         this.limitSelector.hide();
         
         this.chartContainer.removeAll();
-        this.setLoading(i18n._('Loading report... '));
         
         var i, column;
         
@@ -633,7 +649,10 @@ Ext.define('Ung.panel.Reports', {
                     }, this)
                 }]
             }]);
-        } else if(entry.type == 'TIME_GRAPH') {
+        } else if(entry.type == 'TIME_GRAPH' || entry.type == 'TIME_GRAPH_DYNAMIC') {
+            if(!entry.timeDataColumns) {
+                entry.timeDataColumns = [];
+            }
             var axesFields = [], series=[];
             var legendHint = (entry.timeDataColumns.length > 1) ? this.cartesianLegendHint : "";
             var zeroFn = function(val) {
@@ -858,38 +877,6 @@ Ext.define('Ung.panel.Reports', {
                 }];
             }
             this.reportDataGrid.setColumns(reportDataColumns);
-        } else if(entry.type == 'TIME_GRAPH_DYNAMIC') { 
-            chart = {
-                    xtype: 'draw',
-                    name: "chart",
-                    border: false,
-                    width: '100%',
-                    height: '100%',
-                    tbar: tbar,
-                    sprites: [{
-                        type: 'text',
-                        text: i18n._(entry.title),
-                        fontSize: 18,
-                        width: 100,
-                        height: 30,
-                        x: 10, // the sprite x position
-                        y: 22  // the sprite y position
-                    }, {
-                        type: 'text',
-                        text: i18n._(entry.description),
-                        fontSize: 12,
-                        x: 10,
-                        y: 40
-                    }, {
-                        type: 'text',
-                        id: 'infos',
-                        text: "",
-                        fontSize: 12,
-                        x: 10,
-                        y: 80
-                    }]
-                };
-                this.reportDataGrid.setColumns([]);
         }
         
         if(chart.xtype!= 'draw') {
@@ -901,6 +888,10 @@ Ext.define('Ung.panel.Reports', {
         }
         
         this.chartContainer.add(chart);
+    },
+    loadReportEntry: function(entry) {
+        this.setLoading(i18n._('Loading report... '));
+        this.buildReportEntry(entry);
         rpc.reportsManagerNew.getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
