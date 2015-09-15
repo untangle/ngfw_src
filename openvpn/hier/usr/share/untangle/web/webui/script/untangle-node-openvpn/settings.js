@@ -486,7 +486,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 xtype: 'actioncolumn',
                 width: 120,
                 items: [{
-                    id: 'certRemove',
                     tooltip: this.i18n._("Click to download client"),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         if(this.isNodeRunning && record.data.internalId>=0) {
