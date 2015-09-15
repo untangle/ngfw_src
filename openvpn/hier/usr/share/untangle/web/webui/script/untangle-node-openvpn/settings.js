@@ -487,16 +487,14 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 width: 120,
                 items: [{
                     tooltip: this.i18n._("Click to download client"),
+                    iconCls: 'icon-download-row',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        if(this.isNodeRunning && record.data.internalId>=0) {
-                            this.getDistributeWindow().populate(record);
-                        }
-                    }, this),
-                    getClass: Ext.bind(function(value, metadata, record) {
-                        if(this.isNodeRunning && record.data.internalId>=0) {
-                            return 'icon-download-row';
+                        if(record.data.internalId<0) {
+                            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("New clients must be saved before downloading the client."));
+                        } else if(!this.isNodeRunning) {
+                            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("OpenVPN must be turned ON in order to download the client."));
                         } else {
-                            return 'x-hide-display';
+                            this.getDistributeWindow().populate(record);
                         }
                     }, this)
                 }]
