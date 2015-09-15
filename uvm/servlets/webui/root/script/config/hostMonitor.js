@@ -415,33 +415,21 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             }, {
-                width: 85,
-                header: this.i18n._("Control"),
-                dataIndex: null,
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    var out= '';
-                    if(record.data.internalId>=0) {
-                        var id = Ext.id();
-                        Ext.defer(function () {
-                            var button = Ext.widget('button', {
-                                renderTo: id,
-                                text: this.i18n._("Release"),
-                                width: 75,
-                                handler: Ext.bind(function () {
-                                    Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
-                                    rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.gridPenaltyBox.reload();
-                                    }, this), record.data.address );
-                                }, this)
-                            });
-                            this.subCmps.push(button);
-                        }, 50, this);
-                        out=  Ext.String.format('<div id="{0}"></div>', id);
-                    }
-                    return out;
-                }, this)
+                header: this.i18n._("Release host"),
+                xtype: 'actioncolumn',
+                width: 120,
+                items: [{
+                    tooltip: this.i18n._("Release host"),
+                    iconCls: 'icon-play-row',
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
+                        rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridPenaltyBox.reload();
+                        }, this), record.data.address );
+                    }, this)
+                }]
             }]
         });
 
@@ -498,61 +486,37 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             }, {
-                width: 85,
                 header: this.i18n._("Refill Quota"),
-                dataIndex: null,
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    var out= '';
-                    if(record.data.internalId>=0) {
-                        var id = Ext.id();
-                        Ext.defer(function () {
-                            var button = Ext.widget('button', {
-                                renderTo: id,
-                                text: this.i18n._("Refill"),
-                                width: 75,
-                                handler: Ext.bind(function () {
-                                    Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
-                                    rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.gridQuotaBox.reload();
-                                    }, this), record.data.address );
-                                }, this)
-                            });
-                            this.subCmps.push(button);
-                        }, 50, this);
-                        out=  Ext.String.format('<div id="{0}"></div>', id);
-                    }
-                    return out;
-                }, this)
+                xtype: 'actioncolumn',
+                width: 110,
+                items: [{
+                    tooltip: this.i18n._("Refill Quota"),
+                    iconCls: 'icon-refresh-row',
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
+                        rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridQuotaBox.reload();
+                        }, this), record.data.address );
+                    }, this)
+                }]
             }, {
-                width: 85,
                 header: this.i18n._("Drop Quota"),
-                dataIndex: null,
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    var out= '';
-                    if(record.data.internalId>=0) {
-                        var id = Ext.id();
-                        Ext.defer(function () {
-                            var button = Ext.widget('button', {
-                                renderTo: id,
-                                text: this.i18n._("Drop"),
-                                width: 75,
-                                handler: Ext.bind(function () {
-                                    Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
-                                    rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.gridQuotaBox.reload();
-                                    }, this), record.data.address );
-                                }, this)
-                            });
-                            this.subCmps.push(button);
-                        }, 50, this);
-                        out=  Ext.String.format('<div id="{0}"></div>', id);
-                    }
-                    return out;
-                }, this)
+                xtype: 'actioncolumn',
+                width: 110,
+                items: [{
+                    tooltip: this.i18n._("Drop Quota"),
+                    iconCls: 'icon-drop-row',
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
+                        rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridQuotaBox.reload();
+                        }, this), record.data.address );
+                    }, this)
+                }]
             }]
         });
     }

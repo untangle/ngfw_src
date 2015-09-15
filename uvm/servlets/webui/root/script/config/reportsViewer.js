@@ -39,7 +39,7 @@ Ext.define('Webui.config.reportsViewer', {
                 text : i18n._("Shield"),
                 category : "Shield",
                 leaf : true,
-                icon : "/reports/node-icons/untangle-node-shield.png"
+                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/untangle-node-shield_17x17.png' 
             } ]
         }];
         if (rpc.rackView && rpc.rackView.instances.list.length > 0) {
