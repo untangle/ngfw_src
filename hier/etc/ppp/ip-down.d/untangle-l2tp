@@ -1,0 +1,36 @@
+#!/bin/dash
+
+# ip-down.d script for L2TP/IPsec clients
+
+# The following variables are for the use of the scripts run by run-parts
+# and there are other variables we use that are available in the environment.
+# Check the pppd man page for further information.
+
+# PPP_IFACE="$1"
+# PPP_TTY="$2"
+# PPP_SPEED="$3"
+# PPP_LOCAL="$4"
+# PPP_REMOTE="$5"
+# PPP_IPPARAM="$6"
+
+# redirect to logfile and stdout
+mkdir -p /var/log/uvm/
+LOGFILE="/var/log/uvm/l2tp.log"
+mkfifo ${LOGFILE}.pipe
+tee -a < ${LOGFILE}.pipe $LOGFILE &
+exec >> ${LOGFILE}.pipe 2>&1
+rm ${LOGFILE}.pipe
+
+if [ "$PPP_IPPARAM" != "L2TP" ]; then
+    /bin/echo -e "[INFO: `date`] Ignoring ${PPP_IFACE} because it is not an L2TP instance"
+    exit
+fi
+
+/bin/echo -e "[INFO: `date`] Removing iptables rules for ${PPP_IFACE}"
+
+# remove the mark rules for the interface that is going away
+iptables -t mangle -D mark-src-intf -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp"
+iptables -t mangle -D mark-dst-intf -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp"
+
+# call the goodbye function in the node
+/usr/share/untangle/bin/ipsec-virtual-user-event GOODBYE L2TP $IPREMOTE $PEERNAME $BYTES_SENT $BYTES_RCVD

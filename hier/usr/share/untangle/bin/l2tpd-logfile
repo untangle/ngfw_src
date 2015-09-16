@@ -1,0 +1,20 @@
+#!/bin/dash
+
+LOGFILE=/var/log/l2tpd.log
+
+if [ ! -e $LOGFILE ]
+then
+    echo "L2TP is not enabled"
+    exit 0
+fi
+
+if [ ! -s $LOGFILE ]
+then
+    echo "The L2TP log file is empty"
+    exit 0
+fi
+
+# Grab IPsec output from the log file
+tail -n 1024 $LOGFILE | /usr/bin/tac
+
+exit 0

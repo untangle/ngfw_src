@@ -1,0 +1,347 @@
+msgid " sent "
+msgstr "X sent X"
+
+msgid " bytes and received "
+msgstr "X bytes and received X"
+
+msgid " bytes"
+msgstr "X bytesX"
+
+msgid "Configured Tunnels"
+msgstr "XConfigured TunnelsX"
+
+msgid "Disabled Tunnels"
+msgstr "XDisabled TunnelsX"
+
+msgid "Enabled Tunnels"
+msgstr "XEnabled TunnelsX"
+
+msgid "L2TP Clients"
+msgstr "XL2TP ClientsX"
+
+msgid "Status"
+msgstr "XStatusX"
+
+msgid "Enabled IPsec Tunnels"
+msgstr "XEnabled IPsec TunnelsX"
+
+msgid "Local IP"
+msgstr "XLocal IPX"
+
+msgid "Remote Host"
+msgstr "XRemote HostX"
+
+msgid "Local Network"
+msgstr "XLocal NetworkX"
+
+msgid "Remote Network"
+msgstr "XRemote NetworkX"
+
+msgid "Description"
+msgstr "XDescriptionX"
+
+msgid "Inactive"
+msgstr "XInactiveX"
+
+msgid "Active"
+msgstr "XActiveX"
+
+msgid "Unknown"
+msgstr "XUnknownX"
+
+msgid "Active VPN Sessions"
+msgstr "XActive VPN SessionsX"
+
+msgid "IP Address"
+msgstr "XIP AddressX"
+
+msgid "Protocol"
+msgstr "XProtocolX"
+
+msgid "Username"
+msgstr "XUsernameX"
+
+msgid "Interface"
+msgstr "XInterfaceX"
+
+msgid "Connect Time"
+msgstr "XConnect TimeX"
+
+msgid "Elapsed Time"
+msgstr "XElapsed TimeX"
+
+msgid "Disconnect"
+msgstr "XDisconnectX"
+
+msgid "Click to disconnect client"
+msgstr "XClick to disconnect clientX"
+
+msgid "Disconnecting..."
+msgstr "XDisconnecting...X"
+
+msgid "IPsec Options"
+msgstr "XIPsec OptionsX"
+
+msgid ""
+"The IPsec Options tab contains common settings that apply to all IPsec "
+"traffic."
+msgstr "XThe IPsec Options tab contains common settings that apply to all IPsec traffic.X"
+
+msgid "Traffic Processing"
+msgstr "XTraffic ProcessingX"
+
+msgid "Bypass all IPsec traffic"
+msgstr "XBypass all IPsec trafficX"
+
+msgid "Custom"
+msgstr "XCustomX"
+
+msgid "IPsec Tunnels"
+msgstr "XIPsec TunnelsX"
+
+msgid ""
+"The IPsec tunnels list contains all of the secure network tunnels that have "
+"been defined."
+msgstr "XThe IPsec tunnels list contains all of the secure network tunnels that have been defined.X"
+
+msgid "Enabled"
+msgstr "XEnabledX"
+
+msgid "Enable"
+msgstr "XEnableX"
+
+msgid "[enter description]"
+msgstr "X[enter description]X"
+
+msgid "Connection Type"
+msgstr "XConnection TypeX"
+
+msgid ""
+"(We recommended selecting <B>Tunnel</B> unless you have a specific reason to "
+"use <B>Transport</B>)"
+msgstr "X(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)X"
+
+msgid "Auto Mode"
+msgstr "XAuto ModeX"
+
+msgid ""
+"(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-"
+"demand tunnel)"
+msgstr "X(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)X"
+
+msgid "External IP"
+msgstr "XExternal IPX"
+
+msgid "[enter external IP]"
+msgstr "X[enter external IP]X"
+
+msgid "(The external IP address of this server)"
+msgstr "X(The external IP address of this server)X"
+
+msgid "[enter remote host]"
+msgstr "X[enter remote host]X"
+
+msgid "(The public hostname or IP address of the remote IPsec gateway)"
+msgstr "X(The public hostname or IP address of the remote IPsec gateway)X"
+
+msgid "[enter local network]"
+msgstr "X[enter local network]X"
+
+msgid "(The private network attached to the local side of the tunnel)"
+msgstr "X(The private network attached to the local side of the tunnel)X"
+
+msgid "[enter remote network]"
+msgstr "X[enter remote network]X"
+
+msgid "(The private network attached to the remote side of the tunnel)"
+msgstr "X(The private network attached to the remote side of the tunnel)X"
+
+msgid "Shared Secret"
+msgstr "XShared SecretX"
+
+msgid "[enter shared secret]"
+msgstr "X[enter shared secret]X"
+
+msgid "DPD Interval"
+msgstr "XDPD IntervalX"
+
+msgid "The number of seconds between R_U_THERE messages.  Enter 0 to disable."
+msgstr "XThe number of seconds between R_U_THERE messages.  Enter 0 to disable.X"
+
+msgid "DPD Timeout"
+msgstr "XDPD TimeoutX"
+
+msgid "The number of seconds for a dead peer tunnel to be restarted"
+msgstr "XThe number of seconds for a dead peer tunnel to be restartedX"
+
+msgid "<B>Authentication and SA/Key Exchange</B>"
+msgstr "X<B>Authentication and SA/Key Exchange</B>X"
+
+msgid ""
+"Usually IPsec will automatically negotiate the encryption protocol with the "
+"remote peer when creating the tunnel."
+msgstr "XUsually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel.X"
+
+msgid ""
+"However, some peers require specific settings. To configure specific "
+"settings, enable Manual Configuration and set the appropriate values below."
+msgstr "XHowever, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.X"
+
+msgid "Phase 1 IKE/ISAKMP Manual Configuration"
+msgstr "XPhase 1 IKE/ISAKMP Manual ConfigurationX"
+
+msgid "Encryption"
+msgstr "XEncryptionX"
+
+msgid "Default = 3DES"
+msgstr "XDefault = 3DESX"
+
+msgid "Hash"
+msgstr "XHashX"
+
+msgid "Default = MD5"
+msgstr "XDefault = MD5X"
+
+msgid "DH Key Group"
+msgstr "XDH Key GroupX"
+
+msgid "Default = 2 (1024 bit)"
+msgstr "XDefault = 2 (1024 bit)X"
+
+msgid "Lifetime"
+msgstr "XLifetimeX"
+
+msgid "Default = 28800 seconds, min = 3600, max = 86400"
+msgstr "XDefault = 28800 seconds, min = 3600, max = 86400X"
+
+msgid "Phase 2 ESP Manual Configuration"
+msgstr "XPhase 2 ESP Manual ConfigurationX"
+
+msgid "PFS Key Group"
+msgstr "XPFS Key GroupX"
+
+msgid "Default = 3600 seconds, min = 3600, max = 86400"
+msgstr "XDefault = 3600 seconds, min = 3600, max = 86400X"
+
+msgid "VPN Config"
+msgstr "XVPN ConfigX"
+
+msgid ""
+"The VPN Config tab contains settings used to configure the server to support "
+"IPsec L2TP and Xauth VPN client connections."
+msgstr "XThe VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections.X"
+
+msgid "Server Configuration"
+msgstr "XServer ConfigurationX"
+
+msgid "Enable L2TP/Xauth Server"
+msgstr "XEnable L2TP/Xauth ServerX"
+
+msgid "L2TP Address Pool"
+msgstr "XL2TP Address PoolX"
+
+msgid "Xauth Address Pool"
+msgstr "XXauth Address PoolX"
+
+msgid "Custom DNS Server 1"
+msgstr "XCustom DNS Server 1X"
+
+msgid "Custom DNS Server 2"
+msgstr "XCustom DNS Server 2X"
+
+msgid ""
+"<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients "
+"automatically configured to use this server for DNS resolution."
+msgstr "X<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution.X"
+
+msgid "IPsec Secret"
+msgstr "XIPsec SecretX"
+
+msgid "User Authentication"
+msgstr "XUser AuthenticationX"
+
+msgid ""
+"In addition to the IPsec Secret configured above, VPN clients must "
+"authenticate with a valid username and password.  User authentication can be "
+"configured to use either the internal local directory, or an external RADIUS "
+"server configured in the Directory Connector application."
+msgstr "XIn addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application.X"
+
+msgid "Local Directory"
+msgstr "XLocal DirectoryX"
+
+msgid "Configure Local Directory"
+msgstr "XConfigure Local DirectoryX"
+
+msgid "RADIUS {0}(requires Directory Connector) {1}"
+msgstr "XRADIUS {0}(requires Directory Connector) {1}X"
+
+msgid "Configure RADIUS"
+msgstr "XConfigure RADIUSX"
+
+msgid "Server Listen Addresses"
+msgstr "XServer Listen AddressesX"
+
+msgid ""
+"This is the list of IP addresses where the server will listen for incomming "
+"VPN connections. If you have a single WAN connection, you will normally only "
+"add that single address to this list.  If you have multiple WAN interfaces, "
+"you can configure the server to listen on any, or all of them."
+msgstr "XThis is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them.X"
+
+msgid "Address"
+msgstr "XAddressX"
+
+msgid "[enter IP address]"
+msgstr "X[enter IP address]X"
+
+msgid "Loading information... Please wait..."
+msgstr "XLoading information... Please wait...X"
+
+msgid "IPsec State"
+msgstr "XIPsec StateX"
+
+msgid " Refresh Log Information "
+msgstr "X Refresh Log Information X"
+
+msgid "IPsec Policy"
+msgstr "XIPsec PolicyX"
+
+msgid " Refresh Policy Information "
+msgstr "X Refresh Policy Information X"
+
+msgid "IPsec Log"
+msgstr "XIPsec LogX"
+
+msgid " Refresh State Information "
+msgstr "X Refresh State Information X"
+
+msgid "L2TP Log"
+msgstr "XL2TP LogX"
+
+msgid "IPsec Configuration Warning"
+msgstr "XIPsec Configuration WarningX"
+
+msgid ""
+"One or more IPsec tunnels is configured with a hostname in the <B>Remote "
+"Host</B> field.  The use of IP addresses instead of hostname for the remote "
+"host is strongly recommended."
+msgstr "XOne or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended.X"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+#! /bin/dash
+
+# Grab IPsec output from the log file
+tail -n 1024 /var/log/ipsec.log | /usr/bin/tac
+
+exit 0

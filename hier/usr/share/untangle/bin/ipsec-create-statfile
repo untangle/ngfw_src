@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+# We need to create an interface status file so L2TP clients know
+# how to find the Untangle server.  Since we really only care
+# about the IP address we dummy up the other values
+
+from netaddr import IPNetwork
+from uvm.settings_reader import get_node_settings_item
+import os
+import sys
+
+# Read the virtual address pool from the IPsec node settings file
+addressPool = get_node_settings_item("untangle-node-ipsec-vpn", "virtualAddressPool")
+
+# If we have good config data we use the first address for the server
+if addressPool == None:
+    # not found, delete any existing status file and exit
+    if os.path.exists("/var/lib/untangle-netd/interface-251-status.js"):
+        os.remove("/var/lib/untangle-netd/interface-251-status.js")
+    sys.exit(0)
+
+network = IPNetwork(addressPool);
+serverAddress = str(network[1])
+blockSize = str(network.prefixlen)
+blockMask = str(network.netmask)
+
+file = open("/var/lib/untangle-netd/interface-251-status.js", "w");
+file.write("{");
+file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
+file.write("\"v4Address\": \"" + serverAddress + "\", ");
+file.write("\"v4Netmask\": \"" + blockMask + "\", ");
+file.write("\"v4PrefixLength\": \"" + blockSize + "\", ");
+file.write("\"interfaceId\": 251");
+file.write("}");
+file.close()

@@ -1,0 +1,343 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:21+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+
+msgid " sent "
+msgstr ""
+
+msgid " bytes and received "
+msgstr ""
+
+msgid " bytes"
+msgstr ""
+
+msgid "Configured Tunnels"
+msgstr ""
+
+msgid "Disabled Tunnels"
+msgstr ""
+
+msgid "Enabled Tunnels"
+msgstr ""
+
+msgid "L2TP Clients"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Enabled IPsec Tunnels"
+msgstr ""
+
+msgid "Local IP"
+msgstr ""
+
+msgid "Remote Host"
+msgstr ""
+
+msgid "Local Network"
+msgstr ""
+
+msgid "Remote Network"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "Active VPN Sessions"
+msgstr ""
+
+msgid "IP Address"
+msgstr ""
+
+msgid "Protocol"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Interface"
+msgstr ""
+
+msgid "Connect Time"
+msgstr ""
+
+msgid "Elapsed Time"
+msgstr ""
+
+msgid "Disconnect"
+msgstr ""
+
+msgid "Click to disconnect client"
+msgstr ""
+
+msgid "Disconnecting..."
+msgstr ""
+
+msgid "IPsec Options"
+msgstr ""
+
+msgid ""
+"The IPsec Options tab contains common settings that apply to all IPsec "
+"traffic."
+msgstr ""
+
+msgid "Traffic Processing"
+msgstr ""
+
+msgid "Bypass all IPsec traffic"
+msgstr ""
+
+msgid "Custom"
+msgstr ""
+
+msgid "IPsec Tunnels"
+msgstr ""
+
+msgid ""
+"The IPsec tunnels list contains all of the secure network tunnels that have "
+"been defined."
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "[enter description]"
+msgstr ""
+
+msgid "Connection Type"
+msgstr ""
+
+msgid ""
+"(We recommended selecting <B>Tunnel</B> unless you have a specific reason to "
+"use <B>Transport</B>)"
+msgstr ""
+
+msgid "Auto Mode"
+msgstr ""
+
+msgid ""
+"(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-"
+"demand tunnel)"
+msgstr ""
+
+msgid "External IP"
+msgstr ""
+
+msgid "[enter external IP]"
+msgstr ""
+
+msgid "(The external IP address of this server)"
+msgstr ""
+
+msgid "[enter remote host]"
+msgstr ""
+
+msgid "(The public hostname or IP address of the remote IPsec gateway)"
+msgstr ""
+
+msgid "[enter local network]"
+msgstr ""
+
+msgid "(The private network attached to the local side of the tunnel)"
+msgstr ""
+
+msgid "[enter remote network]"
+msgstr ""
+
+msgid "(The private network attached to the remote side of the tunnel)"
+msgstr ""
+
+msgid "Shared Secret"
+msgstr ""
+
+msgid "[enter shared secret]"
+msgstr ""
+
+msgid "DPD Interval"
+msgstr ""
+
+msgid "The number of seconds between R_U_THERE messages.  Enter 0 to disable."
+msgstr ""
+
+msgid "DPD Timeout"
+msgstr ""
+
+msgid "The number of seconds for a dead peer tunnel to be restarted"
+msgstr ""
+
+msgid "<B>Authentication and SA/Key Exchange</B>"
+msgstr ""
+
+msgid ""
+"Usually IPsec will automatically negotiate the encryption protocol with the "
+"remote peer when creating the tunnel."
+msgstr ""
+
+msgid ""
+"However, some peers require specific settings. To configure specific "
+"settings, enable Manual Configuration and set the appropriate values below."
+msgstr ""
+
+msgid "Phase 1 IKE/ISAKMP Manual Configuration"
+msgstr ""
+
+msgid "Encryption"
+msgstr ""
+
+msgid "Default = 3DES"
+msgstr ""
+
+msgid "Hash"
+msgstr ""
+
+msgid "Default = MD5"
+msgstr ""
+
+msgid "DH Key Group"
+msgstr ""
+
+msgid "Default = 2 (1024 bit)"
+msgstr ""
+
+msgid "Lifetime"
+msgstr ""
+
+msgid "Default = 28800 seconds, min = 3600, max = 86400"
+msgstr ""
+
+msgid "Phase 2 ESP Manual Configuration"
+msgstr ""
+
+msgid "PFS Key Group"
+msgstr ""
+
+msgid "Default = 3600 seconds, min = 3600, max = 86400"
+msgstr ""
+
+msgid "VPN Config"
+msgstr ""
+
+msgid ""
+"The VPN Config tab contains settings used to configure the server to support "
+"IPsec L2TP and Xauth VPN client connections."
+msgstr ""
+
+msgid "Server Configuration"
+msgstr ""
+
+msgid "Enable L2TP/Xauth Server"
+msgstr ""
+
+msgid "L2TP Address Pool"
+msgstr ""
+
+msgid "Xauth Address Pool"
+msgstr ""
+
+msgid "Custom DNS Server 1"
+msgstr ""
+
+msgid "Custom DNS Server 2"
+msgstr ""
+
+msgid ""
+"<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients "
+"automatically configured to use this server for DNS resolution."
+msgstr ""
+
+msgid "IPsec Secret"
+msgstr ""
+
+msgid "User Authentication"
+msgstr ""
+
+msgid ""
+"In addition to the IPsec Secret configured above, VPN clients must "
+"authenticate with a valid username and password.  User authentication can be "
+"configured to use either the internal local directory, or an external RADIUS "
+"server configured in the Directory Connector application."
+msgstr ""
+
+msgid "Local Directory"
+msgstr ""
+
+msgid "Configure Local Directory"
+msgstr ""
+
+msgid "RADIUS {0}(requires Directory Connector) {1}"
+msgstr ""
+
+msgid "Configure RADIUS"
+msgstr ""
+
+msgid "Server Listen Addresses"
+msgstr ""
+
+msgid ""
+"This is the list of IP addresses where the server will listen for incomming "
+"VPN connections. If you have a single WAN connection, you will normally only "
+"add that single address to this list.  If you have multiple WAN interfaces, "
+"you can configure the server to listen on any, or all of them."
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "[enter IP address]"
+msgstr ""
+
+msgid "Loading information... Please wait..."
+msgstr ""
+
+msgid "IPsec State"
+msgstr ""
+
+msgid " Refresh Log Information "
+msgstr ""
+
+msgid "IPsec Policy"
+msgstr ""
+
+msgid " Refresh Policy Information "
+msgstr ""
+
+msgid "IPsec Log"
+msgstr ""
+
+msgid " Refresh State Information "
+msgstr ""
+
+msgid "L2TP Log"
+msgstr ""
+
+msgid "IPsec Configuration Warning"
+msgstr ""
+
+msgid ""
+"One or more IPsec tunnels is configured with a hostname in the <B>Remote "
+"Host</B> field.  The use of IP addresses instead of hostname for the remote "
+"host is strongly recommended."
+msgstr ""
