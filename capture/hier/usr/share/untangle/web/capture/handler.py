@@ -80,9 +80,9 @@ def index(req):
     # load the configuration data
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
-    captureNode = load_rpc_manager(appid)
 
     if captureSettings["sessionCookiesEnabled"] == True:       
+        captureNode = load_rpc_manager(appid)
         # Process cookie if exists.
         address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
         cookie = HandlerCookie(req)
