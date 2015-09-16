@@ -171,6 +171,11 @@ public class ResultSetReader implements Runnable
         }
         
         try {
+            if ( resultSet.isClosed() ) {
+                closeConnection();
+                return;
+            }
+
             int lastPosition = this.resultSet.getRow();
         
             while ( true ) {

@@ -21,7 +21,7 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 nodeFirewall = None
-nodeFaild = None
+nodeWanFailover = None
 nodeWeb = None
 orig_settings = None
 orig_netsettings = None
@@ -199,7 +199,7 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def nodeFDName():
-        return "untangle-node-faild"
+        return "untangle-node-wan-failover"
 
     @staticmethod
     def nodeWebName():
@@ -210,7 +210,7 @@ class ReportsTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFirewall, nodeFaild, nodeWeb, orig_settings, orig_netsettings, \
+        global node, nodeFirewall, nodeWanFailover, nodeWeb, orig_settings, orig_netsettings, \
                fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
@@ -227,12 +227,12 @@ class ReportsTests(unittest2.TestCase):
                 nodeFirewall = uvmContext.nodeManager().node(self.nodeFWName())
             else:
                 nodeFirewall = uvmContext.nodeManager().instantiate(self.nodeFWName(), defaultRackId)
-        if nodeFaild == None:
+        if nodeWanFailover == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeFDName())):
                 print "Node %s already installed" % self.nodeFDName()
-                nodeFaild = uvmContext.nodeManager().node(self.nodeFDName())
+                nodeWanFailover = uvmContext.nodeManager().node(self.nodeFDName())
             else:
-                nodeFaild = uvmContext.nodeManager().instantiate(self.nodeFDName(), defaultRackId)
+                nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeFDName(), defaultRackId)
 
         if nodeWeb == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
@@ -433,7 +433,7 @@ class ReportsTests(unittest2.TestCase):
         # set email address and alert for downloads
         settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
-        settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","*FailDEvent*","action","DISCONNECTED"))
+        settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","*WanFailoverEvent*","action","DISCONNECTED"))
         node.setSettings(settings)
 
         # WAN is offine test
@@ -452,29 +452,29 @@ class ReportsTests(unittest2.TestCase):
                 "failureThreshold": 3,
                 "httpUrl": "http://1.2.3.4/",
                 "interfaceId": wanIndex,
-                "javaClass": "com.untangle.node.faild.WanTestSettings",
+                "javaClass": "com.untangle.node.wan_failover.WanTestSettings",
                 "pingHostname": "1.2.3.4",
                 "testHistorySize": 10,
                 "timeoutMilliseconds": 2000,
                 "type": "ping"
             }
-            nodeFaildData = nodeFaild.getSettings()
-            nodeFaildData["tests"]["list"].append(rule)
-            nodeFaild.setSettings(nodeFaildData)
+            nodeWanFailoverData = nodeWanFailover.getSettings()
+            nodeWanFailoverData["tests"]["list"].append(rule)
+            nodeWanFailover.setSettings(nodeWanFailoverData)
             # Wait for all the WANs to be off line before checking for alert email.
             timeout = 50000
             wanUp = True
             while wanUp and timeout > 0:
                 timeout -= 1
-                wanStatus = nodeFaild.getWanStatus()
+                wanStatus = nodeWanFailover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if not statusInterface['online'] and statusInterface['interfaceId'] == wanIndex:
                         wanUp = False
             assert (timeout != 0)
 
         # reset all settings to base.
-        nodeFaildData["tests"]["list"] = []
-        nodeFaild.setSettings(nodeFaildData)
+        nodeWanFailoverData["tests"]["list"] = []
+        nodeWanFailover.setSettings(nodeWanFailoverData)
         node.setSettings(orig_settings)
 
         # Check event log for admin alert for WAN down.
@@ -487,16 +487,16 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeFirewall, nodeFaild, nodeWeb
+        global node, nodeFirewall, nodeWanFailover, nodeWeb
         if node != None:
             node.setSettings(orig_settings)
         node = None
         if nodeFirewall != None:
             uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
         nodeFirewall = None
-        if nodeFaild != None:
-            uvmContext.nodeManager().destroy( nodeFaild.getNodeSettings()["id"] )
-        nodeFaild = None
+        if nodeWanFailover != None:
+            uvmContext.nodeManager().destroy( nodeWanFailover.getNodeSettings()["id"] )
+        nodeWanFailover = None
         if nodeWeb != None:
             uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
         nodeWeb = None

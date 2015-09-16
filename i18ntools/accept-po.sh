@@ -59,8 +59,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-virus-blocker)
             d=$hades/src/virus-blocker
             ;;
-        untangle-node-faild)
-            d=$hades/src/faild
+        untangle-node-wan-failover)
+            d=$hades/src/wan-failover
             ;;
         untangle-node-firewall)
             d=$work/src/firewall

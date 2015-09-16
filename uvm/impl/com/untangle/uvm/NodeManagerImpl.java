@@ -298,10 +298,25 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-        
-        
+
+        // rename faild to wan-failover
+        oldName = "untangle-node-faild";
+        newName = "untangle-node-wan-failover";
+        oldNames = new String[] {"com.untangle.node.faild.FailDImpl",
+                                 "com.untangle.node.faild.FailDSettings"};
+        newNames = new String[] {"com.untangle.node.wan_failover.WanFailoverApp",
+                                 "com.untangle.node.wan_failover.WanFailoverSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
     }
-        
 
     public NodeManagerSettings getSettings()
     {

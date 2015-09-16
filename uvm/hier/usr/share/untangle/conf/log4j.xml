@@ -178,7 +178,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.faild">
+  <category name="com.untangle.node.wan_failover">
     <priority value="INFO"/>
   </category>
 
