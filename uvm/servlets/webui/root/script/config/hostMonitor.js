@@ -320,7 +320,6 @@ Ext.define('Webui.config.hostMonitor', {
                     type: 'date'
                 }
             },{
-                hidden: true,
                 header: "HTTP" + " - " + this.i18n._("User Agent"),
                 dataIndex: "httpUserAgent",
                 width: 200,
@@ -328,6 +327,7 @@ Ext.define('Webui.config.hostMonitor', {
                     type: 'string'
                 }
             },{
+                hidden: true,
                 header: "HTTP" + " - " + this.i18n._("User Agent OS"),
                 dataIndex: "httpUserAgentOs",
                 width: 200,
