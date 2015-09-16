@@ -23,7 +23,11 @@ do
     cp ../${module_dir}/po/$1/${module}.po ./$1/
 done
 
+<<<<<<< .mine
+for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-faild untangle-node-license untangle-node-policy untangle-node-sitefilter untangle-node-faild untangle-node-splitd untangle-node-webcache untangle-node-ipsec-vpn untangle-node-classd
+=======
 for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-wan-failover untangle-node-license untangle-node-policy untangle-node-sitefilter untangle-node-wan-failover untangle-node-splitd untangle-node-webcache untangle-node-ipsec untangle-node-classd
+>>>>>>> .r41260
 do
     module_dir=`echo "${module}"|cut -d"-" -f3`
     cp ../../../hades/src/${module_dir}/po/$1/${module}.po ./$1/

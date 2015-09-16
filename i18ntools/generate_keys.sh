@@ -8,7 +8,11 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-spam-blocker-lite
     untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup
     untangle-node-branding untangle-node-spam-blocker
+<<<<<<< .mine
+    untangle-node-faild untangle-node-ipsec-vpn
+=======
     untangle-node-wan-failover untangle-node-ipsec
+>>>>>>> .r41260
     untangle-node-policy untangle-node-sitefilter untangle-node-splitd
     untangle-node-support untangle-node-webcache untangle-node-classd
     untangle-node-captive-portal untangle-casing-ssl'
@@ -78,7 +82,11 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
+<<<<<<< .mine
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec-vpn"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+=======
 "untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy"|"untangle-node-wan-failover"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+>>>>>>> .r41260
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""

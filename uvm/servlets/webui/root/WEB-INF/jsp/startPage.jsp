@@ -65,7 +65,7 @@
     <script type="text/javascript" src="script/untangle-node-classd/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-wan-failover/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-casing-ssl/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ipsec/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-ipsec-vpn/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-sitefilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spam-blocker/settings.js?s=${buildStamp}"></script>

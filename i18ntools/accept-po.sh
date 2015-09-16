@@ -105,8 +105,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-webcache)
             d=$hades/src/webcache
             ;;
-        untangle-node-ipsec)
-            d=$hades/src/ipsec
+        untangle-node-ipsec-vpn)
+            d=$hades/src/ipsec-vpn
             ;;
         untangle-node-classd)
             d=$hades/src/classd
