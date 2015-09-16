@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:10+0200\n"
+"PO-Revision-Date: 2010-05-14 12:55-0700\n"
+"Last-Translator: Michael Pfautsch <mp@m2lp-consult.de>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+msgid "WAN"
+msgstr ""
+
+msgid "passed"
+msgstr ""
+
+msgid "failed"
+msgstr ""
+
+msgid "test"
+msgstr ""
+
+msgid "Test Failed"
+msgstr "Test fehlgeschlagen."
+
+msgid "Test Successful."
+msgstr ""
+
+msgid "Unexpected error while running test."
+msgstr "Ein unerwarteter Fehler ist während des Test aufgetreten."
+
+msgid "Connected WANs"
+msgstr ""
+
+msgid "Disconnected WANs"
+msgstr ""
+
+msgid "WAN Change"
+msgstr "WAN Änderung"
+
+msgid "Reconnects"
+msgstr "Wiederverbunden"
+
+msgid "Disconnects"
+msgstr "Getrennt"
+
+msgid "came online"
+msgstr ""
+
+msgid "went offline"
+msgstr ""
+
+msgid "unknown"
+msgstr ""
+
+msgid "Summary Report"
+msgstr ""
+
+msgid "detected"
+msgstr ""
+
+msgid "WAN failures and saved the network from"
+msgstr ""
+
+msgid "seconds of downtime"
+msgstr ""
+
+msgid "WAN Availability"
+msgstr ""
+
+msgid "Full Connectivity"
+msgstr ""
+
+msgid "Partial Connectivity"
+msgstr ""
+
+msgid "No Connectivity"
+msgstr ""
+
+msgid "Connectivity"
+msgstr ""
+
+msgid "%"
+msgstr ""
+
+msgid "WAN Interfaces With Downtime"
+msgstr ""
+
+msgid "Seconds"
+msgstr "Sekunde(n)"
+
+msgid "Downtime For"
+msgstr ""
+
+msgid "WAN Interface Failures"
+msgstr ""
+
+msgid "Failures"
+msgstr ""
+
+msgid "Failure For"
+msgstr ""
+
+msgid "Warning: The <i>{0}</i> needs a test configured!"
+msgstr ""
+
+msgid "WAN Status"
+msgstr ""
+
+msgid "This shows the current status of each WAN Interface."
+msgstr ""
+
+msgid "Interface ID"
+msgstr "Schnittstelle"
+
+msgid "Interface Name"
+msgstr ""
+
+msgid "System Name"
+msgstr ""
+
+msgid "Online Status"
+msgstr ""
+
+msgid "Current Tests Count"
+msgstr ""
+
+msgid "Tests Passed"
+msgstr "Test fehlgeschlagen."
+
+msgid "Tests Failed"
+msgstr "Test fehlgeschlagen."
+
+msgid "Status"
+msgstr "Status"
+
+msgid "WAN Failover"
+msgstr ""
+
+msgid ""
+"WAN Failover maximizes your network uptime. It monitors the status of your "
+"WAN interfaces and re-routes traffic any available WANs."
+msgstr ""
+
+msgid ""
+"Tests must be configured using the <i>Tests</i> tab to determine the "
+"connectivity of each WAN."
+msgstr ""
+
+msgid "WARNING"
+msgstr ""
+
+msgid ""
+"There are currently no tests configured. A test must be configured for each "
+"WAN."
+msgstr ""
+
+msgid "{0} of 10"
+msgstr "{0} of 10"
+
+msgid "Ping"
+msgstr "Ping"
+
+msgid "ARP"
+msgstr "ARP"
+
+msgid "DNS"
+msgstr "DNS"
+
+msgid "HTTP"
+msgstr "HTTP"
+
+msgid "Failure Detection Tests"
+msgstr "Fehler Erkennungs Regeln"
+
+msgid "Interface"
+msgstr "Schnittstelle"
+
+msgid "Interface {0}"
+msgstr "Schnittstelle"
+
+msgid "Test Type"
+msgstr "Test Modus"
+
+msgid "Type {0}"
+msgstr ""
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "[no description]"
+msgstr ""
+
+msgid "Tests"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid ""
+"These tests control how each WAN interface is tested to ensure that it has "
+"connectivity to the Internet."
+msgstr ""
+
+msgid "There should be one configured test per WAN interface."
+msgstr ""
+
+msgid ""
+"These rules require careful configuration. Poorly chosen tests will greatly "
+"reduce the effectiveness of WAN Failover."
+msgstr ""
+
+msgid "Press Help to see a further discussion about Failure Detection Tests."
+msgstr ""
+
+msgid "Test configuration:"
+msgstr ""
+
+msgid ""
+"Design a test that likely indicates the connectivity of the chosen WAN "
+"interface."
+msgstr ""
+
+msgid ""
+"<b>Testing Interval</b> specifies how often this test will run. (Default: 5)"
+msgstr ""
+"<b>Test Intervall </b> spezifiziert wie oft dieser Test durchgeführt wird."
+
+msgid "Testing Interval"
+msgstr "Test Intervall"
+
+msgid "(seconds)"
+msgstr "(Sekunden)"
+
+msgid ""
+"<b>Timeout</b> specifies how long the system waits for a response before "
+"considering the test failed. (Default: 2)"
+msgstr ""
+
+msgid "Timeout"
+msgstr "Zeitüberschreitung"
+
+msgid ""
+"<b>Failure Threshold</b> specifies how many tests failures (out of 10) are "
+"required for this WAN to be considered offline."
+msgstr ""
+"<b>Fehler Grenzwert</b> zeigt an, wie viele Tests (von 10)  fehlen müssen, "
+"bis dieses WAN als Offline zu betrachten ist."
+
+msgid "Failure Threshold"
+msgstr "Fehler Grenzwert"
+
+msgid ""
+"Choose a destination that likely indicates the connectivity of the chosen "
+"WAN interface."
+msgstr ""
+
+msgid "The IP of an upstream router at your ISP is recommended."
+msgstr ""
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Generate Suggestions"
+msgstr "Erstelle Vorschläge"
+
+msgid "ARP the default gateway for this interface."
+msgstr "Ermittle mit ARP das Standard Gateway f├╝r diese Schnittstelle."
+
+msgid "Generate DNS requests to the upstream DNS servers."
+msgstr "Generiere DNS Anfragen an die vorgeschalteten DNS Server."
+
+msgid ""
+"Choose a URL that likely indicates the connectivity of the chosen WAN "
+"interface."
+msgstr ""
+
+msgid "The IP URL of an upstream website near your ISP is recommended."
+msgstr ""
+
+msgid ""
+"Using a hostname instead of an IP address URL is <b>not recommended</b> as "
+"it requires DNS which may be down."
+msgstr ""
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Run Test"
+msgstr "Starte Test"
+
+msgid "Querying Pingable Hosts..."
+msgstr "Abfrage nach per Ping zu erreichenden Hosts..."
+
+msgid "Please wait"
+msgstr "Bitte warten"
+
+msgid "Unable to find a pingable host."
+msgstr "Kann keinen per Ping zu erreichenden Host finden."
+
+msgid "Please try again later."
+msgstr "Bitte später noch einmal versuchen."
+
+msgid "Completed host list."
+msgstr "Vollständige Host Liste."
+
+msgid "Select one of the recommended host<br/>from the 'IP' dropdown."
+msgstr "Einen der vorgeschlagenen Hosts<br/>vom 'IP' Menü wählen."
+
+msgid "Running Test..."
+msgstr "Test läuft..."
+
+msgid "Unable to complete test."
+msgstr "Test kann nicht abgeschlossen werden."
+
+msgid "Test Results"
+msgstr "Test Ergebnisse"
+
