@@ -320,8 +320,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
-
-        testMethod();
     }
 
     protected void preStart()
@@ -468,48 +466,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
-    private void testMethod()
-    {
-        ReportEntry entry = new ReportEntry();
-        entry.setType( ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC );
-        entry.setTitle( "TEST" );
-        entry.setEnabled( true );
-        entry.setUniqueId( "TEST" );
-        entry.setCategory( "Network" );
-        entry.setOrderDesc( false );
-
-        entry.setTable( "interface_stat_events" );
-        entry.setTimeDataInterval( ReportEntry.TimeDataInterval.MINUTE );
-        entry.setTimeDataDynamicValue( "rx_rate" );
-        entry.setTimeDataDynamicColumn( "interface_id" );
-        entry.setTimeDataDynamicLimit( 10 );
-        entry.setTimeDataDynamicAggregationFunction( "max" );
-
-        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
-        logger.warn( entry.toSql( getDbConnection(), null, null ) );
-        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-        entry = new ReportEntry();
-        entry.setType( ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC );
-        entry.setTitle( "TEST2" );
-        entry.setEnabled( true );
-        entry.setUniqueId( "TEST2" );
-        entry.setCategory( "Web Filter" );
-        entry.setOrderDesc( false );
-
-        entry.setTable( "http_events" );
-        entry.setTimeDataInterval( ReportEntry.TimeDataInterval.MINUTE );
-        entry.setTimeDataDynamicValue( "request_id" );
-        entry.setTimeDataDynamicColumn( "domain" );
-        entry.setTimeDataDynamicLimit( 10 );
-        entry.setTimeDataDynamicAggregationFunction( "count" );
-
-        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
-        logger.warn( entry.toSql( getDbConnection(), null, null ) );
-        logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXX");
-    }
-
-    
     private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler
     {
         @Override
