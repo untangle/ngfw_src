@@ -781,9 +781,6 @@ Ext.define('Ung.panel.Reports', {
                             opacity: 0.90,
                             lineWidth: 3
                         },
-                        marker: {
-                            radius: 2
-                        },
                         highlight: {
                             fillStyle: '#000',
                             radius: 4,
@@ -812,9 +809,6 @@ Ext.define('Ung.panel.Reports', {
                         style: {
                             opacity: 0.60,
                             lineWidth: 3
-                        },
-                        marker: {
-                            radius: 2
                         },
                         highlight: {
                             fillStyle: '#000',
@@ -896,7 +890,7 @@ Ext.define('Ung.panel.Reports', {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             this.loadReportData(result.list);
-        }, this), entry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
+        }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
     loadEventEntry: function(entry) {
@@ -986,7 +980,7 @@ Ext.define('Ung.panel.Reports', {
             if(this!=null && this.rendered && this.autoRefreshEnabled) {
                 Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
             }
-        }, this), this.entry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
+        }, this), this.entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
     },
     refreshEvents: function() {
         if(!this.entry) {
@@ -998,7 +992,7 @@ Ext.define('Ung.panel.Reports', {
                 this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
                 this.loadResultSet(result);
-            }, this), this.entry, this.extraConditions, limit, this.startDateWindow.date, this.endDateWindow.date);
+            }, this), this.entry, this.extraConditions, limit, this.startDateWindow.serverDate, this.endDateWindow.serverDate);
     },
     autoRefreshEnabled: false,
     startAutoRefresh: function(setButton) {
@@ -1154,8 +1148,8 @@ Ext.define('Ung.panel.Reports', {
         if(!this.entry) {
             return;
         }
-        var startDate = this.startDateWindow.date;
-        var endDate = this.endDateWindow.date;
+        var startDate = this.startDateWindow.serverDate;
+        var endDate = this.endDateWindow.serverDate;
         
         Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
         var name=this.entry.title.trim().replace(/ /g,"_");
@@ -1833,6 +1827,9 @@ Ext.define("Ung.grid.feature.GlobalFilter", {
             }
         });
         
+        this.grid.on("afterrender", Ext.bind(function() {
+            this.grid.getStore().addFilter(this.globalFilter);
+        }, this));
         this.grid.on("beforedestroy", Ext.bind(function() {
             this.grid.getStore().removeFilter(this.globalFilter);
             Ext.destroy(this.globalFilter);
@@ -1938,6 +1935,7 @@ Ext.define("Ung.window.SelectDateTime", {
     },
     setDate: function(date) {
         this.date = date;
+        this.serverDate = (this.date) ? (new Date(this.date.getTime() - i18n.timeoffset)) : null;
         var dateStr ="";
         var buttonLabel = null;
         if(this.date) {
