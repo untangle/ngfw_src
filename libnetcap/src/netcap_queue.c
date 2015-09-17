@@ -731,8 +731,11 @@ static int _init_nfqh( struct nfq_q_handle** nfq_qh, int* nfq_fd, int queue_num,
             return perrlog( "nfq_set_mode" );
         }
     
-        if ( nfq_set_queue_flags( *nfq_qh, NFQA_CFG_F_FAIL_OPEN,  NFQA_CFG_F_FAIL_OPEN ) ) {
-            return perrlog( "nfq_set_queue_flags NFQA_CFG_F_FAIL_OPEN" );
+        /*NFQA_CFG_F_FAIL_OPEN is not supported in buffalo 3.10 kernel*/
+        if ( IS_NEW_KERNEL() == 16 ){  
+            if ( nfq_set_queue_flags( *nfq_qh, NFQA_CFG_F_FAIL_OPEN,  NFQA_CFG_F_FAIL_OPEN ) ) {
+                return perrlog( "nfq_set_queue_flags NFQA_CFG_F_FAIL_OPEN" );
+            }
         }
 
         if ( nfq_set_queue_flags( *nfq_qh, NFQA_CFG_F_CONNTRACK,  NFQA_CFG_F_CONNTRACK ) ) {
