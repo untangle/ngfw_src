@@ -161,24 +161,27 @@ char* netcap_session_fd_tuple_print ( netcap_session_t* sess )
 
 u_int64_t netcap_session_next_id ( void )
 {
+    u_int64_t my_session_id;
+
     if (lock_wrlock(&session_index_lock)<0) {
         errlog(ERR_CRITICAL,"lock_wrlock\n");
         return 0;
     }
-    
-    session_index++;
 
+    my_session_id = session_index;
+    
+    session_index++;    
     /* Down to 63 bit - avoid signedness issues with java*/
     session_index &= 0x7FFFFFFFFFFFFFFFULL;
-    
-    if ( session_index == 0 ) session_index++; /* session id 0 not allowed */
+    if ( session_index == 0 )
+        session_index++; /* session id 0 not allowed */
     
     if (lock_unlock(&session_index_lock)<0) {
         errlog(ERR_CRITICAL,"lock_unlock\n");
         return 0;
     }
 
-    return session_index;
+    return my_session_id;
 }
 
 netcap_session_t* netcap_session_malloc(void)
