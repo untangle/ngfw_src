@@ -6,7 +6,7 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
-        "round(coalesce(sum(rx_bytes + tx_bytes), 0) / (1024*1024),1) as total",
+        "round(coalesce(sum(rx_bytes + tx_bytes), 0) / (1024*1024),1) as total"
     ],
     "textString": "OpenVPN processed {0} megabytes over OpenVPN tunnels.", 
     "readOnly": true,
