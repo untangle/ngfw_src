@@ -99,7 +99,7 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-wan-balancer)
             d=$hades/src/wan-balancer
             ;;
-        untangle-node-support)
+        untangle-node-live-support)
             d=$hades/src/support
             ;;
         untangle-node-webcache)

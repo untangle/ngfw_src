@@ -1153,7 +1153,7 @@ Ext.define("Ung.Main", {
                         { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
                         { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
                         { displayName: "Branding Manager", name: 'untangle-node-branding'},
-                        { displayName: "Live Support", name: 'untangle-node-support'}];
+                        { displayName: "Live Support", name: 'untangle-node-live-support'}];
 
                     // only install this on 1gig+ machines
                     if ( Ung.Main.totalMemoryMb > 900 ) {

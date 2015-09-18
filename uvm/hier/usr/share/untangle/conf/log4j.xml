@@ -146,7 +146,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.bandwidth">
+  <category name="com.untangle.node.bandwidth_control">
     <priority value="INFO"/>
   </category>
 
@@ -154,27 +154,15 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.branding">
+  <category name="com.untangle.node.branding_manager">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.capture">
+  <category name="com.untangle.node.captive_portal">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.clam">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.classd">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.spam_blocker">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.virus_blocker">
+  <category name="com.untangle.node.application_control">
     <priority value="INFO"/>
   </category>
 
@@ -198,11 +186,11 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ips">
+  <category name="com.untangle.node.intrusion_prevention">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ipsec">
+  <category name="com.untangle.node.ipsec_vpn">
     <priority value="INFO"/>
   </category>
 
@@ -218,7 +206,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.policy">
+  <category name="com.untangle.node.policy_manager">
     <priority value="INFO"/>
   </category>
 
@@ -246,6 +234,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.spam_blocker">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.spam_blocker_lite">
     <priority value="INFO"/>
   </category>
@@ -254,7 +246,11 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.support">
+  <category name="com.untangle.node.live_support">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.clam">
     <priority value="INFO"/>
   </category>
 
@@ -262,7 +258,15 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.webcache">
+  <category name="com.untangle.node.virus_blocker">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.virus_blocker_lite">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.web_cache">
     <priority value="INFO"/>
   </category>
 

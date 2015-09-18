@@ -36,7 +36,7 @@
         "untangle-node-policy",
         "untangle-node-web-filter",
         "untangle-node-wan-balancer",
-        "untangle-node-support",
+        "untangle-node-live-support",
         "untangle-node-webcache",
         "untangle-node-classd",
         "untangle-node-captive-portal",

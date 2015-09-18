@@ -162,7 +162,7 @@ Ext.define("Ung.Main", {
             var i, app, apps = [];
             for (i = 0; i < rpc.currentApplications.length; i++) {
                 app = rpc.currentApplications[i];
-                if(app.name != 'untangle-node-branding' && app.name != 'untangle-node-support' ) {
+                if(app.name != 'untangle-node-branding' && app.name != 'untangle-node-live-support' ) {
                     apps.push({
                         text : app.displayName,
                         category : app.displayName,

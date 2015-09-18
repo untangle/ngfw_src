@@ -47,7 +47,7 @@ Ext.define('Webui.config.reportsViewer', {
             for (i = 0; i < rpc.rackView.instances.list.length; i++) {
                 var nodeSettings = rpc.rackView.instances.list[i];
                 var nodeProperties = rpc.rackView.nodeProperties.list[i];
-                if(nodeProperties.name != 'untangle-node-branding' && nodeProperties.name != 'untangle-node-support' ) {
+                if(nodeProperties.name != 'untangle-node-branding' && nodeProperties.name != 'untangle-node-live-support' ) {
                     apps.push({
                         text : nodeProperties.displayName,
                         category : nodeProperties.displayName,
