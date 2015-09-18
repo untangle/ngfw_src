@@ -72,6 +72,9 @@ public class NodeManagerImpl implements NodeManager
         File dir;
         int i;
         
+        // FIXME use version to detect if conversion is needed
+        // FIXME need to fix names in nodes.js
+
         // remove old IPS settings
         oldName = "untangle-node-ips";
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -79,18 +82,15 @@ public class NodeManagerImpl implements NodeManager
         if ( dir.exists() && dir.isDirectory() ) {
             UvmContextFactory.context().execManager().execResult("/bin/rm -rf " + dirName);
         }
-
+        
         // global renames
-        oldNames = new String[] {"SITEFILTER"};
-        newNames = new String[] {"WEB_FILTER"};
+        oldNames = new String[] {"SITEFILTER","CLASSD"};
+        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL"};
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
             UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f | xargs /bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i ");
         }
-        
-        // FIXME use version to detect if conversion is needed
-        // FIXME need to fix names in nodes.js
         
         // rename spamassassin to spam-blocker-lite
         oldName = "untangle-node-spamassassin";
@@ -344,11 +344,45 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename splitd to wan-balancer
+        // rename sitefilter to web-filter
         oldName = "untangle-node-sitefilter";
         newName = "untangle-node-web-filter";
         oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
         newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename support to live-support
+        oldName = "untangle-node-support";
+        newName = "untangle-node-live-support";
+        oldNames = new String[] {"com.untangle.node.support.SupportImpl"};
+        newNames = new String[] {"com.untangle.node.live_support.LiveSupportApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename branding to branding-manager
+        oldName = "untangle-node-branding";
+        newName = "untangle-node-branding-manager";
+        oldNames = new String[] {"com.untangle.node.branding.BrandingNodeImpl",
+                                 "com.untangle.node.branding.BrandingSettings"};
+        newNames = new String[] {"com.untangle.node.branding_manager.BrandingManagerApp",
+                                 "com.untangle.node.branding_manager.BrandingManagerSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {

@@ -102,7 +102,7 @@ def load_capture_settings(req,appid=None):
     if (oemName != None):
         companyName = oemName
 
-    brandco = get_node_settings_item('untangle-node-branding','companyName')
+    brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 

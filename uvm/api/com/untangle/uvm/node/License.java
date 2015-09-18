@@ -25,8 +25,8 @@ public class License implements Serializable
     public static final String BANDWIDTH_CONTROL_OLDNAME = "untangle-node-bandwidth";
     public static final String CONFIGURATION_BACKUP = "untangle-node-configuration-backup";
     public static final String CONFIGURATION_BACKUP_OLDNAME = "untangle-node-boxbackup";
-    public static final String BRANDING_MANAGER = "untangle-node-branding-manager";
-    public static final String BRANDING_MANAGER_OLDNAME = "untangle-node-branding";
+    public static final String BRANDING_MANAGER = "untangle-node-branding";
+    public static final String BRANDING_MANAGER_OLDNAME = "untangle-node-branding-manager";
     public static final String VIRUS_BLOCKER = "untangle-node-virus-blocker";
     public static final String VIRUS_BLOCKER_OLDNAME = "untangle-node-virusblocker";
     public static final String SPAM_BLOCKER = "untangle-node-spam-blocker";

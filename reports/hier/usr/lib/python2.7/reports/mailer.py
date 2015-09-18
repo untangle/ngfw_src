@@ -187,7 +187,7 @@ def __get_branding_info():
     if oemName != None:
         company = oemName
 
-    brandco = get_node_settings_item('untangle-node-branding','companyName')
+    brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
     if (brandco != None):
         company = brandco
 

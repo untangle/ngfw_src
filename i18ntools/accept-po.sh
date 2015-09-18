@@ -50,7 +50,7 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-configuration-backup)
             d=$hades/src/configuration-backup
             ;;
-        untangle-node-branding)
+        untangle-node-branding-manager)
             d=$hades/src/branding
             ;;
         untangle-node-spam-blocker)

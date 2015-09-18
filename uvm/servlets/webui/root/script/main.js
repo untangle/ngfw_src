@@ -1152,7 +1152,7 @@ Ext.define("Ung.Main", {
                         { displayName: "IPsec VPN", name: 'untangle-node-ipsec-vpn'},
                         { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
                         { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
-                        { displayName: "Branding Manager", name: 'untangle-node-branding'},
+                        { displayName: "Branding Manager", name: 'untangle-node-branding-manager'},
                         { displayName: "Live Support", name: 'untangle-node-live-support'}];
 
                     // only install this on 1gig+ machines

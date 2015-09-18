@@ -29,7 +29,7 @@
         "untangle-node-directory-connector",
         "untangle-node-bandwidth",
         "untangle-node-configuration-backup",
-        "untangle-node-branding",
+        "untangle-node-branding-manager",
         "untangle-node-spam-blocker",
         "untangle-node-wan-failover",
         "untangle-node-ipsec-vpn",

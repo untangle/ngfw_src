@@ -72,7 +72,7 @@ class UvmNode(Node):
 
     @sql_helper.print_timing
     def __get_branded_name(self):
-        brandco = get_node_settings_item('untangle-node-branding','companyName')
+        brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
         if (brandco != None):
             return brandco
         return None
