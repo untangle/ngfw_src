@@ -33,7 +33,7 @@
         "untangle-node-spam-blocker",
         "untangle-node-wan-failover",
         "untangle-node-ipsec-vpn",
-        "untangle-node-policy",
+        "untangle-node-policy-manager",
         "untangle-node-web-filter",
         "untangle-node-wan-balancer",
         "untangle-node-live-support",

@@ -189,7 +189,7 @@ public abstract class NetcapHook implements Runnable
                     hostname = clientAddr.getHostAddress();
             }
             
-            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             if (policyManager != null) {
                 this.policyId  = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
                                                              netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),

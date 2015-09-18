@@ -55,7 +55,7 @@ Ext.define("Ung.Main", {
         Ext.applyIf(rpc, startupInfo);
         //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
         try {
-            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy-manager");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -869,12 +869,12 @@ Ext.define("Ung.Main", {
         var position=this.getNodePosition(place, node.viewPosition);
         nodeCmp.render(place, position);
         Ung.AppItem.setLoading(node.name, false);
-        if ( node.name == 'untangle-node-policy') {
+        if ( node.name == 'untangle-node-policy-manager') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
             rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 Ext.getCmp('policyManagerMenuItem').enable();
-            }, this),"untangle-node-policy");
+            }, this),"untangle-node-policy-manager");
         }
         if ( node.name == 'untangle-node-reports') {
             Ext.getCmp('reportsMenuItem').enable();
@@ -1013,7 +1013,7 @@ Ext.define("Ung.Main", {
         }, this);
     },
     showPolicyManager: function() {
-        var node = Ung.Main.getNode("untangle-node-policy");
+        var node = Ung.Main.getNode("untangle-node-policy-manager");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
@@ -1145,7 +1145,7 @@ Ext.define("Ung.Main", {
                         //{ displayName: "Intrusion Prevention", name: 'untangle-node-intrusion-prevention'},
                         //{ displayName: "Ad Blocker", name: 'untangle-node-ad-blocker'},
                         { displayName: "Reports", name: 'untangle-node-reports'},
-                        { displayName: "Policy Manager", name: 'untangle-node-policy'},
+                        { displayName: "Policy Manager", name: 'untangle-node-policy-manager'},
                         { displayName: "Directory Connector", name: 'untangle-node-directory-connector'},
                         { displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
                         { displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},

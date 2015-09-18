@@ -518,7 +518,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public int getPolicyGenerationDiff(Long childId, Long parentId)
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
 
         if ( policyManager != null )
             return policyManager.getPolicyGenerationDiff( childId, parentId );
@@ -542,7 +542,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private boolean policyMatch( Long nodePolicy, Long policyId )
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
 
         /**
          * If nodePolicy is null its a service so it matches all policies

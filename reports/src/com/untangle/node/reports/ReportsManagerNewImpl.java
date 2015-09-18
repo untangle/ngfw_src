@@ -466,7 +466,7 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
     
     public List<JSONObject> getPoliciesInfo() {
         ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
         if ( policyManager != null ) {
             policiesInfo = policyManager.getPoliciesInfo();
         }

@@ -1057,7 +1057,7 @@ public class NodeManagerImpl implements NodeManager
     
     private List<Long> getParentPolicies( Long policyId )
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
         List<Long> parentList = new ArrayList<Long>();
         if (policyManager == null)
             return parentList;

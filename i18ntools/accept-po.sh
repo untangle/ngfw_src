@@ -78,7 +78,7 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-phish-blocker)
             d=$work/src/phish-blocker
             ;;
-        untangle-node-policy)
+        untangle-node-policy-manager)
             d=$hades/src/policy
             ;;
         untangle-node-application-control-lite)

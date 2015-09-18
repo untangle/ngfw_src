@@ -640,7 +640,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();
 
-        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("untangle-node-policy");
+        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("untangle-node-policy-manager");
         
         LinkedList<String> hostnames = new LinkedList<String>();
         LinkedList<String> usernames = new LinkedList<String>();

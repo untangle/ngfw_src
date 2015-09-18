@@ -62,7 +62,7 @@ class NodeManager(Manager):
             self.__print_sessions(nodeId)
 
     def __get_policy_name(self,policyId):
-        node = self.__nodeManager.node( "untangle-node-policy" )
+        node = self.__nodeManager.node( "untangle-node-policy-manager" )
         if node == None:
             if (policyId == 1):
                 return "Default Policy"
