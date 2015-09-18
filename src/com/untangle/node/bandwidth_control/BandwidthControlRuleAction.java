@@ -1,0 +1,303 @@
+/**
+ * $Id$
+ */
+package com.untangle.node.bandwidth_control;
+
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import org.json.JSONObject;
+import org.json.JSONString;
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeSession;
+
+@SuppressWarnings("serial")
+public class BandwidthControlRuleAction implements JSONString, Serializable
+{
+    public static final int END_OF_HOUR = -1;
+    public static final int END_OF_DAY  = -2; 
+    public static final int END_OF_WEEK = -3;
+
+    private final Logger logger = Logger.getLogger(getClass());
+
+    public enum ActionType {
+        SET_PRIORITY, /* priority 1-7 */
+        PENALTY_BOX_CLIENT_HOST, /* priority 1-7, time_sec */
+        APPLY_PENALTY_PRIORITY, /* DEPRECATED */
+        GIVE_CLIENT_HOST_QUOTA, /* bytes #, time_sec */
+    }
+
+    private ActionType action = null;
+    private Integer priority = null;
+    private Integer penaltyTimeSec = null;
+    private Integer quotaTimeSec = null;
+    private Long quotaBytes = null;
+
+    private BandwidthControlRule rule = null; /* the rule that owns this action */
+    
+    /**
+     * This reference is held to that advanced actions can be applied
+     */
+    private BandwidthControlApp node;
+    
+    public BandwidthControlRuleAction()
+    {
+    }
+
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority)
+    {
+        this(action,node,priority,0);
+    }
+
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority, Integer penaltyTimeSec)
+    {
+        this.setNode(node);
+        this.setActionType(action);
+        this.setPriority(priority);
+        this.setPenaltyTime(penaltyTimeSec);
+    }
+
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority, Integer quotaTimeSec, Long quotaBytes)
+    {
+        this.setNode(node);
+        this.setActionType(action);
+        this.setQuotaTime(quotaTimeSec);
+        this.setQuotaBytes(quotaBytes);
+    }
+    
+    /**
+     * Get the action type for this action
+     */
+    public ActionType getActionType()
+    {
+        return this.action;
+    }
+
+    /**
+     * Set the action type for this action
+     */
+    public void setActionType(ActionType action)
+    {
+        this.action = action;
+    }
+
+    /**
+     * Get the priority for this action
+     * 
+     * Not all action types use this setting
+     * For those actions that do not use this value is undefined
+     */
+    public Integer getPriority()
+    {
+        return this.priority;
+    }
+
+    /**
+     * Set the priority for this action 
+     */
+    public void setPriority(Integer priority)
+    {
+        this.priority = priority;
+    }
+
+    /**
+     * Get the penalty box time for this action
+     * This only applies for the PENALTY_BOX_USER action
+     */
+    public Integer getPenaltyTime()
+    {
+        return this.penaltyTimeSec;
+    }
+
+    /**
+     * Set the penalty box time for this action
+     * This only applies for the PENALTY_BOX_USER action
+     */
+    public void setPenaltyTime(Integer seconds)
+    {
+        this.penaltyTimeSec = seconds;
+    }
+
+    /**
+     * Get the quota time for this action
+     * This only applies for the GIVE_HOST_QUOTA action
+     */
+    public Integer getQuotaTime()
+    {
+        return this.quotaTimeSec;
+    }
+
+    /**
+     * Set the quota time for this action
+     * This only applies for the GIVE_HOST_QUOTA action
+     */
+    public void setQuotaTime(Integer seconds)
+    {
+        this.quotaTimeSec = seconds;
+    }
+
+    /**
+     * Get the quota bytes for this action
+     * This only applies for the GIVE_HOST_QUOTA action
+     */
+    public Long getQuotaBytes()
+    {
+        return this.quotaBytes;
+    }
+
+    /**
+     * Set the quota bytes for this action
+     * This only applies for the GIVE_HOST_QUOTA action
+     */
+    public void setQuotaBytes(Long bytes)
+    {
+        this.quotaBytes = bytes;
+    }
+    
+    /**
+     * Sets the node that owns this rule and rule action
+     * This reference is necessary to effect some actions (like adding to penalty box)
+     */
+    public void setNode( BandwidthControlApp node )
+    {
+        this.node = node;
+    }
+
+    public void setRule( BandwidthControlRule rule )
+    {
+        this.rule = rule;
+    }
+    
+    /**
+     * This prints this action in JSON format
+     * This is used for JSON serialization
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+
+    /**
+     * This applies the action to the given session
+     */
+    public void apply( NodeSession sess )
+    {
+        if (this.action == null) {
+            logger.warn("Ignoring improperly initialized action");
+            return;
+        }
+
+        int pri;
+        String reason;
+        
+        switch (this.action) {
+
+        case SET_PRIORITY:
+
+            pri = this.priority.intValue();
+
+            logger.debug( "Applying Action    : " + 
+                         sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                         sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort() + " Set Priority : " + priority);
+
+            if (pri != ((BandwidthControlSessionState)sess.attachment()).lastPriority) {
+                sess.setClientQosMark(pri);
+                sess.setServerQosMark(pri);
+                ((BandwidthControlSessionState)sess.attachment()).lastPriority = pri;
+                
+                this.node.incrementCount( BandwidthControlApp.STAT_PRIORITIZE, 1 );
+                this.node.logEvent( new PrioritizeEvent( sess.sessionEvent(), pri, this.rule.getRuleId() ) );
+            }
+            
+            break;
+
+        case PENALTY_BOX_CLIENT_HOST:
+
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            logger.debug( "Applying Action    : " + "Adding " + sess.getClientAddr() + " to Penalty box for " + this.penaltyTimeSec + " seconds");
+            UvmContextFactory.context().hostTable().addHostToPenaltyBox( sess.getClientAddr(), this.penaltyTimeSec, reason );
+            this.node.incrementCount( BandwidthControlApp.STAT_PENALTY_BOXED, 1 );
+
+            break;
+
+        case APPLY_PENALTY_PRIORITY: 
+            logger.warn("APPLY_PENALTY_PRIORITY used but is now DEPRECATED");
+            break;
+
+        case GIVE_CLIENT_HOST_QUOTA:
+
+            long expireTime = this.quotaTimeSec;
+
+            GregorianCalendar calendar = new GregorianCalendar();
+            Date now = calendar.getTime();
+            Date expireDate = null;
+
+            logger.debug( "Applying Action    : " + "Give Host Quota: " + sess.getClientAddr().getHostAddress());
+            
+            switch(this.quotaTimeSec) {
+
+            case END_OF_HOUR:
+                calendar.add(Calendar.HOUR, 1);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+
+                expireDate = calendar.getTime();
+                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+                logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+                break;
+                
+            case END_OF_DAY:
+                calendar.add(Calendar.DAY_OF_WEEK, 1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.add(Calendar.SECOND, -1);
+                /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
+
+                expireDate = calendar.getTime();
+                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+                logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+                break;
+
+            case END_OF_WEEK:
+                calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.add(Calendar.SECOND, -1);
+                /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
+
+                expireDate = calendar.getTime();
+                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+                logger.info("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+                break;
+
+            default:
+                /* do nothing */
+                break;
+            }
+                
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            logger.debug("Giving " + sess.getClientAddr() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
+            UvmContextFactory.context().hostTable().giveHostQuota( sess.getClientAddr(), this.quotaBytes, (int)expireTime, reason);
+
+            break;
+            
+        default:
+            logger.error("Unknown action: " + this.action);
+
+            break;
+        }
+    }
+    
+}
