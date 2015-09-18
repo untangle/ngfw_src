@@ -120,6 +120,12 @@ if [ -x /etc/untangle-netd/post-network-hook.d/040-splitd ] ; then
     echo "[`date`] Inserting Balancing rules..."
     /etc/untangle-netd/post-network-hook.d/040-splitd
 fi
+# tell splitd to update its balance routes (if its running)
+if [ -x /etc/untangle-netd/post-network-hook.d/040-wan-balancer ] ; then
+    echo "[`date`] Inserting Balancing rules..."
+    /etc/untangle-netd/post-network-hook.d/040-wan-balancer
+fi
+
 
 # flush cache
 ip route flush cache
