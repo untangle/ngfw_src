@@ -91,7 +91,7 @@ task :devel => [:build, :hier, :installuvmcore] do
 end
 
 task :i18n => [:builduvmcore, :targets] do
-  Rake::Task[BuildEnv::SRC.i18nTarget].invoke
+#  Rake::Task[BuildEnv::SRC.i18nTarget].invoke
 end
 
 task :debian_init_files do
