@@ -27,7 +27,7 @@
         "untangle-node-reporting",
         "untangle-node-spam-blocker-lite",
         "untangle-node-directory-connector",
-        "untangle-node-bandwidth",
+        "untangle-node-bandwidth-control",
         "untangle-node-configuration-backup",
         "untangle-node-branding-manager",
         "untangle-node-spam-blocker",

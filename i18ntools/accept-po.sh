@@ -44,7 +44,7 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-directory-connector)
             d=$hades/src/directory-connector
             ;;
-        untangle-node-bandwidth)
+        untangle-node-bandwidth-control)
             d=$hades/src/bandwidth
             ;;
         untangle-node-configuration-backup)

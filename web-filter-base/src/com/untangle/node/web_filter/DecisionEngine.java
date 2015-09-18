@@ -222,12 +222,12 @@ public abstract class DecisionEngine
                 /**
                  * Tag the session with metadata
                  */
-                sess.globalAttach(node.getName()+"-best-category-id",bestCategory.getId());
-                sess.globalAttach(node.getName()+"-best-category-name",bestCategory.getName());
-                sess.globalAttach(node.getName()+"-best-category-description",bestCategory.getDescription());
-                sess.globalAttach(node.getName()+"-best-category-flagged",bestCategory.getFlagged());
-                sess.globalAttach(node.getName()+"-best-category-blocked",bestCategory.getBlocked());
-                sess.globalAttach(node.getName()+"-flagged",isFlagged);
+                sess.globalAttach(node.getAppName()+"-best-category-id",bestCategory.getId());
+                sess.globalAttach(node.getAppName()+"-best-category-name",bestCategory.getName());
+                sess.globalAttach(node.getAppName()+"-best-category-description",bestCategory.getDescription());
+                sess.globalAttach(node.getAppName()+"-best-category-flagged",bestCategory.getFlagged());
+                sess.globalAttach(node.getAppName()+"-best-category-blocked",bestCategory.getBlocked());
+                sess.globalAttach(node.getAppName()+"-flagged",isFlagged);
             }
         
             /**
@@ -289,7 +289,7 @@ public abstract class DecisionEngine
                     WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle());
                     return node.generateNonce(bd);
                 } else if ( extRule.getFlagged() ) {
-                    sess.globalAttach(node.getName()+"-flagged",true);
+                    sess.globalAttach(node.getAppName()+"-flagged",true);
                 }
                 
             }
