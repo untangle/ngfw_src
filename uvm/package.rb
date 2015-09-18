@@ -106,8 +106,10 @@ if ( jsFiles.length > 0 )
   end
 end
 
+# Localization
 JavaMsgFmtTarget.make_po_targets(uvm_lib, "#{BuildEnv::SRC.home}/i18ntools/po",
                                  "#{uvm_lib.distDirectory}/usr/share/untangle/lang/",
                                  'untangle').each do |t|
   BuildEnv::SRC.i18nTarget.register_dependency(t)
+  BuildEnv::SRC.installTarget.register_dependency(t)
 end
