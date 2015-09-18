@@ -376,15 +376,6 @@ class ServletBuilder < Target
     @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)
     deps << @srcJar
 
-    po_dir = "#{path}/po"
-    if File.exist? po_dir
-      JavaMsgFmtTarget.make_po_targets(package, po_dir,
-                                       @srcJar.javac_dir,
-                                       "#{pkgname}.Messages").each do |t|
-        BuildEnv::SRC.i18nTarget.register_dependency(t)
-      end
-    end
-
     super(package, deps + jardeps, suffix)
   end
 
@@ -526,11 +517,11 @@ class JavaMsgFmtTarget
   def JavaMsgFmtTarget.make_po_targets(package, src, dest, basename)
     ts = []
 
-#    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
-#      Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
-#        ts << JavaMsgFmtTarget.new(src, package, dir, "#{src}/#{dir}/#{f}", dest, basename)
-#      end
-#    end
+    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
+      Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
+        ts << JavaMsgFmtTarget.new(src, package, dir, "#{src}/#{dir}/#{f}", dest, basename)
+      end
+    end
 
     ts
   end

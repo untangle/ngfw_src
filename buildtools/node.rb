@@ -39,13 +39,6 @@ class NodeBuilder
       buildEnv.installTarget.install_jars(srcJar, "#{node.distDirectory}/usr/share/untangle/lib", nil, true)
     end
 
-    po_dir = "#{home}/#{dirName}/po"
-    if File.exist? po_dir
-      JavaMsgFmtTarget.make_po_targets(node, po_dir, "#{node.distDirectory}/usr/share/untangle/lang/", name).each do |t|
-        buildEnv.i18nTarget.register_dependency(t)
-      end
-    end
-
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]
     if ( hierFiles.length > 0 )
       ms = MoveSpec.new("#{home}/#{dirName}/hier", hierFiles, node.distDirectory)
