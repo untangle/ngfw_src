@@ -1,0 +1,184 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:21+0200\n"
+"PO-Revision-Date: 2011-06-23 09:44-0700\n"
+"Last-Translator: Joao Henrique Pereira Arroyo <joao@joao.eti.br>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+msgid "searched for"
+msgstr ""
+
+msgid "on"
+msgstr ""
+
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} Aviso"
+
+msgid "The password you entered is incorrect."
+msgstr "A senha informada está incorreta"
+
+msgid "{0}This web page is blocked{1} because it violates network policy."
+msgstr ""
+
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+msgid "Host:"
+msgstr ""
+
+msgid "URL:"
+msgstr ""
+
+msgid "Reason:"
+msgstr ""
+
+msgid "Unblock For Now"
+msgstr ""
+
+msgid "Unblock Permanently"
+msgstr ""
+
+msgid "Top Query Terms"
+msgstr ""
+
+msgid "Hits"
+msgstr ""
+
+msgid "Hosts"
+msgstr ""
+
+msgid "Hits Per Day"
+msgstr ""
+
+msgid "Top Query Hosts"
+msgstr ""
+
+msgid "Top Query Users"
+msgstr ""
+
+msgid "Unblock Events"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Client"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Url"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Server Ip"
+msgstr ""
+
+msgid "Client Ip"
+msgstr ""
+
+msgid "Query Events"
+msgstr ""
+
+msgid "Term"
+msgstr ""
+
+msgid ""
+"Process HTTPS traffic by SNI (Server Name Indication) information if present"
+msgstr ""
+
+msgid ""
+"Process HTTPS traffic by hostname in server certificate when SNI information "
+"not present"
+msgstr ""
+
+msgid ""
+"Process HTTPS traffic by server IP if both SNI and certificate hostname "
+"information are not available"
+msgstr ""
+
+msgid "Enforce"
+msgstr ""
+
+msgid "for Schools."
+msgstr ""
+
+msgid ""
+"Enter your unique Youtube for Schools indentifier provided by youtube. "
+"(Example: Jvagw07BzSxAntTxXxaBcx"
+msgstr ""
+
+msgid "Enforce safe search on popular search engines"
+msgstr "Forçar 'Busca Segura' nas ferramentas de busca populares"
+
+msgid "Require Password"
+msgstr "Exigir Senha"
+
+msgid "Clear Category URL Cache."
+msgstr ""
+
+msgid "Site Lookup"
+msgstr ""
+
+msgid "Search for a site's category"
+msgstr ""
+
+msgid "Type the site's URL to find its category"
+msgstr ""
+
+msgid "Site URL"
+msgstr ""
+
+msgid "Suggest a different category"
+msgstr ""
+
+msgid "Last suggested on"
+msgstr ""
+
+msgid ""
+"NOTE: This is only a suggestion and may not be accepted. If accepted it may "
+"take a few days to become active."
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Suggest"
+msgstr ""
+
+msgid "Suggestion submitted."
+msgstr ""
+
+msgid "Unable to submit suggestion.  Try again later."
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Clearing Host Cache..."
+msgstr ""
+
+msgid "Please Wait"
+msgstr "Aguarde"
+
+msgid "Error Clearing Host Cache."
+msgstr ""
+
+msgid "There was an error clearing the host cache, please try again."
+msgstr ""
+
+msgid "Cleared Host Cache"
+msgstr ""
+
+msgid "The Host Cache was cleared succesfully."
+msgstr ""
