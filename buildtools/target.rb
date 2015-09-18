@@ -526,11 +526,11 @@ class JavaMsgFmtTarget
   def JavaMsgFmtTarget.make_po_targets(package, src, dest, basename)
     ts = []
 
-    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
-      Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
-        ts << JavaMsgFmtTarget.new(src, package, dir, "#{src}/#{dir}/#{f}", dest, basename)
-      end
-    end
+#    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
+#      Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
+#        ts << JavaMsgFmtTarget.new(src, package, dir, "#{src}/#{dir}/#{f}", dest, basename)
+#      end
+#    end
 
     ts
   end
