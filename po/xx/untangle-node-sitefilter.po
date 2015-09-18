@@ -1,0 +1,242 @@
+msgid "searched for"
+msgstr "Xsearched forX"
+
+msgid "on"
+msgstr "XonX"
+
+msgid "{0} | {1} Warning"
+msgstr "X{0} | {1} WarningX"
+
+msgid "The password you entered is incorrect."
+msgstr "XThe password you entered is incorrect.X"
+
+msgid "{0}This web page is blocked{1} because it violates network policy."
+msgstr "X{0}This web page is blocked{1} because it violates network policy.X"
+
+msgid "If you have any questions, Please contact {0}."
+msgstr "XIf you have any questions, Please contact {0}.X"
+
+msgid "Host:"
+msgstr "XHost:X"
+
+msgid "URL:"
+msgstr "XURL:X"
+
+msgid "Reason:"
+msgstr "XReason:X"
+
+msgid "Unblock For Now"
+msgstr "XUnblock For NowX"
+
+msgid "Unblock Permanently"
+msgstr "XUnblock PermanentlyX"
+
+msgid "Top Query Terms"
+msgstr "XTop Query TermsX"
+
+msgid "Hits"
+msgstr "XHitsX"
+
+msgid "Hosts"
+msgstr "XHostsX"
+
+msgid "Hits Per Day"
+msgstr "XHits Per DayX"
+
+msgid "Top Query Hosts"
+msgstr "XTop Query HostsX"
+
+msgid "Top Query Users"
+msgstr "XTop Query UsersX"
+
+msgid "Unblock Events"
+msgstr "XUnblock EventsX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "Client"
+msgstr "XClientX"
+
+msgid "User"
+msgstr "XUserX"
+
+msgid "Url"
+msgstr "XUrlX"
+
+msgid "Category"
+msgstr "XCategoryX"
+
+msgid "Server Ip"
+msgstr "XServer IpX"
+
+msgid "Client Ip"
+msgstr "XClient IpX"
+
+msgid "Query Events"
+msgstr "XQuery EventsX"
+
+msgid "Term"
+msgstr "XTermX"
+
+msgid ""
+"Process HTTPS traffic by SNI (Server Name Indication) information if present"
+msgstr "XProcess HTTPS traffic by SNI (Server Name Indication) information if presentX"
+
+msgid ""
+"Process HTTPS traffic by hostname in server certificate when SNI information "
+"not present"
+msgstr "XProcess HTTPS traffic by hostname in server certificate when SNI information not presentX"
+
+msgid ""
+"Process HTTPS traffic by server IP if both SNI and certificate hostname "
+"information are not available"
+msgstr "XProcess HTTPS traffic by server IP if both SNI and certificate hostname information are not availableX"
+
+msgid "Enforce"
+msgstr "XEnforceX"
+
+msgid "for Schools."
+msgstr "Xfor Schools.X"
+
+msgid ""
+"Enter your unique Youtube for Schools indentifier provided by youtube. "
+"(Example: Jvagw07BzSxAntTxXxaBcx"
+msgstr "XEnter your unique Youtube for Schools indentifier provided by youtube. (Example: Jvagw07BzSxAntTxXxaBcxX"
+
+msgid "Enforce safe search on popular search engines"
+msgstr "XEnforce safe search on popular search enginesX"
+
+msgid "Require Password"
+msgstr "XRequire PasswordX"
+
+msgid "Clear Category URL Cache."
+msgstr "XClear Category URL Cache.X"
+
+msgid "Site Lookup"
+msgstr "XSite LookupX"
+
+msgid "Search for a site's category"
+msgstr "XSearch for a site's categoryX"
+
+msgid "Type the site's URL to find its category"
+msgstr "XType the site's URL to find its categoryX"
+
+msgid "Site URL"
+msgstr "XSite URLX"
+
+msgid "Suggest a different category"
+msgstr "XSuggest a different categoryX"
+
+msgid "Last suggested on"
+msgstr "XLast suggested onX"
+
+msgid ""
+"NOTE: This is only a suggestion and may not be accepted. If accepted it may "
+"take a few days to become active."
+msgstr "XNOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active.X"
+
+msgid "Search"
+msgstr "XSearchX"
+
+msgid "Suggest"
+msgstr "XSuggestX"
+
+msgid "Suggestion submitted."
+msgstr "XSuggestion submitted.X"
+
+msgid "Unable to submit suggestion.  Try again later."
+msgstr "XUnable to submit suggestion.  Try again later.X"
+
+msgid "Close"
+msgstr "XCloseX"
+
+msgid "Clearing Host Cache..."
+msgstr "XClearing Host Cache...X"
+
+msgid "Please Wait"
+msgstr "XPlease WaitX"
+
+msgid "Error Clearing Host Cache."
+msgstr "XError Clearing Host Cache.X"
+
+msgid "There was an error clearing the host cache, please try again."
+msgstr "XThere was an error clearing the host cache, please try again.X"
+
+msgid "Cleared Host Cache"
+msgstr "XCleared Host CacheX"
+
+msgid "The Host Cache was cleared succesfully."
+msgstr "XThe Host Cache was cleared succesfully.X"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
