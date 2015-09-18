@@ -6,7 +6,7 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
-        "sum(case when type='I' then 1 else 0 end) as logins",
+        "sum(case when type='I' then 1 else 0 end) as logins"
     ],
     "textString": "Directory Connector processed {0} logins.", 
     "readOnly": true,
