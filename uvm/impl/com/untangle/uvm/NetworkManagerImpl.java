@@ -1116,7 +1116,7 @@ public class NetworkManagerImpl implements NetworkManager
                 break;
             if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                 break;
-            if ( ! intf.getIsWan() )
+            if ( intf.getIsWan() )
                 break;
             if ( intf.getDhcpEnabled() == null || ! intf.getDhcpEnabled() )
                 break;
