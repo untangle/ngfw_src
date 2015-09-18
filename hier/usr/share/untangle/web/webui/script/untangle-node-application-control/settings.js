@@ -1,5 +1,5 @@
 // Application Control settings
-Ext.define('Webui.untangle-node-application_control.settings', {
+Ext.define('Webui.untangle-node-application-control.settings', {
     extend: 'Ung.NodeWin',
     nodeStats: null,
     gridProtoRules: null,

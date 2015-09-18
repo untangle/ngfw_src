@@ -1,7 +1,7 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.application_control.ApplicationControlApp",
-        "name" : "untangle-node-application_control",
+        "name" : "untangle-node-application-control",
         "displayName" : "Application Control",
         "type" : "FILTER",
         "viewPosition" : 99,
