@@ -1148,7 +1148,7 @@ Ext.define("Ung.Main", {
                         { displayName: "Policy Manager", name: 'untangle-node-policy'},
                         { displayName: "Directory Connector", name: 'untangle-node-directory-connector'},
                         { displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
-                        { displayName: "WAN Balancer", name: 'untangle-node-splitd'},
+                        { displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},
                         { displayName: "IPsec VPN", name: 'untangle-node-ipsec-vpn'},
                         { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
                         { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},

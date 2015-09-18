@@ -250,7 +250,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.splitd">
+  <category name="com.untangle.node.wan_balancer">
     <priority value="INFO"/>
   </category>
 

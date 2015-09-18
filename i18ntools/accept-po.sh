@@ -96,8 +96,8 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-spam-blocker-lite)
             d=$work/src/spam-blocker-lite
             ;;
-        untangle-node-splitd)
-            d=$hades/src/splitd
+        untangle-node-wan-balancer)
+            d=$hades/src/wan-balancer
             ;;
         untangle-node-support)
             d=$hades/src/support

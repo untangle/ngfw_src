@@ -22,7 +22,7 @@ awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
 done
 
 echo " = IPv4 Route Rules = "
-iptables -t mangle -nL splitd-route-rules 2>/dev/null | grep -v -E '(Chain|target)'
+iptables -t mangle -nL wan-balancer-route-rules 2>/dev/null | grep -v -E '(Chain|target)'
 
 echo
 echo
