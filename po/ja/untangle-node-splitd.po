@@ -1,0 +1,195 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:18+0200\n"
+"PO-Revision-Date: 2013-01-07 23:49+0200\n"
+"Last-Translator: Jupiter Technology Corp\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "Sessions on {0}"
+msgstr "{0}上のセッション"
+
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+msgid "spread"
+msgstr "スプレッド"
+
+msgid "sessions over"
+msgstr "セッションオーバー"
+
+msgid "interfaces"
+msgstr "インターフェース"
+
+msgid "Bandwidth Usage"
+msgstr "帯域幅の使用"
+
+msgid "Time"
+msgstr "時間"
+
+msgid "kB/sec"
+msgstr "kB/秒"
+
+msgid "Unknown"
+msgstr "不明"
+
+msgid "(avg)"
+msgstr "(平均)"
+
+msgid "(max)"
+msgstr "(最大)"
+
+msgid "Active Sessions"
+msgstr "アクティブセッション"
+
+msgid "sessions"
+msgstr "セッション"
+
+msgid "Sessions By WAN"
+msgstr "WANでのセッション数"
+
+msgid "Traffic By WAN"
+msgstr "WANでのトラフィック"
+
+msgid "data"
+msgstr "データ"
+
+msgid "Total Sessions By WAN"
+msgstr "WANでの総セッション数"
+
+msgid "Sessions"
+msgstr "セッション"
+
+msgid "Interface"
+msgstr "インターフェース"
+
+msgid "Bandwidth By WAN Interface"
+msgstr "WANインターフェースでの帯域幅"
+
+msgid "MB"
+msgstr "MB"
+
+msgid "Destination Address"
+msgstr "宛先アドレス"
+
+msgid "Destination Port"
+msgstr "宛先ポート"
+
+msgid "Source Address"
+msgstr "発信元アドレス"
+
+msgid "Source Port"
+msgstr "送信元ポート"
+
+msgid "Source Interface"
+msgstr "送信元インターフェース"
+
+msgid "Protocol"
+msgstr "プロトコル"
+
+msgid "any"
+msgstr "any"
+
+msgid "{0} interface"
+msgstr "{0} インターフェース"
+
+msgid "Status"
+msgstr "状態"
+
+msgid ""
+"Currently, WAN Balancer is attempting to share traffic over the existing WAN "
+"interfaces with the ratio displayed below. To change this ratio click on "
+"Traffic Allocation."
+msgstr ""
+
+msgid "Current Traffic Allocation"
+msgstr "現在のトラフィック割当て"
+
+msgid "Configure additional WAN interfaces"
+msgstr ""
+
+msgid "Interface Weights"
+msgstr "インターフェースの重み付け"
+
+msgid "Weight"
+msgstr "重み"
+
+msgid "Resulting Traffic Allocation"
+msgstr "トラフィック割当て結果"
+
+msgid "Traffic Allocation"
+msgstr "トラフィック割当て"
+
+msgid ""
+"Traffic allocation across WAN interfaces is controlled by assigning a "
+"relative weight (1-100) to each interface. After entering the weight of each "
+"interface the resulting allocation is displayed.<br/>If all WAN interfaces "
+"have the same bandwidth it is best to assign the same weight to all WAN "
+"interfaces. If the WAN interfaces vary in bandwidth enter numbers that "
+"correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/"
+"sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr ""
+"WANインターフェースのトラフィック割当ては、各インターフェースに相対的な重み "
+"(1-100) を割当てることで制御されます。割当結果は各インターフェースの重みを入"
+"力した後に表示されます。<br/>すべてのWANインターフェースが同じ帯域幅を持つ場"
+"合、すべてのWANインターフェースに同じ重みを割当てるのがよいです。WANインター"
+"フェースの帯域幅が異なる場合は、相対的に利用できる帯域幅に対応する数を入力し"
+"てください。例えば、1.5 Mbit/秒の T1には 15、6 Mbitのリンクには 60、10 Mbitの"
+"リンクには 100を入力します。"
+
+msgid "Balance"
+msgstr "バランス"
+
+msgid "Route Rules"
+msgstr "ルートルール"
+
+msgid "Rule Id"
+msgstr "ルールID"
+
+msgid "new"
+msgstr "新規"
+
+msgid "Enable"
+msgstr "有効"
+
+msgid "Description"
+msgstr "説明"
+
+msgid "Destination WAN"
+msgstr "宛先WAN"
+
+msgid "Enable Route Rule"
+msgstr "ルートルールを有効"
+
+msgid "[no description]"
+msgstr "[no description]"
+
+msgid "If all of the following conditions are met:"
+msgstr "次の全ての条件が満たされている場合："
+
+msgid "Perform the following action(s):"
+msgstr "次の操作を実行します。"
+
+msgid ""
+"Route Rules are used to assign specific sessions to a specific WAN "
+"interface. Rules are evaluated in order and the WAN interface of the first "
+"matching rule is used to route the matching session. If there is no matching "
+"rule or the rule is set to <i>Balance</i> the session will be routed "
+"according to the <i>Traffic Allocation</i> settings."
+msgstr ""
+"ルートルールは、特定のWANインターフェイスに固有のセッションを割り当てるために"
+"使用される。 ルールは秩序と最初に一致したルールのWANインターフェイスがルート"
+"に一致するセッションが使用されている中で評価されます。一致するルールがないま"
+"たはルールがセッションの<i>バランスを取るように設定</i>されている場合、<i>ト"
+"ラフィック割り当て設定</i>に応じてルーティングされます。"
+
+msgid "{0}% of Internet traffic."
+msgstr "インターネットトラフィック　{0}% "
+

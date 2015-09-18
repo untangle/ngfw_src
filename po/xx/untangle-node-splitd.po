@@ -1,0 +1,174 @@
+msgid "Sessions on {0}"
+msgstr "XSessions on {0}X"
+
+msgid "Summary Report"
+msgstr "XSummary ReportX"
+
+msgid "spread"
+msgstr "XspreadX"
+
+msgid "sessions over"
+msgstr "Xsessions overX"
+
+msgid "interfaces"
+msgstr "XinterfacesX"
+
+msgid "Bandwidth Usage"
+msgstr "XBandwidth UsageX"
+
+msgid "Time"
+msgstr "XTimeX"
+
+msgid "kB/sec"
+msgstr "XkB/secX"
+
+msgid "Unknown"
+msgstr "XUnknownX"
+
+msgid "(avg)"
+msgstr "X(avg)X"
+
+msgid "(max)"
+msgstr "X(max)X"
+
+msgid "Active Sessions"
+msgstr "XActive SessionsX"
+
+msgid "sessions"
+msgstr "XsessionsX"
+
+msgid "Sessions By WAN"
+msgstr "XSessions By WANX"
+
+msgid "Traffic By WAN"
+msgstr "XTraffic By WANX"
+
+msgid "data"
+msgstr "XdataX"
+
+msgid "Total Sessions By WAN"
+msgstr "XTotal Sessions By WANX"
+
+msgid "Sessions"
+msgstr "XSessionsX"
+
+msgid "Interface"
+msgstr "XInterfaceX"
+
+msgid "Bandwidth By WAN Interface"
+msgstr "XBandwidth By WAN InterfaceX"
+
+msgid "MB"
+msgstr "XMBX"
+
+msgid "Destination Address"
+msgstr "XDestination AddressX"
+
+msgid "Destination Port"
+msgstr "XDestination PortX"
+
+msgid "Source Address"
+msgstr "XSource AddressX"
+
+msgid "Source Port"
+msgstr "XSource PortX"
+
+msgid "Source Interface"
+msgstr "XSource InterfaceX"
+
+msgid "Protocol"
+msgstr "XProtocolX"
+
+msgid "any"
+msgstr "XanyX"
+
+msgid "{0} interface"
+msgstr "X{0} interfaceX"
+
+msgid "Status"
+msgstr "XStatusX"
+
+msgid ""
+"Currently, WAN Balancer is attempting to share traffic over the existing WAN "
+"interfaces with the ratio displayed below. To change this ratio click on "
+"Traffic Allocation."
+msgstr "XCurrently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.X"
+
+msgid "Current Traffic Allocation"
+msgstr "XCurrent Traffic AllocationX"
+
+msgid "Configure additional WAN interfaces"
+msgstr "XConfigure additional WAN interfacesX"
+
+msgid "Interface Weights"
+msgstr "XInterface WeightsX"
+
+msgid "Weight"
+msgstr "XWeightX"
+
+msgid "Resulting Traffic Allocation"
+msgstr "XResulting Traffic AllocationX"
+
+msgid "Traffic Allocation"
+msgstr "XTraffic AllocationX"
+
+msgid ""
+"Traffic allocation across WAN interfaces is controlled by assigning a "
+"relative weight (1-100) to each interface. After entering the weight of each "
+"interface the resulting allocation is displayed.<br/>If all WAN interfaces "
+"have the same bandwidth it is best to assign the same weight to all WAN "
+"interfaces. If the WAN interfaces vary in bandwidth enter numbers that "
+"correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/"
+"sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr "XTraffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link.X"
+
+msgid "Balance"
+msgstr "XBalanceX"
+
+msgid "Route Rules"
+msgstr "XRoute RulesX"
+
+msgid "Rule Id"
+msgstr "XRule IdX"
+
+msgid "new"
+msgstr "XnewX"
+
+msgid "Enable"
+msgstr "XEnableX"
+
+msgid "Description"
+msgstr "XDescriptionX"
+
+msgid "Destination WAN"
+msgstr "XDestination WANX"
+
+msgid "Enable Route Rule"
+msgstr "XEnable Route RuleX"
+
+msgid "[no description]"
+msgstr "X[no description]X"
+
+msgid "If all of the following conditions are met:"
+msgstr "XIf all of the following conditions are met:X"
+
+msgid "Perform the following action(s):"
+msgstr "XPerform the following action(s):X"
+
+msgid ""
+"Route Rules are used to assign specific sessions to a specific WAN "
+"interface. Rules are evaluated in order and the WAN interface of the first "
+"matching rule is used to route the matching session. If there is no matching "
+"rule or the rule is set to <i>Balance</i> the session will be routed "
+"according to the <i>Traffic Allocation</i> settings."
+msgstr "XRoute Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings.X"
+
+msgid "{0}% of Internet traffic."
+msgstr "X{0}% of Internet traffic.X"
+
+
+
+
+
+
+

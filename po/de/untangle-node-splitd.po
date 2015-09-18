@@ -1,0 +1,199 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-19 21:10+0200\n"
+"PO-Revision-Date: 2012-08-20 12:41+0200\n"
+"Last-Translator: Rainer <rh@webkom.net>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.6\n"
+
+msgid "Sessions on {0}"
+msgstr "Sitzungen auf {0}"
+
+msgid "Summary Report"
+msgstr "Zusammenfassender Report"
+
+msgid "spread"
+msgstr ""
+
+msgid "sessions over"
+msgstr "Sitzungen über"
+
+msgid "interfaces"
+msgstr "Schnittstellen"
+
+msgid "Bandwidth Usage"
+msgstr "Bandbreitennutzung"
+
+msgid "Time"
+msgstr "Zeit"
+
+msgid "kB/sec"
+msgstr "KB/Sek"
+
+msgid "Unknown"
+msgstr "Unbekannt"
+
+msgid "(avg)"
+msgstr "(durchschn)"
+
+msgid "(max)"
+msgstr "(max)"
+
+msgid "Active Sessions"
+msgstr "Aktive Sitzungen"
+
+msgid "sessions"
+msgstr "Sitzungen"
+
+msgid "Sessions By WAN"
+msgstr ""
+
+msgid "Traffic By WAN"
+msgstr ""
+
+msgid "data"
+msgstr ""
+
+msgid "Total Sessions By WAN"
+msgstr ""
+
+msgid "Sessions"
+msgstr "Sitzungen"
+
+msgid "Interface"
+msgstr "Schnittstelle"
+
+msgid "Bandwidth By WAN Interface"
+msgstr ""
+
+msgid "MB"
+msgstr ""
+
+msgid "Destination Address"
+msgstr ""
+
+msgid "Destination Port"
+msgstr ""
+
+msgid "Source Address"
+msgstr "Quell Adresse"
+
+msgid "Source Port"
+msgstr ""
+
+msgid "Source Interface"
+msgstr ""
+
+msgid "Protocol"
+msgstr ""
+
+msgid "any"
+msgstr ""
+
+msgid "{0} interface"
+msgstr "{0}Schnittstelle"
+
+msgid "Status"
+msgstr "Status"
+
+msgid ""
+"Currently, WAN Balancer is attempting to share traffic over the existing WAN "
+"interfaces with the ratio displayed below. To change this ratio click on "
+"Traffic Allocation."
+msgstr ""
+
+msgid "Current Traffic Allocation"
+msgstr "Aktuelle Verteilung Netzwerkverkehr"
+
+msgid "Configure additional WAN interfaces"
+msgstr ""
+
+msgid "Interface Weights"
+msgstr "Schnittstellen Wertigkeit"
+
+msgid "Weight"
+msgstr "Wertigkeit"
+
+msgid "Resulting Traffic Allocation"
+msgstr "Resultierende Netzwerkverkehr Verteilung"
+
+msgid "Traffic Allocation"
+msgstr "Verteilung Netzwerkverkehr"
+
+msgid ""
+"Traffic allocation across WAN interfaces is controlled by assigning a "
+"relative weight (1-100) to each interface. After entering the weight of each "
+"interface the resulting allocation is displayed.<br/>If all WAN interfaces "
+"have the same bandwidth it is best to assign the same weight to all WAN "
+"interfaces. If the WAN interfaces vary in bandwidth enter numbers that "
+"correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/"
+"sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr ""
+"Die Verteilung des Netzwerkverkehrs über WAN Schnittstellen wird über die "
+"Zuweisung einer relativen Wertigkeit (1-100) zu jeder Schnittstelle "
+"gesteuert. Nach Eingabe der Wertigkeit jeder Schnittstelle wird die sich "
+"daraus ergebende Verteilung angezeigt.<br/>Haben alle WAN Schnittstellen die "
+"gleiche Bandbreite ist es am besten allen WAN Schnittstellen die selbe "
+"Wertigkeit zuzuordnen. Wenn die WAN Schnittstellen unterschiedliche "
+"Bandbreiten haben, nutze Werte, die der relativen verfügbaren Bandbreite "
+"entsprechen.  Zum Beispiel: 15 für einen 1.5Mbit/Sek T1, 60 für einen 6 Mbit "
+"Link und 100 für einen 10 Mbit Link."
+
+msgid "Balance"
+msgstr "Ausgeglichen"
+
+msgid "Route Rules"
+msgstr ""
+
+msgid "Rule Id"
+msgstr ""
+
+msgid "new"
+msgstr ""
+
+msgid "Enable"
+msgstr "Aktiviere"
+
+msgid "Description"
+msgstr ""
+
+msgid "Destination WAN"
+msgstr ""
+
+msgid "Enable Route Rule"
+msgstr ""
+
+msgid "[no description]"
+msgstr ""
+
+msgid "If all of the following conditions are met:"
+msgstr ""
+
+msgid "Perform the following action(s):"
+msgstr ""
+
+msgid ""
+"Route Rules are used to assign specific sessions to a specific WAN "
+"interface. Rules are evaluated in order and the WAN interface of the first "
+"matching rule is used to route the matching session. If there is no matching "
+"rule or the rule is set to <i>Balance</i> the session will be routed "
+"according to the <i>Traffic Allocation</i> settings."
+msgstr ""
+"Source Routing wird benutzt um speziellen Netzwerkverkehr einer bestimmten "
+"WAN Schnittstelle zuzuordnen. Richtlinien werden der Reihe nach bewertet und "
+"die WAN Schnittstelle der ersten passenden Richtlinie wird genutzt um den "
+"entsprechenden Netzwerkverkehr zu routen. Gibt es keine passende Richtlinie "
+"oder ist die Richtlinie auf <i>Ausgeglichen</i> gesetzt wird der "
+"Netzwerkverkehr normal verteilt, entsprechend den Einstellungen der "
+"<i>Netzwerkverkehr Verteilung</i>."
+
+msgid "{0}% of Internet traffic."
+msgstr "{0}% des Internet Netzwerk Verkehrs."
+
