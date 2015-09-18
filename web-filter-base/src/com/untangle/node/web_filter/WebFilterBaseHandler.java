@@ -16,7 +16,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * Blocks HTTP traffic that is on an active block list.
  */
-public class WebFilterHandler extends HttpEventHandler
+public class WebFilterBaseHandler extends HttpEventHandler
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
@@ -24,7 +24,7 @@ public class WebFilterHandler extends HttpEventHandler
 
     // constructors -----------------------------------------------------------
 
-    protected WebFilterHandler( WebFilterBase node )
+    protected WebFilterBaseHandler( WebFilterBase node )
     {
         this.node = node;
     }

@@ -80,6 +80,15 @@ public class NodeManagerImpl implements NodeManager
             UvmContextFactory.context().execManager().execResult("/bin/rm -rf " + dirName);
         }
 
+        // global renames
+        oldNames = new String[] {"SITEFILTER"};
+        newNames = new String[] {"WEB_FILTER"};
+        for ( i = 0 ; i < oldNames.length ; i++ ) {
+            String oldStr = oldNames[i];
+            String newStr = newNames[i];
+            UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f | xargs /bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i ");
+        }
+        
         // FIXME use version to detect if conversion is needed
         // FIXME need to fix names in nodes.js
         
@@ -335,6 +344,22 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
+        // rename splitd to wan-balancer
+        oldName = "untangle-node-sitefilter";
+        newName = "untangle-node-web-filter";
+        oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
+        newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+        
     }
 
     public NodeManagerSettings getSettings()

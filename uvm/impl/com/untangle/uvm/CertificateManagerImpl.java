@@ -214,7 +214,7 @@ public class CertificateManagerImpl implements CertificateManager
             }
 
             // now convert the local PEM file to the local PFX file for apps
-            // that use SSLEngine like sitefilter and captive portal
+            // that use SSLEngine like web filter and captive portal
             UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
 
             // now copy the local PEM file to the apache directory and restart
@@ -448,7 +448,7 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
         // now convert the local PEM file to the local PFX file for apps
-        // that use SSLEngine like sitefilter and captive portal
+        // that use SSLEngine like web filter and captive portal
         UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
 
         // now copy the pem file to the apache directory and restart

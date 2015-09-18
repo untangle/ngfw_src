@@ -234,7 +234,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.sitefilter">
+  <category name="com.untangle.node.web_filter">
     <priority value="INFO"/>
   </category>
 

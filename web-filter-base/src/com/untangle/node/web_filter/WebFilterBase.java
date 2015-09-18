@@ -41,7 +41,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     protected final PipelineConnector connector;
     protected final PipelineConnector[] connectors;
 
-    protected final WebFilterReplacementGenerator replacementGenerator;
+    protected final WebFilterBaseReplacementGenerator replacementGenerator;
 
     protected volatile WebFilterSettings settings;
 
@@ -57,7 +57,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
         this.connectors = new PipelineConnector[] { connector };
         
         String nodeName = this.getName();
@@ -264,9 +264,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         this.incrementMetric(STAT_PASS);
     }
 
-    protected WebFilterReplacementGenerator buildReplacementGenerator()
+    protected WebFilterBaseReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterReplacementGenerator(getNodeSettings());
+        return new WebFilterBaseReplacementGenerator(getNodeSettings());
     }
 
     @Override

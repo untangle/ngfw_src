@@ -134,17 +134,17 @@ public class RackManagerImpl implements RackManager
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
          */
-        List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId );
-        if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
+        List<Node> webFilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-web-filter", policyId );
+        if (webFilterNodes != null && webFilterNodes.size() > 0) {
             installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            License sitefilterLicense = lm.getLicense(License.WEB_FILTER);
-            if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
+            License webFilterLicense = lm.getLicense(License.WEB_FILTER);
+            if ( webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial() ) {
                 installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
-            sitefilterLicense = lm.getLicense(License.WEB_FILTER_OLDNAME);
-            if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
+            webFilterLicense = lm.getLicense(License.WEB_FILTER_OLDNAME);
+            if ( webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial() ) {
                 installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
         }

@@ -95,7 +95,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // so we add a special global attachment that the https handler uses
         // to detect sessions that need https-->http redirection
         if (sessreq.getNewServerPort() == 443) {
-            sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, sessreq.getOrigClientAddr());
+            sessreq.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
         }

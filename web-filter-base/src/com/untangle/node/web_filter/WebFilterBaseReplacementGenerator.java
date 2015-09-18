@@ -10,7 +10,7 @@ import com.untangle.uvm.node.NodeSettings;
 /**
  * ReplacementGenerator for WebFilter.
  */
-public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilterBlockDetails>
+public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebFilterBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -24,7 +24,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    public WebFilterReplacementGenerator(NodeSettings tid)
+    public WebFilterBaseReplacementGenerator(NodeSettings tid)
     {
         super(tid);
     }

@@ -64,7 +64,7 @@ public class CaptivePortalSSLEngine
         }
 
         catch (Exception exn) {
-            logger.error("Exception creating SiteFilterSSLEngine()", exn);
+            logger.error("Exception creating CaptivePortalSSLEngine()", exn);
         }
     }
 
@@ -88,7 +88,7 @@ public class CaptivePortalSSLEngine
         // null result means something went haywire
         if (!success) {
             logger.warn("Received null return from clientDataWorker");
-            session.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, null);
+            session.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
             session.release();
@@ -324,7 +324,7 @@ public class CaptivePortalSSLEngine
         result = sslEngine.wrap(ibuff, obuff);
 
         // we are done so we cleanup and release the session
-        session.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, null);
+        session.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
         session.release();
 
         // return the now encrypted reply buffer back to the client

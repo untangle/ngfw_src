@@ -265,13 +265,13 @@ public class AlertManagerImpl implements AlertManager
         /**
          * Check for redundant apps
          */
+        List<Node> webFilterLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter-lite");
         List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
-        List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
         List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
 
-        for (Node node1 : webFilterList) {
-            for (Node node2 : sitefilterList) {
+        for (Node node1 : webFilterLiteList) {
+            for (Node node2 : webFilterList) {
                 if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;
 
@@ -584,19 +584,19 @@ public class AlertManagerImpl implements AlertManager
 
     private void testZveloDNSServers(List<String> alertList)
     {
-        List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
+        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
 
-        if ( sitefilterList.size() == 0 )
+        if ( webFilterList.size() == 0 )
             return;
 
         String query = null;
         try {
             Method method;
-            Node sitefilter = sitefilterList.get(0);
+            Node webFilter = webFilterList.get(0);
 
             Class[] args = { String.class, String.class };
-            method = sitefilter.getClass().getMethod( "encodeDnsQuery", args );
-            query = (String) method.invoke( sitefilter, "cnn.com", "/" );
+            method = webFilter.getClass().getMethod( "encodeDnsQuery", args );
+            query = (String) method.invoke( webFilter, "cnn.com", "/" );
         } catch (Exception e) {
             logger.warn("Exception generating Web Filter DNS query: ",e);
             return;

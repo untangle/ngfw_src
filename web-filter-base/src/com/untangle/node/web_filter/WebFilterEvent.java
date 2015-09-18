@@ -76,7 +76,7 @@ public class WebFilterEvent extends LogEvent
         String appName;
         switch ( getNodeName().toLowerCase() ) {
         case "web_filter_lite": appName = "Web Filter Lite"; break;
-        case "sitefilter": appName = "Web Filter"; break;
+        case "web_filter": appName = "Web Filter"; break;
         default: appName = "Web Filter"; break;
         }
 
@@ -93,9 +93,9 @@ public class WebFilterEvent extends LogEvent
     private String fixupNodeName()
     {
         String node = getNodeName().toLowerCase();
-        if ("webfilter".equals(node))
+        if ("web-filter-lite".equals(node))
             return "web_filter_lite";
-        if ("sitefilter".equals(node))
+        if ("web-filter".equals(node))
             return "web_filter";
         return node;
     }

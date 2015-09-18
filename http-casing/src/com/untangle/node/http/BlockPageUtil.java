@@ -92,7 +92,7 @@ public class BlockPageUtil
     public interface BlockPageParameters
     {
         /* An array of modules to load into the i18n array.  For example, it may be
-         * webfilter + sitefilter. */
+         * webfilterlite + webfilter. */
         public String getI18n();
 
         /* Retrieve the page title (in the window bar) of the page */

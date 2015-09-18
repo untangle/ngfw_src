@@ -203,7 +203,7 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def nodeWebName():
-        return "untangle-node-sitefilter"
+        return "untangle-node-web-filter"
 
     @staticmethod
     def vendorName():

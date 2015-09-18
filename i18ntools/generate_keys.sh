@@ -13,7 +13,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
 =======
     untangle-node-wan-failover untangle-node-ipsec
 >>>>>>> .r41260
-    untangle-node-policy untangle-node-sitefilter untangle-node-wan-balancer
+    untangle-node-policy untangle-node-web-filter untangle-node-wan-balancer
     untangle-node-support untangle-node-webcache untangle-node-classd
     untangle-node-captive-portal untangle-casing-ssl'
 OFFICIAL_LANGUAGES='de es fr ja pt_BR zh_CN xx'
@@ -83,9 +83,9 @@ case "$1" in
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
 <<<<<<< .mine
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-wan-balancer"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec-vpn"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-faild"|"untangle-node-wan-balancer"|"untangle-node-webcache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec-vpn"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
 =======
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy"|"untangle-node-wan-failover"|"untangle-node-wan-balancer"|"untangle-node-webcache"|"untangle-node-sitefilter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reporting"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy"|"untangle-node-wan-failover"|"untangle-node-wan-balancer"|"untangle-node-webcache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding"|"untangle-node-ipsec"|"untangle-node-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
 >>>>>>> .r41260
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
@@ -110,7 +110,7 @@ case "$1" in
     find $DIR -type f -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot
 
     # http casing
-    if [ $1 = "untangle-base-web-filter" ] || [ $1 == "untangle-node-sitefilter" ] || [ $1 = "untangle-base-virus-blocker" ] ; then
+    if [ $1 = "untangle-base-web-filter" ] || [ $1 == "untangle-node-web-filter" ] || [ $1 = "untangle-base-virus-blocker" ] ; then
         # block page
         xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot $WORK/src/http-casing/src/com/untangle/node/http/BlockPageUtil.java
 

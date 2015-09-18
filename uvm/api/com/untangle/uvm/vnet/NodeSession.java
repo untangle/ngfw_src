@@ -138,22 +138,22 @@ public interface NodeSession extends SessionTuple
     public final String KEY_FTP_FILE_NAME = "ftp-file-name";  /* String */
     public final String KEY_FTP_DATA_SESSION = "ftp-data-session";  /* Boolean */
     
-    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "web_filter-best-category-id"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "web_filter-best-category-name"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "web_filter-best-category-description"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "web_filter-best-category-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "web_filter-best-category-blocked"; /* String */
-    public final String KEY_SITEFILTER_FLAGGED = "web_filter-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_CATEGORIES = "web_filter-categories"; /* List<String> */
+    public final String KEY_WEB_FILTER_BEST_CATEGORY_ID = "web-filter-best-category-id"; /* String */
+    public final String KEY_WEB_FILTER_BEST_CATEGORY_NAME = "web-filter-best-category-name"; /* String */
+    public final String KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION = "web-filter-best-category-description"; /* String */
+    public final String KEY_WEB_FILTER_BEST_CATEGORY_FLAGGED = "web-filter-best-category-flagged"; /* Boolean */
+    public final String KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED = "web-filter-best-category-blocked"; /* String */
+    public final String KEY_WEB_FILTER_FLAGGED = "web-filter-flagged"; /* Boolean */
+    public final String KEY_WEB_FILTER_CATEGORIES = "web-filter-categories"; /* List<String> */
 
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "web_filter_lite-best-category-id"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "web_filter_lite-best-category-name"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "web_filter_lite-best-category-description"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "web_filter_lite-best-category-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "web_filter_lite-best-category-blocked"; /* String */
-    //public final String KEY_WEBFILTER_FLAGGED = "web_filter_lite-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_FLAGGED = "web_filter_lite-content-type"; /* String */
-    //public final String KEY_WEBFILTER_CATEGORIES = "web_filter_lite-categories"; /* List<String> */
+    //public final String KEY_WEB_FILTER_LITE_BEST_CATEGORY_ID = "web-filter-lite-best-category-id"; /* String */
+    //public final String KEY_WEB_FILTER_LITE_BEST_CATEGORY_NAME = "web-filter-lite-best-category-name"; /* String */
+    //public final String KEY_WEB_FILTER_LITE_BEST_CATEGORY_DESCRIPTION = "web-filter-lite-best-category-description"; /* String */
+    //public final String KEY_WEB_FILTER_LITE_BEST_CATEGORY_FLAGGED = "web-filter-lite-best-category-flagged"; /* Boolean */
+    //public final String KEY_WEB_FILTER_LITE_BEST_CATEGORY_BLOCKED = "web-filter-lite-best-category-blocked"; /* String */
+    //public final String KEY_WEB_FILTER_LITE_FLAGGED = "web-filter-lite-flagged"; /* Boolean */
+    //public final String KEY_WEB_FILTER_LITE_FLAGGED = "web-filter-lite-content-type"; /* String */
+    //public final String KEY_WEB_FILTER_LITE_CATEGORIES = "web-filter-lite-categories"; /* List<String> */
 
     public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
     public final String KEY_CLASSD_CATEGORY = "classd-category"; /* String */
@@ -169,9 +169,9 @@ public interface NodeSession extends SessionTuple
     public final String KEY_SSL_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
     public final String KEY_SSL_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
 
-    public final String KEY_CAPTURE_REDIRECT = "capture-redirect-client"; /* InetAddress */
-    public final String KEY_SITEFILTER_SSL_ENGINE = "sitefilter-ssl-engine"; /* SiteFilterSSLEngine */
-    public final String KEY_CAPTURE_SSL_ENGINE = "capture-ssl-engine"; /* CaptureSSLEngine */
+    public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
+    public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */
+    public final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
 
     /**
      * Returns the protocol for the session.</p>

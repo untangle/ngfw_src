@@ -24,9 +24,9 @@ do
 done
 
 <<<<<<< .mine
-for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-faild untangle-node-license untangle-node-policy untangle-node-sitefilter untangle-node-faild untangle-node-wan-balancer untangle-node-webcache untangle-node-ipsec-vpn untangle-node-classd
+for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-faild untangle-node-license untangle-node-policy untangle-node-web-filter untangle-node-faild untangle-node-wan-balancer untangle-node-webcache untangle-node-ipsec-vpn untangle-node-classd
 =======
-for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-wan-failover untangle-node-license untangle-node-policy untangle-node-sitefilter untangle-node-wan-failover untangle-node-wan-balancer untangle-node-webcache untangle-node-ipsec untangle-node-classd
+for module in untangle-node-directory-connector untangle-node-bandwidth untangle-node-configuration-backup untangle-node-branding untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-wan-failover untangle-node-license untangle-node-policy untangle-node-web-filter untangle-node-wan-failover untangle-node-wan-balancer untangle-node-webcache untangle-node-ipsec untangle-node-classd
 >>>>>>> .r41260
 do
     module_dir=`echo "${module}"|cut -d"-" -f3`

@@ -93,9 +93,9 @@ public class RuleMatcher implements JSONString, Serializable
             CLASSD_PRODUCTIVITY, /* productivity index */
             CLASSD_RISK, /* risk index */
             DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
-            SITEFILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
-            SITEFILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
-            SITEFILTER_FLAGGED, /* boolean */
+            WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
+            WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
+            WEB_FILTER_FLAGGED, /* boolean */
             SSL_SNI_HOSTNAME, /* "microsoft.com" */
             SSL_SUBJECT_DN, /* "CN=dropbox.com" */
             SSL_ISSUER_DN, /* "O=Thawte" */
@@ -103,7 +103,7 @@ public class RuleMatcher implements JSONString, Serializable
             /* DEPRECATED */
             /* DEPRECATED */
             DIRECTORY_CONNECTOR_USERNAME, /* DEPRECATED in 9.4 */
-            SITEFILTER_CATEGORY_FLAGGED, /* DEPRECATED */
+            WEB_FILTER_CATEGORY_FLAGGED, /* DEPRECATED */
             ESOFT_WEB_FILTER_CATEGORY, /* DEPRECATED */
             ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION, /* DEPRECATED */
             ESOFT_WEB_FILTER_CATEGORY_FLAGGED, /* DEPRECATED */
@@ -298,7 +298,7 @@ public class RuleMatcher implements JSONString, Serializable
             }
             break;
 
-        case SITEFILTER_FLAGGED:
+        case WEB_FILTER_FLAGGED:
         case CLIENT_IN_PENALTY_BOX:
         case SERVER_IN_PENALTY_BOX:
         case CLIENT_HAS_NO_QUOTA:
@@ -334,8 +334,8 @@ public class RuleMatcher implements JSONString, Serializable
         case PROTOCOL_CONTROL_SIGNATURE:
         case PROTOCOL_CONTROL_CATEGORY:
         case PROTOCOL_CONTROL_DESCRIPTION:
-        case SITEFILTER_CATEGORY:
-        case SITEFILTER_CATEGORY_DESCRIPTION:
+        case WEB_FILTER_CATEGORY:
+        case WEB_FILTER_CATEGORY_DESCRIPTION:
         case CLASSD_APPLICATION:
         case CLASSD_CATEGORY:
         case CLASSD_PROTOCHAIN:
@@ -359,7 +359,7 @@ public class RuleMatcher implements JSONString, Serializable
             }
             break;
             
-        case SITEFILTER_CATEGORY_FLAGGED:
+        case WEB_FILTER_CATEGORY_FLAGGED:
         case ESOFT_WEB_FILTER_CATEGORY:
         case ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION:
         case ESOFT_WEB_FILTER_CATEGORY_FLAGGED:
@@ -597,24 +597,24 @@ public class RuleMatcher implements JSONString, Serializable
         case ESOFT_WEB_FILTER_CATEGORY:
         case ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION:
         case ESOFT_WEB_FILTER_CATEGORY_FLAGGED:
-        case SITEFILTER_CATEGORY_FLAGGED:
+        case WEB_FILTER_CATEGORY_FLAGGED:
             logger.warn("matcher deprecated: " + this.matcherType);
             return false;
             
-        case SITEFILTER_CATEGORY:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_SITEFILTER_BEST_CATEGORY_NAME);
+        case WEB_FILTER_CATEGORY:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
 
-        case SITEFILTER_CATEGORY_DESCRIPTION:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION);
+        case WEB_FILTER_CATEGORY_DESCRIPTION:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION);
             if (attachment == null)
                 return false;
             return Pattern.matches(regexValue, attachment);
 
-        case SITEFILTER_FLAGGED:
-            Boolean flagged = (Boolean) sess.globalAttachment(NodeSession.KEY_SITEFILTER_FLAGGED);
+        case WEB_FILTER_FLAGGED:
+            Boolean flagged = (Boolean) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_FLAGGED);
             if (flagged == null)
                 return false;
             return flagged.booleanValue();
