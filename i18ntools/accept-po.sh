@@ -102,14 +102,14 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-live-support)
             d=$hades/src/support
             ;;
-        untangle-node-webcache)
+        untangle-node-web-cache)
             d=$hades/src/webcache
             ;;
         untangle-node-ipsec-vpn)
             d=$hades/src/ipsec-vpn
             ;;
-        untangle-node-classd)
-            d=$hades/src/classd
+        untangle-node-application-control)
+            d=$hades/src/application-control
             ;;
         untangle-node-web-filter-lite)
             d=$work/src/web-filter-lite

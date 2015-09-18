@@ -85,13 +85,13 @@ public class RuleMatcher implements JSONString, Serializable
             PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
             PROTOCOL_CONTROL_CATEGORY, /* "Networking" "*" */
             PROTOCOL_CONTROL_DESCRIPTION, /* "description" "*" */
-            CLASSD_APPLICATION, /* GOOGLE */
-            CLASSD_CATEGORY, /* Proxy */
-            CLASSD_PROTOCHAIN, /* /IP/TCP/HTTP/GOOGLE */
-            CLASSD_DETAIL, /* blahblahblah */
-            CLASSD_CONFIDENCE, /* 100 */
-            CLASSD_PRODUCTIVITY, /* productivity index */
-            CLASSD_RISK, /* risk index */
+            APPLICATION_CONTROL_APPLICATION, /* GOOGLE */
+            APPLICATION_CONTROL_CATEGORY, /* Proxy */
+            APPLICATION_CONTROL_PROTOCHAIN, /* /IP/TCP/HTTP/GOOGLE */
+            APPLICATION_CONTROL_DETAIL, /* blahblahblah */
+            APPLICATION_CONTROL_CONFIDENCE, /* 100 */
+            APPLICATION_CONTROL_PRODUCTIVITY, /* productivity index */
+            APPLICATION_CONTROL_RISK, /* risk index */
             DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
             WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
@@ -336,19 +336,19 @@ public class RuleMatcher implements JSONString, Serializable
         case PROTOCOL_CONTROL_DESCRIPTION:
         case WEB_FILTER_CATEGORY:
         case WEB_FILTER_CATEGORY_DESCRIPTION:
-        case CLASSD_APPLICATION:
-        case CLASSD_CATEGORY:
-        case CLASSD_PROTOCHAIN:
-        case CLASSD_DETAIL:
+        case APPLICATION_CONTROL_APPLICATION:
+        case APPLICATION_CONTROL_CATEGORY:
+        case APPLICATION_CONTROL_PROTOCHAIN:
+        case APPLICATION_CONTROL_DETAIL:
         case SSL_SNI_HOSTNAME:
         case SSL_SUBJECT_DN:
         case SSL_ISSUER_DN:
             this.regexValue = GlobUtil.globToRegex(value);
             break;
 
-        case CLASSD_CONFIDENCE:
-        case CLASSD_PRODUCTIVITY:
-        case CLASSD_RISK:
+        case APPLICATION_CONTROL_CONFIDENCE:
+        case APPLICATION_CONTROL_PRODUCTIVITY:
+        case APPLICATION_CONTROL_RISK:
         case HTTP_CONTENT_LENGTH:
         case CLIENT_QUOTA_ATTAINMENT:
         case SERVER_QUOTA_ATTAINMENT:
@@ -650,47 +650,47 @@ public class RuleMatcher implements JSONString, Serializable
             logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
 
-        case CLASSD_APPLICATION:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_CLASSD_APPLICATION);
+        case APPLICATION_CONTROL_APPLICATION:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION);
             if (attachment == null)
                 return false;
             if (attachment.equals(regexValue)) //check exact equals first
                 return true;
             return Pattern.matches(regexValue, attachment);
 
-        case CLASSD_CATEGORY:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_CLASSD_CATEGORY);
+        case APPLICATION_CONTROL_CATEGORY:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CATEGORY);
             if (attachment == null)
                 return false;
             if (attachment.equals(regexValue)) //check exact equals first
                 return true;
             return Pattern.matches(regexValue, attachment);
             
-        case CLASSD_PROTOCHAIN:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_CLASSD_PROTOCHAIN);
+        case APPLICATION_CONTROL_PROTOCHAIN:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PROTOCHAIN);
             if (attachment == null)
                 return false;
             if (attachment.equals(regexValue)) //check exact equals first
                 return true;
             return Pattern.matches(regexValue, attachment);
 
-        case CLASSD_DETAIL:
-            attachment = (String) sess.globalAttachment(NodeSession.KEY_CLASSD_DETAIL);
+        case APPLICATION_CONTROL_DETAIL:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_DETAIL);
             if (attachment == null)
                 return false;
             if (attachment.equals(regexValue)) //check exact equals first
                 return true;
             return Pattern.matches(regexValue, attachment);
 
-        case CLASSD_CONFIDENCE:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_CONFIDENCE);
+        case APPLICATION_CONTROL_CONFIDENCE:
+            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CONFIDENCE);
             if (attachmentInt != null && attachmentInt > this.intValue)
                 return true;
             else
                 return false;
 
-        case CLASSD_PRODUCTIVITY:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_PRODUCTIVITY);
+        case APPLICATION_CONTROL_PRODUCTIVITY:
+            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY);
             if ( attachmentInt == null )
                 return false;
             if (this.intMatcher == null) {
@@ -700,8 +700,8 @@ public class RuleMatcher implements JSONString, Serializable
 
             return this.intMatcher.isMatch( attachmentInt );
 
-        case CLASSD_RISK:
-            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_CLASSD_RISK);
+        case APPLICATION_CONTROL_RISK:
+            attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_RISK);
             if ( attachmentInt == null )
                 return false;
             if (this.intMatcher == null) {

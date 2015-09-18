@@ -390,14 +390,14 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             header: this.i18n._("Protochain") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-protochain",
+            dataIndex: "application-control-protochain",
             width: 140,
             filter: {
                 type: 'string'
             }
         },{
             header: this.i18n._("Application") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-application",
+            dataIndex: "application-control-application",
             width: 100,
             filter: {
                 type: 'string'
@@ -405,7 +405,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-category",
+            dataIndex: "application-control-category",
             width: 100,
             filter: {
                 type: 'string'
@@ -413,7 +413,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Detail") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-detail",
+            dataIndex: "application-control-detail",
             width: 120,
             filter: {
                 type: 'string'
@@ -421,7 +421,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Confidence") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-confidence",
+            dataIndex: "application-control-confidence",
             width: 50,
             filter: {
                 type: 'string'
@@ -429,7 +429,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Productivity") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-productivity",
+            dataIndex: "application-control-productivity",
             width: 50,
             filter: {
                 type: 'string'
@@ -437,7 +437,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Risk") +  this.i18n._(" (Application Control)"),
-            dataIndex: "classd-risk",
+            dataIndex: "application-control-risk",
             width: 50,
             filter: {
                 type: 'string'
@@ -630,25 +630,25 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'string',
                 convert: this.fieldConvert
             },{
-                name: "classd-application",
+                name: "application-control-application",
                 convert: this.fieldConvert
             },{
-                name: "classd-category",
+                name: "application-control-category",
                 convert: this.fieldConvert
             },{
-                name: "classd-protochain",
+                name: "application-control-protochain",
                 convert: this.fieldConvert
             },{
-                name: "classd-detail",
+                name: "application-control-detail",
                 convert: this.fieldConvert
             },{
-                name: "classd-confidence",
+                name: "application-control-confidence",
                 convert: this.fieldConvert
             },{
-                name: "classd-productivity",
+                name: "application-control-productivity",
                 convert: this.fieldConvert
             },{
-                name: "classd-risk",
+                name: "application-control-risk",
                 convert: this.fieldConvert
             },{
                 name: "clientKBps",

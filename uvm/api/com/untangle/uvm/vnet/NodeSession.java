@@ -155,13 +155,13 @@ public interface NodeSession extends SessionTuple
     //public final String KEY_WEB_FILTER_LITE_FLAGGED = "web-filter-lite-content-type"; /* String */
     //public final String KEY_WEB_FILTER_LITE_CATEGORIES = "web-filter-lite-categories"; /* List<String> */
 
-    public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
-    public final String KEY_CLASSD_CATEGORY = "classd-category"; /* String */
-    public final String KEY_CLASSD_PROTOCHAIN = "classd-protochain"; /* String */
-    public final String KEY_CLASSD_DETAIL = "classd-detail"; /* String */
-    public final String KEY_CLASSD_CONFIDENCE = "classd-confidence"; /* Integer */
-    public final String KEY_CLASSD_PRODUCTIVITY = "classd-productivity"; /* Integer */
-    public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
+    public final String KEY_APPLICATION_CONTROL_APPLICATION = "application-control-application"; /* String */
+    public final String KEY_APPLICATION_CONTROL_CATEGORY = "application-control-category"; /* String */
+    public final String KEY_APPLICATION_CONTROL_PROTOCHAIN = "application-control-protochain"; /* String */
+    public final String KEY_APPLICATION_CONTROL_DETAIL = "application-control-detail"; /* String */
+    public final String KEY_APPLICATION_CONTROL_CONFIDENCE = "application-control-confidence"; /* Integer */
+    public final String KEY_APPLICATION_CONTROL_PRODUCTIVITY = "application-control-productivity"; /* Integer */
+    public final String KEY_APPLICATION_CONTROL_RISK = "application-control-risk"; /* Integer */
 
     public final String KEY_SSL_SNI_HOSTNAME = "ssl-sni-host"; /* String */
     public final String KEY_SSL_SUBJECT_DN = "ssl-subject-dn"; /* String */

@@ -37,8 +37,8 @@
         "untangle-node-web-filter",
         "untangle-node-wan-balancer",
         "untangle-node-live-support",
-        "untangle-node-webcache",
-        "untangle-node-classd",
+        "untangle-node-web-cache",
+        "untangle-node-application-control",
         "untangle-node-captive-portal",
 		"untangle-casing-ssl"
 	]
