@@ -76,7 +76,7 @@ CREATE TABLE reports.web_cache_stats (
     miss_bytes bigint,
     event_id bigserial)""",["event_id"],["time_stamp"])
 
-        sql_helper.rename_table("web_cache_stats","web_cache_stats") # 12.0
+        sql_helper.rename_table("webcache_stats","web_cache_stats") # 12.0
 
 class WebCacheHighlight(Highlight):
     def __init__(self, name):
