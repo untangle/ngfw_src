@@ -40,6 +40,6 @@
         "untangle-node-web-cache",
         "untangle-node-application-control",
         "untangle-node-captive-portal",
-		"untangle-casing-ssl"
+	"untangle-casing-ssl-inspector"
 	]
 }
