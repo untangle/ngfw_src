@@ -72,7 +72,7 @@
     <script type="text/javascript" src="script/untangle-node-wan-balancer/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-live-support/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-virus-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-webcache/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-web-cache/settings.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/untangle-node-ad-blocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-captive-portal/settings.js?s=${buildStamp}"></script>

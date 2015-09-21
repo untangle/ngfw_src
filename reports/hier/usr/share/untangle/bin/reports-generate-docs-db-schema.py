@@ -101,8 +101,8 @@ dict['server_events'].update({
     'swap_free' : 'The free disk swap in bytes',
 })
 
-dict['webcache_stats'] = copy.deepcopy(generic)
-dict['webcache_stats'].update({
+dict['web_cache_stats'] = copy.deepcopy(generic)
+dict['web_cache_stats'].update({
     'table_description' : 'This table stores web cache statistics.',
     'hits' : 'The number of cache hits during this time frame',
     'misses' : 'The number of cache misses during this time frame',

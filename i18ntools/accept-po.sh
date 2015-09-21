@@ -103,7 +103,7 @@ for f in $(find $t -type f -name '*.po'); do
             d=$hades/src/support
             ;;
         untangle-node-web-cache)
-            d=$hades/src/webcache
+            d=$hades/src/web-cache
             ;;
         untangle-node-ipsec-vpn)
             d=$hades/src/ipsec-vpn

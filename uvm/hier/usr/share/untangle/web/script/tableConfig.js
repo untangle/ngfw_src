@@ -2188,7 +2188,7 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'hostname'
                 }]
             },
-            webcache_stats: {
+            web_cache_stats: {
                 fields: [{
                     name: 'time_stamp',
                     sortType: 'asTimestamp'

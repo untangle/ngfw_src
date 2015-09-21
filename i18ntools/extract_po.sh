@@ -25,7 +25,7 @@ done
 
 <<<<<<< .mine
 <<<<<<< .mine
-for module in untangle-node-directory-connector untangle-node-bandwidth-control untangle-node-configuration-backup untangle-node-branding-manager untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-faild untangle-node-license untangle-node-policy-manager untangle-node-web-filter untangle-node-faild untangle-node-wan-balancer untangle-node-webcache untangle-node-ipsec-vpn untangle-node-classd
+for module in untangle-node-directory-connector untangle-node-bandwidth-control untangle-node-configuration-backup untangle-node-branding-manager untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-faild untangle-node-license untangle-node-policy-manager untangle-node-web-filter untangle-node-faild untangle-node-wan-balancer untangle-node-web-cache untangle-node-ipsec-vpn untangle-node-classd
 for module in untangle-node-directory-connector untangle-node-bandwidth-control untangle-node-configuration-backup untangle-node-branding-manager untangle-node-spam-blocker untangle-node-virus-blocker untangle-node-wan-failover untangle-node-license untangle-node-policy-manager untangle-node-web-filter untangle-node-wan-failover untangle-node-wan-balancer untangle-node-web-cache untangle-node-ipsec-vpn untangle-node-application-control
 do
     module_dir=`echo "${module}"|cut -d"-" -f3`

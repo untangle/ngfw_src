@@ -55,10 +55,6 @@ class Ngfw:
         module_names = module.split("-", 3)
         if module_names[1] == "libuvm" or module_names[1] == "vm":
             source_directory = "uvm"
-        elif module_names[2] == "reporting":
-            source_directory = "reports"
-        elif module_names[2] == "webcache":
-            source_directory = "web-cache"
         elif module_names[1] == "base" or module_names[1] == "casing":
             source_directory = "-".join(["-".join(module_names[2:]), module_names[1]])
         else:
