@@ -143,7 +143,7 @@ Ext.define('Ung.grid.Panel', {
         this.callParent(arguments);
     },
     initComponent: function() {
-        var grid=this;
+        var grid=this, i, col;
         if(this.hasInlineEditor) {
             this.inlineEditor=Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
@@ -161,8 +161,8 @@ Ext.define('Ung.grid.Panel', {
             };
             this.columnsDefaultSortable = false;
         }
-        for (var i = 0; i < this.columns.length; i++) {
-            var col=this.columns[i];
+        for (i = 0; i < this.columns.length; i++) {
+            col=this.columns[i];
             if( col.menuDisabled == null) {
                 col.menuDisabled = this.columnMenuDisabled;
             }
@@ -184,7 +184,11 @@ Ext.define('Ung.grid.Panel', {
                     };
                 }
             }
+            if(col.xtype == "checkcolumn" && col.checkAll) {
+                this.hasCheckAll = true;
+            }
         }
+
         if (this.hasEdit) {
             var editColumn = Ext.create('Ung.grid.EditColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(editColumn);
@@ -269,6 +273,28 @@ Ext.define('Ung.grid.Panel', {
                 name: 'Add',
                 handler: Ext.bind(this.addHandler, this)
             });
+        }
+        if (this.hasCheckAll) {
+            for (i = 0; i < this.columns.length; i++) {
+                col=this.columns[i];
+                if(col.xtype == "checkcolumn" && col.checkAll) {
+                    var colDataIndex = col.dataIndex;
+                    this.tbar.push(Ext.applyIf(col.checkAll, {
+                        xtype: 'checkbox',
+                        hidden: !rpc.isExpertMode,
+                        hideLabel: true,
+                        margin: '0 5px 0 5px',
+                        boxLabel: Ext.String.format(i18n._("{0} All"), col.header),
+                        handler: function(checkbox, checked) {
+                            var records=checkbox.up("grid").getStore().getRange();
+                            for(var i=0; i<records.length; i++) {
+                                records[i].set(this.colDataIndex, checked);
+                            }
+                        },
+                        scope: {colDataIndex: colDataIndex}
+                    }));
+                }
+            }
         }
         if (this.hasImportExport) {
             this.tbar.push('->', {

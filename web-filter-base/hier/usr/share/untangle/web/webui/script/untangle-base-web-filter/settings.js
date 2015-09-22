@@ -84,6 +84,17 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                             }
                         }, this)
                     }
+                },
+                checkAll: {
+                    handler1: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set('blocked', checked);
+                            if(checked) {
+                                records[i].set('flagged', true);
+                            }
+                        }
+                    }
                 }
             }, {
                 xtype:'checkcolumn',
@@ -91,7 +102,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 header: this.i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation")
+                tooltip: this.i18n._("Flag as Violation"),
+                checkAll: {}
             }, {
                 header: this.i18n._("Description"),
                 flex:1,
@@ -194,14 +206,16 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 width:55,
                 header: this.i18n._("Block"),
                 dataIndex: 'blocked',
-                resizable: false
+                resizable: false,
+                checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
                 header: this.i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation")
+                tooltip: this.i18n._("Flag as Violation"),
+                checkAll: {}
             },{
                 header: this.i18n._("Description"),
                 width: 200,
@@ -297,14 +311,16 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 width:55,
                 header: this.i18n._("Block"),
                 dataIndex: 'blocked',
-                resizable: false
+                resizable: false,
+                checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
                 header: this.i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation")
+                tooltip: this.i18n._("Flag as Violation"),
+                checkAll: {}
             },{
                 header: this.i18n._("Category"),
                 width: 200,
@@ -413,14 +429,16 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 width:55,
                 header: this.i18n._("Block"),
                 dataIndex: 'blocked',
-                resizable: false
+                resizable: false,
+                checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
                 header: this.i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation")
+                tooltip: this.i18n._("Flag as Violation"),
+                checkAll: {}
             },{
                 header: this.i18n._("Category"),
                 width: 100,
