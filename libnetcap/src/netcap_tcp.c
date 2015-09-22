@@ -159,7 +159,7 @@ static int _netcap_tcp_get_mark ( int sock )
     u_int size = sizeof(nfmark);
     
     if ( getsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,&size) < 0 )
-        return perrlog( "setsockopt" );
+        return perrlog( "getsockopt" );
 
     return nfmark.mark;
 }
