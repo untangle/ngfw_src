@@ -9,12 +9,4 @@ class LoggingManager(Manager):
     def api_resetlogs(self):
         self.__loggingManager.resetAllLogs()
 
-    def api_logerror(self, *args ):
-        if ( len( args ) == 0 ):
-            self.__loggingManager.logError( None )
-            return
-        
-        message = string.join( args, " " )
-        self.__loggingManager.logError( message )
-
 Manager.managers.append( LoggingManager )

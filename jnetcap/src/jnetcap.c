@@ -270,7 +270,7 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
 /*
  * Class:     com_untangle_jnetcap_Netcap
  * Method:    debugLevel
- * Signature: (I)V
+ * Signature: (II)V
  */
 JNIEXPORT void JNICALL JF_Netcap( debugLevel )
     (JNIEnv* env, jclass _class, jint type, jint debug_level)
