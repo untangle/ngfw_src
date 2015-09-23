@@ -417,7 +417,79 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
+
+        // rename ipsec to ipsec-vpn
+        oldName = "untangle-node-ipsec";
+        newName = "untangle-node-ipsec-vpn";
+        oldNames = new String[] {"com.untangle.node.ipsec.IPsecNodeImpl",
+                                 "com.untangle.node.ipsec.IPsecTunnel",
+                                 "com.untangle.node.ipsec.IPsecSettings"};
+        newNames = new String[] {"com.untangle.node.ipsec_vpn.IpsecVpnApp",
+                                 "com.untangle.node.ipsec_vpn.IpsecVpnTunnel",
+                                 "com.untangle.node.ipsec_vpn.IpsecVpnSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename classd to application-control
+        oldName = "untangle-node-classd";
+        newName = "untangle-node-application-control";
+        oldNames = new String[] {"com.untangle.node.classd.ClassDNodeImpl",
+                                 "com.untangle.node.classd.ClassDLogicRule",
+                                 "com.untangle.node.classd.ClassDLogicRuleAction",
+                                 "com.untangle.node.classd.ClassDLogicRuleMatcher",
+                                 "com.untangle.node.classd.ClassDProtoRule",
+                                 "com.untangle.node.classd.ClassDProtoRuleAction",
+                                 "com.untangle.node.classd.ClassDSettings"};
+        newNames = new String[] {"com.untangle.node.application_control.ApplicationControlApp",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRule",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
+                                 "com.untangle.node.application_control.ApplicationControlProtoRule",
+                                 "com.untangle.node.application_control.ApplicationControlProtoRuleAction",
+                                 "com.untangle.node.application_control.ApplicationControlSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
         
+        // rename https-casing to ssl-inspector
+        oldName = "untangle-casing-https";
+        newName = "untangle-casing-ssl-inspector";
+        oldNames = new String[] {"com.untangle.node.https.HttpsNodeImpl",
+                                 "com.untangle.node.https.HttpsRule",
+                                 "com.untangle.node.https.HttpsRuleAction",
+                                 "com.untangle.node.https.HttpsRuleMatcher",
+                                 "com.untangle.node.https.HttpsSettings"};
+        newNames = new String[] {"com.untangle.node.ssl_inspector.SslInspectorApp",
+                                 "com.untangle.node.ssl_inspector.SslInspectorRule",
+                                 "com.untangle.node.ssl_inspector.SslInspectorAction",
+                                 "com.untangle.node.ssl_inspector.SslInspectorMatcher",
+                                 "com.untangle.node.ssl_inspector.SslInspectorSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
     }
 
     public NodeManagerSettings getSettings()
