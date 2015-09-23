@@ -433,17 +433,29 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
                                        cli_intf, srv_intf,
                                        syn->nfmark );
 
+    debug( 8, "SYN2: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
+           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
+           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
+    
     /**
      * First, put the SYN into the session mailbox.
      * Next, if this is a new session, call the hook.
      */
     _session_put_syn( sess, syn );
 
+    debug( 8, "SYN3: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
+           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
+           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
+    
     if ( new_sess_flag ) {
         debug( 8, "TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id );
         global_tcp_hook( sess, NULL );
     }
 
+    debug( 8, "SYN4: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
+           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
+           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
+    
     return 0;
 }
 
