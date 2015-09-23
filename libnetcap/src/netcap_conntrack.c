@@ -43,12 +43,31 @@ struct netcap_ct_entry {
     uint64_t timestamp_start, timestamp_stop;
 };
 
-static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct );
 static int  _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data );
 static void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct);
 
 #define GET_CT_ITEM(elem, attr, x)                              \
         do { n->elem = nfct_get_attr_u##x(ct,(attr)); } while (0)
+
+
+#if 0
+static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct )
+{
+    debug( level, "ATTR_ID                  = %u\n",netcap_ct->ct_id);
+    debug( level, "ATTR_ORIG_L3PROTO        = %d\n",netcap_ct->l3_proto );
+    debug( level, "ATTR_ORIG_L4PROTO        = %d\n", netcap_ct->l4_proto );
+
+    debug( level, "ATTR_ORIG_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_src_addr));
+    debug( level, "ATTR_ORIG_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_dst_addr));
+    debug( level, "ATTR_REPL_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_src_addr));
+    debug( level, "ATTR_REPL_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_dst_addr));
+
+    debug( level, "ATTR_ORIG_PORT_SRC        = %d\n",netcap_ct->port_src);
+    debug( level, "ATTR_ORIG_PORT_DST        = %d\n",netcap_ct->port_dst);
+    debug( level, "ATTR_REPL_PORT_SRC        = %d\n",netcap_ct->r_port_src);
+    debug( level, "ATTR_REPL_PORT_DST        = %d\n",netcap_ct->r_port_dst);
+}
+#endif
 
 int  netcap_conntrack_init()
 {
@@ -58,7 +77,7 @@ int  netcap_conntrack_init()
         if (!cth)  return -1;
 
         ret = nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
-        debug( 1, "set socket buffer size to %d.\n", ret );
+        debug( 5, "CONNTRACK: set socket buffer size to %d.\n", ret );
 
         nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
 
@@ -92,23 +111,6 @@ void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, u_int6
                                   long timestamp_start, long timestamp_stop )
 {
     //do nothing
-}
-
-void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct )
-{
-    debug( level, "ATTR_ID                  = %u\n",netcap_ct->ct_id);
-    debug( level, "ATTR_ORIG_L3PROTO        = %d\n",netcap_ct->l3_proto );
-    debug( level, "ATTR_ORIG_L4PROTO        = %d\n", netcap_ct->l4_proto );
-
-    debug( level, "ATTR_ORIG_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_src_addr));
-    debug( level, "ATTR_ORIG_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_dst_addr));
-    debug( level, "ATTR_REPL_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_src_addr));
-    debug( level, "ATTR_REPL_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_dst_addr));
-
-    debug( level, "ATTR_ORIG_PORT_SRC        = %d\n",netcap_ct->port_src);
-    debug( level, "ATTR_ORIG_PORT_DST        = %d\n",netcap_ct->port_dst);
-    debug( level, "ATTR_REPL_PORT_SRC        = %d\n",netcap_ct->r_port_src);
-    debug( level, "ATTR_REPL_PORT_DST        = %d\n",netcap_ct->r_port_dst);
 }
 
 int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
