@@ -159,7 +159,7 @@ static int _netcap_tcp_get_mark ( int sock )
     u_int size = sizeof(nfmark);
     
     if ( getsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,&size) < 0 )
-        return perrlog( "setsockopt" );
+        return perrlog( "getsockopt" );
 
     return nfmark.mark;
 }
@@ -420,11 +420,8 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
            unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
            cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
 
-    /**
-     * XXX
-     * We should hold a lock between calling the get and putting the SYN in the mailbox
-     * so the mailbox cannot be deleted from underneath the function
-     */
+    SESSTABLE_WRLOCK();
+
     sess = _netcap_get_or_create_sess( &new_sess_flag,
                                        c_cli_addr, c_cli_port,
                                        c_srv_addr, c_srv_port,
@@ -433,29 +430,19 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
                                        cli_intf, srv_intf,
                                        syn->nfmark );
 
-    debug( 8, "SYN2: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
-           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
-           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
-    
     /**
      * First, put the SYN into the session mailbox.
      * Next, if this is a new session, call the hook.
      */
     _session_put_syn( sess, syn );
 
-    debug( 8, "SYN3: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
-           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
-           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
+    SESSTABLE_UNLOCK();
     
     if ( new_sess_flag ) {
         debug( 8, "TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id );
         global_tcp_hook( sess, NULL );
     }
 
-    debug( 8, "SYN4: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
-           unet_next_inet_ntoa( c_cli_addr ), c_cli_port, unet_next_inet_ntoa( s_srv_addr ), s_srv_port, 
-           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
-    
     return 0;
 }
 
@@ -572,6 +559,9 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
     return 0;
 }
 
+/**
+ * Must hold the SESSTABLE LOCK to call this function
+ */
 static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       in_addr_t c_cli_addr, u_short c_cli_port, 
                                                       in_addr_t c_srv_addr, u_short c_srv_port, 
@@ -584,8 +574,6 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
     if (!created_flag)
         return errlogargs_null();
     
-    SESSTABLE_WRLOCK();
-
     sess = netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP,
                                           c_cli_addr, c_srv_addr, c_cli_port, c_srv_port);
                                           
@@ -600,7 +588,6 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
 #endif
     
     if (sess) {
-        SESSTABLE_UNLOCK();
         *created_flag = 0;
         return sess;
     }
@@ -620,17 +607,13 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                         c_cli_addr, c_srv_addr,
                                         c_cli_port, c_srv_port ) < 0 ) {
         netcap_tcp_session_raze(!NC_SESSTABLE_LOCK,sess);
-        SESSTABLE_UNLOCK();
         return perrlog_null("netcap_nc_sesstable_add_tuple\n");
     }
 
     if ( netcap_nc_sesstable_add ( !NC_SESSTABLE_LOCK, sess )) {
         netcap_tcp_session_raze ( !NC_SESSTABLE_LOCK, sess );
-        SESSTABLE_UNLOCK();
         return perrlog_null("netcap_nc_sesstable_add");
     }
-    
-    SESSTABLE_UNLOCK();
 
     return sess;
 }
