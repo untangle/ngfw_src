@@ -43,7 +43,6 @@ struct netcap_ct_entry {
     uint64_t timestamp_start, timestamp_stop;
 };
 
-static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct );
 static int  _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data );
 static void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct);
 
@@ -94,23 +93,6 @@ void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, u_int6
     //do nothing
 }
 
-void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct )
-{
-    debug( level, "ATTR_ID                  = %u\n",netcap_ct->ct_id);
-    debug( level, "ATTR_ORIG_L3PROTO        = %d\n",netcap_ct->l3_proto );
-    debug( level, "ATTR_ORIG_L4PROTO        = %d\n", netcap_ct->l4_proto );
-
-    debug( level, "ATTR_ORIG_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_src_addr));
-    debug( level, "ATTR_ORIG_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->ip4_dst_addr));
-    debug( level, "ATTR_REPL_IPV4_SRC        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_src_addr));
-    debug( level, "ATTR_REPL_IPV4_DST        = %s\n",unet_next_inet_ntoa(netcap_ct->r_ip4_dst_addr));
-
-    debug( level, "ATTR_ORIG_PORT_SRC        = %d\n",netcap_ct->port_src);
-    debug( level, "ATTR_ORIG_PORT_DST        = %d\n",netcap_ct->port_dst);
-    debug( level, "ATTR_REPL_PORT_SRC        = %d\n",netcap_ct->r_port_src);
-    debug( level, "ATTR_REPL_PORT_DST        = %d\n",netcap_ct->r_port_dst);
-}
-
 int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
 {
         uint32_t mark = nfct_get_attr_u32(ct, ATTR_MARK);
@@ -120,17 +102,17 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
 
         // if its TCP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) {
-            debug( 10, "callback() type=6 mark=0x%08x\n", mark );
+            //debug( 10, "CONNTRACK: type=6 mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
         // if its UDP and not bypassed, the event will be logged elsewhere
         if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) {
-            debug( 10, "callback() type=17 mark=0x%08x\n", mark );
+            //debug( 10, "CONNTRACK: type=17 mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
         /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
         if ( netcap_ct.ip4_src_addr == 0x0100007f && netcap_ct.ip4_dst_addr == 0x0100007f ) {
-            debug( 10, "callback() local mark=0x%08x\n", mark );
+            //debug( 10, "CONNTRACK: local mark=0x%08x\n", mark );
             return NFCT_CB_CONTINUE;
         }
 
@@ -138,16 +120,20 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         
         switch (type) {
         case NFCT_T_DESTROY:
-            debug( 10, "callback() type=DESTROY mark=0x%08x\n", mark );
-            _netcap_conntrack_print_ct_entry(10, &netcap_ct);
+            debug( 10, "CONNTRACK: type=DESTROY mark=0x%08x %s:%d -> %s:%d\n", mark,
+                   unet_next_inet_ntoa(netcap_ct.ip4_src_addr), netcap_ct.port_src,
+                   unet_next_inet_ntoa(netcap_ct.r_ip4_src_addr), netcap_ct.r_port_src);
+            //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
             break;
         case NFCT_T_NEW:
-            debug( 10, "callback() type=NEW mark=0x%08x\n", mark );
-            _netcap_conntrack_print_ct_entry(10, &netcap_ct);
+            debug( 10, "CONNTRACK: type=NEW mark=0x%08x %s:%d -> %s:%d\n", mark,
+                   unet_next_inet_ntoa(netcap_ct.ip4_src_addr), netcap_ct.port_src,
+                   unet_next_inet_ntoa(netcap_ct.r_ip4_src_addr), netcap_ct.r_port_src);
+            //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
             session_id = netcap_session_next_id();
             break;
         default:
-            debug( 10, "callback() type=unknow mark=0x%08x\n", mark );
+            debug( 10, "CONNTRACK: type=unknow mark=0x%08x\n", mark );
             break;
         }
 

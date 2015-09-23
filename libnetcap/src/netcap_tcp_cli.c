@@ -109,13 +109,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     ip_header->daddr = msg->pkt->nat_info.original.dst_address;
     tcp_header->th_dport = (u_int16_t)msg->pkt->nat_info.original.dst_protocol_id;
 
-    
     int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
-    debug( 10, "unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n    buff = %p\n",
-	   tcp_len,
-	   unet_next_inet_ntoa(ip_header->saddr),
-	   unet_next_inet_ntoa(ip_header->daddr),
-	   tcp_header );
     tcp_header->th_sum = 0;
     tcp_header->th_sum = unet_tcp_sum_calc( tcp_len, (u_int8_t*)&ip_header->saddr, (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
                                             
