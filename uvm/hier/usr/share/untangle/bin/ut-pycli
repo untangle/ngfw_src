@@ -93,9 +93,10 @@ def printUsage():
     ucli destroy <node_id> - destroys a node
     ucli sessions <node_id> - list all sessions for a given node
     ucli resetLogs - refresh & reconfigure log4j config 
-    ucli logError <string> - log an error to uvm.log
     ucli reloadLicenses - reload licenses
     ucli version - show the untangle-vm version
+    ucli setNetcapDebugLevel <level> - set the netcap debug level
+    ucli setJNetcapDebugLevel <level> - set the jnetcap debug level
 """ % sys.argv[0] )
 
 

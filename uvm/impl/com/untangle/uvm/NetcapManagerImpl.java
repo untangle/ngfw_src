@@ -199,4 +199,15 @@ public class NetcapManagerImpl implements NetcapManager
     {
         return SessionTable.getInstance().isTcpPortUsed( addr, port );
     }
+
+    public void setNetcapDebugLevel( int level )
+    {
+        Netcap.setNetcapDebugLevel( level );
+    }
+
+    public void setJNetcapDebugLevel( int level )
+    {
+        Netcap.setJnetcapDebugLevel( level );
+    }
+    
 }
