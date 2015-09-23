@@ -6,6 +6,7 @@
 #include <features.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
 #include <sys/time.h>
 #include <semaphore.h>
 #include <stdlib.h>
@@ -161,8 +162,10 @@ int          mailbox_put (mailbox_t* mb, void* mail)
 
     /* post pollable event if in use */
     if (mb->pipe[1] != -1) {
-        if (write(mb->pipe[1],".",1)<1) 
-            perrlog("write");
+        if (write(mb->pipe[1],".",1)<1) {
+            if ( errno != EAGAIN )
+                perrlog("write");
+        }
     }
 
     /* Notify any observers if the key is non-null */
@@ -190,6 +193,14 @@ int          mailbox_get_pollable_event(mailbox_t* mb)
         return perrlog("pipe");
     }
 
+    /**
+     * set the write side to non-blocking 
+     * We write one byte to the pipe to alert the listener of a change 
+     * If the pipe is full there is no need to block as there are already many "alerts" in the pipe
+     */
+    if ( fcntl( mb->pipe[1], F_SETFL, O_NONBLOCK ) < 0 )
+        return perrlog( "fcntl" );
+    
     if (mb->size>0) {
         char buf[mb->size];
         size_t num = mb->size;
