@@ -43,12 +43,9 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
 
 int netcap_sesstable_nextid(void);
 
-#define SESSTABLE_UNLOCK()  if (lock_unlock(&netcap_sesstable_lock)) \
-                                errlog(ERR_CRITICAL,"lock_unlock failed\n"); 
-#define SESSTABLE_WRLOCK()  if (lock_wrlock(&netcap_sesstable_lock)<0) \
-                                errlog(ERR_CRITICAL,"lock_wrlock failed\n"); 
-#define SESSTABLE_RDLOCK()  if (lock_rdlock(&netcap_sesstable_lock)<0) \
-                                errlog(ERR_CRITICAL,"lock_wrlock failed\n"); 
+#define SESSTABLE_UNLOCK()  do { debug(10,"SESSTABLE_UNLOCK\n"); if (lock_unlock(&netcap_sesstable_lock)) errlog(ERR_CRITICAL,"lock_unlock failed\n"); } while(0)
+#define SESSTABLE_WRLOCK()  do { debug(10,"SESSTABLE_WRLOCK\n"); if (lock_wrlock(&netcap_sesstable_lock)<0) errlog(ERR_CRITICAL,"lock_wrlock failed\n"); } while(0)
+#define SESSTABLE_RDLOCK()  do { debug(10,"SESSTABLE_RDLOCK\n"); if (lock_rdlock(&netcap_sesstable_lock)<0) errlog(ERR_CRITICAL,"lock_rdlock failed\n"); } while(0)
 
 extern lock_t netcap_sesstable_lock;
 

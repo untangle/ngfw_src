@@ -535,12 +535,8 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         if ( tcp_header->psh ) pkt->th_flags |= TH_PUSH;
 
         int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
-        debug( 12, "unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
-               tcp_len, unet_next_inet_ntoa(ip_header->saddr),
-               unet_next_inet_ntoa(ip_header->daddr));
         tcp_header->check = 0;
-        tcp_header->check = unet_tcp_sum_calc( tcp_len,(u_int8_t*)&ip_header->saddr,
-                                               (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
+        tcp_header->check = unet_tcp_sum_calc( tcp_len,(u_int8_t*)&ip_header->saddr,(u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
     }
     else if ( ip_header->protocol == IPPROTO_UDP ) {
         struct udphdr* udp_header = (struct udphdr*) ( data + ( 4 * ip_header->ihl ));
