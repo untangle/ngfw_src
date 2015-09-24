@@ -414,6 +414,11 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    protected int getEventsPendingCount()
+    {
+        return inputQueue.size();
+    }
+
     protected void start( ReportsApp node )
     {
         this.node = node;

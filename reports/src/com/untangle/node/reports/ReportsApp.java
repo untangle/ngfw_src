@@ -188,6 +188,14 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if (ReportsApp.eventWriter != null)
             ReportsApp.eventWriter.forceFlush();
     }
+
+    protected int getEventsPendingCount()
+    {
+        if (ReportsApp.eventWriter != null)
+            return ReportsApp.eventWriter.getEventsPendingCount();
+
+        return 0;
+    }
     
     public void initializeSettings()
     {
