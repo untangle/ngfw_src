@@ -269,7 +269,7 @@ public class EventWriterImpl implements Runnable
         /**
          * If too few datapoints, just return 0.0
          */
-        if (totalEventsWritten < 50)
+        if (totalEventsWritten < 500)
             return 0.0;
                          
         return this.avgWriteTimePerEvent;
@@ -412,6 +412,11 @@ public class EventWriterImpl implements Runnable
             this.totalEventsWritten += count;
             this.avgWriteTimePerEvent = (this.avgWriteTimePerEvent * .8) + (avgTime * .2);
         }
+    }
+
+    protected int getEventsPendingCount()
+    {
+        return inputQueue.size();
     }
 
     protected void start( ReportingNodeImpl node )

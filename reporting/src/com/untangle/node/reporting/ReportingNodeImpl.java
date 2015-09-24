@@ -184,6 +184,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         if (ReportingNodeImpl.eventWriter != null)
             ReportingNodeImpl.eventWriter.forceFlush();
     }
+
+    protected int getEventsPendingCount()
+    {
+        if (ReportingNodeImpl.eventWriter != null)
+            return ReportingNodeImpl.eventWriter.getEventsPendingCount();
+
+        return 0;
+    }
     
     public void initializeSettings()
     {

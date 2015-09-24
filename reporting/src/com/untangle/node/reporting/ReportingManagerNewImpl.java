@@ -255,8 +255,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         Connection conn = node.getDbConnection();
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions );
 
-        if ( node != null ) 
-            node.flushEvents();
+        if ( node != null ) {
+            // only flush if there are less than 10k events pending
+            // if there are more than 10k then events are currently being flushed and the queue can be quite long
+            // as such, just return the results for the events already in the DB instead of waiting up to several minutes
+            if (node.getEventsPendingCount() < 10000)
+                node.flushEvents();
+        }
 
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("Statement        : " + statement);
@@ -409,8 +414,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn("Invalid arguments");
             return null;
         }
-        if ( node != null ) 
-            node.flushEvents();
+        if ( node != null ) {
+            // only flush if there are less than 10k events pending
+            // if there are more than 10k then events are currently being flushed and the queue can be quite long
+            // as such, just return the results for the events already in the DB instead of waiting up to several minutes
+            if (node.getEventsPendingCount() < 10000)
+                node.flushEvents();
+        }
 
         logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
 
