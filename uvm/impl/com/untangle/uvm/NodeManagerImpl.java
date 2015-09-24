@@ -53,7 +53,7 @@ public class NodeManagerImpl implements NodeManager
     private final Map<Long, Node> loadedNodesMap = new ConcurrentHashMap<Long, Node>();
 
     private NodeManagerSettings settings = null;
-    
+
     private boolean live = true;
 
     public NodeManagerImpl()
@@ -71,7 +71,7 @@ public class NodeManagerImpl implements NodeManager
         String[] newNames;
         File dir;
         int i;
-        
+
         // FIXME use version to detect if conversion is needed
         // FIXME need to fix names in nodes.js
 
@@ -82,7 +82,7 @@ public class NodeManagerImpl implements NodeManager
         if ( dir.exists() && dir.isDirectory() ) {
             UvmContextFactory.context().execManager().execResult("/bin/rm -rf " + dirName);
         }
-        
+
         // global renames
         oldNames = new String[] {"SITEFILTER","CLASSD","_HTTPS_"};
         newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","_SSL_INSPECTOR_"};
@@ -91,10 +91,11 @@ public class NodeManagerImpl implements NodeManager
             String newStr = newNames[i];
             UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f | xargs /bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i ");
         }
-        
+
         // rename spamassassin to spam-blocker-lite
         oldName = "untangle-node-spamassassin";
         newName = "untangle-node-spam-blocker-lite";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.spamassassin.SpamAssassinNode",
                                  "com.untangle.node.spam."};
         newNames = new String[] {"com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp",
@@ -113,6 +114,7 @@ public class NodeManagerImpl implements NodeManager
         // rename spamblocker to spam-blocker
         oldName = "untangle-node-spamblocker";
         newName = "untangle-node-spam-blocker";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.spamblocker.SpamBlockerNode",
                                  "com.untangle.node.spam."};
         newNames = new String[] {"com.untangle.node.spam_blocker.SpamBlockerApp",
@@ -127,10 +129,11 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-        
+
         // rename protofilter to application-control-lite
         oldName = "untangle-node-protofilter";
         newName = "untangle-node-application-control-lite";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.protofilter.ProtoFilterImpl",
                                  "com.untangle.node.protofilter.ProtoFilterSettings",
                                  "com.untangle.node.protofilter.ProtoFilterPattern"};
@@ -151,6 +154,7 @@ public class NodeManagerImpl implements NodeManager
         // rename phish to phish-blocker
         oldName = "untangle-node-phish";
         newName = "untangle-node-phish-blocker";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.phish.PhishNode",
                                  "com.untangle.node.phish.PhishSettings"};
         newNames = new String[] {"com.untangle.node.phish_blocker.PhishBlockerApp",
@@ -169,6 +173,7 @@ public class NodeManagerImpl implements NodeManager
         // rename adblocker to ad-blocker
         oldName = "untangle-node-adblocker";
         newName = "untangle-node-ad-blocker";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.adblocker.AdBlockerImpl"};
         newNames = new String[] {"com.untangle.node.ad_blocker.AdBlockerApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -181,10 +186,11 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-        
+
         // rename clam to virus-blocker-lite
         oldName = "untangle-node-clam";
         newName = "untangle-node-virus-blocker-lite";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.clam.ClamNode",
                                  "com.untangle.node.virusblocker."        };
         newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp",
@@ -203,6 +209,7 @@ public class NodeManagerImpl implements NodeManager
         // rename virusblocker to virus-blocker
         oldName = "untangle-node-virusblocker";
         newName = "untangle-node-virus-blocker";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
                                  "com.untangle.node.virusblocker."        };
         newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
@@ -217,10 +224,11 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-        
+
         // rename capture to captive-portal
         oldName = "untangle-node-capture";
         newName = "untangle-node-captive-portal";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.capture.CaptureNodeImpl",
                                  "com.untangle.node.capture.CaptureSettings"};
         newNames = new String[] {"com.untangle.node.captive_portal.CaptivePortalApp",
@@ -243,6 +251,7 @@ public class NodeManagerImpl implements NodeManager
         // rename reporting to reports
         oldName = "untangle-node-reporting";
         newName = "untangle-node-reports";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.reporting.ReportingNodeImpl",
                                  "com.untangle.node.reporting.ReportingSettings",
                                  "com.untangle.node.reporting.ReportingUser",
@@ -277,6 +286,7 @@ public class NodeManagerImpl implements NodeManager
         // rename webfilter to web-filter-lite
         oldName = "untangle-node-webfilter";
         newName = "untangle-node-web-filter-lite";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.web_filter.WebFilterImpl",
                                  "com.untangle.node.webfilter"};
         newNames = new String[] {"com.untangle.node.web_filter_lite.WebFilterLiteApp",
@@ -295,6 +305,7 @@ public class NodeManagerImpl implements NodeManager
         // rename idps to intrusion-prevention
         oldName = "untangle-node-idps";
         newName = "untangle-node-intrusion-prevention";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.idps.IdpsNode"};
         newNames = new String[] {"com.untangle.node.intrusion_prevention.IntrusionPreventionApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -311,6 +322,7 @@ public class NodeManagerImpl implements NodeManager
         // rename faild to wan-failover
         oldName = "untangle-node-faild";
         newName = "untangle-node-wan-failover";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.faild.FailDImpl",
                                  "com.untangle.node.faild.FailDSettings"};
         newNames = new String[] {"com.untangle.node.wan_failover.WanFailoverApp",
@@ -329,6 +341,7 @@ public class NodeManagerImpl implements NodeManager
         // rename splitd to wan-balancer
         oldName = "untangle-node-splitd";
         newName = "untangle-node-wan-balancer";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.splitd.SplitDImpl",
                                  "com.untangle.node.splitd.SplitDSettings"};
         newNames = new String[] {"com.untangle.node.wan_balancer.WanBalancerApp",
@@ -347,6 +360,7 @@ public class NodeManagerImpl implements NodeManager
         // rename sitefilter to web-filter
         oldName = "untangle-node-sitefilter";
         newName = "untangle-node-web-filter";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
         newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -363,6 +377,7 @@ public class NodeManagerImpl implements NodeManager
         // rename bandwidth to bandwidth-control
         oldName = "untangle-node-bandwidth";
         newName = "untangle-node-bandwidth-control";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.bandwidth.BandwidthNodeImpl",
                                  "com.untangle.node.bandwidth.BandwidthRule",
                                  "com.untangle.node.bandwidth.BandwidthRuleAction",
@@ -383,10 +398,11 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-        
+
         // rename support to live-support
         oldName = "untangle-node-support";
         newName = "untangle-node-live-support";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.support.SupportImpl"};
         newNames = new String[] {"com.untangle.node.live_support.LiveSupportApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -403,6 +419,7 @@ public class NodeManagerImpl implements NodeManager
         // rename branding to branding-manager
         oldName = "untangle-node-branding";
         newName = "untangle-node-branding-manager";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.branding.BrandingNodeImpl",
                                  "com.untangle.node.branding.BrandingSettings"};
         newNames = new String[] {"com.untangle.node.branding_manager.BrandingManagerApp",
@@ -421,6 +438,7 @@ public class NodeManagerImpl implements NodeManager
         // rename ipsec to ipsec-vpn
         oldName = "untangle-node-ipsec";
         newName = "untangle-node-ipsec-vpn";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.ipsec.IPsecNodeImpl",
                                  "com.untangle.node.ipsec.IPsecTunnel",
                                  "com.untangle.node.ipsec.IPsecSettings"};
@@ -441,6 +459,7 @@ public class NodeManagerImpl implements NodeManager
         // rename classd to application-control
         oldName = "untangle-node-classd";
         newName = "untangle-node-application-control";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.classd.ClassDNodeImpl",
                                  "com.untangle.node.classd.ClassDLogicRule",
                                  "com.untangle.node.classd.ClassDLogicRuleAction",
@@ -466,10 +485,10 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        
         // rename https-casing to ssl-inspector
         oldName = "untangle-casing-https";
         newName = "untangle-casing-ssl-inspector";
+        updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.https.HttpsNodeImpl",
                                  "com.untangle.node.https.HttpsRule",
                                  "com.untangle.node.https.HttpsRuleAction",
@@ -490,6 +509,11 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
+    }
+
+    private void updateNodesFile(String oldName, String newName)
+    {
+        UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldName + "/" + newName + "/g' -i " + NODE_MANAGER_SETTINGS_FILE);
     }
 
     public NodeManagerSettings getSettings()
@@ -517,7 +541,7 @@ public class NodeManagerImpl implements NodeManager
                 }
             }
         }
-        this._setSettings(this.settings);       
+        this._setSettings(this.settings);
     }
 
     public List<Node> nodeInstances()
@@ -589,7 +613,7 @@ public class NodeManagerImpl implements NodeManager
     {
         return nodeToIdList( nodeInstances( policyId ) );
     }
-    
+
     protected List<Node> visibleNodes( Long policyId )
     {
         List<Node> loadedNodes = nodeInstances();
@@ -614,7 +638,7 @@ public class NodeManagerImpl implements NodeManager
     {
         return loadedNodesMap.get( nodeId );
     }
-    
+
     public Node node( String name )
     {
         List<Node> nodes = nodeInstances( name );
@@ -638,13 +662,13 @@ public class NodeManagerImpl implements NodeManager
             logger.info( "Requesting trial for: " + nodeName );
             UvmContextFactory.context().licenseManager().requestTrialLicense( nodeName );
         }
-        
+
         Node node = null;
         NodeProperties nodeProperties = null;
         NodeSettings nodeSettings = null;
-        
+
         synchronized (this) {
-            if (!live) 
+            if (!live)
                 throw new Exception("NodeManager is shut down");
 
             logger.info("initializing node: " + nodeName);
@@ -658,7 +682,7 @@ public class NodeManagerImpl implements NodeManager
             if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
                 policyId = null;
 
-            if ( nodeInstances( nodeName, policyId, false ).size() >= 1 ) 
+            if ( nodeInstances( nodeName, policyId, false ).size() >= 1 )
                 throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
             for ( NodeSettings n2 : getSettings().getNodes() ) {
                 String nodeName1 = nodeName;
@@ -671,15 +695,15 @@ public class NodeManagerImpl implements NodeManager
                 if ( nodeName1.equals(nodeName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
                      throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
             }
-                
+
             nodeSettings = createNewNodeSettings( policyId, nodeName );
 
             /**
              * Check all the basics
              */
-            if (nodeSettings == null) 
+            if (nodeSettings == null)
                 throw new Exception("Null nodeSettings: " + nodeName);
-            if (nodeProperties == null) 
+            if (nodeProperties == null)
                 throw new Exception("Null nodeProperties: " + nodeName);
 
             node = NodeBase.loadClass( nodeProperties, nodeSettings, true );
@@ -690,7 +714,7 @@ public class NodeManagerImpl implements NodeManager
             } else {
                 logger.error( "Failed to initialize node: " + nodeProperties.getName() );
             }
-            
+
         }
 
         /**
@@ -699,7 +723,7 @@ public class NodeManagerImpl implements NodeManager
         if ( nodeProperties != null && nodeProperties.getAutoStart() ) {
             node.start();
         }
-        
+
         return node;
     }
 
@@ -713,7 +737,7 @@ public class NodeManagerImpl implements NodeManager
         if ( node == null) {
             throw new Exception("Node " + node + " not found");
         }
-            
+
         synchronized (this) {
             NodeBase nodeBase = (NodeBase) node;
             nodeBase.destroyClass();
@@ -727,7 +751,7 @@ public class NodeManagerImpl implements NodeManager
                 if (nodeSettings.getId().equals(node.getNodeSettings().getId()))
                     iter.remove();
             }
-            this._setSettings(this.settings);       
+            this._setSettings(this.settings);
         }
 
         return;
@@ -748,8 +772,6 @@ public class NodeManagerImpl implements NodeManager
         return (this.node(nodeName) != null);
     }
 
-
-    
     public Map<Long, NodeSettings> allNodeSettings()
     {
         HashMap<Long, NodeSettings> result = new HashMap<Long, NodeSettings>();
@@ -758,7 +780,7 @@ public class NodeManagerImpl implements NodeManager
         }
         return result;
     }
-    
+
     public Map<Long, NodeProperties> allNodeProperties()
     {
         HashMap<Long, NodeProperties> result = new HashMap<Long, NodeProperties>();
@@ -804,7 +826,7 @@ public class NodeManagerImpl implements NodeManager
 
         }
     }
-    
+
     // Manager lifetime -------------------------------------------------------
 
     protected void init()
@@ -814,7 +836,7 @@ public class NodeManagerImpl implements NodeManager
         restartUnloaded();
 
         startAutoLoad();
-        
+
         logger.info("Initialized NodeManager");
     }
 
@@ -828,7 +850,7 @@ public class NodeManagerImpl implements NodeManager
                     {
                         String name = node.getNodeProperties().getName();
                         Long id = node.getNodeSettings().getId();
-                        
+
                         logger.info("Stopping  : " + name + " (" + id + ")");
 
                         long startTime = System.currentTimeMillis();
@@ -836,7 +858,7 @@ public class NodeManagerImpl implements NodeManager
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " (" + id + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
-                        
+
                         loadedNodesMap.remove( node.getNodeSettings().getId() );
                     }
                 };
@@ -884,7 +906,7 @@ public class NodeManagerImpl implements NodeManager
                     logger.warn("could not deploy: " + nodeProps.getName(), exn);
                     continue;
                 }
-            } 
+            }
         }
     }
 
@@ -908,7 +930,7 @@ public class NodeManagerImpl implements NodeManager
 
             List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiesMap, loadedParents);
 
-            for (NodeSettings ns : startQueue) 
+            for (NodeSettings ns : startQueue)
                 logger.info("Loading in this pass: " + ns.getNodeName() + " (" + ns.getId() + ")");
 
             if ( startQueue.size() == 0 ) {
@@ -971,7 +993,7 @@ public class NodeManagerImpl implements NodeManager
                     };
                 restarters.add(r);
                 loadedParents.add(name);
-            } 
+            }
         }
 
         List<Thread> threads = new ArrayList<Thread>(restarters.size());
@@ -1073,7 +1095,7 @@ public class NodeManagerImpl implements NodeManager
             logger.debug("Loading Settings...");
 
             // UPDATE settings if necessary
-            
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -1089,7 +1111,7 @@ public class NodeManagerImpl implements NodeManager
 
         this._setSettings(newSettings);
     }
-    
+
     /**
      * Reads the setting and returns all the nodes in the settings that aren't already loaded
      */
@@ -1130,7 +1152,7 @@ public class NodeManagerImpl implements NodeManager
 
         return nodeProperties;
     }
-    
+
     private NodeSettings createNewNodeSettings( Long policyId, String nodeName )
     {
         long newNodeId = settings.getNextNodeId();
@@ -1139,7 +1161,7 @@ public class NodeManagerImpl implements NodeManager
          * Increment the next node Id (not saved until later)
          */
         settings.setNextNodeId( newNodeId + 1 );
-        
+
         return new NodeSettings( newNodeId, policyId, nodeName );
     }
 
@@ -1150,14 +1172,14 @@ public class NodeManagerImpl implements NodeManager
         _setSettings(settings);
         return;
     }
-    
+
     private List<Long> getParentPolicies( Long policyId )
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
         List<Long> parentList = new ArrayList<Long>();
         if (policyManager == null)
             return parentList;
-        
+
         for ( Long parentId = policyManager.getParentPolicyId(policyId) ; parentId != null ; parentId = policyManager.getParentPolicyId(parentId) ) {
             parentList.add(parentId);
         }
@@ -1174,11 +1196,11 @@ public class NodeManagerImpl implements NodeManager
     {
         List<Long> parentPolicies = null;
 
-        if (parents && policyId != null) 
+        if (parents && policyId != null)
             parentPolicies = getParentPolicies(policyId);
-        else 
+        else
             parentPolicies = new ArrayList<Long>();
-        
+
         /*
          * This is a list of loadedNodesMap.  Each index of the first list corresponds to its
          * policy in the policies array.  Each index in the second list is a nodeSettings of the nodes
@@ -1187,7 +1209,7 @@ public class NodeManagerImpl implements NodeManager
          * parentNodeSettingsArray[1] == list of loadedNodesMap in parentPolicies[1]
          * ...
          * parentNodeSettingsArray[n] == list of loadedNodesMap in parentPolicies[n]
-         * Policies are ordered parentNodeSettingsArray[0] is the first parent, etc 
+         * Policies are ordered parentNodeSettingsArray[0] is the first parent, etc
          */
         List<List<Node>> parentNodeArray = new ArrayList<List<Node>>(parentPolicies.size());
         List<Node> thisPolicyNodes = new ArrayList<Node>();
@@ -1196,7 +1218,7 @@ public class NodeManagerImpl implements NodeManager
         }
 
         /*
-         * Fill in the inner list, at the end each of these is the list of 
+         * Fill in the inner list, at the end each of these is the list of
          * nodes in the policy.
          */
         for (Node node : loadedNodesMap.values()) {
