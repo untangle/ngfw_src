@@ -636,7 +636,7 @@ public class ReportsManagerImpl implements ReportsManager
     {
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nodeManager = uvm.nodeManager();
-        Node node = nodeManager.nodeInstances("untangle-node-reporting").get(0);
+        Node node = nodeManager.nodeInstances("untangle-node-reports").get(0);
         if (node == null) {
             return false;
         }

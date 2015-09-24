@@ -478,7 +478,7 @@ Ext.define('Ung.Reports', {
                 },
                 {
                     text: i18n._("Server"),
-                    id: "untangle-node-reporting",
+                    id: "untangle-node-reports",
                     leaf: true,
                     icon: "./node-icons/server.png"
                 },

@@ -32,7 +32,7 @@ def N_(message): return message
 
 class ServerNode(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-reporting','Server')
+        Node.__init__(self, 'untangle-node-reports','Server')
 
     @sql_helper.print_timing
     def setup(self):

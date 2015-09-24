@@ -24,7 +24,7 @@
         "untangle-node-openvpn",
         "untangle-node-phish-blocker",
         "untangle-node-application-control-lite",
-        "untangle-node-reporting",
+        "untangle-node-reports",
         "untangle-node-spam-blocker-lite",
         "untangle-node-directory-connector",
         "untangle-node-bandwidth-control",

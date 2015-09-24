@@ -42,7 +42,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     public ReportsManager reportingManager()
     {
-        ReportsApp reporting = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        ReportsApp reporting = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
         if (reporting == null) {
             logger.warn("reporting node not found");
             return null;

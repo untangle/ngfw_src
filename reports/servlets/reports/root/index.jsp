@@ -10,7 +10,7 @@ String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 
 if(request.getParameter("old")!=null) {
-    ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+    ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
     ReportingManager reportingManager = null ;
     boolean reportingEnabled = false;
     boolean reportsAvailable = false;

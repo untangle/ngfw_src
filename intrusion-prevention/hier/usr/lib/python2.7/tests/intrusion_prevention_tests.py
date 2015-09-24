@@ -236,7 +236,7 @@ def flush_events():
     """
     Clear Intrusion Prevention events
     """
-    reports = uvmContext.nodeManager().node("untangle-node-reporting")
+    reports = uvmContext.nodeManager().node("untangle-node-reports")
     if (reports != None):
         reports.flushEvents()
 

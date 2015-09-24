@@ -84,7 +84,7 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-application-control-lite)
             d=$work/src/application-control-lite
             ;;
-        untangle-node-reporting)
+        untangle-node-reports)
             d=$work/src/reporting
             ;;
         untangle-node-shield)

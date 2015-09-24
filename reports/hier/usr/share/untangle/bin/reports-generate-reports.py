@@ -148,19 +148,19 @@ def get_report_lengths(date):
     logger.debug("current_day_of_week: %s" % (current_day_of_week,))
     conn = sql_helper.get_connection()
 
-    dailySched = get_node_settings_item('untangle-node-reporting','generateDailyReports')
+    dailySched = get_node_settings_item('untangle-node-reports','generateDailyReports')
     if dailySched != None:
          dailySched = dailySched.lower()
          if str(current_day_of_week) in dailySched or get_day_name(current_day_of_week) in dailySched or "any" in dailySched:
               lengths.append(1)
 
-    weeklySched = get_node_settings_item('untangle-node-reporting','generateWeeklyReports')
+    weeklySched = get_node_settings_item('untangle-node-reports','generateWeeklyReports')
     if weeklySched != None:
          weeklySched = weeklySched.lower()
          if str(current_day_of_week) in weeklySched or get_day_name(current_day_of_week) in weeklySched or "any" in weeklySched:
               lengths.append(7)
 
-    monthlySched = get_node_settings_item('untangle-node-reporting','generateMonthlyReports')
+    monthlySched = get_node_settings_item('untangle-node-reports','generateMonthlyReports')
     if monthlySched != None:
          if monthlySched and date.day == 1:              
               prev_month = date - datetime.timedelta(days=1)
@@ -217,7 +217,7 @@ if not report_lengths:
 
 running = False
 for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE, stderr=PIPE).communicate()[0].split('\n'):
-     if re.search(r'untangle-node-reporting.+RUNNING', instance):
+     if re.search(r'untangle-node-reports.+RUNNING', instance):
           running = True
           break
 
@@ -239,7 +239,7 @@ CREATE TABLE reports.table_updates (
     last_update timestamp NOT NULL,
     PRIMARY KEY (tablename))""", create_partitions=False)
 
-node = get_node_settings('untangle-node-reporting')
+node = get_node_settings('untangle-node-reports')
 if not node:
      node = {}
 
