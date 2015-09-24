@@ -56,7 +56,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
 
         // if we see that the SSL inspector is working the session we release
-        if (req.globalAttachment(NodeSession.KEY_SSL_SERVER_MANAGER) != null) {
+        if (req.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
             req.release();
             return;
         }
