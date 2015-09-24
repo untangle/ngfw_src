@@ -163,11 +163,11 @@ public interface NodeSession extends SessionTuple
     public final String KEY_APPLICATION_CONTROL_PRODUCTIVITY = "application-control-productivity"; /* Integer */
     public final String KEY_APPLICATION_CONTROL_RISK = "application-control-risk"; /* Integer */
 
-    public final String KEY_SSL_SNI_HOSTNAME = "ssl-sni-host"; /* String */
-    public final String KEY_SSL_SUBJECT_DN = "ssl-subject-dn"; /* String */
-    public final String KEY_SSL_ISSUER_DN = "ssl-issuer-dn"; /* String */
-    public final String KEY_SSL_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
-    public final String KEY_SSL_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
+    public final String KEY_SSL_INSPECTOR_SNI_HOSTNAME = "ssl-sni-host"; /* String */
+    public final String KEY_SSL_INSPECTOR_SUBJECT_DN = "ssl-subject-dn"; /* String */
+    public final String KEY_SSL_INSPECTOR_ISSUER_DN = "ssl-issuer-dn"; /* String */
+    public final String KEY_SSL_INSPECTOR_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
+    public final String KEY_SSL_INSPECTOR_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
 
     public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
     public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */

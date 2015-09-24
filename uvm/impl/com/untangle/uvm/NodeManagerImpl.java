@@ -84,8 +84,8 @@ public class NodeManagerImpl implements NodeManager
         }
         
         // global renames
-        oldNames = new String[] {"SITEFILTER","CLASSD"};
-        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL"};
+        oldNames = new String[] {"SITEFILTER","CLASSD","_HTTPS_"};
+        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","_SSL_INSPECTOR_"};
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];

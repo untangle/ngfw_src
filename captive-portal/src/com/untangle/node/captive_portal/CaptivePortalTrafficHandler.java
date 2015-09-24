@@ -45,7 +45,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // if the https inspector has attached the session manager then
         // we can allow the traffic since it will come later as http
-        if (sessreq.globalAttachment(NodeSession.KEY_SSL_SERVER_MANAGER) != null) {
+        if (sessreq.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
             sessreq.release();
             return;
         }
