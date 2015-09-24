@@ -83,9 +83,9 @@ class SslInspectorManager
     private int chompCount;
 
     public static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
-    public static final byte IPC_RELEASE_MESSAGE[] = "SSL_IPC_RELEASE".getBytes();
-    public static final byte IPC_DESTROY_MESSAGE[] = "SSL_IPC_DESTROY".getBytes();
-    public static final byte IPC_WAKEUP_MESSAGE[] = "SSL_IPC_WAKEUP".getBytes();
+    public static final byte IPC_RELEASE_MESSAGE[] = "SSL_INSPECTOR_IPC_RELEASE".getBytes();
+    public static final byte IPC_DESTROY_MESSAGE[] = "SSL_INSPECTOR_IPC_DESTROY".getBytes();
+    public static final byte IPC_WAKEUP_MESSAGE[] = "SSL_INSPECTOR_IPC_WAKEUP".getBytes();
 
     // these are used while extracting the SNI from the SSL ClientHello packet
     private static int TLS_HANDSHAKE = 0x16;
@@ -112,7 +112,7 @@ class SslInspectorManager
             if (clientSide) {
                 // the server side casing should be finished with the
                 // SSL handshake by now so we grab the peer certificate
-                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_SERVER_MANAGER);
+                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
                 if (server == null)
                     throw new Exception("Server SslInspectorManager attachment is missing");
 
@@ -125,11 +125,11 @@ class SslInspectorManager
 
             else {
                 // we need the SNI hostname from the client side casing
-                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_CLIENT_MANAGER);
+                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
                 if (client == null)
                     throw new Exception("Client SslInspectorManager attachment is missing");
 
-                String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_SNI_HOSTNAME);
+                String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 initializeServerEngine(sniHostname);
             }
         }
@@ -209,7 +209,7 @@ class SslInspectorManager
          */
 
         // grab the SNI hostname so we can check against loaded cert
-        String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_SNI_HOSTNAME);
+        String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
         X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
         if ((node.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
 

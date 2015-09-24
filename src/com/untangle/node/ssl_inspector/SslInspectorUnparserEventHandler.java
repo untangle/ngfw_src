@@ -136,7 +136,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         // null result means something went haywire so we abandon 
         if ( ! success ) {
 
-            String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_SNI_HOSTNAME);
+            String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null)
                 logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
@@ -150,10 +150,10 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
             message.flip();
 
             if (manager.getClientSide()) {
-                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_SERVER_MANAGER);
+                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
                 server.getSession().simulateClientData(message);
             } else {
-                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_CLIENT_MANAGER);
+                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
                 client.getSession().simulateServerData(message);
             }
             
@@ -374,9 +374,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     private SslInspectorManager getManager( NodeTCPSession session )
     {
         if (clientSide)
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_CLIENT_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
         else
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_SERVER_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
     
 }

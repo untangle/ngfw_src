@@ -239,18 +239,18 @@ public class SslInspectorApp extends NodeBase
         LinkedList<SslInspectorRule> defaultRules = new LinkedList<SslInspectorRule>();
         int ruleNumber = 1;
 
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*update.microsoft*", SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleMatcher.MatcherType.SSL_SNI_HOSTNAME, "*gotomeeting.com", SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*dropbox*", SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SNI_HOSTNAME, "*gotomeeting.com", SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect All Traffic", null, null, SslInspectorRuleAction.ActionType.INSPECT, false));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SNI_HOSTNAME, "*youtube.com", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Google Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*Google*", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Facebook Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*Facebook*", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Wikipedia Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*Wikimedia*", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Twitter Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*Twitter*", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SUBJECT_DN, "*Yahoo*", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SNI_HOSTNAME, "*bing.com", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask Traffic", SslInspectorRuleMatcher.MatcherType.SSL_SNI_HOSTNAME, "*ask.com", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SNI_HOSTNAME, "*youtube.com", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Google Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*Google*", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Facebook Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*Facebook*", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Wikipedia Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*Wikimedia*", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Twitter Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*Twitter*", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SUBJECT_DN, "*Yahoo*", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SNI_HOSTNAME, "*bing.com", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask Traffic", SslInspectorRuleMatcher.MatcherType.SSL_INSPECTOR_SNI_HOSTNAME, "*ask.com", SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Other Traffic", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
 
         return defaultRules;
