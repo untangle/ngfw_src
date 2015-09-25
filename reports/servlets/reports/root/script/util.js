@@ -210,8 +210,9 @@ Ext.define('Ung.Util', {
             return true;
         }
     },
-    bytesRenderer: function(bytes) {
-        var units = [i18n._("bytes"), i18n._("Kbytes"), i18n._("Mbytes"), i18n._("Gbytes")];
+    bytesRenderer: function(bytes, perSecond) {
+        var units = (!perSecond) ? [i18n._("bytes"), i18n._("Kbytes"), i18n._("Mbytes"), i18n._("Gbytes")] :
+            [i18n._("bytes/s"), i18n._("Kbytes/s"), i18n._("Mbytes/s"), i18n._("Gbytes/s")];
         var units_itr = 0;
         while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
             bytes = bytes/1000;

@@ -552,7 +552,7 @@ Ext.define('Ung.panel.Reports', {
         } else if(entry.type == 'PIE_GRAPH') {
             var descriptionFn = function(val, record) {
                 var title = (record.get(entry.pieGroupColumn)==null)?i18n._("none") : record.get(entry.pieGroupColumn);
-                var value = (entry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(entry.units);
+                var value = (entry.units == "bytes" || entry.units == "bytes/s") ? Ung.Util.bytesRenderer(record.get("value"), entry.units == "bytes/s") : record.get("value") + " " + i18n._(entry.units);
                 return title + ": " + value;
             };
 
@@ -751,7 +751,7 @@ Ext.define('Ung.panel.Reports', {
                     minimum: 0,
                     renderer: function (v) {
                         var significantValue = Ung.panel.Reports.significantFigures(v, 3);
-                        return (entry.units == "bytes") ? Ung.Util.bytesRenderer(significantValue) : significantValue + " " + i18n._(entry.units);
+                        return (entry.units == "bytes" || entry.units == "bytes/s") ? Ung.Util.bytesRenderer(significantValue, entry.units == "bytes/s") : significantValue + " " + i18n._(entry.units);
                     }
                 }, {
                     type: (entry.timeStyle.indexOf('BAR_3D')!=-1) ? 'category3d' : 'category',
