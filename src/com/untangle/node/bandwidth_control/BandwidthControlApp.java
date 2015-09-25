@@ -83,7 +83,7 @@ public class BandwidthControlApp extends NodeBase
     {
         super.preStart();
 
-        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-bandwidth");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
         if ( ! isLicenseValid() ) {
