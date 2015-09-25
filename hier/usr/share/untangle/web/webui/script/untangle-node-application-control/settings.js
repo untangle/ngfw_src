@@ -209,6 +209,17 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                             record.set('tarpit', false);
                         }
                     }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set('block', checked);
+                            if(checked) {
+                                records[i].set('tarpit', false);
+                            }
+                        }
+                    }
                 }
             }, {
                 xtype:'checkcolumn',
@@ -224,6 +235,17 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                             record.set('block', false);
                         }
                     }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set('tarpit', checked);
+                            if(checked) {
+                                records[i].set('block', false);
+                            }
+                        }
+                    }
                 }
             }, {
                 xtype:'checkcolumn',
@@ -231,7 +253,8 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                 dataIndex: "flag",
                 name: "flag",
                 width: 50,
-                resizable: false
+                resizable: false,
+                checkAll: {}
             }, {
                 header: this.i18n._("Name"),
                 width: 150,
