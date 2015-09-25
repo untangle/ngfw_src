@@ -34,7 +34,7 @@ from uvm.settings_reader import get_node_settings_item
 from reports.log import *
 logger = getLogger(__name__)
 
-_ = uvm.i18n_helper.get_translation('untangle-node-policy-manager').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 def N_(message): return message
 
 class PolicyManager(Node):
