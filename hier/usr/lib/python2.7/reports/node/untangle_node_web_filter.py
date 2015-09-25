@@ -34,7 +34,7 @@ from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 
-_ = uvm.i18n_helper.get_translation('untangle-node-web-filter').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 def N_(message): return message
 
