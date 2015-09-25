@@ -62,12 +62,23 @@ public class LanguageManagerImpl implements LanguageManager
     private static final String LC_MESSAGES = "LC_MESSAGES";
     private static final int BUFFER = 2048;
 
+    private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
+    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* Expire if unused for 5 minutes */
+    // private static final int CLEANER_SLEEP_TIME_MILLI = 10 * 1000; /* Check every minute */
+    // private static final int CLEANER_LAST_ACCESS_MAX_TIME = 20 * 1000; /* Expire if unused for 5 minutes */
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private LanguageSettings languageSettings;
     private Map<String, String> allLanguages;
     private ArrayList<String> blacklist;
     private Map<String, String> allCountries;
+
+    private final Map<String, Map<String, String>> translations;
+    private final Map<String, Long> translationsLastAccessed;
+
+    private volatile Thread cleanerThread;
+    private translationsCleaner cleaner = new translationsCleaner();
 
     static {
         LANGUAGES_DIR = System.getProperty("uvm.lang.dir"); // place for languages resources files
@@ -82,7 +93,10 @@ public class LanguageManagerImpl implements LanguageManager
         allLanguages = loadAllLanguages();
         blacklist = loadBlacklist();
         allCountries = loadAllCountries();
+        translations = new HashMap<String, Map<String, String>>();
+        translationsLastAccessed = new HashMap<String, Long>();
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new LanguageUploadHandler() );
+        UvmContextFactory.context().newThread(this.cleaner).start();
     }
 
     // public methods ---------------------------------------------------------
@@ -315,59 +329,55 @@ public class LanguageManagerImpl implements LanguageManager
 
     public Map<String, String> getTranslations(String module)
     {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map;
 
         if (null == module) {
-            logger.warn("getTranslations called with no module, returning no empty map");
-            return map;
+            logger.warn("getTranslations called with no module, returning empty map");
+            return new HashMap<String, String>();
         }
 
         String i18nModule = module.replaceAll("-", "_");
         Locale locale = getLocale();
 
-        try {
-            I18n i18n = null;
-            ResourceBundle.clearCache(getClass().getClassLoader());
-            try {
-                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
-            } catch (MissingResourceException e) {
-                // fall back to official translations
-                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
+        String translationKey = i18nModule + "_" + locale.getLanguage();
+        
+        synchronized(translations){
+            map = translations.get(translationKey);
+
+            if(map == null){
+                translations.put(translationKey, new HashMap<String, String>());
+                map = translations.get(translationKey);
             }
 
-            if (i18n != null) {
-                for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
-                    String key = enumeration.nextElement();
-                    map.put(key, i18n.tr(key));
-                }
-            }
-        } catch (MissingResourceException e) {
-            // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
-            // is done in client side
-        }
+            if(map.size() == 0){
+                try {
+                    I18n i18n = null;
+                    ResourceBundle.clearCache(getClass().getClassLoader());
+                    try {
+                        // Start with community...
+                        i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
+                    } catch (MissingResourceException e) {
+                        // ...fall back to official translations
+                        i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
+                    }
 
-        // get translation for base node, if any
-        NodeManager nm = UvmContextFactory.context().nodeManager();
-        // nodeManager can be null on shutdown
-        if (nm != null) {
-            Node node = nm.node(module);
-            if (node != null) {
-                NodeProperties nodeProperties = node.getNodeProperties();
-                if (nodeProperties != null) {
-                    String nodeBase = nodeProperties.getNodeBase();
-                    if (nodeBase != null) {
-                        Map<String, String> mapBase = getTranslations(nodeBase);
-                        if (mapBase != null) {
-                            map.putAll(mapBase);
+                    if (i18n != null) {
+                        for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
+                            String key = enumeration.nextElement();
+                            map.put(key, i18n.tr(key));
                         }
                     }
+                } catch (MissingResourceException e) {
+                    // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+                    // is done in client side
                 }
             }
-        }
 
-        return map;
+            translationsLastAccessed.put(translationKey, System.currentTimeMillis());
+            return map;
+        }
     }
 
 
@@ -528,6 +538,49 @@ public class LanguageManagerImpl implements LanguageManager
         }
         else {
             languageSettings = readSettings;
+        }
+    }
+
+    /**
+     * This thread periodically walks through translations instances and removes
+     * those that have not been used recently.
+     */
+    private class translationsCleaner implements Runnable
+    {
+        public void run()
+        {
+            cleanerThread = Thread.currentThread();
+
+            while (cleanerThread != null) {
+                try {
+                    Thread.sleep(CLEANER_SLEEP_TIME_MILLI);
+                } catch (Exception e) {}
+
+                try {
+                    Long now = System.currentTimeMillis();
+                    Map<String, String> map;
+
+                    /**
+                     * Remove old entries from map
+                     */
+                    synchronized(translations){
+                        for( String translationKey : translationsLastAccessed.keySet() ){
+                            if( translationsLastAccessed.get(translationKey) + CLEANER_LAST_ACCESS_MAX_TIME < now){
+                                translationsLastAccessed.remove(translationKey);
+
+                                map = translations.get(translationKey);
+
+                                if(map != null){
+                                    map.clear();
+                                }
+                            }
+                        }
+                    }
+                    
+                } catch (Exception e) {
+                    logger.warn("Exception while cleaning translations",e);
+                }
+            }
         }
     }
 }
