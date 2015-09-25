@@ -209,7 +209,7 @@ public class WanBalancerApp extends NodeBase
         try {
             String uplinkName[] = new String[1 + IntfConstants.MAX_INTF];
 
-            Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle-node-wan-balancer" );
+            Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
             I18nUtil.marktr( "Sessions on {0}" );
         
