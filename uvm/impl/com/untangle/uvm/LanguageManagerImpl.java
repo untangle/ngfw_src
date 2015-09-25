@@ -63,7 +63,6 @@ public class LanguageManagerImpl implements LanguageManager
     private static final int BUFFER = 2048;
 
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
-    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* Expire if unused for 5 minutes */
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -562,9 +561,14 @@ public class LanguageManagerImpl implements LanguageManager
                      * Remove old entries from map
                      */
                     synchronized(translations){
+                        Long lastAccessed;
                         for( String translationKey : translationsLastAccessed.keySet() ){
-                            if( translationsLastAccessed.get(translationKey) + CLEANER_LAST_ACCESS_MAX_TIME < now){
-                                translationsLastAccessed.remove(translationKey);
+                            lastAccessed = translationsLastAccessed.get(translationKey);
+                            if(lastAccessed == 0L){
+                                continue;
+                            } 
+                            if((lastAccessed + CLEANER_LAST_ACCESS_MAX_TIME) < now){
+                                translationsLastAccessed.put(translationKey, 0L);
 
                                 map = translations.get(translationKey);
 

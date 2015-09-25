@@ -48,4 +48,10 @@ public interface LanguageManager
      * @return map of translations 
      */
     Map<String, String> getTranslations(String module);
+
+    /**
+     * Interval to keep cached translation maps
+     */
+    int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* Expire if unused for 5 minutes */
+
 }
