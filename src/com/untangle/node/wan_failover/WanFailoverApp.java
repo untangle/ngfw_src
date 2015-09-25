@@ -105,6 +105,8 @@ public class WanFailoverApp extends NodeBase
 
     public List<WanStatus> getWanStatus( )
     {
+        if ( this.wanFailoverTesterMonitor == null )
+            return new LinkedList<WanStatus>();
         return this.wanFailoverTesterMonitor.getWanStatus();
     }
 
