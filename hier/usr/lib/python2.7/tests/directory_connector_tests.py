@@ -15,14 +15,17 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-AD_HOST = "10.111.56.48"
+AD_NOT_SECURE_HOST = "10.111.56.48"
+AD_SECURE_HOST = "10.111.56.47"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
-AD_DOMAIN = "adtesting.int"
+AD_SECURE_DOMAIN = "dctesting.int"
+AD_NOT_SECURE_DOMAIN = "adtesting.int"
 AD_USER = "user_28004"
 RADIUS_HOST = "10.112.56.71"
 
-AD_RESULT = 1
+AD_NOT_SECURE_RESULT = 1
+AD_SECURE_RESULT = 1
 RADIUS_RESULT = 1
 
 # pdb.set_trace()
@@ -34,8 +37,12 @@ def create_ad_settings(ldap_secure=False):
     """
     if ldap_secure == True:
         ldap_port = 636
+        AD_HOST = AD_SECURE_HOST
+        AD_DOMAIN = AD_SECURE_DOMAIN
     else:
         ldap_port = 389
+        AD_HOST = AD_NOT_SECURE_HOST
+        AD_DOMAIN = AD_NOT_SECURE_DOMAIN
     return {
        "activeDirectorySettings": {
             "LDAPHost": AD_HOST,
@@ -65,12 +72,12 @@ def create_radius_settings():
         "activeDirectorySettings": {
             "enabled": False, 
             "superuserPass": AD_PASSWORD, 
-            "LDAPSecure": False,
-            "LDAPPort": "389", 
+            "LDAPSecure": True,
+            "LDAPPort": "636", 
             "OUFilter": "", 
-            "domain": AD_DOMAIN, 
+            "domain": AD_SECURE_DOMAIN, 
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
-            "LDAPHost": AD_HOST, 
+            "LDAPHost": AD_SECURE_HOST, 
             "superuser": AD_ADMIN}, 
         "radiusSettings": {
             "port": 1812, 
@@ -181,13 +188,14 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Setup
         """
-        global node, AD_RESULT, RADIUS_RESULT
+        global node, AD_NOT_SECURE_RESULT, AD_SECURE_RESULT, RADIUS_RESULT
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        AD_RESULT = subprocess.call(["ping", "-c", "1", AD_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        AD_NOT_SECURE_RESULT = subprocess.call(["ping", "-c", "1", AD_NOT_SECURE_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        AD_SECURE_RESULT = subprocess.call(["ping", "-c", "1", AD_SECURE_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
            
     def test_010_clientIsOnline(self):
@@ -201,7 +209,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test and save settings for test AD server, non secure
         """
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
         print 'result %s' % result
@@ -212,9 +220,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test and save settings for test AD server, secure
         """
-        raise unittest2.SkipTest("No secure AD server available")
-        if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+        if (AD_SECURE_RESULT != 0):
+            raise unittest2.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
         print 'result %s' % result
         
@@ -224,7 +231,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         checkUserRegistration
         """
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = system_properties.getHttpAdminUrl()
@@ -253,7 +260,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         checkUserRegistration, mixed character case in username
         """
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = system_properties.getHttpAdminUrl().title()
@@ -276,7 +283,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Check old user registration
         """
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
         http_admin = system_properties.getHttpAdminUrl()
@@ -298,7 +305,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Check AD settings, non-secure
         """
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         result = add_ad_settings(ldap_secure=False)
         print 'result %s' % result
@@ -316,9 +323,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Check AD settings, secure
         """
-        raise unittest2.SkipTest("No secure AD server available")
-        if (AD_RESULT != 0):
-            raise unittest2.SkipTest("No AD server available")
+        if (AD_SECURE_RESULT != 0):
+            raise unittest2.SkipTest("No secure AD server available")
         result = add_ad_settings(ldap_secure=True)
         print 'result %s' % result
         assert (result == 0)
@@ -336,7 +342,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Get list of AD users, non-secure
         """
         global nodeData
-        if (AD_RESULT != 0):
+        if (AD_NOT_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users 
         result = add_ad_settings(ldap_secure=False)
@@ -360,8 +366,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         Get list of AD users, secure
         """
         global nodeData
-        raise unittest2.SkipTest("No secure AD server available")
-        if (AD_RESULT != 0):
+        if (AD_SECURE_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users 
         result = add_ad_settings(ldap_secure=True)
