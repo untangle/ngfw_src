@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.util.UrlMatchingUtil;
@@ -32,7 +33,8 @@ import com.untangle.node.http.HttpEventHandler;
  */
 public abstract class DecisionEngine
 {
-    static final Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+    private Map<String,String> i18nMap;
+    Long i18nMapLastUpdated = 0L;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -154,6 +156,7 @@ public abstract class DecisionEngine
             if (bestCategory != null)
                 bestCategoryStr = bestCategory.getName();
             if ( bestCategoryStr == null ) {
+                updateI18nMap();
                 bestCategoryStr = I18nUtil.tr("Unblocked", i18nMap);
             }
 
@@ -166,6 +169,7 @@ public abstract class DecisionEngine
         // if this is HTTP traffic and the request is IP-based and block IP-based browsing is enabled, block this traffic
         if ( port == 80 && node.getSettings().getBlockAllIpHosts() ) {
             if ( host == null || IP_PATTERN.matcher(host).matches() ) {
+                updateI18nMap();
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, host, node.getName());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.logEvent(hbe);
@@ -239,6 +243,7 @@ public abstract class DecisionEngine
              * If the site was blocked return the nonce
              */
             if (bestCategory.getBlocked()) {
+                updateI18nMap();
                 String blockReason = I18nUtil.tr(bestCategory.getName(), i18nMap) + " - " + I18nUtil.tr(bestCategory.getDescription(), i18nMap);
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), blockReason, clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
@@ -560,4 +565,15 @@ public abstract class DecisionEngine
 
         return false;
     }
+
+    /**
+     * If expiraton matches language manager, refresh.
+     */
+    private void updateI18nMap(){
+        if((i18nMapLastUpdated + com.untangle.uvm.LanguageManager.CLEANER_LAST_ACCESS_MAX_TIME - 1000) < System.currentTimeMillis()){
+            i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+            i18nMapLastUpdated = System.currentTimeMillis();
+        }
+    }
+
 }
