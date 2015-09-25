@@ -32,7 +32,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
-_ = uvm.i18n_helper.get_translation('untangle-node-directory-connector').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 def N_(message): return message
 
 LOGIN = _('Login')
