@@ -64,8 +64,6 @@ public class LanguageManagerImpl implements LanguageManager
 
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
     private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* Expire if unused for 5 minutes */
-    // private static final int CLEANER_SLEEP_TIME_MILLI = 10 * 1000; /* Check every minute */
-    // private static final int CLEANER_LAST_ACCESS_MAX_TIME = 20 * 1000; /* Expire if unused for 5 minutes */
 
     private final Logger logger = Logger.getLogger(getClass());
 
