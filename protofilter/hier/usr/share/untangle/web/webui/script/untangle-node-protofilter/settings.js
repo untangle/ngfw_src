@@ -118,13 +118,15 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
                 header: "<b>" + this.i18n._("Block") + "</b>",
                 dataIndex: 'blocked',
                 resizable: false,
-                width:55
+                width:55,
+                checkAll: {}
             },  {
                 xtype:'checkcolumn',
                 header: "<b>" + this.i18n._("Log") + "</b>",
                 dataIndex: 'log',
                 resizable: false,
-                width:55
+                width:55,
+                checkAll: {}
             }, {
                 header: this.i18n._("Description"),
                 width: 200,

@@ -704,6 +704,26 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
                         this.gridRules.updateRule(record, null );
                     }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        Ext.MessageBox.wait(checked?i18n._("Checking All ..."):i18n._("Unchecking All ..."), i18n._("Please wait"));
+                        Ext.Function.defer(function() {
+                            var grid=checkbox.up("grid");
+                            var records=grid.getStore().getRange();
+                            grid.getStore().suspendEvents(true);
+                            for(var i=0; i<records.length; i++) {
+                                records[i].set('log', checked);
+                                if(!checked) {
+                                    records[i].set('block', false);
+                                }
+                                grid.updateRule(records[i], null );
+                            }
+                            grid.getStore().resumeEvents();
+                            grid.getStore().getFilters().notify('endupdate');
+                            Ext.MessageBox.hide();
+                        }, 100, this);
+                    }
                 }
             },{
                 xtype:'checkcolumn',
@@ -721,6 +741,26 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
                         this.gridRules.updateRule(record, null );
                     }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        Ext.MessageBox.wait(checked?i18n._("Checking All ..."):i18n._("Unchecking All ..."), i18n._("Please wait"));
+                        Ext.Function.defer(function() {
+                            var grid=checkbox.up("grid");
+                            var records=grid.getStore().getRange();
+                            grid.getStore().suspendEvents(true);
+                            for(var i=0; i<records.length; i++) {
+                                records[i].set('block', checked);
+                                if(checked) {
+                                    records[i].set('log', true);
+                                }
+                                grid.updateRule(records[i], null );
+                            }
+                            grid.getStore().resumeEvents();
+                            grid.getStore().getFilters().notify('endupdate');
+                            Ext.MessageBox.hide();
+                        }, 100, this);
+                    }
                 }
             }],
             rowEditorInputLines: [{

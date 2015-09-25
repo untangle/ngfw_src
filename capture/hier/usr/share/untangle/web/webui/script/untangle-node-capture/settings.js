@@ -317,7 +317,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 header: this.i18n._("Log"),
                 dataIndex: "log",
                 resizable: false,
-                width:55
+                width:55,
+                checkAll: {}
             }, {
                 header: this.i18n._("Address"),
                 width: 200,

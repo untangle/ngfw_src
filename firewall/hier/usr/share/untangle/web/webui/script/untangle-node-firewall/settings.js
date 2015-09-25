@@ -104,13 +104,15 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     header: this.i18n._("Block"),
                     dataIndex: 'block',
                     resizable: false,
-                    width:55
+                    width:55,
+                    checkAll: {}
                 }, {
                     xtype:'checkcolumn',
                     header: this.i18n._("Flag"),
                     dataIndex: 'flag',
                     resizable: false,
-                    width:55
+                    width:55,
+                    checkAll: {}
                 }],
                 rowEditorInputLines: [{
                     xtype:'checkbox',
