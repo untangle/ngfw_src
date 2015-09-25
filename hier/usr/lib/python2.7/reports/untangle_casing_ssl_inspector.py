@@ -30,7 +30,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 
-_ = uvm.i18n_helper.get_translation('untangle-casing-ssl-inspector').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 def N_(message): return message
 
