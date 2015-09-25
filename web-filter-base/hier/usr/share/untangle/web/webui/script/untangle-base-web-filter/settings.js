@@ -86,7 +86,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     }
                 },
                 checkAll: {
-                    handler1: function(checkbox, checked) {
+                    handler: function(checkbox, checked) {
                         var records=checkbox.up("grid").getStore().getRange();
                         for(var i=0; i<records.length; i++) {
                             records[i].set('blocked', checked);
