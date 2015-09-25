@@ -31,7 +31,7 @@ public class BlockPageServlet extends HttpServlet
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
 
-        Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle-base-web-filter" );
+        Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
         WebFilter node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "tid" )) );
         if ( node == null || !(node instanceof WebFilter) ) {

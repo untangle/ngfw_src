@@ -75,7 +75,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     @Override
     public String getTranslatedBodyTemplate()
     {
-        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-smtp");
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String bodyTemplate = i18nUtil.tr("The attached message from")
                               + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was found to contain the virus")

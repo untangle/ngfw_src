@@ -475,7 +475,7 @@ public class TomcatManagerImpl implements TomcatManager
 
         private String administrationDenied()
         {
-            Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
+            Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
             return I18nUtil.tr("HTTP administration is disabled.", i18n_map);
         }
 

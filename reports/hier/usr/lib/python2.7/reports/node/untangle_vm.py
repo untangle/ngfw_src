@@ -34,7 +34,7 @@ EVT_TYPE_RENEW    = 1
 EVT_TYPE_EXPIRE   = 2
 EVT_TYPE_RELEASE  = 3
 
-_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 def N_(message): return message
 
 class UvmNode(Node):

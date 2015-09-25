@@ -58,7 +58,7 @@ public class AlertManagerImpl implements AlertManager
 
     public AlertManagerImpl()
     {
-        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         this.i18nUtil = new I18nUtil(i18nMap);
     }
 

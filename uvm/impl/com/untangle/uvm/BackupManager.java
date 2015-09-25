@@ -43,7 +43,7 @@ public class BackupManager
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new RestoreUploadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new BackupDownloadHandler() );
 
-        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         this.i18nUtil = new I18nUtil(i18nMap);
     }
     

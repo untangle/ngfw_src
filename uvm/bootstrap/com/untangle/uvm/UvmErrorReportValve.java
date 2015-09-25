@@ -104,7 +104,7 @@ public class UvmErrorReportValve extends ErrorReportValve
 
     private Map<String, String> getTranslations()
     {
-        return Main.getMain().getTranslations("untangle-libuvm");
+        return Main.getMain().getTranslations("untangle");
     }
 
     private String tr(String value, Map<String, String> i18nMap)

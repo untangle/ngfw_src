@@ -8,7 +8,7 @@ from mod_python import Cookie
 import pprint
 import uvm.i18n_helper
 
-_ = uvm.i18n_helper.get_translation('untangle-node-captive-portal').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called for a client logout request

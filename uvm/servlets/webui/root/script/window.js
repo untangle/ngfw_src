@@ -291,7 +291,7 @@ Ext.define("Ung.NodeWin", {
     constructor: function(config) {
         this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
         // initializes the node i18n instance
-        config.i18n = Ung.i18nModuleInstances[config.name];
+        config.i18n = Ung.i18nModuleInstances["untangle"];
         this.callParent(arguments);
     },
     initComponent: function() {

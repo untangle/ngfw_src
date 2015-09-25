@@ -576,7 +576,7 @@ Ext.define("Ung.Node", {
         Ext.bind(this.loadNode, this,[Ext.bind(this.initSettingsTranslations, this,[Ext.bind(this.preloadSettings, this)])]).call(this);
     },
     initSettingsTranslations: function(handler) {
-        Ung.Util.loadModuleTranslations.call(this, this.name, handler);
+        Ung.Util.loadModuleTranslations.call(this, "untangle", handler);
     },
     //get node settings async before node settings load
     preloadSettings: function(handler) {

@@ -30,7 +30,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.sql_helper import print_timing
 
-_ = uvm.i18n_helper.get_translation('untangle-base-spam-blocker').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 class SpamBaseNode(Node):
     def __init__(self, node_name, title, short_name, vendor_name, spam_label,

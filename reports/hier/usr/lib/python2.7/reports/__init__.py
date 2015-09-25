@@ -47,7 +47,7 @@ URL_LINK = 'URLLink'
 
 OTHERS_STR = 'others'
 
-_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)

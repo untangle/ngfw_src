@@ -85,7 +85,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 
     public Map<String, String> getTranslations()
     {
-        return this.context.languageManager().getTranslations("untangle-libuvm");
+        return this.context.languageManager().getTranslations("untangle");
     }
     
     /**
@@ -105,7 +105,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("oemName", this.context.oemManager().getOemName());
             json.put("fullVersionAndRevision", this.context.adminManager().getFullVersionAndRevision());
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
-            json.put("translations", this.context.languageManager().getTranslations("untangle-libuvm"));
+            json.put("translations", this.context.languageManager().getTranslations("untangle"));
             json.put("wizardSettings", this.context.getWizardSettings());
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);

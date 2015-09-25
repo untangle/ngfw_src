@@ -27,7 +27,7 @@ from reports.engine import FactTable
 from reports.engine import Node
 from reports.sql_helper import print_timing
 
-_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 def N_(message): return message
 
 class ServerNode(Node):

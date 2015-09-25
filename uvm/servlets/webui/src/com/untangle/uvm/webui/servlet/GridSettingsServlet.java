@@ -111,7 +111,7 @@ public class GridSettingsServlet extends HttpServlet
     private String importFailedMessage()
     {
         UvmContext uvm = UvmContextFactory.context();
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle");
         return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
     }
     

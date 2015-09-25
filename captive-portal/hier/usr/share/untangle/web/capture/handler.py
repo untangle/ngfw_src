@@ -15,7 +15,7 @@ import time
 import os
 import uvm.i18n_helper
 
-_ = uvm.i18n_helper.get_translation('untangle-node-captive-portal').lgettext
+_ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 ## PythonOption ApplicationPath /
 #mod_python.session.application_path /

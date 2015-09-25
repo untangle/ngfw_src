@@ -32,8 +32,7 @@ import com.untangle.node.http.HttpEventHandler;
  */
 public abstract class DecisionEngine
 {
-    static final Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-web-filter");
-
+    static final Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
 
     private final Logger logger = Logger.getLogger(getClass());
 

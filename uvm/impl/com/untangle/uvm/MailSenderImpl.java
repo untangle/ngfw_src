@@ -321,7 +321,7 @@ public class MailSenderImpl implements MailSender
     public String sendTestMessage(String recipient)
     {
         UvmContext context = UvmContextFactory.context();
-        Map<String, String> i18nMap = context.languageManager().getTranslations("untangle-libuvm");
+        Map<String, String> i18nMap = context.languageManager().getTranslations("untangle");
         String companyName = context.brandingManager().getCompanyName();
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String testMessageSubject = i18nUtil.tr("{0} Server Test Message", companyName);

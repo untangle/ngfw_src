@@ -32,8 +32,7 @@ public class BlockPageServlet extends HttpServlet
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
 
-        Map<String,String> i18n_map = UvmContextFactory.context().
-            languageManager().getTranslations( "untangle-base-virus-blocker" );
+        Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
         
         VirusBlockerBaseApp node = (VirusBlockerBaseApp) nm.node( Long.parseLong(request.getParameter( "tid" )) );
         if ( node == null || !(node instanceof VirusBlockerBaseApp)) {
