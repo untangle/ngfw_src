@@ -93,6 +93,12 @@ msgstr "アドレス"
 msgid "Port"
 msgstr "ポート"
 
+msgid "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed."
+msgstr ""
+"名前には、数字、文字、ダッシュ、ピリオドが含まれている必要があります。スペー"
+"スは使用できません。"
+
+
 msgid "Connected Remote Clients"
 msgstr "接続したリモートクライアント"
 
@@ -116,6 +122,12 @@ msgstr "Tx データ"
 
 msgid "Remote Server Status"
 msgstr "リモートサーバの状態"
+
+msgid "The Remote Server Status list shows the current status of the configured remote servers."
+msgstr ""
+"リモートサーバの状態リストには、構成されたリモートサーバの現在の状態が表示さ"
+"れます。"
+
 
 msgid "Name"
 msgstr "名前"
@@ -180,6 +192,18 @@ msgstr "失敗"
 msgid "Import failure"
 msgstr "インポート失敗"
 
+msgid "These settings configure how OpenVPN will connect to remote servers as a client."
+msgstr ""
+"これらの設定は、OpenVPNがクライアントとしてリモートサーバに接続する方法を設定"
+"します。"
+
+
+msgid "Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client."
+msgstr ""
+"リモートサーバは、OpenVPNのクライアントとして接続すべきリストのリモートの"
+"OpenVPNサーバです。"
+
+
 msgid "Download OpenVPN Client"
 msgstr "OpenVPNクライアントをダウンロードしてください"
 
@@ -190,6 +214,13 @@ msgid "These files can be used to configure your Remote Clients."
 msgstr ""
 "これらのファイルは、リモートクライアントを設定するために使用することができま"
 "す。"
+
+
+msgid "This file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file."
+msgstr ""
+"このファイルは、Chromebookのクライアントを設定するために使用することができま"
+"す。ターゲットデバイス上で、<B>クロムを参照：//ネット-内部</ B>およびインポー"
+"トONCファイルを使用します。"
 
 
 msgid "Close"
@@ -208,6 +239,24 @@ msgid "Click here to download this client's Windows setup.exe file."
 msgstr ""
 "Windowsクライアントの setup.exeファイルをダウンロードするには、ここをクリック"
 "してください。"
+
+
+msgid "Click here to download this client's configuration onc file for Chromebook."
+msgstr ""
+"ChromebookのためのファイルONCこのクライアントの設定をダウンロードするには、こ"
+"こをクリックしてください。"
+
+
+msgid "Click here to download this client's configuration zip file for other OSs (apple/linux/etc). "
+msgstr ""
+"他のOS（アップル/ Linux/その他）のクライアント設定zipファイルをダウンロードす"
+"るには、ここをクリックしてください。"
+
+
+msgid "Click here to download this client's configuration file for remote Untangle OpenVPN clients."
+msgstr ""
+"リモート Untangle OpenVPNクライアントのクライアント設定ファイルをダウンロード"
+"するには、ここをクリックしてください。"
 
 
 msgid "Remote Clients"
@@ -282,6 +331,12 @@ msgstr "Push DNSドメイン"
 msgid "Server"
 msgstr "サーバ"
 
+msgid "These settings configure how OpenVPN will be a server for remote clients."
+msgstr ""
+"これらの設定は、OpenVPNがリモートクライアント用のサーバとなる方法を設定しま"
+"す。"
+
+
 msgid "Site Name"
 msgstr "サイト名"
 
@@ -303,6 +358,9 @@ msgstr "プロトコル"
 msgid "Warning"
 msgstr "警告"
 
+msgid "Changing the protocol will require redistributing ALL of the openvpn clients."
+msgstr "プロトコルを変更すると、OpenVPNのクライアントをすべて再配布が必要になります。"
+
 msgid "Do you want to continue anyway?"
 msgstr "続行しますか？"
 
@@ -323,6 +381,12 @@ msgstr "失敗"
 
 msgid "You must create at least one group."
 msgstr "最低 1つのグループを作成しなければなりません。"
+
+msgid "The group: {0} cannot be deleted because it is being used by the client: {1} in the Client To Site List."
+msgstr ""
+"グループ{0}は、クライアントによって使用されているため、削除することができませ"
+"ん{1}サイト一覧へのクライアントインチ"
+
 
 msgid "The group name: {0} in row: {1} already exists."
 msgstr "グループ名{0}の行に{1}はすでに存在しています。"
@@ -377,6 +441,12 @@ msgstr "インポートファイルには{0}有効なレコードと{1}無効な
 
 msgid "Import failed. Imported file has no records."
 msgstr "インポートに失敗しました。インポートされたファイルにはレコードがありません。"
+
+msgid "Import failed. Imported file contains {0} invalid records and no valid records."
+msgstr ""
+"インポートに失敗しました。インポートファイルには{0}無効なレコードと有効なレ"
+"コードを。"
+
 
 msgid "Exporting Settings..."
 msgstr "設定のエクスポート..."
@@ -630,6 +700,12 @@ msgstr "ヘルプ"
 msgid "Buy Now"
 msgstr "今購入する"
 
+msgid "The <B>Status Indicator</B> shows the current operating condition of a particular application."
+msgstr ""
+"<B>ステータスインジケータ</B>は、特定のアプリケーションの現在の動作状態を示し"
+"ています。"
+
+
 msgid "Green"
 msgstr "グリーン"
 
@@ -638,6 +714,9 @@ msgstr "アプリケーションが、正常に動作していることを示し
 
 msgid "Red"
 msgstr "レッド"
+
+msgid "indicates that the application is ON, but that an abnormal condition has occurred."
+msgstr "アプリケーションがONであることが、異常が発生したことを示しています。"
 
 msgid "Yellow"
 msgstr "イエロー"
@@ -648,10 +727,19 @@ msgstr "アプリケーションが保存中か、設定を更新中を示して
 msgid "Clear"
 msgstr "クリア"
 
+msgid "indicates that the application is OFF, and may be turned ON by the user."
+msgstr "アプリケーションがOFFであることを示し、ユーザがオンされてもよいです。"
+
 msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
 msgstr ""
 "<B>電源ボタン</ B>は、アプリケーションのオンとオフを有効にすることができま"
 "す。"
+
+
+msgid "This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack."
+msgstr ""
+"このアプリは、上記の親ラックに属しています。親ラックを選択し、このアプリの設"
+"定にアクセスするには<BR/>。"
 
 
 msgid "Unable to start {0}"
@@ -1008,8 +1096,28 @@ msgstr "自動アップデート"
 msgid "Automatically Install Upgrades"
 msgstr "アップグレードを自動的にインストール"
 
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
+msgstr ""
+"指定のアップグレード時間に新しいアップグレードがあれば、自動的にダウンロード"
+"してインストールします。インストール中、システムの再起動が一時的な接続中断を"
+"及ぼすかもしれません。"
+
+
 msgid "Do Not Automatically Install Upgrades"
 msgstr "アップグレードを自動的にインストールしない"
+
+msgid "If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab."
+msgstr ""
+"指定のアップグレード時間に新しいアップグレードがあっても、インストールされま"
+"せん。アップグレードはすべて、Upgradeタブにあるボタンをつかってマニュアルでイ"
+"ンストールしなければいけません。"
+
+
+msgid "Note: Turning off Automatic Upgrades does not disable signature & list updates"
+msgstr ""
+"Note:  Automatic Upgrades をオフにしてもsignature & list updateをディセーブル"
+"にしません。"
+
 
 msgid "Automatic Upgrade Schedule"
 msgstr "自動アップグレードスケジュール"
@@ -1761,8 +1869,25 @@ msgstr "HTTP管理を許可します"
 msgid "Note:"
 msgstr "注意："
 
+msgid "HTTP is open on non-WANs (internal interfaces) for blockpages and other services."
+msgstr ""
+"HTTPはblockpagesや他のサービスのために非のWAN（内部インターフェース）で開かれ"
+"ています。"
+
+
+msgid "This settings only controls the availability of <b>administration</b> via HTTP."
+msgstr "この設定は、HTTP経由で</ B> <B>管理の可用性を制御します。"
+
 msgid "Public Address"
 msgstr "パブリックアドレス"
+
+msgid "The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails."
+msgstr ""
+"パブリックアドレスはのための公開場所提供アドレス/ URLである{0}サーバーを。こ"
+"のアドレスは、によって送信された電子メールで使用される{0}でホストされている"
+"サービスにリンクするには、サーバー{0}など検疫ダイジェストやOpenVPNのクライア"
+"ントの電子メールとしてサーバー。"
+
 
 msgid "Use IP address from External interface (default)"
 msgstr "外部インタフェース（デフォルト）からIPアドレスを使用します"
@@ -1776,11 +1901,24 @@ msgstr ""
 msgid "Use Hostname"
 msgstr "ホストネームを使用"
 
+msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
+msgstr ""
+"{0} サーバーの完全修飾ドメインネームがIPアドレスを内部、外部からもルックアッ"
+"プする場合、これを推奨します。"
+
+
 msgid "Current Hostname: {0}"
 msgstr "カレント　ホストネーム: {0}"
 
 msgid "Use Manually Specified Address"
 msgstr "手動で指定アドレスを使用します"
+
+msgid "This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server."
+msgstr ""
+"場合は、このことをお勧めします{0}サーバーがにトラフィックをリダイレクト指定し"
+"たホスト名/ IPのポートフォワードを持つ別のファイアウォールの背後にインストー"
+"ルされている{0}サーバー。"
+
 
 msgid "IP/Hostname"
 msgstr "IP /ホスト名"
@@ -1797,6 +1935,16 @@ msgstr "証明書"
 msgid "Certificate Authority"
 msgstr "認証局"
 
+msgid "The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network."
+msgstr ""
+"認証局は、HTTPSインスペクタやキャプティブポータルのようないくつかのアプリケー"
+"ションやサービスによって使用されるHTTPS証明書を作成し、署名するために使用され"
+"ます。また、内部ウェブサーバ証明書に署名するために使用することができます。ク"
+"ライアントコンピュータとデバイスの証明書のセキュリティ警告を解消するには、"
+"ルート証明書をダウンロードし、ネットワークに接続された各クライアント上で、信"
+"頼できる機関のリストに追加する必要があります。"
+
+
 msgid "Valid starting"
 msgstr "有効スターティング"
 
@@ -1809,14 +1957,41 @@ msgstr "サブジェクトDN"
 msgid "Generate Certificate Authority"
 msgstr "認証局の生成"
 
+msgid "Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate."
+msgstr ""
+"内部認証局を再作成するには、ここをクリックしてください。ルート証明書のサブ"
+"ジェクトDNの情報を変更するために使用します。"
+
+
 msgid "Download Root Certificate"
 msgstr "ルート証明書をダウンロード"
+
+msgid "Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server."
+msgstr ""
+"ルート証明書をダウンロードするにはここをクリックしてください。クライアントデ"
+"バイス上でこの証明書をインストールすると、彼らは、このサーバーによって生成さ"
+"れた証明書を信頼することができます。"
+
 
 msgid "Download Root Certificate Installer"
 msgstr "ルート証明書のインストーラをダウンロードしてください"
 
+msgid "Click here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device."
+msgstr ""
+"ルート証明書のインストーラをダウンロードするには、ここをクリックしてくださ"
+"い。これは、Windowsデバイス上で適切にルート証明書をインストールします。"
+
+
 msgid "Server Certificate"
 msgstr "サーバー証明書"
+
+msgid "The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc."
+msgstr ""
+"サーバー証明書は、このサーバーとのすべてのHTTPS接続を固定するために使用されま"
+"す。この証明書を作成するための2つのオプションがあります。あなたが作成した認証"
+"局によって署名された証明書を作成し、上記の表示されたか、などThawte社、ベリサ"
+"インなどのサードパーティの認証局によって署名された証明書を購入することができ"
+
 
 msgid "Issuer DN"
 msgstr "発行者DN"
@@ -1827,14 +2002,43 @@ msgstr "代替名"
 msgid "Generate Server Certificate"
 msgstr "サーバー証明書の生成"
 
+msgid "Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate."
+msgstr ""
+"上記の表示された認証局によって署名されたサーバー証明書を作成するには、ここを"
+"クリックしてください。サーバー証明書のサブジェクトDNの情報を変更するために使"
+"用します。"
+
+
 msgid "Third Party Server Certificate"
 msgstr "サードパーティのサーバー証明書"
+
+msgid "To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below."
+msgstr ""
+"サードパーティの認証局によって署名されたサーバー証明書を使用するには、まず以"
+"下の最初のボタンを使用して、証明書署名要求（CSR）を生成する必要があります。こ"
+"れは、あなたのコンピュータにダウンロードされる新しいCSRを作成することができま"
+"す。あなたはあなたの選択の証明書ベンダーにこのファイルを提供し、彼らはあなた"
+"が下の2番目のボタンを使用してインポートすることができます署名付きサーバ証明書"
+"を作成し、それを使用します。"
+
 
 msgid "Create Signature Signing Request"
 msgstr "署名署名要求を作​​成します。"
 
+msgid "Click here to generate and download a new Certificate Signing Request (CSR) to your computer."
+msgstr ""
+"お使いのコンピュータに新しい証明書署名要求（CSR）を生成し、ダウンロードするに"
+"は、ここをクリックしてください。"
+
+
 msgid "Import Signed Server Certificate"
 msgstr "インポート署名付きサーバー証明書"
+
+msgid "Click here to upload a signed server certificate that you received from the CSR you created in step one."
+msgstr ""
+"あなたがステップ1で作成したCSRから受け取った署名付きサーバ証明書をアップロー"
+"ドするには、ここをクリックしてください。"
+
 
 msgid "Country"
 msgstr "国"
@@ -1845,20 +2049,63 @@ msgstr "あなたの組織が法的に登録されている国を選択します
 msgid "State/Province"
 msgstr "州/郡"
 
+msgid "Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate."
+msgstr ""
+"状態の名前、州、地域、組織が置かれているの領土。フルネームを入力してくださ"
+"い。短縮することはできません。"
+
+
 msgid "City/Locality"
 msgstr "市/地域"
+
+msgid "Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate."
+msgstr ""
+"組織が登録/配置されている都市/地域の名前。都市/地域の名前を綴るください。短縮"
+"することはできません。"
+
 
 msgid "Organization"
 msgstr "団体名"
 
+msgid "The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."
+msgstr ""
+"あなたのビジネスが法的に登録されている名前。記載されている組織では、証明書要"
+"求のドメイン名の法的な登録者でなければなりません。あなたは中小企業/個人事業主"
+"として登録されている場合は、[組織]フィールドに、証明書の要求者の名前を入力し"
+"てください、とDBAは組織単位]フィールドに名前を（のような事業を行っていま"
+"す）。"
+
+
 msgid "Organizational Unit "
 msgstr "組織単位"
+
+msgid "Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."
+msgstr ""
+"オプション。組織内の部門を区別するために、このフィールドを使用します。該当す"
+"る場合は、このフィールドにDBA（として事業を行っている）の名前を入力することが"
+"できます。"
+
 
 msgid "Common Name"
 msgstr "共通名"
 
+msgid "The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."
+msgstr ""
+"CN（一般名）フィールドに入力した名前は、証明書（example.com）を使用されるため"
+"のウェブサイトの完全修飾ドメイン名でなければなりません。あなたの共通の名前"
+"で//接頭辞：//またはhttps：HTTPを使用しないでください。この分野であなたの個人"
+"名を入力しないでください。"
+
+
 msgid "Subject Alternative Names"
 msgstr "サブジェクト代替名"
+
+msgid "Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."
+msgstr ""
+"オプション。あなたが証明書を使用されるためのウェブサイトにアクセスするために"
+"使用され得る1つ以上の代替ホスト名またはIPアドレスのカンマ区切りリストを入力す"
+"るには、このフィールドを使用します。"
+
 
 msgid "Generate"
 msgstr "発生させます"
@@ -1878,11 +2125,20 @@ msgstr "組織]フィールドは空にすることはできません"
 msgid "The Common Name field must not be empty"
 msgstr "Common Nameフィールドが空にすることはできません"
 
+msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgstr "認証局の生成が正常に完了しました。続行するには、[OK]をクリックします。"
+
 msgid "Error during Certificate Authority generation.  Click OK to continue."
 msgstr "認証局の生成中にエラーが発生しました。続行するには、[OK]をクリックします。"
 
 msgid "Generating server certificate and restarting web server..."
 msgstr "サーバ証明書を生成し、Webサーバを再起動します..."
+
+msgid "Certificate generation successfully completed. Click OK to return to the main page."
+msgstr ""
+"証明書の生成が正常に完了しました。メインページに戻るには、[OK]をクリックしま"
+"す。"
+
 
 msgid "Error during certificate generation."
 msgstr "証明書の生成中にエラーが発生しました。"
@@ -1898,6 +2154,12 @@ msgstr "アップロードする証明書を選択してください。"
 
 msgid "Uploading server certificate and restarting web server..."
 msgstr "サーバー証明書をアップロードし、Webサーバーを再起動..."
+
+msgid "Certificate upload successfully completed. Click OK to return to the main page."
+msgstr ""
+"証明書のアップロードが正常に完了しました。メインページに戻るには、[OK]をク"
+"リックします。"
+
 
 msgid "Password is too short."
 msgstr "パスワードが短すぎます。"
@@ -2055,6 +2317,15 @@ msgstr "保存中..."
 msgid "Outgoing Server"
 msgstr "Outgoing サーバー"
 
+msgid "Enter an email address to send a test message and then press Send. That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses."
+msgstr ""
+"テストメッセージを送信する電子メールアドレスを入力し、[送信]を押します。その"
+"メールアカウントは、すぐにテストを実行した後、電子メールを受信する必要があり"
+"ます。ない場合は、電子メールの設定が正しくない可能性があります。<BR/>はそれ"
+"は、電子メールの設定は、内部（ドメイン）と外部の両方の電子メールアドレスへの"
+"送信のために働くことを検証することをお勧めします。"
+
+
 msgid "Email Test"
 msgstr "Eメールテスト"
 
@@ -2069,6 +2340,14 @@ msgstr "メールを送信しています..."
 
 msgid "Outgoing Email Server"
 msgstr "送信メールサーバー"
+
+msgid "The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify a valid SMTP server that will relay mail for the {0} Server."
+msgstr ""
+"送信メールサーバーの設定はどのように決定し{0}サーバーは、ほとんどの場合、デ"
+"フォルトの設定では動作するはずなど<BR/>レポート、隔離ダイジェストとして電子"
+"メールを送信します。ない場合は、メールを中継します有効なSMTPサーバーを指定し"
+"{0}サーバーを。"
+
 
 msgid "Send email directly (default)"
 msgstr "Eメールを直接送信（デフォルト）"
@@ -2103,8 +2382,21 @@ msgstr "アドレスからEメール"
 msgid "The {0} Server will send email from this address."
 msgstr " {0} このアドレスからサーバーがメールを送ります"
 
+msgid "The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect."
+msgstr ""
+"Eメールテストは現在のコンフィギュレーションと一緒に指定したアドレスにメールを"
+"送信します。もしテストメールを受信しない場合は、あなたのセッティングが間違っ"
+"ています。"
+
+
 msgid "Save Changes?"
 msgstr "変更を保存しますか？"
+
+msgid "Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"
+msgstr ""
+"現在のセッティングは保存されてません。{0}テストを実行する前にセッティングを保"
+"存しますか？"
+
 
 msgid "Show Detail"
 msgstr "詳細を表示"
@@ -2151,6 +2443,12 @@ msgstr "毎日の隔離ダイジェストメールを送信"
 msgid "Quarantine Digest Sending Time"
 msgstr "隔離ダイジェストの送信時間"
 
+msgid "Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>"
+msgstr ""
+"また、ユーザーは、このリンクから手動で隔離ダイジェストメールを要求することが"
+"できます。<B>のhttps：// {0} /隔離/ </ B>"
+
+
 msgid "User Quarantines"
 msgstr "ユーザー検疫"
 
@@ -2172,6 +2470,12 @@ msgstr "データサイズ (kB)"
 msgid "Email Quarantine Details for: "
 msgstr "検疫詳細のEメール送信先："
 
+msgid "Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined."
+msgstr ""
+"このリストにあるEメールアドレスは自動的に作成される検疫があります。その他の"
+"メールはマークされ、検疫されません。"
+
+
 msgid "Quarantinable Addresses"
 msgstr "検疫アドレス"
 
@@ -2180,6 +2484,13 @@ msgstr "検疫できるアドレス"
 
 msgid "[enter email address rule]"
 msgstr "[電子メールアドレスのルールを入力してください]"
+
+msgid "This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest."
+msgstr ""
+"これは他のアカウントに検疫ダイジェストがフォワードされるメールアドレスリスト"
+"です。これはリスト全体がダイジェストを受信するべきでない配信リストによくある"
+"ものです。"
+
 
 msgid "Quarantine Forwards"
 msgstr "検疫フォワード"
@@ -2526,6 +2837,12 @@ msgstr "ビューライセンス"
 msgid "Licenses"
 msgstr "ライセンス"
 
+msgid "Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server."
+msgstr ""
+"ライセンスは有料のアプリケーションやサービスを受ける権利を決定します。ライセ"
+"ンスサーバーとの和解を強制するために、[更新]をクリックします。"
+
+
 msgid "The Current list of Licenses available on this Server."
 msgstr "このサーバー上で使用可能なライセンスの現在のリスト。"
 
@@ -2829,6 +3146,12 @@ msgstr "デバイスマッパーを読み込んでいます..."
 msgid "Refresh Device Status"
 msgstr "リフレッシュデバイスステータス"
 
+msgid "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
+msgstr ""
+"コンボを開き、リストから目的のデバイスを選択して、デバイスをクリックします。"
+"別のデバイスが選択されたときに2デバイスが切り替えられます。"
+
+
 msgid "Vendor"
 msgstr "ベンダー"
 
@@ -2838,8 +3161,22 @@ msgstr "デバイスステータスの更新..."
 msgid "How to map Devices with Interfaces"
 msgstr "インターフェイスを持つデバイスをマップする方法"
 
+msgid "<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
+msgstr ""
+"<B>方法1：</ B> <B>ドラッグ＆ドロップ</ b>を希望するインターフェイスにデバイ"
+"スが<BR/> <B>方法2：</ B> <B>デバイスをクリックします</ B >コンボを開き、リス"
+"トから目的のデバイスを選択します。別のデバイスが選択されたときに2デバイスが切"
+"り替えられます。"
+
+
 msgid "Interface configuration"
 msgstr "インターフェイスコンフィギュレーション"
+
+msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
+msgstr ""
+"各インターフェイスの設定と物理ネットワークカードへのマッピングを設定するに"
+"は、このページを使用します。"
+
 
 msgid "[enter IPv4 address]"
 msgstr "[IPv4アドレスを入力してください]"
@@ -3069,8 +3406,20 @@ msgstr "ホスト名（複数可）"
 msgid "Local Services"
 msgstr "ローカルサービス"
 
+msgid "The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services."
+msgstr ""
+"指定されたHTTPSポートは、管理などのサービスを提供するために、ローカルのHTTPS"
+"サーバにすべてのインターフェイスから転送されます。"
+
+
 msgid "HTTPS port"
 msgstr "HTTPSポート"
+
+msgid "The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services."
+msgstr ""
+"指定されたHTTPポートは、管理、blockpages、その他のサービスを提供するために、"
+"ローカルのHTTPサーバに非WANインターフェイスに転送されます。"
+
 
 msgid "HTTP port"
 msgstr "HTTPポート"
@@ -3102,6 +3451,12 @@ msgstr "ポートフォワードのトラブルシューティング"
 msgid "Test 1: Verify pinging the <b>new destination</b>"
 msgstr "テスト1：<B>新しい宛先にpingを実行することを確認する</ b>"
 
+msgid "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>"
+msgstr ""
+"テスト2：新しい宛先<BR/> <I>このテストは唯一のTCPポート転送に適用されるとの接"
+"続を確認してください</ I>。"
+
+
 msgid "Connect Test"
 msgstr "テストを接続します"
 
@@ -3111,11 +3466,30 @@ msgstr "テスト3：パケット試験を使用してトラフィックを見�
 msgid "Packet Test"
 msgstr "パケットテスト"
 
+msgid "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}"
+msgstr ""
+"より多くのヘルプについては、トラブルシューティングのポート転送は<BR/>を表示"
+"{0}ポートフォワードトラブルシューティングガイド{1}"
+
+
 msgid "Other"
 msgstr "その他"
 
+msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
+msgstr ""
+"ポートフォワードは内部（NAT'd）ネットワーク上のIPにパブリックIPアドレスから構"
+"成された条件に一致する前方セッションを支配します。ルールは順番に評価されてい"
+"ます。"
+
+
 msgid "The following ports are currently reserved and can not be forwarded:"
 msgstr "次のポートは、現在予約されており、転送することはできません。"
+
+msgid "Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:"
+msgstr ""
+"あらゆる解くIP宛て上記の説明に一致するトラフィックは新しい場所に転送されま"
+"す。"
+
 
 msgid "Forward to the following location:"
 msgstr "次の場所に転送します："
@@ -3141,6 +3515,12 @@ msgstr "高度に切り替え"
 msgid "NAT Rules"
 msgstr "NATルール"
 
+msgid "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order."
+msgstr ""
+"NAT規則は、トラフィックの送信元IPアドレス（ネットワークアドレス変換）の書き換"
+"えを制御します。ルールは順番に評価されています。"
+
+
 msgid "Enable NAT Rule"
 msgstr "NATルールを有効にします"
 
@@ -3158,6 +3538,14 @@ msgstr "バイパスルール"
 
 msgid "Bypass"
 msgstr "バイパス"
+
+msgid "Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed."
+msgstr ""
+"バイパスルールは、アプリケーションによってスキャンされているもののトラフィッ"
+"クを制御します。バイパスされたトラフィックは、アプリケーションの処理をスキッ"
+"プします。ルールは順番に評価されています。何のルールを満たしていないセッショ"
+"ンがバイパスされていません。"
+
 
 msgid "Enable Bypass Rule"
 msgstr "バイパスルールを有効にします"
@@ -3186,14 +3574,39 @@ msgstr "ローカルインタフェース"
 msgid "[1.2.3.0]"
 msgstr "[1.2.3.0]"
 
+msgid "If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address."
+msgstr ""
+"<B>次ホップ</ b>のIPアドレスである場合、そのネットワークは、指定したIPアドレ"
+"スを経由してルーティングされます。"
+
+
+msgid "If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface."
+msgstr ""
+"もし<B>次ホップ</ b>のネットワークがルーティングされることになるインターフェ"
+"イス、そのインターフェイス上の<B>ローカル</ B>です。"
+
+
 msgid " Refresh Routes "
 msgstr "リフレッシュルート"
 
 msgid "Routes"
 msgstr "ルート"
 
+msgid "Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important."
+msgstr ""
+"スタティックルートは、トラフィックが宛先アドレスによってルーティングされる方"
+"法を制御するグローバルなルートです。最も具体的なスタティックルートは、特定の"
+"パケットのために採取され、順序は重要ではありません。"
+
+
 msgid "Current Routes"
 msgstr "現在のルート"
+
+msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
+msgstr ""
+"現在のルートは、現在のルーティングシステムの構成を示し、すべてのトラフィック"
+"がどのようにルーティングされます。"
+
 
 msgid "Static DNS Entries"
 msgstr "静的DNSエントリ"
@@ -3246,6 +3659,12 @@ msgstr "DHCPサーバ"
 msgid "Advanced"
 msgstr "高度な"
 
+msgid "Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server."
+msgstr ""
+"詳細設定は、慎重な設定が必要です。誤設定は、サーバーの正常な動作とセキュリ"
+"ティを侵害することができます。"
+
+
 msgid "Options"
 msgstr "オプション"
 
@@ -3292,6 +3711,12 @@ msgid "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload"
 msgstr ""
 "合計{0} kbpsの{1}メガビット）のダウンロード{2} kbpsの{3}メガビット）のアップ"
 "ロード"
+
+
+msgid "{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."
+msgstr ""
+"{0}注{1}をイネーブルにする場合、有効なダウンロード帯域幅およびアップロード帯"
+"域幅の制限はすべてのために設定する必要がありますがWANインターフェイス。"
 
 
 msgid "Upload Reservation"
@@ -3456,6 +3881,9 @@ msgstr "ダウンロードテスト"
 msgid "Network Tests"
 msgstr "ネットワークテスト"
 
+msgid "The <b>Connectivity Test</b> verifies a working connection to the Internet."
+msgstr "<B>接続テスト</ B>は、インターネットへの接続作業を確認します。"
+
 msgid "Unable to complete the Connectivity Test."
 msgstr "接続テストを完了することができません。"
 
@@ -3476,6 +3904,12 @@ msgstr "インターネットに正常に接続されています。"
 
 msgid "Test Connectivity Result"
 msgstr "接続テスト結果"
+
+msgid "The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"
+msgstr ""
+"<B> Pingテスト</ B>は、特定のホストまたはクライアントがpingを実行できることを"
+"テストするために使用することができます"
+
 
 msgid "Unable to complete the Ping Test."
 msgstr "Pingテストを完了することができません。"
@@ -3500,6 +3934,12 @@ msgstr "DNSのテスト出力"
 
 msgid "Please enter a valid Hostname"
 msgstr "有効なホスト名を入力してください。"
+
+msgid "The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."
+msgstr ""
+"<B>接続テストは、</ b>を解くには、特定のホストまたはクライアント上のポートへ"
+"のTCP接続を開くことができるかどうかを確認します。"
+
 
 msgid "Unable to complete Connection test."
 msgstr "接続テストを完了することができません。"
@@ -3530,6 +3970,12 @@ msgstr "ダウンロードテスト出力"
 
 msgid "Please enter a valid Url"
 msgstr "有効なURLを入力してください。"
+
+msgid "The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."
+msgstr ""
+"<B>パケット試験</ b>のトラブルシューティングのためのネットワーク回線上のパ"
+"ケットを表示するために使用することができます。"
+
 
 msgid "Unable to complete the Packet Test."
 msgstr "パケット試験を完了することができません。"
@@ -3567,8 +4013,32 @@ msgstr "HTTPSポートを指定する必要があります。"
 msgid "A HTTP port must be specified."
 msgstr "HTTPポートを指定する必要があります。"
 
+msgid "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."
+msgstr ""
+"QoSが有効になっています。すべてのWANインターフェイス用のWAN帯域幅の有効なダウ"
+"ンロード帯域幅およびアップロード帯域幅の制限を設定してください。"
+
+
+msgid "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+"入力フィルタルールでブロックのすべてのルールが無効になっています。これは危険"
+"であり、許可されていません！マニュアルを参照してください。"
+
+
+msgid "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+"ブロックは、入力フィルタルールのすべてのルールが欠落しています。これは危険で"
+"あり、許可されていません！マニュアルを参照してください。"
+
+
 msgid "The Allow SSH rule in Input Filter Rules has been enabled."
 msgstr "入力フィルタルールで許可するSSHルールが有効になっています。"
+
+msgid "If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server."
+msgstr ""
+"管理者/ rootのパスワードが不十分選択された場合は、SSHを有効にすると、非常に危"
+"険なことができ、サーバーのセキュリティを侵害します。"
+
 
 msgid "Applying Network Settings..."
 msgstr "ネットワーク設定を適用します..."
@@ -3660,6 +4130,13 @@ msgstr "再起動"
 msgid "Manual Reboot Warning"
 msgstr "マニュアル再起動警告"
 
+msgid "The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."
+msgstr ""
+"サーバーを手動で再起動しようとしています。までは、通常のネットワーク操作を中"
+"断します{0}サーバーが再起動し、自動的に終了します。これが完了するのに数分かか"
+"ることがあります。"
+
+
 msgid "Manual Reboot Failure Warning"
 msgstr "マニュアル再起動失敗警告"
 
@@ -3681,6 +4158,12 @@ msgstr "シャットダウン"
 msgid "Manual Shutdown Warning"
 msgstr "手動でシャットダウンでの警告"
 
+msgid "The {0} Server is about to shutdown.  This will stop all network operations."
+msgstr ""
+"{0}サーバーがシャットダウンしようとしています。これは、すべてのネットワーク運"
+"用を停止します。"
+
+
 msgid "Manual Shutdown Failure Warning"
 msgstr "マニュアル再起動失敗警告"
 
@@ -3699,6 +4182,12 @@ msgstr "セットアップウィザードを起動します。"
 msgid "Setup Wizard Warning"
 msgstr "セットアップウィザードの警告"
 
+msgid "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"
+msgstr ""
+"セットアップウィザードが再実行されようとしています。これは、再構成することが"
+"できる{0}サーバーをと{1}現在の設定を上書きします{2}"
+
+
 msgid "Factory Defaults"
 msgstr "工場出荷時のデフォルト"
 
@@ -3710,6 +4199,12 @@ msgstr "工場出荷時のデフォルトにリセット"
 
 msgid "Reset to Factory Defaults Warning"
 msgstr "工場出荷時のデフォルトの警告に戻します"
+
+msgid "This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."
+msgstr ""
+"これは、工場出荷時のデフォルトにすべての設定をリセットします。現在のすべての"
+"設定が失われます。"
+
 
 msgid "Resetting to factory defaults..."
 msgstr "工場出荷時設定へのリセット..."
@@ -3726,6 +4221,18 @@ msgstr "バックアップのダウンロード..."
 msgid "Backup to File"
 msgstr "ファイルへバックアップ"
 
+msgid "Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backup"
+msgstr ""
+"バックアップは、後で復元のためのあなたのローカルコンピュータ上のファイルに、"
+"現在のシステム設定を保存することができます。ファイル名は、.backupで終了します"
+
+
+msgid "After backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File."
+msgstr ""
+"ファイルに現在のシステム設定をバックアップしたら、[ファイルからの復元をクリッ"
+"クして、このダイアログからその構成を復元することができます。"
+
+
 msgid "Restore"
 msgstr "修復"
 
@@ -3741,6 +4248,12 @@ msgstr "ファイルが復元手順を失敗しました。"
 msgid "Restore from File"
 msgstr "ファイルから修復する"
 
+msgid "Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backup"
+msgstr ""
+"ローカルコンピュータ上のバックアップファイルからサーバに以前のシステム構成を"
+"復元することができます復元します。バックアップファイル名は、.backupで終了"
+
+
 msgid "Restore Options"
 msgstr "復元オプション"
 
@@ -3749,6 +4262,9 @@ msgstr "すべての設定を復元します。"
 
 msgid "Restore all except keep current network settings."
 msgstr "現在のネットワーク設定を保持以外のすべてを復元します。"
+
+msgid "These settings should not be changed unless instructed to do so by support."
+msgstr "サポートからの指示がない限り、これらの設定を変更する必要はありません。"
 
 msgid "HTTP"
 msgstr "HTTP"
@@ -3800,6 +4316,12 @@ msgstr "時刻を同期"
 
 msgid "Force Time Synchronization"
 msgstr "強制時刻同期"
+
+msgid "Forced time synchronization can cause problems if the current date is far in the future."
+msgstr ""
+"現在の日付が遠い将来である場合は強制時刻同期が問題を引き起こす可能性がありま"
+"す。"
+
 
 msgid "A reboot is suggested after time sychronization."
 msgstr "再起動は、時間同期化]の後に提案されています。"
@@ -3948,8 +4470,23 @@ msgstr "登録は、次のような利点あなたを取得します。"
 msgid "Access to your account on untangle.com"
 msgstr "untangle.com上の自分のアカウントへのアクセス"
 
+msgid "Manage your licences, renewals, servers, and contact info all from one dashboard."
+msgstr ""
+"ライセンス、更新、サーバーの管理、および1つのダッシュボードからすべての情報を"
+"ご連絡ください。"
+
+
 msgid "Easily transfer licences between servers."
 msgstr "簡単にサーバ間でライセンスを転送します。"
+
+msgid "Registration only takes a second and it is required before installing applications."
+msgstr ""
+"登録は秒かかり、それはアプリケーションをインストールする前に必要とされるの"
+"み。"
+
+
+msgid "Rest assured, we will never spam you or share your contact information with anyone."
+msgstr "安心し、私たちはスパムあなたや誰とも連絡先情報を共有することはありません。"
 
 msgid "Continue"
 msgstr "続行"
@@ -3963,17 +4500,48 @@ msgstr "社名"
 msgid "Register"
 msgstr "登録"
 
+msgid "Your untangle.com account has subscriptions that are not assigned to any server."
+msgstr ""
+"あなたuntangle.comアカウントは任意のサーバーに割り当てられていないサブスクリ"
+"プションを持っています。"
+
+
+msgid "If you wish to assign a subscription to this server visit your account and transfer the subscription to this server."
+msgstr ""
+"このサーバーにサブスクリプションを割り当てたい場合は、アカウントを訪問し、こ"
+"のサーバにサブスクリプションを転送します。"
+
+
+msgid "If you do not wish to do this, you can skip this and do this at any time in the future by visiting your account at untangle.com"
+msgstr ""
+"あなたはこれを行わない場合、あなたはこれをスキップしてuntangle.comであなたの"
+"アカウントを訪問し、将来的に、いつでもこれを行うことができます"
+
+
 msgid "Open My Account"
 msgstr "マイアカウントを開きます"
 
 msgid "Skip"
 msgstr "スキップ"
 
+msgid "If your {0} appliance came with an activation code to redem your subscription please enter it now. Otherwise simply skip this step."
+msgstr ""
+"あなたの場合は{0}アプライアンスは、サブスクリプションをredemするアクティベー"
+"ションコードに付属している今、それを入力してください。それ以外の場合は、単純"
+"に、このステップをスキップします。"
+
+
 msgid "Activation Code"
 msgstr "アクティベーションコード"
 
 msgid "Automatically renew my subscription"
 msgstr "自動的に私のサブスクリプションを更新します"
+
+msgid "If you opt out of automatic renewal, services and protection will lapse at the end of the subscription period."
+msgstr ""
+"あなたが自動更新を見送ると、サービスと保護は、サブスクリプション期間の終了時"
+"に失効します。"
+
 
 msgid "It is highly recommended that you enable automatic renewal."
 msgstr "それは非常には、自動更新を有効にすることをお勧めします。"
@@ -4074,8 +4642,20 @@ msgstr "大文字と小文字を区別"
 msgid "Clear Filters"
 msgstr "クリア・フィルタ"
 
+msgid "Filters can be added by clicking on column headers arrow down menu and using Filters menu"
+msgstr ""
+"フィルタは、メニューを下矢印とフィルタ]メニューを使用して、列のヘッダーをク"
+"リックして追加することができます"
+
+
 msgid "Clear Grouping"
 msgstr "クリアグループ"
+
+msgid "Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field"
+msgstr ""
+"グループ化は、列ヘッダをクリックすることで使用できるメニューを下矢印と、この"
+"フィールドでグループをクリック"
+
 
 msgid "Reset View"
 msgstr "表示をリセット"
@@ -4104,8 +4684,23 @@ msgstr "CIDR形式でネットワークでなければなりません。"
 msgid "Must be a comma seperated list of networks in CIDR format."
 msgstr "CIDR形式でネットワークのリストをカンマ区切りでなければなりません。"
 
+msgid "The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."
+msgstr ""
+"ポートは{0} と {1}の間の整数であるか、以下の値の一つでなければいけません: "
+"any, all, n/a, none."
+
+
 msgid "Starting..."
 msgstr "スタート中..."
+
+msgid "The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href=\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Where can I find updated skins and new skins?</a>"
+msgstr ""
+"現在のカスタムスキンは、もはや互換性がないため無効になっています。デフォルト"
+"スキンが一時的に使用されています。このメッセージを無効にするには、管理設定で"
+"スキン設定を変更してください。カスタムスキンを修正するための詳細な情報は：<a "
+"href=\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Where "
+"can I find updated skins and new skins?</a>を参照してください。"
+
 
 msgid "Skin Out of Date"
 msgstr "スキン　有効期限"
@@ -4115,6 +4710,12 @@ msgstr "Apps"
 
 msgid "My Account"
 msgstr "マイ　アカウント"
+
+msgid "You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones."
+msgstr ""
+"あなたは、あなたのオンラインアカウントにアクセスし、購入済みのアプリを再イン"
+"ストールし、バウチャーを償還するか、新しいものを購入することができます。"
+
 
 msgid "Logout"
 msgstr "ログアウト"
@@ -4211,6 +4812,12 @@ msgstr "あなたが今お勧めのアプリケーションをインストール
 
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr "未保存のデータは失われます。続行しますか？"
+
+msgid "One or more fields contain invalid values. Settings cannot be saved until these problems are resolved."
+msgstr ""
+"1つまたは複数のフィールドに無効な値が含まれています。これらの問題が解決される"
+"までの設定を保存することはできません。"
+
 
 msgid "Remove"
 msgstr "除去"
@@ -4347,6 +4954,9 @@ msgstr "次へ {0}"
 msgid "Thanks for choosing {0}!"
 msgstr "誠にありがとうござい{0}"
 
+msgid "This wizard will guide you through the initial setup and configuration of the {0} Server."
+msgstr "このウィザードは、初期セットアップと設定をガイドします{0}サーバー。"
+
 msgid "Click {0}Next{1} to get started."
 msgstr "{0}次へ{1} を始めるためにクリックしてください。"
 
@@ -4355,6 +4965,12 @@ msgstr "セットアップウィザードを続行"
 
 msgid "The setup was started before and the last completed step is {0}{1}{2}."
 msgstr "セットアップは、前に開始し、最後に完了した段階である{0} {1} {2}"
+
+msgid "To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}."
+msgstr ""
+"ステップを続行するには{1} {0} {2}管理者パスワードを入力し、キーを押します{1}"
+"次の{2}"
+
 
 msgid "Restart the Setup Wizard"
 msgstr "セットアップウィザードを再起動します。"
@@ -4389,6 +5005,12 @@ msgstr "タイムゾーンの設定を保存することができません"
 msgid "Unable to save the admin password"
 msgstr "管理パスワードを保存できません"
 
+msgid "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced."
+msgstr ""
+"コンボを開き、リストから目的のデバイスを選択して、デバイスをクリックします。 "
+"anoterデバイスが選択されている場合は2デバイスがswithcedされています。"
+
+
 msgid "Identify Network Cards"
 msgstr "ネットワークカードを特定"
 
@@ -4400,6 +5022,12 @@ msgstr "このステップは、外部、内部、およびその他のネット
 
 msgid "Step 1: "
 msgstr "ステップ1："
+
+msgid "Plug an active cable into one network card to determine which network card it is."
+msgstr ""
+"それがどのネットワークカードを決定するために、1つのネットワークカードにアク"
+"ティブなケーブルを接続します。"
+
 
 msgid "Step 2: "
 msgstr "手順2："
@@ -4430,6 +5058,12 @@ msgstr "ネットワークインターフェースを更新中"
 
 msgid "Missing interfaces"
 msgstr "不足しているインタフェース"
+
+msgid "Untangle requires two or more network cards. Please reinstall with at least two network cards."
+msgstr ""
+"解くには、二つ以上のネットワークカードを必要とします。少なくとも2つのネット"
+"ワークカードを再インストールしてください。"
+
 
 msgid "DHCP Status"
 msgstr "DHCPステータス"
@@ -4500,6 +5134,12 @@ msgstr "インターネット状態"
 msgid "Warning! Internet tests and DNS tests failed."
 msgstr "警告！インターネットテストおよびDNSテストに失敗しました。"
 
+msgid "It is recommended to configure valid internet settings before continuing. Try again?"
+msgstr ""
+"これは、続行する前に、有効なインターネット設定を構成することをお勧めします。"
+"再試行する？"
+
+
 msgid "Testing Connectivity..."
 msgstr "テスト接続中..."
 
@@ -4508,6 +5148,12 @@ msgstr "内部ネットワークインターフェイスの設定"
 
 msgid "Router"
 msgstr "ルーター"
+
+msgid "This is recommended if the external port is plugged into the internet connection. This enables NAT and DHCP."
+msgstr ""
+"外部ポートは、インターネット接続に接続されている場合は、このことをお勧めしま"
+"す。これは、NATとDHCPを有効にします。"
+
 
 msgid "Internal Address"
 msgstr "内部アドレス"
@@ -4523,6 +5169,12 @@ msgstr "DHCP サーバーを有効 (デフォルト)"
 
 msgid "Transparent Bridge"
 msgstr "トランスペアレントブリッジ"
+
+msgid "This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP."
+msgstr ""
+"外部ポートがファイアーウォール／ルーターに接続されている場合、これを推奨しま"
+"す。内部と外部をブリッジし、DHCPを無効にします。"
+
 
 msgid "Internal Network"
 msgstr "内部ネットワーク"
@@ -4542,8 +5194,44 @@ msgstr "ローカルネットワーク設定を保存することができませ
 msgid "Redirect to the new setup address?"
 msgstr "新しいセットアップアドレスにリダイレクト？"
 
+msgid "When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"
+msgstr ""
+"ルータからの透過ブリッジに切り替えると設定は、内部アドレスを使用してアクセス"
+"できなくなります。その代わりに、外部アドレスを使用してアクセスすることができ"
+"ます{0}"
+
+
+msgid "If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."
+msgstr ""
+"新しいセットアップアドレスにリダイレクトされるようにするには{0}あなたのネット"
+"ワーク設定を再初期化してくださいし、はいを押します。"
+
+
+msgid "Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."
+msgstr ""
+"いいえ]をクリックすると、リダイレクトを防ぐことができますし、現在のアドレスを"
+"使用してセットアップを続行しようとしますが、それはもはやアクセスできなくなる"
+"可能性があります。"
+
+
+msgid "When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"
+msgstr ""
+"設定をルータに透過ブリッジからへの切り替えは、もはやアクセス可能な外部アドレ"
+"スを使用していない可能性があります。代わりに、内部アドレスを使用してアクセス"
+"することができます{0}"
+
+
 msgid "The Internal Address is changed to: {0}"
 msgstr "内部アドレスは次のように変更されます{0}"
+
+msgid "The changes are applied and you will be redirected to the new setup address: {0}"
+msgstr "変更が適用され、あなたは新しいセットアップアドレスにリダイレクトされます{0}"
+
+msgid "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again."
+msgstr ""
+"新しい場所は、30秒後にロードされていない場合は、ネットワーク設定を再初期化"
+"し、再度お試しください。"
+
 
 msgid "Configure Automatic Upgrade Settings"
 msgstr "自動アップグレードの設定を構成します"
@@ -4572,6 +5260,18 @@ msgstr ""
 "きます。"
 
 
+msgid "Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically."
+msgstr ""
+"などのウイルスブロッカー、スパムブロッカー、Webフィルタ用の署名はまだ自動的に"
+"更新されます。"
+
+
+msgid "If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings."
+msgstr ""
+"必要に応じて、カスタムのアップグレードスケジュールはアップグレード設定で、イ"
+"ンストール後に設定することができます。"
+
+
 msgid "Automatic Upgrades"
 msgstr "自動アップグレード"
 
@@ -4589,6 +5289,12 @@ msgstr "自動アップグレードの設定を保存することができませ
 
 msgid "Congratulations!"
 msgstr "おめでとうございます！"
+
+msgid "<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications."
+msgstr ""
+"<B> {0}サーバーが設定されました。</ b>を<BR/>はこれでアプリケーションを構成す"
+"る準備が整いました。"
+
 
 msgid "Finished"
 msgstr "終了"
@@ -4695,6 +5401,12 @@ msgstr "注意"
 msgid "Phish Blocker email signatures were last updated"
 msgstr "フィッシングブロッカーの電子メール署名が最後に更新されました"
 
+msgid "Application Control Lite logs and blocks sessions using custom signatures on the session content."
+msgstr ""
+"セッション内容にカスタムシグネチャを使用して、アプリケーション制御Liteのログ"
+"とブロックのセッション。"
+
+
 msgid "Total Signatures Available"
 msgstr "利用可能な全署名"
 
@@ -4703,6 +5415,12 @@ msgstr "総署名ロギング"
 
 msgid "Total Signatures Blocking"
 msgstr "ブロッキング総署名"
+
+msgid "Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."
+msgstr ""
+"注意と裁量は有害な偽陽性のリスクがアプリケーションコントロールライトを設定す"
+"るにはお勧めします。"
+
 
 msgid "Signatures"
 msgstr "署名"
@@ -4734,6 +5452,14 @@ msgstr "HTTP：ホスト名"
 msgid "HTTP: Referer"
 msgstr "HTTP：リファラー"
 
+msgid "Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet."
+msgstr ""
+"キャプティブポータルを使用すると、管理者は、インターネットにアクセスする前"
+"に、そのような中で、ロギングやネットワーク利用ポリシーを受け入れるように、定"
+"義されたプロセスを完了するために、ネットワークユーザが必要とすることができま"
+"す。"
+
+
 msgid "Active Sessions"
 msgstr "アクティブセッション"
 
@@ -4758,6 +5484,12 @@ msgstr "ログアウトする場合にクリックします"
 msgid "Capture Rules"
 msgstr "取得ルール"
 
+msgid "Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below."
+msgstr ""
+"ネットワークアクセスは、以下に定義された規則の組に基づいて制御されます。学ぶ"
+"ためには、より下の<B>ヘルプ</ b>]ボタンをクリックしてください。"
+
+
 msgid "Rules"
 msgstr "ルール"
 
@@ -4773,11 +5505,29 @@ msgstr "アクションタイプ"
 msgid "Pass Listed Client Addresses"
 msgstr "上場クライアントアドレスを渡します"
 
+msgid "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal."
+msgstr ""
+"上場クライアントアドレスを渡すと、キャプティブポータルにさらさ​​れていないクラ"
+"イアントIPのリストです。"
+
+
 msgid "Pass Listed Server Addresses"
 msgstr "リストされたサーバIPアドレスを渡します"
 
+msgid "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication."
+msgstr ""
+"表示されているサーバーのアドレスを渡すと、認証されていないクライアントが認証"
+"なしでアクセスできるサーバーのIPアドレスのリストです。"
+
+
 msgid "Passed Hosts"
 msgstr "合格ホスト"
+
+msgid "The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers."
+msgstr ""
+"パスリストは、特定のクライアントからの、または特定のサーバへのアクセスを許可"
+"する簡単な代替方法を提供します。"
+
 
 msgid "User Authentication"
 msgstr "ユーザー認証"
@@ -4806,20 +5556,47 @@ msgstr "アイドルタイムアウトは0以上でなければなりません�
 msgid "Idle Timeout (minutes)"
 msgstr "アイドルタイムアウト（分）"
 
+msgid "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable."
+msgstr ""
+"クライアントはアイドルこの時間後に認証されていないことになります。彼らはすぐ"
+"に再認証することができます。無効にするにはゼロを使用します。"
+
+
 msgid "Timeout (minutes)"
 msgstr "タイムアウト（分）"
 
 msgid "The Timeout must be more than 5 minutes and less than 525600 minutes."
 msgstr "タイムアウトは5分以上と未満525600分にする必要があります。"
 
+msgid "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately."
+msgstr ""
+"クライアントは、アクティビティに関係なく、この時間後に認証されていないことに"
+"なります。彼らはすぐに再認証することができます。"
+
+
 msgid "Allow Concurrent Logins"
 msgstr "同時ログインを許可します"
+
+msgid "This will allow multiple hosts to use the same username & password concurrently."
+msgstr ""
+"これは、複数のホストが同時に同じユーザー名とパスワードを使用できるようになり"
+"ます。"
+
 
 msgid "Allow Cookie-based authentication"
 msgstr "クッキーベースの認証を許可します"
 
+msgid "This will allow authenicated clients to continue to access even after session idle and timeout values."
+msgstr ""
+"これはauthenicatedクライアントがあっても、セッションのアイドルタイムアウト値"
+"の後に引き続きアクセスできるようになります。"
+
+
 msgid "Cookie Timeout (minutes)"
 msgstr "クッキーのタイムアウト（分）"
+
+msgid "The Cookie Timeout must be more than 5 minutes and less than 525600 minutes."
+msgstr "クッキーのタイムアウトは5分以上と未満525600分にする必要があります。"
 
 msgid "Captive Page"
 msgstr "キャプティブページ"
@@ -4901,6 +5678,13 @@ msgstr "必ずキャプチャページのリダイレクトのためにHTTPSを�
 
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
+
+msgid "<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination."
+msgstr ""
+"<B>注：//とすぐに、ユーザー認証後に表示するページを指定することができます：//"
+"またはhttps：</ B>リダイレクトURL欄のhttpで始まる必要があります。このフィール"
+"ドを空白のままにすると、ユーザーは、代わりに元の宛先に転送されます。"
+
 
 msgid "Missing Filename"
 msgstr "不足しているファイル名"
@@ -4989,8 +5773,20 @@ msgstr "ジェネレーション"
 msgid "Daily Reports"
 msgstr "デイリーレポート"
 
+msgid "Daily Reports covers the previous day. Daily reports will be generated on the selected days."
+msgstr ""
+"デイリーレポートは前日をカバーしています。デイリーレポートは、選択した日に生"
+"成されます。"
+
+
 msgid "Weekly Reports"
 msgstr "ウィークリーレポート"
+
+msgid "Weekly Reports covers the previous week. Weekly reports will be generated on the selected days."
+msgstr ""
+"ウィークリーレポートは、前の週カバーしています。ウィークリーレポートは、選択"
+"した日に生成されます。"
+
 
 msgid "Monthly Reports"
 msgstr "月次レポート"
@@ -5006,6 +5802,18 @@ msgstr "レポートを生成するスケジュールされた時間"
 
 msgid "Data Retention"
 msgstr "データ保持"
+
+msgid "Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation."
+msgstr ""
+"この日数のイベントデータを保管してください。数レポート生成時に必要なディスク"
+"容量とリソースの使用状況下に小さいです。"
+
+
+msgid "Depending on the server and network, increasing this value may cause performance issues."
+msgstr ""
+"サーバーやネットワークによっては、この値を大きくすると、パフォーマンスの問題"
+"が発生することがあります。"
+
 
 msgid "Data Retention days"
 msgstr "データ保持日数"
@@ -5048,6 +5856,12 @@ msgstr "添付ファイルのサイズ制限（MB）"
 
 msgid "Syslog"
 msgstr "Syslog"
+
+msgid "If enabled logged events will be sent in real-time to a remote syslog for custom processing."
+msgstr ""
+"有効記録されたイベントは、カスタム処理用のリモートsyslogにリアルタイムで送信"
+"されます。"
+
 
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
 msgstr "{0}無効に{1} syslogイベント。 （これがデフォルトの設定です。）"
@@ -5100,6 +5914,12 @@ msgstr "見ます"
 msgid "Alert Rules"
 msgstr "アラートルール"
 
+msgid " <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur."
+msgstr ""
+"<B>アラート・ルール</ b>のプロセスのすべてのイベントがログに記録する、および/"
+"または警告管理者または特別な注目すべきイベントが発生します。"
+
+
 msgid "Log Alert"
 msgstr "ログインアラート"
 
@@ -5144,6 +5964,12 @@ msgstr "アップデート"
 
 msgid "Updating filters..."
 msgstr "フィルタを更新しています..."
+
+msgid "The current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required."
+msgstr ""
+"現在のフィルタリストは、上で最後に変更された{1}ただしこれは必須ではなく、フィ"
+"ルタを無効にして、新しいものを追加するのは自由です。"
+
 
 msgid "Standard Filters"
 msgstr "標準フィルタ"
@@ -5304,8 +6130,349 @@ msgstr "不明なトラフィック"
 msgid "A TCP connection was detected"
 msgstr "TCP接続が検出されました"
 
+msgid "This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves."
+msgstr ""
+"このカテゴリには探し規則、および制御、ネットワークアクティビティを生成する特"
+"定のアプリケーションのトラフィックが含まれています。このカテゴリは、アプリ"
+"ケーションの動作方法の様々な側面を制御するために使用されます。"
+
+
+msgid "This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources."
+msgstr ""
+"このカテゴリには、悪意ある活動の指標であることが決定されたURI、ユーザーエー"
+"ジェント、DNS、およびIPアドレスのルールが含まれています。これらのルールは、タ"
+"ロスウイルスサンドボックス、不正なURLの公開リスト、および他のデータソースから"
+"のアクティビティに基づいています。"
+
+
+msgid "This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)"
+msgstr ""
+"このカテゴリには、Chromeブラウザに存在する脆弱性の検出が含まれています。 "
+"（Chromeはそれ自身の中に勃発するのに十分な脆弱性を持っており、それはWebkitの"
+"レンダリングエンジンを使用しているが、クロムに他の機能の多くがあります。これ"
+"は、ブラウザWebKitのカテゴリとは別のものです）"
+
+
+msgid "This category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)"
+msgstr ""
+"このカテゴリにはGeckoエンジンを持つFirefoxのブラウザに存在する脆弱性、または"
+"製品の検出が含まれています。 （Thunderbird電子メールクライアントなど）"
+
+
+msgid "This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)"
+msgstr ""
+"このカテゴリには、Internet Explorerのブラウザに存在する脆弱性の検出が含まれて"
+"います（トライデントまたはタスマンエンジン）"
+
+
+msgid "This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm."
+msgstr ""
+"このカテゴリには、（脇からクローム）Webkitのブラウザエンジンに存在する脆弱性"
+"の検出が含まれていますこれは、AppleのSafari、RIMのモバイルブラウザ、ノキア、"
+"KDE、Webkitの自体、およびパームが含まれています。"
+
+
+msgid "This category contains detection for vulnerabilities in other browsers not listed above."
+msgstr ""
+"このカテゴリには、上記に記載されていない他のブラウザの脆弱性の検出が含まれて"
+"います。"
+
+
+msgid "This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)"
+msgstr ""
+"このカテゴリには、ブラウザのプラグインを扱うブラウザの脆弱性の検出が含まれて"
+"います。 （例：アクティブ-X）"
+
+
+msgid "This category containt any rule that utilizes the replace functionality inside of Snort."
+msgstr ""
+"このカテゴリには、Snortの内部に置き換える機能を利用する任意のルールを"
+"containt。"
+
+
+msgid "When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here."
+msgstr ""
+"ルールは廃止または置換されているときには、このカテゴリに移動されます。ルール"
+"は完全にルールセットから削除されることはありません、彼らはここに移動されま"
+"す。"
+
+
+msgid "This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form."
+msgstr ""
+"これはすぐに廃止される予定の古いカテゴリです。このカテゴリには、一般的な形で"
+"のソフトウェアに対する攻撃を検索します。"
+
+
+msgid "This category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category."
+msgstr ""
+"このカテゴリには、具体的には、キットのアクティビティを活用検出するように調整"
+"されたルールが含まれています。 （それらは、インジケータ、妥協の場合のように）"
+"これはポスト妥協のルールが含まれていません。悪用キットを訪れるの結果としてド"
+"ロップされたファイルは、それぞれのファイルカテゴリにあるであろう。"
+
+
+msgid "This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform."
+msgstr ""
+"このカテゴリには、発見されたか、プラットフォームに関係なく、実行可能ファイル"
+"を介して配信されている脆弱性のためのルールが含まれています。"
+
+
+msgid "This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked."
+msgstr ""
+"このカテゴリには、発見され、フラッシュファイルを介して配信されている脆弱性の"
+"ためのルールが含まれています。どちらの圧縮または非圧縮に関係なく、配信方法プ"
+"ラットフォームのは、攻撃されています。"
+
+
+msgid "This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)"
+msgstr ""
+"このカテゴリには、画像ファイルの中に発見された脆弱性のためのルールが含まれて"
+"います。かかわらず発送方法、ソフトウェア攻撃され、あるいは画像の種類の。 （例"
+"としては、JPG、PNG、GIF、BMPなど）"
+
+
+msgid "This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule."
+msgstr ""
+"このカテゴリは、トラフィックで見つかったファイルの拡張子、ファイル（ファイル"
+"マジック）のコンテンツ、またはヘッダーを介してファイルを特定することです。こ"
+"の情報は、通常、異なるルールで使用するflowbitを設定するために使用されます。"
+
+
+msgid "This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)"
+msgstr ""
+"このカテゴリには、マルチメディアファイル（MP3、映画、WMV）の内部に存在する脆"
+"弱性のためのルールが含まれています"
+
+
+msgid "This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)"
+msgstr ""
+"このカテゴリには、ソフトウェアのMicrosoft Officeのスイートに属するファイルの"
+"内部に存在する脆弱性のためのルールが含まれています。 （エクセル、パワーポイン"
+"ト、ワード、Visioの、アクセス、展望、など）"
+
+
+msgid "This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
+msgstr ""
+"このカテゴリには、PDFファイルの中に発見の脆弱性のためのルールが含まれていま"
+"す。関係なく作成する方法、配送方法、またはソフトウェアのどの作品のPDFファイル"
+"が影響を与える（例えば、Adobe ReaderとFoxitの読者の両方）"
+
+
+msgid "This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above."
+msgstr ""
+"このカテゴリには、上記の他のカテゴリに適合しないファイル、内部に存在する脆弱"
+"性のためのルールが含まれています。"
+
+
+msgid "This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur."
+msgstr ""
+"このカテゴリでは、積極的に感染したシステムを検出するためにのみ使用されること"
+"を明らかにしているルールが含まれ、偽陽性が発生することがあります。"
+
+
+msgid "This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules."
+msgstr ""
+"このカテゴリには明らかにのみ難読化されたコンテンツの検出のために使用される"
+"ルールが含まれています。同様に符号化されたJavaScriptのルール。"
+
+
+msgid "This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules."
+msgstr ""
+"このカテゴリには、単にトラフィックにシェルコードの単純な識別マーカーを探して"
+"いるルールが含まれています。これは、古いshellcode.rulesに置き換えられます。"
+
+
+msgid "This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent."
+msgstr ""
+"このカテゴリには、既知のリスニングバックドアコマンドチャンネル宛てのトラ"
+"フィックを検出するためのルールが含まれています。悪意のあるソフトですの一部が"
+"ポートをオープンし、その制御機能の着信コマンドを待つ場合は、このタイプの検出"
+"はここになります。それは特定のポートでリッスンしてから送信されたコマンドを実"
+"行するような単純な例では、BackOrificeの検出となります。"
+
+
+msgid "This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here."
+msgstr ""
+"このカテゴリには特定され、ボットネットトラフィックの既知の悪質なコマンドと制"
+"御活動が含まれています。これは、コール・ホーム、ドロップされたファイルのダウ"
+"ンロード、およびデータの元ろ過が含まれています。ゾンビタイプのものにマスター"
+"から発行された実際のコマンドもここになります。"
+
+
+msgid "This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC."
+msgstr ""
+"このカテゴリには、自然の中で、悪意のある考慮することができるツールを扱うルー"
+"ルが含まれています。例えば、ロイック。"
+
+
+msgid "This category contains rules that are malware related, but don't fit into one of the other malware categories."
+msgstr ""
+"このカテゴリには、マルウェアに関連しているが、他のマルウェアのカテゴリのいず"
+"れかに適合しないルールが含まれています。"
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself."
+msgstr ""
+"このカテゴリには、LinuxベースのOSの脆弱性を探しているルールが含まれています。"
+"ていないブラウザや、その上に他のソフトウェアのために、単にOS自体に対して。"
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS."
+msgstr ""
+"このカテゴリでは、SolarisベースのOSの脆弱性を探しているルールが含まれていま"
+"す。ていない任意のブラウザやOSの上に他のソフトウェアのため。"
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS."
+msgstr ""
+"このカテゴリには、WindowsベースのOSの脆弱性を探しているルールが含まれていま"
+"す。ていない任意のブラウザやOSの上に他のソフトウェアのため。"
+
+
+msgid "This category contains rules that are looking for vulnerabilities in an OS that is not listed above."
+msgstr ""
+"このカテゴリには、上記記載されていないOSの脆弱性を探しているルールが含まれて"
+"います。"
+
+
+msgid "This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia."
+msgstr ""
+"このカテゴリには、マルチメディアのための政策の潜在的な違反を検出ルールが含ま"
+"れています。ネットワーク上のiTunesの使用を検出するような例。それはファイルの"
+"マルチメディアにあるであろうように、これは、マルチメディア・ファイル内で見つ"
+"かった脆弱性のためではありません。"
+
+
+msgid "This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)"
+msgstr ""
+"このカテゴリには、ソーシャルメディアを使用するための企業ネットワーク上の政策"
+"を検出する潜在的な違反のためのルールが含まれています。 （P2P、チャットなど）"
+
+
+msgid "This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first."
+msgstr ""
+"このカテゴリには、エンドユーザー企業ポリシー芽が最初に他のポリシーカテゴリの"
+"いずれかに分類されない違反する可能性がルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of spam on the network."
+msgstr "このカテゴリには、ネットワーク上のスパムの存在を示す可能性ルールのためです。"
+
+msgid "This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上の指のプロトコルで指プロトコルまたは脆弱性の"
+"存在を示す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のFTPプロトコルでFTPプロトコルまたは脆弱性の"
+"存在を示す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のICMP内のICMPトラフィックや脆弱性の存在を示"
+"す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のIMAPプロトコルでIMAPプロトコルや脆弱性の存"
+"在を示す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のPOPプロトコルでPOPプロトコルまたは脆弱性の"
+"存在を示す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のrservicesプロトコルでrservicesプロトコルま"
+"たは脆弱性の存在を示す可能性ルールのためです。"
+
+
+msgid "This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network."
+msgstr ""
+"このカテゴリには、ネットワーク上のVoIPプロトコルでVoIPサービスや脆弱性の存在"
+"を示す可能性ルールのためです。"
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with adware or spyware."
+msgstr ""
+"このカテゴリには、PUAやアドウェアやスパイウェアに対処不要と思われるアプリケー"
+"ションを扱っています。"
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with p2p."
+msgstr ""
+"このカテゴリには、P2Pを扱うPUAや不要と思われるアプリケーションを扱っていま"
+"す。"
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)"
+msgstr ""
+"このカテゴリには、PUAまたはクライアントシステムにインストールされているツール"
+"バーに対処不要と思われるアプリケーションを扱っています。 （Googleツールバーや"
+"Yahooツールバー、Hotbarは、など）"
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above."
+msgstr ""
+"このカテゴリには、上記のカテゴリのいずれにも当てはまらないPUAや不要と思われる"
+"アプリケーションを扱っています。"
+
+
+msgid "This category deals with vulnerabilities in or attacks against the Apache Web Server."
+msgstr "このカテゴリには、Apache Webサーバに対​​しての脆弱性や攻撃を扱っています。"
+
+msgid "This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server."
+msgstr "脆弱性やMicrosoft IIS Webサーバーに対する攻撃でこのカテゴリでは、お得な情報。"
+
+msgid "This category deals with vulnerabilities in or attacks against the Microsoft SQL Server."
+msgstr "このカテゴリには、Microsoft SQL Serverに対しての脆弱性や攻撃を扱っています。"
+
+msgid "This category deals with vulnerabilities in or attacks against Oracle's MySQL server."
+msgstr "このカテゴリには、OracleのMySQLサーバーに対しての脆弱性や攻撃を扱っています。"
+
+msgid "This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server."
+msgstr ""
+"このカテゴリには、OracleのOracleのDBサーバに対​​しての脆弱性や攻撃を扱っていま"
+"す。"
+
+
+msgid "This category deals with vulnerabilities in or attacks against Web based applications on servers."
+msgstr ""
+"このカテゴリには、サーバー上のWebベースのアプリケーションに対しての脆弱性や攻"
+"撃を扱っています。"
+
+
+msgid "This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself."
+msgstr ""
+"このカテゴリには、メールサーバの脆弱性を検出するルールが含まれています。 （取"
+"引所、クーリエ）。トラフィックのものの取引は、メールサーバ自体に行くように、"
+"これらは、プロトコルのカテゴリから分離されています。"
+
+
+msgid "This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list."
+msgstr ""
+"このカテゴリには、上記のリストで詳述されていないサーバーに対しての脆弱性や攻"
+"撃を検知するルールが含まれています。"
+
+
+msgid " Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."
+msgstr "侵入防止は未設定です。侵入防止を設定するには、ウィザードを使用します。"
+
 msgid "Run Intrusion Detection/Prevention Setup Wizard"
 msgstr "ラン侵入検知/防御のセットアップウィザード"
+
+msgid "{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."
+msgstr ""
+"{0}の自動更新によって、デフォルトの署名設定を維持し続けています。ただし、それ"
+"が必要とされず、変更と署名を追加するのは自由です。"
+
 
 msgid "Updates"
 msgstr "アップデート"
@@ -5391,8 +6558,20 @@ msgstr "すでに使用中の変数名。"
 msgid "Intrusion Prevention Setup Wizard"
 msgstr "侵入防止のセットアップウィザード"
 
+msgid "You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."
+msgstr ""
+"あなたは、侵入防止の設定を完了していません。再度セットアップウィザードを実行"
+"してください。"
+
+
 msgid "Intrusion Prevention Warning"
 msgstr "侵入防止の警告"
+
+msgid "Settings have been changed by rule updater.  Current changes must be discarded."
+msgstr ""
+"設定は、ルールの更新によって変更されています。現在の変更を廃棄しなければなり"
+"ません。"
+
 
 msgid "Saving and creating settings (this may take a few minutes)..."
 msgstr "保存と設定を作成する（これには数分かかる場合があります）..."
@@ -5406,8 +6585,31 @@ msgstr "設定を保存することができません"
 msgid "Welcome to the Intrusion Prevention Setup Wizard!"
 msgstr "侵入防止のセットアップウィザードへようこそ！"
 
+msgid "Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."
+msgstr ""
+"侵入防止は可能な脅威を特定するためのルールを使用して動作します。支配有効にロ"
+"ギングやトラフィックをブロックのいずれか、アクションを実行します。ていないす"
+"べてのルールは、指定されたネットワーク環境を構築するために必要であり、それら"
+"のすべてを有効にすると、マイナスのネットワークに影響を与える可能性がありま"
+"す。"
+
+
+msgid "This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."
+msgstr ""
+"classtypesとカテゴリ：このウィザードは、正しくルール識別子を選択することで、"
+"ネットワークのためのルールの適切な量を設定するために設計されて。あなたが選択"
+"することが、より、より多くのルールが有効になります。ここでも、あまりにも多く"
+"の有効ルールは、負のネット​​ワークに影響を与える可能性があります。"
+
+
 msgid "It is highly suggested that you use Recommended values."
 msgstr "それは非常には、推奨値を使用することをお勧めします。"
+
+msgid "WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!"
+msgstr ""
+"警告：このセットアップウィザードを完了すると、新しい設定で以前の設定が上書き"
+"されます。すべての以前の設定が失われます！"
+
 
 msgid "Determining recommended settings..."
 msgstr "推奨設定を決定..."
@@ -5424,6 +6626,12 @@ msgstr ""
 msgid "Classtypes"
 msgstr "Classtypes"
 
+msgid "Classtypes are a generalized  grouping for rules, such as attempts to gain user access."
+msgstr ""
+"Classtypesは、ユーザーのアクセス権を取得しようとする試みとして、ルールのため"
+"の一般化グループ化されています。"
+
+
 msgid "Recommended (default)"
 msgstr "推奨（デフォルト）"
 
@@ -5436,6 +6644,12 @@ msgstr "なし。選択したカテゴリ内のClasstypesが使用されます�
 msgid "Categories"
 msgstr "カテゴリー"
 
+msgid "Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."
+msgstr ""
+"カテゴリーは、VoIPアクセスなど、複数のclasstypesをまたがることができます別の"
+"ルールのグループ化されています。"
+
+
 msgid "Select by name"
 msgstr "名で選択"
 
@@ -5447,6 +6661,15 @@ msgstr "終了"
 
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr "侵入防止は現在設定されて有効になっています。"
+
+msgid " <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."
+msgstr ""
+"<B>ファイアウォール</ b>の一連のルールに基づいて、簡単なブロックするように設"
+"計されたアプリケーションとフラグネットワークトラフィックです。学ぶためにはよ"
+"り多くの<B>ヘルプ</ b>の下のボタンをクリックします。<BR/>ルーティングとポート"
+"転送機能は、コンフィギュ内の他の場所で見つけることができます>ネットワークをク"
+"リックしてください。"
+
 
 msgid "Flag"
 msgstr "フラグ"
@@ -5601,6 +6824,9 @@ msgstr ""
 "クセスできます。"
 
 
+msgid "Allow access to the specified site regardless of matching block policies."
+msgstr "関係なくマッチングブロックポリシーの指定したサイトへのアクセスを許可します。"
+
 msgid "Client IP addresses"
 msgstr "クライアントのIPアドレス"
 
@@ -5631,8 +6857,20 @@ msgstr "Googleアプリケーションを制限します"
 msgid "NOTE:"
 msgstr "注意："
 
+msgid "must be installed and running with the Inspect Google Traffic configured to Inspect."
+msgstr ""
+"インストールして検査するように構成された点検のGoogleのトラフィックで実行して"
+"いる必要があります。"
+
+
 msgid "Allowed Domain(s)"
 msgstr "許可されたドメイン（複数可）"
+
+msgid "Specify the comma separated list of domains allowed to access non-search Google applications"
+msgstr ""
+"非検索のGoogleアプリケーションにアクセスするために許可されているドメインのカ"
+"ンマ区切りリストを指定します"
+
 
 msgid "Domain cannot contain URL protocol."
 msgstr "ドメインは、URLのプロトコルを含めることはできません。"
@@ -5655,6 +6893,13 @@ msgstr "パーマネントとグローバル"
 msgid "{0} interface"
 msgstr "{0}インターフェース"
 
+msgid "Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation."
+msgstr ""
+"現在、WAN Balancerは、下に表示された比率で、既存のWANインターフェイス上のトラ"
+"フィックを共有しようとしています。トラフィックの割り当てにこの比率を変更する"
+"にはクリック。"
+
+
 msgid "Current Traffic Allocation"
 msgstr "現在のトラフィックの割り当て"
 
@@ -5673,6 +6918,17 @@ msgstr "得られたトラフィックの割り当て"
 msgid "Traffic Allocation"
 msgstr "トラフィックの割り当て"
 
+msgid "Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr ""
+"WANインターフェイス上のトラフィックの割り当ては、各インターフェイスに相対的な"
+"重み（1-100）を割り当てることによって制御されています。すべてのインタフェース"
+"が、それはすべてのWANインターフェイスに同じ重みを割り当てることが最善である、"
+"同じ帯域幅を持つWAN場合は結果の割り当てが表示されている各インタフェースの重量"
+"を入力した後。<BR/>。 WANインターフェイスは、帯域幅が変化した場合の相対的な利"
+"用可能な帯域幅を関連付ける番号を入力してください。たとえば、次の10Mビットリン"
+"ク用6メガビットリンクの1.5Mbit /秒のT1、60、15、および100。"
+
+
 msgid "Balance"
 msgstr "バランス"
 
@@ -5685,14 +6941,44 @@ msgstr "先WAN"
 msgid "Enable Route Rule"
 msgstr "ルートルールを有効にします"
 
+msgid "Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings."
+msgstr ""
+"ルートルールは、特定のWANインターフェイスに固有のセッションを割り当てるために"
+"使用されています。ルールは順番に評価され、最初に一致したルールのWANインター"
+"フェイスは、ルートに一致するセッションが使用されています。そこには一致する"
+"ルールがありませんかルールが<私>のバランスに設定されている場合</ i>のセッショ"
+"ンでは、<I>交通の割り当て</ i>の設定に従ってルーティングされます。"
+
+
 msgid "{0}% of Internet traffic."
 msgstr "{0}のインターネットトラフィックの％。"
+
+msgid "Process HTTPS traffic by SNI (Server Name Indication) information if present"
+msgstr ""
+"SNI（サーバ名の表示）が存在する場合の情報によって、プロセスのHTTPSトラフィッ"
+"ク"
+
+
+msgid "Process HTTPS traffic by hostname in server certificate when SNI information not present"
+msgstr "サーバ証明書でホスト名でプロセスHTTPSトラフィック時SNI情報が存在しません"
+
+msgid "Process HTTPS traffic by server IP if both SNI and certificate hostname information are not available"
+msgstr ""
+"サーバーのIPアドレスでプロセスHTTPSトラフィックの両方SNIおよび証明書のホスト"
+"名の情報が利用できない場合"
+
 
 msgid "Enforce"
 msgstr "施行します"
 
 msgid "for Schools."
 msgstr "学校のために。"
+
+msgid "Enter your unique Youtube for Schools indentifier provided by youtube. (Example: Jvagw07BzSxAntTxXxaBcx"
+msgstr ""
+"indentifier動画が提供する学校のためにあなたのユニークなYouTubeのを入力してく"
+"ださい。 （例：Jvagw07BzSxAntTxXxaBcx"
+
 
 msgid "Enforce safe search on popular search engines"
 msgstr "人気のある検索エンジンの安全な検索を強制します"
@@ -5717,6 +7003,12 @@ msgstr "別のカテゴリを提案"
 
 msgid "Last suggested on"
 msgstr "最後に提案しました"
+
+msgid "NOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active."
+msgstr ""
+"注：これは提案であり、受け入れられない場合があります。受け入れた場合には、ア"
+"クティブになるまでに数日かかる場合があります。"
+
 
 msgid "Suggest"
 msgstr "示唆する"
@@ -5784,6 +7076,12 @@ msgstr "切断..."
 msgid "IPsec Options"
 msgstr "IPsecのオプション"
 
+msgid "The IPsec Options tab contains common settings that apply to all IPsec traffic."
+msgstr ""
+"IPsecの[オプション]タブには、すべてのIPsecトラフィックに適用される共通の設定"
+"が含まれています。"
+
+
 msgid "Traffic Processing"
 msgstr "トラヒック処理"
 
@@ -5793,11 +7091,29 @@ msgstr "すべてのIPsecトラフィックをバイパス"
 msgid "IPsec Tunnels"
 msgstr "IPsecのトンネル"
 
+msgid "The IPsec tunnels list contains all of the secure network tunnels that have been defined."
+msgstr ""
+"IPsecトンネルのリストが定義されている安全なネットワークトンネルのすべてが含ま"
+"れています。"
+
+
 msgid "Connection Type"
 msgstr "接続タイプ"
 
+msgid "(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)"
+msgstr ""
+"（あなたが<B>交通</ B>を使用する特別な理由がない限り、当社は、<B>トンネル</ "
+"B>を選択する推奨しました）"
+
+
 msgid "Auto Mode"
 msgstr "オートモード"
+
+msgid "(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)"
+msgstr ""
+"（常時接続トンネルに<B>スタート</ b>]を選択するか、<B>オンデマンドトンネルの"
+"</ B>を追加します）"
+
 
 msgid "External IP"
 msgstr "外部IP"
@@ -5847,6 +7163,18 @@ msgstr "死んだピアトンネルの秒数を再起動します"
 msgid "<B>Authentication and SA/Key Exchange</B>"
 msgstr "<B>認証とSA /鍵交換</ B>"
 
+msgid "Usually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel."
+msgstr ""
+"トンネルを作成する際に通常のIPsecは、自動的にリモートピアとの暗号化プロトコル"
+"をネゴシエートします。"
+
+
+msgid "However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below."
+msgstr ""
+"しかし、いくつかのピアは、特定の設定が必要です。特定の設定を構成するには、手"
+"動設定を有効にして、以下の適切な値を設定します。"
+
+
 msgid "Phase 1 IKE/ISAKMP Manual Configuration"
 msgstr "フェーズ1 IKE / ISAKMP手動設定"
 
@@ -5883,6 +7211,12 @@ msgstr "デフォルト= 3600秒、分= 3600、最大= 86400"
 msgid "VPN Config"
 msgstr "VPNコンフィグ"
 
+msgid "The VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections."
+msgstr ""
+"VPN Configタブは、IPsec、L2TPおよびXAuthのVPNクライアント接続をサポートするよ"
+"うにサーバーを構成するために使用する設定が含まれています。"
+
+
 msgid "Server Configuration"
 msgstr "サーバーの構成"
 
@@ -5901,11 +7235,33 @@ msgstr "カスタムDNSサーバ1"
 msgid "Custom DNS Server 2"
 msgstr "カスタムDNSサーバ2"
 
+msgid "<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution."
+msgstr ""
+"<strong>注：</ strong>は自動的にDNS解決のために、このサーバーを使用するように"
+"構成されたクライアントを持って空のカスタムDNSフィールドのままにしておきます。"
+
+
 msgid "IPsec Secret"
 msgstr "IPsecの秘密"
 
+msgid "In addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application."
+msgstr ""
+"上記のように構成されたIPsecの秘密に加えて、VPNクライアントは、有効なユーザー"
+"名とパスワードで認証する必要があります。ユーザー認証は、内部のローカルディレ"
+"クトリ、またはディレクトリコネクタのアプリケーションで構成された外部のRADIUS"
+"サーバのいずれかを使用するように設定することができます。"
+
+
 msgid "Server Listen Addresses"
 msgstr "サーバリスンアドレス"
+
+msgid "This is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them."
+msgstr ""
+"これは、サーバがVPN接続をincommingをリッスンするIPアドレスのリストです。あな"
+"たは、単一のWAN接続を持っている場合は、通常のみこのリストにその単一のアドレス"
+"を追加します。あなたは、複数のWANインターフェイスがある場合は、任意のをリッス"
+"ンするようにサーバーを設定し、またはそれらのすべてができます。"
+
 
 msgid "Loading information... Please wait..."
 msgstr "情報を読み込んでいます...お待ちください..."
@@ -5933,6 +7289,13 @@ msgstr "L2TPログイン"
 
 msgid "IPsec Configuration Warning"
 msgstr "IPsecの設定の警告"
+
+msgid "One or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended."
+msgstr ""
+"一つ以上のIPsecトンネルは、<B>リモートホスト</ B>フィールドにホスト名で構成さ"
+"れています。 IPを使用すると、アドレスの代わりにリモートホストのホスト名を強く"
+"お勧めします。"
+
 
 msgid "HTTP: URI"
 msgstr "HTTP：URI"
@@ -5985,6 +7348,12 @@ msgstr "Webフィルタ：カテゴリ説明"
 msgid "Web Filter: Site is Flagged"
 msgstr "Webフィルタ：サイトはフラグが設定されています"
 
+msgid "Application Control detects many different types of network traffic, allowing each to be flagged and/or blocked."
+msgstr ""
+"アプリケーション制御は、各フラグ付け、および/または遮断することができるよう"
+"に、ネットワークトラフィックの多くの異なる種類を検出します。"
+
+
 msgid "Traffic Statistics"
 msgstr "トラフィック統計"
 
@@ -6033,6 +7402,12 @@ msgstr "タール坑"
 msgid "Description (click for full text)"
 msgstr "説明（本文]をクリックします）"
 
+msgid "Application Control rules are used to control traffic post-classification."
+msgstr ""
+"アプリケーション制御ルールは、トラフィックポスト分類を制御するために使用され"
+"ます。"
+
+
 msgid "Rule ID"
 msgstr "ルールID"
 
@@ -6041,6 +7416,12 @@ msgstr "許可します"
 
 msgid "Perform the following action:"
 msgstr "次のアクションを実行します。"
+
+msgid "Web Cache provides HTTP content caching.  This status page allows you to monitor overall cache usage and effectiveness."
+msgstr ""
+"Web Cacheは、HTTPコンテンツキャッシュを提供します。このステータスページでは、"
+"全体的なキャッシュの使用と有効性を監視することができます。"
+
 
 msgid "Cache Hit Count"
 msgstr "キャッシュのヒット数"
@@ -6063,8 +7444,20 @@ msgstr "システムバイパスカウント"
 msgid "Clear Cache"
 msgstr "キャッシュのクリア"
 
+msgid "If content stored in the cache somehow becomes stale or corrupt, the cache can be cleared with the "
+msgstr ""
+"どういうわけか、キャッシュに格納されたコンテンツが失効または破損した場合、"
+"キャッシュはでクリアすることができます"
+
+
 msgid "Clearing the cache requires restarting the caching engine. "
 msgstr "キャッシュをクリアすると、キャッシング・エンジンを再起動する必要があります。"
+
+msgid "This will cause active web sessions to be dropped and may disrupt web traffic for several seconds."
+msgstr ""
+"これは、アクティブなWebセッションがドロップされることになりますと、数秒間Web"
+"トラフィックを中断される場合があります。"
+
 
 msgid "I understand the risks."
 msgstr "私はリスクを理解しています。"
@@ -6080,6 +7473,12 @@ msgstr "クリアキャッシュ..."
 
 msgid "Cache Bypass"
 msgstr "キャッシュのバイパス"
+
+msgid "The Web Cache Bypass List contains host or domain names that should never be cached."
+msgstr ""
+"Web Cacheのバイパスリストは、キャッシュされないようにしてくださいホスト名また"
+"はドメイン名が含まれています。"
+
 
 msgid "[enter hostname]"
 msgstr "[ホスト名を入力します]"
@@ -6108,6 +7507,14 @@ msgstr "グループ"
 msgid "User Notification API"
 msgstr "ユーザー通知API"
 
+msgid "The User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications."
+msgstr ""
+"ユーザー通知APIはスクリプトとエージェントが適切にポリシーマネージャ、レポー"
+"ト、および他のアプリケーションのユーザーを識別するために、サーバのユーザ名と"
+"IPアドレスのマッピングを更新することを可能にするWebベースのアプリケーション/ "
+"APIを提供します。"
+
+
 msgid "Secret Key"
 msgstr "秘密鍵"
 
@@ -6119,6 +7526,12 @@ msgstr "ダウンロードユーザ通知ログインスクリプト"
 
 msgid "Active Directory Connector"
 msgstr "Active Directoryコネクタ"
+
+msgid "This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal."
+msgstr ""
+"これは、サーバーが接続することができます{0} Active Directoryサーバー{1}キャプ"
+"ティブポータルの認証のために。"
+
 
 msgid "AD Server IP or Hostname"
 msgstr "ADサーバのIPアドレスまたはホスト名"
@@ -6140,6 +7553,12 @@ msgstr "（例えばmycompany.localとしてFQDN）"
 
 msgid "Active Directory Organization"
 msgstr "Active Directoryの組織"
+
+msgid "The {0}Active Directory Test{1} can be used to test that your settings above are correct."
+msgstr ""
+"{0} 、Active Directoryのテスト{1}上記設定が正しいことをテストするために使用す"
+"ることができます。"
+
 
 msgid "Active Directory Test"
 msgstr "Active Directoryのテスト"
@@ -6165,6 +7584,12 @@ msgstr "[任意の]"
 msgid "RADIUS Connector"
 msgstr "RADIUSコネクタ"
 
+msgid "This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec."
+msgstr ""
+"これは、サーバーが接続することができます{0} RADIUSサーバ{1}キャプティブポータ"
+"ルおよびL2TP / IPSecで使用するためのユーザを識別するために。"
+
+
 msgid "RADIUS Server IP or Hostname"
 msgstr "RADIUSサーバのIPまたはホスト名"
 
@@ -6188,6 +7613,20 @@ msgstr "PAP"
 
 msgid "Authentication Method"
 msgstr "認証方式"
+
+msgid "<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server."
+msgstr ""
+"<BR> <BR> <B>重要</ B>＆NBSP;＆NBSP; RADIUSサーバとしてWindowsを使用する場合"
+"は、最高のセキュリティとの互換性は、MS-CHAP V2を選択することによって達成され"
+"ます。また、MS-CHAP v2プロトコルは、Windowsネットワークポリシーサーバーでの"
+"RADIUSクライアントが有効になっていることを確認してください。"
+
+
+msgid "The {0}Radius Test{1} can be used to test that your settings above are correct."
+msgstr ""
+"{0}半径テスト{1}上記の設定が正しいことをテストするために使用することができま"
+"す。"
+
 
 msgid "RADIUS Test"
 msgstr "RADIUSのテスト"
@@ -6240,8 +7679,24 @@ msgstr "テストは失敗しました。"
 msgid "WAN Failover"
 msgstr "WANフェイルオーバー"
 
+msgid "WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs."
+msgstr ""
+"WANフェイルオーバーは、ネットワークの稼働時間を最大化します。それはあなたの"
+"WANインターフェイスと再ルーティングトラフィック使用可能な任意のWANの状態を監"
+"視します。"
+
+
+msgid "Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN."
+msgstr ""
+"試験は、各WANの接続性を決定するために、<I>テスト</ i>のタブを使用して設定する"
+"必要があります。"
+
+
 msgid "WARNING"
 msgstr "警告"
+
+msgid "There are currently no tests configured. A test must be configured for each WAN."
+msgstr "構成済みのテストはありません。テストは、各WAN用に設定する必要があります。"
 
 msgid "{0} of 10"
 msgstr "{0} 10の"
@@ -6267,8 +7722,20 @@ msgstr "タイプ{0}"
 msgid "Tests"
 msgstr "テスト"
 
+msgid "These tests control how each WAN interface is tested to ensure that it has connectivity to the Internet."
+msgstr ""
+"これらのテストは、各WANインターフェイスは、インターネットへの接続があることを"
+"確認するためにテストされる方法を制御します。"
+
+
 msgid "There should be one configured test per WAN interface."
 msgstr "WANインターフェイスごとに構成されたテストが必要です。"
+
+msgid "These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover."
+msgstr ""
+"これらのルールは、慎重な設定が必要です。不十分な選択されたテストは大幅にWAN"
+"フェイルオーバーの有効性が低下します。"
+
 
 msgid "Press Help to see a further discussion about Failure Detection Tests."
 msgstr "障害検出テストについてのさらなる議論を参照するには押してヘルプ。"
@@ -6276,14 +7743,38 @@ msgstr "障害検出テストについてのさらなる議論を参照するに
 msgid "Test configuration:"
 msgstr "テスト構成："
 
+msgid "Design a test that likely indicates the connectivity of the chosen WAN interface."
+msgstr "そう選択したWANインターフェイスの接続性を示し、テストを設計します。"
+
+msgid "<b>Testing Interval</b> specifies how often this test will run. (Default: 5)"
+msgstr ""
+"<B>テスト間隔</ b>には、このテストを実行する頻度を指定します。 （デフォルト："
+"5）"
+
+
 msgid "Testing Interval"
 msgstr "テスト間隔"
+
+msgid "<b>Timeout</b> specifies how long the system waits for a response before considering the test failed. (Default: 2)"
+msgstr ""
+"<B>タイムアウト</ B>は、システムがテストに失敗した考慮する前に応答を待つ時間"
+"を指定します。 （デフォルト：2）"
+
 
 msgid "Timeout"
 msgstr "タイムアウト"
 
+msgid "<b>Failure Threshold</b> specifies how many tests failures (out of 10) are required for this WAN to be considered offline."
+msgstr ""
+"<B>エラーしきい値</ B>このWANはオフラインと見なされるために必要とされているど"
+"のように多くのテストの失敗（10のうち）を指定します。"
+
+
 msgid "Failure Threshold"
 msgstr "失敗しきい値"
+
+msgid "Choose a destination that likely indicates the connectivity of the chosen WAN interface."
+msgstr "そう選択したWANインターフェイスの接続性を示す目的地を選択してください。"
 
 msgid "The IP of an upstream router at your ISP is recommended."
 msgstr "あなたのISPのアップストリームルータのIPが推奨されます。"
@@ -6297,8 +7788,17 @@ msgstr "ARPこのインターフェイスのデフォルトゲートウェイ。
 msgid "Generate DNS requests to the upstream DNS servers."
 msgstr "上流のDNSサーバーにDNS要求を生成します。"
 
+msgid "Choose a URL that likely indicates the connectivity of the chosen WAN interface."
+msgstr "そう選択したWANインターフェイスの接続性を示すURLを選択してください。"
+
 msgid "The IP URL of an upstream website near your ISP is recommended."
 msgstr "ご利用のISPに近い上流のウェブサイトのIP URLが推奨されます。"
+
+msgid "Using a hostname instead of an IP address URL is <b>not recommended</b> as it requires DNS which may be down."
+msgstr ""
+"それがダウンしている可能性があり、DNSを必要とする代わりに、IPアドレス、URLの"
+"ホスト名を使用すると、<B>はお勧めしません</ b>のです。"
+
 
 msgid "URL"
 msgstr "URL"
@@ -6326,6 +7826,12 @@ msgstr "テストを完了することができません。"
 
 msgid "Test Results"
 msgstr "テスト結果"
+
+msgid "The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports)."
+msgstr ""
+"Branding Settingsはユーザー (e.g. レポート)により参照されるロゴとコンタクトイ"
+"ンフォメーションをセットするために利用されます。"
+
 
 msgid "Logo"
 msgstr "ロゴ"
@@ -6363,6 +7869,12 @@ msgstr "ロゴイメージがアップロードされる間、お待ちくださ
 msgid "Upload Logo Succeeded."
 msgstr "ロゴアップロード成功"
 
+msgid "Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."
+msgstr ""
+"ロゴアップデート失敗。ロゴは正しいディメンションで、GIF, PNG, or JPG フォー"
+"マットでなければいけません。"
+
+
 msgid "HTTPS: SNI Host Name"
 msgstr "HTTPS：SNIホスト名"
 
@@ -6372,11 +7884,30 @@ msgstr "HTTPS：証明書のサブジェクト"
 msgid "HTTPS: Certificate Issuer"
 msgstr "HTTPS：証明書発行元"
 
+msgid "The HTTPS Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network."
+msgstr ""
+"HTTPSインスペクタは、他のアプリケーションやサービスは、単に暗号化されていない"
+"ポート80のHTTPトラフィックのようなポート443のHTTPSトラフィックを処理すること"
+"を可能にするSSL復号化エンジンです。これを行うには、アプリケーションは、トラ"
+"フィックののman-in-the-middleスタイルの検査を実行するために使用し、その場で新"
+"しいSSL証明書を生成します。クライアントコンピュータとデバイスの証明書のセキュ"
+"リティ警告を解消するには、ルート証明書をダウンロードし、ネットワークに接続さ"
+"れた各クライアント上で、信頼できる機関のリストに追加する必要があります。"
+
+
 msgid "Click here to download the root certificate."
 msgstr "ルート証明書をダウンロードするにはここをクリックしてください。"
 
 msgid "Block Invalid Traffic"
 msgstr "ブロックが無効トラフィック"
+
+msgid "When the HTTPS Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked."
+msgstr ""
+"HTTPSインスペクタは、ポート443上の非HTTPSトラフィックを検出すると、それは通"
+"常、このトラフィックを無視して、それが妨げられることなく流れることができるよ"
+"うになります。このチェックボックスを有効にした場合、HTTPS以外のトラフィック"
+"は、代わりにブロックされます。"
+
 
 msgid "Server Trust"
 msgstr "サーバーの信頼"
@@ -6384,8 +7915,22 @@ msgstr "サーバーの信頼"
 msgid "Trust All Server Certificates"
 msgstr "すべてのサーバー証明書を信頼"
 
+msgid "When this check box is enabled, the inspector will blindly trust all server certificates.  When clear, the inspector will only trust server certificates signed by a well known and trusted root certificate authority, or certificates that you have added to the list below."
+msgstr ""
+"このチェックボックスを有効にすると、検査員は、盲目的にすべてのサーバー証明書"
+"を信頼します。クリアすると、インスペクタはあなたが以下のリストに追加したサー"
+"バーのよく知られており、信頼されたルート証明機関によって署名された証明書、ま"
+"たは証明書を信頼します。"
+
+
 msgid "Upload Trusted Certificate"
 msgstr "信頼できる証明書のアップロード"
+
+msgid "<b>NOTE:</b> When uploading or deleting trusted certificates, changes are applied immediately."
+msgstr ""
+"<b>注：</ b>アップロードまたは信頼できる証明書を削除する場合、変更はすぐに適"
+"用されます。"
+
 
 msgid "Inspect"
 msgstr "点検"
@@ -6423,6 +7968,12 @@ msgstr "証明書の一意の別名またはニックネームを入力してく
 msgid "Upload Failure"
 msgstr "アップロードエラー"
 
+msgid "Ignore rules are used to configure traffic which should be ignored by the inspection engine."
+msgstr ""
+"無視規則は、検査エンジンによって無視されるべきトラフィックを設定するために使"
+"用されます。"
+
+
 msgid "End of Week"
 msgstr "週の終わり"
 
@@ -6459,8 +8010,23 @@ msgstr "未知の優先順位{0}"
 msgid "Bandwidth Control Setup Wizard"
 msgstr "帯域制御のセットアップウィザード"
 
+msgid "You have not finished configuring Bandwidth Control. Please run the Setup Wizard again."
+msgstr ""
+"あなたは、帯域制御の構成が完了していません。再度セットアップウィザードを実行"
+"してください。"
+
+
+msgid "Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control."
+msgstr "帯域制御は未設定です。帯域制御を設定するには、ウィザードを使用します。"
+
 msgid "Bandwidth Control is currently disabled."
 msgstr "帯域制御は現在無効になっています。"
+
+msgid "Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."
+msgstr ""
+"帯域制御が有効になっていますが、QoSが有効になっていません。帯域制御を有効にす"
+"るQoSを必要とします。"
+
 
 msgid "Bandwidth Control is currently enabled and running."
 msgstr "帯域制御は、現在有効になっており、実行されています。"
@@ -6476,6 +8042,12 @@ msgstr "ファイル名を指定して実行帯域制御のセットアップウ
 
 msgid "Bandwidth Monitor"
 msgstr "帯域幅モニタ"
+
+msgid "The Bandwidth Monitor shows current sessions and each session's current bandwidth usage measured on the selected interface."
+msgstr ""
+"帯域幅モニタは、現在のセッションと、選択したインターフェイス上で測定した各"
+"セッションの現在の帯域幅の使用状況を示しています。"
+
 
 msgid "Open Bandwidth Monitor"
 msgstr "オープン帯域幅モニタ"
@@ -6525,6 +8097,15 @@ msgstr "クォータの有効期限"
 msgid "Welcome to the Bandwidth Control Setup Wizard!"
 msgstr "帯域制御のセットアップウィザードへようこそ！"
 
+msgid "This wizard will help guide you through your initial setup and configuration of Bandwidth Control."
+msgstr "このウィザードでは、帯域制御の初期セットアップと構成がわかります。"
+
+msgid "Bandwidth Control leverages information provided by other applications in the rack."
+msgstr ""
+"帯域制御は、ラック内の他のアプリケーションによって提供される情報を利用しま"
+"す。"
+
+
 msgid "Web Filter (non-Lite) provides web site categorization."
 msgstr "Webフィルタ（非Liteは）は、Webサイトの分類を提供します。"
 
@@ -6549,8 +8130,32 @@ msgstr "インターフェイス同上"
 msgid " kbps"
 msgstr "kbpsの"
 
+msgid "{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."
+msgstr ""
+"{0}注{1} QoSをイネーブルにする場合、有効なダウンロード帯域幅およびアップロー"
+"ド帯域幅の制限はすべてのために設定する必要がありますがWANインターフェイス。"
+
+
 msgid "Configure WANs download and upload bandwidths"
 msgstr "設定WANをダウンロードおよびアップロード帯域幅"
+
+msgid "It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN."
+msgstr ""
+"これは、各WANで使用可能な実際の測定帯域幅の95％〜100％の周りにこれらを設定す"
+"ることが提案されています。"
+
+
+msgid "WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!"
+msgstr ""
+"警告：帯域制御が正常に動作するためにこれらの設定は、合理的に正確でなければな"
+"りません！"
+
+
+msgid "Please set valid Download Bandwidth and Upload Bandwidth limits for the interface {0}."
+msgstr ""
+"有効なダウンロード帯域幅とアップロードの帯域幅の制限を、インタフェース{0}を設"
+"定してください。"
+
 
 msgid "Configuring WAN..."
 msgstr "WANの設定..."
@@ -6558,11 +8163,38 @@ msgstr "WANの設定..."
 msgid "Choose a starting configuration"
 msgstr "起動設定を選択してください"
 
+msgid "Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below."
+msgstr ""
+"いくつかの初期のデフォルト構成は、帯域制御のために利用可能です。最も下のあな"
+"たのような環境を選択してください。"
+
+
 msgid "Business"
 msgstr "ビジネス"
 
+msgid "This initial configuration provides common settings suitable for most small and medium-sized businesses."
+msgstr "この初期設定は、ほとんどの中小企業に適した一般的な設定を提供します。"
+
 msgid "Benefits:"
 msgstr "利点："
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses"
+msgstr ""
+"最も一般的に、企業で使用される双方向サービスのトラフィックに優先順位を付ける"
+"ことにより、インターネットの応答性を最適化"
+
+
+msgid "de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing"
+msgstr ""
+"そのようなピア・ツー・ピアのファイル共有などの貪欲非仕事関連の活動のトラ"
+"フィックをデ優先順位付け"
+
+
+msgid "de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most"
+msgstr ""
+"非リアルタイムの背景トラフィックは、あなたがそれを最も必要とするときあなたの"
+"インターネット接続を減速回避するために、デ優先順位付け"
+
 
 msgid "Prioritizes:"
 msgstr "優先順位付け："
@@ -6579,6 +8211,12 @@ msgstr "インタラクティブなWebトラフィック"
 msgid "De-prioritizes:"
 msgstr "デ優先順位付け："
 
+msgid "non-real-time background services (e.g. Microsoft&reg; updates, backup services)"
+msgstr ""
+"非リアルタイムのバックグラウンドサービス（例えば、マイクロソフト＆REG;アップ"
+"デート、バックアップ・サービス）"
+
+
 msgid "any detected Peer-to-Peer traffic"
 msgstr "任意の検出されたピア・ツー・ピアトラフィック"
 
@@ -6587,6 +8225,30 @@ msgstr "会社の方針に違反するすべてのWebトラフィック"
 
 msgid "School"
 msgstr "学校"
+
+msgid "This initial configuration provides common settings suitable for most School Districts, Elementary through High Schools, or Charter Schools."
+msgstr ""
+"この初期設定は、ほとんどの学区、高等学校、またはチャータースクールを通じて小"
+"学校に適した一般的な設定を提供します。"
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools"
+msgstr ""
+"最も一般的に学校で使用される双方向サービスのトラフィックに優先順位を付けるこ"
+"とにより、インターネットの応答性を最適化"
+
+
+msgid "prioritizes school-related traffic, such as traffic to Education sites or Search Engines"
+msgstr ""
+"このような教育サイトや検索エンジンへのトラフィックとして、学校関連のトラ"
+"フィックに優先順位を付けます"
+
+
+msgid "de-prioritizes traffic of greedy non-school-related activities such as peer-to-peer file sharing"
+msgstr ""
+"そのようなピア・ツー・ピアのファイル共有などの貪欲非学校関連活動のトラフィッ"
+"クをデ優先順位付け"
+
 
 msgid "web traffic to download sites"
 msgstr "ダウンロードサイトへのWebトラフィック"
@@ -6603,14 +8265,44 @@ msgstr "重くBitTorrentの使用を制限"
 msgid "College/University"
 msgstr "カレッジ/大学"
 
+msgid "This initial configuration provides common settings suitable for most Community Colleges, Universities, and associated Campus Networks."
+msgstr ""
+"この初期設定は、ほとんどのコミュニティカレッジ、大学、および関連するキャンパ"
+"スネットワークに適した一般的な設定を提供します。"
+
+
+msgid "de-prioritizes traffic of greedy non-school-related activities, peer-to-peer file sharing, or BitTorrent"
+msgstr ""
+"貪欲非学校関連活動、ピア・ツー・ピアのファイル共有、またはBitTorrentのトラ"
+"フィックをデ優先順位付け"
+
+
 msgid "Government"
 msgstr "政府機関"
+
+msgid "This initial configuration provides common settings suitable for most governmental organizations."
+msgstr "この初期設定は、ほとんどの政府機関に適した一般的な設定を提供します。"
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in government"
+msgstr ""
+"政府で使用される最も一般的な双方向サービスのトラフィックに優先順位を付けるこ"
+"とにより、インターネットの応答性を最適化"
+
+
+msgid "de-prioritizes traffic of greedy non-work-related activities, such as peer-to-peer file sharing"
+msgstr ""
+"そのようなピア・ツー・ピアのファイル共有などの貪欲非仕事関連の活動、のトラ"
+"フィックをデ優先順位付け"
+
 
 msgid "all web traffic in violation of organization's policy"
 msgstr "組織のポリシーに違反してすべてのWebトラフィック"
 
 msgid "Non-Profit"
 msgstr "非営利"
+
+msgid "This initial configuration provides common settings suitable for most charitable and not-for-profit organizations."
+msgstr "この初期設定は、ほとんどの慈善と非営利団体に適した一般的な設定を提供します。"
 
 msgid "saves money by controlling bandwidth"
 msgstr "帯域幅を制御することによってお金を節約します"
@@ -6621,17 +8313,94 @@ msgstr "組織のポリシーに違反してすべてのWebトラフィック"
 msgid "Hotel"
 msgstr "ホテル"
 
+msgid "This initial configuration provides common settings suitable for most Hotel and Motels."
+msgstr "この初期設定は、ほとんどのホテルやモーテルに適した一般的な設定を提供します。"
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used by guests"
+msgstr ""
+"最も一般的にゲストが使用する双方向サービスのトラフィックに優先順位を付けるこ"
+"とにより、インターネットの応答性を最適化"
+
+
+msgid "web traffic to business-related sites (Search Engines, Finance, Business/Services, etc)"
+msgstr ""
+"業務関連サイトへのWebトラフィック（検索エンジン、ファイナンス、ビジネス/サー"
+"ビス、など）"
+
+
 msgid "de-prioritizes traffic of peer-to-peer file sharing"
 msgstr "ピアツーピアファイル共有のトラフィックを非優先順位付け"
 
+msgid "de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when it is needed most"
+msgstr ""
+"非リアルタイムの背景トラフィックは、それが最も必要とされるときにインターネッ"
+"ト接続を減速回避するために、デ優先する"
+
+
 msgid "Home"
 msgstr "自宅"
+
+msgid "This initial configuration provides common settings suitable for most home users and households."
+msgstr ""
+"この初期設定は、ほとんどのホームユーザーや家庭に適した一般的な設定を提供しま"
+"す。"
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in households"
+msgstr ""
+"最も一般的に家庭で使用される双方向サービスのトラフィックに優先順位を付けるこ"
+"とにより、インターネットの応答性を最適化"
+
+
+msgid "prioritizes internet radio and video so that these services run flawlessly while downloads are running"
+msgstr ""
+"ダウンロードが実行されている一方で、これらのサービスが完璧に実行されるように"
+"インターネットラジオやビデオを優先し"
+
+
+msgid "internet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)"
+msgstr ""
+"インターネットラジオ（例えばパンドラ＆REG ;, Last.fm <小> <SUP> TM </ SUP> </"
+"小>）"
+
+
+msgid "internet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, NetFlix&reg;)"
+msgstr ""
+"インターネットビデオ（例えばYouTubeの＆REG ;, Huluは、<小> <SUP> TM </ SUP> "
+"</小>、ネットフリックス＆REG;）"
+
 
 msgid "all web traffic in violation of the household policy"
 msgstr "家庭のポリシーに違反するすべてのWebトラフィック"
 
 msgid "Metered Internet"
 msgstr "定量噴霧式インターネット"
+
+msgid "This initial configuration provides common settings suitable for organizations that pay variable rates for bandwidth."
+msgstr ""
+"この初期設定では、帯域幅のために変動金利を支払う組織に適した一般的な設定を提"
+"供します。"
+
+
+msgid "For organizations that have to pay bandwidth rates proportional to bandwidth usage or have significant overage fees, this configuration maximizes bandwidth available to important interactive services, while minimizing bandwidth use for other less important or background tasks."
+msgstr ""
+"他の重要度の低いまたはバックグラウンドタスクのための帯域幅の使用を最小限に抑"
+"えながら、帯域幅の使用量に比例した帯域幅料金を支払わなければならないか、大幅"
+"な超過料金を​​持っている組織では、この構成は、重要な双方向サービスに利用可能な"
+"帯域幅を最大化します。"
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in organizations"
+msgstr ""
+"最も一般的に組織で使用双方向サービスのトラフィックに優先順位を付けることによ"
+"り、インターネットの応答性を最適化"
+
+
+msgid "de-prioritizes traffic of non-work-related activities, such as gaming, peer-to-peer file sharing, or online videos"
+msgstr ""
+"このようなゲーム、ピアツーピアのファイル共有、またはオンラインビデオのような"
+"非仕事関連の活動、のトラフィックをデ優先順位付け"
+
 
 msgid "saves money"
 msgstr "お金を節約します"
@@ -6642,6 +8411,12 @@ msgstr "サイトをダウンロードするすべてのWebトラフィック"
 msgid "This is a basic configuration with no rules set by default."
 msgstr "これがデフォルトで設定されていないルールの基本的な構成です。"
 
+msgid "This is a good option for users who wish to build their own rules configuration from scratch."
+msgstr ""
+"これは、最初から独自のルールの設定を構築したいユーザーに適したオプションで"
+"す。"
+
+
 msgid "You must select a starting configuration."
 msgstr "あなたは起動設定を選択する必要があります。"
 
@@ -6650,6 +8425,14 @@ msgstr "設定の構成..."
 
 msgid "Configure Quotas"
 msgstr "クォータを設定します"
+
+msgid "Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive."
+msgstr ""
+"帯域幅のためのクォータは、特定のホストを設定することができます。これは、それ"
+"が特定の使用クォータ内に留まるれているように、いくつかのホストが高帯域幅を割"
+"り当てることができるようになります。それらの使用量が過剰である場合は、その帯"
+"域幅が鈍化します。"
+
 
 msgid "Disable Quotas (default)"
 msgstr "無効にクォータ（デフォルト）"
@@ -6665,6 +8448,12 @@ msgstr "ホストコントロールは、クォータが与えられます。"
 
 msgid " (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"
 msgstr "（例：192.168.1.1/24または192.168.1.100-192.168.1.200）"
+
+msgid " controls how long a quota lasts (hourly, daily, weekly). The default is Daily."
+msgstr "クォータが（時間、日、週）持続時間の長さを制御します。デフォルトは毎日です。"
+
+msgid " configures the size of the quota given to each host. The default is 1 Gb."
+msgstr "各ホストに与えられたクォータのサイズを設定します。デフォルトは1 GBです。"
 
 msgid "Quota Exceeded Priority"
 msgstr "クォータ超過優先"
@@ -6689,6 +8478,12 @@ msgstr "正常にバックアップされました"
 
 msgid "Last backup failed on"
 msgstr "前回のバックアップが失敗した上で"
+
+msgid "Configuration Backup automatically saves your configuration settings and sends them to {0} for safe storage. If you need a backup of your configuration settings, contact {1}"
+msgstr ""
+"設定のバックアップが自動的に構成設定を保存し、それらを送信する{0}安全な保管の"
+"ために。あなたの構成設定のバックアップが必要な場合は、接点{1}"
+
 
 msgid "Backup Now"
 msgstr "今すぐバックアップ"
@@ -6717,6 +8512,20 @@ msgstr "なし"
 msgid "Policies"
 msgstr "ポリシー"
 
+msgid "<b>Policy Manager</b> allows for the creation of multiple racks (also known as policies) and controls which sessions are processed by which racks."
+msgstr ""
+"<B>ポリシーマネージャは、</ B>は、セッションがどのラックによって処理された複"
+"数の（も政策として知られている）ラックおよびコントロールの作成を可能にしま"
+"す。"
+
+
+msgid "For each new session the <b>Rules</b> are evaluated in order and the <b>Target Rack</b> for the first matching rule is used to handle the session."
+msgstr ""
+"それぞれの新しいセッションについて、<B>ルールは</ b>には順番に評価され、<b>の"
+"ターゲットは、セッションを処理するために使用される最初の一致ルールの<B />ラッ"
+"ク。"
+
+
 msgid "If no rules match, the First Rack (Id:1) is used to handle the session."
 msgstr ""
 "ルールが一致しない場合には、第1のラック（ID：1）は、セッションを処理するため"
@@ -6734,6 +8543,12 @@ msgstr "ペアレント"
 
 msgid "Target Rack"
 msgstr "ターゲットラック"
+
+msgid "Reports application is required for this feature. Please install and enable the Reports application."
+msgstr ""
+"レポートアプリケーションは、この機能のために必要とされます。 Reportsアプリ"
+"ケーションをインストールして有効にしてください。"
+
 
 msgid "Current Data"
 msgstr "現在のデータ"
@@ -7368,8 +9183,21 @@ msgstr "JavaClass"
 msgid "{0} Server"
 msgstr "{0} サーバー"
 
+msgid "The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."
+msgstr ""
+"復元手順が実行されています。これには数分かかることがあります。サーバーは、こ"
+"の時間の間に利用できない場合があります。プロセスが完了したら、再度ログインす"
+"ることができるようになります。"
+
+
 msgid "{0} Server Test Message"
 msgstr "{0} サーバーテストメッセージ"
+
+msgid "This automated message was generated by the {0} Server{1}to confirm that your email settings are correct."
+msgstr ""
+"この自動メッセージは、あなたのメールセッティングが正しいことを確認するために "
+"{0} サーバー{1}によって作成されました。"
+
 
 msgid "HTTP administration is disabled."
 msgstr "HTTP管理が無効になっています。"
@@ -7452,11 +9280,20 @@ msgstr "イベントの処理が遅れています"
 msgid "Packet processing recently overloaded."
 msgstr "パケット処理は、最近、オーバーロードされます。"
 
+msgid "The shield is disabled. This can cause performance and stability problems."
+msgstr ""
+"シールドが無効になっています。これは、パフォーマンスと安定性の問題を引き起こ"
+"す可能性があります。"
+
+
 msgid "Route to unreachable address:"
 msgstr "到達不能アドレスへのルート："
 
 msgid "Running 64-bit with less than 2 gigabytes RAM is not suggested."
 msgstr "未満2ギガバイトのRAMを搭載した64ビットを実行すると示唆されていません。"
+
+msgid "Currently the number of devices significantly exceeds the number of licensed devices."
+msgstr "現在のデバイスの数を大幅にライセンスされたデバイスの数を超えています。"
 
 msgid "Import failed. Settings must be formatted as a JSON Array."
 msgstr ""
@@ -9021,6 +10858,12 @@ msgstr "キャプティブポータルアクティビティの要約。"
 msgid "Activity Summary"
 msgstr "活動概要"
 
+msgid "The top clients that were blocked by Captive Portal because they were not logged in."
+msgstr ""
+"彼らはログインしていなかったので、キャプティブポータルによってブロックされた"
+"トップのクライアント。"
+
+
 msgid "The sum of the size of requested web content grouped by domain."
 msgstr "ドメインごとにグループ化され、要求されたウェブコンテンツのサイズの合計。"
 
@@ -9741,6 +11584,9 @@ msgstr "ウイルスブロッカーFTPの概要"
 msgid "Virus Blocker Email Summary"
 msgstr "ウイルスブロッカーメールの概要"
 
+msgid "The amount of login, update and logout user notification API events over time."
+msgstr "ログイン、更新量と時間をかけてログアウトユーザ通知APIイベント。"
+
 msgid "User Notification API Events"
 msgstr "ユーザー通知APIのイベント"
 
@@ -9794,6 +11640,18 @@ msgstr "（受信したバイトによる）トップのホスト名"
 
 msgid "Top Application (by sent bytes)"
 msgstr "（送信されたバイトによる）トップアプリケーション"
+
+msgid "The approximate averaged data transfer rate (total, sent, received) over time grouped by session creation time."
+msgstr ""
+"おおよその平均データ転送速度セッションの作成時間によってグループ化された時間"
+"をかけて（送信された合計は、受信されました）。"
+
+
+msgid "The sum of the data transferred grouped by Application Control application."
+msgstr ""
+"アプリケーション制御アプリケーションによってグループ化され、転送されたデータ"
+"の合計。"
+
 
 msgid "Top Application (by total bytes)"
 msgstr "（総バイト数によって）上位アプリケーション"
@@ -9866,6 +11724,9 @@ msgstr "クライアントアドレスでグループ化された受信したデ
 
 msgid "Top Clients (by received bytes)"
 msgstr "（受信したバイトによって）上位クライアント"
+
+msgid "The amount of successes, and failures of configuration backup over time."
+msgstr "成功の量、及び経時構成のバックアップの失敗。"
 
 msgid "Backup Usage (all)"
 msgstr "バックアップ使い方（すべて）"
@@ -10046,6 +11907,12 @@ msgstr "サーバステータスEventsdescription"
 
 msgid "All sessions that were not bypassed."
 msgstr "バイパスされていなかったすべてのセッション。"
+
+msgid "Shows when hosts are placed in the penalty box and when the penalty box expires."
+msgstr ""
+"ホストがペナルティーボックス内に配置された場合とペナルティが期限切れになった"
+"ときに表示します。"
+
 
 msgid "Penalty Box Events"
 msgstr "ペナルティエリアのイベント"
@@ -10272,6 +12139,9 @@ msgstr "ウイルスブロッカーによってスキャンすべての電子メ
 msgid "Events from the user notification API."
 msgstr "ユーザー通知APIからのイベント。"
 
+msgid "Events where the failure threshold was exceeded and the WAN was considered offline."
+msgstr "障害しきい値を超えたとWANがオフラインであると考えられたイベント。"
+
 msgid "Outage Events"
 msgstr "停電のイベント"
 
@@ -10296,17 +12166,42 @@ msgstr "失敗に終わったすべてのテスト。"
 msgid "Failed Test Events"
 msgstr "失敗したテストイベント"
 
+msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
+msgstr "トラフィックがSSLセッションでの根本的な問題が原因でブロックされたイベント。"
+
 msgid "Abandoned Sessions"
 msgstr "放棄されたセッション"
 
+msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
+msgstr ""
+"トラフィックがなかったか、トラフィックが完全に無視され、任意のアプリケーショ"
+"ンやサービスによって分析されていなかったので、検査することができませんでした"
+"イベント。"
+
+
 msgid "Ignored Sessions"
 msgstr "無視されたセッション"
+
+msgid "Events where traffic was blocked because it did not contain a valid HTTPS request, and the Block Invalid Traffic option was enabled."
+msgstr ""
+"それが有効なHTTPS要求が含まれていなかったため、トラフィックがブロックされたイ"
+"ベント、およびブロックが無効トラフィックのオプションが有効になっていました。"
+
+
+msgid "Events where traffic was blocked because the server certificate could not be authenticated."
+msgstr "サーバー証明書が認証されなかったため、トラフィックがブロックされたイベント。"
 
 msgid "Untrusted Sessions"
 msgstr "信頼されていないセッション"
 
 msgid "All sessions detected by HTTPS Inspector."
 msgstr "HTTPSインスペクタで検出されたすべてのセッション。"
+
+msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
+msgstr ""
+"トラフィックは完全に検査官によって処理された、すべてのトラフィックは、他のす"
+"べてのアプリケーションとサービスを通したイベント。"
+
 
 msgid "All sessions processed by Bandwidth Control."
 msgstr "帯域制御によって処理されるすべてのセッション。"
@@ -10319,6 +12214,12 @@ msgstr "優先セッション"
 
 msgid "All Configuration Backup events."
 msgstr "すべての構成のバックアップイベント。"
+
+msgid "Lists all sessions with the policy manager rack that handled the session."
+msgstr ""
+"セッションを処理し、ポリシーマネージャラックとのすべてのセッションが一覧表示"
+"されます。"
+
 
 msgid "Documents scanned"
 msgstr "ドキュメントがスキャンされました"
@@ -10427,6 +12328,12 @@ msgstr "警告！"
 
 msgid "An following event occurred on the"
 msgstr "次のイベントが発生しました"
+
+msgid "This is an automated message sent because the event matched the configured Alert Rules."
+msgstr ""
+"これは、イベントが設定されたアラートルールが一致したため、送信された自動化さ"
+"れたメッセージです。"
+
 
 msgid "has online access, but no password is set."
 msgstr "オンラインアクセスを持っていますが、パスワードは設定されていません。"
@@ -10674,17 +12581,26 @@ msgstr "{0}ウィルスブロッカー"
 msgid "{0}This file was blocked{1} because it contains a virus."
 msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
-
 msgid "Quarantine Digest"
 msgstr "検疫ダイジェスト"
+
+msgid "was determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  "
+msgstr ""
+
+msgid "The kind of phish that was found was"
+msgstr ""
 
 msgid "active"
 msgstr "アクティブ"
 
 msgid "inactive"
 msgstr "不活発"
+
+msgid "Shield is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab."
+msgstr ""
+"保護は、ヒューリスティックベースの侵入防止で設定は必要ありません。ユーザーは例外タブで、特定のIPのAND/ORでネットワークの処置を変更することができ"
+"ます。"
+
 
 msgid "Exceptions"
 msgstr "除外"

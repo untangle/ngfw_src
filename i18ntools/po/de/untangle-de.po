@@ -94,6 +94,12 @@ msgstr "Adresse"
 msgid "Port"
 msgstr "Port"
 
+msgid "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed."
+msgstr ""
+"Ein Name sollte nur enthält Zahlen, Buchstaben, Striche und Punkte. "
+"Leerzeichen nicht erlaubt sind."
+
+
 msgid "Connected Remote Clients"
 msgstr "Verbunden Remote Clients"
 
@@ -114,6 +120,12 @@ msgstr "Tx Daten"
 
 msgid "Remote Server Status"
 msgstr "Remote-Server-Status"
+
+msgid "The Remote Server Status list shows the current status of the configured remote servers."
+msgstr ""
+"Die Remoteserver-Statusliste zeigt den aktuellen Status der konfigurierten "
+"Remote-Servern."
+
 
 msgid "Name"
 msgstr "Name"
@@ -178,6 +190,18 @@ msgstr "Fehler"
 msgid "Import failure"
 msgstr "Ausfall Import"
 
+msgid "These settings configure how OpenVPN will connect to remote servers as a client."
+msgstr ""
+"Diese Einstellungen konfigurieren, wie OpenVPN wird auf Remote-Server als "
+"Client zu verbinden."
+
+
+msgid "Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client."
+msgstr ""
+"Remote-Servern ist eine Liste mit Remote-Servern, die OpenVPN OpenVPN sollte "
+"als Client zu verbinden."
+
+
 msgid "Download OpenVPN Client"
 msgstr "Herunterladen OpenVPN-Client"
 
@@ -188,6 +212,13 @@ msgid "These files can be used to configure your Remote Clients."
 msgstr ""
 "Diese Dateien können verwendet werden um einen entfernten VPN Client zu "
 "konfigurieren."
+
+
+msgid "This file can be used to configure Chromebook clients.  On the target device, browse to <b>chrome://net-internals</b> and use Import ONC file."
+msgstr ""
+"Diese Datei kann verwendet werden, um Chrome Clients konfigurieren. Auf dem "
+"Zielgerät finden Sie auf <b> chrome: // net-Einbauten </ b> und verwenden "
+"Sie Import ONC-Datei."
 
 
 msgid "Close"
@@ -204,6 +235,24 @@ msgstr "Bitte warten"
 
 msgid "Click here to download this client's Windows setup.exe file."
 msgstr "Klicken Sie hier, um die Windows-Datei setup.exe dieses Kunden herunterladen."
+
+msgid "Click here to download this client's configuration onc file for Chromebook."
+msgstr ""
+"Klicken Sie hier, um die Konfiguration dieses Kunden für Chrome downloaden "
+"ONC-Datei."
+
+
+msgid "Click here to download this client's configuration zip file for other OSs (apple/linux/etc). "
+msgstr ""
+"Klicken Sie hier, um die Konfiguration ZIP-Datei dieses Kunden für andere "
+"Betriebssysteme (Apple / linux / etc) herunterladen. "
+
+
+msgid "Click here to download this client's configuration file for remote Untangle OpenVPN clients."
+msgstr ""
+"Klicken Sie hier, um die Konfigurationsdatei dieses Kunden für Fern Untangle "
+"OpenVPN-Clients herunterladen."
+
 
 msgid "Remote Clients"
 msgstr "Remote Clients"
@@ -277,6 +326,12 @@ msgstr "Schieben Sie den DNS-Domänen"
 msgid "Server"
 msgstr "Server"
 
+msgid "These settings configure how OpenVPN will be a server for remote clients."
+msgstr ""
+"Diese Einstellungen konfigurieren, wie OpenVPN wird ein Server für Remote-"
+"Clients sein."
+
+
 msgid "Site Name"
 msgstr "Standortname"
 
@@ -298,6 +353,9 @@ msgstr "Protokoll"
 msgid "Warning"
 msgstr "Warnung"
 
+msgid "Changing the protocol will require redistributing ALL of the openvpn clients."
+msgstr "Ändern des Protokolls erfordert eine Umverteilung ALL der OpenVPN-Clients."
+
 msgid "Do you want to continue anyway?"
 msgstr "Wollen Sie trotzdem fortfahren?"
 
@@ -318,6 +376,12 @@ msgstr "Fehler"
 
 msgid "You must create at least one group."
 msgstr "Es muss mindestens eine Gruppe erstellt werden."
+
+msgid "The group: {0} cannot be deleted because it is being used by the client: {1} in the Client To Site List."
+msgstr ""
+"Die Gruppe: {0} kann nicht gelöscht werden, da sie bereits vom Client "
+"verwendet: {1} in der Client-Website-Liste."
+
 
 msgid "The group name: {0} in row: {1} already exists."
 msgstr "Der Gruppenname: {0} in der Zeile: {1} ist bereits vorhanden."
@@ -375,6 +439,12 @@ msgstr ""
 
 msgid "Import failed. Imported file has no records."
 msgstr "Import fehlgeschlagen. Importierte Datei hat keine Aufzeichnungen."
+
+msgid "Import failed. Imported file contains {0} invalid records and no valid records."
+msgstr ""
+"Import fehlgeschlagen. Importierte Datei enthält {0} ungültige Datensätze "
+"und keine gültigen Datensätze."
+
 
 msgid "Exporting Settings..."
 msgstr "Export-Einstellungen ..."
@@ -628,6 +698,12 @@ msgstr "Hilfe"
 msgid "Buy Now"
 msgstr "Kaufen"
 
+msgid "The <B>Status Indicator</B> shows the current operating condition of a particular application."
+msgstr ""
+"Die <B>Statusanzeige</B> zeigt den aktuellen Betriebszustand einer "
+"bestimmten Anwendung an."
+
+
 msgid "Green"
 msgstr "Grün"
 
@@ -636,6 +712,12 @@ msgstr "zeigt an, dass sich die Anwendung auf und funktioniert normal."
 
 msgid "Red"
 msgstr "Rot"
+
+msgid "indicates that the application is ON, but that an abnormal condition has occurred."
+msgstr ""
+"zeigt an, dass sich die Anwendung auf, sondern dass ein anormaler Zustand "
+"aufgetreten ist."
+
 
 msgid "Yellow"
 msgstr "Gelb"
@@ -646,8 +728,20 @@ msgstr "zeigt an, dass die Anwendung ihre Einstellungen speichert oder aktualisi
 msgid "Clear"
 msgstr "Farblos"
 
+msgid "indicates that the application is OFF, and may be turned ON by the user."
+msgstr ""
+"zeigt an, dass die Anwendung ausgeschaltet ist, und kann durch den Benutzer "
+"eingeschaltet werden."
+
+
 msgid "The <B>Power Button</B> allows you to turn a application ON and OFF."
 msgstr "Das <B> Power Button </ B> können Sie eine Anwendung ein- und auszuschalten."
+
+msgid "This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack."
+msgstr ""
+"Diese App ist in dem oben gezeigten Mutter Rack. <br/> Um die Einstellungen "
+"für diese Anwendung zugreifen zu können, wählen Sie die übergeordneten Rack."
+
 
 msgid "Unable to start {0}"
 msgstr "{0} kann nicht gestartet werden"
@@ -1003,8 +1097,29 @@ msgstr "Automatisches Upgrade"
 msgid "Automatically Install Upgrades"
 msgstr "Installiere Upgrades automatisch"
 
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
+msgstr ""
+"Wenn neue Upgrades zur angegebenen Zeit verfügbar sind, werden diese "
+"automatisch heruntergeladen und installiert. Während der Installation kann "
+"das System neu gestartet werden, was einen vorübergehenden Verlust der "
+"Verbindung zur Folge hat."
+
+
 msgid "Do Not Automatically Install Upgrades"
 msgstr "Upgrades nicht automatisch installieren"
+
+msgid "If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab."
+msgstr ""
+"Wenn neue Upgrades zur angegebenen Zeit verfügbar sind, werden diese nicht "
+"installiert. Alle Upgrades müssen manuell installiert werden. Benutze hierzu "
+"den Button auf der Upgrade Systemleiste."
+
+
+msgid "Note: Turning off Automatic Upgrades does not disable signature & list updates"
+msgstr ""
+"Hinweis: Das Deaktivieren der automatischen Upgrades schaltet nicht die "
+"Updates der Signaturen und Listen ab"
+
 
 msgid "Automatic Upgrade Schedule"
 msgstr "Automatische Update-Fahrplan"
@@ -1756,8 +1871,28 @@ msgstr "Lassen Sie HTTP Administration"
 msgid "Note:"
 msgstr "Hinweis:"
 
+msgid "HTTP is open on non-WANs (internal interfaces) for blockpages and other services."
+msgstr ""
+"HTTP ist auf nicht-WANs (interne Schnittstellen) für blockpages und andere "
+"Dienstleistungen geöffnet."
+
+
+msgid "This settings only controls the availability of <b>administration</b> via HTTP."
+msgstr ""
+"Diese Einstellung steuert nur die Verfügbarkeit von <b> Verwaltung </ b> "
+"über HTTP."
+
+
 msgid "Public Address"
 msgstr "Öffentliche Adresse"
+
+msgid "The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails."
+msgstr ""
+"Die öffentliche Adresse ist die Adresse / URL, die einen öffentlichen Ort "
+"für den bietet {0} Server. Diese Adresse wird in E-Mails durch die geschickt "
+"eingesetzt werden {0} Server, um Dienste auf dem gehosteten Link zurück {0} "
+"Server wie zB Quarantäne-Digests und OpenVPN-Client E-Mails."
+
 
 msgid "Use IP address from External interface (default)"
 msgstr "Verwenden Sie die IP-Adresse von einem externen Schnittstelle (Standard)"
@@ -1771,11 +1906,24 @@ msgstr ""
 msgid "Use Hostname"
 msgstr "Benutze Hostname"
 
+msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
+msgstr ""
+"Dies wird empfohlen, wenn der vollständige qualifizierte Domain Name des {0} "
+"Servers sowohl intern als auch extern mit seiner IP Adresse angezeigt wird."
+
+
 msgid "Current Hostname: {0}"
 msgstr "Aktueller Hostname: {0}"
 
 msgid "Use Manually Specified Address"
 msgstr "Verwenden Sie manuell angegeben Adresse"
+
+msgid "This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server."
+msgstr ""
+"Dies wird empfohlen, wenn die {0} Server hinter einem anderen Firewall mit "
+"Port-Weiterleitung aus dem angegebenen Hostnamen / IP, die den Verkehr an "
+"die Weiterleitungen installiert ist {0} Server."
+
 
 msgid "IP/Hostname"
 msgstr "IP / Hostname"
@@ -1792,6 +1940,18 @@ msgstr "Zertifikate"
 msgid "Certificate Authority"
 msgstr "Certificate Authority"
 
+msgid "The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network."
+msgstr ""
+"Die Zertifizierungsstelle wird verwendet, um zu erstellen, und "
+"unterschreiben Sie die HTTPS-Zertifikate, die von mehreren Anwendungen und "
+"Diensten wie HTTPS Inspector und Captive Portal verwendet. Es kann auch "
+"verwendet, um den internen Web-Server-Zertifikat zu unterzeichnen. Um die "
+"Zertifikatssicherheitswarnungen auf den Client-Computern und Geräten zu "
+"vermeiden, sollten Sie das Stammzertifikat herunterladen und es in die Liste "
+"der vertrauenswürdigen Behörden fügen auf jedem Client mit dem Netzwerk "
+"verbunden."
+
+
 msgid "Valid starting"
 msgstr "Gültig ab"
 
@@ -1804,14 +1964,44 @@ msgstr "Subject DN"
 msgid "Generate Certificate Authority"
 msgstr "Generate Certificate Authority"
 
+msgid "Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate."
+msgstr ""
+"Klicken Sie hier, um neu zu erstellen die interne Zertifizierungsstelle. "
+"Verwenden Sie diese, um die Informationen in der Betreff-DN des Root-"
+"Zertifikats ändern."
+
+
 msgid "Download Root Certificate"
 msgstr "Laden Sie Root-Zertifikat"
+
+msgid "Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server."
+msgstr ""
+"Klicken Sie hier, um das Stammzertifikat herunterladen. Die Installation "
+"dieses Zertifikats auf Clientgeräten wird ihnen erlauben, Zertifikate, die "
+"von diesem Server generiert vertrauen."
+
 
 msgid "Download Root Certificate Installer"
 msgstr "Laden Sie Root Certificate Installer"
 
+msgid "Click here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device."
+msgstr ""
+"Klicken Sie hier, um das Stammzertifikat Installer herunterladen. Es "
+"installiert sich das Stammzertifikat entsprechend auf einem Windows-Gerät."
+
+
 msgid "Server Certificate"
 msgstr "Server-Zertifikat"
+
+msgid "The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc."
+msgstr ""
+"Das Serverzertifikat wird verwendet, um alle HTTPS-Verbindungen mit diesem "
+"Server zu sichern. Es gibt zwei Optionen für die Erstellung dieses "
+"Zertifikat. Sie können ein Zertifikat von der Zertifizierungsstelle signiert "
+"erstellt zu erstellen und darüber angezeigt, oder Sie können ein Zertifikat, "
+"das von einem Dritten Zertifizierungsstelle wie Thawte, Verisign usw. "
+"unterzeichnet kaufen"
+
 
 msgid "Issuer DN"
 msgstr "Issuer DN"
@@ -1822,14 +2012,44 @@ msgstr "Alternative Names"
 msgid "Generate Server Certificate"
 msgstr "Generieren Sie Server-Zertifikat"
 
+msgid "Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate."
+msgstr ""
+"Klicken Sie hier, um zu schaffen ein von der Zertifizierungsstelle "
+"signiertes Serverzertifikat oben angezeigt. Verwenden Sie diese, um die "
+"Informationen in der Betreff-DN des Serverzertifikats ändern."
+
+
 msgid "Third Party Server Certificate"
 msgstr "Third Party Serverzertifikat"
+
+msgid "To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below."
+msgstr ""
+"Um ein von einem Dritten Zertifizierungsstelle signiert Server-Zertifikat "
+"verwenden, müssen Sie zuerst eine Certificate Signing Request (CSR) mit dem "
+"ersten Button. Dies ermöglicht es Ihnen, eine neue CSR, die auf Ihren "
+"Computer heruntergeladen werden zu erstellen. Sie finden diese Datei auf das "
+"Zertifikat-Anbieter Ihrer Wahl zu schaffen, und sie werden es nutzen, um ein "
+"signiertes Server-Zertifikat, das Sie importieren können unter Verwendung "
+"des zweiten Button erstellen."
+
 
 msgid "Create Signature Signing Request"
 msgstr "Erstellen Signature Signing Request"
 
+msgid "Click here to generate and download a new Certificate Signing Request (CSR) to your computer."
+msgstr ""
+"Klicken Sie hier, um zu erzeugen, und laden Sie eine neue Certificate "
+"Signing Request (CSR) auf Ihren Computer."
+
+
 msgid "Import Signed Server Certificate"
 msgstr "Import signiertes Serverzertifikat"
+
+msgid "Click here to upload a signed server certificate that you received from the CSR you created in step one."
+msgstr ""
+"Klicken Sie hier, um ein signiertes Serverzertifikat, das Sie aus der CSR "
+"erhalten Sie im ersten Schritt erstellt hochladen."
+
 
 msgid "Country"
 msgstr "Land"
@@ -1840,20 +2060,65 @@ msgstr "Wählen Sie das Land, in dem Ihre Organisation legal registriert."
 msgid "State/Province"
 msgstr "Staat / Provinz"
 
+msgid "Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate."
+msgstr ""
+"Name des Staates, in der Provinz, Region, Territorium, wo Ihre Organisation "
+"befindet. Bitte geben Sie den vollständigen Namen. Abkürzen nicht."
+
+
 msgid "City/Locality"
 msgstr "Stadt / Stelle"
+
+msgid "Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate."
+msgstr ""
+"Name der Stadt / Ort, in dem Ihre Organisation registriert ist / entfernt. "
+"Bitte buchstabieren Sie den Namen der Stadt / Ortschaft. Abkürzen nicht."
+
 
 msgid "Organization"
 msgstr "Organisation"
 
+msgid "The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."
+msgstr ""
+"Der Name, unter dem Ihr Unternehmen ist gesetzlich registriert. Die "
+"aufgeführten Organisation muss die Rechts Registrant der Domain-Namen in der "
+"Zertifikatsanforderung sein. Wenn Sie wie ein kleines Unternehmen / "
+"Alleininhaber der Einschreibung sind, geben Sie bitte den Namen des "
+"Zertifikats Antragstellers im Bereich Organisation und die DBA "
+"(geschäftliche Tätigkeiten als) Namen in das Feld Organisationseinheit."
+
+
 msgid "Organizational Unit "
 msgstr "Organisationseinheit "
+
+msgid "Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."
+msgstr ""
+"Optional. Verwenden Sie dieses Feld, um zwischen Abteilungen innerhalb einer "
+"Organisation zu unterscheiden. Gegebenenfalls können Sie die DBA "
+"(geschäftliche Tätigkeiten als) Namen in dieses Feld eingeben."
+
 
 msgid "Common Name"
 msgstr "Gemeinsamen Namen"
 
+msgid "The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."
+msgstr ""
+"Die in der (common name) CN-Feld eingegebene Name muss mit dem "
+"vollqualifizierten Domänennamen der Website, für die Sie verwenden werden, "
+"das Zertifikat (example.com) zu sein. Enthalten Sie nicht das http: // oder "
+"https: // Präfixe in Ihrem gemeinsamen Namen. Geben Sie nicht Ihren "
+"persönlichen Namen in diesem Bereich."
+
+
 msgid "Subject Alternative Names"
 msgstr "Subject Alternative Names"
+
+msgid "Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."
+msgstr ""
+"Optional. Verwenden Sie dieses Feld, um eine kommasepariert die einen oder "
+"mehrere alternative Hostnamen oder IP-Adressen, die verwendet werden, um die "
+"Website, für die Sie in der mit dem Zertifikat zugreifen können werden soll."
+
 
 msgid "Generate"
 msgstr "Generieren"
@@ -1873,6 +2138,12 @@ msgstr "Das Feld Organisation darf nicht leer sein"
 msgid "The Common Name field must not be empty"
 msgstr "Das Feld Common Name darf nicht leer sein"
 
+msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgstr ""
+"Certificate Authority Generation erfolgreich abgeschlossen. Klicken Sie auf "
+"OK, um fortzufahren."
+
+
 msgid "Error during Certificate Authority generation.  Click OK to continue."
 msgstr ""
 "Fehler bei der Certificate Authority-Generation. Klicken Sie auf OK, um "
@@ -1881,6 +2152,12 @@ msgstr ""
 
 msgid "Generating server certificate and restarting web server..."
 msgstr "Erzeugen von Server-Zertifikat und dem Neustart Web-Server ..."
+
+msgid "Certificate generation successfully completed. Click OK to return to the main page."
+msgstr ""
+"Certificate Generation erfolgreich abgeschlossen. Klicken Sie auf OK, um zur "
+"Hauptseite zurückzukehren."
+
 
 msgid "Error during certificate generation."
 msgstr "Fehler bei der Zertifikatserstellung."
@@ -1896,6 +2173,12 @@ msgstr "Bitte wählen Sie ein Zertifikat hochladen."
 
 msgid "Uploading server certificate and restarting web server..."
 msgstr "Upload-Server-Zertifikat und dem Neustart Web-Server ..."
+
+msgid "Certificate upload successfully completed. Click OK to return to the main page."
+msgstr ""
+"Certificate Upload erfolgreich abgeschlossen. Klicken Sie auf OK, um zur "
+"Hauptseite zurückzukehren."
+
 
 msgid "Password is too short."
 msgstr "Passwort ist zu kurz."
@@ -2056,6 +2339,16 @@ msgstr "Speichern..."
 msgid "Outgoing Server"
 msgstr "Ausgangsserver"
 
+msgid "Enter an email address to send a test message and then press Send. That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses."
+msgstr ""
+"Geben Sie eine E-Mail-Adresse, um eine Testnachricht zu senden und drücken "
+"Sie dann auf Senden. Das E-Mail-Konto sollte eine E-Mail kurz nach der "
+"Durchführung des Tests zu erhalten. Wenn nicht, kann die E-Mail-"
+"Einstellungen nicht korrekt. <br/> Es wird empfohlen, um zu überprüfen, dass "
+"die E-Mail-Einstellungen zu arbeiten für das Senden von sowohl internen "
+"(Ihre Domäne) und externe E-Mail-Adressen."
+
+
 msgid "Email Test"
 msgstr "Email Test"
 
@@ -2070,6 +2363,14 @@ msgstr "Senden E-Mail ..."
 
 msgid "Outgoing Email Server"
 msgstr "Ausgehende E-Mail-Server"
+
+msgid "The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify a valid SMTP server that will relay mail for the {0} Server."
+msgstr ""
+"Die ausgehende E-Mail-Server-Einstellungen bestimmen, wie die {0} Server "
+"sendet E-Mails, wie Berichte, Quarantäne-Digests usw. <br/> In den meisten "
+"Fällen die Standardeinstellung funktionieren sollte. Wenn nicht, geben Sie "
+"einen gültigen SMTP-Server, E-Mail für das Relais {0} Server."
+
 
 msgid "Send email directly (default)"
 msgstr "Sende Emails direkt (default)"
@@ -2104,8 +2405,21 @@ msgstr "Email Absenderadresse"
 msgid "The {0} Server will send email from this address."
 msgstr "The {0} Server wird Emails von dieser Adresse senden."
 
+msgid "The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect."
+msgstr ""
+"Der Email Test wird eine Email mit den aktuellen Einstellungen an die "
+"angegebene Adresse senden. Wenn die Test Email nicht empfangen wird, sind "
+"Ihre Einstellungen möglicherweise nicht korrekt."
+
+
 msgid "Save Changes?"
 msgstr "Änderungen speichern?"
+
+msgid "Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"
+msgstr ""
+"Ihre aktuellen Einstellungen wurden bislang nicht gespeichert.{0}Möchten Sie "
+"Ihre Einstellungen speichern bevor Sie den Test druchführen?"
+
 
 msgid "Show Detail"
 msgstr "Details"
@@ -2152,6 +2466,12 @@ msgstr "Senden Sie täglich Quarantine Digest-E-Mails"
 msgid "Quarantine Digest Sending Time"
 msgstr "Quarantine Digest Sendezeit"
 
+msgid "Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>"
+msgstr ""
+"Benutzer können auch verlangen Quarantine Digest Emails manuell unter diesem "
+"Link: <b> https: // {0} / Quarantäne / </ b>"
+
+
 msgid "User Quarantines"
 msgstr "Benutzer Quarantänen"
 
@@ -2173,6 +2493,12 @@ msgstr "Datengröße (kB)"
 msgid "Email Quarantine Details for: "
 msgstr "Email Quarantänen Details für: "
 
+msgid "Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined."
+msgstr ""
+"Email Adressen auf dieser Liste werden automatisch in Quarantäne gestellt. "
+"Alle anderen Emails werden markiert und nicht in Quarantäne gestellt."
+
+
 msgid "Quarantinable Addresses"
 msgstr "Unter Quarantäne zu stellende Adressen"
 
@@ -2181,6 +2507,13 @@ msgstr "Unter Quarantäne zu stellende Adressen"
 
 msgid "[enter email address rule]"
 msgstr "[E-Mail Adresse Regel enter]"
+
+msgid "This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest."
+msgstr ""
+"Dies ist eine Liste von Email Adressen, deren Quarantänenübersicht zu einem "
+"anderen Konto weitergeleitet wird. Dies ist üblich für Verteilerlisten, bei "
+"denen nicht die gesamte Liste diese Übersicht erhalten soll."
+
 
 msgid "Quarantine Forwards"
 msgstr "Quarantänen-Weiterleitungen"
@@ -2533,6 +2866,12 @@ msgstr "Blick Lizenz"
 msgid "Licenses"
 msgstr "Lizenzen"
 
+msgid "Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server."
+msgstr ""
+"Lizenzen bestimmen, Anspruch auf bezahlten Anwendungen und Dienste. Klicken "
+"Sie auf Aktualisieren, um die Versöhnung mit dem Lizenzserver zwingen."
+
+
 msgid "The Current list of Licenses available on this Server."
 msgstr "Die aktuelle Liste der Lizenzen auf diesem Server zur Verfügung."
 
@@ -2836,6 +3175,13 @@ msgstr "Loading Device-Mapper ..."
 msgid "Refresh Device Status"
 msgstr "Aktualisieren Gerätestatus"
 
+msgid "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
+msgstr ""
+"Klicken Sie auf ein Gerät, um eine Combo zu öffnen und wählen Sie das "
+"gewünschte Gerät aus der Liste. Wenn ein anderes Gerät gewählt ist die 2-"
+"Geräte sind ausgeschaltet."
+
+
 msgid "Vendor"
 msgstr "Verkäufer"
 
@@ -2845,8 +3191,22 @@ msgstr "Erfrischende Gerätestatus ..."
 msgid "How to map Devices with Interfaces"
 msgstr "Wie Geräte mit Schnittstellen Karte"
 
+msgid "<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched."
+msgstr ""
+"<b> Methode 1: </ b> <b> Drag and Drop </ b> das Gerät an der gewünschten "
+"Schnittstelle <br/> <b> Methode 2: </ b> <b> Klicken Sie auf eine Geräte </ "
+"b >, um eine Combo zu öffnen und wählen Sie das gewünschte Gerät aus der "
+"Liste. Wenn ein anderes Gerät gewählt ist die 2-Geräte sind ausgeschaltet."
+
+
 msgid "Interface configuration"
 msgstr "Schnittstellenkonfiguration"
+
+msgid "Use this page to configure each interface's configuration and its mapping to a physical network card."
+msgstr ""
+"Wählen Sie eine Konfiguration jeder Schnittstelle und deren Zuordnung zu "
+"einer physischen Netzwerkkarte zu konfigurieren."
+
 
 msgid "[enter IPv4 address]"
 msgstr "[IPv4-Adresse eingeben]"
@@ -3076,8 +3436,21 @@ msgstr "Hostname (n)"
 msgid "Local Services"
 msgstr "Lokale Dienstleistungen"
 
+msgid "The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services."
+msgstr ""
+"Die angegebene HTTPS-Port wird von allen Schnittstellen zum lokalen HTTPS-"
+"Server weitergeleitet werden, um Verwaltung und andere Dienstleistungen."
+
+
 msgid "HTTPS port"
 msgstr "HTTPS-Port"
+
+msgid "The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services."
+msgstr ""
+"Die angegebene HTTP-Port wird auf Nicht-WAN-Schnittstellen an den lokalen "
+"HTTP-Server weitergeleitet werden, um Verwaltung, blockpages und andere "
+"Dienstleistungen."
+
 
 msgid "HTTP port"
 msgstr "HTTP-Port"
@@ -3109,6 +3482,12 @@ msgstr "Fehlerbehebung Hafen Forwards"
 msgid "Test 1: Verify pinging the <b>new destination</b>"
 msgstr "Test 1: Stellen Sie sicher, Sie, den <b> neue Ziel </ b>"
 
+msgid "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>"
+msgstr ""
+"Test 2:. Überprüfen Sie den Anschluss an das neue Ziel <br/> <i> Dieser Test "
+"gilt nur für TCP-Port nach vorne </ i>"
+
+
 msgid "Connect Test"
 msgstr "Schließen-Test"
 
@@ -3118,13 +3497,32 @@ msgstr "Test 3: Beobachten Sie Verkehr mit dem Packet-Test"
 msgid "Packet Test"
 msgstr "Packet-Test"
 
+msgid "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}"
+msgstr ""
+"Für weitere Hilfe zur Fehlerbehebung Port nach vorne sehen die <br/> {0} "
+"Port Forward Fehlerbehebung {1}"
+
+
 msgid "Other"
 msgstr "Andere"
+
+msgid "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."
+msgstr ""
+"Port Forward-Regeln Vorwärtseinheiten stimmen mit den konfigurierten "
+"Kriterien von einer öffentlichen IP zu einer IP auf einem internen (NAT'd) "
+"Netzwerk. Die Regeln werden in der Reihenfolge ausgewertet."
+
 
 msgid "The following ports are currently reserved and can not be forwarded:"
 msgstr ""
 "Die folgenden Ports sind zur Zeit reserviert und kann nicht weitergeleitet "
 "werden:"
+
+
+msgid "Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:"
+msgstr ""
+"Verkehr entsprechend der obigen Beschreibung zu jedem Untangle IP bestimmt "
+"wird an die neue Stelle weitergeleitet werden:"
 
 
 msgid "Forward to the following location:"
@@ -3151,6 +3549,13 @@ msgstr "Bis Erweiterte wechseln"
 msgid "NAT Rules"
 msgstr "NAT-Regeln"
 
+msgid "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order."
+msgstr ""
+"NAT-Regeln steuern die Neuschreiben der IP-Quelladresse des Verkehrs "
+"(Network Address Translation). Die Regeln werden in der Reihenfolge "
+"ausgewertet."
+
+
 msgid "Enable NAT Rule"
 msgstr "Enable NAT Rule"
 
@@ -3168,6 +3573,14 @@ msgstr "Bypass-Regeln"
 
 msgid "Bypass"
 msgstr "Umgehungsstraße"
+
+msgid "Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed."
+msgstr ""
+"Bypass-Regeln steuern, welche Datenverkehr wird von den Anwendungen "
+"gescannt. Umgangen Verkehr überspringt Anwendungsverarbeitung. Die Regeln "
+"werden in der Reihenfolge ausgewertet. Sitzungen, die keine Regel erfüllen, "
+"werden nicht umgangen."
+
 
 msgid "Enable Bypass Rule"
 msgstr "Aktivieren Bypass-Regel"
@@ -3196,14 +3609,39 @@ msgstr "Lokale Schnittstelle"
 msgid "[1.2.3.0]"
 msgstr "[1.2.3.0]"
 
+msgid "If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address."
+msgstr ""
+"Falls <b> Next Hop </ b> ist eine IP-Adresse, dass Netzwerk wird über die "
+"angegebene IP-Adresse weitergeleitet werden."
+
+
+msgid "If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface."
+msgstr ""
+"Falls <b> Next Hop </ b> ist eine Schnittstelle, Netzwerk geroutet wird <b> "
+"vor Ort </ b> auf dieser Schnittstelle."
+
+
 msgid " Refresh Routes "
 msgstr " Aktualisieren Routen "
 
 msgid "Routes"
 msgstr "Routen"
 
+msgid "Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important."
+msgstr ""
+"Statische Routen sind globale Routen, wie der Verkehr wird durch Zieladresse "
+"weitergeleitet steuern. Die spezifischen statischen Route für eine bestimmte "
+"Paket genommen wird, ist, um nicht von Bedeutung."
+
+
 msgid "Current Routes"
 msgstr "Aktuelle Routen"
+
+msgid "Current Routes shows the current routing system's configuration and how all traffic will be routed."
+msgstr ""
+"Aktuelle Routes zeigt die aktuelle Routing-Systemkonfiguration und wie der "
+"gesamte Datenverkehr wird weitergeleitet."
+
 
 msgid "Static DNS Entries"
 msgstr "Statische DNS-Einträge"
@@ -3256,6 +3694,13 @@ msgstr "DHCP-Server"
 msgid "Advanced"
 msgstr "Erweiterte"
 
+msgid "Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server."
+msgstr ""
+"Erweiterte Einstellungen erfordern eine sorgfältige Konfiguration. Eine "
+"Fehlkonfiguration kann den ordnungsgemäßen Betrieb und die Sicherheit Ihres "
+"Servers beeinträchtigen."
+
+
 msgid "Options"
 msgstr "Optionen"
 
@@ -3300,6 +3745,13 @@ msgstr "Upload-Bandbreite"
 
 msgid "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload"
 msgstr "Total: {0} kbps {1} Mbit) herunterladen, {2} kbps {3} Mbit) Upload"
+
+msgid "{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."
+msgstr ""
+"{0} Hinweis {1} Beim Aktivieren der QoS gültige Download-Bandbreite und "
+"Upload-Bandbreite Grenzen müssen für alle festgelegt werden WAN-"
+"Schnittstellen."
+
 
 msgid "Upload Reservation"
 msgstr "Reservierung hochladen"
@@ -3466,6 +3918,12 @@ msgstr "Download Test"
 msgid "Network Tests"
 msgstr "Netzwerktests"
 
+msgid "The <b>Connectivity Test</b> verifies a working connection to the Internet."
+msgstr ""
+"Die <b> Verbindungstest </ b> überprüft, eine funktionierende Verbindung zum "
+"Internet."
+
+
 msgid "Unable to complete the Connectivity Test."
 msgstr "Kann den Verbindungstest zu vervollständigen."
 
@@ -3486,6 +3944,12 @@ msgstr "Erfolgreich mit dem Internet verbunden."
 
 msgid "Test Connectivity Result"
 msgstr "Test Connectivity Ergebnis"
+
+msgid "The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"
+msgstr ""
+"Die <b> Ping-Test </ b> kann verwendet werden, um zu testen, dass ein "
+"bestimmter Host oder Client kann angepingt werden kann"
+
 
 msgid "Unable to complete the Ping Test."
 msgstr "Unfähig, die Ping-Test zu beenden."
@@ -3510,6 +3974,12 @@ msgstr "DNS-Test Output"
 
 msgid "Please enter a valid Hostname"
 msgstr "Bitte geben Sie eine gültige Hostnamen"
+
+msgid "The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."
+msgstr ""
+"Die <b> Verbindungstest </ b> überprüft, ob Untangle kann eine TCP-"
+"Verbindung zu einem Port auf dem angegebenen Host oder Client zu öffnen."
+
 
 msgid "Unable to complete Connection test."
 msgstr "Können Sie Verbindungstest zu vervollständigen."
@@ -3540,6 +4010,12 @@ msgstr "Download Testausgang"
 
 msgid "Please enter a valid Url"
 msgstr "Bitte geben Sie eine gültige URL ein"
+
+msgid "The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."
+msgstr ""
+"Die <b> Packet-Test </ b> kann verwendet werden, um Pakete im Netzwerk Draht "
+"zur Fehlerbehebung ansehen zu können."
+
 
 msgid "Unable to complete the Packet Test."
 msgstr "Unfähig, die Packet-Test abzuschließen."
@@ -3577,8 +4053,32 @@ msgstr "Ein HTTPS-Port muss angegeben werden."
 msgid "A HTTP port must be specified."
 msgstr "Ein HTTP-Port muss angegeben werden."
 
+msgid "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."
+msgstr ""
+"QoS ist Enabled. Bitte setzen gültige Download-Bandbreite und Hochladen von "
+"Bandbreitenbegrenzungen in der WAN-Bandbreite für alle WAN-Schnittstellen."
+
+
+msgid "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+"Die Block-All-Regel im Eingangsfilterregeln ist deaktiviert. Dies ist "
+"gefährlich und nicht erlaubt! Lesen Sie die Dokumentation."
+
+
+msgid "The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."
+msgstr ""
+"Die Block-All-Regel im Eingangsfilter-Regeln fehlen. Dies ist gefährlich und "
+"nicht erlaubt! Lesen Sie die Dokumentation."
+
+
 msgid "The Allow SSH rule in Input Filter Rules has been enabled."
 msgstr "Die SSH-Regel zulassen im Eingangsfilter-Regeln aktiviert wurde."
+
+msgid "If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server."
+msgstr ""
+"Wenn das admin / root-Passwort ist schlecht gewählt, kann damit SSH sehr "
+"gefährlich sein und wird die Sicherheit des Servers beeinträchtigen."
+
 
 msgid "Applying Network Settings..."
 msgstr "Anwendung Netzwerkeinstellungen ..."
@@ -3670,6 +4170,13 @@ msgstr "Neustart"
 msgid "Manual Reboot Warning"
 msgstr "Warnung Manueller Neustart"
 
+msgid "The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."
+msgstr ""
+"Der Server ist im Begriff, manuell neu starten. Das wird normale "
+"Netzwerkbetrieb zu unterbrechen, bis die {0} Server beendet automatisch "
+"einen Neustart. Das kann bis zu einigen Minuten dauern."
+
+
 msgid "Manual Reboot Failure Warning"
 msgstr "Fehler Warnung Manueller Neustart"
 
@@ -3691,6 +4198,12 @@ msgstr "Herunterfahren"
 msgid "Manual Shutdown Warning"
 msgstr "Manuelles Herunterfahren Warnung"
 
+msgid "The {0} Server is about to shutdown.  This will stop all network operations."
+msgstr ""
+"Die {0} Server ist im Begriff, Herunterfahren. Dadurch werden alle "
+"Netzwerkoperationen zu beenden."
+
+
 msgid "Manual Shutdown Failure Warning"
 msgstr "Manuelles Herunterfahren Fehler Warnung"
 
@@ -3709,6 +4222,13 @@ msgstr "Starten Sie den Setup-Assistenten."
 msgid "Setup Wizard Warning"
 msgstr "Setup-Assistenten Warnung"
 
+msgid "The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"
+msgstr ""
+"Der Setup-Assistent ist im Begriff, erneut ausgeführt werden. Dies kann die "
+"Neukonfiguration {0} Server und {1} überschreiben Ihre aktuellen "
+"Einstellungen. {2}"
+
+
 msgid "Factory Defaults"
 msgstr "Factory Defaults"
 
@@ -3720,6 +4240,12 @@ msgstr "Zurücksetzen auf Werkseinstellungen"
 
 msgid "Reset to Factory Defaults Warning"
 msgstr "Zurücksetzen auf Werkseinstellungen Achtung"
+
+msgid "This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."
+msgstr ""
+"Dadurch werden alle Einstellungen auf die Werkseinstellungen zurückzusetzen. "
+"Alle aktuellen Einstellungen verloren."
+
 
 msgid "Resetting to factory defaults..."
 msgstr "Zurücksetzen der Werkseinstellungen ..."
@@ -3736,6 +4262,20 @@ msgstr "Herunterladen von Backup ..."
 msgid "Backup to File"
 msgstr "Sichere in Datei"
 
+msgid "Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backup"
+msgstr ""
+"Backup kann die aktuelle Systemkonfiguration in einer Datei auf dem lokalen "
+"Computer für eine spätere Wiederherstellung zu speichern. Der Dateiname wird "
+"mit .backup beenden"
+
+
+msgid "After backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File."
+msgstr ""
+"Nach dem Sichern Ihrer aktuellen Systemkonfiguration in einer Datei können "
+"Sie dann wieder, dass die Konfiguration über diesen Dialog, indem Sie auf "
+"Wiederherstellen aus Datei."
+
+
 msgid "Restore"
 msgstr "Wiederherstellen"
 
@@ -3751,6 +4291,13 @@ msgstr "Die Datei-Wiederherstellungsvorgang fehlgeschlagen."
 msgid "Restore from File"
 msgstr "Wiederherstellung von Datei"
 
+msgid "Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backup"
+msgstr ""
+"Wiederherstellung kann eine frühere Systemkonfiguration auf dem Server aus "
+"einer Sicherungsdatei auf Ihrem lokalen Computer wiederherzustellen. Die "
+"Backup-Dateiname endet mit .backup"
+
+
 msgid "Restore Options"
 msgstr "Wiederherstellungsoptionen"
 
@@ -3759,6 +4306,12 @@ msgstr "Alle Einstellungen."
 
 msgid "Restore all except keep current network settings."
 msgstr "Wiederherstellen alle außer zu halten aktuellen Netzwerkeinstellungen."
+
+msgid "These settings should not be changed unless instructed to do so by support."
+msgstr ""
+"Diese Einstellungen sollten nicht geändert werden, es sei denn, dies wurde "
+"von Unterstützung zu tun."
+
 
 msgid "HTTP"
 msgstr "HTTP"
@@ -3819,6 +4372,12 @@ msgstr "Synchronize Zeit"
 
 msgid "Force Time Synchronization"
 msgstr "Kraft Time Synchronization"
+
+msgid "Forced time synchronization can cause problems if the current date is far in the future."
+msgstr ""
+"Erzwungene Zeitsynchronisation kann Probleme verursachen, wenn das aktuelle "
+"Datum in ferner Zukunft."
+
 
 msgid "A reboot is suggested after time sychronization."
 msgstr "Ein Neustart ist nach der Zeit Synchronisations vorgeschlagen."
@@ -3970,8 +4529,26 @@ msgstr "Registrierung bekommt man folgende Vorteile:"
 msgid "Access to your account on untangle.com"
 msgstr "Zugang zu Ihrem Konto auf untangle.com"
 
+msgid "Manage your licences, renewals, servers, and contact info all from one dashboard."
+msgstr ""
+"Verwalten Sie Ihre Lizenzen, Erneuerungen, Server und Kontaktinformationen "
+"aus einer Instrumententafel."
+
+
 msgid "Easily transfer licences between servers."
 msgstr "Problemlos zwischen Servern übertragen Lizenzen."
+
+msgid "Registration only takes a second and it is required before installing applications."
+msgstr ""
+"Anmeldung dauert nur eine Sekunde und es vor der Installation von "
+"Anwendungen erforderlich ist."
+
+
+msgid "Rest assured, we will never spam you or share your contact information with anyone."
+msgstr ""
+"Seien Sie versichert, wir werden nie Spam oder teilen Sie Ihre Kontaktdaten "
+"mit niemandem."
+
 
 msgid "Continue"
 msgstr "Fortsetzen"
@@ -3985,17 +4562,45 @@ msgstr "Firmenname"
 msgid "Register"
 msgstr "Registrieren"
 
+msgid "Your untangle.com account has subscriptions that are not assigned to any server."
+msgstr "Ihre untangle.com Konto über Abonnements, die keinem Server zugeordnet sind."
+
+msgid "If you wish to assign a subscription to this server visit your account and transfer the subscription to this server."
+msgstr ""
+"Wenn Sie zuordnen möchten ein Abonnement für diesen Server besuchen Sie Ihr "
+"Konto und überweisen Sie den Abonnement für diesen Server."
+
+
+msgid "If you do not wish to do this, you can skip this and do this at any time in the future by visiting your account at untangle.com"
+msgstr ""
+"Wenn Sie nicht wollen, dies zu tun, können Sie diesen Schritt überspringen "
+"und tun dies jederzeit in der Zukunft durch den Besuch Ihr Konto bei "
+"untangle.com"
+
+
 msgid "Open My Account"
 msgstr "Öffnen Sie Ihr Konto"
 
 msgid "Skip"
 msgstr "Überspringen"
 
+msgid "If your {0} appliance came with an activation code to redem your subscription please enter it now. Otherwise simply skip this step."
+msgstr ""
+"Wenn Ihre {0} Gerät kam mit einem Aktivierungscode, um Ihr Abonnement REDEM "
+"geben Sie es jetzt. Ansonsten einfach diesen Schritt überspringen."
+
+
 msgid "Activation Code"
 msgstr "Aktivierungscode"
 
 msgid "Automatically renew my subscription"
 msgstr "Mein Abonnement automatisch verlängert"
+
+msgid "If you opt out of automatic renewal, services and protection will lapse at the end of the subscription period."
+msgstr ""
+"Wenn Sie aus der automatischen Verlängerung entscheiden, werden "
+"Dienstleistungen und Schutz am Ende der Bezugsfrist verfallen."
+
 
 msgid "It is highly recommended that you enable automatic renewal."
 msgstr ""
@@ -4099,8 +4704,20 @@ msgstr "Groß- und Kleinschreibung"
 msgid "Clear Filters"
 msgstr "Filter löschen"
 
+msgid "Filters can be added by clicking on column headers arrow down menu and using Filters menu"
+msgstr ""
+"Filter kann durch Klicken auf die Spaltenüberschriften hinzugefügt werden "
+"arrow down-Menü und mit Filter-Menü"
+
+
 msgid "Clear Grouping"
 msgstr "Klar Gruppierung"
+
+msgid "Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field"
+msgstr ""
+"Gruppierung kann durch einen Klick auf die Spaltenüberschriften verwendet "
+"werden arrow down-Menü und klicken Sie auf Gruppe durch dieses Feld"
+
 
 msgid "Reset View"
 msgstr "Ansicht zurücksetzen"
@@ -4129,8 +4746,25 @@ msgstr "Muss ein Netzwerk in CIDR-Format vorliegen."
 msgid "Must be a comma seperated list of networks in CIDR format."
 msgstr "Muss ein Komma getrennte Liste von Netzwerken im CIDR-Format vorliegen."
 
+msgid "The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."
+msgstr ""
+"Der Port muss eine ganze Zahl zwischen {0} und {1} oder einer der folgenden "
+"Werte sein: jeder, alle, n/a, keiner."
+
+
 msgid "Starting..."
 msgstr "Starte..."
+
+msgid "The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href=\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Where can I find updated skins and new skins?</a>"
+msgstr ""
+"Die aktuelle benutzerdefinierte Oberfläche ist nicht mehr länger kompatibel "
+"und wurde deaktiviert. Vorübergehend wird die Standard Oberfläche benutzt. "
+"Um diese Meldung abzuschalten, die Einstellungen der Oberflächen unter "
+"Konfiguration / Verwaltung verändern. Weitere Informationen wie die "
+"benutzerdefinierte Oberfläche in Ordnung gebracht werden kann: <a href="
+"\"http://wiki.untangle.com/index.php/Skins\" target=\"_blank\">Where can I "
+"find updated skins and new skins?</a>"
+
 
 msgid "Skin Out of Date"
 msgstr "Oberfläche nicht mehr aktuell"
@@ -4140,6 +4774,12 @@ msgstr "Anwendungen"
 
 msgid "My Account"
 msgstr "Mein Konto"
+
+msgid "You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones."
+msgstr ""
+"Sie können auf Ihrem Online-Konto, und installieren Sie Anwendungen, die Sie "
+"bereits gekauft, Gutscheine einlösen oder neue zu kaufen."
+
 
 msgid "Logout"
 msgstr "Abmelden"
@@ -4239,6 +4879,12 @@ msgstr "Möchten Sie die empfohlenen Anwendungen jetzt installieren?"
 
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr "Es gibt ungesicherte Einstellungen, die verloren gehen. Weiter?"
+
+msgid "One or more fields contain invalid values. Settings cannot be saved until these problems are resolved."
+msgstr ""
+"Ein oder mehrere Felder enthalten ungültige Werte. Einstellungen können "
+"nicht gespeichert, bis diese Probleme gelöst werden wird."
+
 
 msgid "Remove"
 msgstr "Entfernen"
@@ -4375,6 +5021,12 @@ msgstr "Weiter {0}"
 msgid "Thanks for choosing {0}!"
 msgstr "Dank für das Wählen {0}"
 
+msgid "This wizard will guide you through the initial setup and configuration of the {0} Server."
+msgstr ""
+"Dieser Assistent führt Sie durch die anfängliche Einrichtung und "
+"Konfiguration der Führung {0} Server."
+
+
 msgid "Click {0}Next{1} to get started."
 msgstr "Klicke {0}Weiter{1} um zu beginnen."
 
@@ -4385,6 +5037,12 @@ msgid "The setup was started before and the last completed step is {0}{1}{2}."
 msgstr ""
 "Das Setup wurde, bevor der Autor und der letzte Schritt abgeschlossen ist "
 "{0} {1} {2}"
+
+
+msgid "To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}."
+msgstr ""
+"Mit Schritt fort {1} {0} {2} füllen das Admin-Kennwort und drücken Sie die "
+"{1} Weiter {2}"
 
 
 msgid "Restart the Setup Wizard"
@@ -4420,6 +5078,13 @@ msgstr "Unfähig, Zeitzone Einstellungen zu speichern"
 msgid "Unable to save the admin password"
 msgstr "Kann Admin Kennwort nicht speichern"
 
+msgid "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced."
+msgstr ""
+"Klicken Sie auf ein Gerät, um eine Combo zu öffnen und wählen Sie das "
+"gewünschte Gerät aus der Liste. Wenn anoter Gerät ausgewählt ist die 2-"
+"Geräte sind swithced."
+
+
 msgid "Identify Network Cards"
 msgstr "Identifiziere Netzwerkkarten"
 
@@ -4434,6 +5099,12 @@ msgstr ""
 
 msgid "Step 1: "
 msgstr "Schritt 1: "
+
+msgid "Plug an active cable into one network card to determine which network card it is."
+msgstr ""
+"Schließen Sie eine aktive Kabel in eine Netzwerkkarte zu ermitteln, welche "
+"Netzwerkkarte ist."
+
 
 msgid "Step 2: "
 msgstr "Schritt 2: "
@@ -4467,6 +5138,12 @@ msgstr "Aktualisiere Netzwerkschnittstellen"
 
 msgid "Missing interfaces"
 msgstr "Fehlende Schnittstellen"
+
+msgid "Untangle requires two or more network cards. Please reinstall with at least two network cards."
+msgstr ""
+"Untangle erfordert zwei oder mehr Netzwerkkarten. Bitte installieren Sie mit "
+"mindestens zwei Netzwerkkarten."
+
 
 msgid "DHCP Status"
 msgstr "DHCP-Status"
@@ -4537,6 +5214,12 @@ msgstr "Internet Status"
 msgid "Warning! Internet tests and DNS tests failed."
 msgstr "Achtung! Internet-Tests und DNS-Tests fehlgeschlagen."
 
+msgid "It is recommended to configure valid internet settings before continuing. Try again?"
+msgstr ""
+"Es wird empfohlen, gültige Internet-Einstellungen konfigurieren, bevor Sie "
+"fortfahren. Versuch es noch einmal?"
+
+
 msgid "Testing Connectivity..."
 msgstr "Verbindungstest..."
 
@@ -4545,6 +5228,12 @@ msgstr "Konfigurieren Sie die interne Netzwerkschnittstelle"
 
 msgid "Router"
 msgstr "Router"
+
+msgid "This is recommended if the external port is plugged into the internet connection. This enables NAT and DHCP."
+msgstr ""
+"Dies wird empfohlen, wenn der externe Port ist in die Internet-Verbindung "
+"angeschlossen ist. Dies ermöglicht NAT und DHCP."
+
 
 msgid "Internal Address"
 msgstr "Interne Adresse"
@@ -4560,6 +5249,12 @@ msgstr "Aktiviere DHCP Server (default)"
 
 msgid "Transparent Bridge"
 msgstr "Transparente Bridge"
+
+msgid "This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP."
+msgstr ""
+"Dies wird benötigt, wenn der externe Port mit einer Firewall oder einem "
+"Router verbunden ist. Dies brückt Intern und Extern und deaktiviert DHCP."
+
 
 msgid "Internal Network"
 msgstr "Internes Netzwerk"
@@ -4579,8 +5274,48 @@ msgstr "Kann lokale Netzwerkeinstellungen nicht speichern"
 msgid "Redirect to the new setup address?"
 msgstr "Umleitung auf die neue Setup-Adresse?"
 
+msgid "When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"
+msgstr ""
+"Beim Umschalten vom Router zum Transparente Bridge das Setup nicht mehr "
+"zugänglich ist mit Interne Adresse. Stattdessen könnte es zugänglich mit der "
+"externen Adresse werden: {0}"
+
+
+msgid "If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."
+msgstr ""
+"Wenn Sie sich an die neue Setup-Adresse umgeleitet werden soll: {0} wenden "
+"Sie sich bitte neu initialisieren Sie Ihre Netzwerkeinstellungen, und "
+"drücken Sie Ja."
+
+
+msgid "Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."
+msgstr ""
+"Durch Klicken auf Nein wird die Umleitung zu verhindern, und werden "
+"versuchen, Setup weiterhin mit der aktuellen Adresse, aber es könnte nicht "
+"mehr zugänglich sein."
+
+
+msgid "When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"
+msgstr ""
+"Beim Umschalten von Transparent Bridge to Router das Setup möglicherweise "
+"nicht mehr zugänglich mit externen Adresse. Stattdessen könnte es zugänglich "
+"mit der internen Adresse werden: {0}"
+
+
 msgid "The Internal Address is changed to: {0}"
 msgstr "Die interne Adresse wird geändert zu: {0}"
+
+msgid "The changes are applied and you will be redirected to the new setup address: {0}"
+msgstr ""
+"Die Änderungen werden übernommen, und Sie werden mit dem neuen Setup-Adresse "
+"umgeleitet werden: {0}"
+
+
+msgid "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again."
+msgstr ""
+"Wenn der neue Standort wird nicht nach 30 Sekunden geladen Sie bitte Ihren "
+"Netzwerkeinstellungen neu zu initialisieren und erneut versuchen."
+
 
 msgid "Configure Automatic Upgrade Settings"
 msgstr "Konfigurieren der automatischen Upgrade-Einstellungen"
@@ -4612,6 +5347,18 @@ msgstr ""
 "werden."
 
 
+msgid "Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically."
+msgstr ""
+"Unterschriften für Virus Blocker, Spam Blocker, Web Filter, usw. sind immer "
+"noch automatisch aktualisiert."
+
+
+msgid "If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings."
+msgstr ""
+"Falls gewünscht, können Sie eine benutzerdefinierte Aktualisierungszeitplan "
+"nach der Installation in den Upgrade-Einstellungen konfiguriert werden."
+
+
 msgid "Automatic Upgrades"
 msgstr "Automatische Upgrades"
 
@@ -4629,6 +5376,12 @@ msgstr "Unfähig, automatischen Upgrade-Einstellungen speichern"
 
 msgid "Congratulations!"
 msgstr "Gratulation!"
+
+msgid "<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications."
+msgstr ""
+"<b> Die {0} Server ist nun konfiguriert. </ b> <br/> Sie sind nun bereit, um "
+"die Anwendungen zu konfigurieren."
+
 
 msgid "Finished"
 msgstr "Fertig"
@@ -4732,6 +5485,12 @@ msgstr "Notiz"
 msgid "Phish Blocker email signatures were last updated"
 msgstr "Phish Blocker E-Mail-Signaturen wurden zuletzt aktualisiert"
 
+msgid "Application Control Lite logs and blocks sessions using custom signatures on the session content."
+msgstr ""
+"Application Control Lite Protokolle und blockiert Sitzungen mit "
+"benutzerdefinierten Signaturen auf der Sitzung Inhalt."
+
+
 msgid "Total Signatures Available"
 msgstr "Insgesamt Signaturen verfügbar"
 
@@ -4740,6 +5499,12 @@ msgstr "Insgesamt Signatures Logging"
 
 msgid "Total Signatures Blocking"
 msgstr "Insgesamt Signatures Blocking"
+
+msgid "Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."
+msgstr ""
+"Vorsicht und Diskretion wird bei der Konfiguration von Application Control "
+"Lite an der das Risiko von schädlichen False Positives beraten."
+
 
 msgid "Signatures"
 msgstr "Unterschriften"
@@ -4771,6 +5536,13 @@ msgstr "HTTP: Hostname"
 msgid "HTTP: Referer"
 msgstr "HTTP: Referer"
 
+msgid "Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet."
+msgstr ""
+"Captive Portal können Administratoren die Netznutzer verlangen, um einen "
+"definierten Prozess abzuschließen, wie Logging in oder Annahme der "
+"Netzwerknutzung Politik, vor dem Zugriff auf das Internet."
+
+
 msgid "Active Sessions"
 msgstr "Aktive Sitzungen"
 
@@ -4795,6 +5567,13 @@ msgstr "Klicken Sie auf das Logout"
 msgid "Capture Rules"
 msgstr "Capture-Regeln"
 
+msgid "Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below."
+msgstr ""
+"Netzzugang basierend auf dem Satz von Regeln unten definiert gesteuert. Um "
+"mehr zu sehen, klicken Sie auf die <b> Hilfe </ b> Schaltfläche unten, zu "
+"lernen."
+
+
 msgid "Rules"
 msgstr "Rules"
 
@@ -4810,11 +5589,29 @@ msgstr "Aktionstyp"
 msgid "Pass Listed Client Addresses"
 msgstr "Geben Eingestellt Client-Adressen"
 
+msgid "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal."
+msgstr ""
+"Geben Eingestellt Client-Adressen ist eine Liste von Client-IP-Adressen, die "
+"nicht dem Captive Portal ausgesetzt sind."
+
+
 msgid "Pass Listed Server Addresses"
 msgstr "Geben Eingestellt Serveradressen"
 
+msgid "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication."
+msgstr ""
+"Geben Eingestellt Serveradressen ist eine Liste der Server-IPs, die nicht "
+"authentifizierten Clients ohne Authentifizierung zugreifen."
+
+
 msgid "Passed Hosts"
 msgstr "Geben Hosts"
+
+msgid "The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers."
+msgstr ""
+"Die Pass-Listen bieten eine schnelle Alternative, um den Zugriff auf "
+"bestimmte Kunden oder auf bestimmte Server zu ermöglichen."
+
 
 msgid "User Authentication"
 msgstr "Benutzerauthentifizierung"
@@ -4843,20 +5640,51 @@ msgstr "Die Leerlaufzeitlimit muss 0 oder größer sein."
 msgid "Idle Timeout (minutes)"
 msgstr "Idle Timeout (Minuten)"
 
+msgid "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable."
+msgstr ""
+"Die Kunden werden nicht authentifizierte nach dieser Leerlaufzeit sein. Sie "
+"können erneut authentifizieren sofort. Verwenden Sie null, um zu "
+"deaktivieren."
+
+
 msgid "Timeout (minutes)"
 msgstr "Timeout (Minuten)"
 
 msgid "The Timeout must be more than 5 minutes and less than 525600 minutes."
 msgstr "Die Timeout müssen mehr als 5 Minuten und weniger als 525600 Minuten."
 
+msgid "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately."
+msgstr ""
+"Die Kunden werden nicht authentifizierte nach dieser Zeitdauer unabhängig "
+"von der Aktivität. Sie können erneut authentifizieren sofort."
+
+
 msgid "Allow Concurrent Logins"
 msgstr "Lassen Sie gleichzeitige Anmeldungen"
+
+msgid "This will allow multiple hosts to use the same username & password concurrently."
+msgstr ""
+"Auf diese Weise können mehrere Hosts, um den gleichen Benutzernamen und "
+"Passwort gleichzeitig zu verwenden."
+
 
 msgid "Allow Cookie-based authentication"
 msgstr "Lassen Sie Cookie-basierende Authentifizierung"
 
+msgid "This will allow authenicated clients to continue to access even after session idle and timeout values."
+msgstr ""
+"Dies ermöglicht authenicated Kunden weiterhin auch nach der Sitzung im "
+"Leerlauf und Zeitlimitwerte zuzugreifen."
+
+
 msgid "Cookie Timeout (minutes)"
 msgstr "Cookie-Timeout (Minuten)"
+
+msgid "The Cookie Timeout must be more than 5 minutes and less than 525600 minutes."
+msgstr ""
+"Die Cookie-Timeout muss mehr als 5 Minuten und weniger als 525.600 Minuten "
+"sein."
+
 
 msgid "Captive Page"
 msgstr "Captive Seite"
@@ -4935,6 +5763,15 @@ msgstr "Verwenden Sie immer HTTPS für die Capture-Seite umleiten"
 
 msgid "Redirect URL"
 msgstr "Redirect-URL"
+
+msgid "<B>NOTE:</B> The Redirect URL field must start with http:// or https:// and allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination."
+msgstr ""
+"<B> HINWEIS: </ B> das Feld URL-Umleitung muss mit http: // oder https: // "
+"und ermöglicht es Ihnen, eine Seite, um unmittelbar nach der "
+"Benutzerauthentifizierung angezeigt werden sollen. Wenn Sie dieses Feld leer "
+"lassen, werden die Nutzer statt in ihre ursprüngliche Ziel weitergeleitet "
+"werden."
+
 
 msgid "Missing Filename"
 msgstr "Fehlende Dateiname"
@@ -5032,8 +5869,20 @@ msgstr "Generierung"
 msgid "Daily Reports"
 msgstr "Tagesberichte"
 
+msgid "Daily Reports covers the previous day. Daily reports will be generated on the selected days."
+msgstr ""
+"Tägliche Reports deckt den Vortag. Tägliche Berichte werden an den "
+"ausgewählten Tagen erzeugt werden."
+
+
 msgid "Weekly Reports"
 msgstr "Wochenberichte"
+
+msgid "Weekly Reports covers the previous week. Weekly reports will be generated on the selected days."
+msgstr ""
+"Wöchentliche Reports deckt in der vergangenen Woche. Wöchentliche Berichte "
+"werden an den ausgewählten Tagen erzeugt werden."
+
 
 msgid "Monthly Reports"
 msgstr "Monatsberichte"
@@ -5049,6 +5898,19 @@ msgstr "Geplante Zeit, um die Berichte zu erstellen"
 
 msgid "Data Retention"
 msgstr "Data Retention"
+
+msgid "Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation."
+msgstr ""
+"Halten Sie die Ereignisdaten für diese Anzahl von Tagen. Je kleiner die "
+"Zahl, desto geringer sind die Speicherplatzanforderungen und "
+"Ressourcenverbrauch während der Berichterstellung."
+
+
+msgid "Depending on the server and network, increasing this value may cause performance issues."
+msgstr ""
+"In Abhängigkeit von der Server- und Netzwerk, eine Erhöhung dieses Werts "
+"kann zu Leistungsproblemen führen."
+
 
 msgid "Data Retention days"
 msgstr "Data Retention Tagen"
@@ -5091,6 +5953,12 @@ msgstr "Größenbeschränkung für Anlagen (MB)"
 
 msgid "Syslog"
 msgstr "Syslog"
+
+msgid "If enabled logged events will be sent in real-time to a remote syslog for custom processing."
+msgstr ""
+"Wenn aktiviert protokollierten Ereignisse werden in Echtzeit auf einen "
+"externen Syslog für benutzerdefinierte Verarbeitung gesendet werden."
+
 
 msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
 msgstr "{0} Disable {1} Syslog Events. (Dies ist die Standardeinstellung.)"
@@ -5143,6 +6011,13 @@ msgstr "Ansicht"
 msgid "Alert Rules"
 msgstr "Warnungsregeln"
 
+msgid " <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur."
+msgstr ""
+" <b> Benachrichtigungsregeln </ b> Prozess alle Ereignisse zu protokollieren "
+"und / oder Alarm Administratoren, wenn spezielle oder nennenswerte "
+"Ereignisse eintreten."
+
+
 msgid "Log Alert"
 msgstr "Log Alarm"
 
@@ -5187,6 +6062,12 @@ msgstr "Update"
 
 msgid "Updating filters..."
 msgstr "Filter werden aktualisiert ..."
+
+msgid "The current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required."
+msgstr ""
+"Die aktuelle Filterliste wurde zuletzt geändert am {1} Sie sind frei, Filter "
+"deaktivieren und neue hinzufügen, aber es ist nicht erforderlich."
+
 
 msgid "Standard Filters"
 msgstr "Standard-Filter"
@@ -5347,8 +6228,383 @@ msgstr "Unknown Verkehr"
 msgid "A TCP connection was detected"
 msgstr "Eine TCP-Verbindung festgestellt wurde"
 
+msgid "This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves."
+msgstr ""
+"Diese Kategorie enthält Regeln, die suchen, und die Steuerung, den Verkehr "
+"bestimmter Anwendungen, die Netzwerkaktivität zu erzeugen. Diese Kategorie "
+"wird verwendet, um verschiedene Aspekte, wie eine Anwendung verhält steuern."
+
+
+msgid "This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources."
+msgstr ""
+"Diese Kategorie enthält URI, User-Agent, DNS und IP-Adresse Regeln, der "
+"bestimmt worden, um Indikatoren für bösartige Aktivitäten zu sein. Diese "
+"Regeln werden auf die Aktivität der Talos-Virus-Sandboxen, öffentliche Liste "
+"von bösartigen URLs und andere Datenquellen."
+
+
+msgid "This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)"
+msgstr ""
+"Diese Kategorie enthält zur Detektion in der Chrome-Browser vorhanden "
+"Schwachstellen. (Dies ist unabhängig von der Browser-WebKit-Kategorie, da "
+"Chrome hat genug Schwachstellen, um heraus in seine eigene gebrochen werden, "
+"und während es die Webkit-Rendering-Engine nutzt, gibt es eine Menge anderer "
+"Features zu Chrome.)"
+
+
+msgid "This category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)"
+msgstr ""
+"Diese Kategorie enthält Erkennung für aktuelle Sicherheitslücken in den "
+"Firefox-Browser, oder Produkte, die die Gecko-Engine haben. (Thunderbird E-"
+"Mail-Client, etc.)"
+
+
+msgid "This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)"
+msgstr ""
+"Diese Kategorie Erkennung für die Internet Explorer-Browser vorhanden "
+"Schwachstellen enthält (Trident oder Tasman-Motoren)"
+
+
+msgid "This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm."
+msgstr ""
+"Diese Kategorie enthält Erkennung von Schwachstellen in der Browser-Engine "
+"WebKit (abgesehen von Chrome) vorliegenden dies beinhaltet Apples Safari, "
+"RIM mobilen Browser, Nokia, KDE, Webkit selbst und Palm."
+
+
+msgid "This category contains detection for vulnerabilities in other browsers not listed above."
+msgstr ""
+"Diese Kategorie enthält Erkennung für Sicherheitslücken in anderen Browsern "
+"nicht oben aufgeführt sind."
+
+
+msgid "This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)"
+msgstr ""
+"Diese Kategorie enthält Erkennung für Sicherheitslücken in Browsern, die mit "
+"Plugins für den Browser umzugehen. (Beispiel: Active-X)"
+
+
+msgid "This category containt any rule that utilizes the replace functionality inside of Snort."
+msgstr ""
+"Diese Kategorie containt jede Regel, die die Funktionalität zu ersetzen "
+"Innenseite Snort verwendet."
+
+
+msgid "When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here."
+msgstr ""
+"Wenn eine Regel ist veraltet oder ersetzt es zu folgenden Themen bewegt. "
+"Regeln werden nie ganz aus dem Regelsatz entfernt werden, werden sie hierher "
+"gezogen."
+
+
+msgid "This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form."
+msgstr ""
+"Dies ist ein älteres Kategorie, die bald als veraltet wird. Diese Kategorie "
+"sieht für Exploits gegen Software in einer generischen Form."
+
+
+msgid "This category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category."
+msgstr ""
+"Diese Kategorie enthält Regeln, die speziell darauf zugeschnitten sind, um "
+"zu erfassen Exploit-Kit Aktivität. Dies gilt nicht für Post Kompromiss "
+"Regeln (wie würde in Indikator-Kompromiss). Dateien, die als Ergebnis der "
+"Besuch einer Exploit-Kit fallen gelassen werden würden in ihren jeweiligen "
+"Datei Kategorie sein."
+
+
+msgid "This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform."
+msgstr ""
+"Diese Kategorie enthält Regeln für Schwachstellen, die gefunden werden oder "
+"werden durch ausführbare Dateien geliefert, unabhängig von der Plattform."
+
+
+msgid "This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked."
+msgstr ""
+"Diese Kategorie enthält Regeln für Schwachstellen, die gefunden werden oder "
+"durch Flash-Dateien geliefert. Entweder komprimiert oder unkomprimiert, "
+"unabhängig von der Liefermethode Plattform angegriffen."
+
+
+msgid "This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)"
+msgstr ""
+"Diese Kategorie enthält Regeln für Schwachstellen, die innerhalb der Bilder, "
+"Dateien zu finden sind. Unabhängig davon, Versandmethode, wobei Software "
+"angegriffen werden, oder die Art des Bildes. (Beispiele hierfür sind: jpg, "
+"png, gif, bmp, etc.)"
+
+
+msgid "This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule."
+msgstr ""
+"Diese Kategorie ist auf Dateien über Dateierweiterung, den Inhalt in der "
+"Datei (Magie) oder Kopfzeile in der Datenverkehr festgestellt zu "
+"identifizieren. Diese Information ist in der Regel verwendet werden, um dann "
+"einen flowbit in einer anderen Regel eingesetzt werden."
+
+
+msgid "This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)"
+msgstr ""
+"Diese Kategorie enthält Regeln für Sicherheitslücken vorliegen innerhalb von "
+"Multimedia-Dateien (MP3, Filme, wmv)"
+
+
+msgid "This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)"
+msgstr ""
+"Diese Kategorie enthält Regeln für die Innenseite der Dateien in das "
+"Microsoft Office-Suite von Software-Schwachstellen gehören, vorhanden. "
+"(Excel, Powerpoint, Word, Visio, Access, Outlook, etc.)"
+
+
+msgid "This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)"
+msgstr ""
+"Diese Kategorie enthält Regeln für die Schwachstellen innerhalb von PDF-"
+"Dateien zu finden. Unabhängig davon, Verfahren zur Erstellung, Lieferung "
+"Methode oder dem Stück Software, die PDF betrifft (zum Beispiel sowohl Adobe "
+"Reader und Foxit Reader)"
+
+
+msgid "This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above."
+msgstr ""
+"Diese Kategorie enthält Regeln für die in einer Datei, die nicht in die "
+"anderen Kategorien passt über vorliegende Schwachstellen."
+
+
+msgid "This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur."
+msgstr ""
+"Diese Kategorie enthält Regeln, die eindeutig nur für den Nachweis einer "
+"positiv kompromittierten System verwendet werden, kann zu Fehlalarmen kommen."
+
+
+msgid "This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules."
+msgstr ""
+"Diese Kategorie enthält Regeln, die eindeutig nur für den Nachweis von "
+"verschleierten Gehalt eingesetzt werden. Wie kodiert JavaScript Regeln."
+
+
+msgid "This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules."
+msgstr ""
+"Diese Kategorie enthält Regeln, die einfach auf der Suche sind für die "
+"einfache Identifizierung Marker der Shellcode im Verkehr. Diese ersetzt die "
+"alten shellcode.rules."
+
+
+msgid "This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent."
+msgstr ""
+"Diese Kategorie enthält Regeln für die Erkennung von Verkehrs zu bekannten "
+"hören Backdoor-Befehl Kanälen bestimmt sind. Wenn ein Stück bösartigen weich "
+"öffnet einen Port und wartet auf eingehende Befehle für die "
+"Steuerfunktionen, wird diese Art der Detektion hier zu sein. Ein einfaches "
+"Beispiel wäre der Nachweis für BackOrifice sein, wie es hört auf einem "
+"bestimmten Port und führt die Befehle geschickt dann."
+
+
+msgid "This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here."
+msgstr ""
+"Diese Kategorie enthält bekannte bösartige Kommando- und Kontrolltätigkeit "
+"für identifizierte Botnet-Verkehr. Dazu gehören Anruf nach Hause, das "
+"Herunterladen von abgelegten Dateien, und Ex-Filtration von Daten. Die "
+"tatsächlichen Befehle vom Master zum Zombie-Typ Sachen ausgestellt wird auch "
+"hier sein."
+
+
+msgid "This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC."
+msgstr ""
+"Diese Kategorie enthält Regeln, die mit Werkzeugen, die als bösartige Natur "
+"sein können befassen. Zum Beispiel LOIC."
+
+
+msgid "This category contains rules that are malware related, but don't fit into one of the other malware categories."
+msgstr ""
+"Diese Kategorie enthält Regeln, die Malware verwandt sind, aber nicht in "
+"eine der anderen Malware-Kategorien passt."
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself."
+msgstr ""
+"Diese Kategorie enthält Regeln, die für die Sicherheitslücken in Linux "
+"basierte Betriebssysteme suchen. Nicht für Browser oder einer anderen "
+"Software auf sie, sondern einfach gegen das Betriebssystem selbst."
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS."
+msgstr ""
+"Diese Kategorie enthält Regeln, die auf Schwachstellen in Solaris basierte "
+"Betriebssysteme suchen. Nicht für irgendwelche Browser oder eine andere "
+"Software auf dem OS."
+
+
+msgid "This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS."
+msgstr ""
+"Diese Kategorie enthält Regeln, die für die Sicherheitsanfälligkeiten in "
+"Windows basierte Betriebssysteme suchen. Nicht für irgendwelche Browser oder "
+"eine andere Software auf dem OS."
+
+
+msgid "This category contains rules that are looking for vulnerabilities in an OS that is not listed above."
+msgstr ""
+"Diese Kategorie enthält Regeln, die nach Schwachstellen suchen, in einem "
+"Betriebssystem, das oben nicht aufgeführt ist."
+
+
+msgid "This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia."
+msgstr ""
+"Diese Kategorie enthält Regeln, die mögliche Verstöße gegen Politik für "
+"Multimedia zu erkennen. Beispiele wie die Erfassung der Nutzung iTunes im "
+"Netzwerk. Dies ist nicht auf Schwachstellen innerhalb von Multimedia-Dateien "
+"gefunden werden, da dies in der Datei-Multimedia zu sein."
+
+
+msgid "This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)"
+msgstr ""
+"Diese Kategorie enthält Regeln für die Erkennung möglicher Verstöße der "
+"Politik auf Unternehmensnetzwerke für die Nutzung von Social Media. (p2p, "
+"Chat, etc.)"
+
+
+msgid "This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first."
+msgstr ""
+"Diese Kategorie ist für Regeln, die die Endnutzer Unternehmenspolitik Knospe "
+"verletzen, können Sie nicht in eine der anderen Politikkategorien ersten "
+"fallen."
+
+
+msgid "This category is for rules that may indicate the presence of spam on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die das Vorhandensein von Spam im Netzwerk "
+"hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die das Vorhandensein des Fingers Protokoll "
+"oder Schwachstellen in den Finger-Protokoll im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die die Anwesenheit des FTP-Protokolls oder "
+"Schwachstellen in das FTP-Protokoll im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die das Vorhandensein von ICMP-Datenverkehr "
+"oder Sicherheitslücken in icmp im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die die Anwesenheit des IMAP-Protokoll oder "
+"Schwachstellen im IMAP-Protokoll im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die die Anwesenheit des pop-Protokoll oder "
+"Schwachstellen in das POP-Protokoll im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die die Anwesenheit des rservices Protokoll "
+"oder Sicherheitslücken in den rservices Protokolle im Netzwerk hindeuten."
+
+
+msgid "This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network."
+msgstr ""
+"Diese Kategorie ist für Regeln, die das Vorhandensein von VoIP-Diensten oder "
+"Sicherheitslücken in den VoIP-Protokoll im Netzwerk hindeuten."
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with adware or spyware."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit PUA oder potenziell unerwünschten "
+"Anwendungen, die mit Adware oder Spyware umzugehen."
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with p2p."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit PUA oder potenziell unerwünschten "
+"Anwendungen, die mit P2P umgehen."
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)"
+msgstr ""
+"Diese Kategorie beschäftigt sich mit PUA oder potenziell unerwünschten "
+"Anwendungen, die mit Symbolleisten auf dem Client-System installiert "
+"umzugehen. (Google Toolbar, Yahoo Toolbar, Hotbar, usw.)"
+
+
+msgid "This category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit PUA oder potenziell unerwünschten "
+"Anwendungen, die nicht in eine der oben dargestellten Kategorien passen."
+
+
+msgid "This category deals with vulnerabilities in or attacks against the Apache Web Server."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe "
+"gegen die Apache Web Server."
+
+
+msgid "This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe "
+"gegen die Microsoft IIS-Webserver."
+
+
+msgid "This category deals with vulnerabilities in or attacks against the Microsoft SQL Server."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe auf "
+"die Microsoft SQL Server."
+
+
+msgid "This category deals with vulnerabilities in or attacks against Oracle's MySQL server."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe "
+"gegen Oracles MySQL-Server."
+
+
+msgid "This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe "
+"gegen Oracle Oracle DB Server."
+
+
+msgid "This category deals with vulnerabilities in or attacks against Web based applications on servers."
+msgstr ""
+"Diese Kategorie beschäftigt sich mit Sicherheitslücken in oder Angriffe auf "
+"Web-basierte Anwendungen auf Servern."
+
+
+msgid "This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself."
+msgstr ""
+"Diese Kategorie enthält Regeln, die Sicherheitslücken in Mail-Server zu "
+"erkennen. (Exchange, Courier). Diese sind getrennt von den "
+"Protokollkategorien, wie die Sache mit dem Verkehr, die zu den Mail-Server "
+"selbst."
+
+
+msgid "This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list."
+msgstr ""
+"Diese Kategorie enthält Regeln, die Schwachstellen in oder Angriffe zu "
+"erkennen gegen Server, die nicht in der obigen Liste aufgeführt sind."
+
+
+msgid " Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."
+msgstr ""
+" Intrusion Prevention nicht konfiguriert ist. Verwenden Sie den Assistenten "
+"zum Konfigurieren Intrusion Prevention."
+
+
 msgid "Run Intrusion Detection/Prevention Setup Wizard"
 msgstr "Run Intrusion Detection / Prevention-Setup-Assistenten"
+
+msgid "{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."
+msgstr ""
+"{0} weiterhin die Standardsignatur Einstellungen über automatische Updates "
+"zu erhalten. Sie sind frei, zu modifizieren und Signaturen hinzuzufügen, "
+"aber es ist nicht erforderlich."
+
 
 msgid "Updates"
 msgstr "Aktuelles"
@@ -5434,8 +6690,20 @@ msgstr "Bereits im Einsatz Variablenname."
 msgid "Intrusion Prevention Setup Wizard"
 msgstr "Intrusion Prevention-Setup-Assistenten"
 
+msgid "You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."
+msgstr ""
+"Sie haben noch keine Konfiguration von Intrusion Prevention beendet. Bitte "
+"führen Sie den Setup-Assistenten erneut."
+
+
 msgid "Intrusion Prevention Warning"
 msgstr "Intrusion Prevention Warning"
+
+msgid "Settings have been changed by rule updater.  Current changes must be discarded."
+msgstr ""
+"Einstellungen sind von der Regel Updater geändert. Aktuelle Änderungen zu "
+"verwerfen."
+
 
 msgid "Saving and creating settings (this may take a few minutes)..."
 msgstr ""
@@ -5452,8 +6720,32 @@ msgstr "Unfähig, die Einstellungen zu speichern"
 msgid "Welcome to the Intrusion Prevention Setup Wizard!"
 msgstr "Willkommen auf der Intrusion Prevention-Setup-Assistenten!"
 
+msgid "Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."
+msgstr ""
+"Intrusion Prevention arbeitet mit Regeln, um mögliche Bedrohungen zu "
+"identifizieren. Ein aktivierter regiert eine Aktion ausführt, entweder "
+"Protokollierung oder blockieren den Verkehr. Nicht alle Regeln sind "
+"notwendig für eine bestimmte Netzwerkumgebung und damit alle von ihnen "
+"können sich negativ auf Ihr Netzwerk."
+
+
+msgid "This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."
+msgstr ""
+"Dieser Assistent wird Ihnen dabei helfen, die entsprechende Menge an Regeln "
+"für Ihr Netzwerk korrekt zu konfigurieren, indem Sie Regel-IDs: classtypes "
+"und Kategorien. Je mehr Sie wählen, desto mehr Regeln aktiviert werden. Auch "
+"hier kann zu viele aktivierte Regeln negativ auf Ihr Netzwerk."
+
+
 msgid "It is highly suggested that you use Recommended values."
 msgstr "Es wird dringend empfohlen, dass Sie Empfehlenswerte zu verwenden."
+
+msgid "WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!"
+msgstr ""
+"WARNUNG: Das Abschließen dieser Setup-Assistent die vorherigen Einstellungen "
+"mit den neuen Einstellungen zu überschreiben. Alle vorherigen Einstellungen "
+"gehen verloren!"
+
 
 msgid "Determining recommended settings..."
 msgstr "Bestimmen empfohlenen Einstellungen ..."
@@ -5470,6 +6762,12 @@ msgstr ""
 msgid "Classtypes"
 msgstr "Classtypes"
 
+msgid "Classtypes are a generalized  grouping for rules, such as attempts to gain user access."
+msgstr ""
+"Classtypes sind eine generali Gruppierung für Regeln, wie Versuche, den "
+"Benutzerzugriff zu erlangen."
+
+
 msgid "Recommended (default)"
 msgstr "Empfohlen (Standard)"
 
@@ -5482,6 +6780,12 @@ msgstr "Keine. Classtypes in ausgewählten Kategorien verwendet werden."
 msgid "Categories"
 msgstr "Kategorien"
 
+msgid "Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."
+msgstr ""
+"Kategorien sind eine andere Regel Gruppierung, die mehrere classtypes wie "
+"VOIP Zugang überspannen kann."
+
+
 msgid "Select by name"
 msgstr "Wählen Sie nach Name"
 
@@ -5493,6 +6797,15 @@ msgstr "Fertig"
 
 msgid "Intrusion Prevention is now configured and enabled."
 msgstr "Intrusion Prevention ist jetzt konfiguriert und aktiviert."
+
+msgid " <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."
+msgstr ""
+" <b> Firewall </ b> ist eine einfache Anwendung entwickelt, um zu blockieren "
+"und Flagge des Netzwerkverkehrs auf der Grundlage einer Reihe von Regeln. Um "
+"mehr zu erfahren klicken Sie auf <b> Hilfe </ b> Schaltfläche unten. <br/> "
+"Routing und Port Forwarding-Funktionalität kann an anderer Stelle gefunden "
+"werden Config-> Netzwerk."
+
 
 msgid "Flag"
 msgstr "Flagge"
@@ -5641,6 +6954,12 @@ msgstr "Block MIME-Typen"
 msgid "Block or flag access to files associated with the specified MIME type."
 msgstr "Block oder Fahne Zugriff auf Dateien mit dem angegebenen MIME-Typ zugeordnet."
 
+msgid "Allow access to the specified site regardless of matching block policies."
+msgstr ""
+"Erlauben Sie den Zugriff auf die angegebene Website unabhängig von passenden "
+"Blockpolitik."
+
+
 msgid "Client IP addresses"
 msgstr "Client-IP-Adressen"
 
@@ -5671,8 +6990,20 @@ msgstr "Beschränken Google Anwendungen"
 msgid "NOTE:"
 msgstr "HINWEIS:"
 
+msgid "must be installed and running with the Inspect Google Traffic configured to Inspect."
+msgstr ""
+"muss installiert und ausgeführt mit dem Untersuchen Google Verkehr "
+"konfiguriert werden, zu inspizieren."
+
+
 msgid "Allowed Domain(s)"
 msgstr "Allowed Domain (s)"
+
+msgid "Specify the comma separated list of domains allowed to access non-search Google applications"
+msgstr ""
+"Geben Sie die durch Kommata getrennte Liste von Domains erlaubt den Zugriff "
+"auf nicht-Suche Google-Anwendungen"
+
 
 msgid "Domain cannot contain URL protocol."
 msgstr "Domain nicht URL-Protokoll enthalten."
@@ -5695,6 +7026,13 @@ msgstr "Permanent und Global"
 msgid "{0} interface"
 msgstr "{0} Schnitt"
 
+msgid "Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation."
+msgstr ""
+"Derzeit WAN Balancer versucht, Datenverkehr über die vorhandenen WAN-"
+"Schnittstellen mit den nachfolgend aufgeführten Verhältnis zu teilen. Um "
+"dieses Verhältnis, klicken Sie auf Verkehrs Allocation zu ändern."
+
+
 msgid "Current Traffic Allocation"
 msgstr "Aktuelle Verkehrs Allocation"
 
@@ -5713,6 +7051,18 @@ msgstr "Was zu Verkehrs Allocation"
 msgid "Traffic Allocation"
 msgstr "Verkehrs Allocation"
 
+msgid "Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr ""
+"Verkehrs Allokation über WAN-Schnittstellen wird durch die Zuweisung einer "
+"relativen Gewicht (1-100) an jede Schnittstelle. Nach der Eingabe des "
+"Gewichts jeder Schnittstelle der resultierende Allokation wird angezeigt. "
+"<br/> Wenn alle WAN-Schnittstellen haben die gleiche Bandbreite ist es am "
+"besten, um das gleiche Gewicht auf alle WAN-Schnittstellen zuzuweisen. Wenn "
+"die WAN-Schnittstellen unterscheiden sich in Bandbreiten geben Sie Zahlen, "
+"die die relative verfügbare Bandbreite zu korrelieren. Zum Beispiel: 15 für "
+"eine 1,5 Mbit / s T1, 60 für eine 6 MBit Link, und 100 für eine 10mbit Link."
+
+
 msgid "Balance"
 msgstr "Balance"
 
@@ -5725,14 +7075,48 @@ msgstr "Destination WAN"
 msgid "Enable Route Rule"
 msgstr "Aktivieren Routen Rule"
 
+msgid "Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings."
+msgstr ""
+"Route Regeln werden verwendet, um bestimmte Sessions zu einer bestimmten WAN-"
+"Schnittstelle zuweisen. Regeln werden in der Reihenfolge ausgewertet und die "
+"WAN-Schnittstelle des ersten passenden Regel zu routen die passende Sitzung "
+"verwendet. Wenn es keine passende Regel oder die Regel für <i> Bilanz </ i> "
+"wird die Sitzung nach den <i> Traffic Allocation </ i> Einstellungen geführt "
+"werden gesetzt."
+
+
 msgid "{0}% of Internet traffic."
 msgstr "{0} der Internet-Verkehr."
+
+msgid "Process HTTPS traffic by SNI (Server Name Indication) information if present"
+msgstr ""
+"Prozess HTTPS-Datenverkehr von SNI (Server Name Indication) Informationen, "
+"falls vorhanden"
+
+
+msgid "Process HTTPS traffic by hostname in server certificate when SNI information not present"
+msgstr ""
+"Prozess HTTPS-Datenverkehr durch den Hostnamen im Serverzertifikat bei SNI "
+"Informationen nicht vorhanden"
+
+
+msgid "Process HTTPS traffic by server IP if both SNI and certificate hostname information are not available"
+msgstr ""
+"Prozess HTTPS-Datenverkehr von Server-IP, wenn sowohl SNI und Zertifikat "
+"hostname Informationen nicht zur Verfügung stehen"
+
 
 msgid "Enforce"
 msgstr "Vollstrecken"
 
 msgid "for Schools."
 msgstr "für Schulen."
+
+msgid "Enter your unique Youtube for Schools indentifier provided by youtube. (Example: Jvagw07BzSxAntTxXxaBcx"
+msgstr ""
+"Geben Sie Ihre einzigartige YouTube für Schulen indentifier von YouTube zur "
+"Verfügung gestellt. (Beispiel: Jvagw07BzSxAntTxXxaBcx"
+
 
 msgid "Enforce safe search on popular search engines"
 msgstr "Erzwingen sicherer Suche auf populären Suchmaschinen"
@@ -5757,6 +7141,12 @@ msgstr "Schlagen Sie eine andere Kategorie"
 
 msgid "Last suggested on"
 msgstr "Zuletzt schlug auf"
+
+msgid "NOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active."
+msgstr ""
+"Hinweis: Dies ist nur ein Vorschlag und kann nicht akzeptiert werden. Wenn "
+"angenommen kann es ein paar Tage dauern, aktiv zu werden."
+
 
 msgid "Suggest"
 msgstr "Vorschlagen"
@@ -5824,6 +7214,12 @@ msgstr "Trennen ..."
 msgid "IPsec Options"
 msgstr "IPsec-Optionen"
 
+msgid "The IPsec Options tab contains common settings that apply to all IPsec traffic."
+msgstr ""
+"Die Registerkarte IPsec-Einstellungen können Sie allgemeine Einstellungen, "
+"die für alle IPSec-Datenverkehr anzuwenden."
+
+
 msgid "Traffic Processing"
 msgstr "Verkehrsverarbeitung"
 
@@ -5833,11 +7229,29 @@ msgstr "Bypass All IPsec-Datenverkehr"
 msgid "IPsec Tunnels"
 msgstr "IPSec-Tunnel"
 
+msgid "The IPsec tunnels list contains all of the secure network tunnels that have been defined."
+msgstr ""
+"Die IPsec-Tunnel Liste enthält alle der sicheren Netzwerktunnel, die "
+"definiert wurden."
+
+
 msgid "Connection Type"
 msgstr "Verbindungstyp"
 
+msgid "(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)"
+msgstr ""
+"(Wir empfehlen die Auswahl <B> Tunnel </ B>, wenn Sie einen besonderen Grund "
+"haben, zu bedienen <B> Transport </ B>)"
+
+
 msgid "Auto Mode"
 msgstr "Auto-Modus"
+
+msgid "(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)"
+msgstr ""
+"(Wählen Sie die <B> Start </ B> für eine immer angeschlossen Tunnel oder <B> "
+"hinzufügen </ B> für die On-Demand-Tunnel)"
+
 
 msgid "External IP"
 msgstr "Externe IP-"
@@ -5890,6 +7304,19 @@ msgstr "Die Anzahl der Sekunden für eine Dead-Peer-Tunnel neu gestartet werden"
 msgid "<B>Authentication and SA/Key Exchange</B>"
 msgstr "<B> Authentifizierung und SA / Key Exchange </ B>"
 
+msgid "Usually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel."
+msgstr ""
+"In der Regel IPsec automatisch das Verschlüsselungsprotokoll mit der "
+"Gegenstelle bei der Erstellung des Tunnels zu verhandeln."
+
+
+msgid "However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below."
+msgstr ""
+"Einige Kollegen erfordern jedoch spezifische Einstellungen. Um bestimmte "
+"Einstellungen zu konfigurieren, aktivieren Manuelle Konfiguration und legen "
+"Sie die entsprechenden Werte unter."
+
+
 msgid "Phase 1 IKE/ISAKMP Manual Configuration"
 msgstr "Phase 1 IKE / ISAKMP Manuelle Konfiguration"
 
@@ -5926,6 +7353,13 @@ msgstr "Standard = 3600 Sekunden, min = 3600, max = 86400"
 msgid "VPN Config"
 msgstr "VPN Config"
 
+msgid "The VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections."
+msgstr ""
+"Die Registerkarte VPN Config enthält Einstellungen verwendet, um den Server "
+"zu IPsec und L2TP Xauth VPN-Client-Verbindungen unterstützen zu "
+"konfigurieren."
+
+
 msgid "Server Configuration"
 msgstr "Server-Konfiguration"
 
@@ -5944,11 +7378,36 @@ msgstr "Benutzerdefinierte DNS-Server 1"
 msgid "Custom DNS Server 2"
 msgstr "Benutzerdefinierte DNS-Server 2"
 
+msgid "<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution."
+msgstr ""
+"<Strong> Hinweis: </ STRONG> Lassen Sie die Benutzerdefinierte DNS Felder "
+"leer, um Clients automatisch konfiguriert, um diese Server für die DNS-"
+"Auflösung verwenden."
+
+
 msgid "IPsec Secret"
 msgstr "IPsec Geheimnis"
 
+msgid "In addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application."
+msgstr ""
+"Zusätzlich zu den IPsec Geheimnis oben konfiguriert ist, müssen VPN-Clients "
+"mit einem gültigen Benutzernamen und Passwort authentifizieren. Die "
+"Benutzerauthentifizierung kann so konfiguriert werden, um entweder das "
+"interne lokale Verzeichnis, oder einen externen RADIUS-Server in der "
+"Directory Connector-Anwendung konfiguriert, zu verwenden."
+
+
 msgid "Server Listen Addresses"
 msgstr "Server Listen Adressen"
+
+msgid "This is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them."
+msgstr ""
+"Dies ist die Liste der IP-Adressen, wo der Server für eingehende VPN-"
+"Verbindungen zu hören. Wenn Sie einen einzelnen WAN-Verbindung haben, werden "
+"Sie in der Regel nur, dass einzelne Adresse zu dieser Liste hinzufügen. Wenn "
+"Sie mehrere WAN-Schnittstellen verfügen, können Sie den Server so "
+"konfigurieren, dass auf jedem zu hören, oder alle von ihnen."
+
 
 msgid "Loading information... Please wait..."
 msgstr "Lädt Informationen ... Bitte warten ..."
@@ -5976,6 +7435,13 @@ msgstr "L2TP Anmelden"
 
 msgid "IPsec Configuration Warning"
 msgstr "IPSec-Konfiguration Warnung"
+
+msgid "One or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended."
+msgstr ""
+"Ein oder mehrere IPsec-Tunnel mit einem Hostnamen in der <B> Remote Host </ "
+"B> Feld konfiguriert ist. Die Verwendung von IP-Adressen anstelle von "
+"Hostnamen für den Remote-Host wird dringend empfohlen."
+
 
 msgid "HTTP: URI"
 msgstr "HTTP: URI"
@@ -6028,6 +7494,12 @@ msgstr "Web Filter: Kategorie Beschreibung"
 msgid "Web Filter: Site is Flagged"
 msgstr "Web Filter: Site wird markiert"
 
+msgid "Application Control detects many different types of network traffic, allowing each to be flagged and/or blocked."
+msgstr ""
+"Application Control erkennt viele verschiedene Arten von Netzwerkverkehr, so "
+"dass jeder zu gekennzeichnet werden und / oder blockiert."
+
+
 msgid "Traffic Statistics"
 msgstr "Verkehrsstatistik"
 
@@ -6076,6 +7548,12 @@ msgstr "Tarpit"
 msgid "Description (click for full text)"
 msgstr "Beschreibung (Klick für Volltext)"
 
+msgid "Application Control rules are used to control traffic post-classification."
+msgstr ""
+"Application Control-Regeln werden verwendet, um Datenverkehr nach der "
+"Klassifizierung zu steuern."
+
+
 msgid "Rule ID"
 msgstr "Regel-ID"
 
@@ -6084,6 +7562,12 @@ msgstr "Erlauben"
 
 msgid "Perform the following action:"
 msgstr "Führen Sie die folgende Aktion:"
+
+msgid "Web Cache provides HTTP content caching.  This status page allows you to monitor overall cache usage and effectiveness."
+msgstr ""
+"Web Cache bietet HTTP-Content-Caching. Diese Statusseite können Sie "
+"allgemeine Cache-Nutzung und Wirksamkeit zu überwachen."
+
 
 msgid "Cache Hit Count"
 msgstr "Cache Besucher-Zähler"
@@ -6106,8 +7590,20 @@ msgstr "System Bypass Count"
 msgid "Clear Cache"
 msgstr "Cache leeren"
 
+msgid "If content stored in the cache somehow becomes stale or corrupt, the cache can be cleared with the "
+msgstr ""
+"Wenn der Inhalt im Cache gespeichert irgendwie ist veraltet oder beschädigt "
+"ist, kann der Cache mit der geklärt werden "
+
+
 msgid "Clearing the cache requires restarting the caching engine. "
 msgstr "Leeren des Cache erfordert einen Neustart des Caching-Engine. "
+
+msgid "This will cause active web sessions to be dropped and may disrupt web traffic for several seconds."
+msgstr ""
+"Dies führt dazu, aktive Web-Sessions, um fallen gelassen werden und können "
+"Web-Traffic für einige Sekunden unterbrechen."
+
 
 msgid "I understand the risks."
 msgstr "Ich verstehe die Risiken."
@@ -6123,6 +7619,12 @@ msgstr "Clearing Cache ..."
 
 msgid "Cache Bypass"
 msgstr "Cache-Bypass"
+
+msgid "The Web Cache Bypass List contains host or domain names that should never be cached."
+msgstr ""
+"Der Web-Cache-Bypass Liste enthält Host-oder Domain-Namen, die nie gecached "
+"werden sollen."
+
 
 msgid "[enter hostname]"
 msgstr "[Hostnamen eingeben]"
@@ -6151,6 +7653,14 @@ msgstr "Gruppen"
 msgid "User Notification API"
 msgstr "User Notification API"
 
+msgid "The User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications."
+msgstr ""
+"Die User Notification API bietet eine Web-basierte app / API, damit Scripts "
+"und Agenten, um die Server-Benutzernamen zu IP-Adresszuordnung, um die "
+"Nutzer richtig zu identifizieren für Policy Manager, Berichte und andere "
+"Anwendungen zu aktualisieren."
+
+
 msgid "Secret Key"
 msgstr "Secret Key"
 
@@ -6162,6 +7672,12 @@ msgstr "Herunterladen Benutzerbenachrichtigung Anmeldeskript"
 
 msgid "Active Directory Connector"
 msgstr "Active Directory Connector"
+
+msgid "This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal."
+msgstr ""
+"Dies ermöglicht es dem Server, um eine Verbindung zu einem {0} Active "
+"Directory Server {1} für die Authentifizierung für Captive Portal."
+
 
 msgid "AD Server IP or Hostname"
 msgstr "AD Server IP oder Hostname"
@@ -6183,6 +7699,12 @@ msgstr "(FQDN wie mycompany.local)"
 
 msgid "Active Directory Organization"
 msgstr "Active Directory-Organisation"
+
+msgid "The {0}Active Directory Test{1} can be used to test that your settings above are correct."
+msgstr ""
+"Die {0} Active Directory-Test {1} kann verwendet werden, um zu testen, dass "
+"Ihre Einstellungen vor korrekt sind."
+
 
 msgid "Active Directory Test"
 msgstr "Active Directory-Test"
@@ -6208,6 +7730,13 @@ msgstr "[irgendein]"
 msgid "RADIUS Connector"
 msgstr "RADIUS-Anschluss"
 
+msgid "This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec."
+msgstr ""
+"Dies ermöglicht es Ihrem Server, um eine Verbindung zu einem {0} RADIUS "
+"Server {1} um die Nutzer für die Nutzung durch Captive Portal und L2TP / "
+"IPsec identifizieren."
+
+
 msgid "RADIUS Server IP or Hostname"
 msgstr "RADIUS Server IP oder Hostname"
 
@@ -6231,6 +7760,20 @@ msgstr "PAP"
 
 msgid "Authentication Method"
 msgstr "Authentifizierungsmethode"
+
+msgid "<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server."
+msgstr ""
+"<BR> <B> WICHTIG: </ B> & nbsp; & nbsp; Bei Verwendung von Windows als "
+"RADIUS-Server ist die beste Sicherheit und Kompatibilität, indem Sie MS-CHAP "
+"v2 erreicht. Bitte stellen Sie auch sicher, dass der MS-CHAP v2-Protokoll "
+"wird für RADIUS-Clients in der Windows-Netzwerkrichtlinienserver aktiviert."
+
+
+msgid "The {0}Radius Test{1} can be used to test that your settings above are correct."
+msgstr ""
+"Die {0} Radius-Test {1} kann verwendet werden, um zu testen, dass Ihre "
+"Einstellungen vor korrekt sind."
+
 
 msgid "RADIUS Test"
 msgstr "RADIUS-Test"
@@ -6280,8 +7823,26 @@ msgstr "Tests fehlgeschlagen"
 msgid "WAN Failover"
 msgstr "WAN-Failover"
 
+msgid "WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs."
+msgstr ""
+"WAN Failover maximiert Ihre Netzwerkverfügbarkeit. Es überwacht den Status "
+"der WAN-Schnittstellen und wieder den Datenverkehr jedes verfügbare WANs."
+
+
+msgid "Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN."
+msgstr ""
+"Tests müssen mit Hilfe der <i> Tests konfiguriert werden </ i> "
+"Registerkarte, um die Konnektivität von jedem WAN zu bestimmen."
+
+
 msgid "WARNING"
 msgstr "WARNUNG"
+
+msgid "There are currently no tests configured. A test must be configured for each WAN."
+msgstr ""
+"Es liegen noch keine Tests konfiguriert. Ein Test muss für jeden WAN "
+"konfiguriert werden."
+
 
 msgid "{0} of 10"
 msgstr "{0} von 10"
@@ -6307,8 +7868,20 @@ msgstr "Geben Sie {0}"
 msgid "Tests"
 msgstr "Tests"
 
+msgid "These tests control how each WAN interface is tested to ensure that it has connectivity to the Internet."
+msgstr ""
+"Diese Tests bestimmen, wie jede der WAN-Schnittstelle wird geprüft, um "
+"sicherzustellen, dass es die Verbindung zum Internet."
+
+
 msgid "There should be one configured test per WAN interface."
 msgstr "Es sollte ein Test pro konfigurierten WAN-Schnittstelle sein."
+
+msgid "These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover."
+msgstr ""
+"Diese Regeln erfordern eine sorgfältige Konfiguration. Schlecht gewählt "
+"Tests wird erheblich die Wirksamkeit der WAN-Failover zu reduzieren."
+
 
 msgid "Press Help to see a further discussion about Failure Detection Tests."
 msgstr "Hilfe, um eine weitere Diskussion über Fehlererkennung Tests zu sehen."
@@ -6316,14 +7889,44 @@ msgstr "Hilfe, um eine weitere Diskussion über Fehlererkennung Tests zu sehen."
 msgid "Test configuration:"
 msgstr "Testkonfiguration:"
 
+msgid "Design a test that likely indicates the connectivity of the chosen WAN interface."
+msgstr ""
+"Entwerfen Sie einen Test, der wahrscheinlich zeigt die Konnektivität des "
+"gewählten WAN-Schnittstelle."
+
+
+msgid "<b>Testing Interval</b> specifies how often this test will run. (Default: 5)"
+msgstr ""
+"<b> Prüfintervall </ b> gibt an, wie oft dieser Test ausgeführt wird. "
+"(Standard: 5)"
+
+
 msgid "Testing Interval"
 msgstr "Prüfintervall"
+
+msgid "<b>Timeout</b> specifies how long the system waits for a response before considering the test failed. (Default: 2)"
+msgstr ""
+"<b> Timeout </ b> gibt an, wie lange das System wartet auf eine Antwort vor "
+"der Prüfung der Test fehlgeschlagen. (Standard: 2)"
+
 
 msgid "Timeout"
 msgstr "Auszeit"
 
+msgid "<b>Failure Threshold</b> specifies how many tests failures (out of 10) are required for this WAN to be considered offline."
+msgstr ""
+"<b> Fehlerschwellenwert </ b> gibt an, wie viele Tests Ausfälle (von 10) "
+"werden benötigt dafür WAN offline betrachtet werden."
+
+
 msgid "Failure Threshold"
 msgstr "Fehlerschwellenwert"
+
+msgid "Choose a destination that likely indicates the connectivity of the chosen WAN interface."
+msgstr ""
+"Wählen Sie eine Destination, die wahrscheinlich zeigt die Konnektivität des "
+"gewählten WAN-Schnittstelle."
+
 
 msgid "The IP of an upstream router at your ISP is recommended."
 msgstr "Die IP eines vorgeschalteten Router bei Ihrem ISP empfohlen."
@@ -6337,10 +7940,22 @@ msgstr "ARP das Standard-Gateway für diese Schnittstelle."
 msgid "Generate DNS requests to the upstream DNS servers."
 msgstr "Generieren Sie DNS-Anfragen an den vorgelagerten DNS-Servern."
 
+msgid "Choose a URL that likely indicates the connectivity of the chosen WAN interface."
+msgstr ""
+"Wählen Sie eine URL, die wahrscheinlich zeigt die Konnektivität des "
+"gewählten WAN-Schnittstelle."
+
+
 msgid "The IP URL of an upstream website near your ISP is recommended."
 msgstr ""
 "Die IP-Adresse eines vorgeschalteten Website in der Nähe von Ihrem ISP "
 "empfohlen."
+
+
+msgid "Using a hostname instead of an IP address URL is <b>not recommended</b> as it requires DNS which may be down."
+msgstr ""
+"Unter Verwendung eines Hostnamens anstelle einer IP-Adresse URL ist <b> "
+"nicht empfohlen </ b>, wie es DNS, die sich möglicherweise erfordert."
 
 
 msgid "URL"
@@ -6369,6 +7984,12 @@ msgstr "Unfähig, Test abgeschlossen."
 
 msgid "Test Results"
 msgstr "Testergebnisse"
+
+msgid "The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports)."
+msgstr ""
+"Die Branding Einstellungen werden benutzt um das Logo und die Kontaktdaten "
+"zu setzen, die von den Benutzern gesehen werden (z.B. bei Berichten)."
+
 
 msgid "Logo"
 msgstr "Logo"
@@ -6406,6 +8027,12 @@ msgstr "Bitte warten bis das Bild hochgeladen wurde..."
 msgid "Upload Logo Succeeded."
 msgstr "Logo Upload erfolgreich."
 
+msgid "Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."
+msgstr ""
+"Logo Upload fehlgeschlagen. Das Logo muss die korrekte Größe und Format "
+"(GIF, PNG oder JPG) haben."
+
+
 msgid "HTTPS: SNI Host Name"
 msgstr "HTTPS: SNI Host Name"
 
@@ -6415,11 +8042,32 @@ msgstr "HTTPS: Certificate Subject"
 msgid "HTTPS: Certificate Issuer"
 msgstr "HTTPS: Zertifikataussteller"
 
+msgid "The HTTPS Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network."
+msgstr ""
+"Das HTTPS-Inspektor ist ein SSL-Entschlüsselungs-Engine, die andere "
+"Anwendungen und Dienste auf Port 443 HTTPS-Datenverkehr wie unverschlüsselte "
+"Port 80 HTTP-Datenverkehr verarbeiten können. Um dies zu tun, generiert die "
+"Anwendung neuer SSL-Zertifikate auf der Fliege, die es verwendet, um eine "
+"der Man-in-the-Middle-Stil Inspektion Verkehr durchzuführen. Um die "
+"Zertifikatssicherheitswarnungen auf den Client-Computern und Geräten zu "
+"vermeiden, sollten Sie das Stammzertifikat herunterladen und es in die Liste "
+"der vertrauenswürdigen Behörden fügen auf jedem Client mit dem Netzwerk "
+"verbunden."
+
+
 msgid "Click here to download the root certificate."
 msgstr "Klicken Sie hier, um das Stammzertifikat herunterladen."
 
 msgid "Block Invalid Traffic"
 msgstr "Ungültige Block Verkehr"
+
+msgid "When the HTTPS Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked."
+msgstr ""
+"Wenn die HTTPS-Inspektor erkennt Nicht-HTTPS-Datenverkehr auf Port 443, wird "
+"es in der Regel diesen Verkehr zu ignorieren und lassen Sie ihn ungehindert "
+"fließen. Wenn Sie dieses Kontrollkästchen aktivieren, werden Nicht-HTTPS-"
+"Datenverkehr statt blockiert."
+
 
 msgid "Server Trust"
 msgstr "Serververtrauen"
@@ -6427,8 +8075,23 @@ msgstr "Serververtrauen"
 msgid "Trust All Server Certificates"
 msgstr "Vertrauen Sie Alle Serverzertifikaten"
 
+msgid "When this check box is enabled, the inspector will blindly trust all server certificates.  When clear, the inspector will only trust server certificates signed by a well known and trusted root certificate authority, or certificates that you have added to the list below."
+msgstr ""
+"Wenn dieses Kontrollkästchen aktiviert ist, wird der Inspektor blind "
+"vertrauen alle Server-Zertifikate. Wenn klar ist, wird der Inspektor nur "
+"vertrauen, Server-Zertifikate von einem bekannten und vertrauenswürdigen "
+"Stammzertifizierungsstelle signiert, oder Zertifikate, die Sie der folgenden "
+"Liste hinzugefügt haben."
+
+
 msgid "Upload Trusted Certificate"
 msgstr "Trusted Certificate Laden"
+
+msgid "<b>NOTE:</b> When uploading or deleting trusted certificates, changes are applied immediately."
+msgstr ""
+"<b> Hinweis: </ b> Beim Hochladen oder Löschen von vertrauenswürdigen "
+"Zertifikaten, werden Änderungen sofort wirksam."
+
 
 msgid "Inspect"
 msgstr "Inspizieren"
@@ -6469,6 +8132,12 @@ msgstr "Bitte geben Sie einen eindeutigen Alias ​​oder Spitzname für das Ze
 msgid "Upload Failure"
 msgstr "Failure hochladen"
 
+msgid "Ignore rules are used to configure traffic which should be ignored by the inspection engine."
+msgstr ""
+"Ignorieren-Regeln verwendet werden, um Verkehr, der von der Kontrollmotors "
+"ignoriert werden sollen konfigurieren."
+
+
 msgid "End of Week"
 msgstr "Ende der Woche"
 
@@ -6505,8 +8174,26 @@ msgstr "Unknown Priorität: {0}"
 msgid "Bandwidth Control Setup Wizard"
 msgstr "Bandwidth Control Setup Wizard"
 
+msgid "You have not finished configuring Bandwidth Control. Please run the Setup Wizard again."
+msgstr ""
+"Sie haben noch keine Konfiguration von Bandbreitenkontrolle abgeschlossen. "
+"Bitte führen Sie den Setup-Assistenten erneut."
+
+
+msgid "Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control."
+msgstr ""
+"Bandbreitenkontrolle ist nicht konfiguriert. Verwenden Sie den Assistenten, "
+"um Bandbreitenkontrolle konfigurieren."
+
+
 msgid "Bandwidth Control is currently disabled."
 msgstr "Bandbreitenkontrolle ist derzeit deaktiviert."
+
+msgid "Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."
+msgstr ""
+"Bandbreitenkontrolle ist aktiviert, aber QoS ist nicht aktiviert. "
+"Bandbreitenkontrolle erfordert QoS aktiviert sein."
+
 
 msgid "Bandwidth Control is currently enabled and running."
 msgstr "Bandbreitenkontrolle momentan aktiviert ist und läuft."
@@ -6519,6 +8206,12 @@ msgstr "Run Bandwidth Control Setup Wizard"
 
 msgid "Bandwidth Monitor"
 msgstr "Bandwidth Monitor"
+
+msgid "The Bandwidth Monitor shows current sessions and each session's current bandwidth usage measured on the selected interface."
+msgstr ""
+"Die Bandwidth Monitor zeigt den aktuellen Sitzungen und aktuelle "
+"Bandbreitennutzung jeder Sitzung gemessen an der ausgewählten Schnittstelle."
+
 
 msgid "Open Bandwidth Monitor"
 msgstr "Offene Bandwidth Monitor"
@@ -6574,6 +8267,18 @@ msgstr "Quota Expiration"
 msgid "Welcome to the Bandwidth Control Setup Wizard!"
 msgstr "Willkommen in der Bandbreitensteuerung Setup-Assistenten!"
 
+msgid "This wizard will help guide you through your initial setup and configuration of Bandwidth Control."
+msgstr ""
+"Mit diesem Assistenten können Sie durch Ihre ursprüngliche Installation und "
+"Konfiguration von Bandbreitenkontrolle."
+
+
+msgid "Bandwidth Control leverages information provided by other applications in the rack."
+msgstr ""
+"Bandbreitenkontrolle nutzt Informationen von anderen Anwendungen im Rack zur "
+"Verfügung gestellt."
+
+
 msgid "Web Filter (non-Lite) provides web site categorization."
 msgstr "Web Filter (nicht-Lite) bietet Website-Kategorisierung."
 
@@ -6598,8 +8303,33 @@ msgstr "Schnittstellen-ID"
 msgid " kbps"
 msgstr " kbps"
 
+msgid "{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."
+msgstr ""
+"{0} Hinweis: {1} Beim Aktivieren der QoS gültige Download-Bandbreite und "
+"Upload-Bandbreite Grenzen müssen für alle festgelegt werden WAN-"
+"Schnittstellen."
+
+
 msgid "Configure WANs download and upload bandwidths"
 msgstr "Konfigurieren WANs Download und Upload-Bandbreiten"
+
+msgid "It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN."
+msgstr ""
+"Es wird vorgeschlagen, diese um 95% bis 100% der tatsächlich gemessene "
+"Bandbreite für jeden WAN verfügbar gesetzt."
+
+
+msgid "WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!"
+msgstr ""
+"ACHTUNG: Diese Einstellungen müssen einigermaßen genau zu sein für "
+"Bandbreitensteuerung einwandfrei funktioniert!"
+
+
+msgid "Please set valid Download Bandwidth and Upload Bandwidth limits for the interface {0}."
+msgstr ""
+"Bitte setzen gültige Download-Bandbreite und Hochladen von "
+"Bandbreitenbegrenzungen für die Schnittstelle {0}"
+
 
 msgid "Configuring WAN..."
 msgstr "Konfigurieren von WAN ..."
@@ -6607,11 +8337,41 @@ msgstr "Konfigurieren von WAN ..."
 msgid "Choose a starting configuration"
 msgstr "Wählen Sie eine Startkonfiguration"
 
+msgid "Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below."
+msgstr ""
+"Mehrere anfänglichen Standardkonfigurationen sind für Bandbreitensteuerung "
+"zur Verfügung. Bitte wählen Sie die Umwelt am besten gefällt Ihnen unten."
+
+
 msgid "Business"
 msgstr "Geschäft"
 
+msgid "This initial configuration provides common settings suitable for most small and medium-sized businesses."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten kleinen und mittleren Unternehmen."
+
+
 msgid "Benefits:"
 msgstr "Vorteile:"
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten in Unternehmen verwendet,"
+
+
+msgid "de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing"
+msgstr ""
+"de-priorisiert den Datenverkehr von gierigen nicht-arbeitsbezogenen "
+"Aktivitäten wie Peer-to-Peer-Filesharing"
+
+
+msgid "de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most"
+msgstr ""
+"de-priorisiert nicht-Echtzeit-Hintergrundverkehr, um zu vermeiden, "
+"verlangsamt Ihre Internet-Verbindung, wenn Sie es am meisten brauchen"
+
 
 msgid "Prioritizes:"
 msgstr "Priorisiert:"
@@ -6625,6 +8385,12 @@ msgstr "interaktive Web-Datenverkehr"
 msgid "De-prioritizes:"
 msgstr "De-priorisiert:"
 
+msgid "non-real-time background services (e.g. Microsoft&reg; updates, backup services)"
+msgstr ""
+"Nicht-Echtzeit-Hintergrunddienste (zB Microsoft & reg; Updates, Backup-"
+"Dienste)"
+
+
 msgid "any detected Peer-to-Peer traffic"
 msgstr "Jede erkannte Peer-to-Peer-Verkehr"
 
@@ -6633,6 +8399,30 @@ msgstr "Alle Web-Traffic in Verletzung der Unternehmenspolitik"
 
 msgid "School"
 msgstr "Schule"
+
+msgid "This initial configuration provides common settings suitable for most School Districts, Elementary through High Schools, or Charter Schools."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten Schulbezirke, Grund über High Schools oder Charter Schools."
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten in Schulen"
+
+
+msgid "prioritizes school-related traffic, such as traffic to Education sites or Search Engines"
+msgstr ""
+"priorisiert schulbezogenen Verkehr, wie Besucher auf Bildungsstätten oder "
+"Suchmaschinen"
+
+
+msgid "de-prioritizes traffic of greedy non-school-related activities such as peer-to-peer file sharing"
+msgstr ""
+"de-priorisiert den Datenverkehr von gierigen nicht-schulischen Aktivitäten "
+"wie Peer-to-Peer-Filesharing"
+
 
 msgid "web traffic to download sites"
 msgstr "Web-Traffic auf Download-Seiten"
@@ -6649,14 +8439,51 @@ msgstr "BitTorrent Nutzung stark begrenzt"
 msgid "College/University"
 msgstr "Lehre / Ausbildung"
 
+msgid "This initial configuration provides common settings suitable for most Community Colleges, Universities, and associated Campus Networks."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten Community Colleges, Universitäten, und die damit verbundenen Campus "
+"Networks."
+
+
+msgid "de-prioritizes traffic of greedy non-school-related activities, peer-to-peer file sharing, or BitTorrent"
+msgstr ""
+"de-priorisiert den Datenverkehr von gierigen nicht-schulischen Zwecken, Peer-"
+"to-Peer-Filesharing oder BitTorrent"
+
+
 msgid "Government"
 msgstr "Regierung"
+
+msgid "This initial configuration provides common settings suitable for most governmental organizations."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten Regierungsorganisationen."
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in government"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten in der Regierung"
+
+
+msgid "de-prioritizes traffic of greedy non-work-related activities, such as peer-to-peer file sharing"
+msgstr ""
+"de-priorisiert den Datenverkehr von gierigen nicht-arbeitsbezogenen "
+"Aktivitäten, wie Peer-to-Peer-Filesharing"
+
 
 msgid "all web traffic in violation of organization's policy"
 msgstr "Alle Web-Traffic in Verletzung der Politik der Organisation"
 
 msgid "Non-Profit"
 msgstr "Non-Profit"
+
+msgid "This initial configuration provides common settings suitable for most charitable and not-for-profit organizations."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten wohltätige und nicht-for-Profit-Organisationen."
+
 
 msgid "saves money by controlling bandwidth"
 msgstr "spart Geld durch Steuern Bandbreite"
@@ -6667,17 +8494,98 @@ msgstr "Alle Web-Traffic in Verletzung Politik der Organisation"
 msgid "Hotel"
 msgstr "Hotel"
 
+msgid "This initial configuration provides common settings suitable for most Hotel and Motels."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten Hotels und Motels."
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used by guests"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten von den Gästen genutzt"
+
+
+msgid "web traffic to business-related sites (Search Engines, Finance, Business/Services, etc)"
+msgstr ""
+"Web-Traffic auf unternehmensbezogenen Webseiten (Suchmaschinen, Finanzen, "
+"Wirtschaft / Dienstleistungen, etc.)"
+
+
 msgid "de-prioritizes traffic of peer-to-peer file sharing"
 msgstr "de-priorisiert den Datenverkehr von Peer-to-Peer-Filesharing"
 
+msgid "de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when it is needed most"
+msgstr ""
+"de-priorisiert nicht-Echtzeit-Hintergrundverkehr, um zu vermeiden, "
+"verlangsamt Ihre Internet-Verbindung, wenn sie am meisten gebraucht wird"
+
+
 msgid "Home"
 msgstr "Zuhause"
+
+msgid "This initial configuration provides common settings suitable for most home users and households."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für die "
+"meisten Heimanwender und Haushalte."
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in households"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten in Haushalten"
+
+
+msgid "prioritizes internet radio and video so that these services run flawlessly while downloads are running"
+msgstr ""
+"priorisiert Internet-Radio und Video, so dass diese Dienste laufen "
+"einwandfrei, während Downloads laufen"
+
+
+msgid "internet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)"
+msgstr ""
+"Internet-Radio (zB Pandora & reg ;, Last.fm <small> <sup> TM </ sup> </ "
+"small>)"
+
+
+msgid "internet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, NetFlix&reg;)"
+msgstr ""
+"Internet-Video (zB YouTube und Ausrichtung ;, Hulu <small> <sup> TM </ sup> "
+"</ small>, Netflix & reg;)"
+
 
 msgid "all web traffic in violation of the household policy"
 msgstr "Alle Web-Datenverkehr unter Verstoß gegen die Haushaltspolitik"
 
 msgid "Metered Internet"
 msgstr "Metered Internet"
+
+msgid "This initial configuration provides common settings suitable for organizations that pay variable rates for bandwidth."
+msgstr ""
+"Diese anfängliche Konfiguration liefert allgemeine Einstellungen für "
+"Organisationen, die variablen Raten zahlen für Bandbreite."
+
+
+msgid "For organizations that have to pay bandwidth rates proportional to bandwidth usage or have significant overage fees, this configuration maximizes bandwidth available to important interactive services, while minimizing bandwidth use for other less important or background tasks."
+msgstr ""
+"Unternehmen, die die Bandbreitenraten proportional zur Bandbreitennutzung zu "
+"zahlen haben oder wesentliche Überdosierung Gebühren, diese Konfiguration "
+"maximiert die Bandbreite zur Verfügung, um wichtige interaktive Dienste, bei "
+"gleichzeitiger Minimierung Nutzung der Bandbreite für andere weniger wichtig "
+"oder Hintergrundaufgaben."
+
+
+msgid "optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in organizations"
+msgstr ""
+"optimiert die Internet-Reaktionsfähigkeit durch Priorisierung Verkehr der "
+"interaktiven Dienste am häufigsten in Organisationen verwendet"
+
+
+msgid "de-prioritizes traffic of non-work-related activities, such as gaming, peer-to-peer file sharing, or online videos"
+msgstr ""
+"de-priorisiert den Datenverkehr von nicht-arbeitsbezogenen Aktivitäten, wie "
+"Spiele, Peer-to-Peer-Tauschbörsen oder Online-Videos"
+
 
 msgid "saves money"
 msgstr "spart Geld"
@@ -6688,6 +8596,12 @@ msgstr "Alle Web-Traffic auf Download-Seiten"
 msgid "This is a basic configuration with no rules set by default."
 msgstr "Dies ist eine Grundkonfiguration ohne Regeln standardmäßig eingestellt."
 
+msgid "This is a good option for users who wish to build their own rules configuration from scratch."
+msgstr ""
+"Dies ist eine gute Wahl für Anwender, die ihre eigenen Regeln Konfiguration "
+"von Grund auf neu aufbauen wollen."
+
+
 msgid "You must select a starting configuration."
 msgstr "Sie müssen eine Startkonfiguration auswählen."
 
@@ -6696,6 +8610,14 @@ msgstr "Konfigurieren von Einstellungen ..."
 
 msgid "Configure Quotas"
 msgstr "Konfigurieren Quoten"
+
+msgid "Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive."
+msgstr ""
+"Quoten für Bandbreite kann für bestimmte Hosts festgelegt werden. Dadurch "
+"können verschiedene Wirte, die zugeteilt werden, eine hohe Bandbreite, "
+"solange es noch innerhalb einer bestimmten Verwendungsquote; jedoch werden "
+"ihre Bandbreite abgebremst werden, wenn deren Verwendung zu hoch ist."
+
 
 msgid "Disable Quotas (default)"
 msgstr "Disable Quotas (default)"
@@ -6711,6 +8633,18 @@ msgstr " Kontrollen, die Gastgeber werden Quoten gegeben."
 
 msgid " (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"
 msgstr " (Beispiel: 192.168.1.1/24 oder 192.168.1.100-192.168.1.200)"
+
+msgid " controls how long a quota lasts (hourly, daily, weekly). The default is Daily."
+msgstr ""
+" steuert, wie lange dauert eine Quote (stündlich, täglich, wöchentlich). Der "
+"Standardwert ist Täglich."
+
+
+msgid " configures the size of the quota given to each host. The default is 1 Gb."
+msgstr ""
+" Konfiguriert die Größe des Kontingents zu jedem Host angegeben. Der "
+"Standardwert ist 1 GB."
+
 
 msgid "Quota Exceeded Priority"
 msgstr "Quote überschritten Priorität"
@@ -6739,6 +8673,13 @@ msgstr "Erfolgreich am gesichert"
 msgid "Last backup failed on"
 msgstr "Letztes Backup fehlgeschlagen auf"
 
+msgid "Configuration Backup automatically saves your configuration settings and sends them to {0} for safe storage. If you need a backup of your configuration settings, contact {1}"
+msgstr ""
+"Configuration Backup speichert automatisch die Konfigurationseinstellungen "
+"und sendet sie an {0} zur sicheren Lagerung. Wenn Sie eine Sicherungskopie "
+"der Konfigurationseinstellungen benötigen, wenden Sie {1}"
+
+
 msgid "Backup Now"
 msgstr "Jetzt sichern"
 
@@ -6766,6 +8707,20 @@ msgstr "keine"
 msgid "Policies"
 msgstr "Richtlinien"
 
+msgid "<b>Policy Manager</b> allows for the creation of multiple racks (also known as policies) and controls which sessions are processed by which racks."
+msgstr ""
+"<b> Policy Manager </ b> ermöglicht die Erstellung von mehreren Racks (auch "
+"als Politik bekannt) und Kontrollen, die Sitzungen werden von welchen Racks "
+"verarbeitet."
+
+
+msgid "For each new session the <b>Rules</b> are evaluated in order and the <b>Target Rack</b> for the first matching rule is used to handle the session."
+msgstr ""
+"Für jede neue Sitzung die <b> Regeln </ b> werden in der Reihenfolge "
+"ausgewertet und das <b> Zielgestänge </ b> für die erste zutreffende Regel "
+"wird verwendet, um die Sitzung zu behandeln."
+
+
 msgid "If no rules match, the First Rack (Id:1) is used to handle the session."
 msgstr ""
 "Wenn keine Regeln entsprechen, die erste Zahnstange (Id: 1) verwendet wird, "
@@ -6783,6 +8738,12 @@ msgstr "Mutter"
 
 msgid "Target Rack"
 msgstr "Zielgestänge"
+
+msgid "Reports application is required for this feature. Please install and enable the Reports application."
+msgstr ""
+"Reports Anwendung ist für diese Funktion erforderlich. Bitte installieren "
+"und aktivieren Sie die Reports-Anwendung."
+
 
 msgid "Current Data"
 msgstr "Aktuelle Daten"
@@ -7414,8 +9375,21 @@ msgstr "Javaclass"
 msgid "{0} Server"
 msgstr "{0} Server"
 
+msgid "The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."
+msgstr ""
+"Der Wiederherstellungsvorgang ausgeführt wird. Das kann einige Minuten "
+"dauern. Der Server kann während dieser Zeit nicht verfügbar sein. Sobald der "
+"Prozess abgeschlossen ist, werden Sie in der Lage, sich erneut anzumelden."
+
+
 msgid "{0} Server Test Message"
 msgstr "{0} Server Test Nachricht"
+
+msgid "This automated message was generated by the {0} Server{1}to confirm that your email settings are correct."
+msgstr ""
+"Diese automatisierte Nachricht wurde vom {0} Server{1} generiert um zu "
+"bestätigen, dass Ihre Email-Einstellungen korrekt sind."
+
 
 msgid "HTTP administration is disabled."
 msgstr "HTTP Verwaltung ist deaktiviert."
@@ -7498,11 +9472,23 @@ msgstr "Ereignisverarbeitung ist hinter"
 msgid "Packet processing recently overloaded."
 msgstr "Paketverarbeitung kurzem überlastet."
 
+msgid "The shield is disabled. This can cause performance and stability problems."
+msgstr ""
+"Der Schirm ist deaktiviert. Dies kann die Leistung und Stabilität zu "
+"Problemen führen."
+
+
 msgid "Route to unreachable address:"
 msgstr "Route zu unerreichbaren Adresse:"
 
 msgid "Running 64-bit with less than 2 gigabytes RAM is not suggested."
 msgstr "64-Bit mit weniger als 2 GB RAM wird nicht vorgeschlagen."
+
+msgid "Currently the number of devices significantly exceeds the number of licensed devices."
+msgstr ""
+"Derzeit ist die Anzahl der Geräte, die Anzahl der lizenzierten Geräten "
+"deutlich übertrifft."
+
 
 msgid "Import failed. Settings must be formatted as a JSON Array."
 msgstr "Import fehlgeschlagen. Einstellungen müssen JSON Array formatiert werden."
@@ -9064,6 +11050,12 @@ msgstr "Eine Zusammenfassung der Captive Portal-Aktivität."
 msgid "Activity Summary"
 msgstr "Activity Summary"
 
+msgid "The top clients that were blocked by Captive Portal because they were not logged in."
+msgstr ""
+"Die Top-Kunden, die von Captive Portal blockiert wurden, da sie nicht "
+"eingeloggt."
+
+
 msgid "The sum of the size of requested web content grouped by domain."
 msgstr ""
 "Die Summe aus der Größe der angeforderten Web-Inhalte von Domain "
@@ -9808,6 +11800,12 @@ msgstr "Virus Blocker FTP Zusammenfassung"
 msgid "Virus Blocker Email Summary"
 msgstr "Virus Blocker Email Zusammenfassung"
 
+msgid "The amount of login, update and logout user notification API events over time."
+msgstr ""
+"Die Höhe der Anmeldung, zu aktualisieren und abmelden "
+"Benutzerbenachrichtigung API Ereignissen über die Zeit."
+
+
 msgid "User Notification API Events"
 msgstr "User Notification API Events"
 
@@ -9861,6 +11859,18 @@ msgstr "Top Hostnamen (von empfangenen Bytes)"
 
 msgid "Top Application (by sent bytes)"
 msgstr "Top-Anwendung (per bytes)"
+
+msgid "The approximate averaged data transfer rate (total, sent, received) over time grouped by session creation time."
+msgstr ""
+"Die ungefähre durchschnittliche Datentransferrate (Gesamt, gesendet, "
+"empfangen) über die Zeit nach Sitzung Erstellungszeit zusammengefasst."
+
+
+msgid "The sum of the data transferred grouped by Application Control application."
+msgstr ""
+"Die Summe der Daten, die von Application Control-Anwendung übertragen "
+"zusammengefasst."
+
 
 msgid "Top Application (by total bytes)"
 msgstr "Top-Anwendung (von insgesamt bytes)"
@@ -9933,6 +11943,12 @@ msgstr "Die Summe der Daten, die von Client-Adresse empfangen zusammengefasst."
 
 msgid "Top Clients (by received bytes)"
 msgstr "Top Clients (von empfangenen Bytes)"
+
+msgid "The amount of successes, and failures of configuration backup over time."
+msgstr ""
+"Die Höhe der Erfolge und Misserfolge der Konfigurationssicherung über die "
+"Zeit."
+
 
 msgid "Backup Usage (all)"
 msgstr "Backup Usage (alle)"
@@ -10110,6 +12126,12 @@ msgstr "Server Status Eventsdescription"
 
 msgid "All sessions that were not bypassed."
 msgstr "Alle Sitzungen, die nicht umgangen wurden."
+
+msgid "Shows when hosts are placed in the penalty box and when the penalty box expires."
+msgstr ""
+"Zeigt, wenn Techniker sind im Strafraum gelegt und wenn die Strafbank "
+"abläuft."
+
 
 msgid "Penalty Box Events"
 msgstr "Penalty Box Events"
@@ -10336,6 +12358,12 @@ msgstr "Alle E-Mail-Sitzungen, die von Virus Blocker gescannt."
 msgid "Events from the user notification API."
 msgstr "Ereignisse aus der Benutzerbenachrichtigung API."
 
+msgid "Events where the failure threshold was exceeded and the WAN was considered offline."
+msgstr ""
+"Veranstaltungen, bei denen die Ausfallschwelle überschritten wurde und die "
+"WAN wurde offline betrachtet."
+
+
 msgid "Outage Events"
 msgstr "Ausfall Events"
 
@@ -10360,17 +12388,50 @@ msgstr "Alle Tests, die zu einem Ausfall geführt."
 msgid "Failed Test Events"
 msgstr "Failed Test Events"
 
+msgid "Events where traffic was blocked due to an underlying problems with the SSL session."
+msgstr ""
+"Veranstaltungen, wo der Verkehr wurde wegen eines zugrunde liegenden "
+"Probleme mit der SSL-Sitzung blockiert."
+
+
 msgid "Abandoned Sessions"
 msgstr "Verlassene Sessions"
 
+msgid "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services."
+msgstr ""
+"Veranstaltungen, wo der Verkehr nicht oder konnte nicht überprüft werden, so "
+"dass der Verkehr wurde komplett ignoriert und nicht durch irgendwelche "
+"Anwendungen oder Dienste analysiert."
+
+
 msgid "Ignored Sessions"
 msgstr "Ignoriert Sessions"
+
+msgid "Events where traffic was blocked because it did not contain a valid HTTPS request, and the Block Invalid Traffic option was enabled."
+msgstr ""
+"Veranstaltungen, wo der Verkehr wurde blockiert weil es nicht eine gültige "
+"HTTPS-Anforderung enthalten, und die Option Sperren Ungültige Verkehr wurde "
+"aktiviert."
+
+
+msgid "Events where traffic was blocked because the server certificate could not be authenticated."
+msgstr ""
+"Veranstaltungen, wo der Verkehr wurde blockiert weil das Server-Zertifikat "
+"konnte nicht authentifiziert werden."
+
 
 msgid "Untrusted Sessions"
 msgstr "Nicht vertrauenswürdige Sessions"
 
 msgid "All sessions detected by HTTPS Inspector."
 msgstr "Alle Sitzungen von HTTPS-Inspektor festgestellt."
+
+msgid "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services."
+msgstr ""
+"Veranstaltungen, wo der Verkehr wurde komplett durch den Inspektor "
+"verarbeitet und der gesamte Verkehr wurde durch all die anderen Anwendungen "
+"und Dienste übergeben."
+
 
 msgid "All sessions processed by Bandwidth Control."
 msgstr "Alle Sitzungen von Bandwidth Control verarbeitet."
@@ -10383,6 +12444,9 @@ msgstr "Priorisiert Sessions"
 
 msgid "All Configuration Backup events."
 msgstr "Alle Konfigurationssicherung Veranstaltungen."
+
+msgid "Lists all sessions with the policy manager rack that handled the session."
+msgstr "Listet alle Sitzungen mit dem Policy Manager-Rack, das die Sitzung behandelt."
 
 msgid "Documents scanned"
 msgstr "Durchsuchte Elemente"
@@ -10491,6 +12555,12 @@ msgstr "Alert!"
 
 msgid "An following event occurred on the"
 msgstr "Eine folgende Ereignis eingetreten ist auf die"
+
+msgid "This is an automated message sent because the event matched the configured Alert Rules."
+msgstr ""
+"Dies ist eine automatisierte Mitteilung gesendet, weil das Ereignis "
+"abgestimmt den konfigurierten Warnungsregeln."
+
 
 msgid "has online access, but no password is set."
 msgstr "hat den Online-Zugriff, aber kein Kennwort festgelegt ist."
@@ -10738,16 +12808,22 @@ msgstr "{0} Virus Blocker"
 msgid "{0}This file was blocked{1} because it contains a virus."
 msgstr ""
 
-msgid "The kind of phish that was found was"
-msgstr ""
-
 msgid "Quarantine Digest"
 msgstr "Quarantänenübersicht"
+
+msgid "was determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  "
+msgstr ""
+
+msgid "The kind of phish that was found was"
+msgstr ""
 
 msgid "active"
 msgstr ""
 
 msgid "inactive"
+msgstr ""
+
+msgid "Shield is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab."
 msgstr ""
 
 msgid "Exceptions"

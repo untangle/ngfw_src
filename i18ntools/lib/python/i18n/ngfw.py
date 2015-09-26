@@ -18,11 +18,14 @@ class Ngfw:
 
     directories = []
 
-    def __init__(self):
+    def __init__(self,base_path=None):
         """
         Initialize
         """
-        self.base_path = Utility.get_base_path(self.path)
+        if base_path == None:
+            self.base_path = Utility.get_base_path(self.path)
+        else:
+            self.base_path = base_path
         self.load()
 
         self.search_paths = []

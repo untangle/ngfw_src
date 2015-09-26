@@ -16,7 +16,7 @@ class PoFile:
     regex_comment = re.compile(r'^\#(.*)')
     regex_msgid = re.compile(r'^msgid\s+\"(.*)\"')
     regex_msgstr = re.compile(r'^msgstr\s+\"(.*)\"')
-    regex_msgstr_continue = re.compile(r'^\"(.*)\"')
+    regex_continue = re.compile(r'^\"(.*)\"')
 
     regex_arguments = re.compile(r'({\d+})')
 
@@ -33,6 +33,8 @@ class PoFile:
             self.file_name = file_name
         else:
             self.build_file_name()
+
+        self.add_record_statistics = {}
 
     def build_file_name(self):
         """
@@ -62,7 +64,7 @@ class PoFile:
             comment_match = re.search(PoFile.regex_comment, line)
             msgid_match = re.search(PoFile.regex_msgid, line)
             msgstr_match = re.search(PoFile.regex_msgstr, line)
-            msgstr_continue_match = re.search(PoFile.regex_msgstr_continue, line)
+            continue_match = re.search(PoFile.regex_continue, line)
 
             if (comment_match or msgid_match) and (record_mode == "msgstr"):
                 if record.msg_id == "" and source_record == None:
@@ -80,7 +82,8 @@ class PoFile:
                 record_mode = "comment"
 
             if msgid_match:
-                record.set_msg_id(msgid_match.group(1))
+                if msgid_match.group(1) != "":
+                    record.add_msg_id(msgid_match.group(1))
                 record_mode = "msgid"
 
             if msgstr_match:
@@ -88,10 +91,13 @@ class PoFile:
                     record.add_msg_str(msgstr_match.group(1))
                 record_mode = "msgstr"
 
-            if msgstr_continue_match:
-                ## !!! if not in msgstr mode, complain
-                record.add_msg_str(msgstr_continue_match.group(1))
-                record_mode = "msgstr"
+            if continue_match:
+                if record_mode == "msgstr":
+                    record.add_msg_str(continue_match.group(1))
+                elif record_mode == "msgid":
+                    record.add_msg_id(continue_match.group(1))
+                else:
+                    print "Unknown continue mode for match: " + continue_match.group(1)
 
         record.set_source_record(source_record)
         self.add_record(record)
@@ -175,10 +181,20 @@ class PoFile:
 
         if replace_index is not False:
             self.records[replace_index] = new_record
+            if not "replace_count" in self.add_record_statistics:
+                self.add_record_statistics["replace_count"] = 0
+            self.add_record_statistics["replace_count"] =+ 1
             return new_record
         elif add_record == True:
             self.records.append(new_record)
+            if not "add_count" in self.add_record_statistics:
+                self.add_record_statistics["add_count"] = 0
+            self.add_record_statistics["add_count"] =+ 1
             return new_record
+        else:
+            if not "ignored_count" in self.add_record_statistics:
+                self.add_record_statistics["ignored_count"] = 0
+            self.add_record_statistics["ignored_count"] =+ 1
 
         if replace_comments == True and replace_comment_index is not False:
             self.records[replace_comment_index].set_comment(new_record.comment)

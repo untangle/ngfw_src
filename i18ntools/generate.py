@@ -17,6 +17,9 @@ sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
@@ -47,7 +50,7 @@ def get_keys(module):
                 for report_field in ngfw.report_fields:
                     if report_field in settings:
                         record = i18n.PoRecord()
-                        record.set_msg_id(settings[report_field])
+                        record.add_msg_id(settings[report_field])
                         record.add_comment(": " + full_file_name)
                         pot.add_record(record)
 

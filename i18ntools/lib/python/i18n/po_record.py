@@ -30,17 +30,17 @@ class PoRecord:
             self.source_file_name = ""
         self.source_record = None
 
-    def set_msg_id(self, msg_id):
+    def add_msg_id(self, msg_id):
         """
         Set message identifier
         """
-        self.msg_id = msg_id
+        self.msg_id += msg_id
 
     def add_msg_str(self, msg_str):
         """
         Add to message str
         """
-        self.msg_str.append(msg_str.decode('utf8'))
+        self.msg_str.append(msg_str)
 
     def replace_msg_str(self, prefix, replace):
         """
@@ -132,9 +132,9 @@ class PoRecord:
         if len(self.msg_str) == 0:
             string_record += "\nmsgstr \"\""
         elif len(self.msg_str) == 1:
-            string_record += "\nmsgstr \"" + self.msg_str[0].encode('utf8') + "\""
+            string_record += "\nmsgstr \"" + self.msg_str[0] + "\""
         else:
             string_record += "\nmsgstr \"\"\n"
             for msg_str in self.msg_str:
-                string_record += "\"" + msg_str.encode('utf8') + "\"" + "\n"
+                string_record += "\"" + msg_str + "\"" + "\n"
         return str(string_record)
