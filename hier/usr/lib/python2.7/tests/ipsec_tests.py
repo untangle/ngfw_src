@@ -10,6 +10,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
+import base64
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -17,6 +18,10 @@ node = None
 tunnelUp = False
 
 # hardcoded for ats testing
+l2tpServerHosts = ["10.111.56.49","10.112.11.53"]
+l2tpClientHost = "10.111.56.33"  # Windows running freeSSHd
+l2tpLocalUser = "test"
+l2tpLocalPassword = "passwd"
 ipsecHost = "10.111.56.57"
 ipsecHostLANIP = "192.168.235.57"
 ipsecHostLAN = "192.168.235.0/24"
@@ -47,8 +52,34 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
 
 def appendTunnel(newTunnel):
     ipsecSettings = node.getSettings()
-    ipsecSettings["tunnels"]["list"].append(newTunnel);
+    ipsecSettings["tunnels"]["list"].append(newTunnel)
+    node.setSettings(ipsecSettings)
+
+def createL2TPconfig(authType="LOCAL_DIRECTORY"):
+    ipsecSettings = node.getSettings()
+    ipsecSettings["authenticationType"] = authType
+    ipsecSettings["virtualAddressPool"] = "198.18.0.0/16"
+    ipsecSettings["virtualSecret"] = "testthis"
+    ipsecSettings["vpnflag"] = True
     node.setSettings(ipsecSettings);
+
+def createLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': [{
+            'username': l2tpLocalUser, 
+            'firstName': '[firstName]', 
+            'lastName': '[lastName]', 
+            'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
+            'expirationTime': 0, 
+            'passwordBase64Hash': base64.b64encode(l2tpLocalPassword),
+            'email': 'test@example.com'
+            },]
+    }
+
+def removeLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': []
+    }
 
 class IPsecTests(unittest2.TestCase):
 
@@ -61,7 +92,7 @@ class IPsecTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, ipsecHostResult
+        global node, ipsecHostResult, l2tpClientHostResult
         tunnelUp = False
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
@@ -69,6 +100,7 @@ class IPsecTests(unittest2.TestCase):
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
            
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -110,6 +142,27 @@ class IPsecTests(unittest2.TestCase):
         ipsecHostLANResult = remote_control.runCommand(("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
         
+    def test_040_windowsL2TPlocalDirectory(self):
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (l2tpClientHostResult != 0):
+            raise unittest2.SkipTest("l2tpClientHostResult not available")
+        if (not wan_IP in l2tpServerHosts):
+            raise unittest2.SkipTest("No paried L2TP client available")
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        createL2TPconfig("LOCAL_DIRECTORY")
+        timeout = 360
+        found = False
+        vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
+        while not found and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            virtUsers = node.getVirtualUsers()
+            for user in virtUsers['list']:
+                if user['clientUsername'] == l2tpLocalUser:
+                    found = True
+        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        assert(found)
+
     @staticmethod
     def finalTearDown(self):
         global node
