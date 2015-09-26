@@ -15,13 +15,18 @@ import base64
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
+nodeAD = None
+nodeDataRD = None
 tunnelUp = False
 
 # hardcoded for ats testing
+radiusHost = "10.112.56.71"
 l2tpServerHosts = ["10.111.56.49","10.112.11.53"]
 l2tpClientHost = "10.111.56.33"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
+l2tpRadiusUser = "normal"
+l2tpRadiusPassword = "passwd"
 ipsecHost = "10.111.56.57"
 ipsecHostLANIP = "192.168.235.57"
 ipsecHostLAN = "192.168.235.0/24"
@@ -81,6 +86,26 @@ def removeLocalDirectoryUser():
         'list': []
     }
 
+def createRadiusSettings():
+    return {
+        "activeDirectorySettings": {
+            "enabled": False, 
+            "superuserPass": "passwd", 
+            "LDAPPort": "389", 
+            "OUFilter": "", 
+            "domain": "adtest.metaloft.com", 
+            "javaClass": "com.untangle.node.adconnector.ActiveDirectorySettings", 
+            "LDAPHost": "", 
+            "superuser": "Administrator"}, 
+        "radiusSettings": {
+            "port": 1812, 
+            "enabled": True, 
+            "authenticationMethod": "CHAP", 
+            "javaClass": "com.untangle.node.adconnector.RadiusSettings", 
+            "server": radiusHost, 
+            "sharedSecret": "chakas"}
+    }
+    
 class IPsecTests(unittest2.TestCase):
 
     @staticmethod
@@ -88,19 +113,30 @@ class IPsecTests(unittest2.TestCase):
         return "untangle-node-ipsec"
 
     @staticmethod
+    def nodeNameAD():
+        return "untangle-node-adconnector"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     def setUp(self):
-        global node, ipsecHostResult, l2tpClientHostResult
+        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
         tunnelUp = False
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        if nodeAD == None:
+            if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
+                print "ERROR: Node %s already installed" % self.nodeNameAD()
+                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+            nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
+            nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
            
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -150,7 +186,7 @@ class IPsecTests(unittest2.TestCase):
             raise unittest2.SkipTest("No paried L2TP client available")
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         createL2TPconfig("LOCAL_DIRECTORY")
-        timeout = 360
+        timeout = 180
         found = False
         vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
         while not found and timeout > 0:
@@ -163,11 +199,39 @@ class IPsecTests(unittest2.TestCase):
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
 
+    def test_050_windowsL2TPRadiusDirectory(self):
+        global nodeAD
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (radiusResult != 0):
+            raise unittest2.SkipTest("No RADIUS server available")
+        if (l2tpClientHostResult != 0):
+            raise unittest2.SkipTest("l2tpClientHostResult not available")
+        if (not wan_IP in l2tpServerHosts):
+            raise unittest2.SkipTest("No paried L2TP client available")
+        # Configure RADIUS settings
+        nodeAD.setSettings(createRadiusSettings())
+        createL2TPconfig("RADIUS_SERVER")
+        timeout = 180
+        found = False
+        vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpRadiusUser,l2tpRadiusPassword), host=l2tpClientHost)
+        while not found and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            virtUsers = node.getVirtualUsers()
+            for user in virtUsers['list']:
+                if user['clientUsername'] == l2tpRadiusUser:
+                    found = True
+        # uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        assert(found)
+
     @staticmethod
     def finalTearDown(self):
-        global node
+        global node, nodeAD
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
+        if nodeAD != None:
+            uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
+            nodeAD = None
 
 test_registry.registerNode("ipsec", IPsecTests)
