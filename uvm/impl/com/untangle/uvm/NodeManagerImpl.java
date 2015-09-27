@@ -73,7 +73,6 @@ public class NodeManagerImpl implements NodeManager
         int i;
 
         // FIXME use version to detect if conversion is needed
-        // FIXME need to fix names in nodes.js
 
         // remove old IPS settings
         oldName = "untangle-node-ips";
@@ -90,6 +89,99 @@ public class NodeManagerImpl implements NodeManager
             String oldStr = oldNames[i];
             String newStr = newNames[i];
             UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f | xargs /bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i ");
+        }
+
+        // rename sitefilter to web-filter
+        oldName = "untangle-node-sitefilter";
+        newName = "untangle-node-web-filter";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
+        newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename webfilter to web-filter-lite
+        oldName = "untangle-node-webfilter";
+        newName = "untangle-node-web-filter-lite";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.web_filter.WebFilterImpl",
+                                 "com.untangle.node.webfilter"};
+        newNames = new String[] {"com.untangle.node.web_filter_lite.WebFilterLiteApp",
+                                 "com.untangle.node.web_filter"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename virusblocker to virus-blocker
+        oldName = "untangle-node-virusblocker";
+        newName = "untangle-node-virus-blocker";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
+                                 "com.untangle.node.virusblocker."        };
+        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
+                                 "com.untangle.node.virus_blocker."};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename clam to virus-blocker-lite
+        oldName = "untangle-node-clam";
+        newName = "untangle-node-virus-blocker-lite";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.clam.ClamNode",
+                                 "com.untangle.node.virusblocker."        };
+        newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp",
+                                 "com.untangle.node.virus_blocker."};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename spamblocker to spam-blocker
+        oldName = "untangle-node-spamblocker";
+        newName = "untangle-node-spam-blocker";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.spamblocker.SpamBlockerNode",
+                                 "com.untangle.node.spam."};
+        newNames = new String[] {"com.untangle.node.spam_blocker.SpamBlockerApp",
+                                 "com.untangle.node.spam_blocker."};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
         }
 
         // rename spamassassin to spam-blocker-lite
@@ -111,14 +203,85 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename spamblocker to spam-blocker
-        oldName = "untangle-node-spamblocker";
-        newName = "untangle-node-spam-blocker";
+        // rename phish to phish-blocker
+        oldName = "untangle-node-phish";
+        newName = "untangle-node-phish-blocker";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.spamblocker.SpamBlockerNode",
-                                 "com.untangle.node.spam."};
-        newNames = new String[] {"com.untangle.node.spam_blocker.SpamBlockerApp",
-                                 "com.untangle.node.spam_blocker."};
+        oldNames = new String[] {"com.untangle.node.phish.PhishNode",
+                                 "com.untangle.node.phish.PhishSettings"};
+        newNames = new String[] {"com.untangle.node.phish_blocker.PhishBlockerApp",
+                                 "com.untangle.node.phish_blocker.PhishBlockerSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename webcache to web-cache
+        oldName = "untangle-node-webcache";
+        newName = "untangle-node-web-cache";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.webcache.WebCacheNode"};
+        newNames = new String[] {"com.untangle.node.web_cache.WebCacheApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename bandwidth to bandwidth-control
+        oldName = "untangle-node-bandwidth";
+        newName = "untangle-node-bandwidth-control";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.bandwidth.BandwidthNodeImpl",
+                                 "com.untangle.node.bandwidth.BandwidthRule",
+                                 "com.untangle.node.bandwidth.BandwidthRuleAction",
+                                 "com.untangle.node.bandwidth.BandwidthRuleMatcher",
+                                 "com.untangle.node.bandwidth.BandwidthSettings"};
+        newNames = new String[] {"com.untangle.node.bandwidth_control.BandwidthControlApp",
+                                 "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                                 "com.untangle.node.bandwidth_control.BandwidthControlSettings"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
+        }
+
+        // rename classd to application-control
+        oldName = "untangle-node-classd";
+        newName = "untangle-node-application-control";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.classd.ClassDNodeImpl",
+                                 "com.untangle.node.classd.ClassDLogicRule",
+                                 "com.untangle.node.classd.ClassDLogicRuleAction",
+                                 "com.untangle.node.classd.ClassDLogicRuleMatcher",
+                                 "com.untangle.node.classd.ClassDProtoRule",
+                                 "com.untangle.node.classd.ClassDProtoRuleAction",
+                                 "com.untangle.node.classd.ClassDSettings"};
+        newNames = new String[] {"com.untangle.node.application_control.ApplicationControlApp",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRule",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
+                                 "com.untangle.node.application_control.ApplicationControlProtoRule",
+                                 "com.untangle.node.application_control.ApplicationControlProtoRuleAction",
+                                 "com.untangle.node.application_control.ApplicationControlSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -151,69 +314,20 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename phish to phish-blocker
-        oldName = "untangle-node-phish";
-        newName = "untangle-node-phish-blocker";
+        // rename https-casing to ssl-inspector
+        oldName = "untangle-casing-https";
+        newName = "untangle-casing-ssl-inspector";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.phish.PhishNode",
-                                 "com.untangle.node.phish.PhishSettings"};
-        newNames = new String[] {"com.untangle.node.phish_blocker.PhishBlockerApp",
-                                 "com.untangle.node.phish_blocker.PhishBlockerSettings"};
-        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
-        dir = new File(dirName);
-        if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
-        }
-
-        // rename adblocker to ad-blocker
-        oldName = "untangle-node-adblocker";
-        newName = "untangle-node-ad-blocker";
-        updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.adblocker.AdBlockerImpl"};
-        newNames = new String[] {"com.untangle.node.ad_blocker.AdBlockerApp"};
-        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
-        dir = new File(dirName);
-        if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
-        }
-
-        // rename clam to virus-blocker-lite
-        oldName = "untangle-node-clam";
-        newName = "untangle-node-virus-blocker-lite";
-        updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.clam.ClamNode",
-                                 "com.untangle.node.virusblocker."        };
-        newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp",
-                                 "com.untangle.node.virus_blocker."};
-        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
-        dir = new File(dirName);
-        if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
-        }
-
-        // rename virusblocker to virus-blocker
-        oldName = "untangle-node-virusblocker";
-        newName = "untangle-node-virus-blocker";
-        updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
-                                 "com.untangle.node.virusblocker."        };
-        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
-                                 "com.untangle.node.virus_blocker."};
+        oldNames = new String[] {"com.untangle.node.https.HttpsNodeImpl",
+                                 "com.untangle.node.https.HttpsRule",
+                                 "com.untangle.node.https.HttpsRuleAction",
+                                 "com.untangle.node.https.HttpsRuleMatcher",
+                                 "com.untangle.node.https.HttpsSettings"};
+        newNames = new String[] {"com.untangle.node.ssl_inspector.SslInspectorApp",
+                                 "com.untangle.node.ssl_inspector.SslInspectorRule",
+                                 "com.untangle.node.ssl_inspector.SslInspectorAction",
+                                 "com.untangle.node.ssl_inspector.SslInspectorMatcher",
+                                 "com.untangle.node.ssl_inspector.SslInspectorSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -246,6 +360,27 @@ public class NodeManagerImpl implements NodeManager
             // rewrite .py files
             UvmContextFactory.context().execManager().execResult("find /usr/share/untangle/web/capture -type f | xargs /bin/sed -e 's/untangle-node-capture/untangle-node-captive-portal/g' -i ");
 
+        }
+
+        // ****************************
+        // nothing changed for firewall
+        // ****************************
+
+        // rename adblocker to ad-blocker
+        oldName = "untangle-node-adblocker";
+        newName = "untangle-node-ad-blocker";
+        updateNodesFile(oldName,newName);
+        oldNames = new String[] {"com.untangle.node.adblocker.AdBlockerImpl"};
+        newNames = new String[] {"com.untangle.node.ad_blocker.AdBlockerApp"};
+        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
+        dir = new File(dirName);
+        if ( dir.exists() && dir.isDirectory() ) {
+            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            for ( i = 0 ; i < oldNames.length ; i++ ) {
+                String oldStr = oldNames[i];
+                String newStr = newNames[i];
+                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            }
         }
 
         // rename reporting to reports
@@ -283,14 +418,12 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename webfilter to web-filter-lite
-        oldName = "untangle-node-webfilter";
-        newName = "untangle-node-web-filter-lite";
+        // rename policy to policy-manager
+        oldName = "untangle-node-policy";
+        newName = "untangle-node-policy-manager";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.web_filter.WebFilterImpl",
-                                 "com.untangle.node.webfilter"};
-        newNames = new String[] {"com.untangle.node.web_filter_lite.WebFilterLiteApp",
-                                 "com.untangle.node.web_filter"};
+        oldNames = new String[] {"com.untangle.node.policy.PolicyManagerImpl"};
+        newNames = new String[] {"com.untangle.node.policy_manager.PolicyManagerApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -302,12 +435,12 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename idps to intrusion-prevention
-        oldName = "untangle-node-idps";
-        newName = "untangle-node-intrusion-prevention";
+        // rename adconnector to directory-connector
+        oldName = "untangle-node-adconnector";
+        newName = "untangle-node-directory-connector";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.idps.IdpsNode"};
-        newNames = new String[] {"com.untangle.node.intrusion_prevention.IntrusionPreventionApp"};
+        oldNames = new String[] {"com.untangle.node.adconnector.DirectoryConnectorImpl"};
+        newNames = new String[] {"com.untangle.node.directory_connector.DirectoryConnectorApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -357,12 +490,16 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename sitefilter to web-filter
-        oldName = "untangle-node-sitefilter";
-        newName = "untangle-node-web-filter";
+        // rename ipsec to ipsec-vpn
+        oldName = "untangle-node-ipsec";
+        newName = "untangle-node-ipsec-vpn";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
-        newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
+        oldNames = new String[] {"com.untangle.node.ipsec.IPsecNodeImpl",
+                                 "com.untangle.node.ipsec.IPsecTunnel",
+                                 "com.untangle.node.ipsec.IPsecSettings"};
+        newNames = new String[] {"com.untangle.node.ipsec_vpn.IpsecVpnApp",
+                                 "com.untangle.node.ipsec_vpn.IpsecVpnTunnel",
+                                 "com.untangle.node.ipsec_vpn.IpsecVpnSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -374,20 +511,16 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename bandwidth to bandwidth-control
-        oldName = "untangle-node-bandwidth";
-        newName = "untangle-node-bandwidth-control";
+        // ***************************
+        // nothing changed for openvpn
+        // ***************************
+
+        // rename idps to intrusion-prevention
+        oldName = "untangle-node-idps";
+        newName = "untangle-node-intrusion-prevention";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.bandwidth.BandwidthNodeImpl",
-                                 "com.untangle.node.bandwidth.BandwidthRule",
-                                 "com.untangle.node.bandwidth.BandwidthRuleAction",
-                                 "com.untangle.node.bandwidth.BandwidthRuleMatcher",
-                                 "com.untangle.node.bandwidth.BandwidthSettings"};
-        newNames = new String[] {"com.untangle.node.bandwidth_control.BandwidthControlApp",
-                                 "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
-                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
-                                 "com.untangle.node.bandwidth_control.BandwidthControlSettings"};
+        oldNames = new String[] {"com.untangle.node.idps.IdpsNode"};
+        newNames = new String[] {"com.untangle.node.intrusion_prevention.IntrusionPreventionApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -399,12 +532,12 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename support to live-support
-        oldName = "untangle-node-support";
-        newName = "untangle-node-live-support";
+        // rename boxbackup to configuration-backup
+        oldName = "untangle-node-boxbackup";
+        newName = "untangle-node-configuration-backup";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.support.SupportImpl"};
-        newNames = new String[] {"com.untangle.node.live_support.LiveSupportApp"};
+        oldNames = new String[] {"com.untangle.node.boxbackup.BoxBackupImpl"};
+        newNames = new String[] {"com.untangle.node.configuration_backup.ConfigurationBackupApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -435,16 +568,12 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename ipsec to ipsec-vpn
-        oldName = "untangle-node-ipsec";
-        newName = "untangle-node-ipsec-vpn";
+        // rename support to live-support
+        oldName = "untangle-node-support";
+        newName = "untangle-node-live-support";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.ipsec.IPsecNodeImpl",
-                                 "com.untangle.node.ipsec.IPsecTunnel",
-                                 "com.untangle.node.ipsec.IPsecSettings"};
-        newNames = new String[] {"com.untangle.node.ipsec_vpn.IpsecVpnApp",
-                                 "com.untangle.node.ipsec_vpn.IpsecVpnTunnel",
-                                 "com.untangle.node.ipsec_vpn.IpsecVpnSettings"};
+        oldNames = new String[] {"com.untangle.node.support.SupportImpl"};
+        newNames = new String[] {"com.untangle.node.live_support.LiveSupportApp"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -456,59 +585,7 @@ public class NodeManagerImpl implements NodeManager
             }
         }
 
-        // rename classd to application-control
-        oldName = "untangle-node-classd";
-        newName = "untangle-node-application-control";
-        updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.classd.ClassDNodeImpl",
-                                 "com.untangle.node.classd.ClassDLogicRule",
-                                 "com.untangle.node.classd.ClassDLogicRuleAction",
-                                 "com.untangle.node.classd.ClassDLogicRuleMatcher",
-                                 "com.untangle.node.classd.ClassDProtoRule",
-                                 "com.untangle.node.classd.ClassDProtoRuleAction",
-                                 "com.untangle.node.classd.ClassDSettings"};
-        newNames = new String[] {"com.untangle.node.application_control.ApplicationControlApp",
-                                 "com.untangle.node.application_control.ApplicationControlLogicRule",
-                                 "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
-                                 "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
-                                 "com.untangle.node.application_control.ApplicationControlProtoRule",
-                                 "com.untangle.node.application_control.ApplicationControlProtoRuleAction",
-                                 "com.untangle.node.application_control.ApplicationControlSettings"};
-        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
-        dir = new File(dirName);
-        if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
-        }
 
-        // rename https-casing to ssl-inspector
-        oldName = "untangle-casing-https";
-        newName = "untangle-casing-ssl-inspector";
-        updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.https.HttpsNodeImpl",
-                                 "com.untangle.node.https.HttpsRule",
-                                 "com.untangle.node.https.HttpsRuleAction",
-                                 "com.untangle.node.https.HttpsRuleMatcher",
-                                 "com.untangle.node.https.HttpsSettings"};
-        newNames = new String[] {"com.untangle.node.ssl_inspector.SslInspectorApp",
-                                 "com.untangle.node.ssl_inspector.SslInspectorRule",
-                                 "com.untangle.node.ssl_inspector.SslInspectorAction",
-                                 "com.untangle.node.ssl_inspector.SslInspectorMatcher",
-                                 "com.untangle.node.ssl_inspector.SslInspectorSettings"};
-        dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
-        dir = new File(dirName);
-        if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
-        }
     }
 
     private void updateNodesFile(String oldName, String newName)
