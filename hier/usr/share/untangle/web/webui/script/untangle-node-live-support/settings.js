@@ -20,35 +20,35 @@ Ext.define('Webui.untangle-node-live-support.settings', {
         this.panelSupport = Ext.create('Ext.panel.Panel',{
                 name: 'Support',
                 helpSource: 'live_support_support',
-                title: this.i18n._('Support'),
+                title: i18n._('Support'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
                     xtype: 'fieldset'
                 },
                 items: [{
-                    title: this.i18n._('Live Support'),
-                    html: Ext.String.format(this.i18n._("This {0} Server is entitled to Live Support.<br/>"), rpc.companyName)
+                    title: i18n._('Live Support'),
+                    html: Ext.String.format(i18n._("This {0} Server is entitled to Live Support.<br/>"), rpc.companyName)
                 },{
                     xtype: 'button',
                     margin: '0 0 50 20',
-                    text: this.i18n._('Get Support!'),
+                    text: i18n._('Get Support!'),
                     name: 'Get Support',
                     iconCls: 'action-icon',
                     handler: Ext.bind(function() {
                         Ung.Main.openSupportScreen();
                     }, this)
                 },{
-                    title: this.i18n._('Support Information'),
+                    title: i18n._('Support Information'),
                     defaults: {
                         xtype: 'displayfield',
                         labelWidth: 50
                     },
                     items: [{
-                        fieldLabel: this.i18n._("UID"),
+                        fieldLabel: i18n._("UID"),
                         value: serverUID
                     }, {
-                        fieldLabel: this.i18n._("Build"),
+                        fieldLabel: i18n._("Build"),
                         value: fullVersionAndRevision
                     }]
                 }]
