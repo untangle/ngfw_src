@@ -8,7 +8,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
         fieldSet.insert(0,[{
             //HTTPS options
             xtype: "checkbox",
-            boxLabel: this.i18n._("Process HTTPS traffic by SNI (Server Name Indication) information if present"),
+            boxLabel: i18n._("Process HTTPS traffic by SNI (Server Name Indication) information if present"),
             hideLabel: true,
             name: "scan_https_sni",
             checked: this.settings.enableHttpsSni,
@@ -30,7 +30,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
             }
         },{
             xtype: "checkbox",
-            boxLabel: this.i18n._("Process HTTPS traffic by hostname in server certificate when SNI information not present"),
+            boxLabel: i18n._("Process HTTPS traffic by hostname in server certificate when SNI information not present"),
             hideLabel: true,
             margin: '0 0 5 20',
             id: "scan_https_sni_cert_fallback",
@@ -53,7 +53,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
             }
         },{
             xtype: "checkbox",
-            boxLabel: this.i18n._("Process HTTPS traffic by server IP if both SNI and certificate hostname information are not available"),
+            boxLabel: i18n._("Process HTTPS traffic by server IP if both SNI and certificate hostname information are not available"),
             hideLabel: true,
             margin: '0 0 5 40',
             id: "scan_https_sni_ip_fallback",
@@ -70,7 +70,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
         },{
             //Youtube for Schools
             xtype: "checkbox",
-            boxLabel: this.i18n._("Enforce") + ' Youtube&#153; ' + this.i18n._("for Schools."),
+            boxLabel: i18n._("Enforce") + ' Youtube&#153; ' + i18n._("for Schools."),
             hideLabel: true,
             name: "Enforce Youtube for Schools",
             checked: this.settings.enforceYoutubeForSchools,
@@ -107,7 +107,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
         },{
             //Safe search
             xtype: "checkbox",
-            boxLabel: this.i18n._("Enforce safe search on popular search engines"),
+            boxLabel: i18n._("Enforce safe search on popular search engines"),
             hideLabel: true,
             name: "Enforce safe search",
             checked: this.settings.enforceSafeSearch,
@@ -130,7 +130,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
             hidden: this.settings.unblockMode == "None",
             items: [{
                 xtype: "checkbox",
-                boxLabel: this.i18n._("Require Password"),
+                boxLabel: i18n._("Require Password"),
                 hideLabel: true,
                 checked: this.settings.unblockPasswordEnabled,
                 listeners: {
@@ -184,7 +184,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
         //Clear cache button at the end.
         fieldSet.add({
             xtype: "button",
-            text: this.i18n._("Clear Category URL Cache."),
+            text: i18n._("Clear Category URL Cache."),
             handler: Ext.bind(this.clearHostCache, this )
         });
         return this.panelAdvanced;
@@ -200,7 +200,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
             },
             items: [{
                 xtype: 'button',
-                text: this.i18n._("Site Lookup"),
+                text: i18n._("Site Lookup"),
                 iconCls: 'test-icon',
                 name: "sitelookup",
                 handler: Ext.bind(function() {
@@ -208,7 +208,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                 }, this)
             },{
                 xtype: 'displayfield',
-                value: this.i18n._("Search for a site's category"),
+                value: i18n._("Search for a site's category"),
                 style: {
                     marginLeft: '10px'
                 }
@@ -254,7 +254,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                 width: 500,
                 height: 350,
                 modal: true,
-                title: this.i18n._('Site Lookup'),
+                title: i18n._('Site Lookup'),
                 closeAction: 'hide',
                 items: {
                     xtype: 'panel',
@@ -264,14 +264,14 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                         items: [{
                             xtype: 'displayfield',
                             style: { marginBottom: '10px' },
-                            value: this.i18n._("Type the site's URL to find its category"),
+                            value: i18n._("Type the site's URL to find its category"),
                             width: 400
                         },{
                             xtype: 'textfield',
                             name: 'URL',
                             id: 'sitelookup-site',
                             allowBlank: false,
-                            fieldLabel: this.i18n._('Site URL'),
+                            fieldLabel: i18n._('Site URL'),
                             width: 400,
                             listeners: {
                                 "blur": {
@@ -288,12 +288,12 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                         },{
                             id: 'sitelookup-category',
                             xtype: 'displayfield',
-                            fieldLabel: this.i18n._("Category"),
+                            fieldLabel: i18n._("Category"),
                             hidden: true
                         },{
                             id: 'sitelookup-suggest',
                             xtype: 'checkbox',
-                            boxLabel:  this.i18n._("Suggest a different category"),
+                            boxLabel:  i18n._("Suggest a different category"),
                             hidden: true,
                             listeners: {
                                 "change": {
@@ -307,7 +307,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                                             if( lastDate ){
                                                 Ext.getCmp( 'sitelookup-suggest-last')
                                                     .setVisible( true )
-                                                    .setValue(this.i18n._("Last suggested on") + ": " + this.i18n.timestampFormat(lastDate));
+                                                    .setValue(i18n._("Last suggested on") + ": " + i18n.timestampFormat(lastDate));
                                             }
                                         }
                                     }, this)
@@ -319,7 +319,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                             hidden: true,
                             items: [{
                                 xtype: 'displayfield',
-                                value: this.i18n._("NOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active."),
+                                value: i18n._("NOTE: This is only a suggestion and may not be accepted. If accepted it may take a few days to become active."),
                                 style: {
                                     marginBottom: '10px'
                                 }
@@ -347,7 +347,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
 
                 buttons: [{
                     id: 'sitelookup-search-button',
-                    text: this.i18n._("Search"),
+                    text: i18n._("Search"),
                     disabled: false,
                     handler: Ext.bind(function() {
                         Ext.getCmp( 'sitelookup-suggest-button' ).setVisible( false );
@@ -376,7 +376,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                     }, this)
                 },{
                     id: 'sitelookup-suggest-button',
-                    text: this.i18n._("Suggest"),
+                    text: i18n._("Suggest"),
                     hidden: true,
                     handler: Ext.bind(function() {
                         var url = Ext.getCmp('sitelookup-site');
@@ -389,8 +389,8 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                             .setVisible( true )
                             .setValue(
                                 ( result == category.getValue() ) ?
-                                    this.i18n._("Suggestion submitted.") :
-                                    this.i18n._("Unable to submit suggestion.  Try again later.")
+                                    i18n._("Suggestion submitted.") :
+                                    i18n._("Unable to submit suggestion.  Try again later.")
                             );
                         var sitelookupSuggestions = Ext.state.Manager.get( 'siteLookup-sites' );
                         if( typeof( sitelookupSuggestions) == 'undefined' ){
@@ -400,7 +400,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                         Ext.state.Manager.set( 'siteLookup-sites', sitelookupSuggestions );
                     }, this)
                 },{
-                    text: this.i18n._("Close"),
+                    text: i18n._("Close"),
                     handler: Ext.bind(function() {
                         this.sitelookupMessageBox.destroy();
                         this.sitelookupMessageBox = null;
@@ -415,20 +415,20 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
     },
 
     clearHostCache: function() {
-        Ext.MessageBox.wait( this.i18n._( "Clearing Host Cache..." ), this.i18n._( "Please Wait" ));
+        Ext.MessageBox.wait( i18n._( "Clearing Host Cache..." ), i18n._( "Please Wait" ));
         this.getRpcNode().clearCache( Ext.bind(this.completeClearHostCache, this ), true);
     },
 
     completeClearHostCache: function( result, exception ) {
         if( Ung.Util.handleException(exception, Ext.bind(function() {
-                Ext.MessageBox.alert(this.i18n._("Error Clearing Host Cache."), this.i18n._("There was an error clearing the host cache, please try again."));
+                Ext.MessageBox.alert(i18n._("Error Clearing Host Cache."), i18n._("There was an error clearing the host cache, please try again."));
             }, this ))) {
             return;
         }
 
         Ext.MessageBox.show({
-            title: this.i18n._( "Cleared Host Cache" ),
-            msg: this.i18n._( "The Host Cache was cleared succesfully." ),
+            title: i18n._( "Cleared Host Cache" ),
+            msg: i18n._( "The Host Cache was cleared succesfully." ),
             buttons: Ext.MessageBox.OK,
             icon: Ext.MessageBox.INFO
         });
