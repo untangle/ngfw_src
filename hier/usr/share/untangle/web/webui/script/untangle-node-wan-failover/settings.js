@@ -27,7 +27,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         var interfaceList = Ung.Util.getWanList();
         for ( i = 0 ; i < interfaceList.length ; i++ ) {
             if(!testMap[interfaceList[i][0]]) {
-                warningArr.push(Ext.String.format( this.i18n._( "Warning: The <i>{0}</i> needs a test configured!" ), interfaceList[i][1]));
+                warningArr.push(Ext.String.format( i18n._( "Warning: The <i>{0}</i> needs a test configured!" ), interfaceList[i][1]));
             }
         }
         return warningArr.join("<br/>");
@@ -42,8 +42,8 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            title: this.i18n._("WAN Status"),
-            qtip: this.i18n._("This shows the current status of each WAN Interface."),
+            title: i18n._("WAN Status"),
+            qtip: i18n._("This shows the current status of each WAN Interface."),
             recordJavaClass: "com.untangle.node.wan_failover.WanStatus",
             dataFn: this.getRpcNode().getWanStatus,
             fields: [{
@@ -63,31 +63,31 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             }],
             columns: [{
                 dataIndex: "interfaceId",
-                header: this.i18n._("Interface ID"),
+                header: i18n._("Interface ID"),
                 width: 100
             },{
                 dataIndex: "interfaceName",
-                header: this.i18n._("Interface Name"),
+                header: i18n._("Interface Name"),
                 width: 130
             },{
                 dataIndex: "systemName",
-                header: this.i18n._("System Name"),
+                header: i18n._("System Name"),
                 width: 100
             },{
                 dataIndex: "online",
-                header: this.i18n._("Online Status"),
+                header: i18n._("Online Status"),
                 width: 100
             },{
                 dataIndex: "totalTestsRun",
-                header: this.i18n._("Current Tests Count"),
+                header: i18n._("Current Tests Count"),
                 width: 150
             },{
                 dataIndex: "totalTestsPassed",
-                header: this.i18n._("Tests Passed"),
+                header: i18n._("Tests Passed"),
                 width: 100
             },{
                 dataIndex: "totalTestsFailed",
-                header: this.i18n._("Tests Failed"),
+                header: i18n._("Tests Failed"),
                 width: 100
             }]
         });
@@ -106,21 +106,21 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel', {
             name: 'Status',
             helpSource: 'wan_failover_status',
-            title: this.i18n._("Status"),
+            title: i18n._("Status"),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('WAN Failover'),
+                title: i18n._('WAN Failover'),
                 flex: 0,
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.") + "<br/>" +
-                        this.i18n._("Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.")
+                    html: i18n._("WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.") + "<br/>" +
+                        i18n._("Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.")
                 }, {
                     xtype: "component",
                     name: "noTestsWarning",
-                    html: this.i18n._("WARNING") + ": " + this.i18n._("There are currently no tests configured. A test must be configured for each WAN."),
+                    html: i18n._("WARNING") + ": " + i18n._("There are currently no tests configured. A test must be configured for each WAN."),
                     cls: 'warning',
                     margin: '5 0 0 0',
                     hidden: (this.settings.tests.list.length != 0)
@@ -142,10 +142,10 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         
         this.failureThresholdStore = [];
         for ( c = 1 ; c <= 10 ; c+= 1 ) {
-            this.failureThresholdStore.push([ c, Ext.String.format( this.i18n._( "{0} of 10" ), c)]);
+            this.failureThresholdStore.push([ c, Ext.String.format( i18n._( "{0} of 10" ), c)]);
         }
 
-        this.typeStore = [["ping", this.i18n._( "Ping" )], ["arp", this.i18n._( "ARP" )], ["dns", this.i18n._( "DNS" )], ["http", this.i18n._( "HTTP" )]];
+        this.typeStore = [["ping", i18n._( "Ping" )], ["arp", i18n._( "ARP" )], ["dns", i18n._( "DNS" )], ["http", i18n._( "HTTP" )]];
         this.typeMap = Ung.Util.createStoreMap(this.typeStore);
 
         this.patchTests();
@@ -153,7 +153,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             flex: 1,
             settingsCmp: this,
             dataProperty: "tests",
-            title: this.i18n._( "Failure Detection Tests" ),
+            title: i18n._( "Failure Detection Tests" ),
             recordJavaClass: "com.untangle.node.wan_failover.WanTestSettings",
             emptyRow: {
                 "enabled": true,
@@ -197,47 +197,47 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                 name: "httpUrl"
             }],
             columns: [{
-                header: this.i18n._( "Interface" ),
+                header: i18n._( "Interface" ),
                 width: 170,
                 dataIndex: "interfaceId",
                 renderer: Ext.bind(function( value ) {
                     var name = this.interfaceMap[value];
-                    return ( name == null ) ? (Ext.String.format( this.i18n._("Interface {0}"), value )) : name;
+                    return ( name == null ) ? (Ext.String.format( i18n._("Interface {0}"), value )) : name;
                 }, this)
             },{
-                header: this.i18n._( "Test Type" ),
+                header: i18n._( "Test Type" ),
                 width: 70,
                 dataIndex: "type",
                 renderer: Ext.bind(function( value ) {
                     var name = this.typeMap[value];
-                    return ( name == null ) ? (Ext.String.format( this.i18n._("Type {0}"), value )) : name;
+                    return ( name == null ) ? (Ext.String.format( i18n._("Type {0}"), value )) : name;
                 }, this)
             },{
-                header: this.i18n._( "Description" ),
+                header: i18n._( "Description" ),
                 width: 200,
                 dataIndex: "description",
                 flex:1,
                 editor: {
                     xtype: 'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }]
         });
         this.buildTestsRowEditor();
 
         this.panelTests = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._( "Tests" ),
+            title: i18n._( "Tests" ),
             helpSource: "wan_failover_tests",
             layout: { type: 'vbox', align: 'stretch' },
             cls: "ung-panel",
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._('Note'),
-                html: this.i18n._( 'These tests control how each WAN interface is tested to ensure that it has connectivity to the Internet.')  + "<br/>" +
-                    this.i18n._('There should be one configured test per WAN interface.') + "<br/>" +
-                    this.i18n._('These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover.') + "<br/>" +
-                    this.i18n._('Press Help to see a further discussion about Failure Detection Tests.' )
+                title: i18n._('Note'),
+                html: i18n._( 'These tests control how each WAN interface is tested to ensure that it has connectivity to the Internet.')  + "<br/>" +
+                    i18n._('There should be one configured test per WAN interface.') + "<br/>" +
+                    i18n._('These rules require careful configuration. Poorly chosen tests will greatly reduce the effectiveness of WAN Failover.') + "<br/>" +
+                    i18n._('Press Help to see a further discussion about Failure Detection Tests.' )
             }, this.gridTests ]
         });
     },
@@ -248,68 +248,68 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             inputLines: [{
                 xtype: "component",
                 margin: '0 0 10 0',
-                html: this.i18n._( 'Test configuration:' ) + "<br/>" +
-                    this.i18n._('Design a test that likely indicates the connectivity of the chosen WAN interface.' )
+                html: i18n._( 'Test configuration:' ) + "<br/>" +
+                    i18n._('Design a test that likely indicates the connectivity of the chosen WAN interface.' )
             },{
                 xtype: "combo",
                 store: this.interfaceStore,
                 dataIndex: "interfaceId",
-                fieldLabel: this.i18n._( "Interface" ),
+                fieldLabel: i18n._( "Interface" ),
                 name: "interfaceId",
                 width: 300,
                 queryMode: 'local',
                 editable: false
             },{
                 xtype: "textfield",
-                fieldLabel: this.i18n._( "Description" ),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._( "Description" ),
+                emptyText: i18n._("[no description]"),
                 dataIndex: "description",
                 width: 450
             }, {
                 xtype: "component",
                 margin: '10 0 5 0',
-                html: this.i18n._( '<b>Testing Interval</b> specifies how often this test will run. (Default: 5)' )
+                html: i18n._( '<b>Testing Interval</b> specifies how often this test will run. (Default: 5)' )
             }, {
                 xtype: 'container',
                 layout: 'column',
                 items: [{
                     xtype: "numberfield",
                     width: 210,
-                    fieldLabel: this.i18n._( "Testing Interval" ),
+                    fieldLabel: i18n._( "Testing Interval" ),
                     dataIndex: "delaySeconds",
                     hideTrigger:true
                 },{
                     xtype: 'label',
-                    html: this.i18n._( "(seconds)" ),
+                    html: i18n._( "(seconds)" ),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype: "component",
                 margin: '5 0 5 0',
-                html: this.i18n._( '<b>Timeout</b> specifies how long the system waits for a response before considering the test failed. (Default: 2)' )
+                html: i18n._( '<b>Timeout</b> specifies how long the system waits for a response before considering the test failed. (Default: 2)' )
             }, {
                 xtype: 'container',
                 layout: 'column',
                 items: [{
                     xtype: "numberfield",
                     width: 210,
-                    fieldLabel: this.i18n._( "Timeout" ),
+                    fieldLabel: i18n._( "Timeout" ),
                     dataIndex: "timeoutSeconds",
                     hideTrigger:true
                 },{
                     xtype: 'label',
-                    html: this.i18n._( "(seconds)" ),
+                    html: i18n._( "(seconds)" ),
                     cls: 'boxlabel'
                 }]
             }, {
                 xtype: "component",
                 margin: '5 0 5 0',
-                html: this.i18n._( '<b>Failure Threshold</b> specifies how many tests failures (out of 10) are required for this WAN to be considered offline.' )
+                html: i18n._( '<b>Failure Threshold</b> specifies how many tests failures (out of 10) are required for this WAN to be considered offline.' )
             }, {
                 xtype: "combo",
                 store: this.failureThresholdStore,
                 dataIndex: "failureThreshold",
-                fieldLabel: this.i18n._( "Failure Threshold" ),
+                fieldLabel: i18n._( "Failure Threshold" ),
                 name: "failureThreshold",
                 width: 180,
                 queryMode: 'local',
@@ -317,7 +317,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             }, {
                 xtype: "combo",
                 style: {marginTop: '15px'},
-                fieldLabel: this.i18n._( "Test Type" ),
+                fieldLabel: i18n._( "Test Type" ),
                 dataIndex: "type",
                 store: this.typeStore,
                 width: 180,
@@ -337,8 +337,8 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                 showValue: "ping",
                 items: [{
                     xtype: "component",
-                    html: this.i18n._( 'Choose a destination that likely indicates the connectivity of the chosen WAN interface.' ) + "<br/>" +
-                        this.i18n._( 'The IP of an upstream router at your ISP is recommended.' )
+                    html: i18n._( 'Choose a destination that likely indicates the connectivity of the chosen WAN interface.' ) + "<br/>" +
+                        i18n._( 'The IP of an upstream router at your ISP is recommended.' )
                 }, {
                     xtype: 'container',
                     layout: 'column',
@@ -346,7 +346,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                     items: [{
                         xtype: "combo",
                         dataIndex: "pingHostname",
-                        fieldLabel: this.i18n._( "IP" ),
+                        fieldLabel: i18n._( "IP" ),
                         store: [],
                         queryMode: 'local',
                         editable: true,
@@ -355,7 +355,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                     }, {
                         xtype: "button",
                         margin: '0 0 0 15',
-                        text: this.i18n._( "Generate Suggestions" ),
+                        text: i18n._( "Generate Suggestions" ),
                         handler: this.generateSuggestions,
                         scope: this
                     }]
@@ -365,13 +365,13 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                 xtype: "component",
                 testDetails: true,
                 showValue: "arp",
-                html: this.i18n._( "ARP the default gateway for this interface." )
+                html: i18n._( "ARP the default gateway for this interface." )
             }, {
                 //DNS component
                 xtype: "component",
                 testDetails: true,
                 showValue: "dns",
-                html: this.i18n._( "Generate DNS requests to the upstream DNS servers." )
+                html: i18n._( "Generate DNS requests to the upstream DNS servers." )
             }, {
                 //HTTP container
                 xtype: "container",
@@ -380,18 +380,18 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
                 items: [{
                     xtype: "component",
                     margin: '0 0 5 0',
-                    html: this.i18n._( 'Choose a URL that likely indicates the connectivity of the chosen WAN interface.' ) + "<br/>" +
-                        this.i18n._( 'The IP URL of an upstream website near your ISP is recommended.' ) + "<br/>" +
-                        this.i18n._( 'Using a hostname instead of an IP address URL is <b>not recommended</b> as it requires DNS which may be down.')
+                    html: i18n._( 'Choose a URL that likely indicates the connectivity of the chosen WAN interface.' ) + "<br/>" +
+                        i18n._( 'The IP URL of an upstream website near your ISP is recommended.' ) + "<br/>" +
+                        i18n._( 'Using a hostname instead of an IP address URL is <b>not recommended</b> as it requires DNS which may be down.')
                 },{
                     xtype: "textfield",
-                    fieldLabel: this.i18n._( "URL" ),
+                    fieldLabel: i18n._( "URL" ),
                     dataIndex: "httpUrl",
                     width: 300
                 }]
             }, {
                 xtype: "button",
-                text: this.i18n._( "Run Test" ),
+                text: i18n._( "Run Test" ),
                 margin: '5 0 5 0',
                 handler: this.runTest,
                 scope: this
@@ -452,12 +452,12 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
     generateSuggestions: function() {
         var interfaceId = this.gridTests.rowEditor.down('combo[name="interfaceId"]').getValue();
         var pingHostnameCombo = this.gridTests.rowEditor.down('combo[dataIndex="pingHostname"]');
-        Ext.MessageBox.wait(this.i18n._("Querying Pingable Hosts..."), this.i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Querying Pingable Hosts..."), i18n._("Please wait"));
         this.getRpcNode().getPingableHosts( Ext.bind(function( result, exception ) {
             if ( exception ) {
                 Ext.MessageBox.show({
-                    title: this.i18n._( "Unable to find a pingable host."),
-                    msg: this.i18n._( "Please try again later." ),
+                    title: i18n._( "Unable to find a pingable host."),
+                    msg: i18n._( "Please try again later." ),
                     buttons: Ext.MessageBox.OK
                 });
                 pingHostnameCombo.getStore().loadData([]);
@@ -470,8 +470,8 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
             }
             pingHostnameCombo.getStore().loadData(comboData);
             Ext.MessageBox.show({
-                title: this.i18n._( "Completed host list."),
-                msg: this.i18n._( "Select one of the recommended host<br/>from the 'IP' dropdown." ),
+                title: i18n._( "Completed host list."),
+                msg: i18n._( "Select one of the recommended host<br/>from the 'IP' dropdown." ),
                 buttons: Ext.MessageBox.OK
             });
         }, this ), interfaceId );
@@ -481,20 +481,20 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         if(!rule) {
             return;
         }
-        Ext.MessageBox.wait(this.i18n._("Running Test..."), this.i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Running Test..."), i18n._("Please wait"));
         this.getRpcNode().runTest( Ext.bind(function( result, exception ) {
             if ( exception ) {
                 Ext.MessageBox.show({
-                    title: this.i18n._( "Unable to complete test."),
-                    msg: this.i18n._( "Please try again later." ),
+                    title: i18n._( "Unable to complete test."),
+                    msg: i18n._( "Please try again later." ),
                     buttons: Ext.MessageBox.OK
                 });
                 return;
             }
-            var message = this.i18n._( result );
+            var message = i18n._( result );
 
             Ext.MessageBox.show({
-                title: this.i18n._( "Test Results" ),
+                title: i18n._( "Test Results" ),
                 msg: message,
                 buttons: Ext.MessageBox.OK
             });
