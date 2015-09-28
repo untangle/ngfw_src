@@ -2,25 +2,25 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
     extend:'Ung.NodeWin',
     initComponent: function() {
         this.quotaTimeStore = [
-             [-3, this.i18n._("End of Week")], //END_OF_WEEK from QuotaBoxEntry
-             [-2, this.i18n._("End of Day")], //END_OF_DAY from QuotaBoxEntry
-             [-1, this.i18n._("End of Hour")]]; //END_OF_HOUR from QuotaBoxEntry
+             [-3, i18n._("End of Week")], //END_OF_WEEK from QuotaBoxEntry
+             [-2, i18n._("End of Day")], //END_OF_DAY from QuotaBoxEntry
+             [-1, i18n._("End of Hour")]]; //END_OF_HOUR from QuotaBoxEntry
 
         this.priorityStore = [
-            [1, this.i18n._("Very High")],
-            [2, this.i18n._("High")],
-            [3, this.i18n._("Medium")],
-            [4, this.i18n._("Low")],
-            [5, this.i18n._("Limited")],
-            [6, this.i18n._("Limited More")],
-            [7, this.i18n._("Limited Severely")]];
+            [1, i18n._("Very High")],
+            [2, i18n._("High")],
+            [3, i18n._("Medium")],
+            [4, i18n._("Low")],
+            [5, i18n._("Limited")],
+            [6, i18n._("Limited More")],
+            [7, i18n._("Limited Severely")]];
 
         this.quotaUnitsStore =[
-            [1, this.i18n._("bytes")],
-            [1000, this.i18n._("Kilobytes")],
-            [1000000, this.i18n._("Megabytes")],
-            [1000000000, this.i18n._("Gigabytes")],
-            [1000000000000, this.i18n._("Terrabytes")]
+            [1, i18n._("bytes")],
+            [1000, i18n._("Kilobytes")],
+            [1000000, i18n._("Megabytes")],
+            [1000000000, i18n._("Gigabytes")],
+            [1000000000000, i18n._("Terrabytes")]
         ];
 
         this.buildPanelStatus();
@@ -33,50 +33,50 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
     },
     getMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text", vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",this.i18n._("any")]], visible: true},
-            {name:"USERNAME",displayName: this.i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
-            {name:"CLIENT_HOSTNAME",displayName: this.i18n._("Client Hostname"), type: "text", visible: true},
-            {name:"SERVER_HOSTNAME",displayName: this.i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
-            {name:"SRC_MAC", displayName: this.i18n._("Client MAC Address"), type: "text", visible: true },
-            {name:"DST_MAC", displayName: this.i18n._("Server MAC Address"), type: "text", visible: true },
-            {name:"CLIENT_MAC_VENDOR",displayName: this.i18n._("Client MAC Vendor"), type: "text", visible: true},
-            {name:"SERVER_MAC_VENDOR",displayName: this.i18n._("Server MAC Vendor"), type: "text", visible: true},
-            {name:"CLIENT_IN_PENALTY_BOX",displayName: this.i18n._("Client in Penalty Box"), type: "boolean", visible: true},
-            {name:"SERVER_IN_PENALTY_BOX",displayName: this.i18n._("Server in Penalty Box"), type: "boolean", visible: true},
-            {name:"CLIENT_HAS_NO_QUOTA",displayName: this.i18n._("Client has no Quota"), type: "boolean", visible: true},
-            {name:"SERVER_HAS_NO_QUOTA",displayName: this.i18n._("Server has no Quota"), type: "boolean", visible: true},
-            {name:"CLIENT_QUOTA_EXCEEDED",displayName: this.i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
-            {name:"SERVER_QUOTA_EXCEEDED",displayName: this.i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
-            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: this.i18n._("Client Quota Attainment"), type: "text", visible: true},
-            {name:"SERVER_QUOTA_ATTAINMENT",displayName: this.i18n._("Server Quota Attainment"), type: "text", visible: true},
-            {name:"HTTP_HOST",displayName: this.i18n._("HTTP: Hostname"), type: "text", visible: true},
-            {name:"HTTP_REFERER",displayName: this.i18n._("HTTP: Referer"), type: "text", visible: true},
-            {name:"HTTP_URI",displayName: this.i18n._("HTTP: URI"), type: "text", visible: true},
-            {name:"HTTP_URL",displayName: this.i18n._("HTTP: URL"), type: "text", visible: true},
-            {name:"HTTP_CONTENT_TYPE",displayName: this.i18n._("HTTP: Content Type"), type: "text", visible: true},
-            {name:"HTTP_CONTENT_LENGTH",displayName: this.i18n._("HTTP: Content Length"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT",displayName: this.i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: this.i18n._("HTTP: Client User OS"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_APPLICATION",displayName: this.i18n._("Application Control: Application"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_CATEGORY",displayName: this.i18n._("Application Control: Application Category"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: this.i18n._("Application Control: Protochain"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_DETAIL",displayName: this.i18n._("Application Control: Detail"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_CONFIDENCE",displayName: this.i18n._("Application Control: Confidence"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_PRODUCTIVITY",displayName: this.i18n._("Application Control: Productivity"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_RISK",displayName: this.i18n._("Application Control: Risk"), type: "text", visible: true},
-            {name:"PROTOCOL_CONTROL_SIGNATURE",displayName: this.i18n._("Application Control Lite: Signature"), type: "text", visible: true},
-            {name:"PROTOCOL_CONTROL_CATEGORY",displayName: this.i18n._("Application Control Lite: Category"), type: "text", visible: true},
-            {name:"PROTOCOL_CONTROL_DESCRIPTION",displayName: this.i18n._("Application Control Lite: Description"), type: "text", visible: true},
-            {name:"WEB_FILTER_CATEGORY",displayName: this.i18n._("Web Filter: Category"), type: "text", visible: true},
-            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: this.i18n._("Web Filter: Category Description"), type: "text", visible: true},
-            {name:"WEB_FILTER_FLAGGED",displayName: this.i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
-            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: this.i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text", vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",i18n._("any")]], visible: true},
+            {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
+            {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
+            {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
+            {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
+            {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
+            {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
+            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: true},
+            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: true},
+            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: true},
+            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
+            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: i18n._("Client Quota Attainment"), type: "text", visible: true},
+            {name:"SERVER_QUOTA_ATTAINMENT",displayName: i18n._("Server Quota Attainment"), type: "text", visible: true},
+            {name:"HTTP_HOST",displayName: i18n._("HTTP: Hostname"), type: "text", visible: true},
+            {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
+            {name:"HTTP_URI",displayName: i18n._("HTTP: URI"), type: "text", visible: true},
+            {name:"HTTP_URL",displayName: i18n._("HTTP: URL"), type: "text", visible: true},
+            {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: true},
+            {name:"HTTP_CONTENT_LENGTH",displayName: i18n._("HTTP: Content Length"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_APPLICATION",displayName: i18n._("Application Control: Application"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_CATEGORY",displayName: i18n._("Application Control: Application Category"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: i18n._("Application Control: Protochain"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_DETAIL",displayName: i18n._("Application Control: Detail"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_CONFIDENCE",displayName: i18n._("Application Control: Confidence"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_PRODUCTIVITY",displayName: i18n._("Application Control: Productivity"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_RISK",displayName: i18n._("Application Control: Risk"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_SIGNATURE",displayName: i18n._("Application Control Lite: Signature"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_CATEGORY",displayName: i18n._("Application Control Lite: Category"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_DESCRIPTION",displayName: i18n._("Application Control Lite: Description"), type: "text", visible: true},
+            {name:"WEB_FILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: true},
+            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
+            {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
+            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true}
         ];
     },
     priorityRenderer: function(value) {
@@ -85,35 +85,35 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
 
         switch(value) {
           case 0: return "";
-          case 1: return this.i18n._("Very High");
-          case 2: return this.i18n._("High");
-          case 3: return this.i18n._("Medium");
-          case 4: return this.i18n._("Low");
-          case 5: return this.i18n._("Limited");
-          case 6: return this.i18n._("Limited More");
-          case 7: return this.i18n._("Limited Severely");
-          default: return Ext.String.format(this.i18n._("Unknown Priority: {0}"), value);
+          case 1: return i18n._("Very High");
+          case 2: return i18n._("High");
+          case 3: return i18n._("Medium");
+          case 4: return i18n._("Low");
+          case 5: return i18n._("Limited");
+          case 6: return i18n._("Limited More");
+          case 7: return i18n._("Limited Severely");
+          default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
         }
     },
     setupWizard: function() {
         var welcomeCard = Ext.create('Webui.untangle-node-bandwidth-control.Wizard.Welcome', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var wanBandwidthCard = Ext.create('Webui.untangle-node-bandwidth-control.Wizard.WAN', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var defaultsCard = Ext.create('Webui.untangle-node-bandwidth-control.Wizard.Defaults', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var quotaCard = Ext.create('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var congratulationsCard = Ext.create('Webui.untangle-node-bandwidth-control.Wizard.Congratulations', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var setupWizard = Ext.create('Ung.Wizard',{
@@ -129,7 +129,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             }
         });
         this.wizardWindow = Ext.create('Ung.Window',{
-            title: this.i18n._("Bandwidth Control Setup Wizard"),
+            title: i18n._("Bandwidth Control Setup Wizard"),
             items: setupWizard,
             closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
@@ -156,7 +156,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     var wizard = this.wizardWindow.down('panel[name="wizard"]');
                     if(!wizard.finished) {
                         wizard.finished=true;
-                        Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Bandwidth Control. Please run the Setup Wizard again."), Ext.bind(function () {
+                        Ext.MessageBox.alert(i18n._("Setup Wizard Warning"), i18n._("You have not finished configuring Bandwidth Control. Please run the Setup Wizard again."), Ext.bind(function () {
                             this.wizardWindow.close();
                         }, this));
                         return false;
@@ -174,7 +174,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         if (!this.getSettings().configured) {
             return {
                 xtype: 'component',
-                html: this.i18n._("Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control."),
+                html: i18n._("Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control."),
                 cls: 'warning'
             };
         }
@@ -183,7 +183,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         if (nodeState != "RUNNING") {
             return {
                 xtype: 'component',
-                html: this.i18n._("Bandwidth Control is currently disabled."),
+                html: i18n._("Bandwidth Control is currently disabled."),
                 cls: 'warning'
             };
         }
@@ -192,14 +192,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         if (!qosEnabled) {
             return {
                 xtype: 'component',
-                html: this.i18n._("Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."),
+                html: i18n._("Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."),
                 cls: 'warning'
             };
         }
 
         return {
             xtype: 'component',
-            html: this.i18n._("Bandwidth Control is currently enabled and running."),
+            html: i18n._("Bandwidth Control is currently enabled and running."),
             style: {color:'green'}
         };
     },
@@ -216,7 +216,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
 
         this.intfCombo =  Ext.create('Ext.form.field.ComboBox',{
             store: intfList,
-            fieldLabel: this.i18n._("Interface"),
+            fieldLabel: i18n._("Interface"),
             editable: false,
             queryMode: 'local',
             cls: 'x-combo-list-small'
@@ -227,7 +227,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'bandwidth_control_status',
-            title: this.i18n._('Status'),
+            title: i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -239,32 +239,32 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             items: [{
                 xtype: 'component',
                 margin: '5 0 15 20',
-                html: "<b>Bandwidth Control</b>" + this.i18n._(" controls, monitors, and prioritizes bandwidth usage on the network.")
+                html: "<b>Bandwidth Control</b>" + i18n._(" controls, monitors, and prioritizes bandwidth usage on the network.")
             }, {
-                title: this.i18n._("Status"),
+                title: i18n._("Status"),
                 items: [
                     this.buildStatus(),
                     {
                         xtype: "button",
                         margin: '5 0 0 0',
                         name: 'setup_wizard_button',
-                        text: this.i18n._("Run Bandwidth Control Setup Wizard"),
+                        text: i18n._("Run Bandwidth Control Setup Wizard"),
                         iconCls: "action-icon",
                         handler: Ext.bind(function() {
                             this.setupWizard();
                         }, this)
                     }]
             }, {
-                title: this.i18n._("Bandwidth Monitor"),
+                title: i18n._("Bandwidth Monitor"),
                 items: [{
                     xtype: 'component',
-                    html: this.i18n._("The Bandwidth Monitor shows current sessions and each session's current bandwidth usage measured on the selected interface.")
+                    html: i18n._("The Bandwidth Monitor shows current sessions and each session's current bandwidth usage measured on the selected interface.")
                 }, this.intfCombo, {
                     xtype: "button",
                     name: "bandwidth_monitor",
-                    text: this.i18n._("Open Bandwidth Monitor"),
+                    text: i18n._("Open Bandwidth Monitor"),
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.wait(this.i18n._("Loading..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.defer(function() {
                             if (this.bandwidthMonitorWin === undefined) {
                                 this.bandwidthMonitorWin=Ext.create('Webui.untangle-node-bandwidth-control.Monitor',{
@@ -291,17 +291,17 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     }, this)
                 }]
             }, {
-                title: this.i18n._("Penalty Box"),
+                title: i18n._("Penalty Box"),
                 items: [{
                     xtype: 'component',
-                    html: this.i18n._("View hosts currently in the Penalty Box."),
+                    html: i18n._("View hosts currently in the Penalty Box."),
                     margin: '0 0 5 0'
                 }, {
                     xtype: "button",
                     name: "bandwidth_monitor",
-                    text: this.i18n._('View Penalty Box'),
+                    text: i18n._('View Penalty Box'),
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.wait(this.i18n._("Loading..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.require(['Webui.config.hostMonitor'], function() {
                             Ext.Function.defer(function() {
                                 if (this.hostMonitorWin === undefined) {
@@ -320,17 +320,17 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     }, this)
                 }]
             }, {
-                title: this.i18n._("Quotas"),
+                title: i18n._("Quotas"),
                 items: [{
                     xtype: 'component',
-                    html: this.i18n._("View current Quotas."),
+                    html: i18n._("View current Quotas."),
                     margin: '0 0 5 0'
                 }, {
                     xtype: "button",
                     name: "bandwidth_monitor",
-                    text: this.i18n._('View Quotas'),
+                    text: i18n._('View Quotas'),
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.wait(this.i18n._("Loading..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.require(['Webui.config.hostMonitor'], function() {
                             Ext.defer(function() {
                                 if (this.hostMonitorWin === undefined) {
@@ -359,14 +359,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         this.panelRules = Ext.create('Ext.panel.Panel', {
             name: 'Rules',
             helpSource: 'bandwidth_control_rules',
-            title: this.i18n._('Rules'),
+            title: i18n._('Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._('Note'),
-                html: this.i18n._("Rules are evaluated in-order on network traffic.")
+                title: i18n._('Note'),
+                html: i18n._("Rules are evaluated in-order on network traffic.")
             }, this.gridRules]
         });
     },
@@ -377,8 +377,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             name: "gridRules",
             settingsCmp: this,
             hasReorder: true,
-            title: this.i18n._("Rules"),
-            qtip: this.i18n._("Bandwidth Rules are used to control and enforce bandwidth usage."),
+            title: i18n._("Rules"),
+            qtip: i18n._("Bandwidth Rules are used to control and enforce bandwidth usage."),
             dataFn: this.getRpcNode().getRules,
             recordJavaClass: "com.untangle.node.bandwidth_control.BandwidthControlRule",
             emptyRow: {
@@ -400,12 +400,12 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             }],
             columns:[{
                 xtype:'checkcolumn',
-                header: this.i18n._("Enabled"),
+                header: i18n._("Enabled"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Rule ID"),
+                header: i18n._("Rule ID"),
                 dataIndex: 'ruleId',
                 width: 50,
                 renderer: function(value) {
@@ -416,12 +416,12 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     }
                 }
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 dataIndex:'description',
                 flex:1,
                 width: 200
             }, {
-                header: this.i18n._("Action"),
+                header: i18n._("Action"),
                 dataIndex:'action',
                 width: 250,
                 renderer: Ext.bind(function(value) {
@@ -429,10 +429,10 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                         return "Unknown action";
                     }
                     switch(value.actionType) {
-                        case 'SET_PRIORITY': return this.i18n._("Set Priority") + " [" + this.priorityRenderer(value.priority) + "]";
-                        case 'PENALTY_BOX_CLIENT_HOST': return this.i18n._("Send Client to Penalty Box");
-                        case 'APPLY_PENALTY_PRIORITY': return this.i18n._("Apply Penalty Priority"); // DEPRECATED
-                        case 'GIVE_CLIENT_HOST_QUOTA': return this.i18n._("Give Client a Quota");
+                        case 'SET_PRIORITY': return i18n._("Set Priority") + " [" + this.priorityRenderer(value.priority) + "]";
+                        case 'PENALTY_BOX_CLIENT_HOST': return i18n._("Send Client to Penalty Box");
+                        case 'APPLY_PENALTY_PRIORITY': return i18n._("Apply Penalty Priority"); // DEPRECATED
+                        case 'GIVE_CLIENT_HOST_QUOTA': return i18n._("Give Client a Quota");
                         default: return "Unknown Action: " + value;
                     }
                 }, this)
@@ -469,14 +469,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                 xtype: "checkbox",
                 name: "Enabled",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._( "Enabled" ),
+                fieldLabel: i18n._( "Enabled" ),
                 width: 360
             }, {
                 xtype: "textfield",
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._( "Description" ),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._( "Description" ),
+                emptyText: i18n._("[no description]"),
                 width: 360
             }, {
                 xtype: "fieldset",
@@ -501,11 +501,11 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     xtype: "combo",
                     name: "actionType",
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Action Type"),
+                    fieldLabel: i18n._("Action Type"),
                     editable: false,
-                    store: [['SET_PRIORITY', this.i18n._('Set Priority')],
-                            ['PENALTY_BOX_CLIENT_HOST', this.i18n._('Send Client to Penalty Box')],
-                            ['GIVE_CLIENT_HOST_QUOTA', this.i18n._('Give Client a Quota')]],
+                    store: [['SET_PRIORITY', i18n._('Set Priority')],
+                            ['PENALTY_BOX_CLIENT_HOST', i18n._('Send Client to Penalty Box')],
+                            ['GIVE_CLIENT_HOST_QUOTA', i18n._('Give Client a Quota')]],
                     queryMode: 'local',
                     listeners: {
                         'select': { 
@@ -518,7 +518,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     xtype: "combo",
                     name: "priority",
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Priority"),
+                    fieldLabel: i18n._("Priority"),
                     editable: false,
                     store: this.priorityStore,
                     queryMode: 'local'
@@ -532,19 +532,19 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                         xtype: "numberfield",
                         name: "penaltyTime",
                         allowBlank: false,
-                        fieldLabel: this.i18n._("Penalty Time"),
+                        fieldLabel: i18n._("Penalty Time"),
                         width: 350,
                         labelWidth: 150
                     },{
                         xtype: 'label',
-                        html: this.i18n._("(seconds)"),
+                        html: i18n._("(seconds)"),
                         cls: 'boxlabel'
                     }]
                 }, {
                     xtype: "combo",
                     name: "quotaTime",
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Quota Expiration"),
+                    fieldLabel: i18n._("Quota Expiration"),
                     editable: true,
                     forceSelection: false,
                     store: this.quotaTimeStore,
@@ -559,7 +559,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                         name: "quotaSize",
                         allowBlank: false,
                         xtype: "numberfield",
-                        fieldLabel: this.i18n._("Quota Size"),
+                        fieldLabel: i18n._("Quota Size"),
                         width: 350,
                         labelWidth: 150
                     },{
@@ -694,7 +694,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Monitor', {
     sortOrder: 'DESC',
     initComponent: function() {
         this.breadcrumbs = [{
-            title: this.i18n._('Bandwidth Monitor')
+            title: i18n._('Bandwidth Monitor')
         }];
         this.callParent(arguments);
     },
@@ -732,30 +732,30 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Welcome',{
         Ext.apply(this, config);
         var items = [{
             xtype: 'component',
-            html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the Bandwidth Control Setup Wizard!")+'</h2>'
+            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Bandwidth Control Setup Wizard!")+'</h2>'
         },{
             xtype: 'component',
-            html: this.i18n._('This wizard will help guide you through your initial setup and configuration of Bandwidth Control.'),
+            html: i18n._('This wizard will help guide you through your initial setup and configuration of Bandwidth Control.'),
             margin: '0 0 10 10'
         },{
             xtype: 'component',
-            html: this.i18n._('Bandwidth Control leverages information provided by other applications in the rack.') + "<br/>" + "<br/>" +
-                this.i18n._('Web Filter (non-Lite) provides web site categorization.') + "<br/>" +
-                this.i18n._('Application Control provides protocol profiling categorization.') + "<br/>" +
-                this.i18n._('Application Control Lite provides protocol profiling categorization.') + "<br/>" +
-                this.i18n._('Directory Connector provides username/group information.') + "<br/>" + "<br/>" +
-                "<b>" + this.i18n._('For optimal Bandwidth Control performance install these applications.') + "</b>",
+            html: i18n._('Bandwidth Control leverages information provided by other applications in the rack.') + "<br/>" + "<br/>" +
+                i18n._('Web Filter (non-Lite) provides web site categorization.') + "<br/>" +
+                i18n._('Application Control provides protocol profiling categorization.') + "<br/>" +
+                i18n._('Application Control Lite provides protocol profiling categorization.') + "<br/>" +
+                i18n._('Directory Connector provides username/group information.') + "<br/>" + "<br/>" +
+                "<b>" + i18n._('For optimal Bandwidth Control performance install these applications.') + "</b>",
             margin: '0 0 10 10'
         }];
         if (this.gui.getSettings().configured) {
             items.push({
                 xtype: 'component',
-                html: this.i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
+                html: i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
                 cls: 'warning',
                 margin: '0 0 10 10'
             });
         }
-        this.title = this.i18n._("Welcome");
+        this.title = i18n._("Welcome");
         this.panel = Ext.create('Ext.container.Container',{
             items: items
         });
@@ -765,7 +765,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Welcome',{
 Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.title = this.i18n._("WAN Bandwidth");
+        this.title = i18n._("WAN Bandwidth");
         this.networkSettings = Ung.Main.getNetworkSettings(true);
 
         var wanInterfaces = [];
@@ -800,15 +800,15 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                 name: 'isWan'
             }],
             columns: [{
-                header: this.i18n._("Interface Id"),
+                header: i18n._("Interface Id"),
                 width: 80,
                 dataIndex: 'interfaceId'
             }, {
-                header: this.i18n._("WAN"),
+                header: i18n._("WAN"),
                 width: 150,
                 dataIndex: 'name'
             }, {
-                header: this.i18n._("Download Bandwidth"),
+                header: i18n._("Download Bandwidth"),
                 dataIndex: 'downloadBandwidthKbps',
                 width: 180,
                 editor : {
@@ -819,13 +819,13 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (Ext.isEmpty(value)) {
-                        return this.i18n._("Not set");
+                        return i18n._("Not set");
                     } else {
-                        return value + this.i18n._( " kbps" );
+                        return value + i18n._( " kbps" );
                     }
                 }, this )
             }, {
-                header: this.i18n._("Upload Bandwidth"),
+                header: i18n._("Upload Bandwidth"),
                 dataIndex: 'uploadBandwidthKbps',
                 width: 180,
                 editor : {
@@ -836,9 +836,9 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (Ext.isEmpty(value)) {
-                        return this.i18n._("Not set");
+                        return i18n._("Not set");
                     } else {
-                        return value + this.i18n._( " kbps" );
+                        return value + i18n._( " kbps" );
                     }
                 }, this )
             }],
@@ -861,9 +861,9 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                 var d_Mbit = d/1000;
                 var u_Mbit = u/1000;
 
-                var message = "<i>"+Ext.String.format( this.i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit )+"</i>";
+                var message = "<i>"+Ext.String.format( i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit )+"</i>";
                 var bandwidthLabel = this.panel.down('component[name="bandwidthLabel"]');
-                bandwidthLabel.update(Ext.String.format(this.i18n._("{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br></br>"+message);
+                bandwidthLabel.update(Ext.String.format(i18n._("{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br></br>"+message);
             }, this)
         });
         this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
@@ -873,18 +873,18 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+this.i18n._("Configure WANs download and upload bandwidths")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Configure WANs download and upload bandwidths")+'</h2>'
             },{
                 xtype: 'component',
                 name: 'bandwidthLabel',
                 html: ' '
             }, this.gridQosWanBandwidth,{
                 xtype: 'component',
-                html: this.i18n._('It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.') + "<br/>",
+                html: i18n._('It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.') + "<br/>",
                 margin: '10 0 10 0'
             },{
                 xtype: 'component',
-                html: this.i18n._('WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!'),
+                html: i18n._('WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!'),
                 cls: 'warning'
             }]
         });
@@ -894,7 +894,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
             for(var i=0; i<qosBandwidthList.length; i++) {
                 var qosBandwidth = qosBandwidthList[i];
                 if(Ext.isEmpty(qosBandwidth.downloadBandwidthKbps) || Ext.isEmpty(qosBandwidth.uploadBandwidthKbps) ) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), Ext.String.format(this.i18n._("Please set valid Download Bandwidth and Upload Bandwidth limits for the interface {0}."), qosBandwidth.name));
+                    Ext.MessageBox.alert(i18n._("Failed"), Ext.String.format(i18n._("Please set valid Download Bandwidth and Upload Bandwidth limits for the interface {0}."), qosBandwidth.name));
                     return false;
                 }
             }
@@ -906,7 +906,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                 handler();
                 return;
             }
-            Ext.MessageBox.wait(this.i18n._("Configuring WAN..."), this.i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Configuring WAN..."), i18n._("Please wait"));
             //Set downloadBandwidthKbps and uploadBandwidthKbps for all
             var qosBandwidthList = this.gridQosWanBandwidth.getList();
             var qosBandwidthMap = {};
@@ -943,15 +943,15 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
 Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Defaults', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.title = this.i18n._("Configuration");
+        this.title = i18n._("Configuration");
 
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+this.i18n._("Choose a starting configuration")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Choose a starting configuration")+'</h2>'
             }, {
                 xtype: 'component',
-                html: this.i18n._('Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.'),
+                html: i18n._('Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.'),
                 margin: '0 0 10 0'
             },{
               xtype:'container',
@@ -962,239 +962,239 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Defaults', {
                 store: Ext.create('Ext.data.ArrayStore',{
                     fields: ['settingsName', 'displayName','description'],
                     data: [['business_business',
-                       this.i18n._('Business'),
-                        this.i18n._('This initial configuration provides common settings suitable for most small and medium-sized businesses.') + '<br/>' + '<br/>' +
+                       i18n._('Business'),
+                        i18n._('This initial configuration provides common settings suitable for most small and medium-sized businesses.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of company policy') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of company policy') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['school_school',
-                        this.i18n._('School'),
-                        this.i18n._('This initial configuration provides common settings suitable for most School Districts, Elementary through High Schools, or Charter Schools.') + '<br/>' + '<br/>' +
+                        i18n._('School'),
+                        i18n._('This initial configuration provides common settings suitable for most School Districts, Elementary through High Schools, or Charter Schools.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools') + '</li>' +
-                        '<li>' + this.i18n._('prioritizes school-related traffic, such as traffic to Education sites or Search Engines') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of greedy non-school-related activities such as peer-to-peer file sharing') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools') + '</li>' +
+                        '<li>' + i18n._('prioritizes school-related traffic, such as traffic to Education sites or Search Engines') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of greedy non-school-related activities such as peer-to-peer file sharing') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('web traffic to download sites') + '</li>' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of school policy') + '</li>' +
+                        '<li>' + i18n._('web traffic to download sites') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of school policy') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Limits:') + '<br/>' +
+                        i18n._('Limits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('heavily limits BitTorrent usage') + '</li>' +
+                        '<li>' + i18n._('heavily limits BitTorrent usage') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['school_college',
-                        this.i18n._('College/University'),
-                        this.i18n._('This initial configuration provides common settings suitable for most Community Colleges, Universities, and associated Campus Networks.') + '<br/>' + '<br/>' +
+                        i18n._('College/University'),
+                        i18n._('This initial configuration provides common settings suitable for most Community Colleges, Universities, and associated Campus Networks.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools') + '</li>' +
-                        '<li>' + this.i18n._('prioritizes school-related traffic, such as traffic to Education sites or Search Engines') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of greedy non-school-related activities, peer-to-peer file sharing, or BitTorrent') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in schools') + '</li>' +
+                        '<li>' + i18n._('prioritizes school-related traffic, such as traffic to Education sites or Search Engines') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of greedy non-school-related activities, peer-to-peer file sharing, or BitTorrent') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('web traffic to download sites') + '</li>' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of school policy') + '</li>' +
+                        '<li>' + i18n._('web traffic to download sites') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of school policy') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Limits:') + '<br/>' +
+                        i18n._('Limits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('heavily limits BitTorrent usage') + '</li>' +
+                        '<li>' + i18n._('heavily limits BitTorrent usage') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['business_government',
-                        this.i18n._('Government'),
-                        this.i18n._('This initial configuration provides common settings suitable for most governmental organizations.') + '<br/>' + '<br/>' +
+                        i18n._('Government'),
+                        i18n._('This initial configuration provides common settings suitable for most governmental organizations.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in government') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of greedy non-work-related activities, such as peer-to-peer file sharing') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in government') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of greedy non-work-related activities, such as peer-to-peer file sharing') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of organization\'s policy') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of organization\'s policy') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['business_nonprofit',
-                        this.i18n._('Non-Profit'),
-                        this.i18n._('This initial configuration provides common settings suitable for most charitable and not-for-profit organizations.') + '<br/>' + '<br/>' +
+                        i18n._('Non-Profit'),
+                        i18n._('This initial configuration provides common settings suitable for most charitable and not-for-profit organizations.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
-                        '<li>' + this.i18n._('saves money by controlling bandwidth') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in businesses') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of greedy non-work-related activities such as peer-to-peer file sharing') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('saves money by controlling bandwidth') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of the organization\'s policy') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of the organization\'s policy') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['school_hotel',
-                        this.i18n._('Hotel'),
-                        this.i18n._('This initial configuration provides common settings suitable for most Hotel and Motels.') + '<br/>' + '<br/>' +
+                        i18n._('Hotel'),
+                        i18n._('This initial configuration provides common settings suitable for most Hotel and Motels.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used by guests') + '</li>' +
-                        '<li>' + this.i18n._('web traffic to business-related sites (Search Engines, Finance, Business/Services, etc)') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of peer-to-peer file sharing') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when it is needed most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used by guests') + '</li>' +
+                        '<li>' + i18n._('web traffic to business-related sites (Search Engines, Finance, Business/Services, etc)') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of peer-to-peer file sharing') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when it is needed most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('web traffic to download sites') + '</li>' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of school policy') + '</li>' +
+                        '<li>' + i18n._('web traffic to download sites') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of school policy') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Limits:') + '<br/>' +
+                        i18n._('Limits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('heavily limits BitTorrent usage') + '</li>' +
+                        '<li>' + i18n._('heavily limits BitTorrent usage') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['home',
-                        this.i18n._('Home'),
-                        this.i18n._('This initial configuration provides common settings suitable for most home users and households.') + '<br/>' + '<br/>' +
+                        i18n._('Home'),
+                        i18n._('This initial configuration provides common settings suitable for most home users and households.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in households') + '</li>' +
-                        '<li>' + this.i18n._('prioritizes internet radio and video so that these services run flawlessly while downloads are running') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in households') + '</li>' +
+                        '<li>' + i18n._('prioritizes internet radio and video so that these services run flawlessly while downloads are running') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('internet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)') + '</li>' +
-                        '<li>' + this.i18n._('internet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, NetFlix&reg;)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('internet radio (e.g. Pandora&reg;,  Last.fm<small><sup>TM</sup></small>)') + '</li>' +
+                        '<li>' + i18n._('internet video (e.g. YouTube&reg;, Hulu<small><sup>TM</sup></small>, NetFlix&reg;)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of the household policy') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of the household policy') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['metered',
-                        this.i18n._('Metered Internet'),
-                        this.i18n._('This initial configuration provides common settings suitable for organizations that pay variable rates for bandwidth.') + '<br/>' + '<br/>' +
-                        this.i18n._('For organizations that have to pay bandwidth rates proportional to bandwidth usage or have significant overage fees, this configuration maximizes bandwidth available to important interactive services, while minimizing bandwidth use for other less important or background tasks.') + '<br/>' + '<br/>' +
+                        i18n._('Metered Internet'),
+                        i18n._('This initial configuration provides common settings suitable for organizations that pay variable rates for bandwidth.') + '<br/>' + '<br/>' +
+                        i18n._('For organizations that have to pay bandwidth rates proportional to bandwidth usage or have significant overage fees, this configuration maximizes bandwidth available to important interactive services, while minimizing bandwidth use for other less important or background tasks.') + '<br/>' + '<br/>' +
 
-                        this.i18n._('Benefits:') + '<br/>' +
+                        i18n._('Benefits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in organizations') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes traffic of non-work-related activities, such as gaming, peer-to-peer file sharing, or online videos') + '</li>' +
-                        '<li>' + this.i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
-                        '<li>' + this.i18n._('saves money') + '</li>' +
+                        '<li>' + i18n._('optimizes internet responsiveness by prioritizing traffic of interactive services most commonly used in organizations') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes traffic of non-work-related activities, such as gaming, peer-to-peer file sharing, or online videos') + '</li>' +
+                        '<li>' + i18n._('de-prioritizes non-real-time background traffic, to avoid slowing your internet connection when you need it most') + '</li>' +
+                        '<li>' + i18n._('saves money') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Prioritizes:') + '<br/>' +
+                        i18n._('Prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
-                        '<li>' + this.i18n._('interactive web traffic') + '</li>' +
+                        '<li>' + i18n._('interactive traffic and services (Remote Desktop, Email, DNS, SSH)') + '</li>' +
+                        '<li>' + i18n._('interactive web traffic') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('De-prioritizes:') + '<br/>' +
+                        i18n._('De-prioritizes:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('any detected Peer-to-Peer traffic') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic in violation of the organization\'s policy') + '</li>' +
+                        '<li>' + i18n._('any detected Peer-to-Peer traffic') + '</li>' +
+                        '<li>' + i18n._('all web traffic in violation of the organization\'s policy') + '</li>' +
                         '</ul>' + '<br/>' +
 
-                        this.i18n._('Limits:') + '<br/>' +
+                        i18n._('Limits:') + '<br/>' +
                         '<ul style="list-style: circle inside;">' +
-                        '<li>' + this.i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
-                        '<li>' + this.i18n._('all web traffic to Download Sites') + '</li>' +
-                        '<li>' + this.i18n._('heavily limits BitTorrent usage') + '</li>' +
+                        '<li>' + i18n._('non-real-time background services (e.g. Microsoft&reg; updates, backup services)') + '</li>' +
+                        '<li>' + i18n._('all web traffic to Download Sites') + '</li>' +
+                        '<li>' + i18n._('heavily limits BitTorrent usage') + '</li>' +
                         '</ul>' + '<br/>'
                     ],
                     ['custom',
-                        this.i18n._('Custom'),
-                        this.i18n._('This is a basic configuration with no rules set by default.') + '<br/>' +
-                        this.i18n._('This is a good option for users who wish to build their own rules configuration from scratch.') + '<br/>' +
+                        i18n._('Custom'),
+                        i18n._('This is a basic configuration with no rules set by default.') + '<br/>' +
+                        i18n._('This is a good option for users who wish to build their own rules configuration from scratch.') + '<br/>' +
                         '<br/>'
                     ]]
                 }),
                 valueField: 'settingsName',
                 displayField: 'displayName',
                 name: 'starting_configuration',
-                fieldLabel: this.i18n._('Configuration'),
+                fieldLabel: i18n._('Configuration'),
                 width: 325,
                 labelWidth: 150,
                 queryMode: 'local',
@@ -1217,13 +1217,13 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Defaults', {
         this.onValidate = function() {
             var startingConfiguration = this.panel.down('combo[name="starting_configuration"]').getValue();
             if (Ext.isEmpty(startingConfiguration)) {
-                Ext.MessageBox.alert(this.i18n._("Error"), this.i18n._("You must select a starting configuration."));
+                Ext.MessageBox.alert(i18n._("Error"), i18n._("You must select a starting configuration."));
                 return false;
             }
             return true;
         };
         this.onNext = Ext.bind(function(handler) {
-            Ext.MessageBox.wait(this.i18n._("Configuring Settings..."), this.i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Configuring Settings..."), i18n._("Please wait"));
             var startingConfiguration = this.panel.down('combo[name="starting_configuration"]').getValue();
             this.gui.getRpcNode().wizardLoadDefaults(startingConfiguration.replace(/_.*/,""));
             this.gui.refreshSettings();
@@ -1241,14 +1241,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+this.i18n._("Configure Quotas")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Configure Quotas")+'</h2>'
             },{
                 xtype: 'component',
-                html: this.i18n._('Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.') + "<br/>",
+                html: i18n._('Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.') + "<br/>",
                 margin: '0 0 10 0'
             },{
                 xtype: 'radio',
-                boxLabel: this.i18n._('Disable Quotas (default)'),
+                boxLabel: i18n._('Disable Quotas (default)'),
                 hideLabel: true,
                 name: 'enableQuotas',
                 checked: true,
@@ -1260,7 +1260,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                 }, this)
             }, {
                 xtype: 'radio',
-                boxLabel: this.i18n._('Enable Quotas'),
+                boxLabel: i18n._('Enable Quotas'),
                 hideLabel: true,
                 name: 'enableQuotas',
                 id: 'enableQuotas',
@@ -1277,19 +1277,19 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                 hidden: true,
                 items: [{
                     xtype: 'component',
-                    html: "<i>" + this.i18n._("Quota Clients") + "</i>" + this.i18n._(' controls which hosts will be given quotas.') + this.i18n._(" (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"),
+                    html: "<i>" + i18n._("Quota Clients") + "</i>" + i18n._(' controls which hosts will be given quotas.') + i18n._(" (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "textfield",
                     name: "quotaNetwork",
-                    fieldLabel: this.i18n._("Quota Clients"),
+                    fieldLabel: i18n._("Quota Clients"),
                     width: 300,
                     labelWidth: 150,
                     allowBlank: false,
                     value: ""
                 }, {
                     xtype: 'component',
-                    html: "<i>" + this.i18n._("Quota Expiration") + "</i>" + this.i18n._(' controls how long a quota lasts (hourly, daily, weekly). The default is Daily.'),
+                    html: "<i>" + i18n._("Quota Expiration") + "</i>" + i18n._(' controls how long a quota lasts (hourly, daily, weekly). The default is Daily.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "combo",
@@ -1297,7 +1297,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     width: 300,
                     labelWidth: 150,
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Quota Expiration"),
+                    fieldLabel: i18n._("Quota Expiration"),
                     editable: true,
                     forceSelection: false,
                     store: this.gui.quotaTimeStore,
@@ -1305,7 +1305,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     value: -2
                 }, {
                     xtype: 'component',
-                    html: "<i>" + this.i18n._("Quota Size") + "</i>" + this.i18n._(' configures the size of the quota given to each host. The default is 1 Gb.'),
+                    html: "<i>" + i18n._("Quota Size") + "</i>" + i18n._(' configures the size of the quota given to each host. The default is 1 Gb.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: 'container',
@@ -1316,7 +1316,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                         allowBlank: false,
                         width: 300,
                         labelWidth: 150,
-                        fieldLabel: this.i18n._("Quota Size"),
+                        fieldLabel: i18n._("Quota Size"),
                         value: 1
                     },{
                         xtype: "combo",
@@ -1330,13 +1330,13 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     }]
                 }, {
                     xtype: 'component',
-                    html: "<i>" + this.i18n._("Quota Exceeded Priority") + "</i>" + this.i18n._(' configures the priority given to hosts that have exceeded their quota.'),
+                    html: "<i>" + i18n._("Quota Exceeded Priority") + "</i>" + i18n._(' configures the priority given to hosts that have exceeded their quota.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "combo",
                     name: "quotaExceededPriority",
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Quota Exceeded Priority"),
+                    fieldLabel: i18n._("Quota Exceeded Priority"),
                     width: 325,
                     labelWidth: 150,
                     editable: false,
@@ -1356,14 +1356,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
             if (enabled) {
                 var quotaNet = this.panel.down('textfield[name="quotaNetwork"]').getValue();
                 if (Ext.isEmpty(quotaNet)) {
-                    Ext.MessageBox.alert(this.i18n._("Error"), this.i18n._("You must provide an IP/netmask or range."));
+                    Ext.MessageBox.alert(i18n._("Error"), i18n._("You must provide an IP/netmask or range."));
                     return false;
                 }
             }
             return true;
         };
         this.onNext = Ext.bind(function(handler) {
-            Ext.MessageBox.wait(this.i18n._("Configuring Quotas..."), this.i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Configuring Quotas..."), i18n._("Please wait"));
             if (this.enableQuotas) {
                 var quotaTime   = this.panel.down('combo[name="quotaTime"]').getValue();
                 var quotaSize  = this.panel.down('numberfield[name="quotaSize"]').getValue();
@@ -1384,14 +1384,14 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
 Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Congratulations',{
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.title = this.i18n._( "Finish" );
+        this.title = i18n._( "Finish" );
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+this.i18n._("Congratulations!")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>'
             }, {
                 xtype: 'component',
-                html: this.i18n._('Bandwidth Control is now configured and enabled.')
+                html: i18n._('Bandwidth Control is now configured and enabled.')
             }]
         });
         
