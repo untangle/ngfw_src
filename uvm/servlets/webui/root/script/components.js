@@ -106,7 +106,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
             if ( this.arrayContains(initValue, item.dayId) || this.arrayContains(initValue, item.name) || this.arrayContains(initValue, "any")) {
                 item.checked = true;
             }
-            item.boxLabel = this.i18n._(item.boxLabel);
+            item.boxLabel = i18n._(item.boxLabel);
         }
         this.callParent(arguments);
     },

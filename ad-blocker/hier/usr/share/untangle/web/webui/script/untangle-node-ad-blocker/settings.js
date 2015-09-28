@@ -55,41 +55,41 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'ad_blocker_status',
-            title: this.i18n._('Status'),
+            title: i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._('Statistics'),
+                title: i18n._('Statistics'),
                 labelWidth: 230,
                 defaults: {
                     xtype: "displayfield",
                     labelWidth: 200
                 },
                 items: [{
-                    fieldLabel: this.i18n._('Total Filters Available'),
+                    fieldLabel: i18n._('Total Filters Available'),
                     name: "total_filters_available",
                     value: this.totalFiltersAvailable
                 }, {
-                    fieldLabel: this.i18n._('Total Filters Enabled'),
+                    fieldLabel: i18n._('Total Filters Enabled'),
                     name: "total_filters_enabled",
                     value: this.totalFiltersEnabled
                 }, {
-                    fieldLabel: this.i18n._('Total Cookie Rules Available'),
+                    fieldLabel: i18n._('Total Cookie Rules Available'),
                     name: "total_cookies_available",
                     value: this.totalCookiesAvailable
                 }, {
-                    fieldLabel: this.i18n._('Total Cookie Rules Enabled'),
+                    fieldLabel: i18n._('Total Cookie Rules Enabled'),
                     name: "total_cookies_enabled",
                     value: this.totalCookiesEnabled
                 }]
             }, {
-                title: this.i18n._('Status'),
+                title: i18n._('Status'),
                 items: [{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Block Ads'),
+                    boxLabel: i18n._('Block Ads'),
                     hideLabel: true,
                     name: 'Block Ads',
                     checked: this.settings.scanAds,
@@ -98,7 +98,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                     }, this)
                 }, {
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Block Tracking & Ad Cookies'),
+                    boxLabel: i18n._('Block Tracking & Ad Cookies'),
                     hideLabel: true,
                     name: 'Block Tracking & Ad Cookies',
                     checked: this.settings.scanCookies,
@@ -107,10 +107,10 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                     }, this)
                 }]
             }, {
-                title: this.i18n._('Update filters'),
+                title: i18n._('Update filters'),
                 items: [{
                     xtype: 'button',
-                    text: this.i18n._("Update"),
+                    text: i18n._("Update"),
                     handler: Ext.bind(function() {
                         Ext.MessageBox.wait(i18n._("Updating filters..."), i18n._("Please wait"));
                         this.getRpcNode().updateList(Ext.bind(function(result, exception) {
@@ -141,24 +141,24 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                     }, this)
                 }]
             }, {
-                title: this.i18n._('Note'),
+                title: i18n._('Note'),
                 name: "last_update_timestamp",
                 html: this.formatLastUpdateText()
             }]
         });
     },
     formatLastUpdateText: function() {
-        return Ext.String.format(this.i18n._("The current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required."),
+        return Ext.String.format(i18n._("The current filter list was last modified on {1}. You are free to disable filters and add new ones, however it is not required."),
             rpc.companyName, (this.lastUpdate !== null ? i18n._(this.lastUpdate): i18n._("unknown")));
     },
     // Add Blocker Filters Panel
     buildAdFilters: function() {
-        this.gridAdFiltersStandard = this.buildAdFiltersSubtabs('AdFiltersStandard', this.i18n._('Standard Filters'), 'rules', false);
-        this.gridAdFiltersUser = this.buildAdFiltersSubtabs('AdFiltersUser', this.i18n._('User Defined Filters'), 'userRules', true);
+        this.gridAdFiltersStandard = this.buildAdFiltersSubtabs('AdFiltersStandard', i18n._('Standard Filters'), 'rules', false);
+        this.gridAdFiltersUser = this.buildAdFiltersSubtabs('AdFiltersUser', i18n._('User Defined Filters'), 'userRules', true);
 
         this.panelFilters = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
-            title: this.i18n._('Ad Filters'),
+            title: i18n._('Ad Filters'),
             helpSource: 'ad_blocker_ad_filters',
             deferredRender: false,
             items: [ this.gridAdFiltersStandard, this.gridAdFiltersUser]
@@ -166,12 +166,12 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
     },
     // Cookie Filters Panel
     buildCookieFilters: function() {
-        this.gridCookiesStandard = this.buildCookieSubtabs('CookiesStandard', this.i18n._('Standard Cookie Filters'), 'cookies', false);
-        this.gridCookiesUser = this.buildCookieSubtabs('CookiesUser', this.i18n._('User Defined Cookie Filters'), 'userCookies', true);
+        this.gridCookiesStandard = this.buildCookieSubtabs('CookiesStandard', i18n._('Standard Cookie Filters'), 'cookies', false);
+        this.gridCookiesUser = this.buildCookieSubtabs('CookiesUser', i18n._('User Defined Cookie Filters'), 'userCookies', true);
 
         this.panelCookies = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
-            title: this.i18n._('Cookie Filters'),
+            title: i18n._('Cookie Filters'),
             helpSource: 'ad_blocker_cookie_filters',
             deferredRender: false,
             items: [ this.gridCookiesStandard, this.gridCookiesUser]
@@ -186,7 +186,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             hasDelete: isEditable,
             hasAdd: isEditable,
             hasInlineEditor:  isEditable,
-            title: this.i18n._(nameStr),
+            title: i18n._(nameStr),
             dataProperty: property,
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -207,23 +207,23 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             }],
             columns: [{
                 xtype:'checkcolumn',
-                header: "<b>" + this.i18n._("Enable") + "</b>",
+                header: "<b>" + i18n._("Enable") + "</b>",
                 dataIndex: 'enabled',
                 resizable: false,
                 width: 55
             }, {
-                header: this.i18n._("Rule"),
+                header: i18n._("Rule"),
                 width: 200,
                 dataIndex: 'string',
                 flex:1,
                 editable: isEditable,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter rule]"),
+                    emptyText: i18n._("[enter rule]"),
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("Action"),
+                header: i18n._("Action"),
                 width: 100,
                 dataIndex: 'blocked',
                 editable: isEditable,
@@ -232,7 +232,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                     return (value === true) ? i18n._('Block') : i18n._('Pass');
                 }
             }, {
-                header: this.i18n._("Slow"),
+                header: i18n._("Slow"),
                 width: 55,
                 editable: false,
                 dataIndex: 'flagged',
@@ -244,20 +244,20 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             rowEditorInputLines: [{
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable")
+                fieldLabel: i18n._("Enable")
             }, {
                 xtype:'textfield',
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Rule"),
-                emptyText: this.i18n._("[enter rule]"),
+                fieldLabel: i18n._("Rule"),
+                emptyText: i18n._("[enter rule]"),
                 allowBlank: false,
                 width: 400
             }, {
                 xtype: "combo",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Action"),
+                fieldLabel: i18n._("Action"),
                 editable: false,
-                store: [[true, this.i18n._('Block')], [false, this.i18n._('Pass')]],
+                store: [[true, i18n._('Block')], [false, i18n._('Pass')]],
                 width: 200,
                 queryMode: 'local'
             }]
@@ -273,7 +273,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             hasDelete: isEditable,
             hasAdd: isEditable,
             hasInlineEditor:  isEditable,
-            title: this.i18n._(nameStr),
+            title: i18n._(nameStr),
             dataProperty: property,
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -289,31 +289,31 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             }],
             columns: [{
                 xtype:'checkcolumn',
-                header: "<b>" + this.i18n._("Enable") + "</b>",
+                header: "<b>" + i18n._("Enable") + "</b>",
                 dataIndex: 'enabled',
                 resizable: false,
                 width: 55
             }, {
-                header: this.i18n._("Rule"),
+                header: i18n._("Rule"),
                 width: 200,
                 dataIndex: 'string',
                 flex:1,
                 editable: isEditable,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter rule]"),
+                    emptyText: i18n._("[enter rule]"),
                     allowBlank: false
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable")
+                fieldLabel: i18n._("Enable")
             }, {
                 xtype:'textfield',
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Rule"),
-                emptyText: this.i18n._("[enter rule]"),
+                fieldLabel: i18n._("Rule"),
+                emptyText: i18n._("[enter rule]"),
                 allowBlank: false,
                 width: 400
             }]
@@ -327,7 +327,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
         
         this.panelPassLists = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
-            title: this.i18n._('Pass Lists'),
+            title: i18n._('Pass Lists'),
             name: 'Pass Lists',
             helpSource: 'ad_blocker_pass_lists',
             deferredRender: false,
@@ -338,7 +338,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
     buildPassedUrls: function() {
         var urlValidator = Ext.bind(function(fieldValue) {
             if (fieldValue.indexOf("https://") === 0) {
-                return this.i18n._("URL specified cannot be passed because it uses secure http (https)");
+                return i18n._("URL specified cannot be passed because it uses secure http (https)");
             }
             if (fieldValue.indexOf("http://") === 0) {
                 fieldValue = fieldValue.substr(7);
@@ -350,7 +350,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                 fieldValue = fieldValue.substring(0, fieldValue.length - 1);
             }
             if (fieldValue.trim().length === 0) {
-                return this.i18n._("Invalid URL specified");
+                return i18n._("Invalid URL specified");
             }
             return true;
         }, this);
@@ -359,7 +359,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
         this.gridPassedUrls = Ext.create('Ung.grid.Panel',{
             name: 'Passed Sites',
             settingsCmp: this,
-            title: this.i18n._("Passed Sites"),
+            title: i18n._("Passed Sites"),
             dataProperty: "passedUrls",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -370,38 +370,38 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("Site"),
+                header: i18n._("Site"),
                 width: 200,
                 dataIndex: 'string',
                 editor:{
                     xtype:'textfield',
                     allowBlank: false,
-                    emptyText: this.i18n._("[enter site]"),
+                    emptyText: i18n._("[enter site]"),
                     validator: urlValidator,
-                    blankText: this.i18n._("Invalid URL specified")
+                    blankText: i18n._("Invalid URL specified")
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Pass"),
+                header: i18n._("Pass"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex:1,
                 editor:{
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype: 'textfield',
                 name: "Site",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Site"),
-                emptyText: this.i18n._("[enter site]"),
+                fieldLabel: i18n._("Site"),
+                emptyText: i18n._("[enter site]"),
                 allowBlank: false,
                 width: 400,
                 validator: urlValidator
@@ -409,13 +409,13 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                 xtype: 'checkbox',
                 name: "Pass",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Pass")
+                fieldLabel: i18n._("Pass")
             }, {
                 xtype: 'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -426,7 +426,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
         this.gridPassedClients = Ext.create('Ung.grid.Panel',{
             name: 'Passed Client IP addresses',
             settingsCmp: this,
-            title: this.i18n._("Passed Client IP addresses"),
+            title: i18n._("Passed Client IP addresses"),
             dataProperty: "passedClients",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -437,22 +437,22 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("IP Address/Range"),
+                header: i18n._("IP Address/Range"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter ip]"),
+                    emptyText: i18n._("[enter ip]"),
                     allowBlank: false
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Pass"),
+                header: i18n._("Pass"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex:1,
@@ -463,19 +463,19 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             rowEditorInputLines: [{
                 xtype:'textfield',
                 dataIndex: "string",
-                fieldLabel: this.i18n._("IP address/range"),
-                emptyText: this.i18n._("[enter ip]"),
+                fieldLabel: i18n._("IP address/range"),
+                emptyText: i18n._("[enter ip]"),
                 allowBlank: false,
                 width: 400
             }, {
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Pass")
+                fieldLabel: i18n._("Pass")
             }, {
                 xtype:'textarea',
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]

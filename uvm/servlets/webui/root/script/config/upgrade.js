@@ -109,14 +109,14 @@ Ext.define('Webui.config.upgrade', {
         this.panelSettings = Ext.create('Ext.panel.Panel',{
             name: 'Upgrade Settings',
             helpSource: 'upgrade_upgrade_settings',
-            title: this.i18n._('Upgrade Settings'),
+            title: i18n._('Upgrade Settings'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._('Status'),
+                title: i18n._('Status'),
                 items: [{
                     xtype: 'progressbar',
                     name: 'checkUpgradesProgressbar',
@@ -131,17 +131,17 @@ Ext.define('Webui.config.upgrade', {
                     xtype: "button",
                     name: 'upgradeButton',
                     hidden: true,
-                    text: this.i18n._("Upgrade"),
+                    text: i18n._("Upgrade"),
                     iconCls: "icon-upgrade",
                     handler: Ext.bind(function() {
                         this.downloadUpgrades();
                     }, this)
                 }]
             }, {
-                title: this.i18n._('Automatic Upgrade'),
+                title: i18n._('Automatic Upgrade'),
                 items: [{
                     xtype: 'radio',
-                    boxLabel: this.i18n._('Automatically Install Upgrades'),
+                    boxLabel: i18n._('Automatically Install Upgrades'),
                     hideLabel: true,
                     name: 'Automatically Install Upgrades',
                     checked: this.getSystemSettings().autoUpgrade,
@@ -155,10 +155,10 @@ Ext.define('Webui.config.upgrade', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 20',
-                    html: this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
+                    html: i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                 }, {
                     xtype: 'radio',
-                    boxLabel: this.i18n._('Do Not Automatically Install Upgrades'),
+                    boxLabel: i18n._('Do Not Automatically Install Upgrades'),
                     hideLabel: true,
                     name: 'Automatically Install Upgrades',
                     checked: !this.getSystemSettings().autoUpgrade,
@@ -172,18 +172,18 @@ Ext.define('Webui.config.upgrade', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 20',
-                    html: this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
+                    html: i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 20',
-                    html: "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
+                    html: "<i>" + i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
                 }]
             }, {
-                title: this.i18n._('Automatic Upgrade Schedule'),
+                title: i18n._('Automatic Upgrade Schedule'),
                 items: [{
                     xtype: 'udayfield',
                     name: 'Upgrade Days',
-                    i18n: this.i18n,
+                    i18n: i18n,
                     value: this.getSystemSettings().autoUpgradeDays,
                     listeners: {
                         "change": {

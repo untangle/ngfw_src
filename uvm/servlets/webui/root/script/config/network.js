@@ -91,65 +91,65 @@ Ext.define('Webui.config.network', {
     },
     getPortForwardMatchers: function () {
         return [
-            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
     getNatRuleMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
     getBypassRuleMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
         ];
     },
     getQosRuleMatchers: function () {
         return [
-            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode}
+            {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode}
         ];
     },
     getFilterRuleMatchers: function () {
         return [
-            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"SRC_MAC" ,displayName: this.i18n._("Source MAC"), type: "text", visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_MAC" ,displayName: i18n._("Source MAC"), type: "text", visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
     //asynchronous load of device status and interface status
     loadDeviceAndInterfaceStatus: function(refresh) {
         if(refresh) {
-            Ext.MessageBox.wait(this.i18n._("Refreshing..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
         }
         Ung.Main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
@@ -238,13 +238,13 @@ Ext.define('Webui.config.network', {
                 for (i = 0; i < this.settings.interfaces.list.length; i++) {
                     intf = this.settings.interfaces.list[i];
                     if (intf.v4Address) {
-                        portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
+                        portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
                     }
                 }
                 for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
                     intf = this.settings.interfaces.list[i];
                     if (intf.v4Address && !intf.isWan) {
-                        portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
+                        portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
                     }
                 }
                 for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
@@ -253,7 +253,7 @@ Ext.define('Webui.config.network', {
                         for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
                             var sub_intf = this.settings.interfaces.list[j];
                             if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
-                                portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
+                                portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
                             }
                         }
                     }
@@ -269,46 +269,46 @@ Ext.define('Webui.config.network', {
     getWirelessChannelsMap: function() {
         if(!this.wirelessChannelsMap) {
             this.wirelessChannelsMap = {
-                "-1": [-1, this.i18n._("Automatic 2.4 GHz")],
-                "-2": [-2, this.i18n._("Automatic 5 GHz")],
-                "1": [1, this.i18n._("1 - 2.412 GHz")],
-                "2": [2, this.i18n._("2 - 2.417 GHz")],
-                "3": [3, this.i18n._("3 - 2.422 GHz")],
-                "4": [4, this.i18n._("4 - 2.427 GHz")],
-                "5": [5, this.i18n._("5 - 2.432 GHz")],
-                "6": [6, this.i18n._("6 - 2.437 GHz")],
-                "7": [7, this.i18n._("7 - 2.442 GHz")],
-                "8": [8, this.i18n._("8 - 2.447 GHz")],
-                "9": [9, this.i18n._("9 - 2.452 GHz")],
-                "10": [10, this.i18n._("10 - 2.457 GHz")],
-                "11": [11, this.i18n._("11 - 2.462 GHz")],
-                "12": [12, this.i18n._("12 - 2.467 GHz")],
-                "13": [13, this.i18n._("13 - 2.472 GHz")],
-                "14": [14, this.i18n._("14 - 2.484 GHz")],
-                "36": [36, this.i18n._("36 - 5.180 GHz")],
-                "40": [40, this.i18n._("40 - 5.200 GHz")],
-                "44": [44, this.i18n._("44 - 5.220 GHz")],
-                "48": [48, this.i18n._("48 - 5.240 GHz")],
-                "52": [52, this.i18n._("52 - 5.260 GHz")],
-                "56": [56, this.i18n._("56 - 5.280 GHz")],
-                "60": [60, this.i18n._("60 - 5.300 GHz")],
-                "64": [64, this.i18n._("64 - 5.320 GHz")],
-                "100": [100, this.i18n._("100 - 5.500 GHz")],
-                "104": [104, this.i18n._("104 - 5.520 GHz")],
-                "108": [108, this.i18n._("108 - 5.540 GHz")],
-                "112": [112, this.i18n._("112 - 5.560 GHz")],
-                "116": [116, this.i18n._("116 - 5.580 GHz")],
-                "120": [120, this.i18n._("120 - 5.600 GHz")],
-                "124": [124, this.i18n._("124 - 5.620 GHz")],
-                "128": [128, this.i18n._("128 - 5.640 GHz")],
-                "132": [132, this.i18n._("132 - 5.660 GHz")],
-                "136": [136, this.i18n._("136 - 5.680 GHz")],
-                "140": [140, this.i18n._("140 - 5.700 GHz")],
-                "149": [149, this.i18n._("149 - 5.745 GHz")],
-                "153": [153, this.i18n._("153 - 5.765 GHz")],
-                "157": [157, this.i18n._("157 - 5.785 GHz")],
-                "161": [161, this.i18n._("161 - 5.805 GHz")],
-                "165": [165, this.i18n._("165 - 5.825 GHz")]
+                "-1": [-1, i18n._("Automatic 2.4 GHz")],
+                "-2": [-2, i18n._("Automatic 5 GHz")],
+                "1": [1, i18n._("1 - 2.412 GHz")],
+                "2": [2, i18n._("2 - 2.417 GHz")],
+                "3": [3, i18n._("3 - 2.422 GHz")],
+                "4": [4, i18n._("4 - 2.427 GHz")],
+                "5": [5, i18n._("5 - 2.432 GHz")],
+                "6": [6, i18n._("6 - 2.437 GHz")],
+                "7": [7, i18n._("7 - 2.442 GHz")],
+                "8": [8, i18n._("8 - 2.447 GHz")],
+                "9": [9, i18n._("9 - 2.452 GHz")],
+                "10": [10, i18n._("10 - 2.457 GHz")],
+                "11": [11, i18n._("11 - 2.462 GHz")],
+                "12": [12, i18n._("12 - 2.467 GHz")],
+                "13": [13, i18n._("13 - 2.472 GHz")],
+                "14": [14, i18n._("14 - 2.484 GHz")],
+                "36": [36, i18n._("36 - 5.180 GHz")],
+                "40": [40, i18n._("40 - 5.200 GHz")],
+                "44": [44, i18n._("44 - 5.220 GHz")],
+                "48": [48, i18n._("48 - 5.240 GHz")],
+                "52": [52, i18n._("52 - 5.260 GHz")],
+                "56": [56, i18n._("56 - 5.280 GHz")],
+                "60": [60, i18n._("60 - 5.300 GHz")],
+                "64": [64, i18n._("64 - 5.320 GHz")],
+                "100": [100, i18n._("100 - 5.500 GHz")],
+                "104": [104, i18n._("104 - 5.520 GHz")],
+                "108": [108, i18n._("108 - 5.540 GHz")],
+                "112": [112, i18n._("112 - 5.560 GHz")],
+                "116": [116, i18n._("116 - 5.580 GHz")],
+                "120": [120, i18n._("120 - 5.600 GHz")],
+                "124": [124, i18n._("124 - 5.620 GHz")],
+                "128": [128, i18n._("128 - 5.640 GHz")],
+                "132": [132, i18n._("132 - 5.660 GHz")],
+                "136": [136, i18n._("136 - 5.680 GHz")],
+                "140": [140, i18n._("140 - 5.700 GHz")],
+                "149": [149, i18n._("149 - 5.745 GHz")],
+                "153": [153, i18n._("153 - 5.765 GHz")],
+                "157": [157, i18n._("157 - 5.785 GHz")],
+                "161": [161, i18n._("161 - 5.805 GHz")],
+                "165": [165, i18n._("165 - 5.825 GHz")]
             };
         }
         return this.wirelessChannelsMap;
@@ -319,7 +319,7 @@ Ext.define('Webui.config.network', {
         this.gridIfconfigLists = Ext.create( 'Ung.grid.Panel', {
             name: 'Interface Status',
             margin: 5,
-            title: this.i18n._('Interface Status'),
+            title: i18n._('Interface Status'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -395,48 +395,48 @@ Ext.define('Webui.config.network', {
                 name: "txdrop"
             }],
             columns: [{
-                header: this.i18n._("Device"),
+                header: i18n._("Device"),
                 dataIndex:'intf',
                 width: 150
             },{
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 dataIndex:'macAddress',
                 width: 150
             },{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex:'address',
                 width: 110
             },{
-                header: this.i18n._("Mask"),
+                header: i18n._("Mask"),
                 dataIndex:'mask',
                 width: 130
             },{
-                header: this.i18n._("Rx Packets"),
+                header: i18n._("Rx Packets"),
                 dataIndex:'rxpkts',
                 width: 110,
                 flex: 1
             },{
-                header: this.i18n._("Rx Errors"),
+                header: i18n._("Rx Errors"),
                 dataIndex:'rxerr',
                 width: 110,
                 flex: 1
             },{
-                header: this.i18n._("Rx Drop"),
+                header: i18n._("Rx Drop"),
                 dataIndex:'rxdrop',
                 width: 110,
                 flex: 1
             },{
-                header: this.i18n._("Tx Packets"),
+                header: i18n._("Tx Packets"),
                 dataIndex:'txpkts',
                 width: 110,
                 flex: 1
             },{
-                header: this.i18n._("Tx Errors"),
+                header: i18n._("Tx Errors"),
                 dataIndex:'txerr',
                 width: 110,
                 flex: 1
             },{
-                header: this.i18n._("Tx Drop"),
+                header: i18n._("Tx Drop"),
                 dataIndex:'txdrop',
                 width: 110,
                 flex: 1
@@ -447,7 +447,7 @@ Ext.define('Webui.config.network', {
             name: 'ARP Lists',
             margin: 5,
             flex: 2,
-            title: this.i18n._('ARP Entry List'),
+            title: i18n._('ARP Entry List'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -481,15 +481,15 @@ Ext.define('Webui.config.network', {
                 name: "type"
             }],
             columns: [{
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 dataIndex:'macAddress',
                 width: 150
             },{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex:'address',
                 width: 200
             },{
-                header: this.i18n._("Type"),
+                header: i18n._("Type"),
                 dataIndex:'type',
                 width: 150
             }]
@@ -499,7 +499,7 @@ Ext.define('Webui.config.network', {
             name: 'Wireless Lists',
             margin: 5,
             flex: 3,
-            title: this.i18n._('Wireless Connections List'),
+            title: i18n._('Wireless Connections List'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -573,27 +573,27 @@ Ext.define('Webui.config.network', {
                 name: "txpackets"
             }],
             columns: [{
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 dataIndex:'macAddress',
                 width: 150
             },{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex:'address',
                 width: 200
             },{
-                header: this.i18n._("Rx Bytes"),
+                header: i18n._("Rx Bytes"),
                 dataIndex:'rxbytes',
                 width: 150
             },{
-                header: this.i18n._("Rx Packets"),
+                header: i18n._("Rx Packets"),
                 dataIndex:'rxpackets',
                 width: 150
             },{
-                header: this.i18n._("Tx Bytes"),
+                header: i18n._("Tx Bytes"),
                 dataIndex:'txbytes',
                 width: 150
             },{
-                header: this.i18n._("Tx Packets"),
+                header: i18n._("Tx Packets"),
                 dataIndex:'txpackets',
                 width: 150
             }]
@@ -602,16 +602,16 @@ Ext.define('Webui.config.network', {
         this.winInterfaceStatus = Ext.create('Ung.EditWindow', {
             helpSource: 'network_interface_status',
             breadcrumbs: [{
-                title: this.i18n._("Interface"),
+                title: i18n._("Interface"),
                 action: Ext.bind(function() {
                     this.winWirelessConnections.cancelAction();
                 }, this)
             }, {
-                title: this.i18n._("Interface Status")
+                title: i18n._("Interface Status")
             }],
             bbar: ["-",{
                 iconCls: 'icon-help',
-                text: this.i18n._('Help'),
+                text: i18n._('Help'),
                 handler: function() {
                     this.winInterfaceStatus.helpAction();
                 },
@@ -619,7 +619,7 @@ Ext.define('Webui.config.network', {
             },'-',{
                 xtype: "button",
                 iconCls: 'icon-refresh',
-                text: this.i18n._("Refresh"),
+                text: i18n._("Refresh"),
                 handler: function() {
                     this.gridIfconfigLists.reload();
                     this.gridArpLists.reload();
@@ -631,7 +631,7 @@ Ext.define('Webui.config.network', {
             },'->',{
                 name: "Close",
                 iconCls: 'cancel-icon',
-                text: this.i18n._('Cancel'),
+                text: i18n._('Cancel'),
                 handler: function() {
                     this.winInterfaceStatus.cancelAction();
                 },
@@ -654,7 +654,7 @@ Ext.define('Webui.config.network', {
             menuDisabled:true,
             resizable: false,
             hideable: false,
-            header: this.i18n._("Delete"),
+            header: i18n._("Delete"),
             width: 50,
             init:function(grid) {
                 this.grid=grid;
@@ -677,7 +677,7 @@ Ext.define('Webui.config.network', {
             menuDisabled:true,
             resizable: false,
             hideable: false,
-            header: this.i18n._("Status"),
+            header: i18n._("Status"),
             width: 50,
             init:function(grid) {
                 this.grid=grid;
@@ -697,7 +697,7 @@ Ext.define('Webui.config.network', {
         });
 
         var duplexRenderer = Ext.bind(function(value) {
-            return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");
+            return (value=="FULL_DUPLEX")?i18n._("full-duplex") : (value=="HALF_DUPLEX") ? i18n._("half-duplex") : i18n._("unknown");
         }, this);
 
         this.gridInterfaces = Ext.create('Ung.grid.Panel',{
@@ -710,7 +710,7 @@ Ext.define('Webui.config.network', {
             addAtTop: false,
             enableColumnHide: true,
             columnMenuDisabled: false,
-            title: this.i18n._("Interfaces"),
+            title: i18n._("Interfaces"),
             dataProperty: "interfaces",
             recordJavaClass: "com.untangle.uvm.network.InterfaceSettings",
             emptyRow: { //Used only to add VLAN Interfaces
@@ -870,7 +870,7 @@ Ext.define('Webui.config.network', {
             }],
             plugins: [deleteVlanColumn, intfStatus],
             columns: [{
-                header: this.i18n._("Id"),
+                header: i18n._("Id"),
                 width: 35,
                 dataIndex: 'interfaceId',
                 renderer: function(value) {
@@ -881,31 +881,31 @@ Ext.define('Webui.config.network', {
                     }
                 }
             }, {
-                header: this.i18n._("Name"),
+                header: i18n._("Name"),
                 dataIndex: 'name',
                 width:120
             }, {
-                header: this.i18n._( "Connected" ),
+                header: i18n._( "Connected" ),
                 dataIndex: 'connected',
                 sortable: false,
                 width: 110,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                     if (Ext.isEmpty(value)) return "<div style='height:16px;'></div>";
                     var divClass = "ua-cell-disabled";
-                    var connectedStr = this.i18n._("unknown");
+                    var connectedStr = i18n._("unknown");
                     if ( value == "CONNECTED" ) {
-                        connectedStr = this.i18n._("connected");
+                        connectedStr = i18n._("connected");
                         divClass = "ua-cell-enabled";
                     } else if ( value == "DISCONNECTED" ) {
-                        connectedStr = this.i18n._("disconnected");
+                        connectedStr = i18n._("disconnected");
                     } else if ( value == "MISSING" ) {
-                        connectedStr = this.i18n._("missing");
+                        connectedStr = i18n._("missing");
                     }
                     var title = record.get("mbit") + " " + duplexRenderer(record.get("duplex"));
                     return "<div class='" + divClass + "' title='"+title+"'>" + connectedStr + "</div>";
                 }, this)
             }, {
-                header: this.i18n._("Device"),
+                header: i18n._("Device"),
                 dataIndex: 'physicalDev',
                 width:50,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
@@ -916,52 +916,52 @@ Ext.define('Webui.config.network', {
                 }, this)
             },{
                 hidden: true,
-                header: this.i18n._("Physical Dev"),
+                header: i18n._("Physical Dev"),
                 dataIndex: 'physicalDev',
                 width:80
             }, {
                 hidden: true,
-                header: this.i18n._("System Dev"),
+                header: i18n._("System Dev"),
                 dataIndex: 'systemDev',
                 width:80
             }, {
                 hidden: true,
-                header: this.i18n._("Symbolic Dev"),
+                header: i18n._("Symbolic Dev"),
                 dataIndex: 'symbolicDev',
                 width:80
             }, {
                 hidden: true,
-                header: this.i18n._("IMQ Dev"),
+                header: i18n._("IMQ Dev"),
                 dataIndex: 'imqDev',
                 width:80
             }, {
-                header: this.i18n._("Speed"),
+                header: i18n._("Speed"),
                 dataIndex: 'mbit',
                 width:50
             }, {
                 hidden: true,
-                header: this.i18n._( "Duplex" ),
+                header: i18n._( "Duplex" ),
                 dataIndex: 'duplex',
                 width: 100,
                 renderer: duplexRenderer
             }, {
-                header: this.i18n._("Config"),
+                header: i18n._("Config"),
                 dataIndex: 'configType',
                 width: 90,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                     switch(value) {
                       case "ADDRESSED":
-                        return this.i18n._("Addressed");
+                        return i18n._("Addressed");
                       case "BRIDGED":
-                        return this.i18n._("Bridged");
+                        return i18n._("Bridged");
                       case "DISABLED":
-                        return this.i18n._("Disabled");
+                        return i18n._("Disabled");
                     default:
-                        return this.i18n._(value);
+                        return i18n._(value);
                     }
                 }, this)
             }, {
-                header: this.i18n._("Current Address"),
+                header: i18n._("Current Address"),
                 dataIndex: 'v4Address',
                 width:130,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
@@ -969,7 +969,7 @@ Ext.define('Webui.config.network', {
                     return value + "/" + record.data.v4PrefixLength;
                 }, this)
             }, {
-                header: this.i18n._("is WAN"),
+                header: i18n._("is WAN"),
                 dataIndex: 'isWan',
                 width:50,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
@@ -981,7 +981,7 @@ Ext.define('Webui.config.network', {
                 xtype: "button",
                 name: "remap_interfaces",
                 iconCls: 'icon-drag',
-                text: this.i18n._("Remap Interfaces"),
+                text: i18n._("Remap Interfaces"),
                 handler: function() {
                     this.gridInterfaces.onMapDevices();
                 },
@@ -989,14 +989,14 @@ Ext.define('Webui.config.network', {
             },'-',{
                 xtype: "button",
                 iconCls: 'icon-refresh',
-                text: this.i18n._("Refresh"),
+                text: i18n._("Refresh"),
                 handler: function() {
                     this.loadDeviceAndInterfaceStatus(true);
                 },
                 scope : this
             },'-',{
                 xtype: "button",
-                text : this.i18n._( "Add Tagged VLAN Interface" ),
+                text : i18n._( "Add Tagged VLAN Interface" ),
                 iconCls : "icon-add-row",
                 handler: function() {
                     this.gridInterfaces.addHandler();
@@ -1004,13 +1004,13 @@ Ext.define('Webui.config.network', {
                 scope : this
             }, '-', {
                 xtype: "button",
-                text : this.i18n._( "Test Connectivity" ),
+                text : i18n._( "Test Connectivity" ),
                 handler : this.testConnectivity,
                 iconCls : "icon-test-connectivity",
                 scope : this
             },{
                 xtype: "button",
-                text : this.i18n._( "Ping Test" ),
+                text : i18n._( "Ping Test" ),
                 iconCls : "icon-test-ping",
                 handler : function() {
                     this.openPingTest("");
@@ -1034,7 +1034,7 @@ Ext.define('Webui.config.network', {
                 this.winInterfaceStatus.show();
             }, this),
             onMapDevices: Ext.bind(function() {
-                Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
+                Ext.MessageBox.wait(i18n._("Loading device mapper..."), i18n._("Please wait"));
                 if (!this.winMapDevices) {
                     this.mapDevicesStore = Ext.create('Ext.data.JsonStore',{
                         fields:[{name: "interfaceId"}, { name: "name" }, {name: "deviceName"}, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }]
@@ -1063,7 +1063,7 @@ Ext.define('Webui.config.network', {
                         bbar: [{
                             xtype: "button",
                             iconCls: 'icon-refresh',
-                            text: this.i18n._("Refresh Device Status"),
+                            text: i18n._("Refresh Device Status"),
                             handler: function() {
                                 this.gridMapDevices.onRefreshDeviceStatus();
                             },
@@ -1074,7 +1074,7 @@ Ext.define('Webui.config.network', {
                             disableSelection: false,
                             plugins:{
                                 ptype: 'gridviewdragdrop',
-                                dragText: this.i18n._('Drag and drop to reorganize')
+                                dragText: i18n._('Drag and drop to reorganize')
                             },
                             listeners: {
                                 "drop": {
@@ -1094,7 +1094,7 @@ Ext.define('Webui.config.network', {
                             }
                         },
                         columns: [{
-                            header: this.i18n._("Name"),
+                            header: i18n._("Name"),
                             dataIndex: 'name',
                             sortable: false,
                             width: 80,
@@ -1108,8 +1108,8 @@ Ext.define('Webui.config.network', {
                             width: 40,
                             tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
                         }, {
-                            header: this.i18n._( "Device" ),
-                            tooltip: this.i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched." ),
+                            header: i18n._( "Device" ),
+                            tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched." ),
                             dataIndex: 'deviceName',
                             sortable: false,
                             width: 200,
@@ -1172,45 +1172,45 @@ Ext.define('Webui.config.network', {
                                 }
                             }
                         }, {
-                            header: this.i18n._( "Connected" ),
+                            header: i18n._( "Connected" ),
                             dataIndex: 'connected',
                             sortable: false,
                             width: 120,
                             tdCls: 'ua-draggable',
                             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                                 var divClass = "ua-cell-disabled";
-                                var connectedStr = this.i18n._("unknown");
+                                var connectedStr = i18n._("unknown");
                                 if ( value == "CONNECTED" ) {
-                                    connectedStr = this.i18n._("connected");
+                                    connectedStr = i18n._("connected");
                                     divClass = "ua-cell-enabled";
                                 } else if ( value == "DISCONNECTED" ) {
-                                    connectedStr = this.i18n._("disconnected");
+                                    connectedStr = i18n._("disconnected");
                                 } else if ( value == "MISSING" ) {
-                                    connectedStr = this.i18n._("missing");
+                                    connectedStr = i18n._("missing");
                                 }
                                 return "<div class='" + divClass + "'>" + connectedStr + "</div>";
                             }, this)
                         }, {
-                            header: this.i18n._( "Speed" ),
+                            header: i18n._( "Speed" ),
                             dataIndex: 'mbit',
                             sortable: false,
                             tdCls: 'ua-draggable',
                             width: 100
                         }, {
-                            header: this.i18n._( "Duplex" ),
+                            header: i18n._( "Duplex" ),
                             dataIndex: 'duplex',
                             sortable: false,
                             tdCls: 'ua-draggable',
                             width: 100,
                             renderer: duplexRenderer
                         }, {
-                            header: this.i18n._( "Vendor" ),
+                            header: i18n._( "Vendor" ),
                             dataIndex: 'vendor',
                             sortable: false,
                             tdCls: 'ua-draggable',
                             flex: 1
                         }, {
-                            header: this.i18n._( "MAC Address" ),
+                            header: i18n._( "MAC Address" ),
                             dataIndex: 'macAddress',
                             sortable: false,
                             width: 150,
@@ -1226,7 +1226,7 @@ Ext.define('Webui.config.network', {
                         }],
                         onRefreshDeviceStatus: function() {
                             var grid = this;
-                            Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
+                            Ext.MessageBox.wait(i18n._("Refreshing Device Status..."), i18n._("Please wait"));
                             Ung.Main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                                 if(Ung.Util.handleException(exception)) return;
                                 var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
@@ -1257,12 +1257,12 @@ Ext.define('Webui.config.network', {
 
                     this.winMapDevices = Ext.create('Ung.EditWindow', {
                         breadcrumbs: [{
-                            title: this.i18n._("Interfaces"),
+                            title: i18n._("Interfaces"),
                             action: Ext.bind(function() {
                                 this.winMapDevices.cancelAction();
                             }, this)
                         }, {
-                            title: this.i18n._("Remap Interfaces")
+                            title: i18n._("Remap Interfaces")
                         }],
                         items: [{
                             xtype: 'panel',
@@ -1271,8 +1271,8 @@ Ext.define('Webui.config.network', {
                                 xtype: 'fieldset',
                                 flex: 0,
                                 margin: '5 0 0 0',
-                                title: this.i18n._("How to map Devices with Interfaces"),
-                                html: this.i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.")
+                                title: i18n._("How to map Devices with Interfaces"),
+                                html: i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.")
                             }, this.gridMapDevices]
                         }],
                         updateAction: Ext.bind(function() {
@@ -1317,14 +1317,14 @@ Ext.define('Webui.config.network', {
         this.panelInterfaces = Ext.create('Ext.panel.Panel',{
             name: 'Interfaces',
             helpSource: 'network_interfaces',
-            title: this.i18n._('Interfaces'),
+            title: i18n._('Interfaces'),
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._("Interface configuration"),
-                html: this.i18n._("Use this page to configure each interface's configuration and its mapping to a physical network card.")
+                title: i18n._("Interface configuration"),
+                html: i18n._("Use this page to configure each interface's configuration and its mapping to a physical network card.")
             }, this.gridInterfaces]
         });
         this.gridInterfacesV4AliasesEditor = Ext.create('Ung.grid.Panel',{
@@ -1346,17 +1346,17 @@ Ext.define('Webui.config.network', {
                 name: 'staticPrefix'
             }],
             columns: [{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex: 'staticAddress',
                 width: 200,
                 editor : {
                     xtype: 'textfield',
                     vtype: 'ip4Address',
-                    emptyText: this.i18n._("[enter IPv4 address]"),
+                    emptyText: i18n._("[enter IPv4 address]"),
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("Netmask / Prefix"),
+                header: i18n._("Netmask / Prefix"),
                 dataIndex: 'staticPrefix',
                 flex: 1,
                 editor : {
@@ -1400,17 +1400,17 @@ Ext.define('Webui.config.network', {
                 name: 'staticPrefix'
             }],
             columns: [{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex: 'staticAddress',
                 width:200,
                 editor : {
                     xtype: 'textfield',
                     vtype: 'ip6Address',
-                    emptyText: this.i18n._("[enter IPv6 address]"),
+                    emptyText: i18n._("[enter IPv6 address]"),
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("Netmask / Prefix"),
+                header: i18n._("Netmask / Prefix"),
                 dataIndex: 'staticPrefix',
                 flex: 1,
                 editor : {
@@ -1454,17 +1454,17 @@ Ext.define('Webui.config.network', {
                 name: 'staticPrefix'
             }],
             columns: [{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex: 'staticAddress',
                 width:200,
                 editor : {
                     xtype: 'textfield',
-                    emptyText: this.i18n._("[enter IPv4 address]"),
+                    emptyText: i18n._("[enter IPv4 address]"),
                     vtype: 'ip4Address',
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("Netmask / Prefix"),
+                header: i18n._("Netmask / Prefix"),
                 dataIndex: 'staticPrefix',
                 flex: 1,
                 editor : {
@@ -1502,7 +1502,7 @@ Ext.define('Webui.config.network', {
             emptyRow: {
                 "enabled": true,
                 "value": "66,1.2.3.4",
-                "description": this.i18n._("[no description]")
+                "description": i18n._("[no description]")
             },
             fields: [{
                 name: 'enabled'
@@ -1513,27 +1513,27 @@ Ext.define('Webui.config.network', {
             }],
             columns: [{
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter description]"),
+                    emptyText: i18n._("[enter description]"),
                     allowBlank:false
                 }
             }, {
-                header: this.i18n._("Value"),
+                header: i18n._("Value"),
                 dataIndex: 'value',
                 width:200,
                 editor : {
                     xtype: 'textfield',
-                    emptyText: this.i18n._("[enter value]"),
+                    emptyText: i18n._("[enter value]"),
                     allowBlank: false
                 }
             }],
@@ -1554,30 +1554,30 @@ Ext.define('Webui.config.network', {
         this.gridInterfaces.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             sizeToParent: true,
             helpSource: 'network_interfaces',
-            title: this.i18n._('Edit Interface'),
+            title: i18n._('Edit Interface'),
             inputLines: [{
                 xtype:'textfield',
                 dataIndex: "name",
-                fieldLabel: this.i18n._("Interface Name"),
+                fieldLabel: i18n._("Interface Name"),
                 allowBlank: false,
                 width: 300
             }, {
                 xtype:'checkbox',
                 dataIndex: "isVlanInterface",
-                fieldLabel: this.i18n._("Is VLAN (802.1q) Interface"),
+                fieldLabel: i18n._("Is VLAN (802.1q) Interface"),
                 readOnly: true,
                 width: 300
             }, {
                 xtype:'checkbox',
                 dataIndex: "isWirelessInterface",
-                fieldLabel: this.i18n._("Is Wireless Interface"),
+                fieldLabel: i18n._("Is Wireless Interface"),
                 readOnly: true,
                 width: 300
             }, {
                 xtype: "combo",
                 allowBlank: false,
                 dataIndex: "vlanParent",
-                fieldLabel: this.i18n._("Parent Interface"),
+                fieldLabel: i18n._("Parent Interface"),
                 store: Ung.Util.getInterfaceList(false, false),
                 width: 300,
                 queryMode: 'local',
@@ -1585,19 +1585,19 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype: "numberfield",
                 dataIndex: "vlanTag",
-                fieldLabel: this.i18n._("802.1q Tag"),
+                fieldLabel: i18n._("802.1q Tag"),
                 minValue: 1,
                 maxValue: 4096,
                 allowBlank: false,
-                blankText: this.i18n._("802.1q Tag must be a valid integer."),
+                blankText: i18n._("802.1q Tag must be a valid integer."),
                 width: 300
             }, {
                 xtype: "combo",
                 allowBlank: false,
                 dataIndex: "configType",
-                fieldLabel: this.i18n._("Config Type"),
+                fieldLabel: i18n._("Config Type"),
                 editable: false,
-                store: [["ADDRESSED", this.i18n._('Addressed')], ["BRIDGED", this.i18n._('Bridged')], ["DISABLED", this.i18n._('Disabled')]],
+                store: [["ADDRESSED", i18n._('Addressed')], ["BRIDGED", i18n._('Bridged')], ["DISABLED", i18n._('Disabled')]],
                 width: 300,
                 queryMode: 'local',
                 listeners: {
@@ -1611,7 +1611,7 @@ Ext.define('Webui.config.network', {
                 xtype: "combo",
                 allowBlank: false,
                 dataIndex: "bridgedTo",
-                fieldLabel: this.i18n._("Bridged To"),
+                fieldLabel: i18n._("Bridged To"),
                 store: Ung.Util.getInterfaceAddressedList(),
                 width: 300,
                 queryMode: 'local',
@@ -1619,7 +1619,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkbox',
                 dataIndex: "isWan",
-                fieldLabel: this.i18n._("Is WAN Interface"),
+                fieldLabel: i18n._("Is WAN Interface"),
                 listeners: {
                     "change": {
                         fn: Ext.bind(function(elem, newValue) {
@@ -1636,7 +1636,7 @@ Ext.define('Webui.config.network', {
                 xtype: 'fieldset',
                 name: 'wireless',
                 border: true,
-                title: this.i18n._("Wireless Configuration"),
+                title: i18n._("Wireless Configuration"),
                 collapsible: false,
                 collapsed: false,
                 defaults: {
@@ -1645,7 +1645,7 @@ Ext.define('Webui.config.network', {
                 items: [{
                     xtype:'textfield',
                     dataIndex: "wirelessSsid",
-                    fieldLabel: this.i18n._("SSID"),
+                    fieldLabel: i18n._("SSID"),
                     allowBlank: false,
                     disableOnly: true,
                     maxLength: 30,
@@ -1656,9 +1656,9 @@ Ext.define('Webui.config.network', {
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "wirelessEncryption",
-                    fieldLabel: this.i18n._("Encryption"),
+                    fieldLabel: i18n._("Encryption"),
                     editable: false,
-                    store: [["NONE", this.i18n._('None')], ["WPA1", this.i18n._('WPA')], ["WPA12", this.i18n._('WPA / WPA2')], ["WPA2", this.i18n._('WPA2')]],
+                    store: [["NONE", i18n._('None')], ["WPA1", i18n._('WPA')], ["WPA12", i18n._('WPA / WPA2')], ["WPA2", i18n._('WPA2')]],
                     width: 300,
                     queryMode: 'local',
                     listeners: {
@@ -1671,7 +1671,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype:'textfield',
                     dataIndex: "wirelessPassword",
-                    fieldLabel: this.i18n._("Password"),
+                    fieldLabel: i18n._("Password"),
                     allowBlank: false,
                     disableOnly: true,
                     maxLength: 63,
@@ -1682,7 +1682,7 @@ Ext.define('Webui.config.network', {
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "wirelessChannel",
-                    fieldLabel: this.i18n._("Channel"),
+                    fieldLabel: i18n._("Channel"),
                     editable: false,
                     valueField: "channel",
                     displayField: "channelDescription",
@@ -1697,7 +1697,7 @@ Ext.define('Webui.config.network', {
                 xtype:'fieldset',
                 name: 'v4Config',
                 border: true,
-                title: this.i18n._("IPv4 Configuration"),
+                title: i18n._("IPv4 Configuration"),
                 collapsible: true,
                 collapsed: false,
                 items: [{
@@ -1709,10 +1709,10 @@ Ext.define('Webui.config.network', {
                     items:[{
                         xtype: "combo",
                         dataIndex: "v4ConfigType",
-                        fieldLabel: this.i18n._("Config Type"),
+                        fieldLabel: i18n._("Config Type"),
                         allowBlank: false,
                         editable: false,
-                        store: [ ["AUTO", this.i18n._('Auto (DHCP)')], ["STATIC", this.i18n._('Static')],  ["PPPOE", this.i18n._('PPPoE')]],
+                        store: [ ["AUTO", i18n._('Auto (DHCP)')], ["STATIC", i18n._('Static')],  ["PPPOE", i18n._('PPPoE')]],
                         queryMode: 'local',
                         listeners: {
                             "select": {
@@ -1724,13 +1724,13 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4StaticAddress",
-                        fieldLabel: this.i18n._("Address"),
+                        fieldLabel: i18n._("Address"),
                         allowBlank: false,
                         vtype: "ip4Address"
                     }, {
                         xtype: "combo",
                         dataIndex: "v4StaticPrefix",
-                        fieldLabel: this.i18n._( "Netmask" ),
+                        fieldLabel: i18n._( "Netmask" ),
                         store: Ung.Util.getV4NetmaskList( false ),
                         queryMode: 'local',
                         allowBlank: false,
@@ -1738,19 +1738,19 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4StaticGateway",
-                        fieldLabel: this.i18n._("Gateway"),
+                        fieldLabel: i18n._("Gateway"),
                         allowBlank: false,
                         vtype: "ip4Address"
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4StaticDns1",
-                        fieldLabel: this.i18n._("Primary DNS"),
+                        fieldLabel: i18n._("Primary DNS"),
                         allowBlank: false,
                         vtype: "ip4Address"
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4StaticDns2",
-                        fieldLabel: this.i18n._("Secondary DNS"),
+                        fieldLabel: i18n._("Secondary DNS"),
                         vtype: "ip4Address"
                     }, {
                         xtype: 'container',
@@ -1761,7 +1761,7 @@ Ext.define('Webui.config.network', {
                         items: [{
                             xtype:'textfield',
                             dataIndex: "v4AutoAddressOverride",
-                            fieldLabel: this.i18n._("Address Override"),
+                            fieldLabel: i18n._("Address Override"),
                             vtype: "ip4Address",
                             labelWidth: 150,
                             width: 350
@@ -1770,7 +1770,7 @@ Ext.define('Webui.config.network', {
                             dataIndex: "v4Address",
                             setValue: function(value) {
                                 this.dataValue=value;
-                                this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
+                                this.setText(Ext.isEmpty(value)?"":i18n._("Current:") + " " + Ext.String.format("{0}", value));
                             },
                             getValue: function() {
                                 return this.dataValue;
@@ -1787,7 +1787,7 @@ Ext.define('Webui.config.network', {
                         items: [{
                             xtype: "combo",
                             dataIndex: "v4AutoPrefixOverride",
-                            fieldLabel: this.i18n._("Netmask Override"),
+                            fieldLabel: i18n._("Netmask Override"),
                             store: Ung.Util.getV4NetmaskList( true ),
                             queryMode: 'local',
                             editable: false,
@@ -1799,7 +1799,7 @@ Ext.define('Webui.config.network', {
                             dataIndex: "v4PrefixLength",
                             setValue: function(value, record) {
                                 this.dataValue=value;
-                                this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("/{0} - {1}", value, record.get("v4Netmask")));
+                                this.setText(Ext.isEmpty(value)?"":i18n._("Current:") + " " + Ext.String.format("/{0} - {1}", value, record.get("v4Netmask")));
                             },
                             getValue: function() {
                                 return this.dataValue;
@@ -1816,7 +1816,7 @@ Ext.define('Webui.config.network', {
                         items: [{
                             xtype:'textfield',
                             dataIndex: "v4AutoGatewayOverride",
-                            fieldLabel: this.i18n._("Gateway Override"),
+                            fieldLabel: i18n._("Gateway Override"),
                             vtype: "ip4Address",
                             labelWidth: 150,
                             width: 350
@@ -1825,7 +1825,7 @@ Ext.define('Webui.config.network', {
                             dataIndex: "v4Gateway",
                             setValue: function(value) {
                                 this.dataValue=value;
-                                this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
+                                this.setText(Ext.isEmpty(value)?"":i18n._("Current:") + " " + Ext.String.format("{0}", value));
                             },
                             getValue: function() {
                                 return this.dataValue;
@@ -1842,7 +1842,7 @@ Ext.define('Webui.config.network', {
                         items: [{
                             xtype:'textfield',
                             dataIndex: "v4AutoDns1Override",
-                            fieldLabel: this.i18n._("Primary DNS Override"),
+                            fieldLabel: i18n._("Primary DNS Override"),
                             vtype: "ip4Address",
                             labelWidth: 150,
                             width: 350
@@ -1851,7 +1851,7 @@ Ext.define('Webui.config.network', {
                             dataIndex: "v4Dns1",
                             setValue: function(value) {
                                 this.dataValue=value;
-                                this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
+                                this.setText(Ext.isEmpty(value)?"":i18n._("Current:") + " " + Ext.String.format("{0}", value));
                             },
                             getValue: function() {
                                 return this.dataValue;
@@ -1868,7 +1868,7 @@ Ext.define('Webui.config.network', {
                         items: [{
                             xtype:'textfield',
                             dataIndex: "v4AutoDns2Override",
-                            fieldLabel: this.i18n._("Secondary DNS Override"),
+                            fieldLabel: i18n._("Secondary DNS Override"),
                             vtype: "ip4Address",
                             labelWidth: 150,
                             width: 350
@@ -1877,7 +1877,7 @@ Ext.define('Webui.config.network', {
                             dataIndex: "v4Dns2",
                             setValue: function(value) {
                                 this.dataValue=value;
-                                this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
+                                this.setText(Ext.isEmpty(value)?"":i18n._("Current:") + " " + Ext.String.format("{0}", value));
                             },
                             getValue: function() {
                                 return this.dataValue;
@@ -1888,7 +1888,7 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype: 'button',
                         name: "v4AutoRenewDhcpLease",
-                        text: this.i18n._( "Renew DHCP Lease" ),
+                        text: i18n._( "Renew DHCP Lease" ),
                         width: 195,
                         margin: "5 0 5 155",
                         handler: Ext.bind(function() {
@@ -1897,18 +1897,18 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4PPPoEUsername",
-                        fieldLabel: this.i18n._("Username"),
+                        fieldLabel: i18n._("Username"),
                         width: 350
                     }, {
                         xtype:'textfield',
                         inputType:'password',
                         dataIndex: "v4PPPoEPassword",
-                        fieldLabel: this.i18n._("Password"),
+                        fieldLabel: i18n._("Password"),
                         width: 350
                     }, {
                         xtype:'checkbox',
                         dataIndex: "v4PPPoEUsePeerDns",
-                        fieldLabel: this.i18n._("Use Peer DNS"),
+                        fieldLabel: i18n._("Use Peer DNS"),
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -1919,40 +1919,40 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4PPPoEDns1",
-                        fieldLabel: this.i18n._("Primary DNS"),
+                        fieldLabel: i18n._("Primary DNS"),
                         vtype: "ip4Address",
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "v4PPPoEDns2",
-                        fieldLabel: this.i18n._("Secondary DNS"),
+                        fieldLabel: i18n._("Secondary DNS"),
                         vtype: "ip4Address",
                         width: 350
                     }]
                 }, {
                     xtype: 'fieldset',
-                    title: this.i18n._("IPv4 Aliases"),
+                    title: i18n._("IPv4 Aliases"),
                     name: "v4AliasesContainer",
                     items: [this.gridInterfacesV4AliasesEditor]
                 }, {
                     xtype: 'fieldset',
-                    title: this.i18n._("IPv4 Options"),
+                    title: i18n._("IPv4 Options"),
                     name: "v4OptionsContainer",
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "v4NatEgressTraffic",
-                        boxLabel: this.i18n._("NAT traffic exiting this interface (and bridged peers)")
+                        boxLabel: i18n._("NAT traffic exiting this interface (and bridged peers)")
                     }, {
                         xtype:'checkbox',
                         dataIndex: "v4NatIngressTraffic",
-                        boxLabel: this.i18n._("NAT traffic coming from this interface (and bridged peers)")
+                        boxLabel: i18n._("NAT traffic coming from this interface (and bridged peers)")
                     }]
                 }]
             }, {
                 xtype: 'fieldset',
                 name: 'v6Config',
                 border: true,
-                title: this.i18n._("IPv6 Configuration"),
+                title: i18n._("IPv6 Configuration"),
                 collapsible: true,
                 collapsed: false,
                 defaults: {
@@ -1962,9 +1962,9 @@ Ext.define('Webui.config.network', {
                     xtype: "combo",
                     dataIndex: "v6ConfigType",
                     allowBlank: false,
-                    fieldLabel: this.i18n._("Config Type"),
+                    fieldLabel: i18n._("Config Type"),
                     editable: false,
-                    store: [ ["DISABLED", this.i18n._('Disabled')], ["AUTO", this.i18n._('Auto (SLAAC/RA)')], ["STATIC", this.i18n._('Static')] ],
+                    store: [ ["DISABLED", i18n._('Disabled')], ["AUTO", i18n._('Auto (SLAAC/RA)')], ["STATIC", i18n._('Static')] ],
                     queryMode: 'local',
                     width: 350,
                     listeners: {
@@ -1977,51 +1977,51 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype:'textfield',
                     dataIndex: "v6StaticAddress",
-                    fieldLabel: this.i18n._("Address"),
+                    fieldLabel: i18n._("Address"),
                     vtype: "ip6Address",
                     width: 450
                 }, {
                     xtype:'textfield',
                     dataIndex: "v6StaticPrefixLength",
-                    fieldLabel: this.i18n._("Prefix Length"),
+                    fieldLabel: i18n._("Prefix Length"),
                     width: 200
                 }, {
                     xtype:'textfield',
                     dataIndex: "v6StaticGateway",
-                    fieldLabel: this.i18n._("Gateway"),
+                    fieldLabel: i18n._("Gateway"),
                     vtype: "ip6Address",
                     width: 350
                 }, {
                     xtype:'textfield',
                     dataIndex: "v6StaticDns1",
-                    fieldLabel: this.i18n._("Primary DNS"),
+                    fieldLabel: i18n._("Primary DNS"),
                     vtype: "ip6Address",
                     width: 350
                 }, {
                     xtype:'textfield',
                     dataIndex: "v6StaticDns2",
-                    fieldLabel: this.i18n._("Secondary DNS"),
+                    fieldLabel: i18n._("Secondary DNS"),
                     vtype: "ip6Address",
                     width: 350
                 }, {
                     xtype: 'fieldset',
-                    title: this.i18n._("IPv6 Aliases"),
+                    title: i18n._("IPv6 Aliases"),
                     name: "v6AliasesContainer",
                     items: [this.gridInterfacesV6AliasesEditor]
                 }, {
                     xtype: 'fieldset',
-                    title: this.i18n._("IPv6 Options"),
+                    title: i18n._("IPv6 Options"),
                     name: "v6OptionsContainer",
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "raEnabled",
-                        boxLabel: this.i18n._("Send Router Advertisements"),
+                        boxLabel: i18n._("Send Router Advertisements"),
                         labelWidth: 150,
                         width: 350
                     },{
                         xtype: 'label',
                         name: "v6RouterAdvertisementWarning",
-                        html: "<font color=\"red\">" + this.i18n._("Warning: ") + "</font>" + this.i18n._("SLAAC only works with /64 subnets."),
+                        html: "<font color=\"red\">" + i18n._("Warning: ") + "</font>" + i18n._("SLAAC only works with /64 subnets."),
                         cls: 'boxlabel'
                     }]
                 }]
@@ -2029,7 +2029,7 @@ Ext.define('Webui.config.network', {
                 xtype: 'fieldset',
                 name: 'dhcp',
                 border: true,
-                title: this.i18n._("DHCP Configuration"),
+                title: i18n._("DHCP Configuration"),
                 collapsible: true,
                 collapsed: false,
                 defaults: {
@@ -2038,7 +2038,7 @@ Ext.define('Webui.config.network', {
                 items: [{
                     xtype:'checkbox',
                     dataIndex: "dhcpEnabled",
-                    boxLabel: this.i18n._("Enable DHCP Serving"),
+                    boxLabel: i18n._("Enable DHCP Serving"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -2049,7 +2049,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype: 'textfield',
                     dataIndex: "dhcpRangeStart",
-                    fieldLabel: this.i18n._("Range Start"),
+                    fieldLabel: i18n._("Range Start"),
                     vtype: "ip4Address",
                     allowBlank: false,
                     disableOnly: true,
@@ -2057,7 +2057,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype:'textfield',
                     dataIndex: "dhcpRangeEnd",
-                    fieldLabel: this.i18n._("Range End"),
+                    fieldLabel: i18n._("Range End"),
                     vtype: "ip4Address",
                     allowBlank: false,
                     disableOnly: true,
@@ -2069,7 +2069,7 @@ Ext.define('Webui.config.network', {
                     items: [{
                         xtype: 'numberfield',
                         dataIndex: "dhcpLeaseDuration",
-                        fieldLabel: this.i18n._("Lease Duration"),
+                        fieldLabel: i18n._("Lease Duration"),
                         allowDecimals: false,
                         //minValue: 0,
                         allowBlank: false,
@@ -2078,14 +2078,14 @@ Ext.define('Webui.config.network', {
                         width: 350
                     }, {
                         xtype: 'label',
-                        html: this.i18n._("(seconds)"),
+                        html: i18n._("(seconds)"),
                         cls: 'boxlabel'
                     }]
                 }, {
                     xtype:'fieldset',
                     name: "dhcpAdvanced",
                     border: true,
-                    title: this.i18n._("DHCP Advanced"),
+                    title: i18n._("DHCP Advanced"),
                     collapsible: true,
                     collapsed: true,
                     defaults: {
@@ -2094,14 +2094,14 @@ Ext.define('Webui.config.network', {
                     items: [{
                         xtype:'textfield',
                         dataIndex: "dhcpGatewayOverride",
-                        fieldLabel: this.i18n._("Gateway Override"),
+                        fieldLabel: i18n._("Gateway Override"),
                         vtype: "ip4Address",
                         disableOnly: true,
                         width: 350
                     }, {
                         xtype: "combo",
                         dataIndex: "dhcpPrefixOverride",
-                        fieldLabel: this.i18n._("Netmask Override"),
+                        fieldLabel: i18n._("Netmask Override"),
                         store: Ung.Util.getV4NetmaskList( true ),
                         queryMode: 'local',
                         editable: false,
@@ -2110,13 +2110,13 @@ Ext.define('Webui.config.network', {
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpDnsOverride",
-                        fieldLabel: this.i18n._("DNS Override"),
+                        fieldLabel: i18n._("DNS Override"),
                         vtype: "ip4AddressList",
                         disableOnly: true,
                         width: 350
                     }, {
                         xtype: 'fieldset',
-                        title: this.i18n._("DHCP Options"),
+                        title: i18n._("DHCP Options"),
                         items: [this.gridInterfacesDhcpOptionsEditor]
                     }]
                 }]
@@ -2124,7 +2124,7 @@ Ext.define('Webui.config.network', {
                 xtype: 'fieldset',
                 name: 'vrrp',
                 border: true,
-                title: this.i18n._("Redundancy (VRRP) Configuration"),
+                title: i18n._("Redundancy (VRRP) Configuration"),
                 collapsible: true,
                 collapsed: true,
                 defaults: {
@@ -2133,7 +2133,7 @@ Ext.define('Webui.config.network', {
                 items: [{
                     xtype:'checkbox',
                     dataIndex: "vrrpEnabled",
-                    boxLabel: this.i18n._("Enable VRRP"),
+                    boxLabel: i18n._("Enable VRRP"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -2143,32 +2143,32 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: 'displayfield',
-                    fieldLabel: this.i18n._("Is VRRP Master"),
+                    fieldLabel: i18n._("Is VRRP Master"),
                     name: 'isVrrpMaster',
                     value: "<div class='ua-cell-disabled' style='width:16px;'></div>"
                 }, {
                     xtype: "numberfield",
                     dataIndex: "vrrpId",
-                    fieldLabel: this.i18n._("VRRP ID"),
+                    fieldLabel: i18n._("VRRP ID"),
                     minValue: 1,
                     maxValue: 255,
                     allowBlank: false,
-                    blankText: this.i18n._("VRRP ID must be a valid integer between 1 and 255."),
+                    blankText: i18n._("VRRP ID must be a valid integer between 1 and 255."),
                     disableOnly: true,
                     width: 250
                 }, {
                     xtype: "numberfield",
                     dataIndex: "vrrpPriority",
-                    fieldLabel: this.i18n._("VRRP Priority"),
+                    fieldLabel: i18n._("VRRP Priority"),
                     minValue: 1,
                     maxValue: 255,
                     allowBlank: false,
-                    blankText: this.i18n._("VRRP Priority must be a valid integer between 1 and 255."),
+                    blankText: i18n._("VRRP Priority must be a valid integer between 1 and 255."),
                     disableOnly: true,
                     width: 250
                 }, {
                     xtype: 'fieldset',
-                    title: this.i18n._("VRRP Aliases"),
+                    title: i18n._("VRRP Aliases"),
                     name: "vrrpAliasesContainer",
                     items: [this.gridInterfacesVrrpAliasesEditor]
                 }]
@@ -2479,7 +2479,7 @@ Ext.define('Webui.config.network', {
             },
             onRenewDhcpLease: function() {
                 var settingsCmp = this.grid.settingsCmp;
-                Ext.MessageBox.wait( settingsCmp.i18n._( "Renewing DHCP Lease..." ), settingsCmp.i18n._( "Please wait" ));
+                Ext.MessageBox.wait( i18n._( "Renewing DHCP Lease..." ), i18n._( "Please wait" ));
                 var inerfaceId = this.record.get("interfaceId");
                 Ung.Main.getNetworkManager().renewDhcpLease(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
@@ -2516,19 +2516,19 @@ Ext.define('Webui.config.network', {
         this.panelHostName = Ext.create('Ext.panel.Panel',{
             name: 'Hostname',
             helpSource: 'network_hostname',
-            title: this.i18n._('Hostname'),
+            title: i18n._('Hostname'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Hostname'),
+                title: i18n._('Hostname'),
                 items: [{
                     xtype: 'container',
                     layout: 'column',
                     margin: '0 0 5 0',
                     items: [{
                         xtype: "textfield",
-                        fieldLabel: this.i18n._("Hostname"),
+                        fieldLabel: i18n._("Hostname"),
                         emptyText: "untangle",
                         name: 'HostName',
                         value: this.settings.hostName,
@@ -2542,7 +2542,7 @@ Ext.define('Webui.config.network', {
                         }
                     },{
                         xtype: 'label',
-                        html: this.i18n._("(eg: gateway)"),
+                        html: i18n._("(eg: gateway)"),
                         cls: 'boxlabel'
                     }]
                 },{
@@ -2551,7 +2551,7 @@ Ext.define('Webui.config.network', {
                     margin: '0 0 5 0',
                     items: [{
                         xtype: "textfield",
-                        fieldLabel: this.i18n._("Domain Name"),
+                        fieldLabel: i18n._("Domain Name"),
                         emptyText: "example.com",
                         allowBlank: false,
                         name: 'DomainName',
@@ -2565,16 +2565,16 @@ Ext.define('Webui.config.network', {
                         }
                     },{
                         xtype: 'label',
-                        html: this.i18n._("(eg: example.com)"),
+                        html: i18n._("(eg: example.com)"),
                         cls: 'boxlabel'
                     }]
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Dynamic DNS Service Configuration'),
+                title: i18n._('Dynamic DNS Service Configuration'),
                 items: [{
                     xtype: "checkbox",
-                    fieldLabel: this.i18n._("Enabled"),
+                    fieldLabel: i18n._("Enabled"),
                     checked: this.settings.dynamicDnsServiceEnabled,
                     listeners: {
                         "change": {
@@ -2585,7 +2585,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "combo",
-                    fieldLabel: this.i18n._("Service"),
+                    fieldLabel: i18n._("Service"),
                     value: this.settings.dynamicDnsServiceName,
                     store: [['easydns','EasyDNS'],
                             ['zoneedit','ZoneEdit'],
@@ -2604,7 +2604,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "textfield",
-                    fieldLabel: this.i18n._("Username"),
+                    fieldLabel: i18n._("Username"),
                     value: this.settings.dynamicDnsServiceUsername,
                     listeners: {
                         "change": {
@@ -2615,7 +2615,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "textfield",
-                    fieldLabel: this.i18n._("Password"),
+                    fieldLabel: i18n._("Password"),
                     value: this.settings.dynamicDnsServicePassword,
                     inputType: 'password',
                     listeners: {
@@ -2627,7 +2627,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "textfield",
-                    fieldLabel: this.i18n._("Hostname(s)"),
+                    fieldLabel: i18n._("Hostname(s)"),
                     value: this.settings.dynamicDnsServiceHostnames,
                     listeners: {
                         "change": {
@@ -2645,25 +2645,25 @@ Ext.define('Webui.config.network', {
         this.panelServices = Ext.create('Ext.panel.Panel',{
             name: 'Services',
             helpSource: 'network_services',
-            title: this.i18n._('Services'),
+            title: i18n._('Services'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Local Services'),
+                title: i18n._('Local Services'),
                 items: [{
                     xtype: 'component',
-                    html: "<br/>" + this.i18n._('The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.') + "<br/>",
+                    html: "<br/>" + i18n._('The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.') + "<br/>",
                     margin: '0 0 10 0'
                 }, {
                     xtype: 'numberfield',
-                    fieldLabel: this.i18n._('HTTPS port'),
+                    fieldLabel: i18n._('HTTPS port'),
                     name: 'httpsPort',
                     value: this.settings.httpsPort,
                     allowDecimals: false,
                     minValue: 0,
                     allowBlank: false,
-                    blankText: this.i18n._("You must provide a valid port."),
+                    blankText: i18n._("You must provide a valid port."),
                     vtype: 'port',
                     listeners: {
                         "change": {
@@ -2674,17 +2674,17 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: 'component',
-                    html: "<br/>" + this.i18n._('The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.') + "<br/>",
+                    html: "<br/>" + i18n._('The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.') + "<br/>",
                     margin: '0 0 10 0'
                 }, {
                     xtype: 'numberfield',
-                    fieldLabel: this.i18n._('HTTP port'),
+                    fieldLabel: i18n._('HTTP port'),
                     name: 'httpPort',
                     value: this.settings.httpPort,
                     allowDecimals: false,
                     minValue: 0,
                     allowBlank: false,
-                    blankText: this.i18n._("You must provide a valid port."),
+                    blankText: i18n._("You must provide a valid port."),
                     vtype: 'port',
                     listeners: {
                         "change": {
@@ -2700,7 +2700,7 @@ Ext.define('Webui.config.network', {
     // PortForwardRules Panel
     buildPortForwardRules: function() {
         var troubleshootColumn = Ext.create('Ext.grid.column.Action',{
-            header: this.i18n._("Troubleshooting"),
+            header: i18n._("Troubleshooting"),
             width: 100,
             iconCls: 'icon-detail-row',
             init: function(grid) {
@@ -2752,14 +2752,14 @@ Ext.define('Webui.config.network', {
             },
             initComponent : function() {
                 this.tbar= [{
-                    text: this.settingsCmp.i18n._('Add Simple Rule'),
+                    text: i18n._('Add Simple Rule'),
                     iconCls: 'icon-add-row',
                     handler: this.addSimpleRuleHandler,
                     scope: this
                 }];
                 Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
             },
-            title: this.i18n._("Port Forward Rules"),
+            title: i18n._("Port Forward Rules"),
             recordJavaClass: "com.untangle.uvm.network.PortForwardRule",
             emptyRow: {
                 "ruleId": -1,
@@ -2788,7 +2788,7 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -2800,32 +2800,32 @@ Ext.define('Webui.config.network', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width: 55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }, {
-                header: this.i18n._("New Destination"),
+                header: i18n._("New Destination"),
                 dataIndex: 'newDestination',
                 width: 150
             }, {
-                header: this.i18n._("New Port"),
+                header: i18n._("New Port"),
                 dataIndex: 'newPort',
                 width: 65
             },troubleshootColumn],
             onTroubleshoot: Ext.bind(function(record) {
                 if(!this.portForwardTroubleshootWin) {
                     this.portForwardTroubleshootWin = Ext.create('Ung.Window', {
-                        title: this.i18n._('Port Forward Troubleshooter'),
+                        title: i18n._('Port Forward Troubleshooter'),
                         helpSource: 'port_forward_troubleshooting_guide',
                         settingsCmp: this,
                         helpAction: function() {
@@ -2833,7 +2833,7 @@ Ext.define('Webui.config.network', {
                         },
                         bbar: [{
                             iconCls: 'icon-help',
-                            text: this.i18n._('Help'),
+                            text: i18n._('Help'),
                             handler: function() {
                                 this.portForwardTroubleshootWin.helpAction();
                             },
@@ -2841,7 +2841,7 @@ Ext.define('Webui.config.network', {
                         },'->',{
                             name: "Close",
                             iconCls: 'cancel-icon',
-                            text: this.i18n._('Cancel'),
+                            text: i18n._('Cancel'),
                             handler: function() {
                                 this.portForwardTroubleshootWin.cancelAction();
                             },
@@ -2854,14 +2854,14 @@ Ext.define('Webui.config.network', {
                                 xtype: 'fieldset',
                                 layout: "vbox",
                                 margin: '5 0 0 0',
-                                title: this.i18n._('Troubleshooting Port Forwards'),
+                                title: i18n._('Troubleshooting Port Forwards'),
                                 items: [{
                                     xtype: "label",
-                                    html: this.i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
+                                    html: i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
                                 },{
                                     xtype: "button",
                                     margin: '5 0 0 0',
-                                    text: this.i18n._( "Ping Test" ),
+                                    text: i18n._( "Ping Test" ),
                                     handler: function () {
                                         var destination = this.portForwardTroubleshootWin.recordData.newDestination;
                                         this.openPingTest(destination);
@@ -2870,12 +2870,12 @@ Ext.define('Webui.config.network', {
                                 },{
                                     xtype: "component",
                                     margin: '10 0 0 0',
-                                    html: this.i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
+                                    html: i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
                                 },{
                                     xtype: "button",
                                     margin: '5 0 0 0',
                                     name: "connect_test_button",
-                                    text: this.i18n._( "Connect Test" ),
+                                    text: i18n._( "Connect Test" ),
                                     handler: function () {
                                         var recordData = this.portForwardTroubleshootWin.recordData;
                                         this.openTcpTest(recordData.newDestination, recordData.newPort);
@@ -2884,17 +2884,17 @@ Ext.define('Webui.config.network', {
                                 },{
                                     xtype: "component",
                                     margin: '10 0 0 0',
-                                    html: this.i18n._( "Test 3: Watch traffic using the Packet Test" )
+                                    html: i18n._( "Test 3: Watch traffic using the Packet Test" )
                                 },{
                                     xtype: "button",
                                     margin: '5 0 0 0',
-                                    text: this.i18n._( "Packet Test" ),
+                                    text: i18n._( "Packet Test" ),
                                     handler: this.openPacketTest,
                                     scope: this
                                 },{
                                     xtype: "component",
                                     margin: '10 0 0 0',
-                                    html: Ext.String.format( this.i18n._( "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}" ), "<a href='http://wiki.untangle.com/index.php/Port_Forward_Troubleshooting_Guide'target='_blank'>", "</a>")
+                                    html: Ext.String.format( i18n._( "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}" ), "<a href='http://wiki.untangle.com/index.php/Port_Forward_Troubleshooting_Guide'target='_blank'>", "</a>")
                                 }]
                             }]
                         }],
@@ -2925,17 +2925,17 @@ Ext.define('Webui.config.network', {
         });
 
         var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP"],[ "UDP", "UDP"]];
-        var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
+        var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", i18n._("Other") ]];
         this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
             name: 'PortForwardRules',
             helpSource: 'network_port_forward_rules',
-            title: this.i18n._('Port Forward Rules'),
+            title: i18n._('Port Forward Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Port Forward Rules'),
-                html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.")
+                title: i18n._('Port Forward Rules'),
+                html: i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.")
             }, this.gridPortForwardRules, {
                 xtype: 'fieldset',
                 flex: 2,
@@ -2944,7 +2944,7 @@ Ext.define('Webui.config.network', {
                 collapsible: true,
                 collapsed: false,
                 autoScroll: true,
-                title: this.i18n._('The following ports are currently reserved and can not be forwarded:'),
+                title: i18n._('The following ports are currently reserved and can not be forwarded:'),
                 items: [{
                     xtype: 'component',
                     name: 'portForwardWarnings',
@@ -2983,8 +2983,8 @@ Ext.define('Webui.config.network', {
 
                 Ext.defer( function(){
                     this.down('fieldset[name="fwd_description"]').setTitle( isSimple ?
-                        settingsCmp.i18n._('Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:') :
-                        settingsCmp.i18n._('Forward to the following location:'));
+                        i18n._('Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:') :
+                        i18n._('Forward to the following location:'));
                 },1, this);
             },
             inputLines: [{
@@ -2994,12 +2994,12 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Port Forward Rule")
+                fieldLabel: i18n._("Enable Port Forward Rule")
             }, {
                 xtype:'textfield',
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype : 'fieldset',
@@ -3058,10 +3058,10 @@ Ext.define('Webui.config.network', {
                         return undefined;
                     }
                 },
-                title : this.i18n._("Forward the following traffic:"),
+                title : i18n._("Forward the following traffic:"),
                 items : [{
                     xtype : "combo",
-                    fieldLabel : this.i18n._("Protocol"),
+                    fieldLabel : i18n._("Protocol"),
                     width : 300,
                     name : "simple_protocol",
                     store : protocolStore,
@@ -3069,7 +3069,7 @@ Ext.define('Webui.config.network', {
                     queryMode: 'local'
                 }, {
                     xtype : "combo",
-                    fieldLabel : this.i18n._("Port"),
+                    fieldLabel : i18n._("Port"),
                     width : 300,
                     name : "simple_basic_port",
                     store : portStore,
@@ -3090,7 +3090,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype : "numberfield",
-                    fieldLabel : this.i18n._("Port Number"),
+                    fieldLabel : i18n._("Port Number"),
                     hidden: true,
                     listeners: {
                         "change": {
@@ -3108,7 +3108,7 @@ Ext.define('Webui.config.network', {
                 xtype:'fieldset',
                 name:"advanced_portforward_editor",
                 hidden:true,
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
@@ -3124,7 +3124,7 @@ Ext.define('Webui.config.network', {
                     xtype:'textfield',
                     allowBlank: false,
                     dataIndex: "newDestination",
-                    fieldLabel: this.i18n._("New Destination"),
+                    fieldLabel: i18n._("New Destination"),
                     vtype: 'ipAddress'
                 }, {
                     xtype: 'container',
@@ -3137,20 +3137,20 @@ Ext.define('Webui.config.network', {
                         allowBlank: true,
                         width: 200,
                         dataIndex: "newPort",
-                        fieldLabel: this.i18n._("New Port"),
+                        fieldLabel: i18n._("New Port"),
                         minValue : 1,
                         maxValue : 0xFFFF,
                         vtype: 'port'
                     }, {
                         xtype: 'label',
-                        html: this.i18n._("(optional)"),
+                        html: i18n._("(optional)"),
                         cls: 'boxlabel'
                     }]
                 }]
             }, {
                 xtype: "button",
                 name: "switch_advanced_btn",
-                text: this.i18n._( "Switch to Advanced" ),
+                text: i18n._( "Switch to Advanced" ),
                 handler: function() {
                     var rowEditor = this.gridPortForwardRules.rowEditor;
                     var matchers = rowEditor.down('fieldset[name="simple_portforward_editor"]').getValue();
@@ -3170,7 +3170,7 @@ Ext.define('Webui.config.network', {
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("NAT Rules"),
+            title: i18n._("NAT Rules"),
             dataProperty:'natRules',
             recordJavaClass: "com.untangle.uvm.network.NatRule",
             emptyRow: {
@@ -3195,7 +3195,7 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -3207,18 +3207,18 @@ Ext.define('Webui.config.network', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }]
         });
@@ -3226,14 +3226,14 @@ Ext.define('Webui.config.network', {
         this.panelNatRules = Ext.create('Ext.panel.Panel',{
             name: 'NatRules',
             helpSource: 'network_nat_rules',
-            title: this.i18n._('NAT Rules'),
+            title: i18n._('NAT Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('NAT Rules'),
+                title: i18n._('NAT Rules'),
                 flex: 0,
-                html: this.i18n._("NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.")
+                html: i18n._("NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.")
             },  this.gridNatRules]
         });
         this.gridNatRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
@@ -3243,17 +3243,17 @@ Ext.define('Webui.config.network', {
                 xtype:'checkbox',
                 name: "Enable NAT Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable NAT Rule")
+                fieldLabel: i18n._("Enable NAT Rule")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -3263,14 +3263,14 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action(s):'),
+                title: i18n._('Perform the following action(s):'),
                 items: [{
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "auto",
-                    fieldLabel: this.i18n._("NAT Type"),
+                    fieldLabel: i18n._("NAT Type"),
                     editable: false,
-                    store: [[true, this.i18n._('Auto')], [false, this.i18n._('Custom')]],
+                    store: [[true, i18n._('Auto')], [false, i18n._('Custom')]],
                     queryMode: 'local',
                     listeners: {
                         select: Ext.bind(function(combo, ewVal, oldVal) {
@@ -3282,7 +3282,7 @@ Ext.define('Webui.config.network', {
                     name: "newSource",
                     allowBlank: true,
                     dataIndex: "newSource",
-                    fieldLabel: this.i18n._("New Source"),
+                    fieldLabel: i18n._("New Source"),
                     hidden: true,
                     vtype: 'ipAddress'
                 }]
@@ -3308,7 +3308,7 @@ Ext.define('Webui.config.network', {
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("Bypass Rules"),
+            title: i18n._("Bypass Rules"),
             dataProperty:'bypassRules',
             recordJavaClass: "com.untangle.uvm.network.BypassRule",
             emptyRow: {
@@ -3331,7 +3331,7 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -3343,22 +3343,22 @@ Ext.define('Webui.config.network', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Bypass"),
+                header: i18n._("Bypass"),
                 dataIndex: 'bypass',
                 resizable: false,
                 width:55
@@ -3368,14 +3368,14 @@ Ext.define('Webui.config.network', {
         this.panelBypassRules = Ext.create('Ext.panel.Panel',{
             name: 'BypassRules',
             helpSource: 'network_bypass_rules',
-            title: this.i18n._('Bypass Rules'),
+            title: i18n._('Bypass Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._('Bypass Rules'),
-                html: this.i18n._("Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.")
+                title: i18n._('Bypass Rules'),
+                html: i18n._("Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.")
             }, this.gridBypassRules]
         });
         this.gridBypassRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
@@ -3385,17 +3385,17 @@ Ext.define('Webui.config.network', {
                 xtype:'checkbox',
                 name: "Enable Bypass Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Bypass Rule")
+                fieldLabel: i18n._("Enable Bypass Rule")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -3405,15 +3405,15 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action(s):'),
+                title: i18n._('Perform the following action(s):'),
                 items: [{
                     xtype: "combo",
                     name: "bypass",
                     allowBlank: false,
                     dataIndex: "bypass",
-                    fieldLabel: this.i18n._("Action"),
+                    fieldLabel: i18n._("Action"),
                     editable: false,
-                    store: [[true, this.i18n._('Bypass')], [false, this.i18n._('Process')]],
+                    store: [[true, i18n._('Bypass')], [false, i18n._('Process')]],
                     queryMode: 'local'
                 }]
             }]
@@ -3425,7 +3425,7 @@ Ext.define('Webui.config.network', {
         var devMap = {};
         for ( var c = 0 ; c < this.settings.interfaces.list.length ; c++ ) {
             var intf = this.settings.interfaces.list[c];
-            var name = Ext.String.format(this.i18n._("Local on {0} ({1})"),intf.name, intf.systemDev);
+            var name = Ext.String.format(i18n._("Local on {0} ({1})"),intf.name, intf.systemDev);
             var key = ""+intf.interfaceId;
             devList.push( [ key, name ] );
             devMap[key]=name;
@@ -3434,7 +3434,7 @@ Ext.define('Webui.config.network', {
             height: 300,
             name: 'Static Routes',
             settingsCmp: this,
-            title: this.i18n._("Static Routes"),
+            title: i18n._("Static Routes"),
             dataProperty: 'staticRoutes',
             recordJavaClass: "com.untangle.uvm.network.StaticRoute",
             emptyRow: {
@@ -3461,33 +3461,33 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Network"),
+                header: i18n._("Network"),
                 width: 170,
                 dataIndex: 'network'
             }, {
-                header: this.i18n._("Netmask/Prefix"),
+                header: i18n._("Netmask/Prefix"),
                 width: 170,
                 dataIndex: 'prefix'
             }, {
-                header: this.i18n._("Next Hop"),
+                header: i18n._("Next Hop"),
                 width: 300,
                 dataIndex: 'nextHop',
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                     var intRegex = /^\d+$/;
                     if ( intRegex.test( value ) ) {
-                        return devMap[value]?devMap[value]:this.i18n._("Local interface");
+                        return devMap[value]?devMap[value]:i18n._("Local interface");
                     } else {
                         return value;
                     }
                 }, this)
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 300,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter description]"),
+                    emptyText: i18n._("[enter description]"),
                     allowBlank: false
                 }
             }],
@@ -3496,7 +3496,7 @@ Ext.define('Webui.config.network', {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
+                fieldLabel: i18n._("Description"),
                 emptyText: "[enter description]",
                 allowBlank: false,
                 width: 400
@@ -3504,15 +3504,15 @@ Ext.define('Webui.config.network', {
                 xtype:'textfield',
                 name: "Network",
                 dataIndex: "network",
-                fieldLabel: this.i18n._("Network"),
-                emptyText: this.i18n._("[1.2.3.0]"),
+                fieldLabel: i18n._("Network"),
+                emptyText: i18n._("[1.2.3.0]"),
                 allowBlank: false,
                 vtype: "ipAddress",
                 width: 300
             }, {
                 xtype: "combo",
                 dataIndex: "prefix",
-                fieldLabel: this.i18n._( "Netmask/Prefix" ),
+                fieldLabel: i18n._( "Netmask/Prefix" ),
                 store: Ung.Util.getV4NetmaskList( false ),
                 width: 300,
                 listWidth: 70,
@@ -3521,7 +3521,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype: "combo",
                 dataIndex: "nextHop",
-                fieldLabel: this.i18n._("Next Hop"),
+                fieldLabel: i18n._("Next Hop"),
                 store: devList,
                 width: 300,
                 queryMode: 'local',
@@ -3530,8 +3530,8 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype: 'component',
                 margin: '10 0 0 20',
-                html: this.i18n._("If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.") + "<br/>" +
-                    this.i18n._("If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.")
+                html: i18n._("If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.") + "<br/>" +
+                    i18n._("If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.")
             }]
         });
 
@@ -3548,7 +3548,7 @@ Ext.define('Webui.config.network', {
         });
 
         this.routeButton = Ext.create('Ext.button.Button',{
-            text: this.i18n._(" Refresh Routes "),
+            text: i18n._(" Refresh Routes "),
             handler: function(b,e) {
                 Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
@@ -3561,19 +3561,19 @@ Ext.define('Webui.config.network', {
         this.panelRoutes = Ext.create('Ext.panel.Panel',{
             name: 'Routes',
             helpSource: 'network_routes',
-            title: this.i18n._('Routes'),
+            title: i18n._('Routes'),
             autoScroll: true,
             reserveScrollbar: true,
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Static Routes'),
-                html: this.i18n._("Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
+                title: i18n._('Static Routes'),
+                html: i18n._("Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
             }, this.gridStaticRoutes, {
                 xtype: 'fieldset',
                 style: {marginTop: '10px'},
-                title: this.i18n._('Current Routes'),
-                html: this.i18n._("Current Routes shows the current routing system's configuration and how all traffic will be routed.")
+                title: i18n._('Current Routes'),
+                html: i18n._("Current Routes shows the current routing system's configuration and how all traffic will be routed.")
             }, this.routeArea, this.routeButton]
         });
     },
@@ -3584,11 +3584,11 @@ Ext.define('Webui.config.network', {
             name: 'Static DNS Entries',
             settingsCmp: this,
             hasEdit: false,
-            title: this.i18n._("Static DNS Entries"),
+            title: i18n._("Static DNS Entries"),
             dataExpression:'settings.dnsSettings.staticEntries.list',
             recordJavaClass: "com.untangle.uvm.network.DnsStaticEntry",
             emptyRow: {
-                "name": this.i18n._("[no name]"),
+                "name": i18n._("[no name]"),
                 "address": "1.2.3.4"
             },
             fields: [{
@@ -3598,21 +3598,21 @@ Ext.define('Webui.config.network', {
                 sortType: 'asIp'
             }],
             columns: [{
-                header: this.i18n._("Name"),
+                header: i18n._("Name"),
                 flex: 1,
                 dataIndex: 'name',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter name]"),
+                    emptyText: i18n._("[enter name]"),
                     allowBlank:false
                 }
             },{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex: 'address',
                 width: 200,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter address]"),
+                    emptyText: i18n._("[enter address]"),
                     allowBlank: false,
                     vtype:"ipAddress"
                 }
@@ -3624,11 +3624,11 @@ Ext.define('Webui.config.network', {
             name: 'Domain DNS Servers',
             settingsCmp: this,
             hasEdit: false,
-            title: this.i18n._("Domain DNS Servers"),
+            title: i18n._("Domain DNS Servers"),
             dataExpression:'settings.dnsSettings.localServers.list',
             recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
             emptyRow: {
-                "domain": this.i18n._("[no domain]"),
+                "domain": i18n._("[no domain]"),
                 "localServer": "1.2.3.4"
             },
             fields: [{
@@ -3638,21 +3638,21 @@ Ext.define('Webui.config.network', {
                 sortType: 'asIp'
             }],
             columns: [{
-                header: this.i18n._("Domain"),
+                header: i18n._("Domain"),
                 flex: 1,
                 dataIndex: 'domain',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter domain]"),
+                    emptyText: i18n._("[enter domain]"),
                     allowBlank:false
                 }
             },{
-                header: this.i18n._("Server"),
+                header: i18n._("Server"),
                 dataIndex: 'localServer',
                 width: 200,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter DNS server]"),
+                    emptyText: i18n._("[enter DNS server]"),
                     allowBlank: false,
                     vtype:"ipAddress"
                 }
@@ -3661,7 +3661,7 @@ Ext.define('Webui.config.network', {
         this.panelDnsServer = Ext.create('Ext.panel.Panel',{
             name: 'DnsServer',
             helpSource: 'network_dns_server',
-            title: this.i18n._('DNS Server'),
+            title: i18n._('DNS Server'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
@@ -3674,13 +3674,13 @@ Ext.define('Webui.config.network', {
             name: 'Static DHCP Entries',
             settingsCmp: this,
             hasEdit: false,
-            title: this.i18n._("Static DHCP Entries"),
+            title: i18n._("Static DHCP Entries"),
             dataExpression:'settings.staticDhcpEntries.list',
             recordJavaClass: "com.untangle.uvm.network.DhcpStaticEntry",
             emptyRow: {
                 "macAddress": "11:22:33:44:55:66",
                 "address": "1.2.3.4",
-                "description": this.i18n._("[no description]")
+                "description": i18n._("[no description]")
             },
             fields: [{
                 name: 'macAddress'
@@ -3691,33 +3691,33 @@ Ext.define('Webui.config.network', {
                 name: 'description'
             }],
             columns: [{
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 width: 200,
                 dataIndex: 'macAddress',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter MAC address]"),
+                    emptyText: i18n._("[enter MAC address]"),
                     allowBlank:false,
                     vtype:"macAddress",
                     maskRe: /[a-fA-F0-9:]/
                 }
             },{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex: 'address',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter address]"),
+                    emptyText: i18n._("[enter address]"),
                     allowBlank: false,
                     vtype:"ipAddress"
                 }
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter description]"),
+                    emptyText: i18n._("[enter description]"),
                     allowBlank:false
                 }
             }],
@@ -3736,7 +3736,7 @@ Ext.define('Webui.config.network', {
         });
 
         var addStaticColumn = Ext.create('Ext.grid.column.Action',{
-            header: this.i18n._("Add Static"),
+            header: i18n._("Add Static"),
             width: 100,
             iconCls: 'icon-add-inline-row',
             init: function(grid) {
@@ -3756,7 +3756,7 @@ Ext.define('Webui.config.network', {
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            title: this.i18n._("Current DHCP Leases"),
+            title: i18n._("Current DHCP Leases"),
             dataFn: function(handler) {
                 var me = this;
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
@@ -3792,19 +3792,19 @@ Ext.define('Webui.config.network', {
             }],
             plugins: [addStaticColumn],
             columns: [{
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 dataIndex:'macAddress',
                 width: 150
             },{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 dataIndex:'address',
                 width: 200
             },{
-                header: this.i18n._("Hostname"),
+                header: i18n._("Hostname"),
                 dataIndex:'hostname',
                 width: 200
             },{
-                header: this.i18n._("Expiration Time"),
+                header: i18n._("Expiration Time"),
                 dataIndex:'date',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value*1000); }
@@ -3814,7 +3814,7 @@ Ext.define('Webui.config.network', {
         this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
             name: 'DhcpServer',
             helpSource: 'network_dhcp_server',
-            title: this.i18n._('DHCP Server'),
+            title: i18n._('DHCP Server'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [ this.gridDhcpStaticEntries, this.gridCurrentDhcpLeases]
@@ -3846,14 +3846,14 @@ Ext.define('Webui.config.network', {
                 }
                 return helpSource;
             }, this),
-            title: this.i18n._('Advanced'),
+            title: i18n._('Advanced'),
             cls: 'ung-panel',
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._("Advanced"),
-                html: this.i18n._("Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.")
+                title: i18n._("Advanced"),
+                html: i18n._("Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.")
             }, this.advancedTabPanel]
         });
     },
@@ -3862,11 +3862,11 @@ Ext.define('Webui.config.network', {
         this.panelOptions = Ext.create('Ext.panel.Panel',{
             name: 'Options',
             helpSource: 'network_options',
-            title: this.i18n._('Options'),
+            title: i18n._('Options'),
             cls: 'ung-panel',
             items: [{
                 xtype: "checkbox",
-                fieldLabel: this.i18n._("Enable SIP NAT Helper"),
+                fieldLabel: i18n._("Enable SIP NAT Helper"),
                 labelWidth: 190,
                 checked: this.settings.enableSipNatHelper,
                 listeners: {
@@ -3878,7 +3878,7 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
-                fieldLabel: this.i18n._("Send ICMP Redirects"),
+                fieldLabel: i18n._("Send ICMP Redirects"),
                 labelWidth: 190,
                 checked: this.settings.sendIcmpRedirects,
                 listeners: {
@@ -3890,7 +3890,7 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
-                fieldLabel: this.i18n._("Enable STP (Spanning Tree) on Bridges"),
+                fieldLabel: i18n._("Enable STP (Spanning Tree) on Bridges"),
                 labelWidth: 190,
                 checked: this.settings.stpEnabled,
                 listeners: {
@@ -3903,7 +3903,7 @@ Ext.define('Webui.config.network', {
             },{
                 xtype: "checkbox",
                 hidden: Ung.Util.hideDangerous,
-                fieldLabel: this.i18n._("Enable Strict ARP mode"),
+                fieldLabel: i18n._("Enable Strict ARP mode"),
                 labelWidth: 190,
                 checked: this.settings.strictArpMode,
                 listeners: {
@@ -3915,7 +3915,7 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
-                fieldLabel: this.i18n._("DHCP Authoritative"),
+                fieldLabel: i18n._("DHCP Authoritative"),
                 labelWidth: 190,
                 checked: this.settings.dhcpAuthoritative,
                 listeners: {
@@ -3927,7 +3927,7 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
-                fieldLabel: this.i18n._("Block new sessions during network configuration"),
+                fieldLabel: i18n._("Block new sessions during network configuration"),
                 labelWidth: 190,
                 checked: this.settings.blockDuringRestarts,
                 listeners: {
@@ -3940,7 +3940,7 @@ Ext.define('Webui.config.network', {
             },{
                 xtype: "checkbox",
                 name: "blockReplayPacketsCheckbox",
-                fieldLabel: this.i18n._("Block replay packets"),
+                fieldLabel: i18n._("Block replay packets"),
                 labelWidth: 190,
                 checked: this.settings.blockReplayPackets,
                 listeners: {
@@ -3953,7 +3953,7 @@ Ext.define('Webui.config.network', {
             },{
                 xtype: "checkbox",
                 name: "logBypassedSessions",
-                fieldLabel: this.i18n._("Log bypassed sessions"),
+                fieldLabel: i18n._("Log bypassed sessions"),
                 labelWidth: 190,
                 checked: this.settings.logBypassedSessions,
                 listeners: {
@@ -3966,7 +3966,7 @@ Ext.define('Webui.config.network', {
             },{
                 xtype: "checkbox",
                 name: "logBlockedSessions",
-                fieldLabel: this.i18n._("Log blocked sessions"),
+                fieldLabel: i18n._("Log blocked sessions"),
                 labelWidth: 190,
                 checked: this.settings.logBlockedSessions,
                 listeners: {
@@ -3982,25 +3982,25 @@ Ext.define('Webui.config.network', {
     // QoS Panel
     buildQoS: function() {
         this.qosPriorityStore = [
-            [0, this.i18n._( "Default" )],
-            [1, this.i18n._( "Very High" )],
-            [2, this.i18n._( "High" )],
-            [3, this.i18n._( "Medium" )],
-            [4, this.i18n._( "Low" )],
-            [5, this.i18n._( "Limited" )],
-            [6, this.i18n._( "Limited More" )],
-            [7, this.i18n._( "Limited Severely" )]
+            [0, i18n._( "Default" )],
+            [1, i18n._( "Very High" )],
+            [2, i18n._( "High" )],
+            [3, i18n._( "Medium" )],
+            [4, i18n._( "Low" )],
+            [5, i18n._( "Limited" )],
+            [6, i18n._( "Limited More" )],
+            [7, i18n._( "Limited Severely" )]
         ];
         this.qosPriorityMap = Ung.Util.createStoreMap(this.qosPriorityStore);
 
         this.qosPriorityNoDefaultStore = [
-            [1, this.i18n._( "Very High" )],
-            [2, this.i18n._( "High" )],
-            [3, this.i18n._( "Medium" )],
-            [4, this.i18n._( "Low" )],
-            [5, this.i18n._( "Limited" )],
-            [6, this.i18n._( "Limited More" )],
-            [7, this.i18n._( "Limited Severely" )]
+            [1, i18n._( "Very High" )],
+            [2, i18n._( "High" )],
+            [3, i18n._( "Medium" )],
+            [4, i18n._( "Low" )],
+            [5, i18n._( "Limited" )],
+            [6, i18n._( "Limited More" )],
+            [7, i18n._( "Limited Severely" )]
         ];
         this.qosPriorityNoDefaultMap = Ung.Util.createStoreMap(this.qosPriorityNoDefaultStore);
 
@@ -4029,7 +4029,7 @@ Ext.define('Webui.config.network', {
                 name: 'isWan'
             }],
             columns: [{
-                header: this.i18n._("Id"),
+                header: i18n._("Id"),
                 width: 30,
                 dataIndex: 'interfaceId',
                 renderer: function(value) {
@@ -4040,15 +4040,15 @@ Ext.define('Webui.config.network', {
                     }
                 }
             }, {
-                header: this.i18n._("WAN"),
+                header: i18n._("WAN"),
                 width: 150,
                 dataIndex: 'name'
             }, {
-                header: this.i18n._("Config Type"),
+                header: i18n._("Config Type"),
                 dataIndex: 'configType',
                 width: 150
             }, {
-                header: this.i18n._("Download Bandwidth"),
+                header: i18n._("Download Bandwidth"),
                 dataIndex: 'downloadBandwidthKbps',
                 width: 180,
                 editor: {
@@ -4059,14 +4059,14 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (Ext.isEmpty(value)) {
-                        return this.i18n._("Not set");
+                        return i18n._("Not set");
                     } else {
                         var mbit_value = value/1000;
                         return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
                     }
                 }, this )
             }, {
-                header: this.i18n._("Upload Bandwidth"),
+                header: i18n._("Upload Bandwidth"),
                 dataIndex: 'uploadBandwidthKbps',
                 width: 180,
                 editor : {
@@ -4077,7 +4077,7 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (Ext.isEmpty(value)) {
-                        return this.i18n._("Not set");
+                        return i18n._("Not set");
                     } else {
                         var mbit_value = value/1000;
                         return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
@@ -4103,9 +4103,9 @@ Ext.define('Webui.config.network', {
                 var d_Mbit = d/1000;
                 var u_Mbit = u/1000;
 
-                var message = Ext.String.format( this.i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit );
+                var message = Ext.String.format( i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit );
                 var bandwidthLabel = this.panelQoS.down('component[name="bandwidthLabel"]');
-                bandwidthLabel.update(Ext.String.format(this.i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>');
+                bandwidthLabel.update(Ext.String.format(i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>');
             }, this)
         });
         this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
@@ -4142,7 +4142,7 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -4154,12 +4154,12 @@ Ext.define('Webui.config.network', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._( "Priority" ),
+                header: i18n._( "Priority" ),
                 width: 100,
                 dataIndex: "priority",
                 renderer: Ext.bind(function( value, metadata, record ) {
@@ -4172,13 +4172,13 @@ Ext.define('Webui.config.network', {
                     editable: false
                 }
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }]
         });
@@ -4210,14 +4210,14 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Priority"),
+                header: i18n._("Priority"),
                 width: 150,
                 dataIndex: 'priorityName',
                 renderer: Ext.bind(function( value, metadata, record ) {
-                    return this.i18n._(value);
+                    return i18n._(value);
                 }, this )
             }, {
-                header: this.i18n._("Upload Reservation"),
+                header: i18n._("Upload Reservation"),
                 dataIndex: 'uploadReservation',
                 width: 150,
                 editor : {
@@ -4228,13 +4228,13 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (value === 0) {
-                        return this.i18n._("No reservation");
+                        return i18n._("No reservation");
                     } else {
                         return value + "%";
                     }
                 }, this )
             }, {
-                header: this.i18n._("Upload Limit"),
+                header: i18n._("Upload Limit"),
                 dataIndex: 'uploadLimit',
                 width: 150,
                 editor : {
@@ -4245,13 +4245,13 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (value === 0) {
-                        return this.i18n._("No limit");
+                        return i18n._("No limit");
                     } else {
                         return value + "%";
                     }
                 }, this )
             }, {
-                header: this.i18n._("Download Reservation"),
+                header: i18n._("Download Reservation"),
                 dataIndex: 'downloadReservation',
                 width: 150,
                 editor : {
@@ -4262,13 +4262,13 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (value === 0) {
-                        return this.i18n._("No reservation");
+                        return i18n._("No reservation");
                     } else {
                         return value + "%";
                     }
                 }, this )
             }, {
-                header: this.i18n._("Download Limit"),
+                header: i18n._("Download Limit"),
                 dataIndex: 'downloadLimit',
                 width: 150,
                 editor : {
@@ -4279,7 +4279,7 @@ Ext.define('Webui.config.network', {
                 },
                 renderer: Ext.bind(function( value, metadata, record ) {
                     if (value === 0) {
-                        return this.i18n._("No limit");
+                        return i18n._("No limit");
                     } else {
                         return value + "%";
                     }
@@ -4320,18 +4320,18 @@ Ext.define('Webui.config.network', {
                 name: 'sent'
             }],
             columns: [{
-                header: this.i18n._("Interface"),
+                header: i18n._("Interface"),
                 width: 150,
                 dataIndex: 'interface_name',
                 renderer: Ext.bind(function( value, metadata, record ) {
-                    return this.i18n._(value);
+                    return i18n._(value);
                 }, this )
             }, {
-                header: this.i18n._("Priority"),
+                header: i18n._("Priority"),
                 dataIndex: 'priority',
                 width: 150
             }, {
-                header: this.i18n._("Data"),
+                header: i18n._("Data"),
                 dataIndex: 'sent',
                 width: 150,
                 flex: 1
@@ -4378,27 +4378,27 @@ Ext.define('Webui.config.network', {
                 name:'priority'
             }],
             columns: [{
-                header: this.i18n._("Protocol"),
+                header: i18n._("Protocol"),
                 width: 150,
                 dataIndex: 'proto'
             }, {
-                header: this.i18n._("Source IP"),
+                header: i18n._("Source IP"),
                 dataIndex: 'src',
                 width: 150
             }, {
-                header: this.i18n._("Destination IP"),
+                header: i18n._("Destination IP"),
                 dataIndex: 'dst',
                 width: 150
             }, {
-                header: this.i18n._("Source port"),
+                header: i18n._("Source port"),
                 dataIndex: 'src_port',
                 width: 150
             }, {
-                header: this.i18n._("Destination port"),
+                header: i18n._("Destination port"),
                 dataIndex: 'dst_port',
                 width: 150
             }, {
-                header: this.i18n._("Priority"),
+                header: i18n._("Priority"),
                 dataIndex: 'priority',
                 width: 150,
                 flex: 1,
@@ -4411,15 +4411,15 @@ Ext.define('Webui.config.network', {
         this.panelQoS = Ext.create('Ext.panel.Panel',{
             name: 'QoS',
             helpSource: 'network_qos',
-            title: this.i18n._('QoS'),
+            title: i18n._('QoS'),
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('QoS'),
+                title: i18n._('QoS'),
                 items: [{
                     xtype: "checkbox",
-                    fieldLabel: this.i18n._("Enabled"),
+                    fieldLabel: i18n._("Enabled"),
                     checked: this.settings.qosSettings.qosEnabled,
                     listeners: {
                         "change": {
@@ -4430,7 +4430,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "combo",
-                    fieldLabel: this.i18n._("Default Priority"),
+                    fieldLabel: i18n._("Default Priority"),
                     value: this.settings.qosSettings.defaultPriority,
                     store : this.qosPriorityNoDefaultStore,
                     editable: false,
@@ -4446,7 +4446,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype: 'fieldset',
                 name: 'bandwidth_fieldset',
-                title: this.i18n._('WAN Bandwidth'),
+                title: i18n._('WAN Bandwidth'),
                 items: [{
                     xtype: 'component',
                     name: 'bandwidthLabel',
@@ -4454,10 +4454,10 @@ Ext.define('Webui.config.network', {
                 }, this.gridQosWanBandwidth]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('QoS Rules'),
+                title: i18n._('QoS Rules'),
                 items: [{
                     xtype: "combo",
-                    fieldLabel: this.i18n._("Ping Priority"),
+                    fieldLabel: i18n._("Ping Priority"),
                     value: this.settings.qosSettings.pingPriority,
                     store : this.qosPriorityStore,
                     editable: false,
@@ -4471,7 +4471,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "combo",
-                    fieldLabel: this.i18n._("DNS Priority"),
+                    fieldLabel: i18n._("DNS Priority"),
                     value: this.settings.qosSettings.dnsPriority,
                     store : this.qosPriorityStore,
                     editable: false,
@@ -4485,7 +4485,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "combo",
-                    fieldLabel: this.i18n._("SSH Priority"),
+                    fieldLabel: i18n._("SSH Priority"),
                     value: this.settings.qosSettings.sshPriority,
                     store : this.qosPriorityStore,
                     editable: false,
@@ -4499,7 +4499,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: "combo",
-                    fieldLabel: this.i18n._("OpenVPN Priority"),
+                    fieldLabel: i18n._("OpenVPN Priority"),
                     value: this.settings.qosSettings.openvpnPriority,
                     store : this.qosPriorityStore,
                     editable: false,
@@ -4514,22 +4514,22 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('QoS Custom Rules'),
+                title: i18n._('QoS Custom Rules'),
                 items: [{
                     xtype: 'label',
-                    html: Ext.String.format(this.i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
+                    html: Ext.String.format(i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
                 }, this.gridQosRules]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('QoS Priorities'),
+                title: i18n._('QoS Priorities'),
                 items: [this.gridQosPriorities]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('QoS Statistics'),
+                title: i18n._('QoS Statistics'),
                 items: [this.gridQosStatistics]
             },{
                 xtype: 'fieldset',
-                title: this.i18n._('QoS Sessions'),
+                title: i18n._('QoS Sessions'),
                 items: [this.gridQosSessions]
             }]
         });
@@ -4538,16 +4538,16 @@ Ext.define('Webui.config.network', {
             inputLines:[{
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable")
+                fieldLabel: i18n._("Enable")
             }, {
                 xtype:'textfield',
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -4557,12 +4557,12 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action(s):'),
+                title: i18n._('Perform the following action(s):'),
                 items: [{
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "priority",
-                    fieldLabel: this.i18n._("Priority"),
+                    fieldLabel: i18n._("Priority"),
                     editable: false,
                     store: this.qosPriorityNoDefaultStore,
                     queryMode: 'local'
@@ -4576,14 +4576,14 @@ Ext.define('Webui.config.network', {
         this.panelDnsDhcp = Ext.create('Ext.panel.Panel',{
             name: 'DNS & DHCP',
             helpSource: 'network_dns_and_dhcp',
-            title: this.i18n._('DNS & DHCP'),
+            title: i18n._('DNS & DHCP'),
             autoScroll: true,
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                  xtype: 'component',
-                 html: "<br/><b>" + this.i18n._('Custom dnsmasq options.') + "</b><br/>" +
-                     "<font color=\"red\">" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
+                 html: "<br/><b>" + i18n._('Custom dnsmasq options.') + "</b><br/>" +
+                     "<font color=\"red\">" + i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
                  margin: '0 0 10 0'
              }, {
                  xtype: "textarea",
@@ -4608,7 +4608,7 @@ Ext.define('Webui.config.network', {
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("Forward Filter Rules"),
+            title: i18n._("Forward Filter Rules"),
             dataProperty:'forwardFilterRules',
             recordJavaClass: "com.untangle.uvm.network.FilterRule",
             emptyRow: {
@@ -4634,40 +4634,40 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: Ext.bind(function(value) {
                     if (value < 0) {
-                        return this.i18n._("new");
+                        return i18n._("new");
                     } else {
                         return value;
                     }
                 }, this)
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("IPv6"),
+                header: i18n._("IPv6"),
                 dataIndex: 'ipv6Enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 width:55
@@ -4681,7 +4681,7 @@ Ext.define('Webui.config.network', {
             hasReadOnly: true,
             changableFields: ['enabled', 'ipv6Enabled'],
             addAtTop: false,
-            title: this.i18n._("Input Filter Rules"),
+            title: i18n._("Input Filter Rules"),
             dataProperty:'inputFilterRules',
             recordJavaClass: "com.untangle.uvm.network.FilterRule",
             emptyRow: {
@@ -4710,40 +4710,40 @@ Ext.define('Webui.config.network', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: Ext.bind(function(value) {
                     if (value < 0) {
-                        return this.i18n._("new");
+                        return i18n._("new");
                     } else {
                         return value;
                     }
                 }, this)
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("IPv6"),
+                header: i18n._("IPv6"),
                 dataIndex: 'ipv6Enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 width:55
@@ -4752,7 +4752,7 @@ Ext.define('Webui.config.network', {
         this.panelFilter = Ext.create('Ext.panel.Panel',{
             name: 'FilterRules',
             helpSource: 'network_filter_rules',
-            title: this.i18n._('Filter Rules'),
+            title: i18n._('Filter Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [this.gridForwardFilterRules, this.gridInputFilterRules]
@@ -4765,22 +4765,22 @@ Ext.define('Webui.config.network', {
                 xtype:'checkbox',
                 name: "Enable Forward Filter Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Forward Filter Rule")
+                fieldLabel: i18n._("Enable Forward Filter Rule")
             }, {
                 xtype:'checkbox',
                 name: "Enable IPv6 Support",
                 dataIndex: "ipv6Enabled",
-                fieldLabel: this.i18n._("Enable IPv6 Support")
+                fieldLabel: i18n._("Enable IPv6 Support")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -4790,13 +4790,13 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action(s):'),
+                title: i18n._('Perform the following action(s):'),
                 items: [{
                     xtype: "combo",
                     name: "blocked",
                     allowBlank: false,
                     dataIndex: "blocked",
-                    fieldLabel: this.i18n._("Action"),
+                    fieldLabel: i18n._("Action"),
                     editable: false,
                     store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
                     queryMode: 'local'
@@ -4810,22 +4810,22 @@ Ext.define('Webui.config.network', {
                 xtype:'checkbox',
                 name: "Enable Forward Filter Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Input Filter Rule")
+                fieldLabel: i18n._("Enable Input Filter Rule")
             }, {
                 xtype:'checkbox',
                 name: "Enable IPv6 Support",
                 dataIndex: "ipv6Enabled",
-                fieldLabel: this.i18n._("Enable IPv6 Support")
+                fieldLabel: i18n._("Enable IPv6 Support")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -4835,13 +4835,13 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action(s):'),
+                title: i18n._('Perform the following action(s):'),
                 items: [{
                     xtype: "combo",
                     name: "blocked",
                     allowBlank: false,
                     dataIndex: "blocked",
-                    fieldLabel: this.i18n._("Action"),
+                    fieldLabel: i18n._("Action"),
                     editable: false,
                     store: [[true,i18n._('Block')], [false,i18n._('Pass')]],
                     queryMode: 'local'
@@ -4852,22 +4852,22 @@ Ext.define('Webui.config.network', {
     // NetworkCards Panel
     buildNetworkCards: function() {
         this.duplexStore = [
-            ["AUTO", this.i18n._( "Auto" )],
-            ["M10000_FULL_DUPLEX", this.i18n._( "10000 Mbps, Full Duplex" )],
-            ["M10000_HALF_DUPLEX", this.i18n._( "10000 Mbps, Half Duplex" )],
-            ["M1000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
-            ["M1000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
-            ["M100_FULL_DUPLEX", this.i18n._( "100 Mbps, Full Duplex" )],
-            ["M100_HALF_DUPLEX", this.i18n._( "100 Mbps, Half Duplex" )],
-            ["M10_FULL_DUPLEX", this.i18n._( "10 Mbps, Full Duplex" )],
-            ["M10_HALF_DUPLEX", this.i18n._( "10 Mbps, Half Duplex" )]
+            ["AUTO", i18n._( "Auto" )],
+            ["M10000_FULL_DUPLEX", i18n._( "10000 Mbps, Full Duplex" )],
+            ["M10000_HALF_DUPLEX", i18n._( "10000 Mbps, Half Duplex" )],
+            ["M1000_FULL_DUPLEX", i18n._( "1000 Mbps, Full Duplex" )],
+            ["M1000_HALF_DUPLEX", i18n._( "1000 Mbps, Half Duplex" )],
+            ["M100_FULL_DUPLEX", i18n._( "100 Mbps, Full Duplex" )],
+            ["M100_HALF_DUPLEX", i18n._( "100 Mbps, Half Duplex" )],
+            ["M10_FULL_DUPLEX", i18n._( "10 Mbps, Full Duplex" )],
+            ["M10_HALF_DUPLEX", i18n._( "10 Mbps, Half Duplex" )]
         ];
         this.duplexMap = Ung.Util.createStoreMap(this.duplexStore);
 
         this.gridNetworkCards = Ext.create('Ung.grid.Panel', {
             name: 'Network Cards',
             helpSource: 'network_network_cards',
-            title: this.i18n._('Network Cards'),
+            title: i18n._('Network Cards'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -4883,11 +4883,11 @@ Ext.define('Webui.config.network', {
                 name: 'mtu'
             }],
             columns: [{
-                header: this.i18n._("Device Name"),
+                header: i18n._("Device Name"),
                 width: 250,
                 dataIndex: 'deviceName'
             }, {
-                header: this.i18n._("MTU"),
+                header: i18n._("MTU"),
                 dataIndex: 'mtu',
                 width: 100,
                 renderer: function(value) {
@@ -4901,7 +4901,7 @@ Ext.define('Webui.config.network', {
                     xtype:'numberfield'
                 }
             }, {
-                header: this.i18n._("Ethernet Media"),
+                header: i18n._("Ethernet Media"),
                 dataIndex: 'duplex',
                 width: 250,
                 renderer: Ext.bind(function( value, metadata, record ) {
@@ -4929,31 +4929,31 @@ Ext.define('Webui.config.network', {
             storeData: [{
                 divClass : "ua-cell-test-connectivity",
                 action : "openConnectivityTest",
-                name : this.i18n._( "Connectivity Test" )
+                name : i18n._( "Connectivity Test" )
             },{
                 divClass : "ua-cell-test-ping",
                 action : "openPingTest",
-                name : this.i18n._( "Ping Test" )
+                name : i18n._( "Ping Test" )
             },{
                 divClass : "ua-cell-test-dns",
                 action : "openDnsTest",
-                name : this.i18n._( "DNS Test" )
+                name : i18n._( "DNS Test" )
             },{
                 divClass : "ua-cell-test-tcp",
                 action : "openTcpTest",
-                name : this.i18n._( "Connection Test" )
+                name : i18n._( "Connection Test" )
             },{
                 divClass : "ua-cell-test-traceroute",
                 action : "openTracerouteTest",
-                name : this.i18n._( "Traceroute Test" )
+                name : i18n._( "Traceroute Test" )
             },{
                 divClass : "ua-cell-test-download",
                 action : "openDownloadTest",
-                name : this.i18n._( "Download Test" )
+                name : i18n._( "Download Test" )
             },{
                 divClass : "ua-cell-test-packet",
                 action : "openPacketTest",
-                name : this.i18n._( "Packet Test" )
+                name : i18n._( "Packet Test" )
             }],
             fields: [{
                 name: 'name'
@@ -4963,7 +4963,7 @@ Ext.define('Webui.config.network', {
                 name: 'action'
             }],
             columns: [{
-                header: this.i18n._("Network Tests"),
+                header: i18n._("Network Tests"),
                 flex: 1,
                 dataIndex: 'name',
                 renderer: Ext.bind(function( value, metadata, record ) {
@@ -4974,12 +4974,12 @@ Ext.define('Webui.config.network', {
         this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
             name: 'Troubleshooting',
             helpSource: 'network_troubleshooting',
-            title: this.i18n._('Troubleshooting'),
+            title: i18n._('Troubleshooting'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Network Tests')
+                title: i18n._('Network Tests')
             }, this.gridNetworkTests]
         });
     },
@@ -4988,10 +4988,10 @@ Ext.define('Webui.config.network', {
             this.connectivityTest = Ext.create('Webui.config.network.NetworkTest', {
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Connectivity Test'),
-                testDescription: this.i18n._("The <b>Connectivity Test</b> verifies a working connection to the Internet."),
-                testErrorMessage : this.i18n._( "Unable to complete the Connectivity Test." ),
-                testEmptyText: this.i18n._("Connectivity Test Output"),
+                title: i18n._('Connectivity Test'),
+                testDescription: i18n._("The <b>Connectivity Test</b> verifies a working connection to the Internet."),
+                testErrorMessage : i18n._( "Unable to complete the Connectivity Test." ),
+                testEmptyText: i18n._("Connectivity Test Output"),
                 getCommand: function() {
                     var script= [
                         'echo -n "Testing DNS ... " ; success="Successful";',
@@ -5009,19 +5009,19 @@ Ext.define('Webui.config.network', {
         this.connectivityTest.show();
     },
     testConnectivity: function () {
-        Ext.MessageBox.wait( this.i18n._( "Testing Internet Connectivity" ), this.i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Testing Internet Connectivity" ), i18n._( "Please wait" ));
         var script = [
             'dig updates.untangle.com > /dev/null 2>&1;',
-            'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
+            'if [ "$?" != "0" ]; then echo "'+i18n._('Failed to connect to the Internet, DNS failed.')+'"; exit 1; fi;',
             'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
-            'if [ "$?" != "0" ]; then echo "'+this.i18n._('Failed to connect to the Internet, TCP failed.')+'"; exit 1; fi;',
-            'echo "'+this.i18n._('Successfully connected to the Internet.')+'";'
+            'if [ "$?" != "0" ]; then echo "'+i18n._('Failed to connect to the Internet, TCP failed.')+'"; exit 1; fi;',
+            'echo "'+i18n._('Successfully connected to the Internet.')+'";'
         ];
         var command =  "/bin/bash -c " + script.join("");
         var execResultReader = null;
         Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            Ext.MessageBox.alert(this.i18n._("Test Connectivity Result"), result.output);
+            Ext.MessageBox.alert(i18n._("Test Connectivity Result"), result.output);
         }, this), command);
     },
     openPingTest: function(destination) {
@@ -5029,16 +5029,16 @@ Ext.define('Webui.config.network', {
             this.pingTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Ping Test'),
-                testDescription: this.i18n._("The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"),
-                testErrorMessage : this.i18n._( "Unable to complete the Ping Test." ),
-                testEmptyText: this.i18n._("Ping Test Output"),
+                title: i18n._('Ping Test'),
+                testDescription: i18n._("The <b>Ping Test</b> can be used to test that a particular host or client can be pinged"),
+                testErrorMessage : i18n._( "Unable to complete the Ping Test." ),
+                testEmptyText: i18n._("Ping Test Output"),
                 initComponent : function() {
                     var a = this;
                     this.testTopToolbar = [this.destination = new Ext.form.TextField({
                         xtype : "textfield",
                         width:150,
-                        emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                        emptyText : i18n._( "IP Address or Hostname" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5066,8 +5066,8 @@ Ext.define('Webui.config.network', {
                          ( !Ext.form.VTypes.ipAddress( destination, this.destination ) &&
                            !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                         Ext.MessageBox.show({
-                            title : this.settingsCmp.i18n._( "Warning" ),
-                            msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                            title : i18n._( "Warning" ),
+                            msg : i18n._( "Please enter a valid IP Address or Hostname" ),
                             icon : Ext.MessageBox.WARNING,
                             buttons : Ext.MessageBox.OK
                         });
@@ -5088,16 +5088,16 @@ Ext.define('Webui.config.network', {
             this.dnsTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('DNS Test'),
-                testDescription: this.i18n._("The <b>DNS Test</b> can be used to test DNS lookups"),
-                testErrorMessage : this.i18n._( "Unable to complete DNS test." ),
-                testEmptyText: this.i18n._("DNS Test Output"),
+                title: i18n._('DNS Test'),
+                testDescription: i18n._("The <b>DNS Test</b> can be used to test DNS lookups"),
+                testErrorMessage : i18n._( "Unable to complete DNS test." ),
+                testEmptyText: i18n._("DNS Test Output"),
                 initComponent : function() {
                     var a = this;
                     this.testTopToolbar = [this.destination = new Ext.form.TextField({
                         xtype : "textfield",
                         width:150,
-                        emptyText : this.settingsCmp.i18n._( "Hostname" ),
+                        emptyText : i18n._( "Hostname" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5127,8 +5127,8 @@ Ext.define('Webui.config.network', {
                          ( !Ext.form.VTypes.ipAddress( destination, this.destination ) &&
                            !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                         Ext.MessageBox.show({
-                            title : this.settingsCmp.i18n._( "Warning" ),
-                            msg : this.settingsCmp.i18n._( "Please enter a valid Hostname" ),
+                            title : i18n._( "Warning" ),
+                            msg : i18n._( "Please enter a valid Hostname" ),
                             icon : Ext.MessageBox.WARNING,
                             buttons : Ext.MessageBox.OK
                         });
@@ -5146,16 +5146,16 @@ Ext.define('Webui.config.network', {
             this.tcpTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Connection Test'),
-                testDescription: this.i18n._("The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."),
-                testErrorMessage : this.i18n._( "Unable to complete Connection test." ),
-                testEmptyText: this.i18n._("Connection Test Output"),
+                title: i18n._('Connection Test'),
+                testDescription: i18n._("The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client."),
+                testErrorMessage : i18n._( "Unable to complete Connection test." ),
+                testEmptyText: i18n._("Connection Test Output"),
                 initComponent : function() {
                     var a = this;
                     this.testTopToolbar = [this.destination = new Ext.form.TextField({
                         xtype : "textfield",
                         width:150,
-                        emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                        emptyText : i18n._( "IP Address or Hostname" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5168,7 +5168,7 @@ Ext.define('Webui.config.network', {
                         minValue : 1,
                         maxValue : 65536,
                         width: 60,
-                        emptyText : this.settingsCmp.i18n._( "Port" ),
+                        emptyText : i18n._( "Port" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5202,8 +5202,8 @@ Ext.define('Webui.config.network', {
                          ( !Ext.form.VTypes.ipAddress( destination, this.destination ) &&
                            !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                         Ext.MessageBox.show({
-                            title : this.settingsCmp.i18n._( "Warning" ),
-                            msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                            title : i18n._( "Warning" ),
+                            msg : i18n._( "Please enter a valid IP Address or Hostname" ),
                             icon : Ext.MessageBox.WARNING,
                             buttons : Ext.MessageBox.OK
                         });
@@ -5227,16 +5227,16 @@ Ext.define('Webui.config.network', {
             this.tracerouteTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Traceroute Test'),
-                testDescription: this.i18n._("The <b>Traceroute Test</b> traces the route to a given host or client."),
-                testErrorMessage : this.i18n._( "Unable to complete the Traceroute Test." ),
-                testEmptyText: this.i18n._("Traceroute Test Output"),
+                title: i18n._('Traceroute Test'),
+                testDescription: i18n._("The <b>Traceroute Test</b> traces the route to a given host or client."),
+                testErrorMessage : i18n._( "Unable to complete the Traceroute Test." ),
+                testEmptyText: i18n._("Traceroute Test Output"),
                 initComponent : function() {
                     var a = this;
                     this.testTopToolbar = [this.destination = new Ext.form.TextField({
                         xtype : "textfield",
                         width:150,
-                        emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                        emptyText : i18n._( "IP Address or Hostname" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5276,8 +5276,8 @@ Ext.define('Webui.config.network', {
                          ( !Ext.form.VTypes.ipAddress( destination, this.destination ) &&
                            !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                         Ext.MessageBox.show({
-                            title : this.settingsCmp.i18n._( "Warning" ),
-                            msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                            title : i18n._( "Warning" ),
+                            msg : i18n._( "Please enter a valid IP Address or Hostname" ),
                             icon : Ext.MessageBox.WARNING,
                             buttons : Ext.MessageBox.OK
                         });
@@ -5295,10 +5295,10 @@ Ext.define('Webui.config.network', {
             this.downloadTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Download Test'),
-                testDescription: this.i18n._("The <b>Download Test</b> downloads a file."),
-                testErrorMessage : this.i18n._( "Unable to complete the Download Test." ),
-                testEmptyText: this.i18n._("Download Test Output"),
+                title: i18n._('Download Test'),
+                testDescription: i18n._("The <b>Download Test</b> downloads a file."),
+                testErrorMessage : i18n._( "Unable to complete the Download Test." ),
+                testEmptyText: i18n._("Download Test Output"),
                 initComponent : function() {
                     var a = this;
                     this.testTopToolbar = [this.url = new Ext.form.field.ComboBox({
@@ -5336,8 +5336,8 @@ Ext.define('Webui.config.network', {
                     var url = this.url.getValue();
                     if ( Ext.isEmpty( url ) ) {
                         Ext.MessageBox.show({
-                            title : this.settingsCmp.i18n._( "Warning" ),
-                            msg : this.settingsCmp.i18n._( "Please enter a valid Url" ),
+                            title : i18n._( "Warning" ),
+                            msg : i18n._( "Please enter a valid Url" ),
                             icon : Ext.MessageBox.WARNING,
                             buttons : Ext.MessageBox.OK
                         });
@@ -5355,23 +5355,23 @@ Ext.define('Webui.config.network', {
             this.packetTest = Ext.create('Webui.config.network.NetworkTest',{
                 helpSource: 'network_troubleshooting',
                 settingsCmp: this,
-                title: this.i18n._('Packet Test'),
-                testDescription: this.i18n._("The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."),
-                testErrorMessage : this.i18n._( "Unable to complete the Packet Test." ),
-                testEmptyText: this.i18n._("Packet Test Output"),
-                testAdvancedText: this.i18n._("tcpdump arguments and expression"),
+                title: i18n._('Packet Test'),
+                testDescription: i18n._("The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."),
+                testErrorMessage : i18n._( "Unable to complete the Packet Test." ),
+                testEmptyText: i18n._("Packet Test Output"),
+                testAdvancedText: i18n._("tcpdump arguments and expression"),
                 outputFilename: null,
                 initComponent : function() {
                     var a = this;
-                    var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
-                                    [ 30, this.settingsCmp.i18n._( "30 seconds" )],
-                                    [ 120, this.settingsCmp.i18n._( "120 seconds" )]];
+                    var timeouts = [[ 5, i18n._( "5 seconds" )],
+                                    [ 30, i18n._( "30 seconds" )],
+                                    [ 120, i18n._( "120 seconds" )]];
                     var interfaceStore = Ung.Util.getInterfaceListSystemDev(false, false, true);
                     this.testTopToolbar = [this.destination = new Ext.form.TextField({
                         xtype : "textfield",
                         value : "any",
                         width:150,
-                        emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                        emptyText : i18n._( "IP Address or Hostname" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5384,7 +5384,7 @@ Ext.define('Webui.config.network', {
                         minValue : 1,
                         maxValue : 65536,
                         width: 60,
-                        emptyText : this.settingsCmp.i18n._( "Port" ),
+                        emptyText : i18n._( "Port" ),
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5400,7 +5400,7 @@ Ext.define('Webui.config.network', {
                         value : interfaceStore[0][0],
                         store : interfaceStore
                     }),this.advancedToggleButton = Ext.create("Ext.button.Button",{
-                        text : this.settingsCmp.i18n._("Advanced"),
+                        text : i18n._("Advanced"),
                         toggleHandler : this.onAdvanced,
                         enableToggle: true,
                         scope : this,
@@ -5408,7 +5408,7 @@ Ext.define('Webui.config.network', {
                     }),
                     {
                         xtype : "label",
-                        html : this.settingsCmp.i18n._("Timeout:"),
+                        html : i18n._("Timeout:"),
                         style : "margin-left: 18px"
                     }, this.timeout = new Ext.form.ComboBox({
                         xtype : "combo",
@@ -5497,10 +5497,10 @@ Ext.define('Webui.config.network', {
                              ( !Ext.form.VTypes.ipAddress( destination, this.destination ) &&
                             !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
                             Ext.MessageBox.show({
-                                title : this.settingsCmp.i18n._( "Warning" ),
-                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
-                                icon : Ext.MessageBox.WARNING,
-                                buttons : Ext.MessageBox.OK
+                                title: i18n._( "Warning" ),
+                                msg: i18n._( "Please enter a valid IP Address or Hostname" ),
+                                icon: Ext.MessageBox.WARNING,
+                                buttons: Ext.MessageBox.OK
                             });
                             return false;
                         }
@@ -5508,7 +5508,7 @@ Ext.define('Webui.config.network', {
                     return true;
                 },
                 onAdvanced: function( button, state ){
-                    button.setText( state ? this.settingsCmp.i18n._("Basic") : this.settingsCmp.i18n._("Advanced") );
+                    button.setText( state ? i18n._("Basic") : i18n._("Advanced") );
                     if( !this.advancedInput ){
                         var defaultValue = "";
                         var destination = this.destination.getValue();
@@ -5569,14 +5569,14 @@ Ext.define('Webui.config.network', {
         if (!domainNameCmp.isValid()) {
             this.tabs.setActiveTab(this.panelHostName);
             domainNameCmp.focus(true);
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Domain Name must be specified.'));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Domain Name must be specified.'));
             return false;
         }
         var httpsPortCmp =this.panelServices.down('numberfield[name="httpsPort"]');
         if (!httpsPortCmp.isValid()) {
             this.tabs.setActiveTab(this.panelServices);
             httpsPortCmp.focus(true);
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A HTTPS port must be specified.'));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._('A HTTPS port must be specified.'));
             return false;
         }
 
@@ -5584,7 +5584,7 @@ Ext.define('Webui.config.network', {
         if (!httpPortCmp.isValid()) {
             this.tabs.setActiveTab(this.panelServices);
             httpPortCmp.focus(true);
-            Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A HTTP port must be specified.'));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._('A HTTP port must be specified.'));
             return false;
         }
         if(this.settings.qosSettings.qosEnabled) {
@@ -5597,7 +5597,7 @@ Ext.define('Webui.config.network', {
                     this.tabs.setActiveTab(this.panelAdvanced);
                     this.advancedTabPanel.setActiveTab(this.panelQoS);
                     this.gridQosWanBandwidth.focus();
-                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."));
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces."));
                     return false;
                 }
             }
@@ -5613,7 +5613,7 @@ Ext.define('Webui.config.network', {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelFilter);
                         this.gridInputFilterRules.focus();
-                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."));
+                        Ext.MessageBox.alert(i18n._("Failed"), i18n._("The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation."));
                         return false;
                     }
                     break;
@@ -5624,7 +5624,7 @@ Ext.define('Webui.config.network', {
             this.tabs.setActiveTab(this.panelAdvanced);
             this.advancedTabPanel.setActiveTab(this.panelFilter);
             this.gridInputFilterRules.focus();
-            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."));
+            Ext.MessageBox.alert(i18n._("Failed"), i18n._("The Block All rule in Input Filter Rules is missing. This is dangerous and not allowed! Refer to the documentation."));
             return false;
         }
         if(!this.initialAllowSSHEnabled && rules && !this.confirmedAllowSSHEnabled) {
@@ -5635,10 +5635,10 @@ Ext.define('Webui.config.network', {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelFilter);
                         this.gridInputFilterRules.focus();
-                        Ext.MessageBox.confirm(this.i18n._("Warning"),
-                                               this.i18n._("The Allow SSH rule in Input Filter Rules has been enabled.") + "<br/><br/>" +
-                                               this.i18n._("If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server.") + "<br/><br/>" +
-                                               this.i18n._("Do you want to continue anyway?"),
+                        Ext.MessageBox.confirm(i18n._("Warning"),
+                                               i18n._("The Allow SSH rule in Input Filter Rules has been enabled.") + "<br/><br/>" +
+                                               i18n._("If the admin/root password is poorly chosen, enabling SSH can be very dangerous and will compromise the security of the server.") + "<br/><br/>" +
+                                               i18n._("Do you want to continue anyway?"),
                                                Ext.bind(function(btn, text) {
                                                    if (btn == 'yes') {
                                                        this.confirmedAllowSSHEnabled=true;
@@ -5678,7 +5678,7 @@ Ext.define('Webui.config.network', {
         }, this), this.settings);
     },
     beforeSave: function(isApply, handler) {
-        Ext.MessageBox.wait(this.i18n._("Applying Network Settings..."), this.i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
         this.needRackReload = true;
         
         this.settings.interfaces.list = this.gridInterfaces.getList();
@@ -5725,12 +5725,12 @@ Ext.define("Webui.config.network.NetworkTest", {
     execResultReader: null,
     initComponent : function( ){
         Ext.applyIf( this, {
-            testErrorMessage: this.settingsCmp.i18n._( "Unable to run this Network Utility." ),
+            testErrorMessage: i18n._( "Unable to run this Network Utility." ),
             testTopToolbar: []
         });
         this.bbar = [{
             iconCls: 'icon-help',
-            text: this.settingsCmp.i18n._('Help'),
+            text: i18n._('Help'),
             handler: function() {
                 this.helpAction();
             },
@@ -5738,7 +5738,7 @@ Ext.define("Webui.config.network.NetworkTest", {
         },'->',{
             name: "Close",
             iconCls: 'cancel-icon',
-            text: this.settingsCmp.i18n._('Cancel'),
+            text: i18n._('Cancel'),
             handler: function() {
                 this.cancelAction();
             },
@@ -5760,15 +5760,15 @@ Ext.define("Webui.config.network.NetworkTest", {
                 flex: 1,
                 layout: "fit",
                 tbar: this.testTopToolbar.concat([this.runTest = Ext.create("Ext.button.Button",{
-                    text : this.settingsCmp.i18n._("Run Test"),
-                    iconCls : "icon-test-run",
-                    handler : this.onRunTest,
-                    scope : this
+                    text: i18n._("Run Test"),
+                    iconCls: "icon-test-run",
+                    handler: this.onRunTest,
+                    scope: this
                 }),"->",this.clearOutput = Ext.create("Ext.button.Button",{
-                    text : this.settingsCmp.i18n._("Clear Output"),
-                    iconCls : "icon-clear-output",
-                    handler : this.onClearOutput,
-                    scope : this
+                    text: i18n._("Clear Output"),
+                    iconCls: "icon-clear-output",
+                    handler: this.onClearOutput,
+                    scope: this
                 })]),
                 items : [this.output=Ext.create("Ext.form.field.TextArea", {
                     name : "output",
@@ -5800,7 +5800,7 @@ Ext.define("Webui.config.network.NetworkTest", {
         this.enableParameters( false );
         var text = [];
         text.push( this.output.getValue());
-        text.push( "" + this.settingsCmp.i18n.timestampFormat((new Date()).getTime()) + " - " + this.settingsCmp.i18n._("Test Started")+"\n");
+        text.push( "" + i18n.timestampFormat((new Date()).getTime()) + " - " + i18n._("Test Started")+"\n");
         this.output.setValue( text.join( "" ));
         Ung.Main.getExecManager().execEvil(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
@@ -5840,7 +5840,7 @@ Ext.define("Webui.config.network.NetworkTest", {
                 text.push(result);
                 window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );
             } else { //Test is finished
-                text.push( "" + this.settingsCmp.i18n.timestampFormat((new Date()).getTime()) + " - " + this.settingsCmp.i18n._("Test Completed") +"\n\n");
+                text.push( "" + i18n.timestampFormat((new Date()).getTime()) + " - " + i18n._("Test Completed") +"\n\n");
                 this.finishNetworkUtility();
             }
             this.output.setValue( text.join(""));

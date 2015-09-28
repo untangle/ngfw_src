@@ -41,29 +41,29 @@ Ext.define('Webui.config.system', {
     },
     getShieldMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",this.i18n._("any")]], visible: true},
-            {name:"USERNAME",displayName: this.i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
-            {name:"CLIENT_HOSTNAME",displayName: this.i18n._("Client Hostname"), type: "text", visible: true},
-            {name:"SERVER_HOSTNAME",displayName: this.i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
-            {name:"SRC_MAC", displayName: this.i18n._("Client MAC Address"), type: "text", visible: true },
-            {name:"DST_MAC", displayName: this.i18n._("Server MAC Address"), type: "text", visible: true },
-            {name:"CLIENT_MAC_VENDOR",displayName: this.i18n._("Client MAC Vendor"), type: "text", visible: true},
-            {name:"SERVER_MAC_VENDOR",displayName: this.i18n._("Server MAC Vendor"), type: "text", visible: true},
-            {name:"CLIENT_IN_PENALTY_BOX",displayName: this.i18n._("Client in Penalty Box"), type: "boolean", visible: true},
-            {name:"SERVER_IN_PENALTY_BOX",displayName: this.i18n._("Server in Penalty Box"), type: "boolean", visible: true},
-            {name:"CLIENT_HAS_NO_QUOTA",displayName: this.i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"SERVER_HAS_NO_QUOTA",displayName: this.i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"CLIENT_QUOTA_EXCEEDED",displayName: this.i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
-            {name:"SERVER_QUOTA_EXCEEDED",displayName: this.i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
-            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: this.i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            {name:"HTTP_USER_AGENT",displayName: this.i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: this.i18n._("HTTP: Client User OS"), type: "text", visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",i18n._("any")]], visible: true},
+            {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
+            {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
+            {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
+            {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
+            {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
+            {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
+            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: true},
+            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: true},
+            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
+            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
+            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+            {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: true}
         ];
     },
     // get languange settings object
@@ -204,16 +204,16 @@ Ext.define('Webui.config.system', {
         this.panelSupport = Ext.create('Ext.panel.Panel',{
             name: "Support",
             helpSource: "system_support",
-            title: this.i18n._("Support"),
+            title: i18n._("Support"),
             cls: "ung-panel",
             autoScroll: true,
             items: [{
                 xtype: "fieldset",
-                title: this.i18n._("Support"),
+                title: i18n._("Support"),
                 items: [{
                     xtype: 'checkbox',
                     name: "Allow secure access to your server for support purposes",
-                    boxLabel: Ext.String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
+                    boxLabel: Ext.String.format(i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
                     hideLabel: true,
                     checked: this.getSystemSettings().supportEnabled,
                     listeners: {
@@ -225,11 +225,11 @@ Ext.define('Webui.config.system', {
                     }
                 },{
                     xtype: "component",
-                    html: this.i18n._("Download system logs.")
+                    html: i18n._("Download system logs.")
                 },{
                     xtype: "button",
                     name: 'logButton',
-                    text: this.i18n._("Download"),
+                    text: i18n._("Download"),
                     handler: Ext.bind(function() {
                         var downloadForm = document.getElementById('downloadForm');
                         downloadForm["type"].value="SystemSupportLogs";
@@ -238,26 +238,26 @@ Ext.define('Webui.config.system', {
                 }]
             },{
                 xtype: "fieldset",
-                title: this.i18n._("Manual Reboot"),
+                title: i18n._("Manual Reboot"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Reboot the server.")
+                    html: i18n._("Reboot the server.")
                 },{
                     xtype: "button",
                     margin: '5 0 0 0',
-                    text: this.i18n._("Reboot"),
+                    text: i18n._("Reboot"),
                     name: "Manual Reboot",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                            Ext.String.format(this.i18n._("The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), rpc.companyName ),
+                        Ext.MessageBox.confirm(i18n._("Manual Reboot Warning"),
+                            Ext.String.format(i18n._("The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), rpc.companyName ),
                             Ext.bind(function(btn) {
                             if (btn == "yes") {
                                 rpc.jsonrpc.UvmContext.rebootBox(Ext.bind(function (result, exception) {
                                     if(exception) {
-                                        Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"), rpc.companyName));
+                                        Ext.MessageBox.alert(i18n._("Manual Reboot Failure Warning"),Ext.String.format(i18n._("Error: Unable to reboot {0} Server"), rpc.companyName));
                                     } else {
-                                        Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is rebooting."), rpc.companyName), i18n._("Please wait"));
+                                        Ext.MessageBox.wait(Ext.String.format(i18n._("The {0} Server is rebooting."), rpc.companyName), i18n._("Please wait"));
                                     }
                                 }, this));
                             }
@@ -266,26 +266,26 @@ Ext.define('Webui.config.system', {
                 }]
             },{
                 xtype: "fieldset",
-                title: this.i18n._("Manual Shutdown"),
+                title: i18n._("Manual Shutdown"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Power off the server.")
+                    html: i18n._("Power off the server.")
                 },{
                     xtype: "button",
                     margin: '5 0 0 0',
-                    text: this.i18n._("Shutdown"),
+                    text: i18n._("Shutdown"),
                     name: "Manual Shutdown",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                            Ext.String.format(this.i18n._("The {0} Server is about to shutdown.  This will stop all network operations."), rpc.companyName ),
+                        Ext.MessageBox.confirm(i18n._("Manual Shutdown Warning"),
+                            Ext.String.format(i18n._("The {0} Server is about to shutdown.  This will stop all network operations."), rpc.companyName ),
                             Ext.bind(function(btn) {
                             if (btn == "yes") {
                                 rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
                                     if(exception) {
-                                        Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"), rpc.companyName));
+                                        Ext.MessageBox.alert(i18n._("Manual Shutdown Failure Warning"),Ext.String.format(i18n._("Error: Unable to shutdown {0} Server"), rpc.companyName));
                                     } else {
-                                        Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is shutting down."), rpc.companyName), i18n._("Please wait"));
+                                        Ext.MessageBox.wait(Ext.String.format(i18n._("The {0} Server is shutting down."), rpc.companyName), i18n._("Please wait"));
                                     }
                                 }, this));
                             }
@@ -294,19 +294,19 @@ Ext.define('Webui.config.system', {
                 }]
             },{
                 xtype: "fieldset",
-                title: this.i18n._("Setup Wizard"),
+                title: i18n._("Setup Wizard"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Launch the Setup Wizard.")
+                    html: i18n._("Launch the Setup Wizard.")
                 },{
                     xtype: "button",
                     margin: '5 0 0 0',
-                    text: this.i18n._("Setup Wizard"),
+                    text: i18n._("Setup Wizard"),
                     name: "Setup Wizard",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                            Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
+                        Ext.MessageBox.confirm(i18n._("Setup Wizard Warning"),
+                            Ext.String.format(i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
                             Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     Ung.Main.openSetupWizardScreen();
@@ -316,19 +316,19 @@ Ext.define('Webui.config.system', {
                 }]
             },{
                 xtype: "fieldset",
-                title: this.i18n._("Factory Defaults"),
+                title: i18n._("Factory Defaults"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Reset all settings to factory defaults.")
+                    html: i18n._("Reset all settings to factory defaults.")
                 },{
                     xtype: "button",
                     margin: '5 0 0 0',
-                    text: this.i18n._("Reset to Factory Defaults"),
+                    text: i18n._("Reset to Factory Defaults"),
                     name: "Factory Defaults",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
-                        Ext.MessageBox.confirm(this.i18n._("Reset to Factory Defaults Warning"),
-                           this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
+                        Ext.MessageBox.confirm(i18n._("Reset to Factory Defaults Warning"),
+                           i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
                            Ext.bind(function(btn) {
                                if (btn == "yes") {
     
@@ -370,7 +370,7 @@ Ext.define('Webui.config.system', {
         this.panelBackup = Ext.create('Ext.panel.Panel',{
             name: "Backup",
             helpSource: "system_backup",
-            title: this.i18n._("Backup"),
+            title: i18n._("Backup"),
             cls: "ung-panel",
             autoScroll: true,
             onBackupToFile: Ext.bind(function() {
@@ -382,16 +382,16 @@ Ext.define('Webui.config.system', {
             }, this),
             items: [{
                 xtype: "fieldset",
-                title: this.i18n._("Backup to File"),
+                title: i18n._("Backup to File"),
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backup") +
+                    html: i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with .backup") +
                             "<br> <br> " +
-                            this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File.")
+                            i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by clicking on Restore from File.")
                 },{
                     xtype:"button",
                     margin: '10 0 0 0',
-                    text: this.i18n._("Backup to File"),
+                    text: i18n._("Backup to File"),
                     name: "Backup to File",
                     handler: Ext.bind(function() {
                         this.panelBackup.onBackupToFile();
@@ -405,37 +405,37 @@ Ext.define('Webui.config.system', {
         this.panelRestore = Ext.create('Ext.panel.Panel',{
             name: "Restore",
             helpSource: "system_restore",
-            title: this.i18n._("Restore"),
+            title: i18n._("Restore"),
             cls: "ung-panel",
             autoScroll: true,
             onRestoreFromFile: Ext.bind(function() {
                 var fileForm = this.panelRestore.down("form[name=upload_restore_file_form]");
                 var fileField = fileForm.down("filefield");
                 if (fileField.getValue().length === 0) {
-                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("Please select a file to upload."));
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("Please select a file to upload."));
                     return;
                 }
                 fileForm.getForm().submit({
-                    waitMsg: this.i18n._("Inspecting File..."),
+                    waitMsg: i18n._("Inspecting File..."),
                     success: Ext.bind(function(form, action) {
                         Ung.MetricManager.stop();
-                        Ext.MessageBox.alert(this.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
+                        Ext.MessageBox.alert(i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
                     }, this),
                     failure: Ext.bind(function(form, action) {
-                        var errorMsg = this.i18n._("The File restore procedure failed.");
+                        var errorMsg = i18n._("The File restore procedure failed.");
                         if (action.result && action.result.msg) {
                             errorMsg = action.result.msg;
                         }
-                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                        Ext.MessageBox.alert(i18n._("Failed"), errorMsg);
                     }, this)
                 });
             }, this),
             items: [{
-                title: this.i18n._("Restore from File"),
+                title: i18n._("Restore from File"),
                 xtype: "fieldset",
                 items: [{
                     xtype: "component",
-                    html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backup")
+                    html: i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with .backup")
                 }, {
                     xtype: "form",
                     margin: '20 0 0 0',
@@ -447,7 +447,7 @@ Ext.define('Webui.config.system', {
                         name: "argument",
                         fieldLabel: i18n._( "Restore Options" ),
                         width: 400,
-                        store: [["",this.i18n._("Restore all settings.")], [".*/network.*",this.i18n._("Restore all except keep current network settings.")]],
+                        store: [["",i18n._("Restore all settings.")], [".*/network.*",i18n._("Restore all except keep current network settings.")]],
                         value: "",
                         queryMode: 'local',
                         allowBlank: false,
@@ -455,7 +455,7 @@ Ext.define('Webui.config.system', {
                     }, {
                         xtype: 'filefield',
                         margin: '10 0 0 0',
-                        fieldLabel: this.i18n._("File"),
+                        fieldLabel: i18n._("File"),
                         name: "file",
                         id: "upload_restore_file_textfield",
                         width: 500,
@@ -464,7 +464,7 @@ Ext.define('Webui.config.system', {
                     }, {
                         xtype: "button",
                         margin: '10 0 0 0',
-                        text: this.i18n._("Restore from File"),
+                        text: i18n._("Restore from File"),
                         name: "Restore from File",
                         handler: Ext.bind(function() {
                             this.panelRestore.onRestoreFromFile();
@@ -482,15 +482,15 @@ Ext.define('Webui.config.system', {
         var protocolSettingsItems = [];
 
         protocolSettingsItems.push({
-            html: "<b>" + "<font color=\"red\">" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("These settings should not be changed unless instructed to do so by support.") + "</b>"
+            html: "<b>" + "<font color=\"red\">" + i18n._("Warning:") + "</font>&nbsp;" + i18n._("These settings should not be changed unless instructed to do so by support.") + "</b>"
         });
 
         if (this.isHttpLoaded()) {
             protocolSettingsItems.push({
-                title: this.i18n._("HTTP"),
+                title: i18n._("HTTP"),
                 items: [{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Enable processing of HTTP traffic.  (This is the default setting)"),
+                    boxLabel: i18n._("Enable processing of HTTP traffic.  (This is the default setting)"),
                     hideLabel: true,
                     name: "Web Override",
                     checked: this.getHttpSettings().enabled,
@@ -503,7 +503,7 @@ Ext.define('Webui.config.system', {
                     }
                 },{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Disable processing of HTTP traffic."),
+                    boxLabel: i18n._("Disable processing of HTTP traffic."),
                     hideLabel: true,
                     name: "Web Override",
                     checked: !this.getHttpSettings().enabled,
@@ -520,10 +520,10 @@ Ext.define('Webui.config.system', {
 
         if (this.isFtpLoaded()) {
             protocolSettingsItems.push({
-                title: this.i18n._("FTP"),
+                title: i18n._("FTP"),
                 items: [{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Enable processing of FTP traffic.  (This is the default setting)"),
+                    boxLabel: i18n._("Enable processing of FTP traffic.  (This is the default setting)"),
                     hideLabel: true,
                     name: "FTP",
                     checked: this.getFtpSettings().enabled,
@@ -536,7 +536,7 @@ Ext.define('Webui.config.system', {
                     }
                 },{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Disable processing of FTP traffic."),
+                    boxLabel: i18n._("Disable processing of FTP traffic."),
                     hideLabel: true,
                     name: "FTP",
                     checked: !this.getFtpSettings().enabled,
@@ -553,11 +553,11 @@ Ext.define('Webui.config.system', {
 
         if (this.isMailLoaded()) {
             protocolSettingsItems.push({
-                title: this.i18n._("SMTP"),
+                title: i18n._("SMTP"),
                 labelWidth: 200,
                 items: [{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
+                    boxLabel: i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
                     hideLabel: true,
                     name: "SMTP",
                     checked: this.getSmtpNodeSettings().smtpEnabled,
@@ -570,7 +570,7 @@ Ext.define('Webui.config.system', {
                     }
                 },{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Disable processing of SMTP traffic."),
+                    boxLabel: i18n._("Disable processing of SMTP traffic."),
                     hideLabel: true,
                     name: "SMTP",
                     checked: !this.getSmtpNodeSettings().smtpEnabled,
@@ -584,7 +584,7 @@ Ext.define('Webui.config.system', {
                 },{
                     xtype : "numberfield",
                     hidden: Ung.Util.hideDangerous,
-                    fieldLabel : this.i18n._("SMTP timeout (seconds)"),
+                    fieldLabel : i18n._("SMTP timeout (seconds)"),
                     name : "SMTP timeout",
                     id: "system_protocolSettings_smtpTimeout",
                     value : this.getSmtpNodeSettings().smtpTimeout/1000,
@@ -603,7 +603,7 @@ Ext.define('Webui.config.system', {
                 },{
                     xtype : "radio",
                     hidden: Ung.Util.hideDangerous,
-                    boxLabel : this.i18n._("Allow TLS encryption over SMTP."),
+                    boxLabel : i18n._("Allow TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
                     checked : this.getSmtpNodeSettings().smtpAllowTLS,
@@ -617,7 +617,7 @@ Ext.define('Webui.config.system', {
                 },{
                     xtype : "radio",
                     hidden: Ung.Util.hideDangerous,
-                    boxLabel : this.i18n._("Stop TLS encryption over SMTP."),
+                    boxLabel : i18n._("Stop TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
                     checked : !this.getSmtpNodeSettings().smtpAllowTLS,
@@ -635,7 +635,7 @@ Ext.define('Webui.config.system', {
         this.panelProtocols = Ext.create('Ext.panel.Panel',{
             name: "Protocols",
             helpSource: "system_protocols",
-            title: this.i18n._("Protocols"),
+            title: i18n._("Protocols"),
             cls: "ung-panel",
             autoScroll: true,
             defaults: {
@@ -672,30 +672,30 @@ Ext.define('Webui.config.system', {
 
         var ntpForceSyncFields = {
             xtype: "fieldset",
-            title: this.i18n._("Force Sync Time"),
+            title: i18n._("Force Sync Time"),
             items: [{
                 xtype: "component",
-                html: this.i18n._("Click to force instant time synchronization.")
+                html: i18n._("Click to force instant time synchronization.")
             },{
                 xtype: "button",
                 margin: '10 0 0 0',
-                text: this.i18n._("Synchronize Time"),
+                text: i18n._("Synchronize Time"),
                 name: "Setup Wizard",
                 iconCls: "reboot-icon",
                 handler: Ext.bind(function() {
                     Ext.MessageBox.confirm(
-                        this.i18n._("Force Time Synchronization"),
-                        this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
-                        this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
-                        this.i18n._("Continue?"),
+                        i18n._("Force Time Synchronization"),
+                        i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
+                        i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
+                        i18n._("Continue?"),
                         Ext.bind(function(btn) {
                             if (btn == "yes") {
-                                Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
+                                Ext.MessageBox.wait(i18n._("Syncing time with the internet..."), i18n._("Please wait"));
                                 rpc.jsonrpc.UvmContext.forceTimeSync(Ext.bind(function (result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     if(result !== 0) {
                                         Ext.MessageBox.hide();
-                                        Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Time synchronization failed. Return code: ") + result);
+                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Time synchronization failed. Return code: ") + result);
                                     } else {
                                         Ext.MessageBox.hide();
                                     }
@@ -713,12 +713,12 @@ Ext.define('Webui.config.system', {
         if( rpc.isExpertMode == true || this.getSystemSettings().timeSource == "manual" ){
             var currentTime = new Date(rpc.systemManager.getDate());
             timeFields = {
-                title: this.i18n._("Time Settings"),
+                title: i18n._("Time Settings"),
                 items: [{
                     xtype: 'radiofield',
                     name: 'timeSource',
                     inputValue: 'ntp',
-                    boxLabel: this.i18n._("Synchronize time automatically via NTP"),
+                    boxLabel: i18n._("Synchronize time automatically via NTP"),
                     value: (timeSource == "ntp") ? true : false,
                     handler: Ext.bind(function(elem, checked) {
                         if( checked ){
@@ -739,7 +739,7 @@ Ext.define('Webui.config.system', {
                     xtype: 'radiofield',
                     name: 'timeSource',
                     inputValue: 'manual',
-                    boxLabel: this.i18n._("Set system clock manually"),
+                    boxLabel: i18n._("Set system clock manually"),
                     value: (timeSource == "manual") ? true : false,
                     handler: Ext.bind(function(elem, checked) {
                         if( checked ){
@@ -856,17 +856,17 @@ Ext.define('Webui.config.system', {
         this.panelRegional = Ext.create('Ext.panel.Panel',{
             name: "Regional",
             helpSource: "system_regional",
-            title: this.i18n._("Regional"),
+            title: i18n._("Regional"),
             cls: "ung-panel",
             autoScroll: true,
             defaults: {
                 xtype: "fieldset"
             },
             items: [{
-                title: this.i18n._("Current Time"),
+                title: i18n._("Current Time"),
                 items: [{
                     xtype: 'component',
-                    html: (timeSource == "manual") ? this.i18n._("Time was set manually") : this.i18n._("Time is automatically synchronized via NTP")
+                    html: (timeSource == "manual") ? i18n._("Time was set manually") : i18n._("Time is automatically synchronized via NTP")
                 }, {
                     xtype: 'component',
                     margin: '10 0 0 0',
@@ -883,7 +883,7 @@ Ext.define('Webui.config.system', {
             },
             timeFields,
             {
-                title: this.i18n._("Timezone"),
+                title: i18n._("Timezone"),
                 items: [{
                     xtype: "combo",
                     name: "Timezone",
@@ -903,7 +903,7 @@ Ext.define('Webui.config.system', {
                     }
                 }]
             }, {
-                title: this.i18n._("Language"),
+                title: i18n._("Language"),
                 items: [{
                     id: "system_language_combo",
                     xtype: "combo",
@@ -939,7 +939,7 @@ Ext.define('Webui.config.system', {
                     }
                 }]
             }, {
-                title: this.i18n._("Upload New Language Pack"),
+                title: i18n._("Upload New Language Pack"),
                 items: {
                     xtype: "form",
                     name: "upload_language_form",
@@ -947,7 +947,7 @@ Ext.define('Webui.config.system', {
                     border: false,
                     items: [{
                         xtype: 'filefield',
-                        fieldLabel:this.i18n._("File"),
+                        fieldLabel:i18n._("File"),
                         width: 500,
                         labelWidth: 50,
                         name: 'file',
@@ -959,7 +959,7 @@ Ext.define('Webui.config.system', {
                         value: "language"
                     }, {
                         xtype: "button",
-                        text: this.i18n._("Upload"),
+                        text: i18n._("Upload"),
                         name: "Upload",
                         handler: Ext.bind(function() {
                             this.panelRegional.onUpload();
@@ -972,7 +972,7 @@ Ext.define('Webui.config.system', {
             onUpload: Ext.bind(function() {
                 var languageForm = this.panelRegional.down("form[name=upload_language_form]");
                 languageForm.getForm().submit({
-                    waitMsg: this.i18n._("Please wait while your language pack is uploaded..."),
+                    waitMsg: i18n._("Please wait while your language pack is uploaded..."),
                     success: Ext.bind(function(form, action) {
                         var languagesList;
                         try {
@@ -983,28 +983,28 @@ Ext.define('Webui.config.system', {
 
                         languagesStore.loadData(languagesList.list);
                         if(action.result.success===true) {
-                            Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload language pack succeeded"));
+                            Ext.MessageBox.alert(i18n._("Succeeded"), i18n._("Upload language pack succeeded"));
                         } else {
                             var msg = "An error occured while uploading the language pack";
                             if(action.result.msg) {
                                 msg = action.result.msg;
                             }
-                            Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._(msg));
+                            Ext.MessageBox.alert(i18n._("Warning"), i18n._(msg));
                         }
                     }, this),
                     failure: Ext.bind(function(form, action) {
-                        var errorMsg = this.i18n._("Upload language pack failed");
+                        var errorMsg = i18n._("Upload language pack failed");
                         if (action.result && action.result.msg) {
                             msg = action.result.msg;
                             if(msg === "Invalid Language Pack") {
-                                errorMsg = this.i18n._("Invalid language pack; not a zip file");
+                                errorMsg = i18n._("Invalid language pack; not a zip file");
                             } else if((/.*MO file.*/).test(msg)) {
-                                errorMsg = this.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
+                                errorMsg = i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
                             } else if((/.*bundle file.*/).test(msg)) {
-                                errorMsg = this.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
+                                errorMsg = i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
                             }
                         }
-                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                        Ext.MessageBox.alert(i18n._("Failed"), errorMsg);
                     }, this)
                 });
             }, this),
@@ -1057,19 +1057,19 @@ Ext.define('Webui.config.system', {
     },
     buildShield: function() {
         var multiplierData = [
-            [1, 1 + ' ' + this.i18n._("1 user")],
-            [5, 5 + ' ' + this.i18n._("users")],
-            [25, 25 + ' ' + this.i18n._("users")],
-            [50, 50 + ' ' + this.i18n._("users")],
-            [100, 100 + ' ' + this.i18n._("users")],
-            [-1, this.i18n._("unlimited")]
+            [1, 1 + ' ' + i18n._("1 user")],
+            [5, 5 + ' ' + i18n._("users")],
+            [25, 25 + ' ' + i18n._("users")],
+            [50, 50 + ' ' + i18n._("users")],
+            [100, 100 + ' ' + i18n._("users")],
+            [-1, i18n._("unlimited")]
         ];
         this.gridShieldRules = Ext.create( 'Ung.grid.Panel', {
             name: 'Shield Rules',
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("Shield Rules"),
+            title: i18n._("Shield Rules"),
             dataExpression:'getShieldSettings().rules.list',
             recordJavaClass: "com.untangle.node.shield.ShieldRule",
             emptyRow: {
@@ -1092,7 +1092,7 @@ Ext.define('Webui.config.system', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -1103,16 +1103,16 @@ Ext.define('Webui.config.system', {
                     }
                 }
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }, {
-                header: this.i18n._("User Count"),
+                header: i18n._("User Count"),
                 width: 120,
                 dataIndex: 'multiplier',
                 renderer: function(value) {
@@ -1127,16 +1127,16 @@ Ext.define('Webui.config.system', {
             rowEditorInputLines:[{
                 xtype:'checkbox',
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Shield Rule")
+                fieldLabel: i18n._("Enable Shield Rule")
             }, {
                 xtype:'textfield',
                 dataIndex: "description",
-                emptyText: this.i18n._("[no description]"),
-                fieldLabel: this.i18n._("Description"),
+                emptyText: i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -1151,7 +1151,7 @@ Ext.define('Webui.config.system', {
                     xtype: 'combo',
                     store: multiplierData,
                     dataIndex: "multiplier",
-                    fieldLabel: this.i18n._("User Count"),
+                    fieldLabel: i18n._("User Count"),
                     queryMode: 'local',
                     typeAhead: true
                 }]
@@ -1162,17 +1162,17 @@ Ext.define('Webui.config.system', {
         });
         this.panelShield = Ext.create('Ext.panel.Panel',{
             name: 'Shield',
-            title: this.i18n._('Shield'),
+            title: i18n._('Shield'),
             helpSource: "system_shield",
             cls: 'ung-panel',
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._("Shield Settings"),
+                title: i18n._("Shield Settings"),
                 items:[{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._("Enable Shield"),
+                    boxLabel: i18n._("Enable Shield"),
                     hideLabel: true,
                     checked: this.getShieldSettings().shieldEnabled,
                     listeners: {

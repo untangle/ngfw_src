@@ -38,11 +38,11 @@ Ext.define('Webui.config.about', {
         this.panelServer = Ext.create('Ext.panel.Panel',{
             name: 'Server',
             helpSource: 'about_server',
-            title: this.i18n._('Server'),
+            title: i18n._('Server'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
-                title: this.i18n._('About'),
+                title: i18n._('About'),
                 name: 'About',
                 xtype: 'fieldset',
                 items: [{
@@ -53,8 +53,8 @@ Ext.define('Webui.config.about', {
                     style: 'font-weight: bold;',
                     width: 600,
                     height: 60,
-                    value: this.i18n._('Do not publicly post or share the UID or account information.') + "\n" +
-                        this.i18n._('UID')+": " + serverUID
+                    value: i18n._('Do not publicly post or share the UID or account information.') + "\n" +
+                        i18n._('UID')+": " + serverUID
                 }, {
                     xtype: 'textarea',
                     name: 'About',
@@ -63,12 +63,12 @@ Ext.define('Webui.config.about', {
                     style: 'font-weight: bold;',
                     width: 600,
                     height: 300,
-                    value: this.i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
-                        this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
-                        this.i18n._('History') + ": " + modificationState + "\n" +
-                        this.i18n._('Reboots') + ": " + rebootCount + "\n" +
-                        this.i18n._('Current active device count') + ": " + licensedSized + "\n" +
-                        this.i18n._('Highest active device count since reboot') + ": " + maxLicensedSize
+                    value: i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
+                        i18n._('Kernel') + ": " + kernelVersion + "\n" +
+                        i18n._('History') + ": " + modificationState + "\n" +
+                        i18n._('Reboots') + ": " + rebootCount + "\n" +
+                        i18n._('Current active device count') + ": " + licensedSized + "\n" +
+                        i18n._('Highest active device count since reboot') + ": " + maxLicensedSize
 
                 }]
             }]
@@ -82,7 +82,7 @@ Ext.define('Webui.config.about', {
                         return;
                     }
                     var uidComponent = me.panelServer.down('textarea[name="UID"]');
-                    uidComponent.setValue(uidComponent.getValue() + "\n" + this.i18n._('Account') + ": " + response.account);
+                    uidComponent.setValue(uidComponent.getValue() + "\n" + i18n._('Account') + ": " + response.account);
                 }
             },
             failure: function(response, opts) {
@@ -94,12 +94,12 @@ Ext.define('Webui.config.about', {
         this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
             name: 'License Agreement',
             helpSource: 'about_license_agreement',
-            title: this.i18n._('License Agreement'),
+            title: i18n._('License Agreement'),
             cls: 'ung-panel',
             bodyStyle: 'padding:5px 5px 0px; 5px;',
             items: [{
                 xtype: "button",
-                text: this.i18n._("View License"),
+                text: i18n._("View License"),
                 name: "View License",
                 iconCls: "reboot-icon",
                 handler: function() {
@@ -115,14 +115,14 @@ Ext.define('Webui.config.about', {
         this.panelLicenses = Ext.create('Ext.panel.Panel',{
             name: 'Licenses',
             helpSource: 'about_licenses',
-            title: this.i18n._('Licenses'),
+            title: i18n._('Licenses'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Licenses'),
+                title: i18n._('Licenses'),
                 flex: 0,
-                html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')
+                html: Ext.String.format(i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')
              }, this.gridLicenses]
        });
     },
@@ -134,9 +134,9 @@ Ext.define('Webui.config.about', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            title: this.i18n._("Licenses"),
+            title: i18n._("Licenses"),
             //TODO ext5 - qtip is not displayed, fix this
-            qtip: this.i18n._("The Current list of Licenses available on this Server."),
+            qtip: i18n._("The Current list of Licenses available on this Server."),
             bbar: new Ext.Toolbar({
                 items: [ '-', {
                     xtype: 'button',
@@ -174,37 +174,37 @@ Ext.define('Webui.config.about', {
                 name: "id"
             }],
             columns: [{
-                header: this.i18n._("Name"),
+                header: i18n._("Name"),
                 dataIndex: "displayName",
                 width: 150
             },{
-                header: this.i18n._("App"),
+                header: i18n._("App"),
                 dataIndex: "name",
                 width: 150
             },{
-                header: this.i18n._("UID"),
+                header: i18n._("UID"),
                 dataIndex: "UID",
                 width: 150
             },{
-                header: this.i18n._("Start Date"),
+                header: i18n._("Start Date"),
                 dataIndex: "start",
                 width: 240,
-                renderer: Ext.bind(function(value) { return this.i18n.timestampFormat(value*1000);}, this)
+                renderer: Ext.bind(function(value) { return i18n.timestampFormat(value*1000);}, this)
             },{
-                header: this.i18n._("End Date"),
+                header: i18n._("End Date"),
                 dataIndex: "end",
                 width: 240,
-                renderer: Ext.bind(function(value) { return this.i18n.timestampFormat(value*1000); }, this)
+                renderer: Ext.bind(function(value) { return i18n.timestampFormat(value*1000); }, this)
             },{
-                header: this.i18n._("Seats"),
+                header: i18n._("Seats"),
                 dataIndex: "seats",
                 width: 50
             },{
-                header: this.i18n._("Valid"),
+                header: i18n._("Valid"),
                 dataIndex: "valid",
                 width: 50
             },{
-                header: this.i18n._("Status"),
+                header: i18n._("Status"),
                 dataIndex: "status",
                 width: 150
             }]

@@ -10,7 +10,7 @@ Ext.define('Webui.config.hostMonitor', {
     enableBandwidthColumns: false,
     initComponent: function() {
         this.breadcrumbs = [{
-            title: this.i18n._('Host Viewer')
+            title: i18n._('Host Viewer')
         }];
         this.buildGridCurrentHosts();
         this.buildGridPenaltyBox();
@@ -89,8 +89,8 @@ Ext.define('Webui.config.hostMonitor', {
             helpSource: 'host_viewer_current_hosts',
             settingsCmp: this,
             height: 500,
-            title: this.i18n._("Current Hosts"),
-            tooltip: this.i18n._("This shows all current hosts."),
+            title: i18n._("Current Hosts"),
+            tooltip: i18n._("This shows all current hosts."),
             dataFn: Ext.bind(this.getHosts, this),
             sortField: this.sortField,
             sortOrder: this.sortOrder,
@@ -180,21 +180,21 @@ Ext.define('Webui.config.hostMonitor', {
                 type: 'string'
             }],
             columns: [{
-                header: this.i18n._("IP"),
+                header: i18n._("IP"),
                 dataIndex: "address",
                 width: 100,
                 filter: {
                     type: 'string'
                 }
             }, {
-                header: this.i18n._("MAC Address"),
+                header: i18n._("MAC Address"),
                 dataIndex: "macAddress",
                 width: 100,
                 filter: {
                     type: 'string'
                 }
             }, {
-                header: this.i18n._("MAC Vendor"),
+                header: i18n._("MAC Vendor"),
                 dataIndex: "macVendor",
                 width: 150,
                 filter: {
@@ -202,7 +202,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             }, {
                 hidden: true,
-                header: this.i18n._("Last Access Time"),
+                header: i18n._("Last Access Time"),
                 dataIndex: "lastAccessTimeDate",
                 width: 150,
                 renderer: function(value, metaData, record) {
@@ -214,7 +214,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             }, {
                 hidden: true,
-                header: this.i18n._("Last Session Time"),
+                header: i18n._("Last Session Time"),
                 dataIndex: "lastSessionTimeDate",
                 width: 150,
                 renderer: function(value, metaData, record) {
@@ -226,28 +226,28 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             }, {
                 hidden: true,
-                header: this.i18n._("Licensed"),
+                header: i18n._("Licensed"),
                 dataIndex: "licensed",
                 width: 80,
                 filter: {
                     type: 'boolean'
                 }
             }, {
-                header: this.i18n._("Hostname"),
+                header: i18n._("Hostname"),
                 dataIndex: "hostname",
                 width: 100,
                 filter: {
                     type: 'string'
                 }
             },{
-                header: this.i18n._("Username"),
+                header: i18n._("Username"),
                 dataIndex: "username",
                 width: 100,
                 filter: {
                     type: 'string'
                 }
             },{
-                header: this.i18n._("Penalty Boxed"),
+                header: i18n._("Penalty Boxed"),
                 dataIndex: "penaltyBoxed",
                 width: 100,
                 filter: {
@@ -255,7 +255,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: this.i18n._("Penalty Box Entry Time"),
+                header: i18n._("Penalty Box Entry Time"),
                 dataIndex: "penaltyBoxEntryTimeDate",
                 width: 100,
                 renderer: function(value, metaData, record) {
@@ -267,7 +267,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: this.i18n._("Penalty Box Exit Time"),
+                header: i18n._("Penalty Box Exit Time"),
                 dataIndex: "penaltyBoxExitTimeDate",
                 width: 100,
                 renderer: function(value, metaData, record) {
@@ -278,7 +278,7 @@ Ext.define('Webui.config.hostMonitor', {
                     type: 'date'
                 }
             },{
-                header: this.i18n._("Quota Size"),
+                header: i18n._("Quota Size"),
                 dataIndex: "quotaSize",
                 width: 100,
                 renderer: function(value) {
@@ -289,7 +289,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: this.i18n._("Quota Remaining"),
+                header: i18n._("Quota Remaining"),
                 dataIndex: "quotaRemaining",
                 width: 100,
                 filter: {
@@ -297,7 +297,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: this.i18n._("Quota Issue Time"),
+                header: i18n._("Quota Issue Time"),
                 dataIndex: "quotaIssueTimeDate",
                 width: 100,
                 renderer: function(value, metaData, record) {
@@ -309,7 +309,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: this.i18n._("Quota Expiration Time"),
+                header: i18n._("Quota Expiration Time"),
                 dataIndex: "quotaExpirationTimeDate",
                 width: 100,
                 renderer: function(value, metaData, record) {
@@ -320,7 +320,7 @@ Ext.define('Webui.config.hostMonitor', {
                     type: 'date'
                 }
             },{
-                header: "HTTP" + " - " + this.i18n._("User Agent"),
+                header: "HTTP" + " - " + i18n._("User Agent"),
                 dataIndex: "httpUserAgent",
                 width: 200,
                 filter: {
@@ -328,7 +328,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "HTTP" + " - " + this.i18n._("User Agent OS"),
+                header: "HTTP" + " - " + i18n._("User Agent OS"),
                 dataIndex: "httpUserAgentOs",
                 width: 200,
                 filter: {
@@ -336,7 +336,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "Captive Portal" + " - " + this.i18n._("Authenticated"),
+                header: "Captive Portal" + " - " + i18n._("Authenticated"),
                 dataIndex: "captivePortalAuthenticated",
                 width: 100,
                 filter: {
@@ -344,7 +344,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "Captive Portal" + " - " + this.i18n._("Username"),
+                header: "Captive Portal" + " - " + i18n._("Username"),
                 dataIndex: "usernameCapture",
                 width: 100,
                 filter: {
@@ -352,7 +352,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "Directory Connector" + " - " + this.i18n._("Username"),
+                header: "Directory Connector" + " - " + i18n._("Username"),
                 dataIndex: "usernameAdConnector",
                 width: 100,
                 filter: {
@@ -360,7 +360,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "L2TP" + " - " + this.i18n._("Username"),
+                header: "L2TP" + " - " + i18n._("Username"),
                 dataIndex: "usernameTunnel",
                 width: 100,
                 filter: {
@@ -368,7 +368,7 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             },{
                 hidden: true,
-                header: "OpenVPN" + " - " + this.i18n._("Username"),
+                header: "OpenVPN" + " - " + i18n._("Username"),
                 dataIndex: "usernameOpenvpn",
                 width: 100,
                 filter: {
@@ -386,8 +386,8 @@ Ext.define('Webui.config.hostMonitor', {
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            title: this.i18n._("Penalty Box Hosts"),
-            qtip: this.i18n._("This shows all hosts currently in the Penalty Box."),
+            title: i18n._("Penalty Box Hosts"),
+            qtip: i18n._("This shows all hosts currently in the Penalty Box."),
             dataFn: Ext.bind(rpc.hostTable.getPenaltyBoxedHosts, this),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
@@ -401,28 +401,28 @@ Ext.define('Webui.config.hostMonitor', {
                 name: "id"
             }],
             columns: [{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex: 'address',
                 width: 150
             },{
-                header: this.i18n._("Entry Time"),
+                header: i18n._("Entry Time"),
                 dataIndex: 'penaltyBoxEntryTime',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             },{
-                header: this.i18n._("Planned Exit Time"),
+                header: i18n._("Planned Exit Time"),
                 dataIndex: 'penaltyBoxExitTime',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             }, {
-                header: this.i18n._("Release host"),
+                header: i18n._("Release host"),
                 xtype: 'actioncolumn',
                 width: 120,
                 items: [{
-                    tooltip: this.i18n._("Release host"),
+                    tooltip: i18n._("Release host"),
                     iconCls: 'icon-play-row',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Releasing host..."), i18n._("Please wait"));
                         rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
@@ -443,8 +443,8 @@ Ext.define('Webui.config.hostMonitor', {
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            title: this.i18n._("Current Quotas"),
-            qtip: this.i18n._("This shows all hosts currently with quotas."),
+            title: i18n._("Current Quotas"),
+            qtip: i18n._("This shows all hosts currently with quotas."),
             dataFn: Ext.bind(rpc.hostTable.getQuotaHosts, this),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
@@ -462,38 +462,38 @@ Ext.define('Webui.config.hostMonitor', {
                 name: "id"
             }],
             columns: [{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex: 'address',
                 width: 150
             },{
-                header: this.i18n._("Quota Size"),
+                header: i18n._("Quota Size"),
                 dataIndex: 'quotaSize',
                 width: 100,
                 renderer: Ext.bind(this.megaByteRenderer, this)
             },{
-                header: this.i18n._("Quota Remaining"),
+                header: i18n._("Quota Remaining"),
                 dataIndex: 'quotaRemaining',
                 width: 100,
                 renderer: Ext.bind(this.megaByteRenderer, this)
             },{
-                header: this.i18n._("Allocated"),
+                header: i18n._("Allocated"),
                 dataIndex: 'quotaIssueTime',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             },{
-                header: this.i18n._("Expires"),
+                header: i18n._("Expires"),
                 dataIndex: 'quotaExpirationTime',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             }, {
-                header: this.i18n._("Refill Quota"),
+                header: i18n._("Refill Quota"),
                 xtype: 'actioncolumn',
                 width: 110,
                 items: [{
-                    tooltip: this.i18n._("Refill Quota"),
+                    tooltip: i18n._("Refill Quota"),
                     iconCls: 'icon-refresh-row',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Refilling..."), i18n._("Please wait"));
                         rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
@@ -502,14 +502,14 @@ Ext.define('Webui.config.hostMonitor', {
                     }, this)
                 }]
             }, {
-                header: this.i18n._("Drop Quota"),
+                header: i18n._("Drop Quota"),
                 xtype: 'actioncolumn',
                 width: 110,
                 items: [{
-                    tooltip: this.i18n._("Drop Quota"),
+                    tooltip: i18n._("Drop Quota"),
                     iconCls: 'icon-drop-row',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
+                        Ext.MessageBox.wait(i18n._("Removing Quota..."), i18n._("Please wait"));
                         rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;

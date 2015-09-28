@@ -4,7 +4,7 @@ Ext.define('Webui.config.reportsViewer', {
     displayName : 'Reports Viewer',
     initComponent : function() {
         this.breadcrumbs = [ {
-            title : this.i18n._('Reports Viewer')
+            title : i18n._('Reports Viewer')
         } ];
         var treeNodes = [ {
             text : i18n._('Summary'),

@@ -17,13 +17,13 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
             isDirty: function() {
                 return false;
             },
-            title: this.i18n._('Status'),
+            title: i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Status'),
-                html: Ext.String.format(this.i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
+                title: i18n._('Status'),
+                html: Ext.String.format(i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
             }, {
                 xtype: 'fieldset',
                 defaults: {
@@ -31,22 +31,22 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
                     labelWidth: 200
                 },
                 items: [{
-                    fieldLabel: this.i18n._('Total Signatures Available'),
+                    fieldLabel: i18n._('Total Signatures Available'),
                     name: 'Total Signatures Available',
                     value: this.getRpcNode().getPatternsTotal()
                 }, {
-                    fieldLabel: this.i18n._('Total Signatures Logging'),
+                    fieldLabel: i18n._('Total Signatures Logging'),
                     name: 'Total Signatures Logging',
                     value: this.getRpcNode().getPatternsLogged()
                 }, {
-                    fieldLabel: this.i18n._('Total Signatures Blocking'),
+                    fieldLabel: i18n._('Total Signatures Blocking'),
                     name: 'Total Signatures Blocking',
                     value: this.getRpcNode().getPatternsBlocked()
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Note'),
-                html: Ext.String.format(this.i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
+                title: i18n._('Note'),
+                html: Ext.String.format(i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
             }]
         });
     },
@@ -56,7 +56,7 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
             settingsCmp: this,
             name: 'Signatures',
             helpSource: 'application_control_lite_signatures',
-            title: this.i18n._("Signatures"),
+            title: i18n._("Signatures"),
             dataProperty: "patterns",
             recordJavaClass: "com.untangle.node.application_control_lite.ApplicationControlLitePattern",
             emptyRow: {
@@ -96,87 +96,87 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
                 type: 'string'
             }],
             columns: [{
-                header: this.i18n._("Protocol"),
+                header: i18n._("Protocol"),
                 width: 200,
                 dataIndex: 'protocol',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter protocol]"),
+                    emptyText: i18n._("[enter protocol]"),
                     allowBlank:false
                 }
             }, {
-                header: this.i18n._("Category"),
+                header: i18n._("Category"),
                 width: 200,
                 dataIndex: 'category',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter category]"),
+                    emptyText: i18n._("[enter category]"),
                     allowBlank:false
                 }
             }, {
                 xtype:'checkcolumn',
-                header: "<b>" + this.i18n._("Block") + "</b>",
+                header: "<b>" + i18n._("Block") + "</b>",
                 dataIndex: 'blocked',
                 resizable: false,
                 width:55,
                 checkAll: {}
             },  {
                 xtype:'checkcolumn',
-                header: "<b>" + this.i18n._("Log") + "</b>",
+                header: "<b>" + i18n._("Log") + "</b>",
                 dataIndex: 'log',
                 resizable: false,
                 width:55,
                 checkAll: {}
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor:{
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Protocol",
                 dataIndex: "protocol",
-                fieldLabel: this.i18n._("Protocol"),
-                emptyText: this.i18n._("[enter protocol]"),
+                fieldLabel: i18n._("Protocol"),
+                emptyText: i18n._("[enter protocol]"),
                 allowBlank: false,
                 width: 400
             }, {
                 xtype:'textfield',
                 name: "Category",
                 dataIndex: "category",
-                fieldLabel: this.i18n._("Category"),
-                emptyText: this.i18n._("[enter category]"),
+                fieldLabel: i18n._("Category"),
+                emptyText: i18n._("[enter category]"),
                 allowBlank: false,
                 width: 400
             },  {
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Block")
+                fieldLabel: i18n._("Block")
             }, {
                 xtype:'checkbox',
                 name: "Log",
                 dataIndex: "log",
-                fieldLabel: this.i18n._("Log")
+                fieldLabel: i18n._("Log")
             }, {
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }, {  
                 xtype:'textarea',
                 name: "Signature",
                 dataIndex: "definition",
-                fieldLabel: this.i18n._("Signature"),
-                emptyText: this.i18n._("[enter signature]"),
+                fieldLabel: i18n._("Signature"),
+                emptyText: i18n._("[enter signature]"),
                 allowBlank: false,
                 width: 400,
                 height: 60

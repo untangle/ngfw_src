@@ -290,8 +290,6 @@ Ext.define("Ung.NodeWin", {
     node: null,
     constructor: function(config) {
         this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
-        // initializes the node i18n instance
-        config.i18n = i18n;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -427,7 +425,7 @@ Ext.define("Ung.ConfigWin", {
     constructor: function(config) {
         this.id = "configWin_" + config.name;
         // for config elements we have the untangle-libuvm translation map
-        this.i18n = i18n;
+        i18n = i18n;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -483,7 +481,7 @@ Ext.define("Ung.StatusWin", {
     constructor: function(config) {
         this.id = "statusWin_" + config.name;
         // for config elements we have the untangle-libuvm translation map
-        this.i18n = i18n;
+        i18n = i18n;
         this.callParent(arguments);
     },
     initComponent: function() {

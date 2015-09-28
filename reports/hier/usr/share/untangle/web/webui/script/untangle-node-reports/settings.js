@@ -31,7 +31,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     getAlertRuleMatchers: function () {
         return [
-            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, disableInvert: true, allowMultiple: true, allowBlank: false, formatValue: function(value) {
+            {name:"FIELD_CONDITION",displayName: i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, disableInvert: true, allowMultiple: true, allowBlank: false, formatValue: function(value) {
                 var result= "";
                 if(value) {
                     result = value.field + " " + value.comparator + " " + value.value;
@@ -74,22 +74,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
     // Status Panel
     buildStatus: function() {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._('Status'),
+            title: i18n._('Status'),
             name: 'Status',
             helpSource: 'reports_status',
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
-                title: this.i18n._('Status'),
+                title: i18n._('Status'),
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'panel',
-                    html: this.i18n._('The new reports.'),
+                    html: i18n._('The new reports.'),
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
                         xtype: 'button',
-                        text: this.i18n._('View Reports'),
+                        text: i18n._('View Reports'),
                         name: 'View Reports',
                         iconCls: 'action-icon',
                         handler: Ext.bind(function() {
@@ -99,16 +99,16 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }]
                 }]
             }, {
-                title: this.i18n._('Old Reports'),
+                title: i18n._('Old Reports'),
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'panel',
-                    html: this.i18n._('Reports are automatically generated each night.'),
+                    html: i18n._('Reports are automatically generated each night.'),
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
                         xtype: 'button',
-                        text: this.i18n._('View Old Reports'),
+                        text: i18n._('View Old Reports'),
                         name: 'View Reports',
                         iconCls: 'action-icon',
                         handler: Ext.bind(function() {
@@ -119,17 +119,17 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }, {
                     xtype: 'panel',
                     margin: '20 0 0 0',
-                    html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
-                        "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Real-time report generation may cause network slowness."),
+                    html: i18n._('Report generation for the current day can be forced with the ') + "<b>" + i18n._('Generate Today\'s Reports') + "</b>" + i18n._(" button.") + "<br/>" +
+                        "<b>" + i18n._("Caution") + ":  </b>" + i18n._("Real-time report generation may cause network slowness."),
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
                         xtype: 'button',
-                        text: this.i18n._('Generate Today\'s Reports'),
+                        text: i18n._('Generate Today\'s Reports'),
                         name: 'Generate Reports',
                         iconCls: 'action-icon',
                         handler: Ext.bind(function(callback) {
-                            Ext.MessageBox.wait(this.i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
+                            Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
                             this.getRpcNode().runDailyReport(Ext.bind(function(result, exception) {
                                 Ext.MessageBox.hide();
                                 if(Ung.Util.handleException(exception)) return;
@@ -152,22 +152,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.panelGeneration = Ext.create('Ext.panel.Panel',{
             name: 'Generation',
             helpSource: 'reports_generation',
-            title: this.i18n._('Generation'),
+            title: i18n._('Generation'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._("Daily Reports"),
+                title: i18n._("Daily Reports"),
                 items: [{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
+                    html: i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
                 },  {
                     xtype: 'udayfield',
                     name: 'Daily Days',
-                    i18n: this.i18n,
+                    i18n: i18n,
                     value: this.getSettings().generateDailyReports,
                     listeners: {
                         "change": {
@@ -178,15 +178,15 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }]
             },{
-                title: this.i18n._("Weekly Reports"),
+                title: i18n._("Weekly Reports"),
                 items: [{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
+                    html: i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
                 },  {
                     xtype: 'udayfield',
                     name: 'Weekly Days',
-                    i18n: this.i18n,
+                    i18n: i18n,
                     value: this.getSettings().generateWeeklyReports,
                     listeners: {
                         "change": {
@@ -197,15 +197,15 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }]
             },{
-                title: this.i18n._("Monthly Reports"),
+                title: i18n._("Monthly Reports"),
                 items: [{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: this.i18n._('Monthly Reports are generated on the 1st and cover the previous month.')
+                    html: i18n._('Monthly Reports are generated on the 1st and cover the previous month.')
                 },  {
                     xtype: 'checkbox',
                     name: "Monthly Enabled",
-                    boxLabel: this.i18n._("Enabled"),
+                    boxLabel: i18n._("Enabled"),
                     hideLabel: true,
                     checked: this.getSettings().generateMonthlyReports,
                     listeners: {
@@ -217,11 +217,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }]
             }, {
-                title: this.i18n._("Generation Time"),
+                title: i18n._("Generation Time"),
                 labelWidth: 150,
                 items: [{
                     xtype: 'timefield',
-                    fieldLabel: this.i18n._("Scheduled time to generate the reports"),
+                    fieldLabel: i18n._("Scheduled time to generate the reports"),
                     labelWidth: 260,
                     width: 360,
                     name: 'Generation Time',
@@ -239,19 +239,19 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }]
             }, {
-                title: this.i18n._("Data Retention"),
+                title: i18n._("Data Retention"),
                 labelWidth: 150,
                 items: [{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                    html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
                 },{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: Ext.String.format("{0}" + this.i18n._("Warning") + ":{1} " +  this.i18n._("Depending on the server and network, increasing this value may cause performance issues."),"<font color=\"red\">","</font>")
+                    html: Ext.String.format("{0}" + i18n._("Warning") + ":{1} " +  i18n._("Depending on the server and network, increasing this value may cause performance issues."),"<font color=\"red\">","</font>")
                 },{
                     xtype: 'numberfield',
-                    fieldLabel: this.i18n._('Data Retention days'),
+                    fieldLabel: i18n._('Data Retention days'),
                     name: 'Data Retention days',
                     id: 'reports_daysToKeepDB',
                     value: this.getSettings().dbRetention,
@@ -279,7 +279,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
 
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
-            header: this.i18n._("Change Password"),
+            header: i18n._("Change Password"),
             width: 130,
             resizable: false,
             iconClass: 'icon-edit-row',
@@ -292,18 +292,18 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.panelEmail = Ext.create('Ext.panel.Panel',{
             name: 'Email',
             helpSource: 'reports_email',
-            title: this.i18n._('Email'),
+            title: i18n._('Email'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._('Email'),
+                title: i18n._('Email'),
                 flex: 1,
                 layout: 'fit',
                 items: [ this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
-                    title: this.i18n._("Reports Users"),
+                    title: i18n._("Reports Users"),
                     hasEdit: false,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
@@ -329,26 +329,26 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         name: "passwordHashBase64"
                     }],
                     columns: [{
-                        header: this.i18n._("Email Address (username)"),
+                        header: i18n._("Email Address (username)"),
                         dataIndex: "emailAddress",
                         width: 200,
                         editor: {
                             xtype:'textfield',
                             vtype: 'email',
-                            emptyText: this.i18n._("[enter email address]"),
+                            emptyText: i18n._("[enter email address]"),
                             allowBlank: false,
-                            blankText: this.i18n._("The email address cannot be blank.")
+                            blankText: i18n._("The email address cannot be blank.")
                         },
                         flex:1
                     }, {
                         xtype:'checkcolumn',
-                        header: this.i18n._("Email Summaries"),
+                        header: i18n._("Email Summaries"),
                         dataIndex: "emailSummaries",
                         width: 100,
                         resizable: false
                     }, {
                         xtype:'checkcolumn',
-                        header: this.i18n._("Online Access"),
+                        header: i18n._("Online Access"),
                         dataIndex: "onlineAccess",
                         width: 100,
                         resizable: false
@@ -356,22 +356,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     rowEditorInputLines: [{
                         xtype:'textfield',
                         dataIndex: "emailAddress",
-                        fieldLabel: this.i18n._("Email Address (username)"),
+                        fieldLabel: i18n._("Email Address (username)"),
                         vtype: 'email',
-                        emptyText: this.i18n._("[enter email address]"),
+                        emptyText: i18n._("[enter email address]"),
                         allowBlank: false,
-                        blankText: this.i18n._("The email address name cannot be blank."),
+                        blankText: i18n._("The email address name cannot be blank."),
                         width: 300
                     },{
                         xtype:'checkbox',
                         dataIndex: "emailSummaries",
-                        fieldLabel: this.i18n._("Email Summaries"),
+                        fieldLabel: i18n._("Email Summaries"),
                         width: 300
                     },{
                         xtype:'checkbox',
                         dataIndex: "onlineAccess",
                         id: "add_reports_online_reports_" + fieldID,
-                        fieldLabel: this.i18n._("Online Access"),
+                        fieldLabel: i18n._("Online Access"),
                         width: 300
                     },{
                         xtype: 'container',
@@ -384,14 +384,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             dataIndex: "password",
                             id: "add_reports_user_password_" + fieldID,
                             msgTarget: "title",
-                            fieldLabel: this.i18n._("Password"),
+                            fieldLabel: i18n._("Password"),
                             width: 300,
                             minLength: 3,
-                            minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                            minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
                             validator: this.passwordValidator
                         },{
                             xtype: 'label',
-                            html: this.i18n._("(required for Online Access)"),
+                            html: i18n._("(required for Online Access)"),
                             cls: 'boxlabel'
                         }]
                     }, {
@@ -400,17 +400,17 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         name: "Confirm Password",
                         dataIndex: "password",
                         id: "add_reports_confirm_password_" + fieldID,
-                        fieldLabel: this.i18n._("Confirm Password"),
+                        fieldLabel: i18n._("Confirm Password"),
                         width: 300,
                         validator: this.passwordValidator
                     }]
                 })]
             },{
-                title: this.i18n._("Email Attachment Settings"),
+                title: i18n._("Email Attachment Settings"),
                 flex: 0,
                 items: [{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
+                    boxLabel: i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
                     name: 'Email Detail',
                     hideLabel: true,
                     checked: this.getSettings().emailDetail,
@@ -423,7 +423,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'numberfield',
-                    fieldLabel: this.i18n._('Attachment size limit (MB)'),
+                    fieldLabel: i18n._('Attachment size limit (MB)'),
                     name: 'Attachement size limit',
                     id: 'reports_attachment_size_limit',
                     value: this.getSettings().attachmentSizeLimit,
@@ -460,10 +460,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 name: "Password",
                 dataIndex: "password",
                 id: "edit_reports_user_password_"  + fieldID,
-                fieldLabel: this.i18n._("Password"),
+                fieldLabel: i18n._("Password"),
                 width: 300,
                 minLength: 3,
-                minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
                 validator: this.passwordValidator
             },
             {
@@ -472,7 +472,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 name: "Confirm Password",
                 dataIndex: "password",
                 id: "edit_reports_confirm_password_"  + fieldID,
-                fieldLabel: this.i18n._("Confirm Password"),
+                fieldLabel: i18n._("Confirm Password"),
                 width: 300,
                 validator: this.passwordValidator
             }]
@@ -484,22 +484,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.panelSyslog = Ext.create('Ext.panel.Panel',{
             name: 'Syslog',
             helpSource: 'reports_syslog',
-            title: this.i18n._('Syslog'),
+            title: i18n._('Syslog'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._('Syslog'),
+                title: i18n._('Syslog'),
                 height: 350,
                 items: [{
                     xtype: 'component',
                     margin: '0 0 10 0',
-                    html: this.i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
+                    html: i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
                 }, {
                     xtype: 'radio',
-                    boxLabel: Ext.String.format(this.i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
+                    boxLabel: Ext.String.format(i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
                     hideLabel: true,
                     name: 'syslogEnabled',
                     checked: !this.getSettings().syslogEnabled,
@@ -517,7 +517,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'radio',
-                    boxLabel: Ext.String.format(this.i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
+                    boxLabel: Ext.String.format(i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
                     hideLabel: true,
                     name: 'syslogEnabled',
                     checked: this.getSettings().syslogEnabled,
@@ -538,24 +538,24 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     margin: '0 0 0 40',
                     items: [{
                         xtype: 'textfield',
-                        fieldLabel: this.i18n._('Host'),
+                        fieldLabel: i18n._('Host'),
                         name: 'syslogHost',
                         width: 300,
                         value: this.getSettings().syslogHost,
                         toValidate: true,
                         allowBlank: false,
-                        blankText: this.i18n._("A Host must be specified."),
+                        blankText: i18n._("A Host must be specified."),
                         disabled: !this.getSettings().syslogEnabled,
                         validator: Ext.bind( function( value ){
                             if( value == '127.0.0.1' ||
                                 value == 'localhost' ){
-                                return this.i18n._("Host cannot be localhost address.");
+                                return i18n._("Host cannot be localhost address.");
                             }
                             return true;
                         }, this)
                     },{
                         xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Port'),
+                        fieldLabel: i18n._('Port'),
                         name: 'syslogPort',
                         width: 200,
                         value: this.getSettings().syslogPort,
@@ -563,17 +563,17 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         allowDecimals: false,
                         minValue: 0,
                         allowBlank: false,
-                        blankText: this.i18n._("You must provide a valid port."),
+                        blankText: i18n._("You must provide a valid port."),
                         vtype: 'port',
                         disabled: !this.getSettings().syslogEnabled
                     },{
                         xtype: 'combo',
                         name: 'syslogProtocol',
                         editable: false,
-                        fieldLabel: this.i18n._('Protocol'),
+                        fieldLabel: i18n._('Protocol'),
                         queryMode: 'local',
-                        store: [["UDP", this.i18n._("UDP")],
-                                ["TCP", this.i18n._("TCP")]],
+                        store: [["UDP", i18n._("UDP")],
+                                ["TCP", i18n._("TCP")]],
                         value: this.getSettings().syslogProtocol,
                         disabled: !this.getSettings().syslogEnabled
                     }]
@@ -586,23 +586,23 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.panelDatabase = Ext.create('Ext.panel.Panel',{
             name: 'Database',
             // helpSource: 'reports_database', //DISABLED
-            title: this.i18n._('Database'),
+            title: i18n._('Database'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._('Database'),
+                title: i18n._('Database'),
                 height: 350,
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Host'),
+                    fieldLabel: i18n._('Host'),
                     name: 'databaseHost',
                     width: 300,
                     value: this.getSettings().dbHost,
                     allowBlank: false,
-                    blankText: this.i18n._("A Host must be specified."),
+                    blankText: i18n._("A Host must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbHost = newValue;
@@ -610,14 +610,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'numberfield',
-                    fieldLabel: this.i18n._('Port'),
+                    fieldLabel: i18n._('Port'),
                     name: 'databasePort',
                     width: 200,
                     value: this.getSettings().dbPort,
                     allowDecimals: false,
                     minValue: 0,
                     allowBlank: false,
-                    blankText: this.i18n._("You must provide a valid port."),
+                    blankText: i18n._("You must provide a valid port."),
                     vtype: 'port',
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
@@ -626,12 +626,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('User'),
+                    fieldLabel: i18n._('User'),
                     name: 'databaseUser',
                     width: 300,
                     value: this.getSettings().dbUser,
                     allowBlank: false,
-                    blankText: this.i18n._("A User must be specified."),
+                    blankText: i18n._("A User must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbUser = newValue;
@@ -639,12 +639,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Password'),
+                    fieldLabel: i18n._('Password'),
                     name: 'databasePassword',
                     width: 300,
                     value: this.getSettings().dbPassword,
                     allowBlank: false,
-                    blankText: this.i18n._("A Password must be specified."),
+                    blankText: i18n._("A Password must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbPassword = newValue;
@@ -652,12 +652,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Name'),
+                    fieldLabel: i18n._('Name'),
                     name: 'databaseName',
                     width: 300,
                     value: this.getSettings().dbName,
                     allowBlank: false,
-                    blankText: this.i18n._("A Name must be specified."),
+                    blankText: i18n._("A Name must be specified."),
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().dbName = newValue;
@@ -673,7 +673,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             settingsCmp: this,
             name: 'Name Map',
             helpSource: 'reports_name_map',
-            title: this.i18n._("Name Map"),
+            title: i18n._("Name Map"),
             dataProperty: 'hostnameMap',
             recordJavaClass: "com.untangle.node.reports.ReportsHostnameMapEntry",
             emptyRow: {
@@ -689,25 +689,25 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 name: 'hostname'
             }],
             columns: [{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 width: 200,
                 dataIndex: 'address',
                 editor: {
                     xtype:'textfield',
                     vtype: 'ipAddress',
-                    emptyText: this.i18n._("[enter IP address]"),
+                    emptyText: i18n._("[enter IP address]"),
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("Name"),
+                header: i18n._("Name"),
                 width: 200,
                 dataIndex: 'hostname',
                 flex:1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter name]"),
+                    emptyText: i18n._("[enter name]"),
                     regex: /^[^'"]+$/,
-                    regexText: this.i18n._("Quotes and double quotes are not allowed"),
+                    regexText: i18n._("Quotes and double quotes are not allowed"),
                     allowBlank: false
                 }
             }],
@@ -715,8 +715,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype:'textfield',
                 name: "Subnet",
                 dataIndex: "address",
-                fieldLabel: this.i18n._("IP Address"),
-                emptyText: this.i18n._("[enter IP address]"),
+                fieldLabel: i18n._("IP Address"),
+                emptyText: i18n._("[enter IP address]"),
                 vtype: 'ipAddress',
                 allowBlank: false,
                 width: 300
@@ -724,10 +724,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype:'textfield',
                 name: "Name",
                 dataIndex: "hostname",
-                fieldLabel: this.i18n._("Name"),
-                emptyText: this.i18n._("[enter name]"),
+                fieldLabel: i18n._("Name"),
+                emptyText: i18n._("[enter name]"),
                 regex: /^[^'"]+$/,
-                regexText: this.i18n._("Quotes and double quotes are not allowed"),
+                regexText: i18n._("Quotes and double quotes are not allowed"),
                 allowBlank: false,
                 width: 300
             }]
@@ -735,7 +735,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     // Manage Reports Panel
     buildReportEntries: function() {
-        var chartTypes = [["TEXT", this.i18n._("Text")],["PIE_GRAPH", this.i18n._("Pie Graph")],["TIME_GRAPH", this.i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", this.i18n._("Time Graph Dynamic")]];
+        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
         var chartTypeMap = Ung.Util.createStoreMap(chartTypes);
         var chartTypeRenderer = function(value) {
             return chartTypeMap[value]?chartTypeMap[value]:value;
@@ -746,7 +746,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             settingsCmp: this,
             hasReadOnly: true,
             changableFields: ['enabled'],
-            title: this.i18n._("Manage Reports"),
+            title: i18n._("Manage Reports"),
             features: [{
                 ftype: 'grouping'
             }],
@@ -765,40 +765,40 @@ Ext.define('Webui.untangle-node-reports.settings', {
             fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions', 
                      'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
             columns: [{
-                header: this.i18n._("Title"),
+                header: i18n._("Title"),
                 width: 230,
                 dataIndex: 'title'
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enabled"),
+                header: i18n._("Enabled"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width: 55
             }, {
-                header: this.i18n._("Type"),
+                header: i18n._("Type"),
                 width: 90,
                 dataIndex: 'type',
                 renderer: chartTypeRenderer
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1
             }, {
-                header: this.i18n._("Units"),
+                header: i18n._("Units"),
                 width: 90,
                 dataIndex: 'units'
             }, {
-                header: this.i18n._("Display Order"),
+                header: i18n._("Display Order"),
                 width: 90,
                 dataIndex: 'displayOrder'
             }, {
-                header: this.i18n._("View"),
+                header: i18n._("View"),
                 xtype: 'actioncolumn',
                 width: 70,
                 items: [{
                     iconCls: 'icon-play-row',
-                    tooltip: this.i18n._('View Report'),
+                    tooltip: i18n._('View Report'),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         this.viewReport(Ext.clone(record.getData()));
                     }, this)
@@ -812,11 +812,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     viewReport: function(reportEntry) {
         if(!this.winViewReport) {
             this.winViewReport = Ext.create('Ung.Window', {
-                title: this.i18n._('View Report'),
+                title: i18n._('View Report'),
                 bbar: ['->', {
                     name: "Cancel",
                     iconCls: 'cancel-icon',
-                    text: this.i18n._('Cancel'),
+                    text: i18n._('Cancel'),
                     handler: function() {
                         this.up('window').cancelAction();
                     }
@@ -847,21 +847,21 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
             helpSource: 'reports_alert_rules',
-            title: this.i18n._('Alert Rules'),
+            title: i18n._('Alert Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('Note'),
+                title: i18n._('Note'),
                 flex: 0,
-                html: this.i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
+                html: i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
             },  this.gridAlertRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Alert Rules',
                 settingsCmp: this,
                 hasReorder: true,
                 addAtTop: false,
-                title: this.i18n._("Alert Rules"),
+                title: i18n._("Alert Rules"),
                 dataProperty:'alertRules',
                 recordJavaClass: "com.untangle.node.reports.AlertRule",
                 emptyRow: {
@@ -893,7 +893,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     name: 'javaClass'
                 }],
                 columns: [{
-                    header: this.i18n._("Rule Id"),
+                    header: i18n._("Rule Id"),
                     width: 50,
                     dataIndex: 'ruleId',
                     renderer: function(value) {
@@ -905,23 +905,23 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }, {
                     xtype:'checkcolumn',
-                    header: this.i18n._("Enable"),
+                    header: i18n._("Enable"),
                     dataIndex: 'enabled',
                     resizable: false,
                     width:55
                 }, {
-                    header: this.i18n._("Description"),
+                    header: i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
                     flex: 1
                 }, {
                     xtype:'checkcolumn',
-                    header: this.i18n._("Log Alert"),
+                    header: i18n._("Log Alert"),
                     dataIndex: 'log',
                     width:150
                 }, {
                     xtype:'checkcolumn',
-                    header: this.i18n._("Send Alert"),
+                    header: i18n._("Send Alert"),
                     dataIndex: 'alert',
                     width:150
                 }]
@@ -932,17 +932,17 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype:'checkbox',
                 name: "Enable Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Rule")
+                fieldLabel: i18n._("Enable Rule")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -957,12 +957,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype:'checkbox',
                     labelWidth: 160,
                     dataIndex: "log",
-                    fieldLabel: this.i18n._("Log Alert")
+                    fieldLabel: i18n._("Log Alert")
                 }, {
                     xtype:'checkbox',
                     labelWidth: 160,
                     dataIndex: "alert",
-                    fieldLabel: this.i18n._("Send Alert"),
+                    fieldLabel: i18n._("Send Alert"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -977,7 +977,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         xtype:'checkbox',
                         labelWidth: 160,
                         dataIndex: "alertLimitFrequency",
-                        fieldLabel: this.i18n._("Limit Send Frequency")
+                        fieldLabel: i18n._("Limit Send Frequency")
                     },{
                         xtype: 'container',
                         layout: 'column',
@@ -991,10 +991,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             allowBlank: false,
                             minValue: 0,
                             maxValue: 24*60*7, // 1 weeks
-                            fieldLabel: this.i18n._('To once per')
+                            fieldLabel: i18n._('To once per')
                         }, {
                             xtype: 'label',
-                            html: this.i18n._("(minutes)"),
+                            html: i18n._("(minutes)"),
                             cls: 'boxlabel'
                         }]
                     }]

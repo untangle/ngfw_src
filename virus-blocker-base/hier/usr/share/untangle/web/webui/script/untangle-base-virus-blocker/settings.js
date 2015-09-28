@@ -42,14 +42,14 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             helpSource: this.helpSourceName + '_web',
             winExtensions: null,
             winMimeTypes: null,
-            title: this.i18n._('Web'),
+            title: i18n._('Web'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Scan HTTP'),
+                    boxLabel: i18n._('Scan HTTP'),
                     hideLabel: true,
                     name: 'Scan HTTP',
                     checked: this.settings.scanHttp,
@@ -63,12 +63,12 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 }, {
                     xtype: 'component',
                     margin: '30 0 0 0',
-                    html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    html: i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                         (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('About'),
+                title: i18n._('About'),
                 html: this.aboutInfo,
                 hidden: (this.aboutInfo==null)
             }]
@@ -80,7 +80,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
         this.gridExtensions = Ext.create('Ung.grid.Panel',{
             name: 'File Extensions',
             settingsCmp: this,
-            title: this.i18n._("File Extensions"),
+            title: i18n._("File Extensions"),
             dataProperty: "httpFileExtensions",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -91,29 +91,29 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
-                header: this.i18n._("File Type"),
+                header: i18n._("File Type"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter file type]"),
+                    emptyText: i18n._("[enter file type]"),
                     allowBlank: false
                 }
             },
             {
                 xtype:'checkcolumn',
-                header: this.i18n._("Scan"),
+                header: i18n._("Scan"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [
@@ -121,8 +121,8 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 xtype:'textfield',
                 name: "File Type",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("File Type"),
-                emptyText: this.i18n._("[enter file type]"),
+                fieldLabel: i18n._("File Type"),
+                emptyText: i18n._("[enter file type]"),
                 allowBlank: false,
                 width: 400
             },
@@ -130,14 +130,14 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 xtype:'checkbox',
                 name: "Scan",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Scan")
+                fieldLabel: i18n._("Scan")
             },
             {
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -148,7 +148,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
         this.gridMimeTypes = Ext.create('Ung.grid.Panel', {
             name: 'MIME Types',
             settingsCmp: this,
-            title: this.i18n._("MIME Types"),
+            title: i18n._("MIME Types"),
             dataProperty: "httpMimeTypes",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -159,28 +159,28 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
-                header: this.i18n._("MIME Type"),
+                header: i18n._("MIME Type"),
                 width: 200,
                 dataIndex: 'string',
                 editor:{
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter MIME type]"),
+                    emptyText: i18n._("[enter MIME type]"),
                     allowBlank:false
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Scan"),
+                header: i18n._("Scan"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 field: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]"),
+                    emptyText: i18n._("[no description]"),
                     allowBlank:false
                 }
             }],
@@ -189,21 +189,21 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 xtype:'textfield',
                 name: "MIME Type",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("MIME Type"),
-                emptyText: this.i18n._("[enter MIME type]"),
+                fieldLabel: i18n._("MIME Type"),
+                emptyText: i18n._("[enter MIME type]"),
                 allowBlank: false,
                 width: 400
             }, {
                 xtype:'checkbox',
                 name: "Scan",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Scan")
+                fieldLabel: i18n._("Scan")
             }, {
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -216,7 +216,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             //helpSource: 'virus_blocker_ftp',
             //helpSource: 'virus_blocker_lite_ftp',
             helpSource: this.helpSourceName + '_ftp',
-            title: this.i18n._('FTP'),
+            title: i18n._('FTP'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -225,7 +225,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             items: [{
                 items: [{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Scan FTP'),
+                    boxLabel: i18n._('Scan FTP'),
                     hideLabel: true,
                     name: 'Scan FTP',
                     checked: this.settings.scanFtp,
@@ -238,8 +238,8 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                     }
                 }]
             }, {
-                html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                html: i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): i18n._("Unknown"))
             }]
 
         });
@@ -251,7 +251,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             //helpSource: 'virus_blocker_email',
             //helpSource: 'virus_blocker_lite_email',
             helpSource: this.helpSourceName + '_email',
-            title: this.i18n._('Email'),
+            title: i18n._('Email'),
             defaults: {
                 xtype: 'fieldset'
             },
@@ -264,7 +264,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                     border: false,
                     items: [{
                         xtype: 'checkbox',
-                        boxLabel: this.i18n._('Scan SMTP'),
+                        boxLabel: i18n._('Scan SMTP'),
                         hideLabel: true,
                         name: 'Scan SMTP',
                         checked: this.settings.scanSmtp,
@@ -283,11 +283,11 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                         xtype: 'combo',
                         name: 'SMTP Action',
                         editable: false,
-                        fieldLabel: this.i18n._('Action'),
+                        fieldLabel: i18n._('Action'),
                         queryMode: 'local',
-                        store: [["pass", this.i18n._("pass message")],
-                                ["remove", this.i18n._("remove infection")],
-                                ["block", this.i18n._("block message")]],
+                        store: [["pass", i18n._("pass message")],
+                                ["remove", i18n._("remove infection")],
+                                ["block", i18n._("block message")]],
                         value: this.settings.smtpAction,
                         listeners: {
                             "change": {
@@ -299,8 +299,8 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                     }]
                 }]
             }, {
-                html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                html: i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): i18n._("Unknown"))
             }]
         });
     },
@@ -310,7 +310,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             name: 'Pass Sites',
             settingsCmp: this,
             flex: 1,
-            title: this.i18n._("Pass Sites"),
+            title: i18n._("Pass Sites"),
             dataProperty: "passSites",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -321,49 +321,49 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
-                header: this.i18n._("Site"),
+                header: i18n._("Site"),
                 width: 200,
                 dataIndex: 'string',
                 editor:{
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter site]"),
+                    emptyText: i18n._("[enter site]"),
                     allowBlank:false
                 }
             },{
                 xtype:'checkcolumn',
-                header: this.i18n._("Pass"),
+                header: i18n._("Pass"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex: 1,
                 field: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Site"),
-                emptyText: this.i18n._("[enter site]"),
+                fieldLabel: i18n._("Site"),
+                emptyText: i18n._("[enter site]"),
                 allowBlank: false,
                 width: 400
             },{
                 xtype:'checkbox',
                 name: "Scan",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Pass")
+                fieldLabel: i18n._("Pass")
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -374,7 +374,7 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             helpSource: this.helpSourceName + '_pass_sites',
             //helpSource: 'virus_blocker_pass_sites',
             //helpSource: 'virus_blocker_lite_pass_sites',
-            title: this.i18n._("Pass Sites"),
+            title: i18n._("Pass Sites"),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -385,8 +385,8 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!")
+                title: i18n . _("Pass Sites"),
+                html: i18n . _("Do not scan traffic to the specified sites.  Use caution!")
             },
             this.gridPassSites
             ]
@@ -398,14 +398,14 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
 
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
             name: 'Advanced',
-            title: this.i18n._('Advanced'),
+            title: i18n._('Advanced'),
             cls: 'ung-panel',
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                title: this.i18n._("Advanced"),
-                html: this.i18n._("Advanced settings require careful configuration.")
+                title: i18n._("Advanced"),
+                html: i18n._("Advanced settings require careful configuration.")
             }, {
                 xtype: 'tabpanel',
                 activeTab: 0,

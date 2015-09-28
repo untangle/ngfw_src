@@ -33,24 +33,24 @@ Ext.define('Webui.untangle-node-phish-blocker.settings', {
     },
     // Email Config Panel
     buildEmail: function() {
-        this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
-                ['DROP', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
-        this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
+        this.smtpData = [['MARK', i18n._('Mark')], ['PASS', i18n._('Pass')],
+                ['DROP', i18n._('Drop')], ['QUARANTINE', i18n._('Quarantine')]];
+        this.spamData = [['MARK', i18n._('Mark')], ['PASS', i18n._('Pass')]];
         this.emailPanel = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._('Email'),
+            title: i18n._('Email'),
             name: 'Email',
             helpSource: 'phish_blocker_email',
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('SMTP'),
+                title: i18n._('SMTP'),
                 defaults: {
                     width: 210
                 },
                 items: [{
                     xtype: 'checkbox',
-                    boxLabel: this.i18n._('Scan SMTP'),
+                    boxLabel: i18n._('Scan SMTP'),
                     name: 'Scan SMTP',
                     hideLabel: true,
                     checked: this.settings.smtpConfig.scan,
@@ -64,7 +64,7 @@ Ext.define('Webui.untangle-node-phish-blocker.settings', {
                     store:this.smtpData,
                     valueField: 'key',
                     displayField: 'name',
-                    fieldLabel: this.i18n._('Action'),
+                    fieldLabel: i18n._('Action'),
                     queryMode: 'local',
                     value: this.settings.smtpConfig.msgAction,
                     listeners: {
@@ -77,8 +77,8 @@ Ext.define('Webui.untangle-node-phish-blocker.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Note'),
-                html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                title: i18n._('Note'),
+                html: i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
             }]
         });

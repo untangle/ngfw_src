@@ -260,43 +260,43 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         };
 
         var classtypesInfoList = [
-            [ "attempted-admin", this.i18n._("Attempted Administrator Privilege Gain"), "high"],
-            [ "attempted-user", this.i18n._("Attempted User Privilege Gain"), "high" ],
-            [ "inappropriate-content", this.i18n._("Inappropriate Content was Detected"), "high" ],
-            [ "policy-violation", this.i18n._("Potential Corporate Privacy Violation"), "high" ],
-            [ "shellcode-detect", this.i18n._("Executable code was detected"), "high" ],
-            [ "successful-admin", this.i18n._("Successful Administrator Privilege Gain"), "high" ],
-            [ "successful-user", this.i18n._("Successful User Privilege Gain"), "high" ],
-            [ "trojan-activity", this.i18n._("A Network Trojan was detected"), "high" ],
-            [ "unsuccessful-user", this.i18n._("Unsuccessful User Privilege Gain"), "high" ],
-            [ "web-application-attack", this.i18n._("Web Application Attack"), "high" ],
+            [ "attempted-admin", i18n._("Attempted Administrator Privilege Gain"), "high"],
+            [ "attempted-user", i18n._("Attempted User Privilege Gain"), "high" ],
+            [ "inappropriate-content", i18n._("Inappropriate Content was Detected"), "high" ],
+            [ "policy-violation", i18n._("Potential Corporate Privacy Violation"), "high" ],
+            [ "shellcode-detect", i18n._("Executable code was detected"), "high" ],
+            [ "successful-admin", i18n._("Successful Administrator Privilege Gain"), "high" ],
+            [ "successful-user", i18n._("Successful User Privilege Gain"), "high" ],
+            [ "trojan-activity", i18n._("A Network Trojan was detected"), "high" ],
+            [ "unsuccessful-user", i18n._("Unsuccessful User Privilege Gain"), "high" ],
+            [ "web-application-attack", i18n._("Web Application Attack"), "high" ],
 
-            [ "attempted-dos", this.i18n._("Attempted Denial of Service"), "medium" ],
-            [ "attempted-recon", this.i18n._("Attempted Information Leak"), "medium" ],
-            [ "bad-unknown", this.i18n._("Potentially Bad Traffic"), "medium" ],
-            [ "default-login-attempt", this.i18n._("Attempt to login by a default username and password"), "medium" ],
-            [ "denial-of-service", this.i18n._("Detection of a Denial of Service Attack"), "medium" ],
-            [ "misc-attack", this.i18n._("Misc Attack"), "medium" ],
-            [ "non-standard-protocol", this.i18n._("Detection of a non-standard protocol or event"), "medium" ],
-            [ "rpc-portmap-decode", this.i18n._("Decode of an RPC Query"), "medium" ],
-            [ "successful-dos", this.i18n._("Denial of Service"), "medium" ],
-            [ "successful-recon-largescale", this.i18n._("Large Scale Information Leak"), "medium" ],
-            [ "successful-recon-limited", this.i18n._("Information Leak"), "medium" ],
-            [ "suspicious-filename-detect", this.i18n._("A suspicious filename was detected"), "medium" ],
-            [ "suspicious-login", this.i18n._("An attempted login using a suspicious username was detected"), "medium" ],
-            [ "system-call-detect", this.i18n._("A system call was detected"), "medium" ],
-            [ "unusual-client-port-connection", this.i18n._("A client was using an unusual port"), "medium" ],
-            [ "web-application-activity", this.i18n._("Access to a potentially vulnerable web application"), "medium" ],
+            [ "attempted-dos", i18n._("Attempted Denial of Service"), "medium" ],
+            [ "attempted-recon", i18n._("Attempted Information Leak"), "medium" ],
+            [ "bad-unknown", i18n._("Potentially Bad Traffic"), "medium" ],
+            [ "default-login-attempt", i18n._("Attempt to login by a default username and password"), "medium" ],
+            [ "denial-of-service", i18n._("Detection of a Denial of Service Attack"), "medium" ],
+            [ "misc-attack", i18n._("Misc Attack"), "medium" ],
+            [ "non-standard-protocol", i18n._("Detection of a non-standard protocol or event"), "medium" ],
+            [ "rpc-portmap-decode", i18n._("Decode of an RPC Query"), "medium" ],
+            [ "successful-dos", i18n._("Denial of Service"), "medium" ],
+            [ "successful-recon-largescale", i18n._("Large Scale Information Leak"), "medium" ],
+            [ "successful-recon-limited", i18n._("Information Leak"), "medium" ],
+            [ "suspicious-filename-detect", i18n._("A suspicious filename was detected"), "medium" ],
+            [ "suspicious-login", i18n._("An attempted login using a suspicious username was detected"), "medium" ],
+            [ "system-call-detect", i18n._("A system call was detected"), "medium" ],
+            [ "unusual-client-port-connection", i18n._("A client was using an unusual port"), "medium" ],
+            [ "web-application-activity", i18n._("Access to a potentially vulnerable web application"), "medium" ],
 
-            [ "icmp-event", this.i18n._("Generic ICMP event"), "low" ],
-            [ "misc-activity", this.i18n._("Misc activity"), "low" ],
-            [ "network-scan", this.i18n._("Detection of a Network Scan"), "low" ],
-            [ "not-suspicious", this.i18n._("Not Suspicious Traffic"), "low" ],
-            [ "protocol-command-decode", this.i18n._("Generic Protocol Command Decode"), "low" ],
-            [ "string-detect", this.i18n._("A suspicious string was detected"), "low" ],
-            [ "unknown", this.i18n._("Unknown Traffic"), "low" ],
+            [ "icmp-event", i18n._("Generic ICMP event"), "low" ],
+            [ "misc-activity", i18n._("Misc activity"), "low" ],
+            [ "network-scan", i18n._("Detection of a Network Scan"), "low" ],
+            [ "not-suspicious", i18n._("Not Suspicious Traffic"), "low" ],
+            [ "protocol-command-decode", i18n._("Generic Protocol Command Decode"), "low" ],
+            [ "string-detect", i18n._("A suspicious string was detected"), "low" ],
+            [ "unknown", i18n._("Unknown Traffic"), "low" ],
 
-            [ "tcp-connection", this.i18n._("A TCP connection was detected"), "low" ]
+            [ "tcp-connection", i18n._("A TCP connection was detected"), "low" ]
         ];
         this.classtypesInfoStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description', 'priority' ],
@@ -305,60 +305,60 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         this.classtypesInfoMap = Ung.Util.createStoreMap(classtypesInfoList);
         
         var categoriesInfoList = [
-            ["app-detect", this.i18n._("This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.") ],
-            ["blacklist", this.i18n._("This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.") ],
-            ["browser-chrome", this.i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)") ],
-            ["browser-firefox", this.i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)") ],
-            ["browser-ie", this.i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
-            ["browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
-            ["browser-other", this.i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
-            ["browser-plugins", this.i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
-            ["content-replace", this.i18n._("This category containt any rule that utilizes the replace functionality inside of Snort.") ],
-            ["deleted", this.i18n._("When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.") ],
-            ["exploit", this.i18n._("This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.") ],
-            ["exploit-kit", this.i18n._("This category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.") ],
-            ["file-executable", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.") ],
-            ["file-flash", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.") ],
-            ["file-image", this.i18n._("This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)") ],
-            ["file-identify", this.i18n._("This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.") ],
-            ["file-multimedia", this.i18n._("This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)") ],
-            ["file-office", this.i18n._("This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)") ],
-            ["file-pdf", this.i18n._("This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)") ],
-            ["file-other", this.i18n._("This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.") ],
-            ["indicator-compromise", this.i18n._("This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.") ],
-            ["indicator-obfuscation", this.i18n._("This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.") ],
-            ["indicator-shellcode", this.i18n._("This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules.") ],
-            ["malware-backdoor", this.i18n._("This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.") ],
-            ["malware-cnc", this.i18n._("This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here.") ],
-            ["malware-tools", this.i18n._("This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.") ],
-            ["malware-other", this.i18n._("This category contains rules that are malware related, but don't fit into one of the other malware categories.") ],
-            ["os-linux", this.i18n._("This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.") ],
-            ["os-solaris", this.i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
-            ["os-windows", this.i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
-            ["os-other", this.i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
-            ["policy-multimedia", this.i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
-            ["policy-social", this.i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
-            ["policy-other", this.i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
-            ["policy-spam", this.i18n._("This category is for rules that may indicate the presence of spam on the network.") ],
-            ["protocol-finger", this.i18n._("This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.") ],
-            ["protocol-ftp", this.i18n._("This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.") ],
-            ["protocol-icmp", this.i18n._("This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.") ],
-            ["protocol-imap", this.i18n._("This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.") ],
-            ["protocol-pop", this.i18n._("This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.") ],
-            ["protocol-services", this.i18n._("This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.") ],
-            ["protocol-voip", this.i18n._("This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.") ],
-            ["pua-adware", this.i18n._("This category deals with pua or Potentially Unwanted Applications that deal with adware or spyware.") ],
-            ["pua-p2p", this.i18n._("This category deals with pua or Potentially Unwanted Applications that deal with p2p.") ],
-            ["pua-toolbars", this.i18n._("This category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)") ],
-            ["pua-other", this.i18n._("This category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above.") ],
-            ["server-apache", this.i18n._("This category deals with vulnerabilities in or attacks against the Apache Web Server.") ],
-            ["server-iis", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.") ],
-            ["server-mssql", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft SQL Server.") ],
-            ["server-mysql", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's MySQL server.") ],
-            ["server-oracle", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.") ],
-            ["server-webapp", this.i18n._("This category deals with vulnerabilities in or attacks against Web based applications on servers.") ],
-            ["server-mail", this.i18n._("This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.") ],
-            ["server-other", this.i18n._("This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.") ]
+            ["app-detect", i18n._("This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.") ],
+            ["blacklist", i18n._("This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.") ],
+            ["browser-chrome", i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the browser-webkit category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)") ],
+            ["browser-firefox", i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the Gecko engine. (Thunderbird email client, etc)") ],
+            ["browser-ie", i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
+            ["browser-webkit", i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
+            ["browser-other", i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
+            ["browser-plugins", i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
+            ["content-replace", i18n._("This category containt any rule that utilizes the replace functionality inside of Snort.") ],
+            ["deleted", i18n._("When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.") ],
+            ["exploit", i18n._("This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.") ],
+            ["exploit-kit", i18n._("This category contains rules that are specifically tailored to detect exploit kit activity. This does not include post-compromise rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.") ],
+            ["file-executable", i18n._("This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.") ],
+            ["file-flash", i18n._("This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.") ],
+            ["file-image", i18n._("This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)") ],
+            ["file-identify", i18n._("This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.") ],
+            ["file-multimedia", i18n._("This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)") ],
+            ["file-office", i18n._("This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)") ],
+            ["file-pdf", i18n._("This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)") ],
+            ["file-other", i18n._("This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.") ],
+            ["indicator-compromise", i18n._("This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.") ],
+            ["indicator-obfuscation", i18n._("This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.") ],
+            ["indicator-shellcode", i18n._("This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old shellcode.rules.") ],
+            ["malware-backdoor", i18n._("This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.") ],
+            ["malware-cnc", i18n._("This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from Master to Zombie type stuff will also be here.") ],
+            ["malware-tools", i18n._("This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.") ],
+            ["malware-other", i18n._("This category contains rules that are malware related, but don't fit into one of the other malware categories.") ],
+            ["os-linux", i18n._("This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.") ],
+            ["os-solaris", i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
+            ["os-windows", i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
+            ["os-other", i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
+            ["policy-multimedia", i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
+            ["policy-social", i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
+            ["policy-other", i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
+            ["policy-spam", i18n._("This category is for rules that may indicate the presence of spam on the network.") ],
+            ["protocol-finger", i18n._("This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.") ],
+            ["protocol-ftp", i18n._("This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.") ],
+            ["protocol-icmp", i18n._("This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.") ],
+            ["protocol-imap", i18n._("This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.") ],
+            ["protocol-pop", i18n._("This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.") ],
+            ["protocol-services", i18n._("This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.") ],
+            ["protocol-voip", i18n._("This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.") ],
+            ["pua-adware", i18n._("This category deals with pua or Potentially Unwanted Applications that deal with adware or spyware.") ],
+            ["pua-p2p", i18n._("This category deals with pua or Potentially Unwanted Applications that deal with p2p.") ],
+            ["pua-toolbars", i18n._("This category deals with pua or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)") ],
+            ["pua-other", i18n._("This category deals with pua or Potentially Unwanted Applications that don't fit into one of the categories shown above.") ],
+            ["server-apache", i18n._("This category deals with vulnerabilities in or attacks against the Apache Web Server.") ],
+            ["server-iis", i18n._("This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.") ],
+            ["server-mssql", i18n._("This category deals with vulnerabilities in or attacks against the Microsoft SQL Server.") ],
+            ["server-mysql", i18n._("This category deals with vulnerabilities in or attacks against Oracle's MySQL server.") ],
+            ["server-oracle", i18n._("This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.") ],
+            ["server-webapp", i18n._("This category deals with vulnerabilities in or attacks against Web based applications on servers.") ],
+            ["server-mail", i18n._("This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.") ],
+            ["server-other", i18n._("This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.") ]
         ];
         this.categoriesInfoStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description' ],
@@ -387,43 +387,43 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'intrusion_prevention_status', 
-            title: this.i18n._('Status'),
+            title: i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._("Setup Wizard"),
+                title: i18n._("Setup Wizard"),
                 items: [{
                     xtype: 'component',
-                    html: this.i18n._(" Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."),
+                    html: i18n._(" Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."),
                     cls: 'warning',
                     margin: '0 0 5 0',
                     hidden: this.getSettings().configured
                 }, {
                     xtype: "button",
                     name: 'setup_wizard_button',
-                    text: this.i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
+                    text: i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
                     iconCls: "action-icon",
                     handler: Ext.bind(function() {
                         this.setupWizard();
                     }, this)
                 }]
             }, {
-                title: this.i18n._('Note'),
-                html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."), rpc.companyName)
+                title: i18n._('Note'),
+                html: Ext.String.format(i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."), rpc.companyName)
             },{
-                title: this.i18n._("Updates"),
+                title: i18n._("Updates"),
                 items: [{
                     xtype: 'displayfield',
-                    fieldLabel: this.i18n._("Last check for updates"),
+                    fieldLabel: i18n._("Last check for updates"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     value: ( this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("Never")
                 },{
                     xtype: 'displayfield',
-                    fieldLabel: this.i18n._("Last update"),
+                    fieldLabel: i18n._("Last update"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     value: ( this.lastUpdate !== null && this.lastUpdate.time !== 0 && this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("Never")
@@ -439,7 +439,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
             name: 'Rules',
             groupField: 'classtype',
             settingsCmp: this,
-            title: this.i18n._("Rules"),
+            title: i18n._("Rules"),
             dataProperty: 'rules',
             plugins: ['gridfilters'],
             features: [{
@@ -457,15 +457,15 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                             totalEnabled++;
                         }
                     });
-                    logOrBlockText = Ext.String.format(me.i18n._("{0} logging or blocking"), totalEnabled);
+                    logOrBlockText = Ext.String.format(i18n._("{0} logging or blocking"), totalEnabled);
                 }
                 if(hasFilter) {
-                    statusText = Ext.String.format(me.i18n._('{0} matching rules(s) found'), this.getStore().count());
+                    statusText = Ext.String.format(i18n._('{0} matching rules(s) found'), this.getStore().count());
                     if(!hasLogOrBlockFilter) {
                         statusText += ', ' + logOrBlockText;
                     }
                 } else {
-                    statusText = Ext.String.format(me.i18n._("{0} available rules"), this.getStore().getCount()) + ', ' + logOrBlockText;
+                    statusText = Ext.String.format(i18n._("{0} available rules"), this.getStore().getCount()) + ', ' + logOrBlockText;
                 }
                 this.searchStatusBar.update(statusText);
             },
@@ -486,7 +486,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 });
                 this.features.push(this.filterFeature);
                 
-                this.bbar = [me.i18n._('Search'), {
+                this.bbar = [i18n._('Search'), {
                     xtype: 'textfield',
                     name: 'searchField',
                     margin: '0 10 0 0',
@@ -504,7 +504,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 },{
                     xtype: 'checkbox',
                     name: 'searchLog',
-                    boxLabel: me.i18n._("Log"),
+                    boxLabel: i18n._("Log"),
                     margin: '0 10 0 0',
                     listeners: {
                         change: {
@@ -521,7 +521,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 }, {
                     xtype: 'checkbox',
                     name: 'searchBlock',
-                    boxLabel: me.i18n._("Block"),
+                    boxLabel: i18n._("Block"),
                     margin: '0 10 0 0',
                     listeners: {
                         change: {
@@ -538,7 +538,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 },{
                     xtype: 'tbtext',
                     name: 'searchStatusBar',
-                    html: me.i18n._('Loading...')
+                    html: i18n._('Loading...')
                 }];
                 Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
                 this.getStore().addFilter(this.filterFeature.globalFilter);
@@ -600,7 +600,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 name: 'block'
             }],
             columns: [{
-                header: this.i18n._("Sid"),
+                header: i18n._("Sid"),
                 dataIndex: 'sid',
                 sortable: true,
                 width: 70,
@@ -615,7 +615,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     return value;
                 }
             },{
-                header: this.i18n._("Classtype"),
+                header: i18n._("Classtype"),
                 dataIndex: 'classtype',
                 sortable: true,
                 width: 100,
@@ -631,7 +631,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     return value;
                 }
             },{
-                header: this.i18n._("Category"),
+                header: i18n._("Category"),
                 dataIndex: 'category',
                 sortable: true,
                 width: 100,
@@ -646,7 +646,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     return value;
                 }
             },{
-                header: this.i18n._("Msg"),
+                header: i18n._("Msg"),
                 dataIndex: 'msg',
                 sortable: true,
                 width: 200,
@@ -654,7 +654,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 editor: null,
                 menuDisabled: false
             },{
-                header: this.i18n._("Reference"),
+                header: i18n._("Reference"),
                 dataIndex: 'rule',
                 sortable: true,
                 width: 100,
@@ -690,7 +690,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 }
             },{
                 xtype:'checkcolumn',
-                header: this.i18n._("Log"),
+                header: i18n._("Log"),
                 dataIndex: 'log',
                 sortable: true,
                 resizable: false,
@@ -727,7 +727,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 }
             },{
                 xtype:'checkcolumn',
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'block',
                 sortable: true,
                 resizable: false,
@@ -766,8 +766,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
             rowEditorInputLines: [{
                 name: "Classtype",
                 dataIndex: "classtype",
-                fieldLabel: this.i18n._("Classtype"),
-                emptyText: this.i18n._("[enter class]"),
+                fieldLabel: i18n._("Classtype"),
+                emptyText: i18n._("[enter class]"),
                 allowBlank: false,
                 width: 400,
                 xtype: 'combo',
@@ -778,7 +778,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 regexMatch: /\s+classtype:([^;]+);/,
                 validator: function( value ){
                     if( this.store.find( "value", value ) == -1 ){
-                        return me.i18n._("Invalid Classtype");
+                        return i18n._("Invalid Classtype");
                     }
                     return true;
                 },
@@ -806,9 +806,9 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype: 'hidden'
             },{
                 name: "Category",
-                fieldLabel: this.i18n._("Category"),
+                fieldLabel: i18n._("Category"),
                 dataIndex: "category",
-                emptyText: this.i18n._("[enter category]"),
+                emptyText: i18n._("[enter category]"),
                 allowBlank: false,
                 width: 400,
                 xtype: 'combo',
@@ -820,14 +820,14 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype:'textfield',
                 name: "Msg",
                 dataIndex: "msg",
-                fieldLabel: this.i18n._("Msg"),
-                emptyText: this.i18n._("[enter name]"),
+                fieldLabel: i18n._("Msg"),
+                emptyText: i18n._("[enter name]"),
                 allowBlank: false,
                 width: 400,
                 regexMatch: /\s+msg:"([^;]+)";/,
                 validator: function( value ){
                     if( /[";]/.test(value) ){
-                        return me.i18n._("Msg contains invalid characters.");
+                        return i18n._("Msg contains invalid characters.");
                     }
                     return true;
                 },
@@ -854,8 +854,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype:'numberfield',
                 name: "Sid",
                 dataIndex: "sid",
-                fieldLabel: this.i18n._("Sid"),
-                emptyText: this.i18n._("[enter sid]"),
+                fieldLabel: i18n._("Sid"),
+                emptyText: i18n._("[enter sid]"),
                 allowBlank: false,
                 width: 400,
                 hideTrigger: true,
@@ -864,7 +864,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 validator: function( ourValue ) {
                     var ruleEditor = this.up("window");
                     if( ! /^[0-9]+$/.test( ourValue )){
-                        return me.i18n._("Sid must be numeric");
+                        return i18n._("Sid must be numeric");
                     }
                     var record = ruleEditor.record;
                     var rule = ruleEditor.down("[name=Rule]");
@@ -891,7 +891,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                         }
                     }, this);
                     if( match === true ){
-                        return me.i18n._("Sid already in use.");
+                        return i18n._("Sid already in use.");
                     }
                     return true;
                 },
@@ -918,7 +918,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype:'checkbox',
                 name: "Log",
                 dataIndex: "log",
-                fieldLabel: this.i18n._("Log"),
+                fieldLabel: i18n._("Log"),
                 listeners: {
                     change: function( me, newValue, oldValue, eOpts ) {
                         var ruleEditor = this.up("window");
@@ -932,7 +932,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "block",
-                fieldLabel: this.i18n._("Block"),
+                fieldLabel: i18n._("Block"),
                 listeners: {
                     change: function( me, newValue, oldValue, eOpts ) {
                         var ruleEditor = this.up("window");
@@ -946,8 +946,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 xtype:'textareafield',
                 name: "Rule",
                 dataIndex: "rule",
-                fieldLabel: this.i18n._("Rule"),
-                emptyText: this.i18n._("[enter rule]"),
+                fieldLabel: i18n._("Rule"),
+                emptyText: i18n._("[enter rule]"),
                 allowBlank: false,
                 width: 500,
                 height: 150,
@@ -955,7 +955,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)(\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+))?\s+\((.+)\)$/,
                 validator: function( value ){
                     if( !this.regexMatch.test(value)){
-                        return me.i18n._("Rule formatted wrong.");
+                        return i18n._("Rule formatted wrong.");
                     }
                     return true;
                 },
@@ -1050,7 +1050,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         var me = this;
         this.gridVariables = Ext.create('Ung.grid.Panel', {
             helpSource: 'intrusion_prevention_variables',
-            title: this.i18n._("Variables"),
+            title: i18n._("Variables"),
             name: 'Variables',
             settingsCmp: this,
             dataProperty: 'variables',
@@ -1099,36 +1099,36 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 mapping: 'variable'
             }],
             columns: [{
-                header: this.i18n._("Name"),
+                header: i18n._("Name"),
                 width: 170,
                 dataIndex: 'variable'
             },{
                 id: 'definition',
-                header: this.i18n._("Definition"),
+                header: i18n._("Definition"),
                 width: 300,
                 dataIndex: 'definition',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter definition]"),
+                    emptyText: i18n._("[enter definition]"),
                     allowBlank: false
                 }
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 300,
                 dataIndex: 'description',
                 flex:1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter description]"),
+                    emptyText: i18n._("[enter description]"),
                     allowBlank: false
                 }
             }],
             deleteHandler: function( record ){
-                Ext.MessageBox.wait(me.i18n._("Validating..."), me.i18n._("Please wait") );
+                Ext.MessageBox.wait(i18n._("Validating..."), i18n._("Please wait") );
                 Ext.Function.defer(function() {
                     var variable = record.get('variable');
                     if(me.isVariableUsed(variable)) {
-                        Ext.MessageBox.alert( me.i18n._("Cannot Delete Variable"), me.i18n._("Variable is used by one or more rules.") );
+                        Ext.MessageBox.alert( i18n._("Cannot Delete Variable"), i18n._("Variable is used by one or more rules.") );
                     } else {
                         Ext.MessageBox.hide();
                         this.stopEditing();
@@ -1146,8 +1146,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     xtype:'textfield',
                     name: "Name",
                     dataIndex: "variable",
-                    fieldLabel: this.i18n._("Name"),
-                    emptyText: this.i18n._("[enter name]"),
+                    fieldLabel: i18n._("Name"),
+                    emptyText: i18n._("[enter name]"),
                     allowBlank: false,
                     width: 300,
                     validator: function( ourValue ) {
@@ -1160,7 +1160,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                             }
                         }, this);
                         if( match === true ){
-                            return me.i18n._("Variable name already in use.");
+                            return i18n._("Variable name already in use.");
                         }
                         return true;
                     }
@@ -1168,23 +1168,23 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     xtype: 'label',
                     name: 'inUseNotice',
                     hidden: true,
-                    html: this.i18n._("Variable is used by one or more rules."),
+                    html: i18n._("Variable is used by one or more rules."),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype:'textfield',
                 name: "Definition",
                 dataIndex: "definition",
-                fieldLabel: this.i18n._("Definition"),
-                emptyText: this.i18n._("[enter definition]"),
+                fieldLabel: i18n._("Definition"),
+                emptyText: i18n._("[enter definition]"),
                 allowBlank: false,
                 width: 400
             },{
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[enter description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[enter description]"),
                 allowBlank: false,
                 width: 400
             }],
@@ -1202,19 +1202,19 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
     },
     setupWizard: function() {
         var welcomeCard = Ext.create('Webui.untangle-node-intrusion-prevention.Wizard.Welcome', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var classtypesCard = Ext.create('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var categoriesCard = Ext.create('Webui.untangle-node-intrusion-prevention.Wizard.Categories', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var congratulationsCard = Ext.create('Webui.untangle-node-intrusion-prevention.Wizard.Congratulations', {
-            i18n: this.i18n,
+            i18n: i18n,
             gui: this
         });
         var setupWizard = Ext.create('Ung.Wizard',{
@@ -1230,7 +1230,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
             }
         });
         this.wizardWindow = Ext.create('Ung.Window',{
-            title: this.i18n._("Intrusion Prevention Setup Wizard"),
+            title: i18n._("Intrusion Prevention Setup Wizard"),
             items: setupWizard,
             closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
@@ -1258,7 +1258,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                     var wizard = this.wizardWindow.down('panel[name="wizard"]');
                     if(!wizard.finished) {
                         wizard.finished=true;
-                        Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
+                        Ext.MessageBox.alert(i18n._("Setup Wizard Warning"), i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
                             this.wizardWindow.close();
                         }, this));
                         return false;
@@ -1275,7 +1275,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         this.getRpcNode().getUpdatedSettingsFlag(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             if(result) {
-                Ext.MessageBox.alert(this.i18n._("Intrusion Prevention Warning"), this.i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
+                Ext.MessageBox.alert(i18n._("Intrusion Prevention Warning"), i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
                     this.reload();
                 }, this));
                 return;
@@ -1397,31 +1397,31 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Welcome',{
 
         var items = [{
             xtype: 'component',
-            html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>'
+            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>'
         },{
             xtype: 'component',
-            html: this.i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
+            html: i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
             margin: '0 0 10 10'
         },{
             xtype: 'component',
-            html: this.i18n._("This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."),
+            html: i18n._("This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."),
             margin: '0 0 10 10'
         },{
             xtype: 'component',
-            html: this.i18n._("It is highly suggested that you use Recommended values."),
+            html: i18n._("It is highly suggested that you use Recommended values."),
             margin: '0 0 10 10'
         }];
 
         if( this.gui.getSettings().configured === true ){
             items.push({
                 xtype: 'component',
-                html: this.i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
+                html: i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
                 cls: 'warning',
                 margin: '0 0 10 10'
             });
         }
 
-        this.title = this.i18n._("Welcome");
+        this.title = i18n._("Welcome");
         this.panel = Ext.create('Ext.container.Container',{
             items: items
         });
@@ -1430,7 +1430,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Welcome',{
     },
 
     loadDefaultSettings: function(handler){
-        Ext.MessageBox.wait(this.i18n._("Determining recommended settings..."), this.i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Determining recommended settings..."), i18n._("Please wait"));
         Ext.Ajax.request({
             url: "/webui/download",
             method: 'POST',
@@ -1495,7 +1495,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Welcome',{
                 }, this));
             },
             failure: function(response){
-                Ext.MessageBox.alert( this.i18n._("Setup Wizard Error"), this.i18n._("Unable to obtain default settings.  Please run the Setup Wizard again."), Ext.bind(function () {
+                Ext.MessageBox.alert( i18n._("Setup Wizard Error"), i18n._("Unable to obtain default settings.  Please run the Setup Wizard again."), Ext.bind(function () {
                     this.gui.wizardWindow.hide();
                 }, this));
             }
@@ -1509,7 +1509,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
 
         this.classtypesCheckboxGroup = {
             xtype: 'checkboxgroup',
-            fieldLabel: this.i18n._("Classtypes"),
+            fieldLabel: i18n._("Classtypes"),
             columns: 1,
             items: []
         };
@@ -1534,20 +1534,20 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
             });
         }, this );
 
-        this.title = this.i18n._( "Classtypes" );
+        this.title = i18n._( "Classtypes" );
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+this.i18n._("Classtypes")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Classtypes")+'</h2>'
             },{
                 xtype: 'container',
-                html: this.i18n._("Classtypes are a generalized  grouping for rules, such as attempts to gain user access."),
+                html: i18n._("Classtypes are a generalized  grouping for rules, such as attempts to gain user access."),
                 margin: '0 0 10 0'
             },{
                 name: 'classtypes',
                 xtype: 'radio',
                 inputValue: 'recommended',
-                boxLabel: this.i18n._('Recommended (default)'),
+                boxLabel: i18n._('Recommended (default)'),
                 hideLabel: true,
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
@@ -1557,12 +1557,12 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
                 name: 'classtypes_recommended_settings',
                 xtype: 'fieldset',
                 hidden: true,
-                html: "<i>" + this.i18n._("Recommended classtype Settings") + "</i>"
+                html: "<i>" + i18n._("Recommended classtype Settings") + "</i>"
             },{
                 name: 'classtypes',
                 xtype: 'radio',
                 inputValue: 'custom',
-                boxLabel: this.i18n._('Custom'),
+                boxLabel: i18n._('Custom'),
                 hideLabel: true,
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
@@ -1614,7 +1614,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
                 }
 
                 if( this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length === 0 ) {
-                    this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
+                    this.panel.down( "[name=classtypes_recommended_settings]" ).update( i18n._("None.  Classtypes within selected categories will be used.") );
                 } else {
                     var recommendedValues = [];
                     for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length; i++ ){
@@ -1651,7 +1651,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
 
         var categoriesCheckboxGroup = {
             xtype: 'checkboxgroup',
-            fieldLabel: this.i18n._("Categories"),
+            fieldLabel: i18n._("Categories"),
             columns: 1,
             items: []
         };
@@ -1676,20 +1676,20 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
             });
         });
 
-        this.title = this.i18n._( "Categories" );
+        this.title = i18n._( "Categories" );
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+this.i18n._("Categories")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Categories")+'</h2>'
             },{
                 xtype: 'container',
-                html: this.i18n._("Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."),
+                html: i18n._("Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."),
                 margin: '0 0 10 0'
             },{
                 name: 'categories',
                 xtype: 'radio',
                 inputValue: 'recommended',
-                boxLabel: this.i18n._('Recommended (default)'),
+                boxLabel: i18n._('Recommended (default)'),
                 hideLabel: true,
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
@@ -1703,7 +1703,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
                 name: 'categories',
                 xtype: 'radio',
                 inputValue: 'custom',
-                boxLabel: this.i18n._('Select by name'),
+                boxLabel: i18n._('Select by name'),
                 hideLabel: true,
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
@@ -1754,7 +1754,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
                 }
 
                 if( this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length === 0 ) {
-                    this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
+                    this.panel.down( "[name=categories_recommended_settings]" ).update( i18n._("None.  Categories within selected classtypes will be used.") );
                 } else {
                     var recommendedValues = [];
                     for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length; i++ ){
@@ -1789,14 +1789,14 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
 Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Congratulations',{
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.title = this.i18n._( "Finish" );
+        this.title = i18n._( "Finish" );
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+this.i18n._("Congratulations!")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>'
             }, {
                 xtype: 'container',
-                html: this.i18n._('Intrusion Prevention is now configured and enabled.'),
+                html: i18n._('Intrusion Prevention is now configured and enabled.'),
                 margin: '10 0 0 10'
             }]
         });

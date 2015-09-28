@@ -27,10 +27,10 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     buildUrlValidator: function(){
         this.urlValidator = Ext.bind(function(fieldValue) {
             if (fieldValue.match( /^([^:]+):\/\// ) != null ){
-                return this.i18n._("Site cannot contain URL protocol.");
+                return i18n._("Site cannot contain URL protocol.");
             }
             if (fieldValue.match( /^([^:]+):\d+\// ) != null ){
-                return this.i18n._("Site cannot contain port.");
+                return i18n._("Site cannot contain port.");
             }
             // strip "www." from beginning of rule
             if (fieldValue.indexOf("www.") == 0) {
@@ -45,7 +45,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 fieldValue = fieldValue.substring(0, fieldValue.length - 1);
             }
             if (fieldValue.trim().length == 0) {
-                return this.i18n._("Invalid URL specified");
+                return i18n._("Invalid URL specified");
             }
             return true;
         }, this);
@@ -56,7 +56,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.gridCategories = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: 'Categories',
-            title: this.i18n._("Categories"),
+            title: i18n._("Categories"),
             sizetoParent: true,
             settingsCmp: this,
             hasAdd: false,
@@ -66,13 +66,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'name',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("Category"),
+                header: i18n._("Category"),
                 width: 200,
                 dataIndex: 'name'
             }, {
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 listeners: {
@@ -99,13 +99,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             }, {
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Flag"),
+                header: i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation"),
+                tooltip: i18n._("Flag as Violation"),
                 checkAll: {}
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 flex:1,
                 width: 400,
                 dataIndex: 'description',
@@ -118,7 +118,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'textfield',
                 name: "Category",
                 dataIndex: "name",
-                fieldLabel: this.i18n._("Category"),
+                fieldLabel: i18n._("Category"),
                 allowBlank: false,
                 width: 400,
                 disabled: true
@@ -126,7 +126,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Block"),
+                fieldLabel: i18n._("Block"),
                 listeners: {
                     "change": {
                         fn: Ext.bind(function(elem, checked) {
@@ -141,20 +141,20 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'checkbox',
                 name: "Flag",
                 dataIndex: "flagged",
-                fieldLabel: this.i18n._("Flag"),
-                tooltip: this.i18n._("Flag as Violation")
+                fieldLabel: i18n._("Flag"),
+                tooltip: i18n._("Flag as Violation")
             }, {
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
+                fieldLabel: i18n._("Description"),
                 width: 400,
                 height: 60
             }]
         });
         this.blockedCategoriesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockCategories',
-            title: this.i18n._('Block Categories'),
+            title: i18n._('Block Categories'),
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
             helpSource: this.helpSourceName + '_block_categories',
@@ -168,8 +168,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Block Categories"),
-                html: this.i18n . _("Block or flag access to sites associated with the specified category.")
+                title: i18n . _("Block Categories"),
+                html: i18n . _("Block or flag access to sites associated with the specified category.")
             }, this.gridCategories ]
         });
         return this.blockedCategoriesPanel;
@@ -178,7 +178,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     buildPanelBlockedSites: function() {
         this.gridBlockedSites = Ext.create('Ung.grid.Panel',{
             name: 'Sites',
-            title: this.i18n._("Sites"),
+            title: i18n._("Sites"),
             settingsCmp: this,
             flex: 1,
             dataProperty: "blockedUrls",
@@ -192,46 +192,46 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("Site"),
+                header: i18n._("Site"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter site]"),
+                    emptyText: i18n._("[enter site]"),
                     allowBlank: false,
                     validator: this.urlValidator
                 }
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Flag"),
+                header: i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation"),
+                tooltip: i18n._("Flag as Violation"),
                 checkAll: {}
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 flex:1,
                 dataIndex: 'description',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Site"),
-                emptyText: this.i18n._("[enter site]"),
+                fieldLabel: i18n._("Site"),
+                emptyText: i18n._("[enter site]"),
                 allowBlank: false,
                 width: 400,
                 validator: this.urlValidator
@@ -239,26 +239,26 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Block")
+                fieldLabel: i18n._("Block")
             },{
                 xtype:'checkbox',
                 name: "Flag",
                 dataIndex: "flagged",
-                fieldLabel: this.i18n._("Flag"),
-                tooltip: this.i18n._("Flag as Violation")
+                fieldLabel: i18n._("Flag"),
+                tooltip: i18n._("Flag as Violation")
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
         });
         this.blockedSitesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockSites',
-            title: this.i18n._('Block Sites'),
+            title: i18n._('Block Sites'),
             //helpSource: 'web_filter_block_sites',
             //helpSource: 'web_filter_lite_block_sites',
             helpSource: this.helpSourceName + '_block_sites',
@@ -272,8 +272,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Blocked Sites"),
-                html: this.i18n . _("Block or flag access to the specified site.")
+                title: i18n . _("Blocked Sites"),
+                html: i18n . _("Block or flag access to the specified site.")
             }, this.gridBlockedSites ]
         });
         return this.blockedSitesPanel;
@@ -285,7 +285,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             name: 'File Types',
             sizetoParent: true,
             settingsCmp: this,
-            title: this.i18n._("File Types"),
+            title: i18n._("File Types"),
             dataProperty: "blockedExtensions",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -298,86 +298,86 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("File Type"),
+                header: i18n._("File Type"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype: 'textfield',
-                    emptyText: this.i18n._("[enter extension]"),
+                    emptyText: i18n._("[enter extension]"),
                     allowBlank: false
                 }
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Flag"),
+                header: i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation"),
+                tooltip: i18n._("Flag as Violation"),
                 checkAll: {}
             },{
-                header: this.i18n._("Category"),
+                header: i18n._("Category"),
                 width: 200,
                 dataIndex: 'category',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no category]")
+                    emptyText: i18n._("[no category]")
                 }
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex:1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "File Type",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("File Type"),
-                emptyText: this.i18n._("[enter extension]"),
+                fieldLabel: i18n._("File Type"),
+                emptyText: i18n._("[enter extension]"),
                 allowBlank: false,
                 width: 300
             },{
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Block")
+                fieldLabel: i18n._("Block")
             },{
                 xtype:'checkbox',
                 name: "Flag",
                 dataIndex: "flagged",
-                fieldLabel: this.i18n._("Flag"),
-                tooltip: this.i18n._("Flag as Violation")
+                fieldLabel: i18n._("Flag"),
+                tooltip: i18n._("Flag as Violation")
             },{
                 xtype:'textarea',
                 name: "Category",
                 dataIndex: "category",
-                fieldLabel: this.i18n._("Category"),
-                emptyText: this.i18n._("[no category]"),
+                fieldLabel: i18n._("Category"),
+                emptyText: i18n._("[no category]"),
                 width: 300
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
         });
         this.blockedFileTypesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockFileTypes',
-            title: this.i18n._('Block File Types'),
+            title: i18n._('Block File Types'),
             //helpSource: 'web_filter_block_filetypes',
             //helpSource: 'web_filter_lite_block_filetypes',
             helpSource: this.helpSourceName + '_block_filetypes',
@@ -391,8 +391,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Block File Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified file type.")
+                title: i18n . _("Block File Types"),
+                html: i18n . _("Block or flag access to files associated with the specified file type.")
             }, this.gridBlockedFileTypes ]
         });
         return this.blockedFileTypesPanel;
@@ -403,7 +403,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             flex: 1,
             name: 'MIME Types',
             settingsCmp: this,
-            title: this.i18n._("MIME Types"),
+            title: i18n._("MIME Types"),
             dataProperty: "blockedMimeTypes",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -416,86 +416,86 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("MIME type"),
+                header: i18n._("MIME type"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter mime type]"),
+                    emptyText: i18n._("[enter mime type]"),
                     allowBlank:false
                 }
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Block"),
+                header: i18n._("Block"),
                 dataIndex: 'blocked',
                 resizable: false,
                 checkAll: {}
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Flag"),
+                header: i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
-                tooltip: this.i18n._("Flag as Violation"),
+                tooltip: i18n._("Flag as Violation"),
                 checkAll: {}
             },{
-                header: this.i18n._("Category"),
+                header: i18n._("Category"),
                 width: 100,
                 dataIndex: 'category',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no category]")
+                    emptyText: i18n._("[no category]")
                 }
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 flex:1,
                 dataIndex: 'description',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "MIME Type",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("MIME Type"),
-                emptyText: this.i18n._("[enter mime type]"),
+                fieldLabel: i18n._("MIME Type"),
+                emptyText: i18n._("[enter mime type]"),
                 allowBlank: false,
                 width: 400
             },{
                 xtype:'checkbox',
                 name: "Block",
                 dataIndex: "blocked",
-                fieldLabel: this.i18n._("Block")
+                fieldLabel: i18n._("Block")
             },{
                 xtype:'checkbox',
                 name: "Flag",
                 dataIndex: "flagged",
-                fieldLabel: this.i18n._("Flag"),
-                tooltip: this.i18n._("Flag as Violation")
+                fieldLabel: i18n._("Flag"),
+                tooltip: i18n._("Flag as Violation")
             },{
                 xtype:'textarea',
                 name: "Category",
                 dataIndex: "category",
-                fieldLabel: this.i18n._("Category"),
-                emptyText: this.i18n._("[no category]"),
+                fieldLabel: i18n._("Category"),
+                emptyText: i18n._("[no category]"),
                 width: 300
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
         });
         this.blockedMimeTypesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockMimeTypes',
-            title: this.i18n._('Block Mime Types'),
+            title: i18n._('Block Mime Types'),
             //helpSource: 'web_filter_block_mimetypes',
             //helpSource: 'web_filter_lite_block_mimetypes',
             helpSource: this.helpSourceName + '_block_mimetypes',
@@ -509,8 +509,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Block MIME Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified MIME type.")
+                title: i18n . _("Block MIME Types"),
+                html: i18n . _("Block or flag access to files associated with the specified MIME type.")
             }, this.gridBlockedMimeTypes ]
         });
         return this.blockedMimeTypesPanel;
@@ -521,7 +521,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             name: 'Sites',
             settingsCmp: this,
             flex: 1,
-            title: this.i18n._("Sites"),
+            title: i18n._("Sites"),
             dataProperty: "passedUrls",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -532,37 +532,37 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("Site"),
+                header: i18n._("Site"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter site]"),
+                    emptyText: i18n._("[enter site]"),
                     allowBlank: false,
                     validator: this.urlValidator
                 }
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Pass"),
+                header: i18n._("Pass"),
                 dataIndex: 'enabled',
                 resizable: false
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 flex:1,
                 width: 200,
                 dataIndex: 'description',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("Site"),
-                emptyText: this.i18n._("[enter site]"),
+                fieldLabel: i18n._("Site"),
+                emptyText: i18n._("[enter site]"),
                 allowBlank: false,
                 width: 400,
                 validator: this.urlValidator
@@ -570,13 +570,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'checkbox',
                 name: "Pass",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Pass")
+                fieldLabel: i18n._("Pass")
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -586,7 +586,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_pass_sites',
             //helpSource: 'web_filter_lite_pass_sites',
             helpSource: this.helpSourceName + '_pass_sites',
-            title: this.i18n._('Pass Sites'),
+            title: i18n._('Pass Sites'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -597,8 +597,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Allow access to the specified site regardless of matching block policies.")
+                title: i18n . _("Pass Sites"),
+                html: i18n . _("Allow access to the specified site regardless of matching block policies.")
             }, this.gridAllowedSites ]
         });
         return this.allowedSitesPanel;
@@ -609,7 +609,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             flex: 1,
             name: 'Client IP addresses',
             settingsCmp: this,
-            title: this.i18n._("Client IP addresses"),
+            title: i18n._("Client IP addresses"),
             dataProperty: "passedClients",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
@@ -620,37 +620,37 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
-                header: this.i18n._("IP address/range"),
+                header: i18n._("IP address/range"),
                 width: 200,
                 dataIndex: 'string',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[enter IP address/range]"),
+                    emptyText: i18n._("[enter IP address/range]"),
                     vtype:"ipMatcher",
                     allowBlank:false
                 }
             },{
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Pass"),
+                header: i18n._("Pass"),
                 dataIndex: 'enabled',
                 resizable: false
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 flex:1,
                 width: 200,
                 dataIndex: 'description',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._("[no description]")
+                    emptyText: i18n._("[no description]")
                 }
             }],
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "IP address/range",
                 dataIndex: "string",
-                fieldLabel: this.i18n._("IP address/range"),
-                emptyText: this.i18n._("[enter IP address/range]"),
+                fieldLabel: i18n._("IP address/range"),
+                emptyText: i18n._("[enter IP address/range]"),
                 vtype:"ipMatcher",
                 allowBlank: false,
                 width: 400
@@ -658,13 +658,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 xtype:'checkbox',
                 name: "Pass",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Pass")
+                fieldLabel: i18n._("Pass")
             },{
                 xtype:'textarea',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 400,
                 height: 60
             }]
@@ -674,7 +674,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_pass_clients',
             //helpSource: 'web_filter_lite_pass_clients',
             helpSource: this.helpSourceName + '_pass_clients',
-            title: this.i18n._('Pass Clients'),
+            title: i18n._('Pass Clients'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -685,8 +685,8 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: this.i18n . _("Pass Clients"),
-                html: this.i18n . _("Allow access for client networks regardless of matching block policies.")
+                title: i18n . _("Pass Clients"),
+                html: i18n . _("Allow access for client networks regardless of matching block policies.")
             }, this.gridAllowedClients ]
         });
         return this.allowedClientsPanel;
@@ -699,7 +699,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
 
-            title: this.i18n._('Advanced'),
+            title: i18n._('Advanced'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -707,10 +707,10 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             },
             items: [{
                 name: "fieldset_miscellaneous",
-                title: this.i18n._("Advanced Options"),
+                title: i18n._("Advanced Options"),
                 items: [{
                     xtype: "checkbox",
-                    boxLabel: this.i18n._("Block pages from IP only hosts"),
+                    boxLabel: i18n._("Block pages from IP only hosts"),
                     hideLabel: true,
                     name: 'Block IPHost',
                     checked: this.settings.blockAllIpHosts,
@@ -723,7 +723,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     }
                 },{
                     xtype: "checkbox",
-                    boxLabel: this.i18n._("Pass if referers match Pass Sites"),
+                    boxLabel: i18n._("Pass if referers match Pass Sites"),
                     hideLabel: true,
                     name: 'Pass Referers',
                     checked: this.settings.passReferers,
@@ -736,7 +736,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     }
                 },{
                     xtype: "checkbox",
-                    boxLabel: this.i18n._("Restrict Google applications"),
+                    boxLabel: i18n._("Restrict Google applications"),
                     hideLabel: true,
                     name: 'restrictGoogleApps',
                     checked: this.settings.restrictGoogleApps,
@@ -754,13 +754,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     hidden: !this.settings.restrictGoogleApps,
                     items: [{
                         xtype: 'displayfield',
-                        value: this.i18n._("NOTE:") + "&nbsp;" + "<i>HTTPS Inspector</i> " + this.i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
+                        value: i18n._("NOTE:") + "&nbsp;" + "<i>HTTPS Inspector</i> " + i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
                         style: {
                             marginBottom: '10px'
                         }
                     },{
                         xtype: "textfield",
-                        fieldLabel: this.i18n._("Allowed Domain(s)"),
+                        fieldLabel: i18n._("Allowed Domain(s)"),
                         labelWidth: 120,
                         tooltip: i18n._("Specify the comma separated list of domains allowed to access non-search Google applications"),
                         passwordField: true,
@@ -771,13 +771,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                                 for( var i = 0; i < domains.length; i++ ){
                                     var domain = domains[i];
                                     if ( domain.match( /^([^:]+):\/\// ) != null ){
-                                        return this.i18n._("Domain cannot contain URL protocol.");
+                                        return i18n._("Domain cannot contain URL protocol.");
                                     }
                                     if( domain.match( /^([^:]+):\d+\// ) != null ){
-                                        return this.i18n._("Domain cannot contain port.");
+                                        return i18n._("Domain cannot contain port.");
                                     }
                                     if (domain.trim().length == 0) {
-                                        return this.i18n._("Invalid domain specified");
+                                        return i18n._("Invalid domain specified");
                                     }
                                 }
                                 return true;
@@ -795,11 +795,11 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     xtype: "combo",
                     editable: false,
                     queryMode: 'local',
-                    fieldLabel: this.i18n._("Unblock"),
+                    fieldLabel: i18n._("Unblock"),
                     name: "user_bypass",
-                    store: [["None", this.i18n._("None")],
-                            ["Host", this.i18n._("Temporary")],
-                            ["Global", this.i18n._("Permanent and Global")]],
+                    store: [["None", i18n._("None")],
+                            ["Host", i18n._("Temporary")],
+                            ["Global", i18n._("Permanent and Global")]],
                     value: this.settings.unblockMode,
                     listeners: {
                         "change": {

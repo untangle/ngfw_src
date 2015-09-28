@@ -20,7 +20,7 @@ Ext.define('Webui.config.localDirectory', {
         this.gridUsers = Ext.create('Ung.grid.Panel',{
             name: 'Local Users',
             helpSource: 'local_directory_local_users',
-            title: this.i18n._('Local Users'),
+            title: i18n._('Local Users'),
             settingsCmp: this,
             height: 500,
             dataFn: Ung.Main.getLocalDirectory().getUsers,
@@ -61,45 +61,45 @@ Ext.define('Webui.config.localDirectory', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("user/login ID"),
+                header: i18n._("user/login ID"),
                 width: 140,
                 dataIndex: 'username',
                 editor: {
                     xtype: 'textfield',
                     allowBlank: false,
-                    emptyText: this.i18n._('[enter login]'),
+                    emptyText: i18n._('[enter login]'),
                     regex: /^[\w ]+$/,
-                    regexText: this.i18n._("The field user/login ID can have only alphanumeric characters.")
+                    regexText: i18n._("The field user/login ID can have only alphanumeric characters.")
                 }
             }, {
-                header: this.i18n._("first name"),
+                header: i18n._("first name"),
                 width: 120,
                 dataIndex: 'firstName',
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._('[enter first name]'),
+                    emptyText: i18n._('[enter first name]'),
                     allowBlank: false
                 }
             }, {
-                header: this.i18n._("last name"),
+                header: i18n._("last name"),
                 width: 120,
                 dataIndex: 'lastName',
                 editor: {
                     xtype: 'textfield',
-                    emptyText: this.i18n._('[last name]')
+                    emptyText: i18n._('[last name]')
                 }
             }, {
-                header: this.i18n._("email address"),
+                header: i18n._("email address"),
                 width: 250,
                 dataIndex: 'email',
                 flex:1,
                 editor: {
                     xtype:'textfield',
-                    emptyText: this.i18n._('[email address]'),
+                    emptyText: i18n._('[email address]'),
                     vtype: 'email'
                 }
             }, {
-                header: this.i18n._("password"),
+                header: i18n._("password"),
                 width: 180,
                 dataIndex: 'password',
                 editor: {
@@ -111,7 +111,7 @@ Ext.define('Webui.config.localDirectory', {
                     if (record.get("passwordBase64Hash") == null)
                         return "";
                     if(Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) {
-                        return "*** "+this.i18n._("Unchanged")+" ***";
+                        return "*** "+i18n._("Unchanged")+" ***";
                     }
                     var result = "";
                     for(var i=0; value != null && i<value.length; i++) {
@@ -120,12 +120,12 @@ Ext.define('Webui.config.localDirectory', {
                     return result;
                 },this)
             }, {
-                header: this.i18n._("expiration time"),
+                header: i18n._("expiration time"),
                 width: 150,
                 dataIndex: 'expirationTime',
                 renderer: Ext.bind(function(value, metadata, record) {
                     if (value == 0) {
-                        return this.i18n._("Never");
+                        return i18n._("Never");
                     } else {
                         return i18n.timestampFormat(value);
                     }
@@ -137,33 +137,33 @@ Ext.define('Webui.config.localDirectory', {
                  xtype:'textfield',
                  name: "User/Login ID",
                  dataIndex: "username",
-                 fieldLabel: this.i18n._("User/Login ID"),
-                 emptyText: this.i18n._('[enter login]'),
+                 fieldLabel: i18n._("User/Login ID"),
+                 emptyText: i18n._('[enter login]'),
                  allowBlank: false,
                  regex: /^[\w ]+$/,
-                 regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
+                 regexText: i18n._("The field user/login ID can have only alphanumeric character."),
                  width: 300
              }, {
                  xtype:'textfield',
                  name: "First Name",
                  dataIndex: "firstName",
-                 fieldLabel: this.i18n._("First Name"),
-                 emptyText: this.i18n._('[enter first name]'),
+                 fieldLabel: i18n._("First Name"),
+                 emptyText: i18n._('[enter first name]'),
                  allowBlank: false,
                  width: 300
              }, {
                  xtype:'textfield',
                  name: "Last Name",
                  dataIndex: "lastName",
-                 fieldLabel: this.i18n._("Last Name"),
-                 emptyText: this.i18n._('[last name]'),
+                 fieldLabel: i18n._("Last Name"),
+                 emptyText: i18n._('[last name]'),
                  width: 300
              }, {
                  xtype:'textfield',
                  name: "Email Address",
                  dataIndex: "email",
-                 fieldLabel: this.i18n._("Email Address"),
-                 emptyText: this.i18n._('[email address]'),
+                 fieldLabel: i18n._("Email Address"),
+                 emptyText: i18n._('[email address]'),
                  vtype: 'email',
                  width: 300
              }, {
@@ -175,13 +175,13 @@ Ext.define('Webui.config.localDirectory', {
                      inputType: 'password',
                      name: "Password",
                      dataIndex: "password",
-                     fieldLabel: this.i18n._("Password"),
+                     fieldLabel: i18n._("Password"),
                      allowBlank: false,
                      width: 300
                  },{
                      xtype: 'label',
                      name: 'passwordInfo',
-                     html: this.i18n._("(leave empty to keep the current password unchanged)"),
+                     html: i18n._("(leave empty to keep the current password unchanged)"),
                      cls: 'boxlabel'
                  }]
              }, {
@@ -212,8 +212,8 @@ Ext.define('Webui.config.localDirectory', {
                  items:[{
                      xtype:'checkbox',
                      name:'neverExpire',
-                     fieldLabel: this.i18n._("Expiration Time"),
-                     boxLabel:this.i18n._('Never'),
+                     fieldLabel: i18n._("Expiration Time"),
+                     boxLabel:i18n._('Never'),
                      listeners: {
                          "change": Ext.bind(function (elem,checked) {
                              var expirationCtl = this.gridUsers.rowEditor.down("[name='expirationTime']");
@@ -251,7 +251,7 @@ Ext.define('Webui.config.localDirectory', {
             user = listUsers[i];
             // verify that the login name is not duplicated
             if(mapUsers[user.username]) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The login name has already been taken:') + ' ' + user.username,
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The login name has already been taken:') + ' ' + user.username,
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -261,7 +261,7 @@ Ext.define('Webui.config.localDirectory', {
             mapUsers[user.username]=true;
             // login name contains no forward slash character
             if (user.username.indexOf("/") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The login name must not contain forward slash character.') + ' ' + i18n._('row') + ':' + (i+1),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The login name must not contain forward slash character.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -270,7 +270,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // first name contains no spaces
             if (user.firstName.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The first name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The first name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -279,7 +279,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // last name contains no spaces
             if (user.lastName.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The last name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The last name must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -288,7 +288,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // the password is at least one character
             if (Ext.isEmpty(user.passwordBase64Hash) && Ext.isEmpty(user.password)) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The password must contain at least 1 character.') + ' ' + i18n._('row') + ':' + (i+1),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The password must contain at least 1 character.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -297,7 +297,7 @@ Ext.define('Webui.config.localDirectory', {
             }
             // the password contains no spaces
             if (user.password !=null && user.password.indexOf(" ") != -1) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The password must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The password must not contain any spaces.') + ' ' + i18n._('row') + ':' + (i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
                     }, this)
@@ -331,10 +331,10 @@ Ext.define('Webui.config.localDirectory', {
     },
     cleanupExpiredUsers:function() {
         if ( this.isDirty()) {
-            Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Please save the changes before cleaning up expired users !"));
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Please save the changes before cleaning up expired users !"));
             return;
         }
-        Ext.MessageBox.wait(this.i18n._("Cleaning up expired users..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Cleaning up expired users..."), i18n._("Please wait"));
         Ung.Main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
