@@ -11,12 +11,12 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
     },
     getRouteRuleMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", this.i18n._("any")]], visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", i18n._("any")]], visible: true}
         ];
     },
     // Status Panel
@@ -26,7 +26,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             intf = this.interfaceWeightList[i];
             interfaceItems.push({
                 name: 'interfaceStatus' + intf.interfaceId,
-                fieldLabel: Ext.String.format( this.i18n._( "{0} interface" ), intf.name),
+                fieldLabel: Ext.String.format( i18n._( "{0} interface" ), intf.name),
                 value: intf.description
             });
         }
@@ -34,16 +34,16 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: "status",
             helpSource: "wan_balancer_status",
-            title: this.i18n._("Status"),
+            title: i18n._("Status"),
             cls: "ung-panel",
             autoScroll: true,
             defaults: {
                 xtype: "fieldset"
             },
             items: [{
-                html: this.i18n._( 'Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.' )
+                html: i18n._( 'Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.' )
             }, {
-                title: this.i18n._("Current Traffic Allocation"),
+                title: i18n._("Current Traffic Allocation"),
                 defaults: {
                     xtype: "displayfield",
                     labelWidth: 180
@@ -52,7 +52,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             }, {
                 xtype: "button",
                 margin: '0 0 0 20',
-                text: this.i18n._("Configure additional WAN interfaces"),
+                text: i18n._("Configure additional WAN interfaces"),
                 handler: Ext.bind(function() {
                     this.cancelAction(function() {
                         Ung.Main.openConfig(Ung.Main.configMap["network"]);
@@ -68,7 +68,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            title: this.i18n._( "Interface Weights" ),
+            title: i18n._( "Interface Weights" ),
             storeData: this.interfaceWeightList,
             fields: [{
                 name: "interfaceId"
@@ -80,11 +80,11 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                 name: "description"
             }],
             columns: [{
-                header: this.i18n._( "Interface" ),
+                header: i18n._( "Interface" ),
                 width: 170,
                 dataIndex: "name"
             }, {
-                header: this.i18n._( "Weight" ),
+                header: i18n._( "Weight" ),
                 width: 70,
                 dataIndex: "weight",
                 editor: {
@@ -94,7 +94,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                     maxValue: 100
                 }
             }, {
-                header: this.i18n._( "Resulting Traffic Allocation" ),
+                header: i18n._( "Resulting Traffic Allocation" ),
                 width: 300,
                 flex:1,
                 dataIndex: "description"
@@ -102,14 +102,14 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
         });
         
         this.panelTrafficAllocation = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._( "Traffic Allocation" ),
+            title: i18n._( "Traffic Allocation" ),
             helpSource: "wan_balancer_traffic_allocation",
             layout: { type: 'vbox', align: 'stretch' },
             cls: "ung-panel",
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                html: this.i18n._( 'Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link.' ) 
+                html: i18n._( 'Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface. After entering the weight of each interface the resulting allocation is displayed.<br/>If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces. If the WAN interfaces vary in bandwidth enter numbers that correlate the relative available bandwidth.  For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link.' ) 
             }, this.gridInterfaceWeight]
         });
         this.gridInterfaceWeight.getStore().on("update", this.updateDescriptions, this);
@@ -117,7 +117,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
 
     buildRoutingRules: function() {
         var destinationWanList = Ung.Util.getWanList();
-        destinationWanList.push( [0, this.i18n._('Balance')] );
+        destinationWanList.push( [0, i18n._('Balance')] );
         var destinationWanMap = Ung.Util.createStoreMap(destinationWanList);
         
         this.gridRouteRules = Ext.create( 'Ung.grid.Panel', {
@@ -126,7 +126,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("Route Rules"),
+            title: i18n._("Route Rules"),
             dataProperty:'routeRules',
             recordJavaClass: "com.untangle.node.wan_balancer.RouteRule",
             emptyRow: {
@@ -149,7 +149,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                 name: 'javaClass'
             }],
             columns: [{
-                header: this.i18n._("Rule Id"),
+                header: i18n._("Rule Id"),
                 width: 50,
                 dataIndex: 'ruleId',
                 renderer: function(value) {
@@ -161,17 +161,17 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: this.i18n._("Enable"),
+                header: i18n._("Enable"),
                 dataIndex: 'enabled',
                 resizable: false,
                 width:55
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 200,
                 dataIndex: 'description',
                 flex:1
             }, {
-                header: this.i18n._("Destination WAN"),
+                header: i18n._("Destination WAN"),
                 dataIndex: 'destinationWan',
                 resizable: false,
                 renderer: function (value) {
@@ -183,17 +183,17 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                 xtype:'checkbox',
                 name: "Enable Route Rule",
                 dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enable Route Rule")
+                fieldLabel: i18n._("Enable Route Rule")
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
                 width: 500
             }, {
                 xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
@@ -209,7 +209,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                     name: "destinationWan",
                     allowBlank: false,
                     dataIndex: "destinationWan",
-                    fieldLabel: this.i18n._("Destination WAN"),
+                    fieldLabel: i18n._("Destination WAN"),
                     editable: false,
                     store: destinationWanList,
                     queryMode: 'local'
@@ -218,14 +218,14 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
         });
 
         this.panelRouteRules = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._( "Route Rules" ),
+            title: i18n._( "Route Rules" ),
             helpSource: "wan_balancer_route_rules",
             layout: { type: 'vbox', align: 'stretch' },
             cls: "ung-panel",
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                html: this.i18n._( "Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings." )
+                html: i18n._( "Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session. If there is no matching rule or the rule is set to <i>Balance</i> the session will be routed according to the <i>Traffic Allocation</i> settings." )
             }, this.gridRouteRules ]
         });
     },
@@ -294,7 +294,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
     },
     getDescription: function(intfCount, total, weight) {
         var percent = ( total == 0 ) ? Math.round(( 1 / intfCount ) * 1000) / 10 : Math.round(( weight / total ) * 1000) / 10;
-        return Ext.String.format( this.i18n._( "{0}% of Internet traffic." ), percent);
+        return Ext.String.format( i18n._( "{0}% of Internet traffic." ), percent);
     },
     // Convert the rules back to the correct form
     setWeights: function() {
