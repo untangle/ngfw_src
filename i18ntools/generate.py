@@ -91,10 +91,14 @@ def get_keys(module):
             ])
         for file_name in fnmatch.filter(file_names, '*.jspx'):
             full_file_name = root + "/" + file_name
-            call(
-                "ruby " + ngfw.base_path + "/work/src/i18ntools/xi18ntags.rb " +full_file_name + " >> " + pot.file_name,
-                shell=True
-            )
+            jspfile = i18n.JspxFile(full_file_name)
+            jspfile.load()
+            pot.load()
+
+            for record in jspfile.records:
+                pot.add_record(record)
+
+            pot.save()
 
 def main(argv):
     """

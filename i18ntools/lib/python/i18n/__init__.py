@@ -1,6 +1,7 @@
 """
 i18n modules
 """
+from i18n.jspx_file import JspxFile
 from i18n.languages import Languages
 from i18n.ngfw import Ngfw
 from i18n.po_record import PoRecord
