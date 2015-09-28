@@ -34,7 +34,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageStatus = Ext.create('Ext.panel.Panel',{
             name: 'pageStatus',
             helpSource: 'ipsec_vpn_ipsec_status',
-            title: this.i18n._("Status"),
+            title: i18n._("Status"),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [this.gridActiveTunnels,this.gridVirtualUsers]
@@ -49,7 +49,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             hasDelete: false,
             hasRefresh: true,
             flex: 1,
-            title: this.i18n._("Enabled IPsec Tunnels"),
+            title: i18n._("Enabled IPsec Tunnels"),
             dataFn: this.getRpcNode().getTunnelStatus,
             recordJavaClass: "com.untangle.node.ipsec_vpn.ConnectionStatusRecord",
             fields: [{
@@ -70,38 +70,38 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: "mode"
             }],
             columns: [{
-                header: this.i18n._("Local IP"),
+                header: i18n._("Local IP"),
                 dataIndex:'src',
                 width: 150
             },{
-                header: this.i18n._("Remote Host"),
+                header: i18n._("Remote Host"),
                 dataIndex:'dst',
                 width: 150
             },{
-                header: this.i18n._("Local Network"),
+                header: i18n._("Local Network"),
                 dataIndex:'tmplSrc',
                 width: 150
             },{
-                header: this.i18n._("Remote Network"),
+                header: i18n._("Remote Network"),
                 dataIndex:'tmplDst',
                 width: 150
             },{
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 dataIndex:'proto',
                 width: 200,
                 flex: 1
             },{
-                header: this.i18n._("Status"),
+                header: i18n._("Status"),
                 dataIndex: 'mode',
                 renderer: Ext.bind(function(value) {
-                    showtxt = this.i18n._("Inactive");
+                    showtxt = i18n._("Inactive");
                     showico = "ua-cell-disabled";
                     if (value.toLowerCase() === "active") {
-                        showtxt = this.i18n._("Active");
+                        showtxt = i18n._("Active");
                         showico = "ua-cell-enabled";
                     }
                     if (value.toLowerCase() === "unknown") {
-                        showtxt = this.i18n._("Unknown");
+                        showtxt = i18n._("Unknown");
                     }
                     return ("<div class='" + showico + "'>" + showtxt + "</div>");
                 }, this)
@@ -126,7 +126,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             hasRefresh: true,
             flex: 1,
             margin: '5 0 0 0',
-            title: this.i18n._("Active VPN Sessions"),
+            title: i18n._("Active VPN Sessions"),
             dataFn: this.getRpcNode().getVirtualUsers,
             recordJavaClass: "com.untangle.node.ipsec_vpn.VirtualUserEntry",
             fields: [{
@@ -146,41 +146,41 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: "sessionElapsed"
             }],
             columns: [{
-                header: this.i18n._("IP Address"),
+                header: i18n._("IP Address"),
                 dataIndex:'clientAddress',
                 width: 150
             },{
-                header: this.i18n._("Protocol"),
+                header: i18n._("Protocol"),
                 dataIndex:'clientProtocol',
                 width: 80
             },{
-                header: this.i18n._("Username"),
+                header: i18n._("Username"),
                 dataIndex:'clientUsername',
                 width: 200,
                 flex: 1
             },{
-                header: this.i18n._("Interface"),
+                header: i18n._("Interface"),
                 dataIndex:'netInterface',
                 width: 150
             },{
-                header: this.i18n._("Connect Time"),
+                header: i18n._("Connect Time"),
                 dataIndex:'sessionCreation',
                 width: 180,
                 renderer: function(value) { return i18n.timestampFormat(value); }
             },{
-                header: this.i18n._("Elapsed Time"),
+                header: i18n._("Elapsed Time"),
                 dataIndex:'sessionElapsed',
                 width: 180,
                 renderer: elapsedFormat
             },{
-                header: this.i18n._("Disconnect"),
+                header: i18n._("Disconnect"),
                 xtype: 'actioncolumn',
                 width: 80,
                 items: [{
                     iconCls: 'icon-delete-row',
-                    tooltip: this.i18n._("Click to disconnect client"),
+                    tooltip: i18n._("Click to disconnect client"),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        this.gridVirtualUsers.setLoading(this.i18n._("Disconnecting..."));
+                        this.gridVirtualUsers.setLoading(i18n._("Disconnecting..."));
                         this.getRpcNode().virtualUserDisconnect(Ext.bind(function(result, exception) {
                             this.gridVirtualUsers.setLoading(false);
                             if(Ung.Util.handleException(exception)) return;
@@ -198,7 +198,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageOptions = Ext.create('Ext.form.Panel',{
             name: 'pageOptions',
             helpSource: 'ipsec_vpn_ipsec_options',
-            title: this.i18n._("IPsec Options"),
+            title: i18n._("IPsec Options"),
             cls: 'ung-panel',
             autoScroll: true,
             trackResetOnLoad: true,
@@ -206,13 +206,13 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._("Description"),
-                html: this.i18n._("The IPsec Options tab contains common settings that apply to all IPsec traffic.")
+                title: i18n._("Description"),
+                html: i18n._("The IPsec Options tab contains common settings that apply to all IPsec traffic.")
             }, {
-                title: this.i18n._("Traffic Processing"),
+                title: i18n._("Traffic Processing"),
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: this.i18n._("Bypass all IPsec traffic"),
+                    fieldLabel: i18n._("Bypass all IPsec traffic"),
                     labelWidth: 220,
                     name: 'bypassflag',
                     checked: this.getSettings().bypassflag,
@@ -229,7 +229,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         var leftSubnetDefault = "0.0.0.0/0";
         var x;
         var networks = [];
-        networks.push(['', '- ' + this.i18n._("Custom") + ' -']);
+        networks.push(['', '- ' + i18n._("Custom") + ' -']);
 
         // build the list of active WAN networks for the interface combo box
         for( x = 0 ; x < this.rpc.intStatus.list.length ; x++) {
@@ -332,8 +332,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             settingsCmp: this,
             name: 'gridTunnels',
             helpSource: 'ipsec_vpn_ipsec_tunnels',
-            title: this.i18n._("IPsec Tunnels"),
-            qtip: this.i18n._("The IPsec tunnels list contains all of the secure network tunnels that have been defined."),
+            title: i18n._("IPsec Tunnels"),
+            qtip: i18n._("The IPsec tunnels list contains all of the secure network tunnels that have been defined."),
             dataProperty:'tunnels',
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
             emptyRow: {
@@ -409,28 +409,28 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             }],
             columns: [{
                 xtype: 'checkcolumn',
-                header: this.i18n._("Enabled"),
+                header: i18n._("Enabled"),
                 dataIndex: 'active',
                 resizable: false,
                 width: 55
             }, {
-                header: this.i18n._("Local IP"),
+                header: i18n._("Local IP"),
                 width: 150,
                 dataIndex: 'left'
             }, {
-                header: this.i18n._("Remote Host"),
+                header: i18n._("Remote Host"),
                 width: 150,
                 dataIndex: 'right'
             }, {
-                header: this.i18n._("Local Network"),
+                header: i18n._("Local Network"),
                 width: 200,
                 dataIndex: 'leftSubnet'
             }, {
-                header: this.i18n._("Remote Network"),
+                header: i18n._("Remote Network"),
                 width: 200,
                 dataIndex: 'rightSubnet'
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 width: 100,
                 dataIndex: 'description',
                 flex: 1
@@ -442,13 +442,13 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype:'checkbox',
                 name: 'active',
                 dataIndex: 'active',
-                fieldLabel: this.i18n._("Enable")
+                fieldLabel: i18n._("Enable")
             },{
                 xtype:'textfield',
                 name: 'Description',
                 dataIndex: 'description',
-                fieldLabel: this.i18n._("Description"),
-                emptyText: this.i18n._("[enter description]"),
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[enter description]"),
                 allowBlank: false,
                 width: 400
             },{
@@ -457,13 +457,13 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 margin: '0 0 5 0',
                 items: [{
                     xtype:'combo',
-                    fieldLabel: this.i18n._("Connection Type"),
+                    fieldLabel: i18n._("Connection Type"),
                     editable: false,
                     dataIndex: 'conntype',
                     store:[['tunnel','Tunnel'],['transport','Transport']]
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)"),
+                    html: i18n._("(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -472,19 +472,19 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 margin: '0 0 5 0',
                 items: [{
                     xtype:'combo',
-                    fieldLabel: this.i18n._("Auto Mode"),
+                    fieldLabel: i18n._("Auto Mode"),
                     dataIndex: 'runmode',
                     editable: false,
                     store:[['start','Start'],['add','Add']]
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)"),
+                    html: i18n._("(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)"),
                     cls: 'boxlabel'
                 }]
             }, {
                 xtype: "combo",
                 name: 'interfaceCombo',
-                fieldLabel: this.i18n._("Interface"),
+                fieldLabel: i18n._("Interface"),
                 editable: false,
                 queryMode: 'local',
                 store: networks,
@@ -502,8 +502,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 items: [{
                     xtype: "textfield",
                     dataIndex: 'left',
-                    fieldLabel: this.i18n._("External IP"),
-                    emptyText: this.i18n._("[enter external IP]"),
+                    fieldLabel: i18n._("External IP"),
+                    emptyText: i18n._("[enter external IP]"),
                     width: 350,
                     allowBlank: false,
                     vtype: 'ipAddress',
@@ -514,7 +514,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     }
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(The external IP address of this server)"),
+                    html: i18n._("(The external IP address of this server)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -525,13 +525,13 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'textfield',
                     name: 'right',
                     dataIndex: 'right',
-                    fieldLabel: this.i18n._("Remote Host"),
-                    emptyText: this.i18n._("[enter remote host]"),
+                    fieldLabel: i18n._("Remote Host"),
+                    emptyText: i18n._("[enter remote host]"),
                     width: 350,
                     allowBlank: false
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(The public hostname or IP address of the remote IPsec gateway)"),
+                    html: i18n._("(The public hostname or IP address of the remote IPsec gateway)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -542,14 +542,14 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'textfield',
                     name: 'leftSubnet',
                     dataIndex: 'leftSubnet',
-                    fieldLabel: this.i18n._("Local Network"),
-                    emptyText: this.i18n._("[enter local network]"),
+                    fieldLabel: i18n._("Local Network"),
+                    emptyText: i18n._("[enter local network]"),
                     width: 350,
                     allowBlank: false,
                     vtype: 'cidrBlock'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(The private network attached to the local side of the tunnel)"),
+                    html: i18n._("(The private network attached to the local side of the tunnel)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -560,22 +560,22 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'textfield',
                     name: 'rightSubnet',
                     dataIndex: 'rightSubnet',
-                    fieldLabel: this.i18n._("Remote Network"),
-                    emptyText: this.i18n._("[enter remote network]"),
+                    fieldLabel: i18n._("Remote Network"),
+                    emptyText: i18n._("[enter remote network]"),
                     width: 350,
                     allowBlank: false,
                     vtype: 'cidrBlock'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("(The private network attached to the remote side of the tunnel)"),
+                    html: i18n._("(The private network attached to the remote side of the tunnel)"),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype:'textfield',
                 name: 'secret',
                 dataIndex: 'secret',
-                fieldLabel: this.i18n._("Shared Secret"),
-                emptyText: this.i18n._("[enter shared secret]"),
+                fieldLabel: i18n._("Shared Secret"),
+                emptyText: i18n._("[enter shared secret]"),
                 style: "font-family: monospace",
                 width: 700,
                 maxLength: 1000,
@@ -589,7 +589,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'numberfield',
                     name: 'dpddelay',
                     dataIndex: 'dpddelay',
-                    fieldLabel: this.i18n._("DPD Interval"),
+                    fieldLabel: i18n._("DPD Interval"),
                     width: 250,
                     allowBlank: false,
                     allowDecimals: false,
@@ -597,7 +597,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     maxValue: 3600
                 },{
                     xtype: 'label',
-                    html: this.i18n._("The number of seconds between R_U_THERE messages.  Enter 0 to disable."),
+                    html: i18n._("The number of seconds between R_U_THERE messages.  Enter 0 to disable."),
                     cls: 'boxlabel'
                 }]
             },{
@@ -608,7 +608,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'numberfield',
                     name: 'dpdtimeout',
                     dataIndex: 'dpdtimeout',
-                    fieldLabel: this.i18n._("DPD Timeout"),
+                    fieldLabel: i18n._("DPD Timeout"),
                     width: 250,
                     allowBlank: false,
                     allowDecimals: false,
@@ -616,22 +616,22 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     maxValue: 3600
                 },{
                     xtype: 'label',
-                    html: this.i18n._("The number of seconds for a dead peer tunnel to be restarted"),
+                    html: i18n._("The number of seconds for a dead peer tunnel to be restarted"),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype: 'displayfield',
                 margin: '10 0 10 0',
-                value: this.i18n._("<B>Authentication and SA/Key Exchange</B>")
+                value: i18n._("<B>Authentication and SA/Key Exchange</B>")
             },{
                 xtype: 'displayfield',
                 margin: '5 0 10 0',
-                value: this.i18n._("Usually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel.") + "<br/>" +
-                    this.i18n._("However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.")
+                value: i18n._("Usually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel.") + "<br/>" +
+                    i18n._("However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.")
             },{
                 xtype:'checkbox',
                 dataIndex: 'phase1Manual',
-                boxLabel: this.i18n._("Phase 1 IKE/ISAKMP Manual Configuration"),
+                boxLabel: i18n._("Phase 1 IKE/ISAKMP Manual Configuration"),
                 labelWidth: 250,
                 margin: '20 0 10 0',
                 hideLabel: true,
@@ -647,7 +647,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase1Cipher',
                     dataIndex: 'phase1Cipher',
-                    fieldLabel: this.i18n._("Encryption"),
+                    fieldLabel: i18n._("Encryption"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -657,7 +657,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = 3DES"),
+                    html: i18n._("Default = 3DES"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -669,7 +669,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase1Hash',
                     dataIndex: 'phase1Hash',
-                    fieldLabel: this.i18n._("Hash"),
+                    fieldLabel: i18n._("Hash"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -679,7 +679,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = MD5"),
+                    html: i18n._("Default = MD5"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -691,7 +691,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase1Group',
                     dataIndex: 'phase1Group',
-                    fieldLabel: this.i18n._("DH Key Group"),
+                    fieldLabel: i18n._("DH Key Group"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -701,7 +701,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = 2 (1024 bit)"),
+                    html: i18n._("Default = 2 (1024 bit)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -713,7 +713,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'numberfield',
                     name: 'phase1Lifetime',
                     dataIndex: 'phase1Lifetime',
-                    fieldLabel: this.i18n._("Lifetime"),
+                    fieldLabel: i18n._("Lifetime"),
                     labelWidth: 120,
                     width: 250,
                     allowBlank: false,
@@ -722,13 +722,13 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     maxValue: 86400
                 },{
                     xtype: 'label',
-                    html: this.i18n._("Default = 28800 seconds, min = 3600, max = 86400"),
+                    html: i18n._("Default = 28800 seconds, min = 3600, max = 86400"),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype:'checkbox',
                 dataIndex: 'phase2Manual',
-                boxLabel: this.i18n._("Phase 2 ESP Manual Configuration"),
+                boxLabel: i18n._("Phase 2 ESP Manual Configuration"),
                 labelWidth: 250,
                 margin: '20 0 10 0',
                 hideLabel: true,
@@ -744,7 +744,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase2Cipher',
                     dataIndex: 'phase2Cipher',
-                    fieldLabel: this.i18n._("Encryption"),
+                    fieldLabel: i18n._("Encryption"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -754,7 +754,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = 3DES"),
+                    html: i18n._("Default = 3DES"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -766,7 +766,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase2Hash',
                     dataIndex: 'phase2Hash',
-                    fieldLabel: this.i18n._("Hash"),
+                    fieldLabel: i18n._("Hash"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -776,7 +776,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = MD5"),
+                    html: i18n._("Default = MD5"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -788,7 +788,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'combobox',
                     name: 'phase2Group',
                     dataIndex: 'phase2Group',
-                    fieldLabel: this.i18n._("PFS Key Group"),
+                    fieldLabel: i18n._("PFS Key Group"),
                     labelWidth: 120,
                     width: 250,
                     editable: false,
@@ -798,7 +798,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     valueField: 'value'
                 }, {
                     xtype: 'label',
-                    html: this.i18n._("Default = 2 (1024 bit)"),
+                    html: i18n._("Default = 2 (1024 bit)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -810,7 +810,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype:'numberfield',
                     name: 'phase2Lifetime',
                     dataIndex: 'phase2Lifetime',
-                    fieldLabel: this.i18n._("Lifetime"),
+                    fieldLabel: i18n._("Lifetime"),
                     labelWidth: 120,
                     width: 250,
                     allowBlank: false,
@@ -819,7 +819,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     maxValue: 86400
                 },{
                     xtype: 'label',
-                    html: this.i18n._("Default = 3600 seconds, min = 3600, max = 86400"),
+                    html: i18n._("Default = 3600 seconds, min = 3600, max = 86400"),
                     cls: 'boxlabel'
                 }]
             }],
@@ -887,7 +887,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             settingsCmp: this,
             name: 'pageVirtualConfig',
             helpSource: 'ipsec_vpn_l2tp_options',
-            title: this.i18n._("VPN Config"),
+            title: i18n._("VPN Config"),
             cls: 'ung-panel',
             autoScroll: true,
             reserveScrollbar: true,
@@ -896,17 +896,17 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._("Description"),
-                html: this.i18n._("The VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections.")
+                title: i18n._("Description"),
+                html: i18n._("The VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections.")
             }, {
-                title: this.i18n._("Server Configuration"),
+                title: i18n._("Server Configuration"),
                 labelWidth: 300,
                 defaults: {
                     labelWidth: 160
                 },
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: this.i18n._("Enable L2TP/Xauth Server"),
+                    fieldLabel: i18n._("Enable L2TP/Xauth Server"),
                     padding: '3 0 3 0',
                     name: 'vpnflag',
                     checked: this.getSettings().vpnflag,
@@ -919,7 +919,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     width: 300,
                     padding: '3 0 3 0',
                     dataIndex: 'virtualAddressPool',
-                    fieldLabel: this.i18n._("L2TP Address Pool"),
+                    fieldLabel: i18n._("L2TP Address Pool"),
                     value: this.getSettings().virtualAddressPool,
                     vtype: 'cidrBlock',
                     listeners: {
@@ -933,7 +933,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     width: 300,
                     padding: '3 0 3 0',
                     dataIndex: 'virtualXauthPool',
-                    fieldLabel: this.i18n._("Xauth Address Pool"),
+                    fieldLabel: i18n._("Xauth Address Pool"),
                     value: this.getSettings().virtualXauthPool,
                     vtype: 'cidrBlock',
                     listeners: {
@@ -951,7 +951,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         width: 300,
                         padding: '3 0 3 0',
                         dataIndex: 'virtualDnsOne',
-                        fieldLabel: this.i18n._("Custom DNS Server 1"),
+                        fieldLabel: i18n._("Custom DNS Server 1"),
                         value: this.getSettings().virtualDnsOne,
                         vtype: 'ipAddress',
                         allowBlank: true,
@@ -967,7 +967,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         width: 300,
                         padding: '3 0 3 20',
                         dataIndex: 'virtualDnsTwo',
-                        fieldLabel: this.i18n._("Custom DNS Server 2"),
+                        fieldLabel: i18n._("Custom DNS Server 2"),
                         value: this.getSettings().virtualDnsTwo,
                         vtype: 'ipAddress',
                         allowBlank: true,
@@ -980,14 +980,14 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'displayfield',
                     padding: '10 10 10 10',
-                    value:  this.i18n._("<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution.")
+                    value:  i18n._("<STRONG>NOTE:</STRONG> Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution.")
                 },{
                     xtype: 'textfield',
                     name: 'virtualSecret',
                     width: 500,
                     padding: '0 0 0 0',
                     dataIndex: 'virtualSecret',
-                    fieldLabel: this.i18n._("IPsec Secret"),
+                    fieldLabel: i18n._("IPsec Secret"),
                     value: this.getSettings().virtualSecret,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
@@ -996,14 +996,14 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     }
                 }]
             },{
-                title: this.i18n._( "User Authentication" ),
+                title: i18n._( "User Authentication" ),
                 labelWidth: 300,
                 items: [{
                     xtype: 'displayfield',
-                    value: this.i18n._("In addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application.")
+                    value: i18n._("In addition to the IPsec Secret configured above, VPN clients must authenticate with a valid username and password.  User authentication can be configured to use either the internal local directory, or an external RADIUS server configured in the Directory Connector application.")
                 },{
                     xtype: "radio",
-                    boxLabel: this.i18n._("Local Directory"),
+                    boxLabel: i18n._("Local Directory"),
                     hideLabel: true,
                     padding: '10 0 0 0',
                     name: "authenticationType",
@@ -1015,11 +1015,11 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: "button",
                     name: "configureLocalDirectory",
-                    text: this.i18n._("Configure Local Directory"),
+                    text: i18n._("Configure Local Directory"),
                     handler: Ext.bind(this.configureLocalDirectory, this )
                 },{
                     xtype: "radio",
-                    boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
+                    boxLabel: Ext.String.format( i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
                     padding: '10 0 0 0',
                     disabled: !this.rpc.dirConLicenseValid,
@@ -1033,17 +1033,17 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype: "button",
                     disabled: !this.rpc.dirConLicenseValid,
                     name: "configureRadiusServer",
-                    text: this.i18n._("Configure RADIUS"),
+                    text: i18n._("Configure RADIUS"),
                     handler: Ext.bind(this.configureRadius, this )
                 }]
             },{
 
-                title: this.i18n._( "Server Listen Addresses" ),
+                title: i18n._( "Server Listen Addresses" ),
                 labelWidth: 300,
                 items: [{
                     xtype: 'component',
                     margin: '0 0 10 0',
-                    html:  this.i18n._("This is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them.")
+                    html:  i18n._("This is the list of IP addresses where the server will listen for incomming VPN connections. If you have a single WAN connection, you will normally only add that single address to this list.  If you have multiple WAN interfaces, you can configure the server to listen on any, or all of them.")
                 }, this.gridListenList ]
             }]
         });
@@ -1067,7 +1067,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'address'
             }],
             columns: [{
-                header: this.i18n._("Address"),
+                header: i18n._("Address"),
                 width: 200,
                 name: 'address',
                 dataIndex: 'address',
@@ -1075,7 +1075,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 flex: 1,
                 editor: {
                     xtype: 'textfield',
-                    emptyText: this.i18n._("[enter IP address]"),
+                    emptyText: i18n._("[enter IP address]"),
                     vtype: 'ip4Address',
                     allowBlank: false
                 }
@@ -1145,7 +1145,6 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         }
     },
     buildInfoPanel: function(config) {
-        me = this;
         var infoArea = Ext.create('Ext.form.TextArea',{
             name: "state",
             hideLabel: true,
@@ -1169,7 +1168,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 return false;
             },
             loadInfo: function() {
-                infoArea.setValue(me.i18n._("Loading information... Please wait..."));
+                infoArea.setValue(i18n._("Loading information... Please wait..."));
                 config.dataFn(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     infoArea.setValue(result);
@@ -1186,32 +1185,32 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     buildPanelState: function() {
         this.pageStateInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_state',
-            title: this.i18n._("IPsec State"),
-            text: this.i18n._(" Refresh Log Information "),
+            title: i18n._("IPsec State"),
+            text: i18n._(" Refresh Log Information "),
             dataFn: this.getRpcNode().getStateInfo
         });
     },
     buildPanelPolicy: function() {
         this.pagePolicyInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_policy',
-            title: this.i18n._("IPsec Policy"),
-            text: this.i18n._(" Refresh Policy Information "),
+            title: i18n._("IPsec Policy"),
+            text: i18n._(" Refresh Policy Information "),
             dataFn: this.getRpcNode().getPolicyInfo
         });
     },
     buildPanelLogFile: function() {
         this.pageLogFile = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_log',
-            title: this.i18n._("IPsec Log"),
-            text: this.i18n._(" Refresh State Information "),
+            title: i18n._("IPsec Log"),
+            text: i18n._(" Refresh State Information "),
             dataFn: this.getRpcNode().getLogFile
         });
     },
     buildPanelVirtualLogFile: function() {
         this.pageVirtualLogFile = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_l2tp_log',
-            title: this.i18n._("L2TP Log"),
-            text: this.i18n._(" Refresh Log Information "),
+            title: i18n._("L2TP Log"),
+            text: i18n._(" Refresh Log Information "),
             dataFn: this.getRpcNode().getVirtualLogFile
         });
     },
@@ -1235,7 +1234,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
 
         if (problem == false) return(true);
 
-        Ext.MessageBox.alert(this.i18n._('IPsec Configuration Warning'), this.i18n._("One or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended."));
+        Ext.MessageBox.alert(i18n._('IPsec Configuration Warning'), i18n._("One or more IPsec tunnels is configured with a hostname in the <B>Remote Host</B> field.  The use of IP addresses instead of hostname for the remote host is strongly recommended."));
         this.warningDisplayed = true;
         return(false);
     }
