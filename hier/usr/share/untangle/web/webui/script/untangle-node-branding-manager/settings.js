@@ -12,7 +12,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
         this.panelBranding = Ext.create('Ext.panel.Panel',{
             name: 'Branding',
             helpSource: 'branding_manager_settings',
-            title: this.i18n._('Settings'),
+            title: i18n._('Settings'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -39,14 +39,14 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
             items: [{
                 xtype: 'component',
                 margin: '5 0 15 20',
-                html: this.i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
+                html: i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
             },{
-                title: this.i18n._('Logo'),
+                title: i18n._('Logo'),
                 items: [{
                     xtype: 'radio',
                     name: 'Logo',
                     hideLabel: true,
-                    boxLabel: this.i18n._('Use Default Logo'),
+                    boxLabel: i18n._('Use Default Logo'),
                     checked: this.getSettings().defaultLogo,
                     listeners: {
                         "change": {
@@ -62,7 +62,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     xtype: 'radio',
                     name: 'Logo',
                     hideLabel: true,
-                    boxLabel: this.i18n._('Use Custom Logo. Maximum size is 166 x 100.'),
+                    boxLabel: i18n._('Use Custom Logo. Maximum size is 166 x 100.'),
                     checked: !this.getSettings().defaultLogo,
                     listeners: {
                         "change": {
@@ -85,7 +85,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     },
                     items: [{
                         xtype: 'filefield',
-                        fieldLabel: this.i18n._('File'),
+                        fieldLabel: i18n._('File'),
                         name: 'upload_logo_file_textfield',
                         width: 500,
                         labelWidth: 50,
@@ -94,7 +94,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     },{
                         xtype: 'button',
                         name: 'upload_logo_file_button',
-                        text: this.i18n._("Upload"),
+                        text: i18n._("Upload"),
                         handler: Ext.bind(function() {
                             this.panelBranding.onUpload();
                         }, this),
@@ -106,13 +106,13 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     }]
                 }]
             },{
-                title: this.i18n._('Contact Information'),
+                title: i18n._('Contact Information'),
                 defaults: {
                     width: 300
                 },
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Company Name'),
+                    fieldLabel: i18n._('Company Name'),
                     name: 'Company Name',
                     allowBlank: true,
                     value: this.getSettings().companyName,
@@ -125,7 +125,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Company URL'),
+                    fieldLabel: i18n._('Company URL'),
                     name: 'Company URL',
                     allowBlank: true,
                     value: this.getSettings().companyUrl,
@@ -138,10 +138,10 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Contact Name'),
+                    fieldLabel: i18n._('Contact Name'),
                     name: 'Contact Name',
                     allowBlank: true,
-                    value: ("your network administrator" == this.getSettings().contactName)?this.i18n._("your network administrator"):this.getSettings().contactName,
+                    value: ("your network administrator" == this.getSettings().contactName)?i18n._("your network administrator"):this.getSettings().contactName,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -151,7 +151,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     }
                 },{
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._('Contact Email'),
+                    fieldLabel: i18n._('Contact Email'),
                     name: 'contact_email',
                     allowBlank: true,
                     vtype: 'email',
@@ -165,14 +165,14 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     }
                 }]
             },{
-                title: this.i18n._('Banner Message'),
+                title: i18n._('Banner Message'),
                 items:[{
                     xtype: "textarea",
                     allowBlank: true,
                     name: "bannerMessage",
                     width: 500,
                     height: 100,
-                    fieldLabel: this.i18n._("Message Text"),
+                    fieldLabel: i18n._("Message Text"),
                     value: this.settings.bannerMessage,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
@@ -192,17 +192,17 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     return;
                 }
                 formPanel.getForm().submit({
-                    waitMsg: this.i18n._('Please wait while your logo image is uploaded...'),
+                    waitMsg: i18n._('Please wait while your logo image is uploaded...'),
                     success: Ext.bind(function(form, action) {
                         this.needRackReload = true;
-                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload Logo Succeeded."),
+                        Ext.MessageBox.alert(i18n._("Succeeded"), i18n._("Upload Logo Succeeded."),
                             function() {
                                 fileField.reset();
                             }
                         );
                     }, this),
                     failure: Ext.bind(function(form, action) {
-                        Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."));
+                        Ext.MessageBox.alert(i18n._("Failed"), i18n._("Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."));
                     }, this)
                 });
             }, this)
