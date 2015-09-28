@@ -1491,7 +1491,6 @@ Ext.define('Ung.panel.Reports', {
 
 Ext.define("Ung.panel.ExtraConditions", {
     extend: "Ext.panel.Panel",
-    title: Ext.String.format( i18n._("Conditions: {0}"), i18n._("None")),
     collapsible: true,
     collapsed: false,
     floatable: false,
@@ -1500,6 +1499,7 @@ Ext.define("Ung.panel.ExtraConditions", {
     autoScroll: true,
     layout: { type: 'vbox'},
     initComponent: function() {
+        this.title = Ext.String.format( i18n._("Conditions: {0}"), i18n._("None"));
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
             fields: ["dataIndex", "header"],

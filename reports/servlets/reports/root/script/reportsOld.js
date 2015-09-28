@@ -71,7 +71,7 @@ Ext.define('Ung.Reports', {
             if(Ung.Util.handleException(exception)) return;
             i18n = new Ung.I18N({ "map": result.map });
             this.postinit();
-        }, this), "untangle-libuvm");
+        }, this), "untangle");
         rpc.languageManager.getLanguageSettings(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             rpc.languageSettings = result;
@@ -627,16 +627,12 @@ Ext.define('Ung.Reports', {
         reports.breadcrumbs.push({ text: this.selectedNode.data.text,
             handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays])
         });
-        Ung.Util.loadModuleTranslations( nodeName, i18n,
-             function(){
-                 try{
-                     reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
-                     reports.progressBar.hide();
-                 }catch(e){
-                     alert(e.message);
-                 }
-             }
-        );
+        try {
+            reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+            reports.progressBar.hide();
+        } catch(e) {
+            alert(e.message);
+        }
     },
     processApplicationData: function (result,exception,nodeName,numDays) {
         if(Ung.Util.handleException(exception)) return;
@@ -649,22 +645,18 @@ Ext.define('Ung.Reports', {
                 drilldownValue: rpc.drilldownValue
             });
         }
-        Ung.Util.loadModuleTranslations( nodeName, i18n,
-             function(){
-                 try{
-                     reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
-                     if ( reports.progressBar.rendered) {
-                        reports.progressBar.hide();
-                     }
-                     if(reports.printView){
-                         //hack but close enough , could not find a reliable event that would fire after template is displayed.
-                         window.setTimeout(function(){window.print();},1000);
-                     }
-                 }catch(e){
-                     alert(e.message);
-                 }
-             }
-        );
+        try {
+            reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+            if ( reports.progressBar.rendered) {
+               reports.progressBar.hide();
+            }
+            if(reports.printView){
+                //hack but close enough , could not find a reliable event that would fire after template is displayed.
+                window.setTimeout(function(){window.print();},1000);
+            }
+        } catch(e) {
+            alert(e.message);
+        }
     },
     getDrilldownTableOfContents: function(type, value) {
         var fnMap = {
@@ -717,19 +709,15 @@ Ext.define('Ung.Reports', {
                 this.reportDetails.buildReportDetails(); // XXX take to correct page
                 reports.progressBar.hide();
             } else {
-                Ung.Util.loadModuleTranslations( app, i18n,
-                    function(){
-                        try{
-                            reports.reportDetails = new Ung.ReportDetails({reportType: app});
-                            if ( reports.progressBar.rendered) {
-                               reports.progressBar.hide();
-                            }
-                            window.setTimeout(function(){window.print();},1000);
-                        }catch(e){
-                            alert(e.message);
-                        }
+                try {
+                    reports.reportDetails = new Ung.ReportDetails({reportType: app});
+                    if ( reports.progressBar.rendered) {
+                       reports.progressBar.hide();
                     }
-               );
+                    window.setTimeout(function(){window.print();},1000);
+                } catch(e) {
+                    alert(e.message);
+                }
             }
         },this), reports.reportsDate, reports.numDays, app, value);
     },
@@ -749,10 +737,8 @@ Ext.define('Ung.ReportDetails', {
     reportType: null,
     constructor: function(config) {
         Ext.apply(this, config);
-        // this.i18n should be used in ReportDetails to have i18n context based
         this.appName = reports.selectedNode.data.id;
         this.application = reports.selectedApplication;
-        this.i18n = Ung.i18nModuleInstances[reports.selectedNode.data.id];
         this.reportType = config.reportType;
         this.buildReportDetails();
     },
@@ -787,7 +773,7 @@ Ext.define('Ung.ReportDetails', {
                     return '<a href="javascript:reports.getDrilldownApplicationData(\'' + type + '\', \'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                 },this)
             }],
-            title:this.i18n._('Application List'),
+            title: i18n._('Application List'),
             height: 500,
             stripeRows: true,
             hideHeaders: true,
@@ -853,15 +839,15 @@ Ext.define('Ung.ReportDetails', {
     },
 
     buildUserList: function() {
-        return this.buildDrilldownList('user', this.i18n._('User'), this.i18n._('User List'));
+        return this.buildDrilldownList('user', i18n._('User'), i18n._('User List'));
     },
 
     buildHostList: function() {
-        return this.buildDrilldownList('host', this.i18n._('Host'), this.i18n._('Host List'));
+        return this.buildDrilldownList('host', i18n._('Host'), i18n._('Host List'));
     },
 
     buildEmailList: function() {
-        return this.buildDrilldownList('email', this.i18n._('Email'), this.i18n._('Email List'));
+        return this.buildDrilldownList('email', i18n._('Email'), i18n._('Email List'));
     },
 
     buildReportDetails: function() {
@@ -1083,7 +1069,7 @@ Ext.define('Ung.ReportDetails', {
                         } else if (linkType == "URLLink") {
                             return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
                         } else {
-                            return this.i18n._(value);
+                            return i18n._(value);
                         }
                     },this)
                 });
@@ -1116,8 +1102,8 @@ Ext.define('Ung.ReportDetails', {
                             }
                         }
 
-                        var v = this.i18n.numberFormat(value);
-                        return unit == null ? v: (v + " " + this.i18n._(unit));
+                        var v = i18n.numberFormat(value);
+                        return unit == null ? v: (v + " " + i18n._(unit));
                     }, this)
                 });
                 var exportHandler = this.buildExportHandler(summaryItem.csvUrl);
@@ -1140,12 +1126,12 @@ Ext.define('Ung.ReportDetails', {
                     // inline toolbars
                     tbar:[{
                         xtype: 'label',
-                        text: this.i18n._('Key Statistics'),
+                        text: i18n._('Key Statistics'),
                         style: 'font-weight: bold;padding-left:3px;',
                         flex: 1
                     }, {
                         xtype:'button',
-                        tooltip:this.i18n._('Export Excel'),
+                        tooltip: i18n._('Export Excel'),
                         style: 'padding: 0px 0px 0px 0px;',
                         iconCls:'export-excel',
                         text: i18n._('Export Data'),
@@ -1197,7 +1183,7 @@ Ext.define('Ung.ReportDetails', {
             c = section.columns.list[i];
             if (c === null || c === undefined) { break; }
             var col = {
-                header: this.i18n._(c.title),
+                header: i18n._(c.title),
                 dataIndex: c.name
             };
 

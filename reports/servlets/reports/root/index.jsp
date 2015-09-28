@@ -22,7 +22,7 @@ if(request.getParameter("old")!=null) {
     }
 
     if (node == null || !reportsAvailable || !reportingEnabled) {
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle");
         String msg = I18nUtil.tr("No reports are available.", i18n_map);
         String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
         String emptyMsg = I18nUtil.tr("No reports have been generated.", i18n_map);

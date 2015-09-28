@@ -1,6 +1,5 @@
 Ext.namespace('Ung');
 // instances map of i18n objects for modules
-Ung.i18nModuleInstances = {};
 
 // I18N object class
 Ext.define("Ung.I18N", {
@@ -108,24 +107,6 @@ Ext.define("Ung.I18N", {
         return tokens.join("");
     }
 
-});
-
-// module I18N class object
-Ext.define("Ung.ModuleI18N", {
-    extend: "Ung.I18N",
-    // module map
-    moduleMap: null,
-    // translation function tryes to find the word in the moduleMap
-    // and if not succesful it tries to find it in the global map
-    _: function(s) {
-        if (this.moduleMap !== null && this.moduleMap[s]) {
-            return this.moduleMap[s];
-        }
-        if (this.map !== null && this.map[s]) {
-            return this.map[s];
-        }
-        return s;
-    }
 });
 
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object

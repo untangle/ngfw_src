@@ -284,21 +284,6 @@ Ext.define('Ung.Util', {
         }
         return error;
     },
-    loadModuleTranslations: function(moduleName, handler) {
-        if(!Ung.i18nModuleInstances[moduleName]) {
-            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, moduleName, handler) {
-                if(Ung.Util.handleException(exception)) return;
-                var moduleMap=result.map;
-                Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                    map: i18n.map,
-                    moduleMap: moduleMap
-                });
-                handler.call(this);
-            }, this,[moduleName, handler],true), moduleName);
-        } else {
-            handler.call(this);
-        }
-    },
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },

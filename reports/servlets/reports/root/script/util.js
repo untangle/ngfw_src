@@ -43,21 +43,6 @@ Ext.define('Ung.Util', {
         }
         return error;
     },
-    loadModuleTranslations: function(moduleName, handler) {
-        if(!Ung.i18nModuleInstances[moduleName]) {
-            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, moduleName, handler) {
-                if(Ung.Util.handleException(exception)) return;
-                var moduleMap=result.map;
-                Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                    map: i18n.map,
-                    moduleMap: moduleMap
-                });
-                handler.call(this);
-            }, this,[moduleName, handler],true), moduleName);
-        } else {
-            handler.call(this);
-        }
-    },
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.reload(true);

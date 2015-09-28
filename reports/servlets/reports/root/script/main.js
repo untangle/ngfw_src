@@ -90,7 +90,7 @@ Ext.define("Ung.Main", {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.translations = result;
                 this.startApplication();
-            }, this), "untangle-libuvm");
+            }, this), "untangle");
             
             rpc.languageManager.getLanguageSettings(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;

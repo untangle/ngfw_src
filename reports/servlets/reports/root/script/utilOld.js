@@ -35,28 +35,6 @@ Ung.Util = {
         }
         return error;
     },
-    loadModuleTranslations : function(appName, i18n, handler) {
-        if(!Ung.i18nModuleInstances[appName]) {
-            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, appName, i18n, handler) {
-                if (exception) {
-                    var message = exception.message;
-                    if (message == null || message == "Unknown") {
-                        message = i18n._("Please Try Again");
-                    }
-                    Ext.MessageBox.alert("Failed", message);
-                    return;
-                }
-                var moduleMap=result.map;
-                Ung.i18nModuleInstances[appName] = new Ung.ModuleI18N({
-                        "map" : i18n.map,
-                        "moduleMap" : moduleMap
-                });
-                handler.call(this);
-            },this,[appName, i18n, handler],true), appName);
-        } else {
-            handler.call(this);
-        }
-    },
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.reload(true);
