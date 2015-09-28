@@ -9903,7 +9903,7 @@ msgid "Change Password"
 msgstr "Changer le mot de passe"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:307
-msgid "Reporting Users"
+msgid "Reports Users"
 msgstr "Utilisateurs des rapports"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:333

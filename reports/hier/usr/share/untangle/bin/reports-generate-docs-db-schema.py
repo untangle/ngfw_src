@@ -260,7 +260,7 @@ dict['intrusion_prevention_events'].update({
 
 dict['alerts'] = copy.deepcopy(generic)
 dict['alerts'].update({
-    'table_description' : 'This table stores Reporting Alert events.',
+    'table_description' : 'This table stores Reports Alert events.',
     'description' : 'The description from the alert rule.',
     'summary_text' : 'The summary text of the alert',
     'json' : 'The summary JSON representation of the event causing the alert',

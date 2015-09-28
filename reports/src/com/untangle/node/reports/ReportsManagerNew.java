@@ -91,11 +91,11 @@ public interface ReportsManagerNew
     org.json.JSONObject getConditionQuickAddHints();
     
     /**
-     * Tests if reporting is enabled, that is if reports will be
+     * Tests if reports is enabled, that is if reports will be
      * generated nightly.  Currently this is the same thing as "is the
-     * reporting node installed and turned on."
+     * reports node installed and turned on."
      *
-     * @return true if reporting is enabled, false otherwise.
+     * @return true if reports is enabled, false otherwise.
      */
     boolean isReportsEnabled();
     

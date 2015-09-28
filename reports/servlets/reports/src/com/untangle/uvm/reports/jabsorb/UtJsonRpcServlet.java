@@ -104,9 +104,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     
     public interface ReportsContext
     {
-        public ReportsManager reportingManager();
+        public ReportsManager reportsManager();
         
-        public ReportsManagerNew reportingManagerNew();
+        public ReportsManagerNew reportsManagerNew();
 
         public SkinManager skinManager();
 

@@ -169,7 +169,6 @@ Ext.define('Webui.config.administration', {
                 this.grid.rowEditorChangePass.show();
             }
         });
-        var thisReporting = this;
         var passwordValidator = function (fieldValue) {
           //validate password match
             var panel = this.up("panel");
@@ -177,7 +176,7 @@ Ext.define('Webui.config.administration', {
             var confirmPwd = panel.down('textfield[name="confirmPassword"]');
             if(pwd.getValue() != confirmPwd.getValue()) {
                 pwd.markInvalid();
-                return thisReporting.i18n._('Passwords do not match');
+                return i18n._('Passwords do not match');
             }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();

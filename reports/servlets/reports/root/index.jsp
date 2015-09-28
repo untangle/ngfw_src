@@ -10,18 +10,18 @@ String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 
 if(request.getParameter("old")!=null) {
-    ReportingNode node = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-    ReportingManager reportingManager = null ;
-    boolean reportingEnabled = false;
+    ReportsApp node = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+    ReportsManager reportsManager = null ;
+    boolean reportsEnabled = false;
     boolean reportsAvailable = false;
 
     if (node != null) {
-        reportingManager = node.getReportingManager();
-        reportingEnabled = reportingManager.isReportingEnabled();
-        reportsAvailable = reportingManager.isReportsAvailable();
+        reportsManager = node.getReportsManager();
+        reportsEnabled = reportsManager.isReportsEnabled();
+        reportsAvailable = reportsManager.isReportsAvailable();
     }
 
-    if (node == null || !reportsAvailable || !reportingEnabled) {
+    if (node == null || !reportsAvailable || !reportsEnabled) {
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle");
         String msg = I18nUtil.tr("No reports are available.", i18n_map);
         String disabledMsg = I18nUtil.tr("Reports is not installed into your rack or it is not turned on.<br />Reports are only generated when Reports is installed and turned on.", i18n_map);
@@ -52,7 +52,7 @@ if(request.getParameter("old")!=null) {
         <b><i><%=msg%></i></b>
         <br /><br />
 
-        <% if(!reportingEnabled){ %>
+        <% if(!reportsEnabled){ %>
         <%=disabledMsg%>
         <% } else{ %>
         <%=emptyMsg%>

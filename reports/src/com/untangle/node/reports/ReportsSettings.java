@@ -27,7 +27,7 @@ public class ReportsSettings implements Serializable, JSONString
     private Integer attachmentSizeLimit = 10; // MB
 
     private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<ReportsHostnameMapEntry>();
-    private LinkedList<ReportsUser> reportingUsers = new LinkedList<ReportsUser>();
+    private LinkedList<ReportsUser> reportsUsers = new LinkedList<ReportsUser>();
     private LinkedList<AlertRule> alertRules = null;
     
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
@@ -71,8 +71,8 @@ public class ReportsSettings implements Serializable, JSONString
     public int getAttachmentSizeLimit() { return attachmentSizeLimit; }
     public void setAttachmentSizeLimit( int limit ) { attachmentSizeLimit = limit; }
 
-    public LinkedList<ReportsUser> getReportsUsers() { return this.reportingUsers; }
-    public void setReportsUsers( LinkedList<ReportsUser> reportingUsers ) { this.reportingUsers = reportingUsers; }
+    public LinkedList<ReportsUser> getReportsUsers() { return this.reportsUsers; }
+    public void setReportsUsers( LinkedList<ReportsUser> reportsUsers ) { this.reportsUsers = reportsUsers; }
 
     public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
     public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }

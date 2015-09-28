@@ -54,7 +54,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
-    protected static ReportsManagerImpl    reportingManager = null;
+    protected static ReportsManagerImpl    reportsManager = null;
 
     private ReportsSettings settings;
     
@@ -66,8 +66,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             eventWriter = new EventWriterImpl( this );
         if (eventReader == null)
             eventReader = new EventReaderImpl( this );
-        if (reportingManager == null)
-            reportingManager = new ReportsManagerImpl( this );
+        if (reportsManager == null)
+            reportsManager = new ReportsManagerImpl( this );
         ReportsManagerNewImpl.getInstance().setReportsNode( this );
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
@@ -259,7 +259,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public ReportsManager getReportsManager()
     {
-        return ReportsApp.reportingManager;
+        return ReportsApp.reportsManager;
     }
 
     public ReportsManagerNew getReportsManagerNew()
@@ -506,7 +506,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.info("Export CSV( name:" + appName + " detailName: " + detailName + " date: " + d + ")");
             SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
             String name = sdf.format(d) + "-" + appName + "-" + detailName;
-            ResultSetReader resultSetReader = reportingManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
+            ResultSetReader resultSetReader = reportsManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
             
             toCsv(resultSetReader, resp, columnListStr, name);
         }
@@ -616,9 +616,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
                 logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
 
-                ReportsApp reporting = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-                if (reporting == null) {
-                    logger.warn("reporting node not found");
+                ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+                if (reports == null) {
+                    logger.warn("reports node not found");
                     return;
                 }
                 ResultSetReader resultSetReader = ReportsManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);

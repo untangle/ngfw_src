@@ -9819,7 +9819,7 @@ msgid "Change Password"
 msgstr "パスワードを変更する"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:307
-msgid "Reporting Users"
+msgid "Reports Users"
 msgstr "レポートユーザー"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:333

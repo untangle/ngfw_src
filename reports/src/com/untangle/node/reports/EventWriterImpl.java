@@ -204,7 +204,7 @@ public class EventWriterImpl implements Runnable
     public void forceFlush()
     {
         if ( thread == null ) {
-            logger.warn("forceFlush() called, but reporting not running.");
+            logger.warn("forceFlush() called, but reports not running.");
             return;
         }
 

@@ -1,5 +1,5 @@
 #! /usr/bin/env python 
-# $Id: reporting-generate-reports.py 39898 2015-03-18 22:55:24Z dmorris $
+# $Id: reports-generate-reports.py 39898 2015-03-18 22:55:24Z dmorris $
 
 import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime, traceback
 from subprocess import Popen, PIPE
@@ -210,7 +210,7 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 ## main
 total_start_time = time.time()
 
-os.system(PREFIX + "/usr/share/untangle/bin/reporting-generate-tables.py")
+os.system(PREFIX + "/usr/share/untangle/bin/reports-generate-tables.py")
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)

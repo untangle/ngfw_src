@@ -9892,7 +9892,7 @@ msgid "Change Password"
 msgstr "Cambiar la contraseña"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:307
-msgid "Reporting Users"
+msgid "Reports Users"
 msgstr "Los usuarios de informes"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:333

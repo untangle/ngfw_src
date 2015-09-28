@@ -50,16 +50,16 @@ public class SyslogManagerImpl
 
     }
 
-    public static void reconfigure(ReportsSettings reportingSettings)
+    public static void reconfigure(ReportsSettings reportsSettings)
     {
-        if (reportingSettings != null && reportingSettings.isSyslogEnabled()) {
+        if (reportsSettings != null && reportsSettings.isSyslogEnabled()) {
             enabled = true;
-            String hostname = reportingSettings.getSyslogHost();
-            int port = reportingSettings.getSyslogPort();
-            String protocol = reportingSettings.getSyslogProtocol();
+            String hostname = reportsSettings.getSyslogHost();
+            int port = reportsSettings.getSyslogPort();
+            String protocol = reportsSettings.getSyslogProtocol();
 
-            /* int facility = reportingSettings.getSyslogFacility(); unused */
-            /* int threshold = reportingSettings.getSyslogThreshold(); unused */
+            /* int facility = reportsSettings.getSyslogFacility(); unused */
+            /* int threshold = reportsSettings.getSyslogThreshold(); unused */
             // SyslogAppender sa = (SyslogAppender)logger.getAppender("EVENTS");
             // sa.setFacility("LOCAL" + facility);
             // sa.setThreshold(threshold);
@@ -87,17 +87,17 @@ public class SyslogManagerImpl
             }
         } else {
             enabled = false;
-            CONF_FILE.delete();            
+            CONF_FILE.delete();
         }
 
         // restart syslog
         UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
     }
     
-    public static void setEnabled(ReportsSettings reportingSettings)
+    public static void setEnabled(ReportsSettings reportsSettings)
     {
         enabled = 
-            ( reportingSettings != null && reportingSettings.isSyslogEnabled()) 
+            ( reportsSettings != null && reportsSettings.isSyslogEnabled()) 
             ? true : false;
     }
 }

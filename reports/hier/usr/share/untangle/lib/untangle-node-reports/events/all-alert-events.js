@@ -7,5 +7,5 @@
     "javaClass": "com.untangle.node.reports.EventEntry",
     "table": "alerts",
     "title": "Alert Events",
-    "uniqueId": "reporting-8XL9cbqQa9"
+    "uniqueId": "reports-8XL9cbqQa9"
 }

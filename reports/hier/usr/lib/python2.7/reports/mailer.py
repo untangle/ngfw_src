@@ -169,7 +169,7 @@ def __get_mail_info():
 
     try:
         report_email = get_uvm_settings_item('mail','fromAddress')
-        receivers_list = get_node_settings_item('untangle-node-reports','reportingUsers')
+        receivers_list = get_node_settings_item('untangle-node-reports','reportsUsers')
 
         if receivers_list != None:
             for r in receivers_list['list']:
@@ -217,14 +217,14 @@ def __get_report_users():
     rv = []
 
     try:
-        report_users = get_node_settings_item('untangle-node-reports','reportingUsers')
+        report_users = get_node_settings_item('untangle-node-reports','reportsUsers')
 
         if report_users != None:
             for r in report_users['list']:
                 if (r['onlineAccess']):
                     rv.append(r['emailAddress'])
     except:
-        logger.warn('could not get reporting users', exc_info=True)
+        logger.warn('could not get reports users', exc_info=True)
 
     return rv
 

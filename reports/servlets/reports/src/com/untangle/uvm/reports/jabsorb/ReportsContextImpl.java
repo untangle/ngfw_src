@@ -33,26 +33,26 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
-    private final ReportsManagerNew reportingManagerNew = ReportsManagerNewImpl.getInstance();
+    private final ReportsManagerNew reportsManagerNew = ReportsManagerNewImpl.getInstance();
 
     private ReportsContextImpl( UvmContext context )
     {
         this.context = context;
     }
 
-    public ReportsManager reportingManager()
+    public ReportsManager reportsManager()
     {
-        ReportsApp reporting = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-        if (reporting == null) {
-            logger.warn("reporting node not found");
+        ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+        if (reports == null) {
+            logger.warn("reports node not found");
             return null;
         }
-        return reporting.getReportsManager();
+        return reports.getReportsManager();
     }
 
-    public ReportsManagerNew reportingManagerNew()
+    public ReportsManagerNew reportsManagerNew()
     {
-        return this.reportingManagerNew;
+        return this.reportsManagerNew;
     }
 
     public SkinManager skinManager()
@@ -73,7 +73,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     
     /**
-     * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
+     * This proxy object is used so the reports servlet does not have access to setSettings and related methods
      */
     public class SkinManagerImpl implements SkinManager
     {
@@ -84,7 +84,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     }
 
     /**
-     * This proxy object is used so the reporting servlet does not have access to setSettings and related methods
+     * This proxy object is used so the reports servlet does not have access to setSettings and related methods
      */
     public class LanguageManagerImpl implements LanguageManager
     {
@@ -96,7 +96,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     }
     
     /**
-     * This class is used extend ReportsManagerNewImpl and overwrite some methods that changes settings so reporting servlet does not have access to them.
+     * This class is used extend ReportsManagerNewImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
      */
     public class ReportsManagerNewImpl extends com.untangle.node.reports.ReportsManagerNewImpl
     {

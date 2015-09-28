@@ -1,5 +1,5 @@
 #! /usr/bin/env python 
-# $Id: reporting-generate-subreport.py 38486 2014-08-21 22:29:30Z cblaise $
+# $Id: reports-generate-subreport.py 38486 2014-08-21 22:29:30Z cblaise $
 
 import getopt
 import logging

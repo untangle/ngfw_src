@@ -60,7 +60,7 @@ Ext.define('Ung.Reports', {
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
         rpc.jsonrpc.ReportsContext.languageManager(Ext.bind(this.completeLanguageManager,this));
         rpc.jsonrpc.ReportsContext.skinManager(Ext.bind(this.completeSkinManager,this));
-        rpc.jsonrpc.ReportsContext.reportingManager(Ext.bind(this.completeReportingManager,this));
+        rpc.jsonrpc.ReportsContext.reportsManager(Ext.bind(this.completeReportsManager,this));
     },
 
     completeLanguageManager: function( result, exception ) {
@@ -94,20 +94,20 @@ Ext.define('Ung.Reports', {
         },this));
     },
 
-    completeReportingManager: function(result, exception) {
+    completeReportsManager: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
-        rpc.reportingManager = result;
-        rpc.reportingManager.getDates(Ext.bind(function( result, exception ) {
+        rpc.reportsManager = result;
+        rpc.reportsManager.getDates(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             rpc.dates = result;
             this.postinit();
         }, this));
-        rpc.reportingManager.getTimeZoneOffset(Ext.bind(function( result, exception ) {
+        rpc.reportsManager.getTimeZoneOffset(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             rpc.timeZoneOffset = result;
             this.postinit();
         }, this));
-        rpc.reportingManager.getReportsCutoff(Ext.bind(function(result,exception){
+        rpc.reportsManager.getReportsCutoff(Ext.bind(function(result,exception){
             if(Ung.Util.handleException(exception)) return;
             this.cutOffDateInMillisecs = result.time;
         },this));
@@ -156,7 +156,7 @@ Ext.define('Ung.Reports', {
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
+        rpc.reportsManager.getTableOfContents( Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.tableOfContents = result;
             this.getTreeNodesFromTableOfContent(this.tableOfContents);
@@ -580,7 +580,7 @@ Ext.define('Ung.Reports', {
         if(found){
             this.reportsDate=date;
             this.numDays =  this.reportDatesItems[i].numDays;
-            rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
+            rpc.reportsManager.getTableOfContents( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.tableOfContents = result;
                 var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
@@ -612,11 +612,11 @@ Ext.define('Ung.Reports', {
     getApplicationData: function(nodeName, numDays) {
         reports.progressBar.wait(i18n._("Please Wait"));
         if(nodeName == 'untangle-pnode-summary'){
-            rpc.reportingManager.getHighlights( Ext.bind(function(result,exception){
+            rpc.reportsManager.getHighlights( Ext.bind(function(result,exception){
                 this.processHiglightsData(result,exception,nodeName,numDays);
             },this), reports.reportsDate, numDays);
         } else {
-            rpc.reportingManager.getApplicationData(Ext.bind(function(result,exception){
+            rpc.reportsManager.getApplicationData(Ext.bind(function(result,exception){
                 this.processApplicationData(result,exception,nodeName,numDays);
             },this), reports.reportsDate, numDays, nodeName);
         }
@@ -668,7 +668,7 @@ Ext.define('Ung.Reports', {
         rpc.drilldownType = type;
         rpc.drilldownValue = value;
         reports.progressBar.wait(i18n._("Please Wait"));
-        rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
+        rpc.reportsManager[fnName]( Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.applicationData=result;
             reports.breadcrumbs.push({
@@ -692,7 +692,7 @@ Ext.define('Ung.Reports', {
         rpc.drilldownValue = value;
         this.selectedApplication = app;
         reports.progressBar.wait(i18n._("Please Wait"));
-        rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
+        rpc.reportsManager[fnName]( Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             if(result==null){
                Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));

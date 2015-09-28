@@ -1,5 +1,5 @@
 #! /usr/bin/env python 
-# $Id: reporting-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
+# $Id: reports-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
 
 import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime, traceback
 from subprocess import Popen, PIPE

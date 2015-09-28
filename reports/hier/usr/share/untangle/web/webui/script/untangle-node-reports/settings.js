@@ -5,7 +5,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     panelEmail: null,
     panelSyslog: null,
     panelDatabase: null,
-    gridReportingUsers: null,
+    gridReportsUsers: null,
     gridHostnameMap: null,
     gridReportEntries: null,
     gridAlertEventLog: null,
@@ -41,7 +41,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
         ];
     },
     buildPasswordValidator: function() {
-        var thisReporting = this;
         this.passwordValidator = function( fieldValue ){
             // Get field container
             var panel = this.up("panel");
@@ -60,12 +59,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
             if(pwd.getValue() != confirmPwd.getValue() ){
                 pwd.markInvalid();
                 confirmPwd.markInvalid();
-                return thisReporting.i18n._('Passwords do not match');
+                return i18n._('Passwords do not match');
             }
             // validate password not empty if onlineAccess checked
-            var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + suffix );
+            var onlineAccess=Ext.getCmp("add_reports_online_reports_" + suffix );
             if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
-                return thisReporting.i18n._("A password must be set to enable Online Access!");
+                return i18n._("A password must be set to enable Online Access!");
             }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();
@@ -254,7 +253,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: 'numberfield',
                     fieldLabel: this.i18n._('Data Retention days'),
                     name: 'Data Retention days',
-                    id: 'reporting_daysToKeepDB',
+                    id: 'reports_daysToKeepDB',
                     value: this.getSettings().dbRetention,
                     toValidate: true,
                     labelWidth: 150,
@@ -303,13 +302,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 title: this.i18n._('Email'),
                 flex: 1,
                 layout: 'fit',
-                items: [ this.gridReportingUsers = Ext.create('Ung.grid.Panel',{
-                    title: this.i18n._("Reporting Users"),
+                items: [ this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
+                    title: this.i18n._("Reports Users"),
                     hasEdit: false,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
-                    dataProperty: 'reportingUsers',
-                    recordJavaClass: "com.untangle.node.reports.ReportingUser",
+                    dataProperty: 'reportsUsers',
+                    recordJavaClass: "com.untangle.node.reports.ReportsUser",
                     emptyRow: {
                         emailAddress: "",
                         emailSummaries: true,
@@ -371,7 +370,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     },{
                         xtype:'checkbox',
                         dataIndex: "onlineAccess",
-                        id: "add_reporting_online_reports_" + fieldID,
+                        id: "add_reports_online_reports_" + fieldID,
                         fieldLabel: this.i18n._("Online Access"),
                         width: 300
                     },{
@@ -383,7 +382,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             inputType: "password",
                             name: "Password",
                             dataIndex: "password",
-                            id: "add_reporting_user_password_" + fieldID,
+                            id: "add_reports_user_password_" + fieldID,
                             msgTarget: "title",
                             fieldLabel: this.i18n._("Password"),
                             width: 300,
@@ -400,7 +399,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         inputType: "password",
                         name: "Confirm Password",
                         dataIndex: "password",
-                        id: "add_reporting_confirm_password_" + fieldID,
+                        id: "add_reports_confirm_password_" + fieldID,
                         fieldLabel: this.i18n._("Confirm Password"),
                         width: 300,
                         validator: this.passwordValidator
@@ -426,7 +425,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: 'numberfield',
                     fieldLabel: this.i18n._('Attachment size limit (MB)'),
                     name: 'Attachement size limit',
-                    id: 'reporting_attachment_size_limit',
+                    id: 'reports_attachment_size_limit',
                     value: this.getSettings().attachmentSizeLimit,
                     toValidate: true,
                     labelWidth: 150,
@@ -447,8 +446,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }]
         });
         /* Create the row editor for updating the password */
-        this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
-            grid: this.gridReportingUsers,
+        this.gridReportsUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
+            grid: this.gridReportsUsers,
             //TODO extjs5 fix positioninig
             width: 300,
             height: 150,
@@ -460,7 +459,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 inputType: "password",
                 name: "Password",
                 dataIndex: "password",
-                id: "edit_reporting_user_password_"  + fieldID,
+                id: "edit_reports_user_password_"  + fieldID,
                 fieldLabel: this.i18n._("Password"),
                 width: 300,
                 minLength: 3,
@@ -472,13 +471,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 inputType: "password",
                 name: "Confirm Password",
                 dataIndex: "password",
-                id: "edit_reporting_confirm_password_"  + fieldID,
+                id: "edit_reports_confirm_password_"  + fieldID,
                 fieldLabel: this.i18n._("Confirm Password"),
                 width: 300,
                 validator: this.passwordValidator
             }]
         });
-        this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePassword);
+        this.gridReportsUsers.subCmps.push(this.gridReportsUsers.rowEditorChangePassword);
     },
     // syslog panel
     buildSyslog: function() {
@@ -676,7 +675,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             helpSource: 'reports_name_map',
             title: this.i18n._("Name Map"),
             dataProperty: 'hostnameMap',
-            recordJavaClass: "com.untangle.node.reports.ReportingHostnameMapEntry",
+            recordJavaClass: "com.untangle.node.reports.ReportsHostnameMapEntry",
             emptyRow: {
                 "address": "1.2.3.4",
                 "hostname": ""
@@ -1009,7 +1008,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         }));
     },
     beforeSave: function(isApply,handler) {
-        this.getSettings().reportingUsers.list = this.gridReportingUsers.getList();
+        this.getSettings().reportsUsers.list = this.gridReportsUsers.getList();
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
         this.getSettings().reportEntries.list = this.gridReportEntries.getList();
         //console.log(this.getSettings().reportEntries.list);

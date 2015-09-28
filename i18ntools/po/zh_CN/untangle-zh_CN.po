@@ -9504,7 +9504,7 @@ msgid "Change Password"
 msgstr "更改密码"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:307
-msgid "Reporting Users"
+msgid "Reports Users"
 msgstr "报告用户"
 
 #: /ngfw/work/src/reports/hier/usr/share/untangle/web/webui/script/untangle-node-reports/settings.js:333

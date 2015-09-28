@@ -52,19 +52,19 @@ public interface ReportsManager
     Object getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value);
 
     /**
-     * Tests if reporting is enabled, that is if reports will be
+     * Tests if reports is enabled, that is if reports will be
      * generated nightly.  Currently this is the same thing as "is the
-     * reporting node installed and turned on."
+     * reports node installed and turned on."
      *
-     * @return true if reporting is enabled, false otherwise.
+     * @return true if reports is enabled, false otherwise.
      */
     boolean isReportsEnabled();
 
     /**
-     * Tests if reporting is enabled and reports have been generated
+     * Tests if reports is enabled and reports have been generated
      * and are ready to view.  Currently this is the same thing as
      * "does the current symlink exist and contain a valid
-     * reporting-node/sum-daily.html file."
+     * reports-node/sum-daily.html file."
      *
      * @return true if reports are available
      */

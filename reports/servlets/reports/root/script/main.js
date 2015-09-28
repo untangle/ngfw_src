@@ -49,17 +49,17 @@ Ext.define("Ung.Main", {
             },this));
         }, this));
         
-        rpc.jsonrpc.ReportsContext.reportingManagerNew(Ext.bind(function(result,exception) {
+        rpc.jsonrpc.ReportsContext.reportsManagerNew(Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
-            rpc.reportingManagerNew = result;
-            rpc.reportingManagerNew.isReportingEnabled(Ext.bind(function( result, exception ) {
+            rpc.reportsManagerNew = result;
+            rpc.reportsManagerNew.isReportsEnabled(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
-                rpc.isReportingEnabled = result;
-                if(rpc.isReportingEnabled) {
-                    rpc.reportingManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
+                rpc.isReportsEnabled = result;
+                if(rpc.isReportsEnabled) {
+                    rpc.reportsManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
                         if(Ung.Util.handleException(exception)) return;
                         rpc.currentApplications = result.list;
-                        rpc.reportingManagerNew.getPoliciesInfo(Ext.bind(function( result, exception ) {
+                        rpc.reportsManagerNew.getPoliciesInfo(Ext.bind(function( result, exception ) {
                             if(Ung.Util.handleException(exception)) return;
                             rpc.policyNamesMap = {};
                             rpc.policyNamesMap[0] = i18n._("No Rack");
@@ -75,7 +75,7 @@ Ext.define("Ung.Main", {
                     this.startApplication();
                 }
             },this));
-            rpc.reportingManagerNew.getTimeZoneOffset(Ext.bind(function( result, exception ) {
+            rpc.reportsManagerNew.getTimeZoneOffset(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.timeZoneOffset = result;
                 this.startApplication();
@@ -228,7 +228,7 @@ Ext.define("Ung.Main", {
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset()*60000) + rpc.timeZoneOffset
         });
-        var contentItems = rpc.isReportingEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
+        var contentItems = rpc.isReportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items: [
@@ -279,7 +279,7 @@ Ext.define("Ung.Main", {
         });
         
         Ext.MessageBox.hide();
-        if(rpc.isReportingEnabled) {
+        if(rpc.isReportsEnabled) {
             this.viewport.down("treepanel").getSelectionModel().select(0);
         }
     }

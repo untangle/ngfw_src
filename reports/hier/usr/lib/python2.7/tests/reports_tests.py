@@ -281,7 +281,7 @@ class ReportsTests(unittest2.TestCase):
         # test if PDF is mailed out.
         settings = node.getSettings()
         settings["attachmentSizeLimit"] = 5
-        settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
+        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         node.setSettings(settings)
         
         createFakeEmailEnvironment(emailLogFile="test_020.log")
@@ -310,7 +310,7 @@ class ReportsTests(unittest2.TestCase):
         # test if PDF is mailed out.
         settings = node.getSettings()
         settings["attachmentSizeLimit"] = 5
-        settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
+        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         node.setSettings(settings)
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['hostName'] = "untangle"
@@ -391,7 +391,7 @@ class ReportsTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         settings = node.getSettings()
         # set email address and alert for downloads
-        settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
+        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
         settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","*HttpResponseEvent*","contentLength","1000"))
         node.setSettings(settings)
@@ -431,7 +431,7 @@ class ReportsTests(unittest2.TestCase):
         # Just check the event log for the alert.
         settings = node.getSettings()
         # set email address and alert for downloads
-        settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
+        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
         settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","*WanFailoverEvent*","action","DISCONNECTED"))
         node.setSettings(settings)

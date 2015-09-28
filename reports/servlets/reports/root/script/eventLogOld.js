@@ -41,7 +41,7 @@ Ext.define("Ung.GridEventLogReports", {
     },
     refreshList: function() {
         this.setLoading(i18n._('Querying Database...'));
-        rpc.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this), this.reportsDate, this.numDays,
+        rpc.reportsManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this), this.reportsDate, this.numDays,
             this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
     }
 });
