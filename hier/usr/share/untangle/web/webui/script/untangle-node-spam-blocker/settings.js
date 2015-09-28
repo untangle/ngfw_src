@@ -78,24 +78,24 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
     },
     // Email Config Panel
     buildEmail: function() {
-        var smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
-                         ['DROP', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
-        var strengthsData = [[50, this.i18n._('Low (Threshold: 5.0)')], [43, this.i18n._('Medium (Threshold: 4.3)')], [35, this.i18n._('High (Threshold: 3.5)')],
-                              [33, this.i18n._('Very High (Threshold: 3.3)')], [30, this.i18n._('Extreme (Threshold: 3.0)')], [0, this.i18n._('Custom')]];
+        var smtpData = [['MARK', i18n._('Mark')], ['PASS', i18n._('Pass')],
+                         ['DROP', i18n._('Drop')], ['QUARANTINE', i18n._('Quarantine')]];
+        var strengthsData = [[50, i18n._('Low (Threshold: 5.0)')], [43, i18n._('Medium (Threshold: 4.3)')], [35, i18n._('High (Threshold: 3.5)')],
+                              [33, i18n._('Very High (Threshold: 3.3)')], [30, i18n._('Extreme (Threshold: 3.0)')], [0, i18n._('Custom')]];
 
         this.emailPanel = Ext.create('Ext.panel.Panel',{
-            title: this.i18n._('Email'),
+            title: i18n._('Email'),
             name: 'Email',
             helpSource: 'spam_blocker_email',
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('SMTP'),
+                title: i18n._('SMTP'),
                 items: [{
                     xtype: 'checkbox',
                     name: 'Scan SMTP',
-                    boxLabel: this.i18n._('Scan SMTP'),
+                    boxLabel: i18n._('Scan SMTP'),
                     hideLabel: true,
                     checked: this.settings.smtpConfig.scan,
                     listeners: {
@@ -127,7 +127,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         name: 'smtpStrength',
                         editable: false,
                         store: strengthsData,
-                        fieldLabel: this.i18n._('Strength'),
+                        fieldLabel: i18n._('Strength'),
                         width: 300,
                         queryMode: 'local',
                         value: this.getStrengthSelectionValue(this.settings.smtpConfig.strength),
@@ -147,14 +147,14 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         }
                     },{
                         xtype: 'numberfield',
-                        fieldLabel: '&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),
+                        fieldLabel: '&nbsp;&nbsp;&nbsp;' + i18n._('Strength Value'),
                         name: 'smtpStrengthValue',
                         value: this.settings.smtpConfig.strength / 10.0,
                         toValidate: true,
                         width: 200,
                         allowDecimals: true,
                         allowBlank: false,
-                        blankText: this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                        blankText: i18n._('Strength Value must be a number. Smaller value is higher strength.'),
                         minValue: -2147483648,
                         maxValue: 2147483647,
                         hideTrigger:true,
@@ -174,7 +174,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     store: smtpData,
                     valueField: 'key',
                     displayField: 'name',
-                    fieldLabel: this.i18n._('Action'),
+                    fieldLabel: i18n._('Action'),
                     width: 300,
                     queryMode: 'local',
                     value: this.settings.smtpConfig.msgAction,
@@ -198,7 +198,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                 }, {
                     xtype: 'checkbox',
                     name: 'dropSuperSpam',
-                    boxLabel: this.i18n._('Drop Super Spam'),
+                    boxLabel: i18n._('Drop Super Spam'),
                     hideLabel: true,
                     checked: this.settings.smtpConfig.blockSuperSpam,
                     listeners: {
@@ -218,7 +218,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                 {
                     xtype: 'numberfield',
                     labelWidth: 150,
-                    fieldLabel: this.i18n._('Super Spam Threshold'),
+                    fieldLabel: i18n._('Super Spam Threshold'),
                     name: 'smtpSuperStrengthValue',
                     value: this.settings.smtpConfig.superSpamStrength / 10.0,
                     toValidate: true,
@@ -256,7 +256,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                 },{
                     name:'advanced',
                     xtype:'fieldset',
-                    title:this.i18n._("Advanced SMTP Configuration"),
+                    title:i18n._("Advanced SMTP Configuration"),
                     collapsible: true,
                     collapsed: !this.isAdvanced,
                     listeners: {
@@ -266,7 +266,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     items: [{
                         xtype: 'checkbox',
                         name: 'Enable tarpitting',
-                        boxLabel: this.i18n._('Enable tarpitting'),
+                        boxLabel: i18n._('Enable tarpitting'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.tarpit,
                         listeners: {
@@ -279,7 +279,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     },{
                         xtype: 'checkbox',
                         name: 'Enable greylisting',
-                        boxLabel: this.i18n._('Enable greylisting'),
+                        boxLabel: i18n._('Enable greylisting'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.greylist,
                         listeners: {
@@ -292,7 +292,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     },{
                         xtype: 'checkbox',
                         name: 'SMTP Add Email Headers',
-                        boxLabel: this.i18n._('Add email headers'),
+                        boxLabel: i18n._('Add email headers'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.addSpamHeaders,
                         listeners: {
@@ -305,7 +305,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     },{
                         xtype: 'checkbox',
                         name: 'SMTP Fail Closed',
-                        boxLabel: this.i18n._('Close connection on scan failure'),
+                        boxLabel: i18n._('Close connection on scan failure'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.failClosed,
                         listeners: {
@@ -318,7 +318,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     },{
                         xtype: 'checkbox',
                         name: 'Scan outbound (WAN) SMTP',
-                        boxLabel: this.i18n._('Scan outbound (WAN) SMTP'),
+                        boxLabel: i18n._('Scan outbound (WAN) SMTP'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.scanWanMail,
                         listeners: {
@@ -331,7 +331,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                     },{
                         xtype: 'checkbox',
                         name: 'Allow and ignore TLS sessions',
-                        boxLabel: this.i18n._('Allow and ignore TLS sessions'),
+                        boxLabel: i18n._('Allow and ignore TLS sessions'),
                         hideLabel: true,
                         checked: this.settings.smtpConfig.allowTls,
                         listeners: {
@@ -343,14 +343,14 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         }
                     },{
                         xtype: 'numberfield',
-                        fieldLabel: this.i18n._('CPU Load Limit'),
+                        fieldLabel: i18n._('CPU Load Limit'),
                         labelWidth: 150,
                         name: 'SMTP CPU Load Limit',
                         value: this.settings.smtpConfig.loadLimit,
                         toValidate: true,
                         allowDecimals: true,
                         allowBlank: false,
-                        blankText: this.i18n._('Value must be a float.'),
+                        blankText: i18n._('Value must be a float.'),
                         minValue: 0,
                         maxValue: 50,
                         hideTrigger:true,
@@ -363,14 +363,14 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         }
                     },{
                         xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Concurrent Scan Limit'),
+                        fieldLabel: i18n._('Concurrent Scan Limit'),
                         labelWidth: 150,
                         name: 'SMTP Concurrent Scan Limit',
                         value: this.settings.smtpConfig.scanLimit,
                         toValidate: true,
                         allowDecimals: false,
                         allowBlank: false,
-                        blankText: this.i18n._('Value must be a integer.'),
+                        blankText: i18n._('Value must be a integer.'),
                         minValue: 0,
                         maxValue: 100,
                         hideTrigger:true,
@@ -383,14 +383,14 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         }
                     },{
                         xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Message Size Limit'),
+                        fieldLabel: i18n._('Message Size Limit'),
                         labelWidth: 150,
                         name: 'SMTP Message Size Limit',
                         value: this.settings.smtpConfig.msgSizeLimit,
                         toValidate: true,
                         allowDecimals: false,
                         allowBlank: false,
-                        blankText: this.i18n._('Value must be a integer.'),
+                        blankText: i18n._('Value must be a integer.'),
                         minValue: 0,
                         maxValue: 2147483647,
                         hideTrigger:true,
@@ -405,11 +405,11 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                         xtype: "button",
                         name: "resetBayesButton",
                         margin: '5 0 0 0',
-                        text: this.i18n._("Clear Bayes Data"),
+                        text: i18n._("Clear Bayes Data"),
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
-                            Ext.MessageBox.confirm(this.i18n._("Warning"),
-                                                   Ext.String.format(this.i18n._("This will clear all learned bayesian data!"), rpc.companyName ),
+                            Ext.MessageBox.confirm(i18n._("Warning"),
+                                                   Ext.String.format(i18n._("This will clear all learned bayesian data!"), rpc.companyName ),
                                                    Ext.bind(function(btn) {
                                                        var script = [
                                                            '/bin/rm -f /home/spamd/.spamassassin/bayes*;',
@@ -418,12 +418,12 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                                                        var command =  "/bin/bash -c " + script.join("");
 
                                                        if (btn == "yes") {
-                                                           Ext.MessageBox.wait(this.i18n._("Clearing bayes data..."), i18n._("Please wait"));
+                                                           Ext.MessageBox.wait(i18n._("Clearing bayes data..."), i18n._("Please wait"));
                                                            Ung.Main.getExecManager().execOutput(Ext.bind(function (result, exception) {
                                                                if(exception) {
-                                                                   Ext.MessageBox.alert(this.i18n._("Failure"),this.i18n._("Error: Unable to reset bayes data."));
+                                                                   Ext.MessageBox.alert(i18n._("Failure"),i18n._("Error: Unable to reset bayes data."));
                                                                } else {
-                                                                   Ext.MessageBox.alert(this.i18n._("Success"), i18n._("Bayes data cleared."));
+                                                                   Ext.MessageBox.alert(i18n._("Success"), i18n._("Bayes data cleared."));
                                                                }
                                                            }, this), command);
                                                        }
@@ -433,10 +433,10 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Note'),
-                html: this.i18n._('Spam Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                title: i18n._('Note'),
+                html: i18n._('Spam Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastCheck != null&& this.lastCheck.time != 0 ? i18n.timestampFormat(this.lastCheck): i18n._("never")) + '<br\>' +
-                    this.i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
             }]
         });
