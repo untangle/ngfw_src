@@ -566,7 +566,7 @@
 		},{
 			"id": "test",
 			"name": "Testing (Untangle)",
-			"enabled": true
+			"enabled": false
 		},{
 			"id": "th",
 			"name": "Thai",
