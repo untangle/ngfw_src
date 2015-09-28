@@ -188,7 +188,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                 var formPanel = this.panelBranding.down('form[name="upload_logo_form"]');
                 var fileField = formPanel.down('filefield');
                 if (fileField.getValue().length === 0) {
-                    Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._('Please select an image to upload.'));
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._('Please select an image to upload.'));
                     return;
                 }
                 formPanel.getForm().submit({
