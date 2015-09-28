@@ -14,53 +14,53 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
     },
     getMatchers: function () {
         return [
-            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", this.i18n._("any")]], visible: true},
-            {name:"USERNAME",displayName: this.i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
-            {name:"CLIENT_HOSTNAME",displayName: this.i18n._("Client Hostname"), type: "text", visible: true},
-            {name:"SERVER_HOSTNAME",displayName: this.i18n._("Server Hostname"), type: "text", visible: true},
-            {name:"SRC_MAC", displayName: this.i18n._("Client MAC Address"), type: "text", visible: true },
-            {name:"DST_MAC", displayName: this.i18n._("Server MAC Address"), type: "text", visible: true },
-            {name:"CLIENT_MAC_VENDOR",displayName: this.i18n._("Client MAC Vendor"), type: "text", visible: true},
-            {name:"SERVER_MAC_VENDOR",displayName: this.i18n._("Server MAC Vendor"), type: "text", visible: true},
-            {name:"CLIENT_IN_PENALTY_BOX",displayName: this.i18n._("Client in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"SERVER_IN_PENALTY_BOX",displayName: this.i18n._("Server in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"CLIENT_HAS_NO_QUOTA",displayName: this.i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"SERVER_HAS_NO_QUOTA",displayName: this.i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"CLIENT_QUOTA_EXCEEDED",displayName: this.i18n._("Client has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"SERVER_QUOTA_EXCEEDED",displayName: this.i18n._("Server has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: this.i18n._("Client Quota Attainment"), type: "text", visible: rpc.isExpertMode},
-            {name:"SERVER_QUOTA_ATTAINMENT",displayName: this.i18n._("Server Quota Attainment"), type: "text", visible: rpc.isExpertMode},
-            {name:"HTTP_HOST",displayName: this.i18n._("HTTP: Hostname"), type: "text", visible: rpc.isExpertMode},
-            {name:"HTTP_REFERER",displayName: this.i18n._("HTTP: Referer"), type: "text", visible: true},
-            {name:"HTTP_URI",displayName: this.i18n._("HTTP: URI"), type: "text", visible: rpc.isExpertMode},
-            {name:"HTTP_URL",displayName: this.i18n._("HTTP: URL"), type: "text", visible: true},
-            {name:"HTTP_CONTENT_TYPE",displayName: this.i18n._("HTTP: Content Type"), type: "text", visible: rpc.isExpertMode},
-            {name:"HTTP_CONTENT_LENGTH",displayName: this.i18n._("HTTP: Content Length"), type: "text", visible: rpc.isExpertMode},
-            {name:"HTTP_USER_AGENT",displayName: this.i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: this.i18n._("HTTP: Client User OS"), type: "text", visible: true},
-            {name:"APPLICATION_CONTROL_APPLICATION",displayName: this.i18n._("Application Control: Application"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_CATEGORY",displayName: this.i18n._("Application Control: Category"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: this.i18n._("Application Control: ProtoChain"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_DETAIL",displayName: this.i18n._("Application Control: Detail"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_CONFIDENCE",displayName: this.i18n._("Application Control: Confidence"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_PRODUCTIVITY",displayName: this.i18n._("Application Control: Productivity"), type: "text", visible: rpc.isExpertMode},
-            {name:"APPLICATION_CONTROL_RISK",displayName: this.i18n._("Application Control: Risk"), type: "text", visible: rpc.isExpertMode},
-            {name:"PROTOCOL_CONTROL_SIGNATURE",displayName: this.i18n._("Application Control Lite: Signature"), type: "text", visible: rpc.isExpertMode},
-            {name:"PROTOCOL_CONTROL_CATEGORY",displayName: this.i18n._("Application Control Lite: Category"), type: "text", visible: rpc.isExpertMode},
-            {name:"PROTOCOL_CONTROL_DESCRIPTION",displayName: this.i18n._("Application Control Lite: Description"), type: "text", visible: rpc.isExpertMode},
-            {name:"WEB_FILTER_CATEGORY",displayName: this.i18n._("Web Filter: Category"), type: "text", visible: rpc.isExpertMode},
-            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: this.i18n._("Web Filter: Category Description"), type: "text", visible: rpc.isExpertMode},
-            {name:"WEB_FILTER_FLAGGED",displayName: this.i18n._("Web Filter: Site is Flagged"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: this.i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            {name:"SSL_SNI_HOSTNAME",displayName: this.i18n._("SSL: SNI Host Name"), type: "text", visible: true},
-            {name:"SSL_SUBJECT_DN",displayName: this.i18n._("SSL: Certificate Subject"), type: "text", visible: true},
-            {name:"SSL_ISSUER_DN",displayName: this.i18n._("SSL: Certificate Issuer"), type: "text", visible: true}
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", i18n._("any")]], visible: true},
+            {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
+            {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: true},
+            {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
+            {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
+            {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
+            {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
+            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: i18n._("Client Quota Attainment"), type: "text", visible: rpc.isExpertMode},
+            {name:"SERVER_QUOTA_ATTAINMENT",displayName: i18n._("Server Quota Attainment"), type: "text", visible: rpc.isExpertMode},
+            {name:"HTTP_HOST",displayName: i18n._("HTTP: Hostname"), type: "text", visible: rpc.isExpertMode},
+            {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
+            {name:"HTTP_URI",displayName: i18n._("HTTP: URI"), type: "text", visible: rpc.isExpertMode},
+            {name:"HTTP_URL",displayName: i18n._("HTTP: URL"), type: "text", visible: true},
+            {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: rpc.isExpertMode},
+            {name:"HTTP_CONTENT_LENGTH",displayName: i18n._("HTTP: Content Length"), type: "text", visible: rpc.isExpertMode},
+            {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_APPLICATION",displayName: i18n._("Application Control: Application"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_CATEGORY",displayName: i18n._("Application Control: Category"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: i18n._("Application Control: ProtoChain"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_DETAIL",displayName: i18n._("Application Control: Detail"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_CONFIDENCE",displayName: i18n._("Application Control: Confidence"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_PRODUCTIVITY",displayName: i18n._("Application Control: Productivity"), type: "text", visible: rpc.isExpertMode},
+            {name:"APPLICATION_CONTROL_RISK",displayName: i18n._("Application Control: Risk"), type: "text", visible: rpc.isExpertMode},
+            {name:"PROTOCOL_CONTROL_SIGNATURE",displayName: i18n._("Application Control Lite: Signature"), type: "text", visible: rpc.isExpertMode},
+            {name:"PROTOCOL_CONTROL_CATEGORY",displayName: i18n._("Application Control Lite: Category"), type: "text", visible: rpc.isExpertMode},
+            {name:"PROTOCOL_CONTROL_DESCRIPTION",displayName: i18n._("Application Control Lite: Description"), type: "text", visible: rpc.isExpertMode},
+            {name:"WEB_FILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: rpc.isExpertMode},
+            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: rpc.isExpertMode},
+            {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Site is Flagged"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+            {name:"SSL_SNI_HOSTNAME",displayName: i18n._("SSL: SNI Host Name"), type: "text", visible: true},
+            {name:"SSL_SUBJECT_DN",displayName: i18n._("SSL: Certificate Subject"), type: "text", visible: true},
+            {name:"SSL_ISSUER_DN",displayName: i18n._("SSL: Certificate Issuer"), type: "text", visible: true}
         ];
     },
     buildPanelConfiguration: function() {
@@ -69,7 +69,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.panelNodeConfiguration = Ext.create('Ext.form.Panel',{
             name: 'Configuration',
             helpSource: 'ssl_inspector_configuration',
-            title: this.i18n._("Configuration"),
+            title: i18n._("Configuration"),
             cls: 'ung-panel',
             autoScroll: true,
             trackResetOnLoad: true,
@@ -77,8 +77,8 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-                title: this.i18n._("Description"),
-                html: this.i18n._("The SSL Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS and port 25 SMTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
+                title: i18n._("Description"),
+                html: i18n._("The SSL Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS and port 25 SMTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
             }, {
                 xtype: 'fieldset',
                 layout: 'column',
@@ -86,7 +86,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     xtype: 'button',
                     margin: '0 5 0 5',
                     minWidth: 200,
-                    text: this.i18n._("Download Root Certificate"),
+                    text: i18n._("Download Root Certificate"),
                     handler: Ext.bind(function() {
                         var downloadForm = document.getElementById('downloadForm');
                         downloadForm["type"].value = "root_certificate_download";
@@ -96,7 +96,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     xtype: 'displayfield',
                     margin: '0 5 0 5',
                     columnWidth: 1,
-                    value: this.i18n._("Click here to download the root certificate.")
+                    value: i18n._("Click here to download the root certificate.")
                 }]
             },{
                 xtype: 'fieldset',
@@ -105,7 +105,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     xtype: 'button',
                     margin: '0 5 0 5',
                     minWidth: 200,
-                    text: this.i18n._('Download Root Certificate Installer'),
+                    text: i18n._('Download Root Certificate Installer'),
                     iconCls: 'action-icon',
                     handler: Ext.bind(function() {
                         var downloadForm = document.getElementById('downloadForm');
@@ -116,14 +116,14 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     xtype: 'component',
                     margin: '0 5 0 5',
                     columnWidth: 1,
-                    html: this.i18n._('Click here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device.')
+                    html: i18n._('Click here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device.')
                 }]
             }, {
-                title: this.i18n._("Options"),
+                title: i18n._("Options"),
                 labelWidth: 230,
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: this.i18n._("Block Invalid Traffic"),
+                    fieldLabel: i18n._("Block Invalid Traffic"),
                     labelWidth: 200,
                     name: 'blockInvalidTraffic',
                     checked: this.settings.blockInvalidTraffic,
@@ -133,14 +133,14 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 },{
                     xtype: 'displayfield',
                     padding: '0 100 0 20',
-                    value:  this.i18n._("When the SSL Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked.")
+                    value:  i18n._("When the SSL Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked.")
                 }]
             }, {
-                title: this.i18n._("Server Trust"),
+                title: i18n._("Server Trust"),
                 labelWidth: 230,
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: this.i18n._("Trust All Server Certificates"),
+                    fieldLabel: i18n._("Trust All Server Certificates"),
                     labelWidth: 200,
                     name: 'serverBlindTrust',
                     checked: this.settings.serverBlindTrust,
@@ -150,15 +150,15 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 },{
                     xtype: 'displayfield',
                     padding: '0 100 10 20',
-                    value:  this.i18n._("When this check box is enabled, the inspector will blindly trust all server certificates.  When clear, the inspector will only trust server certificates signed by a well known and trusted root certificate authority, or certificates that you have added to the list below.")
+                    value:  i18n._("When this check box is enabled, the inspector will blindly trust all server certificates.  When clear, the inspector will only trust server certificates signed by a well known and trusted root certificate authority, or certificates that you have added to the list below.")
                 }, {
                     xtype: 'button',
-                    text: this.i18n._("Upload Trusted Certificate"),
+                    text: i18n._("Upload Trusted Certificate"),
                     handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
                 }, {
                     xtype: 'displayfield',
                     padding: '10 0 0 0',
-                    value:  this.i18n._("<b>NOTE:</b> When uploading or deleting trusted certificates, changes are applied immediately.")
+                    value:  i18n._("<b>NOTE:</b> When uploading or deleting trusted certificates, changes are applied immediately.")
                 }, this.gridTrustList ]
             }]
         });
@@ -174,7 +174,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
 
     buildTrustGrid: function() {
         this.gridTrustList = Ext.create('Ung.grid.Panel',{
-            title: this.i18n._("Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"),
+            title: i18n._("Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"),
             autoGenerateId: true,
             height: 400,
             hasDelete: false,
@@ -198,43 +198,43 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 mapping: 'dateExpire'
             }],
             columns: [{
-                header: this.i18n._("Alias"),
+                header: i18n._("Alias"),
                 flex: 1,
                 width: 180,
                 sortable: true,
                 dataIndex: 'certAlias'
             }, {
-                header: this.i18n._("Issued To"),
+                header: i18n._("Issued To"),
                 flex: 1,
                 width: 220,
                 sortable: true,
                 dataIndex: 'issuedTo'
             }, {
-                header: this.i18n._("Issued By"),
+                header: i18n._("Issued By"),
                 flex: 1,
                 width: 220,
                 sortable: true,
                 dataIndex: 'issuedBy'
             }, {
-                header: this.i18n._("Date Valid"),
+                header: i18n._("Date Valid"),
                 flex: 1,
                 width: 180,
                 sortable: true,
                 dataIndex: 'dateValid'
             }, {
-                header: this.i18n._("Date Expires"),
+                header: i18n._("Date Expires"),
                 flex: 1,
                 width: 180,
                 sortable: true,
                 dataIndex: 'dateExpire'
             }, {
-                header: this.i18n._("Delete"),
+                header: i18n._("Delete"),
                 xtype: 'actioncolumn',
                 width: 80,
                 items: [{
                     id: 'certRemove',
                     iconCls: 'icon-delete-row',
-                    tooltip: this.i18n._("Click to delete"),
+                    tooltip: i18n._("Click to delete"),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         this.getRpcNode().removeTrustedCertificate(record.get("certAlias"));
                         this.gridTrustList.reload();
@@ -254,7 +254,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
 
     handleCertificateUpload: function() {
         this.uploadCertificateWin = Ext.create('Ext.Window', {
-            title: this.i18n._("Upload Trusted Certificate"),
+            title: i18n._("Upload Trusted Certificate"),
             layout: 'fit',
             width: 600,
             height: 200,
@@ -265,7 +265,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 url: "upload",
                 items: [{
                     xtype: 'filefield',
-                    fieldLabel: this.i18n._("File"),
+                    fieldLabel: i18n._("File"),
                     name: "filename",
                     margin: "10 10 10 10",
                     width: 560,
@@ -274,7 +274,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     validateOnBlur: false
                 }, {
                     xtype: 'textfield',
-                    fieldLabel: this.i18n._("Alias"),
+                    fieldLabel: i18n._("Alias"),
                     name: "argument",
                     margin: "10 10 10 10",
                     width: 200,
@@ -282,7 +282,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     allowBlank: false
                 }, {
                     xtype: "button",
-                    text: this.i18n._("Upload Certificate"),
+                    text: i18n._("Upload Certificate"),
                     name: "Upload Certificate",
                     width: 200,
                     margin: "10 10 10 80",
@@ -291,7 +291,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     }, this)
                 }, {
                     xtype: "button",
-                    text: this.i18n._("Cancel"),
+                    text: i18n._("Cancel"),
                     name: "Cancel",
                     width: 200,
                     margin: "10 10 10 10",
@@ -314,23 +314,23 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         var fileText = prova.down('filefield[name="filename"]');
         var nameText = prova.down('textfield[name="argument"]');
         if (fileText.getValue().length === 0) {
-            Ext.MessageBox.alert(this.i18n._("Invalid or missing File"), this.i18n._("Please select a certificate to upload."));
+            Ext.MessageBox.alert(i18n._("Invalid or missing File"), i18n._("Please select a certificate to upload."));
             return false;
             }
         if (nameText.getValue().length === 0) {
-            Ext.MessageBox.alert(this.i18n._("Invalid or missing Alias"), this.i18n._("Please enter a unique alias or nickname for the certificate."));
+            Ext.MessageBox.alert(i18n._("Invalid or missing Alias"), i18n._("Please enter a unique alias or nickname for the certificate."));
             return false;
         }
         var form = prova.getForm();
         form.submit({
-            waitMsg: this.i18n._("Inspecting File..."),
+            waitMsg: i18n._("Inspecting File..."),
             success: Ext.bind(function(form, action) {
                 this.uploadCertificateWin.close();
                 this.gridTrustList.reload();
             }, this),
             failure: Ext.bind(function(form, action) {
                 this.uploadCertificateWin.close();
-                Ext.MessageBox.alert(this.i18n._("Upload Failure"), action.result.msg);
+                Ext.MessageBox.alert(i18n._("Upload Failure"), action.result.msg);
             }, this)
         });
         return true;
@@ -344,8 +344,8 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
             height: 500,
             hasReorder: true,
             addAtTop: false,
-            title: this.i18n._("Rules"),
-            qtip: this.i18n._("Ignore rules are used to configure traffic which should be ignored by the inspection engine."),
+            title: i18n._("Rules"),
+            qtip: i18n._("Ignore rules are used to configure traffic which should be ignored by the inspection engine."),
             dataProperty: "ignoreRules",
             recordJavaClass: "com.untangle.node.ssl_inspector.SslInspectorRule",
             emptyRow: {
@@ -369,12 +369,12 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
             {
                 xtype:'checkcolumn',
                 width:55,
-                header: this.i18n._("Enabled"),
+                header: i18n._("Enabled"),
                 dataIndex: 'live',
                 resizable: false
             },
             {
-                header: this.i18n._("Rule ID"),
+                header: i18n._("Rule ID"),
                 dataIndex: 'ruleId',
                 width: 50,
                 renderer: function(value) {
@@ -385,12 +385,12 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     }
                 }
             }, {
-                header: this.i18n._("Description"),
+                header: i18n._("Description"),
                 dataIndex:'description',
                 flex:1,
                 width: 200
             }, {
-                header: this.i18n._("Action"),
+                header: i18n._("Action"),
                 dataIndex:'action',
                 width: 150,
                 renderer: this.actionRenderer
@@ -399,19 +399,19 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 xtype: "checkbox",
                 name: "Enabled",
                 dataIndex: "live",
-                fieldLabel: this.i18n._( "Enabled" ),
+                fieldLabel: i18n._( "Enabled" ),
                 width: 360
             }, {
                 xtype: "textfield",
                 name: "Description",
                 dataIndex: "description",
-                fieldLabel: this.i18n._( "Description" ),
-                emptyText: this.i18n._("[no description]"),
+                fieldLabel: i18n._( "Description" ),
+                emptyText: i18n._("[no description]"),
                 width: 480
             }, {
                 xtype: "fieldset",
                 autoScroll: true,
-                title: this.i18n._("If all of the following conditions are met:"),
+                title: i18n._("If all of the following conditions are met:"),
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
@@ -421,20 +421,20 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: this.i18n._('Perform the following action:'),
+                title: i18n._('Perform the following action:'),
                 items:[{
                     xtype: "container",
                     name: "Action",
                     dataIndex: "action",
-                    fieldLabel: this.i18n._("Action"),
+                    fieldLabel: i18n._("Action"),
                     items: [{
                         xtype: "combo",
                         name: "actionType",
                         allowBlank: false,
-                        fieldLabel: this.i18n._("Action"),
+                        fieldLabel: i18n._("Action"),
                         editable: false,
-                        store: [['INSPECT', this.i18n._('Inspect')],
-                                ['IGNORE', this.i18n._('Ignore')]],
+                        store: [['INSPECT', i18n._('Inspect')],
+                                ['IGNORE', i18n._('Ignore')]],
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: "local"
