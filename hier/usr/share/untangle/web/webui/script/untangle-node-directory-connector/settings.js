@@ -34,11 +34,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     openUserGroupMap: function() {
         if(!this.winUserGroupMap) {
             this.winUserGroupMap = Ext.create('Ung.Window', {
-                title: this.i18n._('User map window'),
+                title: i18n._('User map window'),
                 bbar: ['->', {
                     name: "Cancel",
                     iconCls: 'cancel-icon',
-                    text: this.i18n._('Cancel'),
+                    text: i18n._('Cancel'),
                     handler: function() {
                         this.up('window').cancelAction();
                     }
@@ -68,7 +68,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         name:'groups'
                     }],
                     columns: [{
-                        header: this.i18n._('name'),
+                        header: i18n._('name'),
                         dataIndex:'name',
                         sortable: true,
                         width: 180,
@@ -76,7 +76,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                             type: 'string'
                         }
                     },{
-                        header: this.i18n._('groups'),
+                        header: i18n._('groups'),
                         dataIndex: 'groups',
                         sortable: true,
                         flex: 1,
@@ -95,19 +95,19 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.panelUserNotificationApi = Ext.create('Ext.panel.Panel',{
             name: 'User Notification API',
             helpSource: 'directory_connector_user_notification_api',
-            title: this.i18n._('User Notification API'),
+            title: i18n._('User Notification API'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: this.i18n._('User Notification API'),
+                title: i18n._('User Notification API'),
                 name: 'User Notification API',
                 items: [{
                     xtype: 'component',
-                    html: Ext.String.format(this.i18n._('The User Notification API provides a web-based app/API to allow scripts and agents to update the server\'s username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The User Notification API provides a web-based app/API to allow scripts and agents to update the server\'s username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.'),'<b>','</b>')
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Disabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Disabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableNotification',
@@ -123,7 +123,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     }
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Enabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Enabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableNotification',
@@ -135,7 +135,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     items: [{
                         xtype:'textfield',
                         name: 'secretKey',
-                        fieldLabel: this.i18n._('Secret Key'),
+                        fieldLabel: i18n._('Secret Key'),
                         labelWidth: 250,
                         labelAlign: 'right',
                         width: 450,
@@ -148,7 +148,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }
                     },{
                         xtype: 'label',
-                        html: this.i18n._('(blank means no secret key is required)'),
+                        html: i18n._('(blank means no secret key is required)'),
                         cls: 'boxlabel'
                     }]
                 }, {
@@ -158,7 +158,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'button',
                     margin: '10 0 0 0',
-                    text: this.i18n._('Download User Notification Login Script'),
+                    text: i18n._('Download User Notification Login Script'),
                     name: 'downloadLoginScript',
                     iconCls: 'action-icon',
                     handler: Ext.bind(function() {
@@ -174,19 +174,19 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.panelActiveDirectoryConnector = Ext.create('Ext.panel.Panel',{
             name: 'Active Directory Connector',
             helpSource: 'directory_connector_active_directory_connector',
-            title: this.i18n._('Active Directory Connector'),
+            title: i18n._('Active Directory Connector'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
-                title: this.i18n._('Active Directory Connector'),
+                title: i18n._('Active Directory Connector'),
                 name: 'Active Directory Connector',
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'component',
-                    html: Ext.String.format(this.i18n._('This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('This allows the server to connect to an {0}Active Directory Server{1} for authentication for Captive Portal.'),'<b>','</b>')
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Disabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Disabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableAD',
@@ -219,7 +219,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     }
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Enabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Enabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableAD',
@@ -227,7 +227,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'LDAPHost',
-                    fieldLabel: this.i18n._('AD Server IP or Hostname'),
+                    fieldLabel: i18n._('AD Server IP or Hostname'),
                     labelWidth:250,
                     labelAlign:'right',
                     width: 450,
@@ -241,7 +241,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'checkbox',
                     name: 'LDAPSecure',
-                    fieldLabel: this.i18n._('Secure'),
+                    fieldLabel: i18n._('Secure'),
                     labelWidth:250,
                     labelAlign:'right',
                     width: 450,
@@ -266,7 +266,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'LDAPPort',
-                    fieldLabel: this.i18n._('Port'),
+                    fieldLabel: i18n._('Port'),
                     allowBlank: false,
                     labelWidth:250,
                     labelAlign:'right',
@@ -282,7 +282,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'superuser',
-                    fieldLabel: this.i18n._('Authentication Login'),
+                    fieldLabel: i18n._('Authentication Login'),
                     labelWidth: 250,
                     labelAlign:'right',
                     width: 450,
@@ -297,7 +297,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     xtype: 'textfield',
                     inputType: 'password',
                     name: 'superuserPass',
-                    fieldLabel: this.i18n._('Authentication Password'),
+                    fieldLabel: i18n._('Authentication Password'),
                     labelWidth: 250,
                     labelAlign:'right',
                     width: 450,
@@ -315,7 +315,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     items: [{
                         xtype:'textfield',
                         name: 'domain',
-                        fieldLabel: this.i18n._('Active Directory Domain'),
+                        fieldLabel: i18n._('Active Directory Domain'),
                         labelWidth: 250,
                         labelAlign: 'right',
                         width: 450,
@@ -328,7 +328,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }
                     },{
                         xtype: 'label',
-                        html: this.i18n._('(FQDN such as mycompany.local)'),
+                        html: i18n._('(FQDN such as mycompany.local)'),
                         cls: 'boxlabel'
                     }]
                 }, {
@@ -338,7 +338,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     items: [{
                         xtype: 'textfield',
                         name: 'OUFilter',
-                        fieldLabel: this.i18n._('Active Directory Organization'),
+                        fieldLabel: i18n._('Active Directory Organization'),
                         labelWidth:250,
                         labelAlign:'right',
                         width: 450,
@@ -351,7 +351,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }
                     }, {
                         xtype: 'label',
-                        html: this.i18n._('(optional)'),
+                        html: i18n._('(optional)'),
                         cls: 'boxlabel'
                     }]
                 }, {
@@ -360,11 +360,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 }, {
                     xtype: 'component',
-                    html: Ext.String.format(this.i18n._('The {0}Active Directory Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Active Directory Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
                 }, {
                     xtype: 'button',
                     margin: '10 0 5 0',
-                    text: this.i18n._('Active Directory Test'),
+                    text: i18n._('Active Directory Test'),
                     iconCls: 'test-icon',
                     name: 'ActiveDirectoryTest',
                     disabled: (!this.getActiveDirectorySettings().enabled),
@@ -387,7 +387,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         bodyStyle: "padding-top: 90px",
                         buttons: [{
                             xtype: 'button',
-                            text: this.i18n._('Active Directory Users'),
+                            text: i18n._('Active Directory Users'),
                             name: 'ActiveDirectoryUsers',
                             disabled: (!this.getActiveDirectorySettings().enabled),
                             handler: Ext.bind(function() {
@@ -411,7 +411,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }, {
                             xtype: 'button',
                             name: 'UserGroupMap',
-                            text: this.i18n._('User Group Map'),
+                            text: i18n._('User Group Map'),
                             iconCls: 'test-icon',
                             disabled: (!this.getActiveDirectorySettings().enabled),
                             handler: Ext.bind(function() {
@@ -420,7 +420,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }, {
                             xtype: 'button',
                             margin: '0 0 0 10',
-                            text: this.i18n._('Refresh group cache'),
+                            text: i18n._('Refresh group cache'),
                             name: 'RefreshGroupCache',
                             iconCls: 'test-icon',
                             disabled: (!this.getActiveDirectorySettings().enabled),
@@ -435,16 +435,16 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
             }],
 
             onADTestClick: Ext.bind(function() {
-                Ext.MessageBox.wait(this.i18n._("Testing..."), this.i18n._("Active Directory Test"));
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Active Directory Test"));
                 var message = this.getActiveDirectoryManager().getActiveDirectoryStatusForSettings( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    var message = this.i18n._(result);
-                    Ext.MessageBox.alert(this.i18n._("Active Directory Test"), message);
+                    var message = i18n._(result);
+                    Ext.MessageBox.alert(i18n._("Active Directory Test"), message);
                 }, this), this.getSettings());
             }, this),
 
             onADUsersClick: Ext.bind(function() {
-                Ext.MessageBox.wait(this.i18n._("Obtaining users..."), this.i18n._("Active Directory Users"));
+                Ext.MessageBox.wait(i18n._("Obtaining users..."), i18n._("Active Directory Users"));
                 this.getActiveDirectoryManager().getActiveDirectoryUserEntries( Ext.bind(function( result, exception ) {
                     if(Ung.Util.handleException(exception)) return;
                     var userEntries = result.list;
@@ -455,7 +455,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         if( userEntries[i] == null ) {
                             continue;
                         }
-                        var uid = userEntries[i].uid != null ? userEntries[i].uid: this.i18n._('[any]');
+                        var uid = userEntries[i].uid != null ? userEntries[i].uid: i18n._('[any]');
                         usersArray.push(( uid + "\r\n"));
                     }
                     usersArray.sort(function(a,b) {
@@ -474,7 +474,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                         }
                     });
 
-                    usersList += this.i18n._('[any]') +"\r\n";
+                    usersList += i18n._('[any]') +"\r\n";
                     for (i = 0 ; i < usersArray.length ; i++) {
                         usersList += usersArray[i];
                     }
@@ -491,20 +491,20 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.panelRadius = Ext.create('Ext.panel.Panel',{
             name: 'RADIUS Connector',
             helpSource: 'directory_connector_radius_connector',
-            title: this.i18n._('RADIUS Connector'),
+            title: i18n._('RADIUS Connector'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
-                title: this.i18n._('RADIUS Connector'),
+                title: i18n._('RADIUS Connector'),
                 name: 'RADIUS Connector',
                 xtype: 'fieldset',
                 labelWidth: 250,
                 items: [{
                     xtype: 'container',
-                    html: Ext.String.format(this.i18n._('This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.'),'<b>','</b>')
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Disabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Disabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableRadius',
@@ -531,7 +531,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     }
                 }, {
                     xtype: 'radio',
-                    boxLabel: '<b>'+this.i18n._('Enabled')+'</b>',
+                    boxLabel: '<b>'+i18n._('Enabled')+'</b>',
                     style: {marginLeft: '50px'},
                     hideLabel: true,
                     name: 'enableRadius',
@@ -539,7 +539,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'Radius Server IP or Hostname',
-                    fieldLabel: this.i18n._('RADIUS Server IP or Hostname'),
+                    fieldLabel: i18n._('RADIUS Server IP or Hostname'),
                     requiresRadius: true,
                     labelWidth:250,
                     labelAlign:'right',
@@ -554,7 +554,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'authPort',
-                    fieldLabel: this.i18n._('Authentication Port'),
+                    fieldLabel: i18n._('Authentication Port'),
                     requiresRadius: true,
                     allowBlank: false,
                     labelWidth:250,
@@ -571,7 +571,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }, {
                     xtype: 'textfield',
                     name: 'acctPort',
-                    fieldLabel: this.i18n._('Accounting Port'),
+                    fieldLabel: i18n._('Accounting Port'),
                     requiresRadius: true,
                     allowBlank: false,
                     labelWidth:250,
@@ -588,7 +588,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 },{
                     xtype: 'textfield',
                     name: 'Shared Secret',
-                    fieldLabel: this.i18n._('Shared Secret'),
+                    fieldLabel: i18n._('Shared Secret'),
                     requiresRadius: true,
                     labelWidth:250,
                     labelAlign:'right',
@@ -605,15 +605,15 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     name: "authenticationMethod",
                     value: this.getRadiusSettings().authenticationMethod,
                     store: [
-                        [ "MSCHAPV2", this.i18n._( "MS-CHAP v2" )],
-                        [ "MSCHAPV1", this.i18n._( "MS-CHAP v1" )],
-                        [ "CHAP", this.i18n._( "CHAP" )],
-                        [ "PAP", this.i18n._( "PAP" )]
-                        // Doesn't work: [ "CLEARTEXT", this.i18n._( "Cleartext" )],
+                        [ "MSCHAPV2", i18n._( "MS-CHAP v2" )],
+                        [ "MSCHAPV1", i18n._( "MS-CHAP v1" )],
+                        [ "CHAP", i18n._( "CHAP" )],
+                        [ "PAP", i18n._( "PAP" )]
+                        // Doesn't work: [ "CLEARTEXT", i18n._( "Cleartext" )],
                     ],
                     queryMode: 'local',
                     disabled: (!this.getRadiusSettings().enabled),
-                    fieldLabel: this.i18n._( "Authentication Method" ),
+                    fieldLabel: i18n._( "Authentication Method" ),
                     requiresRadius: true,
                     labelWidth:250,
                     labelAlign:'right',
@@ -626,20 +626,20 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     }
                 },{
                     xtype: 'container',
-                    html: Ext.String.format(this.i18n._('<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.'),'<b>','</b>')
                 },{
                     xtype: 'component',
                     html: "<BR><HR><BR>",
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(this.i18n._('The {0}Radius Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Radius Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
                 },
                 {
                     xtype:'textfield',
                     style: {marginTop: '10px'},
                     name: 'radius_test_username',
-                    fieldLabel: this.i18n._('Username'),
+                    fieldLabel: i18n._('Username'),
                     labelWidth:250,
                     labelAlign:'right',
                     width: 450,
@@ -648,7 +648,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 {
                     xtype:'textfield',
                     name: 'radius_test_password',
-                    fieldLabel: this.i18n._('Password'),
+                    fieldLabel: i18n._('Password'),
                     labelWidth:250,
                     labelAlign:'right',
                     width: 450,
@@ -656,7 +656,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 },
                 {
                     xtype: 'button',
-                    text: this.i18n._('RADIUS Test'),
+                    text: i18n._('RADIUS Test'),
                     iconCls: 'test-icon',
                     name: 'radius_test',
                     disabled: (!this.getRadiusSettings().enabled),
@@ -667,13 +667,13 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
             }],
 
             onRadiusTestClick: Ext.bind(function() {
-                Ext.MessageBox.wait(this.i18n._("Testing..."), this.i18n._("RADIUS Test"));
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("RADIUS Test"));
                 var userCmp = this.panelRadius.down('textfield[name=radius_test_username]').getValue();
                 var passwordCmp = this.panelRadius.down('textfield[name=radius_test_password]').getValue();
 
                 var message = this.getRpcNode().getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    var message = this.i18n._(result);
+                    var message = i18n._(result);
                     Ext.MessageBox.alert(i18n._("RADIUS Test"), message);
                 }, this), this.getSettings(), userCmp, passwordCmp);
             }, this)
@@ -691,7 +691,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
             //validate port
             if (!portCmp.isValid()) {
-            Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
+            Ext.MessageBox.alert(i18n._('Warning'), Ext.String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         portCmp.focus(true);
@@ -702,7 +702,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
             // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED
             if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length == 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Password must be specified if a Login is specified.'),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Password must be specified if a Login is specified.'),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         passwordCmp.focus(true);
@@ -710,7 +710,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 );
                 return false;
             } else if(loginCmp.getValue().length == 0 && passwordCmp.getValue().length > 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Login must be specified if a Password is specified.'),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Login must be specified if a Password is specified.'),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         loginCmp.focus(true);
@@ -721,7 +721,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
             // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
             if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length > 0 && hostCmp.getValue().length == 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Hostname must be specified if Login or Password are specified.'),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Hostname must be specified if Login or Password are specified.'),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         hostCmp.focus(true);
@@ -732,7 +732,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
             // CHECK THAT A DOMAIN IS SUPPLIED
             if (domainCmp.getValue().length == 0) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Search Base must be specified.'),
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Search Base must be specified.'),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.panelActiveDirectoryConnector);
                         domainCmp.focus(true);
