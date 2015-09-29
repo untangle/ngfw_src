@@ -542,6 +542,9 @@ class JavaMsgFmtTarget
 
     command = "msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file} 2> /dev/null"
     ensureDirectory "#{@dest}/official/#{@lang}"
+
+    command = "msgfmt -o #{@mo_dest}/#{@lang}/LC_MESSAGES/#{@basename}.mo #{@po_file} 2> /dev/null"
+    ensureDirectory "#{@mo_dest}/#{@lang}/LC_MESSAGES"
     raise "msgfmt failed: " + command unless Kernel.system command
   end
 end
