@@ -100,7 +100,7 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["dataIndex", "header"],
             data: []
         });
-        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")]];
+        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
         
         var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
             name: 'Sql Conditions',
@@ -424,6 +424,33 @@ Ext.define("Ung.window.ReportEditor", {
                 this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
             }
         }, {
+            xtype:'textfield',
+            name: "timeDataDynamicValue",
+            dataIndex: "timeDataDynamicValue",
+            fieldLabel: i18n._("Time Data Dynamic Value"),
+            width: 500
+        }, {
+            xtype:'textfield',
+            name: "timeDataDynamicColumn",
+            dataIndex: "timeDataDynamicColumn",
+            fieldLabel: i18n._("Time Data Dynamic Column"),
+            width: 500
+        }, {
+            xtype: 'numberfield',
+            name: 'timeDataDynamicLimit',
+            dataIndex: "timeDataDynamicLimit",
+            fieldLabel: i18n._('Time Data Dynamic Limit'),
+            allowDecimals: false,
+            minValue: 0,
+            maxValue: 100000,
+            width: 350
+        }, {
+            xtype:'textfield',
+            name: "timeDataDynamicAggregationFunction",
+            dataIndex: "timeDataDynamicAggregationFunction",
+            fieldLabel: i18n._("Time Data Aggregation Function"),
+            width: 500
+        }, {
             xtype: "container",
             dataIndex: "colors",
             layout: 'column',
@@ -441,7 +468,7 @@ Ext.define("Ung.window.ReportEditor", {
                 cls: 'boxlabel'
             }],
             setValue: function(value) {
-                var timeDataColumns  = this.down('textfield[name="colors"]');
+                var timeDataColumns = this.down('textfield[name="colors"]');
                 timeDataColumns.setValue((value||[]).join("\n"));
             },
             getValue: function() {
@@ -506,44 +533,63 @@ Ext.define("Ung.window.ReportEditor", {
         this.callParent(arguments);
     },
     syncComponents: function () {
-        var type=this.down('combo[dataIndex=type]').getValue();
-        var cmps = {
-            textColumns: this.down('[dataIndex=textColumns]'),
-            textString: this.down('[dataIndex=textString]'),
-            pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
-            pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
-            pieNumSlices: this.down('[dataIndex=pieNumSlices]'),
-            timeStyle: this.down('[dataIndex=timeStyle]'),
-            timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
-            timeDataColumns: this.down('[dataIndex=timeDataColumns]'),
-            colors: this.down('[dataIndex=colors]')
-        };
+        if(!this.cmps) {
+            this.cmps = {
+                typeCmp: this.down('combo[dataIndex=type]'),
+                textColumns: this.down('[dataIndex=textColumns]'),
+                textString: this.down('[dataIndex=textString]'),
+                pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
+                pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
+                pieNumSlices: this.down('[dataIndex=pieNumSlices]'),
+                timeStyle: this.down('[dataIndex=timeStyle]'),
+                timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
+                timeDataColumns: this.down('[dataIndex=timeDataColumns]'),
+                timeDataDynamicValue: this.down('[dataIndex=timeDataDynamicValue]'),
+                timeDataDynamicColumn: this.down('[dataIndex=timeDataDynamicColumn]'),
+                timeDataDynamicLimit: this.down('[dataIndex=timeDataDynamicLimit]'),
+                timeDataDynamicAggregationFunction: this.down('[dataIndex=timeDataDynamicAggregationFunction]'),
+                colors: this.down('[dataIndex=colors]')
+            };
+        }
+        var type = this.cmps.typeCmp.getValue();
         
-        cmps.textColumns.setVisible(type=="TEXT");
-        cmps.textColumns.setDisabled(type!="TEXT");
+        this.cmps.textColumns.setVisible(type=="TEXT");
+        this.cmps.textColumns.setDisabled(type!="TEXT");
 
-        cmps.textString.setVisible(type=="TEXT");
-        cmps.textString.setDisabled(type!="TEXT");
+        this.cmps.textString.setVisible(type=="TEXT");
+        this.cmps.textString.setDisabled(type!="TEXT");
 
-        cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
-        cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
+        this.cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
+        this.cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
 
-        cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
-        cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
-        
-        cmps.pieNumSlices.setVisible(type=="PIE_GRAPH");
-        cmps.pieNumSlices.setDisabled(type!="PIE_GRAPH");
+        this.cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
+        this.cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
 
-        cmps.timeStyle.setVisible(type=="TIME_GRAPH");
-        cmps.timeStyle.setDisabled(type!="TIME_GRAPH");
+        this.cmps.pieNumSlices.setVisible(type=="PIE_GRAPH");
+        this.cmps.pieNumSlices.setDisabled(type!="PIE_GRAPH");
 
-        cmps.timeDataInterval.setVisible(type=="TIME_GRAPH");
-        cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH");
-        
-        cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
-        cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
-        
-        cmps.colors.setVisible(type!="TEXT");
-        cmps.colors.setDisabled(type=="TEXT");
+        this.cmps.timeStyle.setVisible(type=="TIME_GRAPH");
+        this.cmps.timeStyle.setDisabled(type!="TIME_GRAPH");
+
+        this.cmps.timeDataInterval.setVisible(type=="TIME_GRAPH" || type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH" && type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
+        this.cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
+
+        this.cmps.timeDataDynamicValue.setVisible(type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicValue.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.timeDataDynamicColumn.setVisible(type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicColumn.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.timeDataDynamicLimit.setVisible(type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicLimit.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.timeDataDynamicAggregationFunction.setVisible(type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicAggregationFunction.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.colors.setVisible(type!="TEXT");
+        this.cmps.colors.setDisabled(type=="TEXT");
     }
 });

@@ -776,7 +776,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 width: 55
             }, {
                 header: i18n._("Type"),
-                width: 90,
+                width: 110,
                 dataIndex: 'type',
                 renderer: chartTypeRenderer
             }, {
