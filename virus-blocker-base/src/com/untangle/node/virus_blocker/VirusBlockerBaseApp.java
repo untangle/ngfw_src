@@ -464,6 +464,8 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
+        reconfigure();
+
         /**
          * Reset existing sessions for this node only
          */
