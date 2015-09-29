@@ -25,9 +25,11 @@ vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
+vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-testsite-site2site-94-config.zip"
+vpnSite2SiteHostname = "untangle-2607"
 
 # special box with testshell in the sudoer group  - used to connect to as client
-vpnServerVpnIP = "10.111.56.57"
+vpnServerVpnIP = "10.111.56.94"
 
 # special box within vpnServerVpnIP's network
 vpnServerVpnLanIP = "192.168.235.57"
@@ -60,7 +62,7 @@ def waitForServerVPNtoConnect():
     return timeout
 
 def waitForClientVPNtoConnect():
-    timeout = 60  # wait for up to one minute for the VPN to connect
+    timeout = 120  # wait for up to two minute for the VPN to connect
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
@@ -130,7 +132,7 @@ class OpenVpnTests(unittest2.TestCase):
         if (vpnHostResult != 0):
             raise unittest2.SkipTest("No paried VPN server available")
         # Download remote system VPN config
-        result = os.system("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/config-9.4-ats-test-site2-site-client.zip -O /tmp/config.zip")
+        result = os.system("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip")
         assert (result == 0) # verify the download was successful
         node.importClientConfig("/tmp/config.zip")
         # wait for vpn tunnel to form
@@ -142,7 +144,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert (remoteHostResult)
         listOfServers = node.getRemoteServersStatus()
         # print listOfServers
-        assert(listOfServers['list'][0]['name'] == 'test')
+        assert(listOfServers['list'][0]['name'] == vpnSite2SiteHostname)
         tunnelUp = True
    
     def test_030_disableRemoteClientVPNTunnel(self):
@@ -154,7 +156,7 @@ class OpenVpnTests(unittest2.TestCase):
         i=0
         found = False
         for remoteGuest in nodeData['remoteServers']['list']:
-            if (remoteGuest['name'] == 'test'):
+            if (remoteGuest['name'] == vpnSite2SiteHostname):
                 found = True 
             if (not found):
                 i+=1
