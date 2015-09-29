@@ -58,8 +58,10 @@ public class CertificateManagerImpl implements CertificateManager
 
     private static final String MARKER_CERT_HEAD = "-----BEGIN CERTIFICATE-----";
     private static final String MARKER_CERT_TAIL = "-----END CERTIFICATE-----";
-    private static final String MARKER_KEY_HEAD = "-----BEGIN RSA PRIVATE KEY-----";
-    private static final String MARKER_KEY_TAIL = "-----END RSA PRIVATE KEY-----";
+    private static final String MARKER_RKEY_HEAD = "-----BEGIN RSA PRIVATE KEY-----";
+    private static final String MARKER_RKEY_TAIL = "-----END RSA PRIVATE KEY-----";
+    private static final String MARKER_GKEY_HEAD = "-----BEGIN PRIVATE KEY-----";
+    private static final String MARKER_GKEY_TAIL = "-----END PRIVATE KEY-----";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
@@ -162,19 +164,28 @@ public class CertificateManagerImpl implements CertificateManager
             int certTop = certString.indexOf(MARKER_CERT_HEAD);
             int certEnd = certString.indexOf(MARKER_CERT_TAIL);
 
-            int keyTop = certString.indexOf(MARKER_KEY_HEAD);
-            int keyEnd = certString.indexOf(MARKER_KEY_TAIL);
-
             // if both cert markers found then calculate the length
-            if ((certTop >= 0) && (certEnd >= 0))
-                certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
+            if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
+
+            if (certLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate");
+
+            int keyTop = certString.indexOf(MARKER_RKEY_HEAD);
+            int keyEnd = certString.indexOf(MARKER_RKEY_TAIL);
 
             // if both key markers found then calculate the length
-            if ((keyTop >= 0) && (keyEnd >= 0))
-                keyLen = (keyEnd - keyTop + MARKER_KEY_TAIL.length());
+            if ((keyTop >= 0) && (keyEnd >= 0)) {
+                keyLen = (keyEnd - keyTop + MARKER_RKEY_TAIL.length());
+            }
 
-            if (certLen == 0)
-                return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate");
+            // didn't find the RSA style so check for generic format
+            else {
+                keyTop = certString.indexOf(MARKER_GKEY_HEAD);
+                keyEnd = certString.indexOf(MARKER_GKEY_TAIL);
+
+                if ((keyTop >= 0) && (keyEnd >= 0)) {
+                    keyLen = (keyEnd - keyTop + MARKER_GKEY_TAIL.length());
+                }
+            }
 
             // if the uploaded file only contains a cert then we combine
             // with the existing private key and create a new pem file
@@ -214,7 +225,7 @@ public class CertificateManagerImpl implements CertificateManager
             }
 
             // now convert the local PEM file to the local PFX file for apps
-            // that use SSLEngine like sitefilter and captive portal
+            // that use SSLEngine like web filter and captive portal
             UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
 
             // now copy the local PEM file to the apache directory and restart
@@ -366,8 +377,7 @@ public class CertificateManagerImpl implements CertificateManager
 
             // if either certTop or certEnd returned an error something is
             // wrong so just return what we have so far
-            if ((certTop < 0) || (certEnd < 0))
-                return certInfo;
+            if ((certTop < 0) || (certEnd < 0)) return certInfo;
 
             // create a new String with just the certificate we isolated
             // and pass it to the certificate factory generatory function
@@ -394,13 +404,11 @@ public class CertificateManagerImpl implements CertificateManager
                     int value = ((Integer) entry.get(0)).intValue();
 
                     // check the entry type against the list we understand
-                    if (validAlternateList.containsKey(value) == false)
-                        continue;
+                    if (validAlternateList.containsKey(value) == false) continue;
 
                     // use the name string from our hashmap along with the
                     // value from the certificate to build our SAN list
-                    if (nameList.length() != 0)
-                        nameList.append(",");
+                    if (nameList.length() != 0) nameList.append(",");
                     nameList.append(validAlternateList.get(value) + ":" + entry.get(1).toString());
                 }
                 certInfo.setServerNames(nameList.toString());
@@ -448,7 +456,7 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
         // now convert the local PEM file to the local PFX file for apps
-        // that use SSLEngine like sitefilter and captive portal
+        // that use SSLEngine like web filter and captive portal
         UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
 
         // now copy the pem file to the apache directory and restart
