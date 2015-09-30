@@ -83,8 +83,8 @@ public class NodeManagerImpl implements NodeManager
         }
 
         // global renames
-        oldNames = new String[] {"SITEFILTER","CLASSD","_HTTPS_"};
-        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","_SSL_INSPECTOR_"};
+        oldNames = new String[] {"SITEFILTER","CLASSD","HTTPS_"};
+        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","SSL_INSPECTOR_"};
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
@@ -132,9 +132,9 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-virus-blocker";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
-                                 "com.untangle.node.virusblocker."        };
-        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
-                                 "com.untangle.node.virus_blocker."};
+                                 "com.untangle.node.virusblocker.VirusSettings" };
+        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerBaseApp",
+                                 "com.untangle.node.virus_blocker.VirusSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -344,8 +344,12 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-captive-portal";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.capture.CaptureNodeImpl",
+                                 "com.untangle.node.capture.CaptureRule",
+                                 "com.untangle.node.capture.CaptureRuleMatcher",
                                  "com.untangle.node.capture.CaptureSettings"};
         newNames = new String[] {"com.untangle.node.captive_portal.CaptivePortalApp",
+                                 "com.untangle.node.captive_portal.CaptureRule",
+                                 "com.untangle.node.captive_portal.CaptureRuleMatcher",
                                  "com.untangle.node.captive_portal.CaptivePortalSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -370,8 +374,10 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-adblocker";
         newName = "untangle-node-ad-blocker";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.adblocker.AdBlockerImpl"};
-        newNames = new String[] {"com.untangle.node.ad_blocker.AdBlockerApp"};
+        oldNames = new String[] {"com.untangle.node.adblocker.AdBlockerImpl",
+                                 "com.untangle.node.adblocker.AdBlockerSettings"};
+        newNames = new String[] {"com.untangle.node.ad_blocker.AdBlockerApp",
+                                 "com.untangle.node.ad_blocker.AdBlockerSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -439,8 +445,14 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-adconnector";
         newName = "untangle-node-directory-connector";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.adconnector.DirectoryConnectorImpl"};
-        newNames = new String[] {"com.untangle.node.directory_connector.DirectoryConnectorApp"};
+        oldNames = new String[] {"com.untangle.node.adconnector.DirectoryConnectorImpl",
+                                 "com.untangle.node.adconnector.ActiveDirectorySettings",
+                                 "com.untangle.node.adconnector.RadiusSettings",
+                                 "com.untangle.node.adconnector.DirectoryConnectorSettings"};
+        newNames = new String[] {"com.untangle.node.directory_connector.DirectoryConnectorApp",
+                                 "com.untangle.node.directory_connector.ActiveDirectorySettings",
+                                 "com.untangle.node.directory_connector.RadiusSettings",                                 
+                                 "com.untangle.node.directory_connector.DirectoryConnectorSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -457,8 +469,10 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-wan-failover";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.faild.FailDImpl",
+                                 "com.untangle.node.faild.WanTestSettings",
                                  "com.untangle.node.faild.FailDSettings"};
         newNames = new String[] {"com.untangle.node.wan_failover.WanFailoverApp",
+                                 "com.untangle.node.wan_failover.WanTestSettings",
                                  "com.untangle.node.wan_failover.WanFailoverSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -476,8 +490,12 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-wan-balancer";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.splitd.SplitDImpl",
+                                 "com.untangle.node.splitd.RouteRule",
+                                 "com.untangle.node.splitd.RouteRuleAction",
                                  "com.untangle.node.splitd.SplitDSettings"};
         newNames = new String[] {"com.untangle.node.wan_balancer.WanBalancerApp",
+                                 "com.untangle.node.wan_balancer.RouteRule",
+                                 "com.untangle.node.wan_balancer.RouteRuleAction",
                                  "com.untangle.node.wan_balancer.WanBalancerSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -496,9 +514,11 @@ public class NodeManagerImpl implements NodeManager
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.ipsec.IPsecNodeImpl",
                                  "com.untangle.node.ipsec.IPsecTunnel",
+                                 "com.untangle.node.ipsec.VirtualListen",
                                  "com.untangle.node.ipsec.IPsecSettings"};
         newNames = new String[] {"com.untangle.node.ipsec_vpn.IpsecVpnApp",
                                  "com.untangle.node.ipsec_vpn.IpsecVpnTunnel",
+                                 "com.untangle.node.ipsec_vpn.VirtualListen",
                                  "com.untangle.node.ipsec_vpn.IpsecVpnSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -536,8 +556,10 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-boxbackup";
         newName = "untangle-node-configuration-backup";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.boxbackup.BoxBackupImpl"};
-        newNames = new String[] {"com.untangle.node.configuration_backup.ConfigurationBackupApp"};
+        oldNames = new String[] {"com.untangle.node.boxbackup.BoxBackupImpl",
+                                 "com.untangle.node.boxbackup.BoxBackupSettings"};
+        newNames = new String[] {"com.untangle.node.configuration_backup.ConfigurationBackupApp",
+                                 "com.untangle.node.configuration_backup.ConfigurationBackupSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
