@@ -111,5 +111,6 @@ JavaMsgFmtTarget.make_po_targets(uvm, "#{BuildEnv::SRC.home}/i18ntools/po",
                                  "#{uvm.distDirectory}/usr/share/untangle/lang/",
                                  'untangle').each do |t|
   BuildEnv::SRC.i18nTarget.register_dependency(t)
-  BuildEnv::SRC.installTarget.register_dependency(t)
+  # Comment out to avoid always building in dev env. install target already depends on i18n target... Why is this needed?
+  # BuildEnv::SRC.installTarget.register_dependency(t)
 end
