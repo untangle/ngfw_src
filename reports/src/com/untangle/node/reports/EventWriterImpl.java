@@ -108,7 +108,6 @@ public class EventWriterImpl implements Runnable
             String temp;
             if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
                 HIGH_WATER_MARK = Integer.parseInt( temp );
-                logger.info("XXXXXXXXXXXXXXXXX: " + HIGH_WATER_MARK);
             }
         }
         catch (Exception e) {
