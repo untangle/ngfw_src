@@ -45,28 +45,31 @@ Ext.define('Webui.config.reportsViewer', {
         if (rpc.rackView && rpc.rackView.instances.list.length > 0) {
             var i, node, apps = [];
             for (i = 0; i < rpc.rackView.instances.list.length; i++) {
-                var nodeSettings = rpc.rackView.instances.list[i];
-                var nodeProperties = rpc.rackView.nodeProperties.list[i];
-                if(nodeProperties.name != 'untangle-node-branding-manager' && nodeProperties.name != 'untangle-node-live-support' ) {
-                    apps.push({
-                        text : nodeProperties.displayName,
-                        category : nodeProperties.displayName,
-                        leaf : true,
-                        viewPosition : nodeProperties.viewPosition,
-                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+nodeProperties.name+'_17x17.png'
-                    });
+                if(rpc.rackView.instances.list[i].policyId == rpc.currentPolicy.policyId) {
+                    var nodeSettings = rpc.rackView.instances.list[i];
+                    var nodeProperties = rpc.rackView.nodeProperties.list[i];
+                    if(nodeProperties.name != 'untangle-node-branding-manager' && nodeProperties.name != 'untangle-node-live-support' ) {
+                        apps.push({
+                            text : nodeProperties.displayName,
+                            category : nodeProperties.displayName,
+                            leaf : true,
+                            viewPosition : nodeProperties.viewPosition,
+                            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+nodeProperties.name+'_17x17.png'
+                        });
+                    }
                 }
-                
             }
-            apps.sort(function(a, b) {
-                return a.viewPosition - b.viewPosition;
-            });
-            treeNodes.push({
-                text : i18n._("Applications"),
-                leaf : false,
-                expanded : true,
-                children : apps
-            });
+            if(apps.length>0) {
+                apps.sort(function(a, b) {
+                    return a.viewPosition - b.viewPosition;
+                });
+                treeNodes.push({
+                    text : i18n._("Applications"),
+                    leaf : false,
+                    expanded : true,
+                    children : apps
+                });
+            }
         }
 
         this.items = {
