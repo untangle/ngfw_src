@@ -1097,7 +1097,7 @@ Ext.define('Webui.config.network', {
                             header: this.i18n._("Name"),
                             dataIndex: 'name',
                             sortable: false,
-                            width: 80,
+                            width: 130,
                             renderer: function( value ) {
                                 return i18n._( value );
                             }
@@ -1112,7 +1112,7 @@ Ext.define('Webui.config.network', {
                             tooltip: this.i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched." ),
                             dataIndex: 'deviceName',
                             sortable: false,
-                            width: 200,
+                            width: 170,
                             tdCls: 'ua-pointer',
                             editor:{
                                 xtype: 'combo',
@@ -1308,7 +1308,7 @@ Ext.define('Webui.config.network', {
                         this.currentInterfaces.push(allInterfaces[i]);
                     }
                 }
-                this.mapDevicesStore.loadData( this.currentInterfaces );
+                this.mapDevicesStore.loadData( Ext.decode(Ext.encode(this.currentInterfaces)) );
                 this.availableDevicesStore.loadData( Ext.decode(Ext.encode(this.currentInterfaces)));
                 this.winMapDevices.show();
             }, this)

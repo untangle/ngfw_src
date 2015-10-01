@@ -344,7 +344,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 header: i18n._( "Name" ),
                 dataIndex: 'name',
                 sortable: false,
-                width: 80,
+                width: 90,
                 renderer: function( value ) {
                     return i18n._( value );
                 }
@@ -431,7 +431,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 header: i18n._( "Status" ),
                 dataIndex: 'connected',
                 sortable: false,
-                width: 223,
+                width: 213,
                 flex: 1,
                 tdCls: 'ua-draggable',
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
