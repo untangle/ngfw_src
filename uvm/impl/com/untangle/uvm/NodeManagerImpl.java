@@ -95,8 +95,10 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-sitefilter";
         newName = "untangle-node-web-filter";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl"};
-        newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp"};
+        oldNames = new String[] {"com.untangle.node.sitefilter.SiteFilterImpl",
+                                 "com.untangle.node.webfilter.WebFilterSettings"};
+        newNames = new String[] {"com.untangle.node.web_filter.WebFilterApp",
+                                 "com.untangle.node.web_filter.WebFilterSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -132,8 +134,8 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-virus-blocker";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.virusblocker.VirusBlockerNode",
-                                 "com.untangle.node.virusblocker.VirusSettings" };
-        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerBaseApp",
+                                 "com.untangle.node.virus.VirusSettings" };
+        newNames = new String[] {"com.untangle.node.virus_blocker.VirusBlockerApp",
                                  "com.untangle.node.virus_blocker.VirusSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -151,9 +153,9 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-virus-blocker-lite";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.clam.ClamNode",
-                                 "com.untangle.node.virusblocker."        };
+                                 "com.untangle.node.virus.VirusSettings"};
         newNames = new String[] {"com.untangle.node.virus_blocker_lite.VirusBlockerLiteApp",
-                                 "com.untangle.node.virus_blocker."};
+                                 "com.untangle.node.virus_blocker.VirusSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -208,9 +210,11 @@ public class NodeManagerImpl implements NodeManager
         newName = "untangle-node-phish-blocker";
         updateNodesFile(oldName,newName);
         oldNames = new String[] {"com.untangle.node.phish.PhishNode",
-                                 "com.untangle.node.phish.PhishSettings"};
+                                 "com.untangle.node.phish.PhishSettings",
+                                 "com.untangle.node.spam.SpamSmtpConfig"};
         newNames = new String[] {"com.untangle.node.phish_blocker.PhishBlockerApp",
-                                 "com.untangle.node.phish_blocker.PhishBlockerSettings"};
+                                 "com.untangle.node.phish_blocker.PhishBlockerSettings",
+                                 "com.untangle.node.spam_blocker.SpamSmtpConfig"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -606,8 +610,6 @@ public class NodeManagerImpl implements NodeManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
-
-
     }
 
     private void updateNodesFile(String oldName, String newName)
