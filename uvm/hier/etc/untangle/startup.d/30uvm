@@ -26,21 +26,25 @@ if [ $MEM -gt 4900000 ] ; then
     fi
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=1
+    REPORTS_MAX_QUEUE_LEN=5000000
 elif [ $MEM -gt 3900000 ] ; then
     MAX_HEAP_SIZE=2000m
     MAX_VIRTUAL_SIZE=6000m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=2
+    REPORTS_MAX_QUEUE_LEN=4000000
 elif [ $MEM -gt 2900000 ] ; then
     MAX_HEAP_SIZE=1500m
     MAX_VIRTUAL_SIZE=4500m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
+    REPORTS_MAX_QUEUE_LEN=3000000
 elif [ $MEM -gt 1900000 ] ; then
     MAX_HEAP_SIZE=820m
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=50
     GC_MIN_CYCLE=10
+    REPORTS_MAX_QUEUE_LEN=1000000
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=420m
@@ -51,6 +55,7 @@ elif [ $MEM -gt 900000 ] ; then
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
+    REPORTS_MAX_QUEUE_LEN=500000
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=320m
@@ -61,6 +66,7 @@ else
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
+    REPORTS_MAX_QUEUE_LEN=100000
 fi
 
 if [ $ARCH = 'x86_64' ]; then
@@ -76,6 +82,7 @@ echo "    Maximum virtual size     -> ${MAX_VIRTUAL_SIZE}"
 echo "    GC safety factor         -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
 echo "    Session limit            -> ${SESSION_LIMIT}"
+echo "    Reports queue limit      -> ${REPORTS_MAX_QUEUE_LEN}"
 
 #
 # Apply the settings
@@ -88,5 +95,6 @@ max_virtual_size="$MAX_VIRTUAL_SIZE"
 gc_safety_factor="$GC_SAFETY_FACTOR"
 gc_min_cycle="$GC_MIN_CYCLE"
 session_limit="$SESSION_LIMIT"
+reports_max_queue_len="$REPORTS_MAX_QUEUE_LEN"
 EOF
 
