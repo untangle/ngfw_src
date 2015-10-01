@@ -49,7 +49,7 @@ public class EventWriterImpl implements Runnable
      * Then the eventWriter is not able to keep up with demand
      * In this case the overloadedFlag is set to true
      */
-    private static final int HIGH_WATER_MARK = 1000000;
+    private static int HIGH_WATER_MARK = 1000000;
 
     /**
      * If overloadedFlag is set to true and the queue shrinks to this size
@@ -57,7 +57,7 @@ public class EventWriterImpl implements Runnable
      */
     private static final int LOW_WATER_MARK = 100000;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(EventWriterImpl.class);
 
     private static boolean forceFlush = false;
 
@@ -102,6 +102,19 @@ public class EventWriterImpl implements Runnable
      * This is a queue of incoming events
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
+
+    static {
+        try {
+            String temp;
+            if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
+                HIGH_WATER_MARK = Integer.parseInt( temp );
+                logger.info("XXXXXXXXXXXXXXXXX: " + HIGH_WATER_MARK);
+            }
+        }
+        catch (Exception e) {
+            logger.warn("Failed to set max queue length.",e);
+        }
+    }
 
     public EventWriterImpl( ReportsApp node )
     {
