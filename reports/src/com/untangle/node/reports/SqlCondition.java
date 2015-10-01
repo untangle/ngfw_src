@@ -152,7 +152,21 @@ public class SqlCondition implements Serializable, JSONString
                         }
                     }
                 break;
-                    
+
+                case "real":
+                case "float4":
+                case "float8":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.INTEGER);
+                    else {
+                        try {
+                            statement.setFloat(i, Float.valueOf( value ));
+                        } catch (Exception e) {
+                            throw new RuntimeException( "Invalid number: " + value );
+                        }
+                    }
+                break;
+                
                 case "inet":
                     if ("null".equalsIgnoreCase(value))
                         statement.setNull(i, java.sql.Types.OTHER);
