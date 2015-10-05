@@ -148,7 +148,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         PolicyManagerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-policy/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-policy-manager/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load( PolicyManagerSettings.class, settingsFileName );
@@ -260,7 +260,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-policy/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -366,7 +366,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
 
         public boolean isMatch( Long oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
         {
-            PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+            PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             Long newPolicyId = null;
             if (policyManager != null) {
                 newPolicyId  = policyManager.findPolicyId( protocol,
