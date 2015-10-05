@@ -438,8 +438,16 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-policy";
         newName = "untangle-node-policy-manager";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.policy.PolicyManagerImpl"};
-        newNames = new String[] {"com.untangle.node.policy_manager.PolicyManagerApp"};
+        oldNames = new String[] {"com.untangle.node.policy.PolicyManagerImpl",
+                                 "com.untangle.node.policy.PolicyManagerSettings",
+                                 "com.untangle.node.policy.PolicyRule",
+                                 "com.untangle.node.policy.PolicyRuleMatcher",
+                                 "com.untangle.node.policy.PolicySettings"};
+        newNames = new String[] {"com.untangle.node.policy_manager.PolicyManagerApp",
+                                 "com.untangle.node.policy_manager.PolicyManagerSettings",
+                                 "com.untangle.node.policy_manager.PolicyRule",
+                                 "com.untangle.node.policy_manager.PolicyRuleMatcher",
+                                 "com.untangle.node.policy_manager.PolicySettings",};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
