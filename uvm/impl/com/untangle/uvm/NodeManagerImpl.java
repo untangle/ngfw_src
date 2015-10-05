@@ -230,8 +230,12 @@ public class NodeManagerImpl implements NodeManager
         oldName = "untangle-node-webcache";
         newName = "untangle-node-web-cache";
         updateNodesFile(oldName,newName);
-        oldNames = new String[] {"com.untangle.node.webcache.WebCacheNode"};
-        newNames = new String[] {"com.untangle.node.web_cache.WebCacheApp"};
+        oldNames = new String[] {"com.untangle.node.webcache.WebCacheNode",
+                                 "com.untangle.node.webcache.WebCacheSettings",
+                                 "com.untangle.node.webcache.WebCacheRule"};
+        newNames = new String[] {"com.untangle.node.web_cache.WebCacheApp",
+                                 "com.untangle.node.web_cache.WebCacheSettings",
+                                 "com.untangle.node.web_cache.WebCacheRule"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
@@ -350,10 +354,12 @@ public class NodeManagerImpl implements NodeManager
         oldNames = new String[] {"com.untangle.node.capture.CaptureNodeImpl",
                                  "com.untangle.node.capture.CaptureRule",
                                  "com.untangle.node.capture.CaptureRuleMatcher",
+                                 "com.untangle.node.capture.PassedAddress",
                                  "com.untangle.node.capture.CaptureSettings"};
         newNames = new String[] {"com.untangle.node.captive_portal.CaptivePortalApp",
                                  "com.untangle.node.captive_portal.CaptureRule",
                                  "com.untangle.node.captive_portal.CaptureRuleMatcher",
+                                 "com.untangle.node.captive_portal.PassedAddress",
                                  "com.untangle.node.captive_portal.CaptivePortalSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
