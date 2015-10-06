@@ -123,6 +123,10 @@ class VirusHttpHandler extends HttpEventHandler
         if ( ! ignoredHost( state.host ) ) {
             String virusName = lookupCache( state.host, state.uri );
             if ( virusName != null ) {
+                // increment both scan and block count
+                node.incrementScanCount();
+                node.incrementBlockCount();
+
                 VirusBlockDetails bd = new VirusBlockDetails( state.host, state.uri, null, node.getName() );
                 String nonce = node.generateNonce(bd);
                 Token[] response = node.generateResponse( nonce, session, state.uri, requestHeader );
