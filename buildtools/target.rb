@@ -370,7 +370,7 @@ class ServletBuilder < Target
     end
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
-    jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
+    jardeps = libdeps + @nodedeps + Jars::Base
     jardeps << uvm_lib["api"] 
 
     @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)
