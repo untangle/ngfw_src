@@ -43,31 +43,41 @@ Ext.define('Webui.config.reportsViewer', {
             } ]
         }];
         if (rpc.rackView && rpc.rackView.instances.list.length > 0) {
-            var i, node, apps = [];
+            var i, apps = [], services = [], node, nodeSettings, nodeProperties;
             for (i = 0; i < rpc.rackView.instances.list.length; i++) {
-                if(rpc.rackView.instances.list[i].policyId == rpc.currentPolicy.policyId) {
-                    var nodeSettings = rpc.rackView.instances.list[i];
-                    var nodeProperties = rpc.rackView.nodeProperties.list[i];
-                    if(nodeProperties.name != 'untangle-node-branding' && nodeProperties.name != 'untangle-node-support' ) {
-                        apps.push({
-                            text : nodeProperties.displayName,
-                            category : nodeProperties.displayName,
-                            leaf : true,
-                            viewPosition : nodeProperties.viewPosition,
-                            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+nodeProperties.name+'_17x17.png'
-                        });
+                nodeSettings = rpc.rackView.instances.list[i];
+                nodeProperties = rpc.rackView.nodeProperties.list[i];
+                if(nodeProperties.name != 'untangle-node-branding' && nodeProperties.name != 'untangle-node-support' ) {
+                    node = {
+                        text : nodeProperties.displayName,
+                        category : nodeProperties.displayName,
+                        leaf : true,
+                        viewPosition : nodeProperties.viewPosition,
+                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+nodeProperties.name+'_17x17.png'
+                    };
+                    if(nodeProperties.type == "FILTER") {
+                        if(rpc.rackView.instances.list[i].policyId == rpc.currentPolicy.policyId) {
+                            apps.push(node);
+                        }
+                    } else {
+                        services.push(node);
                     }
                 }
             }
             if(apps.length>0) {
-                apps.sort(function(a, b) {
-                    return a.viewPosition - b.viewPosition;
-                });
                 treeNodes.push({
                     text : i18n._("Applications"),
                     leaf : false,
                     expanded : true,
                     children : apps
+                });
+            }
+            if(services.length>0) {
+                treeNodes.push({
+                    text : i18n._("Services"),
+                    leaf : false,
+                    expanded : true,
+                    children : services
                 });
             }
         }

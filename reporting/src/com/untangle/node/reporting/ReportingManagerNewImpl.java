@@ -158,6 +158,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             try {
                 json.put("displayName", nodeProperties.getDisplayName());
                 json.put("name", nodeProperties.getName());
+                json.put("type", nodeProperties.getType());
                 json.put("viewPosition", nodeProperties.getViewPosition());
             } catch (Exception e) {
                 logger.error( "Error generating Current Applications list", e );
