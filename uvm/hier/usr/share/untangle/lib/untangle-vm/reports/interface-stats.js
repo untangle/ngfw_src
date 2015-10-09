@@ -16,5 +16,6 @@
     "timeDataDynamicAggregationFunction": "max",
     "timeStyle": "LINE",
     "title": "Interface Usage",
-    "type": "TIME_GRAPH_DYNAMIC"
+    "type": "TIME_GRAPH_DYNAMIC",
+    "renderer": "interface"
 }
