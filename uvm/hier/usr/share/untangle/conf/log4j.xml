@@ -182,7 +182,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ssl">
+  <category name="com.untangle.node.ssl_inspector">
     <priority value="INFO"/>
   </category>
 
