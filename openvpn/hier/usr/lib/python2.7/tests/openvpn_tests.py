@@ -25,11 +25,11 @@ vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
-vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-testsite-site2site-94-config.zip"
-vpnSite2SiteHostname = "untangle-2607"
+vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
+vpnSite2SiteHostname = "untangle-4845"
 
 # special box with testshell in the sudoer group  - used to connect to as client
-vpnServerVpnIP = "10.111.56.94"
+vpnServerVpnIP = "10.111.56.96"
 
 # special box within vpnServerVpnIP's network
 vpnServerVpnLanIP = "192.168.235.57"
@@ -62,7 +62,7 @@ def waitForServerVPNtoConnect():
     return timeout
 
 def waitForClientVPNtoConnect():
-    timeout = 120  # wait for up to one minute for the VPN to connect
+    timeout = 120  # wait for up to two minute for the VPN to connect
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
