@@ -5,6 +5,7 @@ synchronize with existing po files
 """
 import datetime
 import fnmatch
+import getopt
 import json
 import os
 import sys
@@ -25,6 +26,7 @@ languages = i18n.Languages()
 
 pot = i18n.PotFile(language="en", file_name="generated.pot")
 pot_file_name = "pot/en/untangle-en.pot"
+#pot = i18n.PotFile(language="en", file_name=pot_file_name)
 
 def get_keys(module):
     """
@@ -105,30 +107,60 @@ def main(argv):
     Main entry for generate
     """
     global pot
+    process_source = True
+    process_language = None
 
-    #
-    # Process source files
-    #
-    print "Processing source files..."
-    pot.reset()
-    modules = ngfw.modules
-    for module in modules:
-        print "\t" + module
-        get_keys(module)
+    try:
+        opts, args = getopt.getopt(argv, "hpl:d", ["help", "process_source=", "process_language=", "debug"] )
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ( "-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ( "-p", "--process_source"):
+            if str(arg).lower() in ("yes", "true", "t", "1"):
+                process_source = True
+            else:
+                process_source = False
+        elif opt in ( "-l", "--process_language"):
+            process_language = arg
 
-    # Change comments to not have path leading to "ngfw"
-    print "Converting comments..."
+    if process_source:
+        #
+        # Process source files
+        #
+        print "Processing source files..."
+        pot.reset()
+        modules = ngfw.modules
+        for module in modules:
+            print "\t" + module
+            get_keys(module)
+
+        # Change comments to not have path leading to "ngfw"
+        print "Converting comments..."
+        pot.load()
+        for record in pot.records:
+            for (comment_index, comment) in enumerate(record.comment):
+                record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
+        pot.save()
+
+        if os.path.isfile(pot_file_name):
+            os.remove(pot_file_name)
+        pot.rename(pot_file_name)
+    else:
+        pot.set_file_name(pot_file_name)
+
     pot.load()
-    for record in pot.records:
-        for (comment_index, comment) in enumerate(record.comment):
-            record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
-    pot.save()
 
     print "Synchronizing po files..."
     total_character_count = 0
     total_word_count = 0
     for language in languages.get_enabled():
         if language["id"] == "en":
+            continue
+        if (process_language != None) and (language["id"] != process_language):
             continue
 
         po = i18n.PoFile(language=language["id"])
@@ -166,10 +198,6 @@ def main(argv):
         po.save()
 
     print "%d/%d chars/words total to translate" % (total_character_count, total_word_count)
-
-    if os.path.isfile(pot_file_name):
-        os.remove(pot_file_name)
-    pot.rename(pot_file_name)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
