@@ -18,7 +18,7 @@ class PoRecord:
         "%Y-%m-%d %H:%M:%S",
         "%Y-%m-%d %H:%M",
     ]
-    regex_content_type = re.compile(r'"Content-Type:\s+text/plain;\s+charset=(.+)\\n"')
+    regex_content_type = re.compile(r'Content-Type:\s+text/plain;\s+charset=([^\\]+)\\n')
 
     def __init__(self, source_file_name=None):
         """
@@ -44,6 +44,12 @@ class PoRecord:
         Add to message str
         """
         self.msg_str.append(msg_str)
+
+        if self.msg_id == "":
+            for (msgstr_index, msgstr) in enumerate(self.msg_str):
+                content_type_match = re.findall(PoRecord.regex_content_type, msgstr)
+                if len(content_type_match) > 0 and content_type_match[0] == "CHARSET":
+                    self.msg_str[msgstr_index] = re.sub("CHARSET", "UTF-8", msgstr)
 
     def replace_msg_str(self, prefix, replace):
         """
