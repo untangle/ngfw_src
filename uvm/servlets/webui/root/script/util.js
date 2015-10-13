@@ -404,15 +404,6 @@ Ext.define('Ung.Util', {
         }
         return data;
     },
-    formatTime: function(value, rec) {
-        if(value==null) {
-            return null;
-        } else {
-            var d=new Date();
-            d.setTime(value.time);
-            return d.format("H:i");
-        }
-    },
     // Test if there is data in the specified object
     hasData: function(obj) {
         var hasData = false;

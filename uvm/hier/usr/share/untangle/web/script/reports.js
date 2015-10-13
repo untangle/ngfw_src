@@ -552,7 +552,7 @@ Ext.define('Ung.panel.Reports', {
         } else if(entry.type == 'PIE_GRAPH') {
             var descriptionFn = function(val, record) {
                 var title = (record.get(entry.pieGroupColumn)==null)?i18n._("none") : record.get(entry.pieGroupColumn);
-                var value = (entry.units == "bytes" || entry.units == "bytes/s") ? Ung.Util.bytesRenderer(record.get("value"), entry.units == "bytes/s") : record.get("value") + " " + i18n._(entry.units);
+                var value = Ung.panel.Reports.renderValue(record.get("value"), entry);
                 return title + ": " + value;
             };
 
@@ -653,7 +653,7 @@ Ext.define('Ung.panel.Reports', {
             if(!entry.timeDataColumns) {
                 entry.timeDataColumns = [];
             }
-            var axesFields = [], series=[];
+            var axesFields = [], axesFieldsTitles=[], series=[];
             var legendHint = (entry.timeDataColumns.length > 1) ? this.cartesianLegendHint : "";
             var zeroFn = function(val) {
                 return (val==null)?0:val;
@@ -664,13 +664,18 @@ Ext.define('Ung.panel.Reports', {
             var storeFields =[{name: 'time_trunc', convert: timeFn}];
             var reportDataColumns = [{
                 dataIndex: 'time_trunc',
-                header: 'time_trunc',
+                header: i18n._("Timestamp"),
                 width: 130,
                 flex: entry.timeDataColumns.length>2? 0:1
             }];
+            var seriesRenderer = null;
+            if(!Ext.isEmpty(entry.seriesRenderer)) {
+                seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
+            }
             for(i=0; i<entry.timeDataColumns.length; i++) {
                 column = entry.timeDataColumns[i].split(" ").splice(-1)[0];
                 axesFields.push(column);
+                axesFieldsTitles.push(seriesRenderer?seriesRenderer(column):column);
                 storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
@@ -751,7 +756,7 @@ Ext.define('Ung.panel.Reports', {
                     minimum: 0,
                     renderer: function (v) {
                         var significantValue = Ung.panel.Reports.significantFigures(v, 3);
-                        return (entry.units == "bytes" || entry.units == "bytes/s") ? Ung.Util.bytesRenderer(significantValue, entry.units == "bytes/s") : significantValue + " " + i18n._(entry.units);
+                        return Ung.panel.Reports.renderValue(significantValue, entry);
                     }
                 }, {
                     type: (entry.timeStyle.indexOf('BAR_3D')!=-1) ? 'category3d' : 'category',
@@ -774,7 +779,7 @@ Ext.define('Ung.panel.Reports', {
                     series.push({
                         type: 'line',
                         axis: 'left',
-                        title: axesFields[i],
+                        title: axesFieldsTitles[i],
                         xField: 'time_trunc',
                         yField: axesFields[i],
                         style: {
@@ -803,7 +808,7 @@ Ext.define('Ung.panel.Reports', {
                     series.push({
                         type: 'area',
                         axis: 'left',
-                        title: axesFields[i],
+                        title: axesFieldsTitles[i],
                         xField: 'time_trunc',
                         yField: axesFields[i],
                         style: {
@@ -832,7 +837,7 @@ Ext.define('Ung.panel.Reports', {
                     series.push({
                         type: (entry.timeStyle.indexOf('BAR_3D')!=-1)?'bar3d': 'bar',
                         axis: 'left',
-                        title: axesFields[i],
+                        title: axesFieldsTitles[i],
                         xField: 'time_trunc',
                         yField: axesFields[i],
                         style: (entry.timeStyle.indexOf('BAR_3D') != -1)? { opacity: 0.70, lineWidth: 1+5*i } : {  opacity: 0.60,  maxBarWidth: Math.max(40-2*i, 2) },
@@ -851,7 +856,7 @@ Ext.define('Ung.panel.Reports', {
                 chart.series = [{
                     type: (entry.timeStyle.indexOf('BAR_3D')!=-1)?'bar3d': 'bar',
                     axis: 'left',
-                    title: axesFields,
+                    title: axesFieldsTitles,
                     xField: 'time_trunc',
                     yField: axesFields,
                     stacked: false,
@@ -1135,14 +1140,6 @@ Ext.define('Ung.panel.Reports', {
         downloadForm["arg6"].value="";
         downloadForm.submit();
         Ext.MessageBox.hide();
-        /*
-        if (Ext.os.is.Desktop) {
-            chart.download({
-                filename: fileName
-            });
-        } else {
-            chart.preview();
-        } */
     },
     exportEventsHandler: function() {
         if(!this.entry) {
@@ -1328,159 +1325,183 @@ Ext.define('Ung.panel.Reports', {
             var result =  Math.round(n * mult) / mult;
             return isNegative? -result : result;
         },
+        renderValue: function(value, entry) {
+            var showValue = value;
+            if(entry.units == "bytes" || entry.units == "bytes/s") {
+                showValue = Ung.Util.bytesRenderer(value, entry.units == "bytes/s");
+            }
+            return showValue + (Ext.isEmpty(entry.units)? "" : " " + i18n._(entry.units));
+        },
         getColumnRenderer: function(columnName) {
             if(!this.columnRenderers) {
                 this.columnRenderers = {
-                    policy_id: function(value) {
+                    "policy_id": function(value) {
                         var name = Ung.Main.getPolicyName(value);
                         if ( name != null )
                             return name + " (" + value + ")";
                         else
                             return value;
                     },
-                    protocol: function(value) {
-                        switch (value) {
-                          case 0: return "HOPOPT (0)";
-                          case 1: return "ICMP (1)";
-                          case 2: return "IGMP (2)";
-                          case 3: return "GGP (3)";
-                          case 4: return "IP-in-IP (4)";
-                          case 5: return "ST (5)";
-                          case 6: return "TCP (6)";
-                          case 7: return "CBT (7)";
-                          case 8: return "EGP (8)";
-                          case 9: return "IGP (9)";
-                          case 10: return "BBN-RCC-MON (10)";
-                          case 11: return "NVP-II (11)";
-                          case 12: return "PUP (12)";
-                          case 13: return "ARGUS (13)";
-                          case 14: return "EMCON (14)";
-                          case 15: return "XNET (15)";
-                          case 16: return "CHAOS (16)";
-                          case 17: return "UDP (17)";
-                          case 18: return "MUX (18)";
-                          case 19: return "DCN-MEAS (19)";
-                          case 20: return "HMP (20)";
-                          case 21: return "PRM (21)";
-                          case 22: return "XNS-IDP (22)";
-                          case 23: return "TRUNK-1 (23)";
-                          case 24: return "TRUNK-2 (24)";
-                          case 25: return "LEAF-1 (25)";
-                          case 26: return "LEAF-2 (26)";
-                          case 27: return "RDP (27)";
-                          case 28: return "IRTP (28)";
-                          case 29: return "ISO-TP4 (29)";
-                          case 30: return "NETBLT (30)";
-                          case 31: return "MFE-NSP (31)";
-                          case 32: return "MERIT-INP (32)";
-                          case 33: return "DCCP (33)";
-                          case 34: return "3PC (34)";
-                          case 35: return "IDPR (35)";
-                          case 36: return "XTP (36)";
-                          case 37: return "DDP (37)";
-                          case 38: return "IDPR-CMTP (38)";
-                          case 39: return "TP++ (39)";
-                          case 40: return "IL (40)";
-                          case 41: return "IPv6 (41)";
-                          case 42: return "SDRP (42)";
-                          case 43: return "IPv6-Route (43)";
-                          case 44: return "IPv6-Frag (44)";
-                          case 45: return "IDRP (45)";
-                          case 46: return "RSVP (46)";
-                          case 47: return "GRE (47)";
-                          case 48: return "MHRP (48)";
-                          case 49: return "BNA (49)";
-                          case 50: return "ESP (50)";
-                          case 51: return "AH (51)";
-                          case 52: return "I-NLSP (52)";
-                          case 53: return "SWIPE (53)";
-                          case 54: return "NARP (54)";
-                          case 55: return "MOBILE (55)";
-                          case 56: return "TLSP (56)";
-                          case 57: return "SKIP (57)";
-                          case 58: return "IPv6-ICMP (58)";
-                          case 59: return "IPv6-NoNxt (59)";
-                          case 60: return "IPv6-Opts (60)";
-                          case 62: return "CFTP (62)";
-                          case 64: return "SAT-EXPAK (64)";
-                          case 65: return "KRYPTOLAN (65)";
-                          case 66: return "RVD (66)";
-                          case 67: return "IPPC (67)";
-                          case 69: return "SAT-MON (69)";
-                          case 70: return "VISA (70)";
-                          case 71: return "IPCU (71)";
-                          case 72: return "CPNX (72)";
-                          case 73: return "CPHB (73)";
-                          case 74: return "WSN (74)";
-                          case 75: return "PVP (75)";
-                          case 76: return "BR-SAT-MON (76)";
-                          case 77: return "SUN-ND (77)";
-                          case 78: return "WB-MON (78)";
-                          case 79: return "WB-EXPAK (79)";
-                          case 80: return "ISO-IP (80)";
-                          case 81: return "VMTP (81)";
-                          case 82: return "SECURE-VMTP (82)";
-                          case 83: return "VINES (83)";
-                          case 84: return "TTP (84)";
-                          case 84: return "IPTM (84)";
-                          case 85: return "NSFNET-IGP (85)";
-                          case 86: return "DGP (86)";
-                          case 87: return "TCF (87)";
-                          case 88: return "EIGRP (88)";
-                          case 89: return "OSPF (89)";
-                          case 90: return "Sprite-RPC (90)";
-                          case 91: return "LARP (91)";
-                          case 92: return "MTP (92)";
-                          case 93: return "AX.25 (93)";
-                          case 94: return "IPIP (94)";
-                          case 95: return "MICP (95)";
-                          case 96: return "SCC-SP (96)";
-                          case 97: return "ETHERIP (97)";
-                          case 98: return "ENCAP (98)";
-                          case 100: return "GMTP (100)";
-                          case 101: return "IFMP (101)";
-                          case 102: return "PNNI (102)";
-                          case 103: return "PIM (103)";
-                          case 104: return "ARIS (104)";
-                          case 105: return "SCPS (105)";
-                          case 106: return "QNX (106)";
-                          case 107: return "A/N (107)";
-                          case 108: return "IPComp (108)";
-                          case 109: return "SNP (109)";
-                          case 110: return "Compaq-Peer (110)";
-                          case 111: return "IPX-in-IP (111)";
-                          case 112: return "VRRP (112)";
-                          case 113: return "PGM (113)";
-                          case 115: return "L2TP (115)";
-                          case 116: return "DDX (116)";
-                          case 117: return "IATP (117)";
-                          case 118: return "STP (118)";
-                          case 119: return "SRP (119)";
-                          case 120: return "UTI (120)";
-                          case 121: return "SMP (121)";
-                          case 122: return "SM (122)";
-                          case 123: return "PTP (123)";
-                          case 124: return "IS-IS (124)";
-                          case 125: return "FIRE (125)";
-                          case 126: return "CRTP (126)";
-                          case 127: return "CRUDP (127)";
-                          case 128: return "SSCOPMCE (128)";
-                          case 129: return "IPLT (129)";
-                          case 130: return "SPS (130)";
-                          case 131: return "PIPE (131)";
-                          case 132: return "SCTP (132)";
-                          case 133: return "FC (133)";
-                          case 134: return "RSVP-E2E-IGNORE (134)";
-                          case 135: return "Mobility (135)";
-                          case 136: return "UDPLite (136)";
-                          case 137: return "MPLS-in-IP (137)";
-                          case 138: return "manet (138)";
-                          case 139: return "HIP (139)";
-                          case 140: return "Shim6 (140)";
-                          case 141: return "WESP (141)";
-                          case 142: return "ROHC (142)";
-                          default: return value.toString();
+                    "protocol": function(value) {
+                        if(!Ung.panel.Reports.protocolMap) {
+                            Ung.panel.Reports.protocolMap = {
+                                0: "HOPOPT (0)",
+                                1: "ICMP (1)",
+                                2: "IGMP (2)",
+                                3: "GGP (3)",
+                                4: "IP-in-IP (4)",
+                                5: "ST (5)",
+                                6: "TCP (6)",
+                                7: "CBT (7)",
+                                8: "EGP (8)",
+                                9: "IGP (9)",
+                                10: "BBN-RCC-MON (10)",
+                                11: "NVP-II (11)",
+                                12: "PUP (12)",
+                                13: "ARGUS (13)",
+                                14: "EMCON (14)",
+                                15: "XNET (15)",
+                                16: "CHAOS (16)",
+                                17: "UDP (17)",
+                                18: "MUX (18)",
+                                19: "DCN-MEAS (19)",
+                                20: "HMP (20)",
+                                21: "PRM (21)",
+                                22: "XNS-IDP (22)",
+                                23: "TRUNK-1 (23)",
+                                24: "TRUNK-2 (24)",
+                                25: "LEAF-1 (25)",
+                                26: "LEAF-2 (26)",
+                                27: "RDP (27)",
+                                28: "IRTP (28)",
+                                29: "ISO-TP4 (29)",
+                                30: "NETBLT (30)",
+                                31: "MFE-NSP (31)",
+                                32: "MERIT-INP (32)",
+                                33: "DCCP (33)",
+                                34: "3PC (34)",
+                                35: "IDPR (35)",
+                                36: "XTP (36)",
+                                37: "DDP (37)",
+                                38: "IDPR-CMTP (38)",
+                                39: "TP++ (39)",
+                                40: "IL (40)",
+                                41: "IPv6 (41)",
+                                42: "SDRP (42)",
+                                43: "IPv6-Route (43)",
+                                44: "IPv6-Frag (44)",
+                                45: "IDRP (45)",
+                                46: "RSVP (46)",
+                                47: "GRE (47)",
+                                48: "MHRP (48)",
+                                49: "BNA (49)",
+                                50: "ESP (50)",
+                                51: "AH (51)",
+                                52: "I-NLSP (52)",
+                                53: "SWIPE (53)",
+                                54: "NARP (54)",
+                                55: "MOBILE (55)",
+                                56: "TLSP (56)",
+                                57: "SKIP (57)",
+                                58: "IPv6-ICMP (58)",
+                                59: "IPv6-NoNxt (59)",
+                                60: "IPv6-Opts (60)",
+                                62: "CFTP (62)",
+                                64: "SAT-EXPAK (64)",
+                                65: "KRYPTOLAN (65)",
+                                66: "RVD (66)",
+                                67: "IPPC (67)",
+                                69: "SAT-MON (69)",
+                                70: "VISA (70)",
+                                71: "IPCU (71)",
+                                72: "CPNX (72)",
+                                73: "CPHB (73)",
+                                74: "WSN (74)",
+                                75: "PVP (75)",
+                                76: "BR-SAT-MON (76)",
+                                77: "SUN-ND (77)",
+                                78: "WB-MON (78)",
+                                79: "WB-EXPAK (79)",
+                                80: "ISO-IP (80)",
+                                81: "VMTP (81)",
+                                82: "SECURE-VMTP (82)",
+                                83: "VINES (83)",
+                                84: "TTP (84)",
+                                85: "NSFNET-IGP (85)",
+                                86: "DGP (86)",
+                                87: "TCF (87)",
+                                88: "EIGRP (88)",
+                                89: "OSPF (89)",
+                                90: "Sprite-RPC (90)",
+                                91: "LARP (91)",
+                                92: "MTP (92)",
+                                93: "AX.25 (93)",
+                                94: "IPIP (94)",
+                                95: "MICP (95)",
+                                96: "SCC-SP (96)",
+                                97: "ETHERIP (97)",
+                                98: "ENCAP (98)",
+                                100: "GMTP (100)",
+                                101: "IFMP (101)",
+                                102: "PNNI (102)",
+                                103: "PIM (103)",
+                                104: "ARIS (104)",
+                                105: "SCPS (105)",
+                                106: "QNX (106)",
+                                107: "A/N (107)",
+                                108: "IPComp (108)",
+                                109: "SNP (109)",
+                                110: "Compaq-Peer (110)",
+                                111: "IPX-in-IP (111)",
+                                112: "VRRP (112)",
+                                113: "PGM (113)",
+                                115: "L2TP (115)",
+                                116: "DDX (116)",
+                                117: "IATP (117)",
+                                118: "STP (118)",
+                                119: "SRP (119)",
+                                120: "UTI (120)",
+                                121: "SMP (121)",
+                                122: "SM (122)",
+                                123: "PTP (123)",
+                                124: "IS-IS (124)",
+                                125: "FIRE (125)",
+                                126: "CRTP (126)",
+                                127: "CRUDP (127)",
+                                128: "SSCOPMCE (128)",
+                                129: "IPLT (129)",
+                                130: "SPS (130)",
+                                131: "PIPE (131)",
+                                132: "SCTP (132)",
+                                133: "FC (133)",
+                                134: "RSVP-E2E-IGNORE (134)",
+                                135: "Mobility (135)",
+                                136: "UDPLite (136)",
+                                137: "MPLS-in-IP (137)",
+                                138: "manet (138)",
+                                139: "HIP (139)",
+                                140: "Shim6 (140)",
+                                141: "WESP (141)",
+                                142: "ROHC (142)"
+                            };
                         }
+                        return (value!=null)?Ung.panel.Reports.protocolMap[value] || value.toString():"";
+                    },
+                    "interface": function(value) {
+                        if(!Ung.panel.Reports.interfaceMap) {
+                            var interfacesList = [];
+                            try {
+                                interfacesList = rpc.reportsManagerNew.getInterfacesInfo().list;
+                            } catch (e) {
+                                Ung.Util.rpcExHandler(e);
+                            }
+                            interfacesList.push({ interfaceId: 250, name: "OpenVPN" }, { interfaceId: 251, name: "L2TP" }, { interfaceId: 252, name: "Xauth" });
+                            Ung.panel.Reports.interfaceMap = {};
+                            for(var i=0;i<interfacesList.length;i++) {
+                                Ung.panel.Reports.interfaceMap[interfacesList[i].interfaceId]=interfacesList[i].name;
+                            }
+                        }
+                        return (value!=null) ? Ung.panel.Reports.interfaceMap[value] || value.toString() : "";
                     }
                 };
             }

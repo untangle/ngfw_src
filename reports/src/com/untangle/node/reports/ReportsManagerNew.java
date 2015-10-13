@@ -3,13 +3,11 @@
  */
 package com.untangle.node.reports;
 
-import java.util.List;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.json.JSONObject;
-
-import com.untangle.uvm.SettingsManager.SettingsException;
 
 /**
  * The API for interacting/viewing/editing reports
@@ -105,4 +103,9 @@ public interface ReportsManagerNew
      * Get current application categories that should be displayed
      */
     List<JSONObject> getPoliciesInfo();
+    
+    /**
+     * Get the list of interfaces ids and names
+     */
+    List<JSONObject> getInterfacesInfo();
 }

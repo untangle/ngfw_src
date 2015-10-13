@@ -407,7 +407,7 @@ Ext.define("Ung.Main", {
             try {
                 rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
             } catch (e) {
-            Ung.Util.rpcExHandler(e);
+                Ung.Util.rpcExHandler(e);
             }
         }
         return rpc.mailSender;

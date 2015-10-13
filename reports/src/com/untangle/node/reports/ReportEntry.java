@@ -65,7 +65,7 @@ public class ReportEntry implements Serializable, JSONString
     private String category; /* category of the entry/graph */
     private String description; /* A text description */
     private int displayOrder = 9999; /* The order to display this report entry (relative to others) */
-    private String renderer; /* The renderer that can be used to display the column/series name */
+    private String seriesRenderer; /* The renderer that can be used to display the column/series name */
     
     private String units;
     private String[] colors; /* The colors of the columns/lines/pie slices */
@@ -137,8 +137,8 @@ public class ReportEntry implements Serializable, JSONString
     public int getDisplayOrder() { return this.displayOrder; }
     public void setDisplayOrder( int newValue ) { this.displayOrder = newValue; }
 
-    public String getRenderer() { return this.renderer; }
-    public void setRenderer( String newValue ) { this.renderer = newValue; }
+    public String getSeriesRenderer() { return this.seriesRenderer; }
+    public void setSeriesRenderer( String newValue ) { this.seriesRenderer = newValue; }
     
     public String getUnits() { return this.units; }
     public void setUnits( String newValue ) { this.units = newValue; }

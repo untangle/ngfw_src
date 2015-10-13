@@ -4,7 +4,6 @@
 package com.untangle.node.reports;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -14,14 +13,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager.SettingsException;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
@@ -484,6 +482,21 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
         return policiesInfo;
     }
     
+    public List<JSONObject> getInterfacesInfo() {
+        ArrayList<JSONObject> interfacesInfo = new ArrayList<JSONObject>();
+        for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ){
+            try {
+                JSONObject json = new org.json.JSONObject();
+                json.put("interfaceId", interfaceSettings.getInterfaceId());
+                json.put("name", interfaceSettings.getName() );
+                interfacesInfo.add(json);
+            } catch (Exception e) {
+                logger.warn("Error generating interfaces list",e);
+            }
+        }
+        return interfacesInfo;
+    }
+
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
