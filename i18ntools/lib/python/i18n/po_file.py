@@ -18,8 +18,6 @@ class PoFile:
     regex_msgstr = re.compile(r'^msgstr\s+\"(.*)\"')
     regex_continue = re.compile(r'^\"(.*)\"')
 
-    regex_arguments = re.compile(r'({\d+})')
-
     path = "/po"
     extension = "po"
 
@@ -41,6 +39,9 @@ class PoFile:
         Create filename from language
         """
         self.file_name = Utility.get_base_path() + self.path + "/%s/untangle-%s.%s" % (self.language, self.language, self.extension)
+
+    def set_file_name(self, file_name):
+        self.file_name = file_name
 
     def load(self):
         """
@@ -109,6 +110,13 @@ class PoFile:
         Append record with checking.
         This does the same as msgmerge but much more for our purpoeses.
         """
+
+        # Perform argument check
+        if new_record.arguments_match() == False:
+            print "Arguments do not match; clearing msgstr"
+            print new_record
+            new_record.msg_str = []
+
         add_record = True
         replace_index = False
         replace_comment_index = False
@@ -142,10 +150,10 @@ class PoFile:
                 # Look at arguments.  Some translations have them and others do not and
                 # those without can break.  If we find that one has argument replacement
                 # and the other does not, use the one with argument replacements.
-                msgid_arguments_match = re.findall(PoFile.regex_arguments, record.msg_id)
+                msgid_arguments_match = re.findall(PoRecord.regex_arguments, record.msg_id)
                 if msgid_arguments_match:
-                    current_msg_str_arguments_match = re.findall(PoFile.regex_arguments, record.msg_str[0])
-                    new_msg_str_arguments_match = re.findall(PoFile.regex_arguments, new_record.msg_str[0])
+                    current_msg_str_arguments_match = re.findall(PoRecord.regex_arguments, record.msg_str[0])
+                    new_msg_str_arguments_match = re.findall(PoRecord.regex_arguments, new_record.msg_str[0])
                     if len(current_msg_str_arguments_match) != len(new_msg_str_arguments_match):
                         if len(current_msg_str_arguments_match) == len(msgid_arguments_match):
                             break

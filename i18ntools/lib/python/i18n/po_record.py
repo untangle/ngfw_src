@@ -9,6 +9,8 @@ class PoRecord:
     """
     getmsg record
     """
+    regex_arguments = re.compile(r'({\d+})')
+
     unverified = ": Status: UNVERIFIED"
 
     regex_last_revision_date = re.compile(r'PO-Revision-Date:\s+(.+)\\n')
@@ -16,6 +18,7 @@ class PoRecord:
         "%Y-%m-%d %H:%M:%S",
         "%Y-%m-%d %H:%M",
     ]
+    regex_content_type = re.compile(r'"Content-Type:\s+text/plain;\s+charset=(.+)\\n"')
 
     def __init__(self, source_file_name=None):
         """
@@ -81,6 +84,21 @@ class PoRecord:
 
         if verified == False or unverified_found == True:
             self.comment.append(self.unverified)
+
+    def arguments_match(self):
+        """
+        Verify that if msgid containts arguments, msgstr matches
+        """
+        if len("".join(self.msg_str)) == 0:
+            return True
+        msgid_arguments_match = re.search(PoRecord.regex_arguments, self.msg_id)
+        if not msgid_arguments_match:
+            return True
+
+        if re.findall(PoRecord.regex_arguments, self.msg_id) == re.findall(PoRecord.regex_arguments, "".join(self.msg_str)):
+            return True
+        else:
+            return False
 
     def set_source_record(self, record):
         """
