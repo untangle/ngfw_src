@@ -668,18 +668,19 @@ Ext.define('Ung.panel.Reports', {
                 width: 130,
                 flex: entry.timeDataColumns.length>2? 0:1
             }];
-            var seriesRenderer = null;
+            var seriesRenderer = null, title;
             if(!Ext.isEmpty(entry.seriesRenderer)) {
                 seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
             }
             for(i=0; i<entry.timeDataColumns.length; i++) {
                 column = entry.timeDataColumns[i].split(" ").splice(-1)[0];
+                title = seriesRenderer?seriesRenderer(column):column;
                 axesFields.push(column);
-                axesFieldsTitles.push(seriesRenderer?seriesRenderer(column):column);
+                axesFieldsTitles.push(title);
                 storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
-                    header: column,
+                    header: title,
                     width: entry.timeDataColumns.length>2 ? 60 : 90
                 });
             }
