@@ -451,6 +451,12 @@ Ext.define("Ung.window.ReportEditor", {
             fieldLabel: i18n._("Time Data Aggregation Function"),
             width: 500
         }, {
+            xtype:'textfield',
+            name: "seriesRenderer",
+            dataIndex: "seriesRenderer",
+            fieldLabel: i18n._("Series Renderer"),
+            width: 500
+        }, {
             xtype: "container",
             dataIndex: "colors",
             layout: 'column',
@@ -548,6 +554,7 @@ Ext.define("Ung.window.ReportEditor", {
                 timeDataDynamicColumn: this.down('[dataIndex=timeDataDynamicColumn]'),
                 timeDataDynamicLimit: this.down('[dataIndex=timeDataDynamicLimit]'),
                 timeDataDynamicAggregationFunction: this.down('[dataIndex=timeDataDynamicAggregationFunction]'),
+                seriesRenderer: this.down('[dataIndex=seriesRenderer]'),
                 colors: this.down('[dataIndex=colors]')
             };
         }
@@ -588,6 +595,9 @@ Ext.define("Ung.window.ReportEditor", {
 
         this.cmps.timeDataDynamicAggregationFunction.setVisible(type=="TIME_GRAPH_DYNAMIC");
         this.cmps.timeDataDynamicAggregationFunction.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+
+        this.cmps.seriesRenderer.setVisible(type=="TIME_GRAPH" || type=="TIME_GRAPH_DYNAMIC");
+        this.cmps.seriesRenderer.setDisabled(type!="TIME_GRAPH" && type!="TIME_GRAPH_DYNAMIC");
 
         this.cmps.colors.setVisible(type!="TEXT");
         this.cmps.colors.setDisabled(type=="TEXT");
