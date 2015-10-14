@@ -159,22 +159,16 @@ Ext.define("Ung.Main", {
             } ]
         }];
         if (rpc.currentApplications) {
-            var i, app, node, apps = [], services = [];
+            var i, app, apps = [];
             for (i = 0; i < rpc.currentApplications.length; i++) {
                 app = rpc.currentApplications[i];
                 if(app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support' ) {
-                    node = {
+                    apps.push({
                         text : app.displayName,
                         category : app.displayName,
                         leaf : true,
-                        viewPosition : app.viewPosition,
                         icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+app.name+'_17x17.png'
-                    };
-                    if(app.type == "FILTER") {
-                        apps.push(node);
-                    } else {
-                        services.push(node);
-                    }
+                    });
                 }
             }
             if(apps.length > 0) {
@@ -183,14 +177,6 @@ Ext.define("Ung.Main", {
                     leaf : false,
                     expanded : true,
                     children : apps
-                });
-            }
-            if(services.length > 0) {
-                treeNodes.push({
-                    text : i18n._("Services"),
-                    leaf : false,
-                    expanded : true,
-                    children : services
                 });
             }
         }

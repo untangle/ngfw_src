@@ -42,45 +42,6 @@ Ext.define('Webui.config.reportsViewer', {
                 icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/untangle-node-shield_17x17.png' 
             } ]
         }];
-        if (rpc.rackView && rpc.rackView.instances.list.length > 0) {
-            var i, apps = [], services = [], node, nodeSettings, nodeProperties;
-            for (i = 0; i < rpc.rackView.instances.list.length; i++) {
-                nodeSettings = rpc.rackView.instances.list[i];
-                nodeProperties = rpc.rackView.nodeProperties.list[i];
-                if(nodeProperties.name != 'untangle-node-branding-manager' && nodeProperties.name != 'untangle-node-live-support' ) {
-                    node = {
-                        text : nodeProperties.displayName,
-                        category : nodeProperties.displayName,
-                        leaf : true,
-                        viewPosition : nodeProperties.viewPosition,
-                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+nodeProperties.name+'_17x17.png'
-                    };
-                    if(nodeProperties.type == "FILTER") {
-                        if(rpc.rackView.instances.list[i].policyId == rpc.currentPolicy.policyId) {
-                            apps.push(node);
-                        }
-                    } else {
-                        services.push(node);
-                    }
-                }
-            }
-            if(apps.length>0) {
-                treeNodes.push({
-                    text : i18n._("Applications"),
-                    leaf : false,
-                    expanded : true,
-                    children : apps
-                });
-            }
-            if(services.length>0) {
-                treeNodes.push({
-                    text : i18n._("Services"),
-                    leaf : false,
-                    expanded : true,
-                    children : services
-                });
-            }
-        }
 
         this.items = {
             xtype : "panel",
@@ -120,7 +81,34 @@ Ext.define('Webui.config.reportsViewer', {
         };
         this.callParent(arguments);
         
-        this.down("treepanel").getSelectionModel().select(0);
+        var treepanel = this.down("treepanel"); 
+        treepanel.getSelectionModel().select(0);
+        rpc.reportsManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            var currentApplications = result.list;
+            if (currentApplications) {
+                var i, app, apps = [];
+                for (i = 0; i < currentApplications.length; i++) {
+                    app = currentApplications[i];
+                    if(app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support' ) {
+                        apps.push({
+                            text : app.displayName,
+                            category : app.displayName,
+                            leaf : true,
+                            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+app.name+'_17x17.png'
+                        });
+                    }
+                }
+                if(apps.length > 0) {
+                    treepanel.getStore().getRoot().appendChild({
+                        text : i18n._("Applications"),
+                        leaf : false,
+                        expanded : true,
+                        children : apps
+                    });
+                }
+            }
+        },this));
     },
     doSize : function() {
         this.maximize();
