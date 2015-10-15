@@ -5,7 +5,7 @@
             "column": "event_info",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
-            "value": "'LOGIN'"
+            "value": "LOGIN"
         }
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
