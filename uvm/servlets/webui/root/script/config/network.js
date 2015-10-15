@@ -328,49 +328,55 @@ Ext.define('Webui.config.network', {
             dataFn: function(handler) {
                 var command1 = "ifconfig "+this.symbolicDev+" | grep 'HWaddr\\|packets' |tr '\\n' ' ' | tr -s ' ' ";
                 var command2 = "ifconfig "+this.symbolicDev+" | grep 'inet addr' | tr -s ' ' | cut -c 7- ";
+                var command3 = "ifconfig "+this.symbolicDev+" | grep inet6 | grep Global | cut -d' ' -f 13";
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    if(Ext.isEmpty(result)) {
-                        return;
-                    }
-                    var lineparts = result.split(" ");
-                    var intf = lineparts[0];
-                    var macAddress = lineparts[4];
-                    var rxpkts = lineparts[6].split(":")[1];
-                    var rxerr = lineparts[7].split(":")[1];
-                    var rxdrop = lineparts[8].split(":")[1];
-                    var txpkts = lineparts[12].split(":")[1];
-                    var txerr = lineparts[13].split(":")[1];
-                    var txdrop = lineparts[14].split(":")[1];
-                    
+                    var v6addr = result;
                     Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-
-                        var address = "";
-                        var mask = "";
-                        if(!Ext.isEmpty(result)) {
-                            var linep = result.split(" ");
-                            address = linep[0].split(":")[1];
-                            mask = linep[2].split(":")[1];
+                        if(Ext.isEmpty(result)) {
+                            return;
                         }
-
-                        var config=[{
-                            intf: intf,
-                            macAddress: macAddress,
-                            address: address,
-                            mask: mask,
-                            rxpkts: rxpkts,
-                            rxerr: rxerr,
-                            rxdrop: rxdrop,
-                            txpkts: txpkts,
-                            txerr: txerr,
-                            txdrop: txdrop
-                        }];
-
-                        handler({list: config});
+                        var lineparts = result.split(" ");
+                        var intf = lineparts[0];
+                        var macAddress = lineparts[4];
+                        var rxpkts = lineparts[6].split(":")[1];
+                        var rxerr = lineparts[7].split(":")[1];
+                        var rxdrop = lineparts[8].split(":")[1];
+                        var txpkts = lineparts[12].split(":")[1];
+                        var txerr = lineparts[13].split(":")[1];
+                        var txdrop = lineparts[14].split(":")[1];
                         
-                    }, this), command2);
-                }, this), command1);
+                        Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+    
+                            var address = "";
+                            var mask = "";
+                            if(!Ext.isEmpty(result)) {
+                                var linep = result.split(" ");
+                                address = linep[0].split(":")[1];
+                                mask = linep[2].split(":")[1];
+                            }
+    
+                            var config=[{
+                                intf: intf,
+                                macAddress: macAddress,
+                                address: address,
+                                mask: mask,
+                                v6addr: v6addr,
+                                rxpkts: rxpkts,
+                                rxerr: rxerr,
+                                rxdrop: rxdrop,
+                                txpkts: txpkts,
+                                txerr: txerr,
+                                txdrop: txdrop
+                            }];
+    
+                            handler({list: config});
+                            
+                        }, this), command2);
+                    }, this), command1);
+                }, this), command3);
             }, 
             fields: [{
                 name: "intf"
@@ -381,6 +387,8 @@ Ext.define('Webui.config.network', {
                 sortType: 'asIp'
             },{
                 name: "mask"
+            },{
+                name: "v6addr"
             },{
                 name: "rxpkts"
             },{
@@ -403,42 +411,46 @@ Ext.define('Webui.config.network', {
                 dataIndex:'macAddress',
                 width: 150
             },{
-                header: i18n._("IP Address"),
+                header: i18n._("IPv4 Address"),
                 dataIndex:'address',
                 width: 110
             },{
                 header: i18n._("Mask"),
                 dataIndex:'mask',
-                width: 130
+                width: 110
+            },{
+                header: i18n._("IPv6"),
+                dataIndex:'v6addr',
+                width: 240
             },{
                 header: i18n._("Rx Packets"),
                 dataIndex:'rxpkts',
-                width: 110,
+                width: 50,
                 flex: 1
             },{
                 header: i18n._("Rx Errors"),
                 dataIndex:'rxerr',
-                width: 110,
+                width: 30,
                 flex: 1
             },{
                 header: i18n._("Rx Drop"),
                 dataIndex:'rxdrop',
-                width: 110,
+                width: 30,
                 flex: 1
             },{
                 header: i18n._("Tx Packets"),
                 dataIndex:'txpkts',
-                width: 110,
+                width: 50,
                 flex: 1
             },{
                 header: i18n._("Tx Errors"),
                 dataIndex:'txerr',
-                width: 110,
+                width: 30,
                 flex: 1
             },{
                 header: i18n._("Tx Drop"),
                 dataIndex:'txdrop',
-                width: 110,
+                width: 30,
                 flex: 1
             }]
         });
