@@ -5,7 +5,7 @@
             "column": "vendor_name",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
-            "value": "'spam_blocker_lite'"
+            "value": "spam_blocker_lite"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","ipaddr"],

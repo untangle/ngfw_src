@@ -5,7 +5,7 @@
             "column": "event_info",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
-            "value": "'USER_LOGOUT'"
+            "value": "USER_LOGOUT"
         }
     ],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],

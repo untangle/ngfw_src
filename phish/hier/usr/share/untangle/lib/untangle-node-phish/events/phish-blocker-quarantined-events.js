@@ -11,7 +11,7 @@
             "column": "phish_blocker_action",
             "javaClass": "com.untangle.node.reporting.SqlCondition",
             "operator": "=",
-            "value": "'Q'"
+            "value": "Q"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
