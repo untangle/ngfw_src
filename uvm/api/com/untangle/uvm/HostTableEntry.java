@@ -17,7 +17,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class HostTableEntry implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 30 * 60 * 1000; /* 30 minutes */
+    private static final Logger logger = Logger.getLogger(HostTableEntry.class);
 
     private InetAddress address = null;
     private String      macAddress = null;
@@ -243,9 +244,6 @@ public class HostTableEntry implements Serializable, JSONString
     
     public String getUsername()
     {
-        // disabled for now
-        //if (! licensed )
-        //    return "unlicensed"; 
         if (getUsernameCapture() != null)
             return getUsernameCapture();
         if (getUsernameTunnel() != null)
@@ -270,6 +268,15 @@ public class HostTableEntry implements Serializable, JSONString
         return null;
     }
 
+    public boolean getLicenseNeeded()
+    {
+        long cutoffTime = System.currentTimeMillis() - LICENSE_TRAFFIC_AGE_MAX_TIME;
+        if ( getLastSessionTime() > cutoffTime )
+            return true;
+
+        return false;
+    }
+    
     /**
      * Utility method to check that hostname is known
      * Its not enough to just check that its null or ""

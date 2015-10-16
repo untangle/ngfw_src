@@ -35,7 +35,7 @@ public class HostTableImpl implements HostTable
 {
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
     private static final int CLEANER_LAST_ACCESS_MAX_TIME = 30 * 60 * 1000; /* 30 minutes */
-
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
@@ -442,10 +442,9 @@ public class HostTableImpl implements HostTable
          * and its processes sessions within 24 hours
          */
         try {
-            long cutoffTime = System.currentTimeMillis() - 1000 * 60 * 60 * 24; /* 24 hours ago */
             for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
                 HostTableEntry entry = i.next();
-                if (entry.getLastSessionTime() > cutoffTime)
+                if ( entry.getLicenseNeeded() )
                     licenseSize++;
             }
         }
@@ -499,14 +498,14 @@ public class HostTableImpl implements HostTable
         int realSize = 0;
 
         /**
-         * Only count hosts with getLastSessionTime() is > 0
+         * Only count hosts with getLastSessionTime() is > 0 and
+         * getLastSessionTime() > (now - LICENSE_TRAFFIC_AGE_MAX_TIME)
          * Meaning the UVM has processed sessions for that host
-         * and its processes sessions within 24 hours
+         * and its processes sessions recently
          */
-        long cutoffTime = System.currentTimeMillis() - 1000 * 60 * 60 * 24; /* 24 hours ago */
         for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
             HostTableEntry entry = i.next();
-            if ( entry.getLastSessionTime() > cutoffTime )
+            if ( entry.getLicenseNeeded() )
                 realSize++;
         }
         
