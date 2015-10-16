@@ -39,6 +39,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "macVendor": "MAC vendor"+i,
                         "hostname": i%3?("p.twitter.com"+i):null,
                         "licensed": true,
+                        "licenseNeeded": true,
                         "lastAccessTime": 0,//d.getTime()+(i*86400000),
                         "lastSessionTime": 0,//d.getTime()+(i*86400000),
                         "username": "testuser"+i,
@@ -124,6 +125,9 @@ Ext.define('Webui.config.hostMonitor', {
                 convert: dateConvertFn
             }, {
                 name: "licensed",
+                type: 'boolean'
+            }, {
+                name: "licenseNeeded",
                 type: 'boolean'
             },{
                 name: "username",
@@ -228,6 +232,14 @@ Ext.define('Webui.config.hostMonitor', {
                 hidden: true,
                 header: i18n._("Licensed"),
                 dataIndex: "licensed",
+                width: 80,
+                filter: {
+                    type: 'boolean'
+                }
+            }, {
+                hidden: true,
+                header: i18n._("License Needed"),
+                dataIndex: "licenseNeeded",
                 width: 80,
                 filter: {
                     type: 'boolean'
