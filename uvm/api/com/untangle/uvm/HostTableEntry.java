@@ -268,7 +268,12 @@ public class HostTableEntry implements Serializable, JSONString
         return null;
     }
 
-    public boolean getLicenseNeeded()
+    /**
+     * This returns the "active" status for purposes of licensing
+     * Only "active" hosts are counted against licenses while many
+     * inactive hosts can be in the host table.
+     */
+    public boolean getActive()
     {
         long cutoffTime = System.currentTimeMillis() - LICENSE_TRAFFIC_AGE_MAX_TIME;
         if ( getLastSessionTime() > cutoffTime )

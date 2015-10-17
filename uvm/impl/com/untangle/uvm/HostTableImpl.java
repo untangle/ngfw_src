@@ -444,7 +444,8 @@ public class HostTableImpl implements HostTable
         try {
             for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
                 HostTableEntry entry = i.next();
-                if ( entry.getLicenseNeeded() )
+                /* Only count hosts that are "active" */
+                if ( entry.getActive() )
                     licenseSize++;
             }
         }
@@ -497,15 +498,10 @@ public class HostTableImpl implements HostTable
     {
         int realSize = 0;
 
-        /**
-         * Only count hosts with getLastSessionTime() is > 0 and
-         * getLastSessionTime() > (now - LICENSE_TRAFFIC_AGE_MAX_TIME)
-         * Meaning the UVM has processed sessions for that host
-         * and its processes sessions recently
-         */
         for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
             HostTableEntry entry = i.next();
-            if ( entry.getLicenseNeeded() )
+            /* Only count hosts that are "active" */
+            if ( entry.getActive() )
                 realSize++;
         }
         
