@@ -268,7 +268,7 @@ public class HostTableEntry implements Serializable, JSONString
         return null;
     }
 
-    public boolean getLicenseNeeded()
+    public boolean getActive()
     {
         long cutoffTime = System.currentTimeMillis() - LICENSE_TRAFFIC_AGE_MAX_TIME;
         if ( getLastSessionTime() > cutoffTime )

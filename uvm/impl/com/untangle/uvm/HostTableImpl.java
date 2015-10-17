@@ -444,7 +444,7 @@ public class HostTableImpl implements HostTable
         try {
             for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
                 HostTableEntry entry = i.next();
-                if ( entry.getLicenseNeeded() )
+                if ( entry.getActive() )
                     licenseSize++;
             }
         }
@@ -505,7 +505,7 @@ public class HostTableImpl implements HostTable
          */
         for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
             HostTableEntry entry = i.next();
-            if ( entry.getLicenseNeeded() )
+            if ( entry.getActive() )
                 realSize++;
         }
         
