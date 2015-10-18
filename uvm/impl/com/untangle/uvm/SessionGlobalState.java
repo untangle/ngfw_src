@@ -122,6 +122,21 @@ public class SessionGlobalState
         return originalAgents;
     }
 
+    public String getPipelineDescription()
+    {
+        if ( originalAgents == null )
+            return "null";
+
+        String pipelineDescription = "";
+        boolean first = true;
+        for ( PipelineConnectorImpl connector: originalAgents ) {
+            pipelineDescription += (first ? "" : "," ) + connector.getName();
+            first = false;
+        }
+
+        return pipelineDescription;
+    }
+    
     public void setPipelineConnectorImpls( List<PipelineConnectorImpl> agents )
     {
         this.originalAgents = agents;

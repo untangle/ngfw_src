@@ -47,6 +47,7 @@ Ext.define('Webui.config.sessionMonitor', {
                         "natted": true,
                         "totalKBps": null,
                         "priority": (ii%7)+1,
+                        "pipeline": "str",
                         "postNatClient": "50.193.63."+((ii+1)%10),
                         "postNatClientPort": (ii+1000),
                         "preNatClient": "10.0.0."+((t+2)%10),
@@ -443,6 +444,7 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'string'
             }
         }];
+
         if(this.bandwidthColumns) {
             columns.push({
                 header: i18n._("Client KB/s") + i18n._(" (Bandwidth Control)"),
@@ -495,7 +497,16 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'list',
                 store: priorityOptionsStore
             }
+        },{
+            hidden: true,
+            header: i18n._("Pipeline"),
+            dataIndex: "pipeline",
+            width: 400,
+            filter: {
+                type: 'string'
+            }
         });
+        
         return columns;
     },
     // Current Sessions Grid
@@ -675,6 +686,9 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: this.fieldConvert
             },{
                 name: "qosPriority",
+                convert: this.fieldConvert
+            },{
+                name: "pipeline",
                 convert: this.fieldConvert
             }]
         });

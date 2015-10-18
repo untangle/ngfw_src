@@ -56,11 +56,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
     private final List<PipelineConnectorImpl> pipelineConnectors = new LinkedList<PipelineConnectorImpl>();
 
     /**
-     * A global list of all current casings
-     */
-    private final Map<PipelineConnectorImpl, PipelineConnectorImpl> casings = new HashMap<PipelineConnectorImpl, PipelineConnectorImpl>();
-
-    /**
      * This stores a list of "hints" about connections and what fitting types they are
      * If an app knows what kind of connection/fitting should be used for a connection from the given address/port
      * It can register a hint so the pipeline foundry will treat the session accordingly
@@ -214,7 +209,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         logger.debug("registerCasing( " + insidePipelineConnector.getName() + " , " + outsidePipelineConnector.getName() + " )");
         synchronized (this) {
-            casings.put( ((PipelineConnectorImpl) insidePipelineConnector) , ((PipelineConnectorImpl) outsidePipelineConnector) );
+            this.pipelineConnectors.add( ((PipelineConnectorImpl) insidePipelineConnector) );
+            this.pipelineConnectors.add( ((PipelineConnectorImpl) outsidePipelineConnector) );
+            Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
             clearCache();
         }
     }
@@ -226,7 +223,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         logger.debug("deregisterCasing( " + insidePipelineConnector.getName() + " )");
         synchronized (this) {
-            casings.remove( ((PipelineConnectorImpl)insidePipelineConnector) );
+            this.pipelineConnectors.remove( (PipelineConnectorImpl) insidePipelineConnector );
+            this.pipelineConnectors.remove( (PipelineConnectorImpl) outsidePipelineConnector );
             clearCache();
         }
     }
@@ -293,17 +291,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
 
                     List<PipelineConnectorImpl> availablePipelineConnectorsNodes = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
-                    List<PipelineConnectorImpl> availablePipelineConnectorsCasings = new LinkedList<PipelineConnectorImpl>( this.casings.keySet() );
 
                     removeDuplicates( policyId, availablePipelineConnectorsNodes );
-                    printPipelineConnectorList( "nodes: ", availablePipelineConnectorsNodes );
+                    printPipelineConnectorList( "available connectors: ", availablePipelineConnectorsNodes );
 
-                    removeDuplicates( policyId, availablePipelineConnectorsCasings );
-                    printPipelineConnectorList( "casings: ", availablePipelineConnectorsCasings );
-                    
                     addPipelineConnectors( pipelineConnectorList,
                                            availablePipelineConnectorsNodes,
-                                           availablePipelineConnectorsCasings,
                                            fitting, policyId );
 
                     fittingCache.put( fitting, pipelineConnectorList );
@@ -319,10 +312,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private boolean addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
                                            List<PipelineConnectorImpl> availableConnectors,
-                                           List<PipelineConnectorImpl> availableCasings, Fitting fitting, Long policyId )
+                                           Fitting fitting, Long policyId )
     {
-        boolean added = false;
-
+        PipelineConnectorImpl connectorToAdd = null;
+        
         /**
          * Iterate through all the netcapConnections and look for ones that fit the current fitting type
          */
@@ -341,71 +334,29 @@ public class PipelineFoundryImpl implements PipelineFoundry
             if ( ! policyMatch( pipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) )
                 continue;
             
-            pipelineConnectorList.add( pipelineConnector );
-            added = true;
+
+            /**
+             * Add the current pipelineConnector to the chain
+             */
+            connectorToAdd = pipelineConnector;
+            break;
         }
 
-        /**
-         * Now we should add in any casings
-         */
-        boolean addedCasings = addCasings( pipelineConnectorList, availableConnectors, availableCasings, fitting, policyId );
-        if ( addedCasings ) {
-            added = true;
+        if ( connectorToAdd != null ) {
+            pipelineConnectorList.add( connectorToAdd ); // add to current chain
+            availableConnectors.remove( connectorToAdd ); // remove from available list
+
+            logger.debug("Adding " + connectorToAdd + " to current chain.");
+            printPipelineConnectorList( "current chain : ", pipelineConnectorList );
+            printPipelineConnectorList( "available     : ", availableConnectors );
+
+            Fitting outputFitting = connectorToAdd.getOutputFitting(); // this connections output fitting
+            addPipelineConnectors( pipelineConnectorList, availableConnectors, outputFitting, policyId );
+            return true;
+        } else {
+            //nothing to add, just return
+            return false;
         }
-
-        return added;
-    }
-
-    /**
-     * Add all casings to the list that match this policy and fitting type
-     * Also calls addPipelineConnectors recursively to add netcap connectors
-     * for the "inner" fitting type
-     */
-    private boolean addCasings( List<PipelineConnectorImpl> pipelineConnectorList,
-                                List<PipelineConnectorImpl> availableConnectors,
-                                List<PipelineConnectorImpl> availableCasings, Fitting fitting, Long policyId )
-    {
-        boolean addedCasing = false;
-
-        for (Iterator<PipelineConnectorImpl> i = availableCasings.iterator(); i.hasNext();) {
-            PipelineConnectorImpl insidePipelineConnector = i.next();
-            PipelineConnectorImpl outsidePipelineConnector = casings.get( insidePipelineConnector );
-            
-            /**
-             * If this insidePipelineConnector is the wrong fitting type, skip it
-             */
-            if ( ! fitting.equals( insidePipelineConnector.getInputFitting() ) )
-                continue;
-
-            /**
-             * If this insidePipelineConnector is not on this policy, skip it
-             */
-            if ( ! policyMatch( insidePipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) ) 
-                continue;
-
-            /**
-             * Add this casing
-             */
-            pipelineConnectorList.add( insidePipelineConnector );
-
-            /**
-             * add in any pipelineConnectors that should be inside the casing
-             */
-            boolean addedSubPipelineConnectors = addPipelineConnectors( pipelineConnectorList, availableConnectors, availableCasings, insidePipelineConnector.getOutputFitting(), policyId );
-
-            /**
-             * If no nodes were interested in this casing's traffic, just remove it
-             * Otherwise, add the other casing
-             */
-            if ( ! addedSubPipelineConnectors ) {
-                pipelineConnectorList.remove( insidePipelineConnector );
-            } else {
-                pipelineConnectorList.add( outsidePipelineConnector );
-                addedCasing = true;
-            }
-        }
-
-        return addedCasing;
     }
 
     /**
@@ -618,56 +569,36 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         private PipelineConnectorComparator() { }
 
-        public int compare(PipelineConnectorImpl mp1, PipelineConnectorImpl mp2)
+        public int compareStrength( int strength1, int strength2 )
         {
-            Affinity ra1 = mp1.getAffinity();
-            Affinity ra2 = mp2.getAffinity();
-
-            if (null == ra1) {
-                if (null == ra2) {
-                    return 0;
-                } else {
-                    if (Affinity.CLIENT == ra2) {
-                        return 1;
-                    } else if (Affinity.SERVER == ra2) {
-                        return -1;
-                    } else {
-                        throw new RuntimeException("programmer malfunction");
-                    }
-                }
-            } else if (null == ra2) {
-                if (Affinity.CLIENT == ra1) {
-                    return -1;
-                } else if (Affinity.SERVER == ra2) {
-                    return 1;
-                } else {
-                    throw new RuntimeException("programmer malfunction");
-                }
-            } else if (ra1 == ra2) {
-                int s1 = mp1.getAffinityStrength();
-                int s2 = mp2.getAffinityStrength();
-
-                if (s1 == s2) {
-                    if (mp1 == mp2) {
-                        return 0;
-                    } else {
-                        int mp1Id = System.identityHashCode(mp1);
-                        int mp2Id = System.identityHashCode(mp2);
-                        return mp1Id < mp2Id ? -1 : 1;
-                    }
-                } else if (ra1 == Affinity.CLIENT) {
-                    return s1 < s2 ? 1 : -1;
-                } else if (ra1 == Affinity.SERVER) {
-                    return s1 < s2 ? -1 : 1;
-                } else {
-                    throw new RuntimeException("programmer malfunction");
-                }
-            } else if (Affinity.CLIENT == ra1) {
+            if ( strength1 == strength2 )
+                return 0;
+            if ( strength1 < strength2 )
                 return -1;
-            } else if (Affinity.SERVER == ra1) {
+            else
                 return 1;
+        }
+        
+        public int compare(PipelineConnectorImpl connector1, PipelineConnectorImpl connector2)
+        {
+            Affinity affinity1 = connector1.getAffinity();
+            Affinity affinity2 = connector2.getAffinity();
+
+            if ( affinity1 == null )
+                affinity1 = Affinity.MIDDLE;
+            if ( affinity2 == null )
+                affinity2 = Affinity.MIDDLE;
+            
+            if ( affinity1 == affinity2 ) {
+                Integer strength1 = connector1.getAffinityStrength();
+                if ( strength1 == null ) strength1 = 0;
+                Integer strength2 = connector2.getAffinityStrength();
+                if ( strength2 == null ) strength2 = 0;
+                return compareStrength( strength1, strength2 );
             } else {
-                throw new RuntimeException("programmer malfunction");
+                int numValue1 = affinity1.numValue();
+                int numValue2 = affinity2.numValue();
+                return compareStrength( numValue1, numValue2 );
             }
         }
     }

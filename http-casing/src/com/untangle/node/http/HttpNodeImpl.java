@@ -9,6 +9,7 @@ import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.SettingsManager;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
@@ -22,8 +23,8 @@ public class HttpNodeImpl extends NodeBase
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );
     
-    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-client-side", this, null, clientSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS, null, null );
-    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, null, null );
+    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-client-side", this, null, clientSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS, Affinity.CLIENT, -1000 );
+    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, Affinity.SERVER, 1000 );
     private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
 
     private final Logger logger = Logger.getLogger(HttpNodeImpl.class);

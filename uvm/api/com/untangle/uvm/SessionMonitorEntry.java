@@ -70,6 +70,7 @@ public class SessionMonitorEntry
     private Boolean portForwarded;
     private Boolean natted;
     private Integer priority;
+    private String pipeline;
 
     private Map<String,Object> attachments;
     
@@ -96,6 +97,9 @@ public class SessionMonitorEntry
     public Integer getPriority() {return priority;}
     public void    setPriority( Integer priority ) {this.priority = priority;}
 
+    public String  getPipeline() {return pipeline;}
+    public void    setPipeline( String newValue ) {this.pipeline = newValue;}
+    
     public Map<String,Object> getAttachments() {return attachments;}
 
     /**

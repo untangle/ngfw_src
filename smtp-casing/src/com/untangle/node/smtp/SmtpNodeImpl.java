@@ -24,6 +24,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
@@ -41,8 +42,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new SmtpClientParserEventHandler(), new SmtpClientUnparserEventHandler() );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new SmtpServerUnparserEventHandler(), new SmtpServerParserEventHandler() );
     
-    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-client-side", this, null, clientSideHandler, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS, null, null );
-    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-server-side", this, null, serverSideHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_STREAM, null, null );
+    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-client-side", this, null, clientSideHandler, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS, Affinity.CLIENT, -1000 );
+    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-server-side", this, null, serverSideHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_STREAM, Affinity.SERVER,  1000 );
     private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
     
     private SmtpNodeSettings settings;

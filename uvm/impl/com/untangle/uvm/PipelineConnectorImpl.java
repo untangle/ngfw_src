@@ -167,6 +167,6 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     public String toString()
     {
-        return "PipelineConnector[" + this.name + "]";
+        return this.name;
     }
 }
