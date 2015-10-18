@@ -56,10 +56,7 @@ public class NodeManagerImpl implements NodeManager
 
     private boolean live = true;
 
-    public NodeManagerImpl()
-    {
-        convertToNewNames();
-    }
+    public NodeManagerImpl() {}
 
     /* 12.0 conversion */
     private void convertToNewNames()
@@ -72,7 +69,15 @@ public class NodeManagerImpl implements NodeManager
         File dir;
         int i;
 
-        // FIXME use version to detect if conversion is needed
+        /**
+         * If we are on version 2 (or greater), the conversion has already taken place
+         */
+        if ( settings.getVersion() != null && settings.getVersion() >= 2 )
+            return;
+
+        // set version at 2 so we don't re-run conversion
+        settings.setVersion( 2L );
+        this._setSettings( settings );
 
         // remove old IPS settings
         oldName = "untangle-node-ips";
@@ -952,6 +957,8 @@ public class NodeManagerImpl implements NodeManager
 
         startAutoLoad();
 
+        convertToNewNames();
+        
         logger.info("Initialized NodeManager");
     }
 
@@ -1223,7 +1230,8 @@ public class NodeManagerImpl implements NodeManager
         logger.info("Initializing Settings...");
 
         NodeManagerSettings newSettings = new NodeManagerSettings();
-
+        newSettings.setVersion(2L); /* as of 12.0, we start with version 2 */
+        
         this._setSettings(newSettings);
     }
 
