@@ -135,18 +135,6 @@ public class SslInspectorApp extends NodeBase
         return this.connectors;
     }
 
-    @Override
-    protected void connectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().registerCasing(clientSideConnector, serverSideConnector);
-    }
-
-    @Override
-    protected void disconnectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing(clientSideConnector, serverSideConnector);
-    }
-
     // public functions -------------------------------------------------------
 
     public SslInspectorSettings getSettings()
