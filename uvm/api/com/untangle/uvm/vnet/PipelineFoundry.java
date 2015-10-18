@@ -25,7 +25,7 @@ public interface PipelineFoundry
 
     void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector );
 
-    void deregisterCasing( PipelineConnector insidePipelineConnector);
+    void deregisterCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector );
 
     /* Remove all of the cached chains */
     void clearCache();

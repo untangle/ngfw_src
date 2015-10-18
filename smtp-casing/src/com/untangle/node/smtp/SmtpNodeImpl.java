@@ -310,7 +310,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     @Override
     protected void disconnectPipelineConnectors()
     {
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector );
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector, serverSideConnector );
     }
     
 

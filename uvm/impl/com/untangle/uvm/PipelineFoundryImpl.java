@@ -183,24 +183,28 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Register an Netcap Connector
+     * Register an PipelineConnector
      */
     public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
         logger.debug( "registerPipelineConnector( " + pipelineConnector.getName() + " )" );
-        this.pipelineConnectors.add( ((PipelineConnectorImpl) pipelineConnector) );
-        Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
-        clearCache();
+        synchronized (this) {
+            this.pipelineConnectors.add( ((PipelineConnectorImpl) pipelineConnector) );
+            Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
+            clearCache();
+        }
     }
 
     /**
-     * Unregister an Netcap Connector
+     * Unregister an PipelineConnector
      */
     public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
         logger.debug( "deregisterPipelineConnector( " + pipelineConnector.getName() + " )" );
-        this.pipelineConnectors.remove( (PipelineConnectorImpl) pipelineConnector );
-        clearCache();
+        synchronized (this) {
+            this.pipelineConnectors.remove( (PipelineConnectorImpl) pipelineConnector );
+            clearCache();
+        }
     }
     
     /**
@@ -218,7 +222,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Unregister a Casing
      */
-    public void deregisterCasing( PipelineConnector insidePipelineConnector )
+    public void deregisterCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector )
     {
         logger.debug("deregisterCasing( " + insidePipelineConnector.getName() + " )");
         synchronized (this) {

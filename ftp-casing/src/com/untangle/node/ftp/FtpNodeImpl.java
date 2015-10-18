@@ -140,8 +140,8 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
     @Override
     protected void disconnectPipelineConnectors()
     {
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing( controlClientSideConnector );
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing( dataClientSideConnector );
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( controlClientSideConnector, controlServerSideConnector );
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( dataClientSideConnector, dataServerSideConnector );
         UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( natFtpConnectorCtl );
         UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( natFtpConnectorData );
     }
