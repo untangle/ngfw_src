@@ -221,7 +221,7 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSServerPort( serverSide.getServerPort() );
 
             sessionGlobalState.setSessionEvent( sessionEvent );
-            
+
             int tupleHashCodeOriginal =
                 sessionEvent.getSClientAddr().hashCode() + 
                 sessionEvent.getSClientPort() + 

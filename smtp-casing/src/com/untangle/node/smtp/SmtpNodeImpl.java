@@ -294,26 +294,11 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         SmtpNodeImpl.quarantine.open();
     }
 
-    // NodeBase methods ---------------------------------------------------
-
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
-
-    @Override
-    protected void connectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().registerCasing( clientSideConnector, serverSideConnector );
-    }
-
-    @Override
-    protected void disconnectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector, serverSideConnector );
-    }
-    
 
     public Object getSettings()
     {

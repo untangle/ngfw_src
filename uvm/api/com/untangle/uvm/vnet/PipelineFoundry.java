@@ -17,18 +17,11 @@ import com.untangle.uvm.node.Node;
  */
 public interface PipelineFoundry
 {
-    //PipelineConnector createPipelineConnector( PipeSpec spec, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting );
-
     void registerPipelineConnector( PipelineConnector pipelineConnector );
 
     void deregisterPipelineConnector( PipelineConnector pipelineConnector );
 
-    void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector );
-
-    void deregisterCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector );
-
-    /* Remove all of the cached chains */
-    void clearCache();
+    void clearCache();     /* Remove all of the cached chains */
 
     void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
 

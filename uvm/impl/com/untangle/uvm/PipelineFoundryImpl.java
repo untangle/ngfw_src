@@ -203,33 +203,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
     
     /**
-     * Register a Casing
-     */
-    public void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector )
-    {
-        logger.debug("registerCasing( " + insidePipelineConnector.getName() + " , " + outsidePipelineConnector.getName() + " )");
-        synchronized (this) {
-            this.pipelineConnectors.add( ((PipelineConnectorImpl) insidePipelineConnector) );
-            this.pipelineConnectors.add( ((PipelineConnectorImpl) outsidePipelineConnector) );
-            Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
-            clearCache();
-        }
-    }
-
-    /**
-     * Unregister a Casing
-     */
-    public void deregisterCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector )
-    {
-        logger.debug("deregisterCasing( " + insidePipelineConnector.getName() + " )");
-        synchronized (this) {
-            this.pipelineConnectors.remove( (PipelineConnectorImpl) insidePipelineConnector );
-            this.pipelineConnectors.remove( (PipelineConnectorImpl) outsidePipelineConnector );
-            clearCache();
-        }
-    }
-
-    /**
      * registerConnection tells PipelineFoundry that connections from the socketAddress address/port pair
      * is the following type of fitting.
      * It is used only by the FTP-casing currently to tell use which connections are FTP_DATA_STREAM connections

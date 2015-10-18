@@ -109,18 +109,6 @@ public class HttpNodeImpl extends NodeBase
         return this.connectors;
     }
 
-    @Override
-    protected void connectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().registerCasing( clientSideConnector, serverSideConnector );
-    }
-
-    @Override
-    protected void disconnectPipelineConnectors()
-    {
-        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector, serverSideConnector );
-    }
-    
     public Object getSettings()
     {
         return getHttpSettings();
