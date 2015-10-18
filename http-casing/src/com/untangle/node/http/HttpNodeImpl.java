@@ -17,7 +17,7 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * An HTTP casing node.
  */
-public class HttpNodeImpl extends NodeBase implements HttpNode
+public class HttpNodeImpl extends NodeBase
 {
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );
