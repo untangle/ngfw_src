@@ -123,12 +123,10 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
         this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
-        int strength = getStrength();
-
-        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl",  this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength);
-        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength);
-        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http",  this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, strength);
-        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp",  this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, strength);
+        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl",  this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, getFtpStrength());
+        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, getFtpStrength());
+        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http",  this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength());
+        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp",  this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength());
         this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
 
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
@@ -205,7 +203,9 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         return scanner.getLastSignatureUpdate();
     }
 
-    abstract protected int getStrength();
+    abstract protected int getHttpStrength();
+    abstract protected int getFtpStrength();
+    abstract protected int getSmtpStrength();
 
     abstract public String getName();
     abstract public String getAppName();

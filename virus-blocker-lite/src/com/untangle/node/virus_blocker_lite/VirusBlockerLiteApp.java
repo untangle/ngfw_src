@@ -14,9 +14,28 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         super( nodeSettings, nodeProperties, new ClamScanner() );
     }
 
-    protected int getStrength()
+    protected int getHttpStrength()
     {
+        // virus blocker is 18
+        // virus blocker lite is 15
+        // virus blocker should be higher (closer to server)
         return 15;
+    }
+
+    protected int getFtpStrength()
+    {
+        // virus blocker is 18
+        // virus blocker lite is 15
+        // virus blocker should be higher (closer to server)
+        return 15;
+    }
+
+    protected int getSmtpStrength()
+    {
+        // virus blocker is 15
+        // virus blocker lite is 18
+        // virus blocker should be lower (closer to client)
+        return 18; 
     }
 
     public String getName()
