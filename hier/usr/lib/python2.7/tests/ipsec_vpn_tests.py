@@ -94,14 +94,14 @@ def createRadiusSettings():
             "LDAPPort": "389", 
             "OUFilter": "", 
             "domain": "adtest.metaloft.com", 
-            "javaClass": "com.untangle.node.adconnector.ActiveDirectorySettings", 
+            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": "", 
             "superuser": "Administrator"}, 
         "radiusSettings": {
             "port": 1812, 
             "enabled": True, 
             "authenticationMethod": "CHAP", 
-            "javaClass": "com.untangle.node.adconnector.RadiusSettings", 
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": radiusHost, 
             "sharedSecret": "chakas"}
     }
@@ -110,11 +110,11 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-ipsec"
+        return "untangle-node-ipsec-vpn"
 
     @staticmethod
     def nodeNameAD():
-        return "untangle-node-adconnector"
+        return "untangle-node-directory-connector"
 
     @staticmethod
     def vendorName():
@@ -234,4 +234,4 @@ class IPsecTests(unittest2.TestCase):
             uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
             nodeAD = None
 
-test_registry.registerNode("ipsec", IPsecTests)
+test_registry.registerNode("ipsec-vpn", IPsecTests)
