@@ -2270,7 +2270,7 @@ Ext.define('Ung.TableConfig', {
                     }
                 }]
             },
-            capture_user_events: {
+            captive_portal_user_events: {
                 fields: [{
                     name: "time_stamp",
                     sortType: 'asTimestamp'

@@ -10,7 +10,7 @@
     ],
     "textString": "Captive Portal processed {0} user logins.", 
     "readOnly": true,
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "Captive Portal Summary",
     "type": "TEXT"
 }

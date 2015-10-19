@@ -11,7 +11,7 @@
     "pieGroupColumn": "event_info",
     "pieSumColumn": "count(*)",
     "readOnly": true,
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "Activity Summary",
     "type": "PIE_GRAPH"
 }

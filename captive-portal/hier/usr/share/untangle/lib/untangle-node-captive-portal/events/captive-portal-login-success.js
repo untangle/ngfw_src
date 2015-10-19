@@ -12,7 +12,7 @@
     "description": "Successful logins to Captive Portal.",
     "displayOrder": 21,
     "javaClass": "com.untangle.node.reports.EventEntry",
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "Login Success User Events",
     "uniqueId": "captive-portal-DAVKMYJ0AR"
 }

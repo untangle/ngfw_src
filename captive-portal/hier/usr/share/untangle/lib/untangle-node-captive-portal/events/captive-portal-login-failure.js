@@ -12,7 +12,7 @@
     "description": "Failed logins to Captive Portal.",
     "displayOrder": 22,
     "javaClass": "com.untangle.node.reports.EventEntry",
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "Login Failure User Events",
     "uniqueId": "captive-portal-YQ42F59W9G"
 }

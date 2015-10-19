@@ -11,7 +11,7 @@
     "pieGroupColumn": "client_addr",
     "pieSumColumn": "count(*)",
     "readOnly": true,
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "conditions": [
         {
             "javaClass": "com.untangle.node.reports.SqlCondition",

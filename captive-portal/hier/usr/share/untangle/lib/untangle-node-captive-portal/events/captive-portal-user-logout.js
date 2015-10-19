@@ -12,7 +12,7 @@
     "description": "All user logout events.",
     "displayOrder": 25,
     "javaClass": "com.untangle.node.reports.EventEntry",
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "User Logout User Events",
     "uniqueId": "captive-portal-ZAWHSSSP3A"
 }

@@ -12,7 +12,7 @@
     "description": "Sessions that reached the session timeout.",
     "displayOrder": 23,
     "javaClass": "com.untangle.node.reports.EventEntry",
-    "table": "capture_user_events",
+    "table": "captive_portal_user_events",
     "title": "Session Timeout User Events",
     "uniqueId": "captive-portal-14EX9EL9NL"
 }

@@ -119,8 +119,8 @@ dict['configuration_backup_events'].update({
     'description' : 'Text detail of the event',
 })
 
-dict['capture_user_events'] = copy.deepcopy(generic)
-dict['capture_user_events'].update({
+dict['captive_portal_user_events'] = copy.deepcopy(generic)
+dict['captive_portal_user_events'].update({
     'table_description' : 'This table stores Captive Portal events',
     'login_name' : 'The login username',
     'event_info' : 'The type of event (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)',

@@ -60,7 +60,7 @@ public class CaptivePortalUserEvent extends LogEvent
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
-        String sql = "INSERT INTO reports.capture_user_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO reports.captive_portal_user_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " +
             "values ( ?, ?, ?, ?, ?, ? )";
 

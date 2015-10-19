@@ -76,7 +76,7 @@ class CaptivePortal(Node):
         ft.dimensions.append(Column('captive_portal_rule_index', 'integer'))
 
     def create_tables(self):
-        self.__make_capture_user_events_table()
+        self.__make_captive_portal_user_events_table()
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -104,7 +104,7 @@ class CaptivePortal(Node):
         sql_helper.clean_table("captive_portal_user_totals", cutoff)
 
     @sql_helper.print_timing
-    def __make_capture_user_events_table(self):
+    def __make_captive_portal_user_events_table(self):
         sql_helper.create_table("""\
 CREATE TABLE reports.captive_portal_user_events (
     time_stamp timestamp without time zone,
