@@ -76,7 +76,7 @@ public class SslInspectorApp extends NodeBase
         SessionEventHandler clientSideHandler = new ForkedEventHandler(clientParser, clientUnparser);
         SessionEventHandler serverSideHandler = new ForkedEventHandler(serverUnparser, serverParser);
 
-        this.clientSideConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-client-side", this, null, clientSideHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, "ssl-server-side");
+        this.clientSideConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-client-side", this, null, clientSideHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, null);
         this.serverSideConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-server-side", this, null, serverSideHandler, Fitting.HTTP_STREAM, Fitting.HTTPS_STREAM, Affinity.SERVER, 1100, "ssl-client-side");
         this.connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
 
