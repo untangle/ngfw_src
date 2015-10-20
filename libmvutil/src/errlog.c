@@ -64,6 +64,17 @@ int _errlog (char* fmt, char* file, int lineno, int level, char*lpszFmt, ...)
     return -1;
 }
 
+void* _errlog_null (char* fmt, char* file, int lineno, int level, char*lpszFmt, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, lpszFmt);
+    _errlog (fmt, file, lineno, level, lpszFmt, argptr);
+    va_end(argptr);
+
+    return NULL;
+}
+
 int _errlog_noprefix (char* fmt, char* file, int lineno, int level, char*lpszFmt, ...)
 {
     va_list argptr;

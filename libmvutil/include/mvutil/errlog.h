@@ -17,6 +17,7 @@ typedef void (*errlog_fatal_func_t) (void* arg);
 extern int   _errlog_init(void);
 extern void  _errlog_cleanup(void);
 extern int   _errlog (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...) __attribute__ ((format (printf, 5, 6)));
+extern void* _errlog_null (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...) __attribute__ ((format (printf, 5, 6)));
 extern void  _errlog_set_output (FILE * out);
 extern void  _errlog_date_toggle (int onoff);
 extern void  _errlog_set_fatal_func (errlog_fatal_func_t func);
@@ -30,7 +31,7 @@ extern void  _errlog_cleanup (void);
 #define ERR_INFORM    STD_ERRLOG_PREFIX,ERROR_INFORM_LVL
 
 #define errlog(...)              _errlog(__VA_ARGS__)
-#define errlog_null(...)         ((_errlog(__VA_ARGS__) < 0 ) ? NULL : NULL )
+#define errlog_null(...)         _errlog_null(__VA_ARGS__)
 #define errlog_noprefix(...)     _errlog_noprefix(__VA_ARGS__)
 #define errlog_set_output(a)     _errlog_set_output(a)
 #define errlog_date_toggle(a)    _errlog_date_toggle(a)
