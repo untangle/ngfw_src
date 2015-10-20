@@ -23,8 +23,8 @@ public class HttpNodeImpl extends NodeBase
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );
     
-    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-client-side", this, null, clientSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS, Affinity.CLIENT, -1000 );
-    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, Affinity.SERVER, 1000 );
+    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-client-side", this, null, clientSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS, Affinity.CLIENT, -1000, "http-server-side" );
+    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, Affinity.SERVER, 1000, "http-client-side" );
     private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
 
     private final Logger logger = Logger.getLogger(HttpNodeImpl.class);

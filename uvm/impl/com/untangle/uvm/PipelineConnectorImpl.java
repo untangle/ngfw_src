@@ -45,12 +45,24 @@ public class PipelineConnectorImpl implements PipelineConnector
     private final Fitting outputFitting;
     private final Affinity affinity;
     private final Integer affinityStrength;
+
+    /**
+     * A nemesis is another pipelineConnector that this connector must not be adjacent to.
+     * If it is, both this one and the nemesis will be removed from the pipeline.
+     * This is used for casings where if the pipline looks like http-client-side -> http-server-side with nothing
+     * in the middle, they will both be removed from the pipeline
+     */
+    private final String nemesis; 
+    
     
     protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
     
-    // public construction is the easiest solution to access from
-    // PipelineConnectorManager for now.
     public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
+    {
+        this( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, null );
+    }
+
+    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String nemesis )
     {
         this.name = name;
         this.node = node;
@@ -60,12 +72,13 @@ public class PipelineConnectorImpl implements PipelineConnector
         this.outputFitting = outputFitting;
         this.affinity = affinity;
         this.affinityStrength = affinityStrength;
+        this.nemesis = nemesis;
         
         dispatcher = new Dispatcher(this);
         if (listener != null)
             dispatcher.setSessionEventHandler( listener );
     }
-
+    
     public boolean isEnabled()
     {
         return enabled;
@@ -77,6 +90,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     }
 
     public String getName() { return this.name; }
+    public String getNemesis() { return this.nemesis; }
     public Node getNode() { return this.node; }
     public Node node() { return this.node; }
     public Affinity getAffinity() { return this.affinity; }

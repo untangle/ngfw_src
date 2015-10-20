@@ -174,9 +174,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
     {
-        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength );
+        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, null );
     }
 
+    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String nemesis )
+    {
+        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, nemesis );
+    }
+    
     /**
      * Register an PipelineConnector
      */
@@ -283,9 +288,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Add all netcap connectors to the list that match this policy and fitting type
      */
-    private boolean addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
-                                           List<PipelineConnectorImpl> availableConnectors,
-                                           Fitting fitting, Long policyId )
+    private void addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
+                                        List<PipelineConnectorImpl> availableConnectors,
+                                        Fitting fitting, Long policyId )
     {
         PipelineConnectorImpl connectorToAdd = null;
         
@@ -316,6 +321,23 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         if ( connectorToAdd != null ) {
+
+            // first check that the previous pipeline connector is not a nemesis
+            // if it is, remove the nemesis and don't add this one
+            if ( pipelineConnectorList.size() > 0 ) {
+                PipelineConnectorImpl prevConnector = pipelineConnectorList.get( pipelineConnectorList.size() - 1 );
+                if ( ( prevConnector.getNemesis() != null && prevConnector.getNemesis().equals( connectorToAdd.getName() ) ) ||
+                     ( connectorToAdd.getNemesis() != null && connectorToAdd.getNemesis().equals( prevConnector.getName() ) ) ) {
+                    
+                    pipelineConnectorList.remove( pipelineConnectorList.size() - 1 );
+                    logger.debug("Dropping both " + prevConnector.getName() + " and " + connectorToAdd.getName() + " from pipeline because nothing is in between.");
+                    // now continue where we left off
+                    addPipelineConnectors( pipelineConnectorList, availableConnectors, prevConnector.getInputFitting(), policyId );
+                    return;
+                }
+
+            }
+
             pipelineConnectorList.add( connectorToAdd ); // add to current chain
             availableConnectors.remove( connectorToAdd ); // remove from available list
 
@@ -325,10 +347,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
             Fitting outputFitting = connectorToAdd.getOutputFitting(); // this connections output fitting
             addPipelineConnectors( pipelineConnectorList, availableConnectors, outputFitting, policyId );
-            return true;
+            return;
         } else {
             //nothing to add, just return
-            return false;
+            return;
         }
     }
 
