@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.SmtpNode;
+import com.untangle.node.smtp.SmtpNodeImpl;
 import com.untangle.node.smtp.quarantine.QuarantineSettings;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
 import com.untangle.node.smtp.safelist.SafelistManipulation;
@@ -30,7 +30,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
-    private SmtpNode m_mailNode;
+    private SmtpNodeImpl m_mailNode;
     private QuarantineUserView m_quarantine;
     private SafelistManipulation m_safelist;
 
@@ -86,7 +86,7 @@ public class QuarantineEnduserServlet extends HttpServlet
      *
      * @return the Quarantine node view.
      */
-    public SmtpNode getSmtpNode()
+    public SmtpNodeImpl getSmtpNode()
     {
         if(m_safelist == null) {
             initRemoteRefs();
@@ -150,7 +150,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private void initRemoteRefs()
     {
         try {
-            SmtpNode mt = (SmtpNode) UvmContextFactory.context().nodeManager().nodeInstances("untangle-casing-smtp").get(0);
+            SmtpNodeImpl mt = (SmtpNodeImpl) UvmContextFactory.context().nodeManager().nodeInstances("untangle-casing-smtp").get(0);
             m_mailNode = mt;
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistManipulation();
