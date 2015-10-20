@@ -30,7 +30,7 @@ extern void  _errlog_cleanup (void);
 #define ERR_INFORM    STD_ERRLOG_PREFIX,ERROR_INFORM_LVL
 
 #define errlog(...)              _errlog(__VA_ARGS__)
-#define errlog_null(...)         ((void*)((_errlog(__VA_ARGS__) < 0 ) ? NULL : NULL ))
+#define errlog_null(...)         ((_errlog(__VA_ARGS__) < 0 ) ? NULL : NULL )
 #define errlog_noprefix(...)     _errlog_noprefix(__VA_ARGS__)
 #define errlog_set_output(a)     _errlog_set_output(a)
 #define errlog_date_toggle(a)    _errlog_date_toggle(a)

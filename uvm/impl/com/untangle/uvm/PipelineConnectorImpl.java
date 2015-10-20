@@ -47,12 +47,17 @@ public class PipelineConnectorImpl implements PipelineConnector
     private final Integer affinityStrength;
 
     /**
-     * A nemesis is another pipelineConnector that this connector must not be adjacent to.
-     * If it is, both this one and the nemesis will be removed from the pipeline.
-     * This is used for casings where if the pipline looks like http-client-side -> http-server-side with nothing
-     * in the middle, they will both be removed from the pipeline
+     * A buddy is another pipelineConnector that this connector must not be adjacent to.
+     * If it is, both this one and the buddy will be removed from the pipeline.
+     * Also, this pipeline connector will not be inserted into the pipeline if the buddy is not present.
+     *
+     * This is used for casings
+     * For example, the "http-server-side" pipeline connector has a buddy of "http-client-side"
+     * This assures two things
+     * 1) That http-server-side is only inserted if http-client-side exists somewhere in the pipeline before it
+     * 2) That if http-server-side is inserted immediately after http-client-side, then both are removed since there is nothin "in the middle"
      */
-    private final String nemesis; 
+    private final String buddy; 
     
     
     protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
@@ -62,7 +67,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         this( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, null );
     }
 
-    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String nemesis )
+    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String buddy )
     {
         this.name = name;
         this.node = node;
@@ -72,7 +77,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         this.outputFitting = outputFitting;
         this.affinity = affinity;
         this.affinityStrength = affinityStrength;
-        this.nemesis = nemesis;
+        this.buddy = buddy;
         
         dispatcher = new Dispatcher(this);
         if (listener != null)
@@ -90,7 +95,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     }
 
     public String getName() { return this.name; }
-    public String getNemesis() { return this.nemesis; }
+    public String getBuddy() { return this.buddy; }
     public Node getNode() { return this.node; }
     public Node node() { return this.node; }
     public Affinity getAffinity() { return this.affinity; }

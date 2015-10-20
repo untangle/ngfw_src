@@ -34,7 +34,7 @@ public interface PipelineConnector
 
     String getName();
 
-    String getNemesis();
+    String getBuddy();
     
     Fitting getInputFitting();
 
