@@ -337,15 +337,38 @@ Ext.define('Webui.config.network', {
                         if(Ext.isEmpty(result)) {
                             return;
                         }
+                        if (result.search("Device not found") >=0) {
+                            return;
+                        }
                         var lineparts = result.split(" ");
                         var intf = lineparts[0];
-                        var macAddress = lineparts[4];
-                        var rxpkts = lineparts[6].split(":")[1];
-                        var rxerr = lineparts[7].split(":")[1];
-                        var rxdrop = lineparts[8].split(":")[1];
-                        var txpkts = lineparts[12].split(":")[1];
-                        var txerr = lineparts[13].split(":")[1];
-                        var txdrop = lineparts[14].split(":")[1];
+                        var macAddress = "";
+                        var rxpkts = "";
+                        var rxerr = "";
+                        var rxdrop = "";
+                        var txpkts = "";
+                        var txerr = "";
+                        var txdrop = "";
+
+                        if (result.search("Ethernet") >= 0) {
+
+                            macAddress = lineparts[4];
+                            rxpkts = lineparts[6].split(":")[1];
+                            rxerr = lineparts[7].split(":")[1];
+                            rxdrop = lineparts[8].split(":")[1];
+                            txpkts = lineparts[12].split(":")[1];
+                            txerr = lineparts[13].split(":")[1];
+                            txdrop = lineparts[14].split(":")[1];
+                        }
+                        if (result.search("Point-to-Point") >= 0) {
+                            macAddress = "";
+                            rxpkts = lineparts[5].split(":")[1];
+                            rxerr = lineparts[6].split(":")[1];
+                            rxdrop = lineparts[7].split(":")[1];
+                            txpkts = lineparts[11].split(":")[1];
+                            txerr = lineparts[12].split(":")[1];
+                            txdrop = lineparts[13].split(":")[1];
+                        }
                         
                         Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
