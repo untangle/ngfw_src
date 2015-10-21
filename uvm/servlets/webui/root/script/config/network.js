@@ -326,7 +326,7 @@ Ext.define('Webui.config.network', {
             hasEdit: false,
             initialLoad: function() {}, //Don't load automatically
             dataFn: function(handler) {
-                var command1 = "ifconfig "+this.symbolicDev+" | grep 'HWaddr\\|packets' |tr '\\n' ' ' | tr -s ' ' ";
+                var command1 = "ifconfig "+this.symbolicDev+" | grep 'Link\\|packets' |tr '\\n' ' ' | tr -s ' ' ";
                 var command2 = "ifconfig "+this.symbolicDev+" | grep 'inet addr' | tr -s ' ' | cut -c 7- ";
                 var command3 = "ifconfig "+this.symbolicDev+" | grep inet6 | grep Global | cut -d' ' -f 13";
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
