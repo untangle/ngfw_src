@@ -1,5 +1,6 @@
 # -*-ruby-*-
-# $Id$
+
+# This rakefile is compatible with both 0.8 and 10
 
 verbose(false) #disable printing of rake mkdir messages
 
