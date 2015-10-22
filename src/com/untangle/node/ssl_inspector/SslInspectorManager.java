@@ -93,10 +93,16 @@ class SslInspectorManager
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
-    public SslInspectorManager( NodeTCPSession session, boolean clientSide, SslInspectorApp node )
+    public boolean tlsFlagClient;
+    public boolean tlsFlagServer;
+
+    public SslInspectorManager(NodeTCPSession session, boolean clientSide, SslInspectorApp node)
     {
         this.session = session;
         this.node = node;
+        this.tlsFlagClient = false;
+        this.tlsFlagServer = false;
+
         this.clientSide = clientSide;
         this.dataMode = false;
         this.chompCount = 0;
@@ -113,23 +119,23 @@ class SslInspectorManager
                 // the server side casing should be finished with the
                 // SSL handshake by now so we grab the peer certificate
                 SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
-                if (server == null)
-                    throw new Exception("Server SslInspectorManager attachment is missing");
+                if (server == null) throw new Exception("Server SslInspectorManager attachment is missing");
 
                 X509Certificate cert = server.getPeerCertificate();
-                if (cert == null)
-                    throw new Exception("Server SslInspectorManager certificate is missing");
-                    
+                if (cert == null) throw new Exception("Server SslInspectorManager certificate is missing");
+
+                logger.debug("Initializing CLIENT SSLEngine");
                 initializeClientEngine(cert);
             }
 
             else {
                 // we need the SNI hostname from the client side casing
                 SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
-                if (client == null)
-                    throw new Exception("Client SslInspectorManager attachment is missing");
+                if (client == null) throw new Exception("Client SslInspectorManager attachment is missing");
 
                 String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+
+                logger.debug("Initializing SERVER SSLEngine");
                 initializeServerEngine(sniHostname);
             }
         }
@@ -167,8 +173,7 @@ class SslInspectorManager
 
         // we only want the CN from the certificate
         for (Rdn rdn : ldapDN.getRdns()) {
-            if (rdn.getType().equals("CN") == false)
-                continue;
+            if (rdn.getType().equals("CN") == false) continue;
             certHostName += rdn.getValue().toString();
             break;
         }
@@ -286,12 +291,12 @@ class SslInspectorManager
         // No idea if this is even possible, but if so it would allow us
         // to support client to server authentication via certificate.
 
-        // if blind trust is enabled we simply trust everything
-        if (node.getSettings().getServerBlindTrust() == true) {
+        // if blind trust is enabled or we are doing SMTP then we simply trust everything
+        if ((node.getSettings().getServerBlindTrust() == true) || (session.getServerPort() == 25)) {
             sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
         }
 
-        // blind trust not enabled so use the shared list of trusted certs
+        // blind trust not enabled and not SMTP so use the shared list of trusted certs
         else {
             sslContext.init(null, node.getTrustFactory().getTrustManagers(), null);
         }
@@ -323,8 +328,7 @@ class SslInspectorManager
             String strValue = rdn.getValue().toString();
 
             // ignore any subject fields that we don't understand
-            if (validSubjectList.containsKey(strType) == false)
-                continue;
+            if (validSubjectList.containsKey(strType) == false) continue;
 
             // use the type string stored in the hashmap since openssl
             // is very picky about the case of the field names
@@ -351,13 +355,11 @@ class SslInspectorManager
                 int value = ((Integer) entry.get(0)).intValue();
 
                 // check the entry type against the list we understand
-                if (validAlternateList.containsKey(value) == false)
-                    continue;
+                if (validAlternateList.containsKey(value) == false) continue;
 
                 // use the name string from our hashmap along with the
                 // value from the certificate to build our SAN list
-                if (certSANlist.length() != 0)
-                    certSANlist.append(",");
+                if (certSANlist.length() != 0) certSANlist.append(",");
                 certSANlist.append(validAlternateList.get(value) + ":" + entry.get(1).toString());
             }
         }
@@ -409,9 +411,9 @@ class SslInspectorManager
         return (dataMode);
     }
 
-    public void setDataMode(boolean dataMode)
+    public void setDataMode(boolean argMode)
     {
-        this.dataMode = dataMode;
+        this.dataMode = argMode;
     }
 
     public int getChompCount()
@@ -473,16 +475,14 @@ for more data when a full packet has not yet been received.
 
         // make sure we have a TLS handshake message
         int recordType = Math.abs(data.get());
-        if (recordType != TLS_HANDSHAKE)
-            throw new Exception("Packet does not contain a TLS Handshake");
+        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet does not contain a TLS Handshake");
 
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO)
-            throw new Exception("Packet does not contain TLS ClientHello");
+        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");
 
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
@@ -495,22 +495,18 @@ for more data when a full packet has not yet been received.
         data.get(clientRandom, 0, 28);
 
         int sessionLength = Math.abs(data.get());
-        if (sessionLength > 0)
-            data.get(sessionData, 0, sessionLength);
+        if (sessionLength > 0) data.get(sessionData, 0, sessionLength);
 
         int cipherLength = Math.abs(data.getShort());
-        if (cipherLength > 0)
-            data.get(cipherList, 0, cipherLength);
+        if (cipherLength > 0) data.get(cipherList, 0, cipherLength);
 
         int compLength = Math.abs(data.get());
-        if (compLength > 0)
-            data.get(compData, 0, compLength);
+        if (compLength > 0) data.get(compData, 0, compLength);
 
         // if position equals recordLength plus five we know this is the end
         // of the packet and thus there are no extensions - will normally
         // be equal but we include the greater than just to be safe
-        if (data.position() >= (recordLength + 5))
-            return (null);
+        if (data.position() >= (recordLength + 5)) return (null);
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
@@ -587,15 +583,64 @@ for more data when a full packet has not yet been received.
     public boolean checkIPCMessage(byte[] haystack, byte[] needle)
     {
         // first make sure the haystack is large enough to contain the needle
-        if (needle.length > haystack.length)
-            return (false);
+        if (needle.length > haystack.length) return (false);
 
         // now check each byte returning false if we find a missmatch
         for (int x = 0; x < needle.length; x++)
-            if (haystack[x] != needle[x])
-                return (false);
+            if (haystack[x] != needle[x]) return (false);
 
         // everything matches so return true
+        return (true);
+    }
+
+    /*
+     * We use the checkTls functions here to look for TLS handshake. The TLS
+     * extension for SMTP defined by RFC-3207 only requires 220 in a successful
+     * server reply to STARTTLS received from a client. This makes it slightly
+     * more complicated to detect when the server is switching to TLS mode. Our
+     * approach is to only look for the 220 response in the first server reply
+     * after setting the TLS flag on the client side. If found we continue with
+     * TLS handling. If not, we assume crazy things are happening and release
+     * the session.
+     */
+
+    public boolean checkTlsClient(ByteBuffer data)
+    {
+        byte[] rawdata = data.array();
+        int rawlen = data.limit();
+
+        // make sure we have the minumum number of bytes
+        if (rawlen < 9) return (false);
+
+        if ((rawdata[0] != 'S') && (rawdata[0] != 's')) return (false);
+        if ((rawdata[1] != 'T') && (rawdata[0] != 't')) return (false);
+        if ((rawdata[2] != 'A') && (rawdata[0] != 'a')) return (false);
+        if ((rawdata[3] != 'R') && (rawdata[0] != 'r')) return (false);
+        if ((rawdata[4] != 'T') && (rawdata[0] != 't')) return (false);
+        if ((rawdata[5] != 'T') && (rawdata[0] != 't')) return (false);
+        if ((rawdata[6] != 'L') && (rawdata[0] != 'l')) return (false);
+        if ((rawdata[7] != 'S') && (rawdata[0] != 's')) return (false);
+
+        // the last character should be LF be we allow CR as well
+        if ((rawdata[rawlen - 1] != '\n') && (rawdata[rawlen - 1] != '\r')) return (false);
+
+        return (true);
+    }
+
+    public boolean checkTlsServer(ByteBuffer data)
+    {
+        byte[] rawdata = data.array();
+        int rawlen = data.limit();
+
+        if (rawdata.length < 4) return (false);
+
+        if (rawdata[0] != '2') return (false);
+        if (rawdata[1] != '2') return (false);
+        if (rawdata[2] != '0') return (false);
+
+        // the last character should be LF be we allow CR as well
+        if ((rawdata[rawlen - 1] != '\n') && (rawdata[rawlen - 1] != '\r')) return (false);
+
         return (true);
     }
 
@@ -605,15 +650,12 @@ for more data when a full packet has not yet been received.
     private boolean validateCertificate(X509Certificate argCert, String argName) throws Exception
     {
         // if the argumented name is null we just return true
-        if (argName == null)
-            return (true);
+        if (argName == null) return (true);
 
         // for starters if we find wildcard characters in the arg name then
         // who knows what the hell is going on so just blindly return true
-        if (argName.contains("*") == true)
-            return (true);
-        if (argName.contains("?") == true)
-            return (true);
+        if (argName.contains("*") == true) return (true);
+        if (argName.contains("?") == true) return (true);
 
         String certName = new String();
 
@@ -622,16 +664,14 @@ for more data when a full packet has not yet been received.
 
         // we only want the CN from the certificate
         for (Rdn rdn : ldapDN.getRdns()) {
-            if (rdn.getType().equals("CN") == false)
-                continue;
+            if (rdn.getType().equals("CN") == false) continue;
             certName += rdn.getValue().toString();
             break;
         }
 
         // see if the name matches the certificate common name
         logger.debug("CHECKING CN " + certName + " FOR " + argName);
-        if (Pattern.matches(GlobUtil.globToRegex(certName), argName) == true)
-            return (true);
+        if (Pattern.matches(GlobUtil.globToRegex(certName), argName) == true) return (true);
 
         // The SAN list is stored as a collection of List's where the
         // first entry is an Integer indicating the type of name and the
@@ -639,8 +679,7 @@ for more data when a full packet has not yet been received.
         Collection<List<?>> altNames = argCert.getSubjectAlternativeNames();
 
         // if there aren't any alt names then nothing else to check
-        if (altNames == null)
-            return (false);
+        if (altNames == null) return (false);
 
         Iterator<List<?>> iterator = altNames.iterator();
 
@@ -649,15 +688,13 @@ for more data when a full packet has not yet been received.
             int value = ((Integer) entry.get(0)).intValue();
 
             // check the entry type against the list we understand
-            if (validAlternateList.containsKey(value) == false)
-                continue;
+            if (validAlternateList.containsKey(value) == false) continue;
 
             String string = entry.get(1).toString();
 
             // if this alt name matches the arg name return true
             logger.debug("CHECKING ALT " + string + " FOR " + argName);
-            if (Pattern.matches(GlobUtil.globToRegex(string), argName) == true)
-                return (true);
+            if (Pattern.matches(GlobUtil.globToRegex(string), argName) == true) return (true);
         }
 
         // nothing matched above so return false
@@ -679,7 +716,7 @@ for more data when a full packet has not yet been received.
 
         public X509Certificate[] getAcceptedIssuers()
         {
-            logger.debug("RETURNING NULL FROM TrustManager.getAcceptedIssuers()");
+            logger.debug("Returning NULL from TrustManager.getAcceptedIssuers()");
             return null;
         }
     };

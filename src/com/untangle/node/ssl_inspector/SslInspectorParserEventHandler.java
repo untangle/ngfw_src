@@ -40,19 +40,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     private final SslInspectorApp node;
     private final boolean clientSide;
 
-    // the corresponding parser for this unparser
-    private SslInspectorUnparserEventHandler unparser;
-
     protected SslInspectorParserEventHandler(boolean clientSide, SslInspectorApp node)
     {
         super();
         this.clientSide = clientSide;
         this.node = node;
-    }
-
-    public void setUnparser(SslInspectorUnparserEventHandler unparser)
-    {
-        this.unparser = unparser;
     }
 
     // ------------------------------------------------------------------------
@@ -122,19 +114,48 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     private void streamParse(NodeTCPSession session, ByteBuffer data, boolean s2c)
     {
+        SslInspectorManager manager = getManager(session);
+        boolean tlsFlag = (s2c ? manager.tlsFlagServer : manager.tlsFlagClient);
+
+        // special handling for SMTP stream in plain text mode  
+        if ((session.getServerPort() == 25) && (tlsFlag == false)) {
+            logger.debug("---------- " + (s2c ? "CLIENT" : "SERVER") + " parse() received " + data.limit() + " bytes ----------");
+
+            if (s2c == true) {
+                session.sendDataToClient(data);
+                if (manager.tlsFlagClient == true) {
+                    if (manager.checkTlsServer(data) == true) {
+                        logger.debug("PARSER SETTING SERVER TLS FLAG");
+                        manager.tlsFlagServer = true;
+                    } else {
+                        logger.debug("PARSER RELEASING TLS LOGIC FAILURE");
+                        manager.tlsFlagClient = manager.tlsFlagServer = false;
+                        shutdownOtherSide(session, false);
+                        session.release();
+                    }
+                }
+            }
+
+            if (s2c == false) {
+                session.sendDataToServer(data);
+                if (manager.checkTlsClient(data) == true) {
+                    logger.debug("PARSER SETTING CLIENT TLS FLAG");
+                    manager.tlsFlagClient = true;
+                }
+            }
+            return;
+        }
+
         try {
-            parse(session, data);
+            parse(session, data, manager);
         } catch (Exception exn) {
             logger.warn("Error during streamParse()", exn);
             return;
         }
-
-        return;
     }
 
-    public void parse(NodeTCPSession session, ByteBuffer data)
+    public void parse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
-        SslInspectorManager manager = getManager(session);
         ByteBuffer buff = data;
         String sslProblem = null;
         String logDetail = null;
@@ -147,25 +168,20 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             return;
         }
 
+        // pass the data to the parse worker function
         try {
-            // pass the data to the parse worker function
             success = parseWorker(session, buff);
         }
 
         catch (SSLException ssl) {
             sslProblem = ssl.getMessage();
-            if (sslProblem == null)
-                sslProblem = "Unknown SSL exception";
+            if (sslProblem == null) sslProblem = "Unknown SSL exception";
 
+            // for normal close we kill both sides and return  
             if (sslProblem.contains("close_notify")) {
-                // cleanup the session on the other side and return destroy result
-                sessionShutdown(session, true);
+                shutdownOtherSide(session, true);
                 session.killSession();
-                success = true;
-            }
-
-            else {
-                logger.warn("Parse exception:", ssl);
+                return;
             }
         }
 
@@ -173,25 +189,21 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logger.debug("Exception calling parseWorker", exn);
         }
 
-        // null result means something went haywire so we abandon
-        // the session and craft up an empty chunk result
-        if (!success) {
-            // put something in the event log
+        // no success result means something went haywire so we kill the session
+        if (success == false) {
+            // put something in the event log starting with any ssl message we extracted above
             logDetail = sslProblem;
-            if (logDetail == null)
-                logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            if (logDetail == null)
-                logDetail = session.getServerAddr().getHostAddress();
+            if (logDetail == null) logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
             node.logEvent(logevt);
             node.incrementMetric(SslInspectorApp.STAT_ABANDONED);
 
             // only log a warning if we didn't get an exception message for the event log 
-            if (sslProblem == null)
-                logger.warn("Session abandon on parseWorker null return for " + logDetail);
+            if (sslProblem == null) logger.warn("Session abandon on parseWorker false return for " + logDetail);
 
             // cleanup the session on the other side and return destroy result
-            sessionShutdown(session, true);
+            shutdownOtherSide(session, true);
             session.killSession();
         }
 
@@ -200,7 +212,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private void sessionShutdown(NodeTCPSession session, boolean killSession)
+    private void shutdownOtherSide(NodeTCPSession session, boolean killSession)
     {
         ByteBuffer message = ByteBuffer.allocate(256);
 
@@ -268,29 +280,29 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
                 node.incrementMetric(SslInspectorApp.STAT_BLOCKED);
 
-                // cleanup the session on the other side and return destroy result
-                sessionShutdown(session, true);
+                // kill the session on both sides
+                shutdownOtherSide(session, true);
                 session.killSession();
                 return true;
             }
 
-            // invalid traffic not blocked so release the session and return
-            // original server chunk for transmit to the client
+            // invalid traffic not blocked so we ignore the session
             ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_IGNORED, ruleMatch.getDescription());
             node.logEvent(logevt);
             logger.debug("RULE MATCH EVENT = " + logevt.toString());
             node.incrementMetric(SslInspectorApp.STAT_IGNORED);
 
-            // cleanup the session on the other side of the casing
-            sessionShutdown(session, false);
-            session.sendObjectToClient( new ReleaseToken() );
+            // release the session on both sides and send the original
+            // message received from the server to the client
+            shutdownOtherSide(session, false);
+            session.sendObjectToClient(new ReleaseToken());
             session.sendDataToClient(data);
             session.release();
             return true;
         }
 
-        while (!done) {
+        while (done == false) {
             status = manager.getSSLEngine().getHandshakeStatus();
             logger.debug("STATUS = " + status);
 
@@ -300,8 +312,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
                 // log the untrusted certificate event
                 String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-                if (logDetail == null)
-                    logDetail = session.getServerAddr().getHostAddress();
+                if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
 
                 SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_UNTRUSTED, logDetail);
                 node.logEvent(logevt);
@@ -313,8 +324,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
                 logger.debug("UNTRUSTED SERVER = " + logDetail);
 
-                // cleanup the session on the other side and return destroy result
-                sessionShutdown(session, true);
+                // kill the session on both sides
+                shutdownOtherSide(session, true);
                 session.killSession();
                 return true;
             }
@@ -330,6 +341,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 return false;
             }
 
+            // check the SSL handshake status we grabbed above
             switch (status)
             {
             // should never happen since this will only be returned from
@@ -434,8 +446,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
 
             // if the message was null this was unexpected so log a warning
-            if (exn.getMessage() == null)
-                logger.warn("Exception parsing SNI hostname", exn);
+            if (exn.getMessage() == null) logger.warn("Exception parsing SNI hostname", exn);
         }
 
         // wait until after the exception handlers to increment the counter
@@ -467,10 +478,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logger.debug("Checking Rules against NodeTCPSession : " + session.getProtocol() + " " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
 
             for (SslInspectorRule rule : ruleList) {
-                if (rule.isLive() == false)
-                    continue;
-                if (rule.matches(session) == false)
-                    continue;
+                if (rule.isLive() == false) continue;
+                if (rule.matches(session) == false) continue;
                 ruleMatch = rule;
                 logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 break;
@@ -483,16 +492,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if (ruleMatch.getAction().getActionType() == SslInspectorRuleAction.ActionType.BLOCK) {
                 // log the block event using any log detail set above but
                 // falling back to the rule description if detail is empty
-                if (logDetail == null)
-                    logDetail = ruleMatch.getDescription();
+                if (logDetail == null) logDetail = ruleMatch.getDescription();
                 logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_BLOCKED, logDetail);
                 node.logEvent(logevt);
                 node.incrementMetric(SslInspectorApp.STAT_BLOCKED);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
 
-                // cleanup the session on the other side and return destroy result
-                sessionShutdown(session, true);
-
+                // kill the session on both sides
+                shutdownOtherSide(session, true);
                 session.killSession();
                 return;
             }
@@ -502,19 +509,17 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             else if (ruleMatch.getAction().getActionType() == SslInspectorRuleAction.ActionType.IGNORE) {
                 // log the ignore event using any log detail set above but
                 // falling back to the rule description if detail is empty
-                if (logDetail == null)
-                    logDetail = ruleMatch.getDescription();
+                if (logDetail == null) logDetail = ruleMatch.getDescription();
                 logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_IGNORED, logDetail);
                 node.logEvent(logevt);
                 node.incrementMetric(SslInspectorApp.STAT_IGNORED);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
 
-                // cleanup the session in the casing on the other side
-                sessionShutdown(session, false);
+                // release the session in the casing on the other side
+                shutdownOtherSide(session, false);
 
-                // put the original client hello packet in a buffer for xmit
-                // to the server and return in a session release chunk result
-                session.sendObjectToServer( new ReleaseToken() );
+                // release the session and send the original client hello to the server
+                session.sendObjectToServer(new ReleaseToken());
                 session.sendDataToServer(data);
                 session.release();
                 return;
@@ -525,15 +530,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // if we have a rule match and make it this far then it must have
             // been an inspect rule so we create an appropriate log event
             logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            if (logDetail == null)
-                logDetail = ruleMatch.getDescription();
+            if (logDetail == null) logDetail = ruleMatch.getDescription();
             logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_INSPECTED, logDetail);
             logger.debug("RULE MATCH EVENT = " + logevt.toString());
         } else {
             // no rule match so create a default INSPECT log event
             logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            if (logDetail == null)
-                logDetail = session.getServerAddr().getHostAddress();
+            if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_INSPECTED, logDetail);
         }
 
@@ -548,10 +551,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         wakeup.flip();
         SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
         server.getSession().simulateClientData(wakeup);
-
-        // return emtpy response here since we sent the wakeup directly
-
-        return;
     }
 
     // ------------------------------------------------------------------------
@@ -595,12 +594,10 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP) return false;
 
         // handle transition from handshaking to finished
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
@@ -608,8 +605,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             manager.setDataMode(true);
 
             // nothing to do on the client side when handshake is finished
-            if (manager.getClientSide() == true)
-                return false;
+            if (manager.getClientSide() == true) return false;
 
             // grab the server certificate and save in our mananger so we can
             // use on the client side to create our fake certificate
@@ -630,16 +626,12 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             wakeup.flip();
             SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
             client.getSession().simulateServerData(wakeup);
-
-            // return emtpy response here since we sent the wakeup directly
-            // clear out buffer
             return true;
         }
 
-        // the unwrap call shouldn't produce data during handshake and if
-        // that is the case we return null here allowing the loop to continue
-        if (result.bytesProduced() == 0)
-            return false;
+        // the unwrap call shouldn't produce data during handshake and if that
+        // is the case we return done=false here allowing the loop to continue
+        if (result.bytesProduced() == 0) return false;
 
         // unwrap calls during handshake should never produce data
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
@@ -657,29 +649,23 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         logger.debug("EXEC_WRAP " + result.toString());
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine wrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
         // if the handshake completed set the dataMode flag
-        if (result.getHandshakeStatus() == HandshakeStatus.FINISHED)
-            manager.setDataMode(true);
+        if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) manager.setDataMode(true);
 
-        // if the wrap call didn't produce any data return null
-        if (result.bytesProduced() == 0)
-            return false;
+        // if the wrap call didn't produce any data return done=false
+        if (result.bytesProduced() == 0) return false;
 
         // the wrap call produced some data so prepare it for return to peer
         target.flip();
 
-        // during handshake client data goes from client to client
-        // and server to server, because they are two separate handshakes
-        // (unlike how normally client flows from client to server and
-        // vice versa
-
+        // during handshake client data goes from client to client and server
+        // data goes from server to server, because they are two separate handshakes
+        // unlike how normally client flows from client to server and vice versa
         if (manager.getClientSide()) {
             session.sendDataToClient(target);
         } else {
@@ -697,8 +683,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         SSLEngineResult result;
 
         // we don't expect to get here unless dataMode is already active
-        if (manager.getDataMode() == false)
-            throw new Exception("SSLEngine datamode fault");
+        if (manager.getDataMode() == false) throw new Exception("SSLEngine datamode fault");
 
         // the parser will always call unwrap to convert SSL to plain
         result = manager.getSSLEngine().unwrap(data, target);
@@ -706,9 +691,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         logger.debug("LOCAL_BUFFER = " + target.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
-            // if the target buffer is empty just return an empty result
+            // if the target buffer is empty we are finished so return done=true 
             if (target.position() == 0) {
-                // clear out buffer
                 return true;
             }
 
@@ -736,7 +720,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             // when the handshake is complete and data is flowing we send
             // unparse data from the client to the server and vice versa
-
             if (manager.getClientSide()) {
                 session.sendDataToServer(target);
                 session.setClientBuffer(data);
@@ -765,7 +748,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
-            // if unwrap hasn't produce any data just return the data buffer
+            // if unwrap hasn't produce any data just re-use the data buffer
             // so the session manager can fill it with more data
             if (target.position() == 0) {
                 if (manager.getClientSide()) {
@@ -793,31 +776,27 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         // any other result is very bad news
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
-        // if we have gone back into handshake mode we return null to abandon
-        // the session since the SSLEngine doesn't support rehandshake
+        // if we have gone back into handshake mode we return done=false so the caller
+        // can detect and abandon the session since the SSLEngine doesn't support rehandshake
         if (result.getHandshakeStatus() != HandshakeStatus.NOT_HANDSHAKING) {
             manager.setDataMode(false);
             return false;
         }
 
-        // The SSL engine may not consume all of the data on the first call
-        // so we use the chomp counter to track consumption and keep looping
-        // until everything has been unwraped.
+        // The SSLEngine may not consume all data on the first call so we use the chomp
+        // counter to track consumption and keep looping until everything has been unwrapped
         int count = manager.addChompCount(result.bytesConsumed());
         logger.debug("RECEIVED = " + data.limit() + "  CONSUMED = " + count);
-        if (manager.getChompCount() != data.limit())
-            return false;
+        if (manager.getChompCount() != data.limit()) return false;
 
         // everything consumed so clear the chomp counter
         manager.clearChompCount();
 
         // if the unwrap call doesn't produce any data we just return
-        // an empty result and let the processing continue
-        if (result.bytesProduced() == 0)
-            return false;
+        // done=false and let the processing continue
+        if (result.bytesProduced() == 0) return false;
 
         // The SSLEngine gave us some data so pass it along. We only get
         // this far if all the data passed is consumed so we don't have
@@ -841,5 +820,4 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         else
             return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
-
 }

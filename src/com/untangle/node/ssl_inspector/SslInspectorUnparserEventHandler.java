@@ -10,10 +10,12 @@ import java.util.Arrays;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+
 import org.apache.log4j.Logger;
 
 /*
@@ -35,12 +37,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     private final SslInspectorApp node;
     private final boolean clientSide;
 
-    // the corresponding parser for this unparser
-    private SslInspectorParserEventHandler parser;
-    
     // ------------------------------------------------------------------------
 
-    protected SslInspectorUnparserEventHandler( boolean clientSide, SslInspectorApp node )
+    protected SslInspectorUnparserEventHandler(boolean clientSide, SslInspectorApp node)
     {
         this.clientSide = clientSide;
         this.node = node;
@@ -48,50 +47,44 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    public void setParser( SslInspectorParserEventHandler parser )
-    {
-        this.parser = parser;
-    }
-    
-    
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk(NodeTCPSession session, ByteBuffer data)
     {
-        if (clientSide)  {
+        if (clientSide) {
             logger.warn("Received unexpected event");
             throw new RuntimeException("Received unexpected event");
         } else {
-            streamUnparse( session, data, false );
+            streamUnparse(session, data, false);
         }
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk(NodeTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
-            streamUnparse( session, data, true );
+            streamUnparse(session, data, true);
         } else {
             logger.warn("Received unexpected event");
             throw new RuntimeException("Received unexpected event");
-        }            
-    }
-
-    @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
-    {
-        if (clientSide) {
-            logger.warn("Received unexpected event");
-            throw new RuntimeException("Received unexpected event");
-        } else {
-            streamUnparse( session, data, false );
         }
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd(NodeTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
-            streamUnparse( session, data, true );
+            logger.warn("Received unexpected event");
+            throw new RuntimeException("Received unexpected event");
+        } else {
+            streamUnparse(session, data, false);
+        }
+    }
+
+    @Override
+    public void handleTCPServerDataEnd(NodeTCPSession session, ByteBuffer data)
+    {
+        if (clientSide) {
+            streamUnparse(session, data, true);
         } else {
             logger.warn("Received unexpected event");
             throw new RuntimeException("Received unexpected event");
@@ -100,45 +93,71 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private void streamUnparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
+    private void streamUnparse(NodeTCPSession session, ByteBuffer data, boolean s2c)
     {
-        try {
-            unparse( session, data );
+        SslInspectorManager manager = getManager(session);
+        boolean tlsFlag = (s2c ? manager.tlsFlagServer : manager.tlsFlagClient);
+
+        // special handling for SMTP stream in plain text mode
+        if ((session.getServerPort() == 25) && (tlsFlag == false)) {
+            logger.debug("---------- " + (s2c ? "CLIENT" : "SERVER") + " unparse() received " + data.limit() + " bytes ----------");
+
+            if (s2c == true) {
+                session.sendDataToClient(data);
+                if (manager.tlsFlagClient == true) {
+                    if (manager.checkTlsServer(data) == true) {
+                        logger.debug("UNPARSER SETTING SERVER TLS FLAG");
+                        manager.tlsFlagServer = true;
+                    } else {
+                        logger.debug("UNPARSER RELEASING TLS LOGIC FAILURE");
+                        manager.tlsFlagClient = manager.tlsFlagServer = false;
+                        shutdownOtherSide(session, false);
+                        session.release();
+                    }
+                }
+            }
+
+            if (s2c == false) {
+                session.sendDataToServer(data);
+                if (manager.checkTlsClient(data) == true) {
+                    logger.debug("UNPARSER SETTING CLIENT TLS FLAG");
+                    manager.tlsFlagClient = true;
+                }
+            }
+            return;
         }
-        catch (Exception exn) {
+
+        try {
+            unparse(session, data, manager);
+        } catch (Exception exn) {
             logger.warn("Error during streamUnparse()", exn);
         }
-
-        return;
     }
 
-    public void unparse( NodeTCPSession session, ByteBuffer data )
+    public void unparse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
-        SslInspectorManager manager = getManager( session );
         ByteBuffer buff = data;
         boolean success = false;
 
         logger.debug("---------- " + (manager.getClientSide() ? "CLIENT" : "SERVER") + " unparse() received " + buff.limit() + " bytes ----------");
 
         // empty buffer indicates the session is terminating
-        if (buff.limit() == 0)
-            return;
+        if (buff.limit() == 0) return;
 
         try {
             // pass the data to the unparse worker function
-            success = unparseWorker( session, buff );
+            success = unparseWorker(session, buff);
         }
 
         catch (Exception exn) {
             logger.debug("Exception calling unparseWorker", exn);
         }
 
-        // null result means something went haywire so we abandon 
-        if ( ! success ) {
-
+        // no success result means something went haywire so we kill the session 
+        if (success == false) {
+            // put something in the event log
             String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            if (logDetail == null)
-                logDetail = session.getServerAddr().getHostAddress();
+            if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
             node.logEvent(logevt);
             node.incrementMetric(SslInspectorApp.STAT_ABANDONED);
@@ -156,8 +175,8 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
                 SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
                 client.getSession().simulateServerData(message);
             }
-            
-            // return a session release result
+
+            // release the session on our side
             session.release();
         }
 
@@ -166,9 +185,32 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean unparseWorker( NodeTCPSession session, ByteBuffer data ) throws Exception
+    private void shutdownOtherSide(NodeTCPSession session, boolean killSession)
     {
-        SslInspectorManager manager = getManager( session );
+        ByteBuffer message = ByteBuffer.allocate(256);
+
+        if (killSession == true)
+            message.put(SslInspectorManager.IPC_DESTROY_MESSAGE);
+        else
+            message.put(SslInspectorManager.IPC_RELEASE_MESSAGE);
+
+        message.flip();
+
+        SslInspectorManager manager = getManager(session);
+        if (manager.getClientSide()) {
+            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            server.getSession().simulateClientData(message);
+        } else {
+            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            client.getSession().simulateServerData(message);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    private boolean unparseWorker(NodeTCPSession session, ByteBuffer data) throws Exception
+    {
+        SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
         boolean done = false;
         HandshakeStatus status;
@@ -198,20 +240,32 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         logger.debug("PARAM_BUFFER = " + data.toString());
         logger.debug("DATA_MODE = " + manager.getDataMode());
 
-        while ( ! done ) {
+        while (done == false) {
             status = manager.getSSLEngine().getHandshakeStatus();
             logger.debug("STATUS = " + status);
 
+            // for SMTP streams the client decides when to close the connection
+            // so we watch for that and release the session when detected
+
             if (manager.getSSLEngine().isInboundDone()) {
+                if (session.getServerPort() == 25) {
+                    session.release();
+                    return (true);
+                }
                 logger.debug("Unexpected isInboundDone() == TRUE");
                 return false;
             }
             if (manager.getSSLEngine().isOutboundDone()) {
+                if (session.getServerPort() == 25) {
+                    session.release();
+                    return (true);
+                }
                 logger.debug("Unexpected IsOutboundDone() == TRUE");
                 return false;
             }
 
-            switch (status) {
+            switch (status)
+            {
             // should never happen since this will only be returned from
             // a call to wrap or unwrap but we include it to be complete
             case FINISHED:
@@ -220,7 +274,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
                 // handle outstanding tasks during handshake
             case NEED_TASK:
-                done = doNeedTask( session, data );
+                done = doNeedTask(session, data);
                 break;
 
             // the parser handles most handshake stuff so we can ignore
@@ -230,12 +284,12 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
                 // handle wrap during handshake
             case NEED_WRAP:
-                done = doNeedWrap( session, data, target );
+                done = doNeedWrap(session, data, target);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                done = doNotHandshaking( session, data, target );
+                done = doNotHandshaking(session, data, target);
                 break;
 
             // should never happen but we handle just to be safe
@@ -250,9 +304,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedTask( NodeTCPSession session, ByteBuffer data ) throws Exception
+    private boolean doNeedTask(NodeTCPSession session, ByteBuffer data) throws Exception
     {
-        SslInspectorManager manager = getManager( session );
+        SslInspectorManager manager = getManager(session);
         Runnable runnable;
 
         // loop and run SSLEngine outstanding tasks
@@ -265,9 +319,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedWrap( NodeTCPSession session, ByteBuffer data, ByteBuffer target ) throws Exception
+    private boolean doNeedWrap(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
     {
-        SslInspectorManager manager = getManager( session );
+        SslInspectorManager manager = getManager(session);
         SSLEngineResult result;
         ByteBuffer empty = ByteBuffer.allocate(32);
 
@@ -275,36 +329,33 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         // data we pass, so we just wrap an empty buffer here.
         result = manager.getSSLEngine().wrap(empty, target);
         logger.debug("EXEC_WRAP " + result.toString());
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine wrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
         // during the handshake we only expect to need a single wrap call
         // so if the status did not transition we have a big problem
-        if (result.getHandshakeStatus() != HandshakeStatus.NEED_UNWRAP)
-            throw new Exception("SSLEngine logic fault");
+        if (result.getHandshakeStatus() != HandshakeStatus.NEED_UNWRAP) throw new Exception("SSLEngine logic fault");
 
-        // if the wrap call didn't produce any data return false
-        if (result.bytesProduced() == 0)
-            return false;
+        // if the wrap call didn't produce any data return done=false
+        if (result.bytesProduced() == 0) return false;
 
         // send the initial handshake data and let the parser handle the rest
         target.flip();
 
         if (manager.getClientSide()) {
-            session.sendDataToClient( target );
-            session.setServerBuffer( null );
+            session.sendDataToClient(target);
+            session.setServerBuffer(null);
         } else {
-            session.sendDataToServer( target );
-            session.setClientBuffer( null );
+            session.sendDataToServer(target);
+            session.setClientBuffer(null);
         }
         return true;
     }
 
     // ------------------------------------------------------------------------
 
-    private boolean doNotHandshaking( NodeTCPSession session, ByteBuffer data, ByteBuffer target ) throws Exception
+    private boolean doNotHandshaking(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
     {
-        SslInspectorManager manager = getManager( session );
+        SslInspectorManager manager = getManager(session);
         SSLEngineResult result;
 
         // if we're not in dataMode yet we need to work on the handshake
@@ -327,31 +378,29 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         result = manager.getSSLEngine().wrap(data, target);
         logger.debug("EXEC_HANDSHAKING " + result.toString());
 
-        // if the engine reports closed return an empty result
+        // if the engine reports closed clear the buffer and return done=true
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
             if (manager.getClientSide()) {
-                session.setClientBuffer( null );
+                session.setClientBuffer(null);
             } else {
-                session.setServerBuffer( null );
+                session.setServerBuffer(null);
             }
             return true;
         }
 
         // any other result is very bad news
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine wrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
-        // if we have gone back into handshake mode we return null to abandon
-        // the session since the SSLEngine doesn't support rehandshake
+        // if we have gone back into handshake mode we clear dataMode and return done=false and
+        // let the loop detect the problem since the SSLEngine doesn't support re-handshake
         if (result.getHandshakeStatus() != HandshakeStatus.NOT_HANDSHAKING) {
             manager.setDataMode(false);
             return false;
         }
 
-        // if the wrap call didn't produce anything yet just return null
-        // wo we can call wrap again on the next pass through the loop
-        if (result.bytesProduced() == 0)
-            return false;
+        // if the wrap call didn't produce anything yet just return done=false
+        // so we can call wrap again on the next pass through the loop
+        if (result.bytesProduced() == 0) return false;
 
         // got some data from the wrap call so well prepare to send it along
         target.flip();
@@ -359,24 +408,20 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         // here in the unparser we're converting plain-text back to SSL so we
         // send client data to the client and server data to the server
         if (manager.getClientSide()) {
-            session.sendDataToClient( target );
-            session.setServerBuffer( null );
+            session.sendDataToClient(target);
+            session.setServerBuffer(null);
         } else {
-            session.sendDataToServer( target );
-            session.setClientBuffer( null );
+            session.sendDataToServer(target);
+            session.setClientBuffer(null);
         }
         return true;
-        // if (manager.getClientSide())
-        //     return new TCPChunkResult(array, null, null);
-        // return new TCPChunkResult(null, array, null);
     }
 
-    private SslInspectorManager getManager( NodeTCPSession session )
+    private SslInspectorManager getManager(NodeTCPSession session)
     {
         if (clientSide)
             return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
         else
             return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
-    
 }

@@ -36,8 +36,10 @@ public class SslInspectorApp extends NodeBase
 {
     private final Logger logger = Logger.getLogger(SslInspectorApp.class);
 
-    private PipelineConnector clientSideConnector = null;
-    private PipelineConnector serverSideConnector = null;
+    private PipelineConnector clientWebConnector = null;
+    private PipelineConnector serverWebConnector = null;
+    private PipelineConnector clientMailConnector = null;
+    private PipelineConnector serverMailConnector = null;
     private PipelineConnector[] connectors = null;
 
     protected static final String STAT_COUNTER = "COUNTER";
@@ -66,19 +68,17 @@ public class SslInspectorApp extends NodeBase
         SslInspectorUnparserEventHandler clientUnparser = new SslInspectorUnparserEventHandler(true, this);
         SslInspectorUnparserEventHandler serverUnparser = new SslInspectorUnparserEventHandler(false, this);
 
-        // tell the client side parser about the client-side unparser and vice versa
-        clientParser.setUnparser(clientUnparser);
-        clientUnparser.setParser(clientParser);
-        // tell the server side parser about the server-side unparser and vice versa
-        serverParser.setUnparser(serverUnparser);
-        serverUnparser.setParser(serverParser);
+        SessionEventHandler clientWebHandler = new ForkedEventHandler(clientParser, clientUnparser);
+        SessionEventHandler serverWebHandler = new ForkedEventHandler(serverUnparser, serverParser);
+        this.clientWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-client", this, null, clientWebHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, null);
+        this.serverWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-server", this, null, serverWebHandler, Fitting.HTTP_STREAM, Fitting.HTTPS_STREAM, Affinity.SERVER, 1100, "ssl-web-client");
 
-        SessionEventHandler clientSideHandler = new ForkedEventHandler(clientParser, clientUnparser);
-        SessionEventHandler serverSideHandler = new ForkedEventHandler(serverUnparser, serverParser);
+        SessionEventHandler clientMailHandler = new ForkedEventHandler(clientParser, clientUnparser);
+        SessionEventHandler serverMailHandler = new ForkedEventHandler(serverUnparser, serverParser);
+        this.clientMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-client", this, null, clientMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, -1100, null);
+        this.serverMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-server", this, null, serverMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.SERVER, 1100, "ssl-mail-client");
 
-        this.clientSideConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-client-side", this, null, clientSideHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, null);
-        this.serverSideConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-server-side", this, null, serverSideHandler, Fitting.HTTP_STREAM, Fitting.HTTPS_STREAM, Affinity.SERVER, 1100, "ssl-client-side");
-        this.connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
+        this.connectors = new PipelineConnector[] { clientWebConnector, serverWebConnector, clientMailConnector, serverMailConnector };
 
         TrustCatalog.staticInitialization(logger);
     }
@@ -125,8 +125,7 @@ public class SslInspectorApp extends NodeBase
     protected void preStart()
     {
         // check for a valid license
-        if (isLicenseValid() != true)
-            throw (new RuntimeException("Unable to start ssl node: invalid license"));
+        if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ssl node: invalid license"));
     }
 
     @Override
@@ -148,7 +147,7 @@ public class SslInspectorApp extends NodeBase
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ssl-inspector/settings_" + nodeID + ".js";
 
         try {
-            UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
+            UvmContextFactory.context().settingsManager().save(settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("setSettings()", exn);
             return;
@@ -187,10 +186,8 @@ public class SslInspectorApp extends NodeBase
 
     public boolean isLicenseValid()
     {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR_OLDNAME))
-            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR)) return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR_OLDNAME)) return true;
         return false;
     }
 
@@ -200,14 +197,12 @@ public class SslInspectorApp extends NodeBase
     {
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CertificateUploadHandler());
 
-        if (settings == null)
-            return;
+        if (settings == null) return;
 
         for (PipelineConnector connector : this.connectors)
             connector.setEnabled(settings.isEnabled());
 
-        if (settings.getJavaxDebug() == true)
-            System.setProperty("javax.net.debug", "all");
+        if (settings.getJavaxDebug() == true) System.setProperty("javax.net.debug", "all");
 
         if (settings.getServerBlindTrust() == false) {
             try {
