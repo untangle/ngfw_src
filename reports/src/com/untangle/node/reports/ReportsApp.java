@@ -328,6 +328,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
+
+        /* Enable to run event writing performance tests */
+        //new Thread(new PerformanceTest()).start();
     }
 
     protected void preStart()
@@ -474,6 +477,59 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
+    public class PerformanceTest implements Runnable
+    {
+        public void run()
+        {
+            logger.warn("--- Running Performance Tests ---");
+            logger.warn("--- Running Performance Tests ---");
+            logger.warn("--- Running Performance Tests ---");
+
+            java.util.Random r = new java.util.Random();
+            long sessionId = r.nextLong();
+
+            InetAddress c_client;
+            InetAddress c_server;
+            InetAddress s_client;
+            InetAddress s_server;
+        
+            try {
+                c_client = InetAddress.getByName("192.168.1.100");
+                c_server = InetAddress.getByName("1.2.3.4");
+                s_client = InetAddress.getByName("4.3.2.1");
+                s_server = InetAddress.getByName("1.2.3.4");
+            } catch (Exception e) {
+                logger.warn("Failed to run tests.",e);
+                return;
+            }
+        
+            while (true) {
+                if ((sessionId%10) == 0) try {Thread.sleep(1);} catch (Exception e){}
+                
+                sessionId++;
+                com.untangle.uvm.node.SessionEvent testEvent = new com.untangle.uvm.node.SessionEvent();
+                testEvent.setSessionId(sessionId);
+                testEvent.setBypassed(false);
+                testEvent.setProtocol((short)6);
+                testEvent.setClientIntf(2);
+                testEvent.setServerIntf(2);
+                testEvent.setCClientAddr(c_client);
+                testEvent.setSClientAddr(s_client);
+                testEvent.setCServerAddr(c_server);
+                testEvent.setSServerAddr(s_server);
+                testEvent.setCClientPort(1234);
+                testEvent.setSClientPort(1234);
+                testEvent.setCServerPort(80);
+                testEvent.setSServerPort(80);
+                testEvent.setPolicyId((long)1);
+                testEvent.setUsername("test_username");
+                testEvent.setHostname("test_hostname");
+                logEvent(testEvent);
+            }
+        }
+        
+    }
+    
     private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler
     {
         @Override
@@ -574,7 +630,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             }
         }
         
-        private Date getDate(String ts) {
+        private Date getDate(String ts)
+        {
             try {
                 long l = Long.parseLong(ts);
                 if ( l != -1) {

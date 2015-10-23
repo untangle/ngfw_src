@@ -410,10 +410,12 @@ public class EventWriterImpl implements Runnable
             long t1 = System.currentTimeMillis();
             long elapsedTime = t1-t0;
             double avgTime = ((double)elapsedTime/((double)count));
+            double ratePerSec = ((double)1000)/avgTime;
             logger.info("persist(): EventStats " +
                         String.format("%5d",count) +
                         " events [" + String.format("%5d",elapsedTime) +
-                        " ms] [" + String.format("%4.1f",avgTime) +
+                        " ms] [" + String.format("%.1f",ratePerSec) +
+                        " event/s] [" + String.format("%4.1f",avgTime) +
                         " avg] [" + String.format("%5d",writeDelaySec) +
                         "s delay] [" + String.format("%5d",inputQueue.size()) + " pending]");
             logger.info("persist(): EventMap   " + mapOutput);

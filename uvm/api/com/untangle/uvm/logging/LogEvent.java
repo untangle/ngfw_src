@@ -65,10 +65,11 @@ public abstract class LogEvent implements Serializable, JSONString
      */
     public List<PreparedStatement> getDirectEventSqls( Connection conn ) throws Exception
     {
-        LinkedList<PreparedStatement> newList = new LinkedList<PreparedStatement>();
         PreparedStatement pstmt = getDirectEventSql( conn );
-        if (pstmt != null)
-            newList.add(pstmt);
+        if ( pstmt == null )
+            return null;
+        LinkedList<PreparedStatement> newList = new LinkedList<PreparedStatement>();
+        newList.add(pstmt);
         return newList;
     }
     
