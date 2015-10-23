@@ -37,7 +37,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding-manager/settings_" + nodeID + ".js";
         BrandingManagerSettings readSettings = null;
 
         logger.info("Loading settings from " + settingsFile);
@@ -118,7 +118,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding/settings_" + nodeID +".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding-manager/settings_" + nodeID +".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
