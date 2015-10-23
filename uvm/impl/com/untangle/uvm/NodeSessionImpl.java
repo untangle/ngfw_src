@@ -172,12 +172,12 @@ public abstract class NodeSessionImpl implements NodeSession
         return this.stringAttachments.get(key);
     }
     
-    public Object globalAttach(String key, Object ob)
+    public Object globalAttach( String key, Object ob )
     {
         return this.sessionGlobalState().attach(key,ob);
     }
 
-    public Object globalAttachment(String key)
+    public Object globalAttachment( String key )
     {
         return this.sessionGlobalState().attachment(key);
     }
@@ -192,6 +192,11 @@ public abstract class NodeSessionImpl implements NodeSession
         return sessionGlobalState;
     }
 
+    public String getPipelineDescription()
+    {
+        return this.sessionGlobalState().getPipelineDescription();
+    }
+    
     public long id()
     {
         return sessionGlobalState.id();
