@@ -65,7 +65,12 @@ class SslTests(unittest2.TestCase):
             nodeData['ignoreRules']['list'][3]['live'] = True
             node.setSettings(nodeData)
 
-    def test_010_checkServerCertificate(self):
+    # verify client is online
+    def test_010_clientIsOnline(self):
+        result = remote_control.isOnline()
+        assert (result == 0)
+            
+    def test_011_checkServerCertificate(self):
         result = remote_control.runCommand('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
         assert (result == 0)
 
