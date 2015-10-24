@@ -38,21 +38,23 @@ public class TunnelStatusEvent extends LogEvent implements Serializable
     public void setOutBytes( long outBytes ) { this.outBytes = outBytes; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.ipsec_tunnel_stats" + getPartitionTablePostfix() + " " +
             "(time_stamp, tunnel_name, in_bytes, out_bytes) " +
             "values " +
             "( ?, ?, ?, ? )";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setString(++i, getTunnelName());
         pstmt.setLong(++i, getInBytes());
         pstmt.setLong(++i, getOutBytes());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     public String toString()

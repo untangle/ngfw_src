@@ -151,7 +151,7 @@ public class VirtualUserEvent extends LogEvent
     }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String insert = "INSERT INTO reports.ipsec_user_events" + getPartitionTablePostfix() + " " +
             "(event_id, time_stamp, connect_stamp, client_address, client_protocol, client_username, net_interface, net_process) " +
@@ -165,7 +165,7 @@ public class VirtualUserEvent extends LogEvent
 
         // when updateMode is false we prepare the insert statement
         if (updateMode == false) {
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(insert);
+            java.sql.PreparedStatement pstmt = getStatementFromCache( insert, statementCache, conn );        
 
             pstmt.setLong(++i, getEventId().longValue());
             pstmt.setTimestamp(++i, getTimeStamp());
@@ -175,11 +175,12 @@ public class VirtualUserEvent extends LogEvent
             pstmt.setString(++i, getClientUsername());
             pstmt.setString(++i, getNetInterface());
             pstmt.setString(++i, getNetProcess());
-            return pstmt;
+            pstmt.addBatch();
+            return;
         }
 
         // the updateMode flag is set so we prepare the update statement
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(update);
+        java.sql.PreparedStatement pstmt = getStatementFromCache( update, statementCache, conn );        
 
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setString(++i, getElapsedTime());
@@ -187,7 +188,8 @@ public class VirtualUserEvent extends LogEvent
         pstmt.setLong(++i, getNetTXbytes());
         pstmt.setLong(++i, getEventId().longValue());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override
