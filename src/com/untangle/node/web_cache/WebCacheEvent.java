@@ -57,14 +57,14 @@ public class WebCacheEvent extends LogEvent implements Serializable
     public void setPolicyId( Long policyId ) { this.policyId = policyId; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.web_cache_stats" + getPartitionTablePostfix() + " " +
             "(time_stamp, hits, misses, bypasses, systems, hit_bytes, miss_bytes) " + 
             "values " +
             "( ?, ?, ?, ?, ?, ?, ? )";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -74,7 +74,9 @@ public class WebCacheEvent extends LogEvent implements Serializable
         pstmt.setLong(++i, getSystemCount());
         pstmt.setLong(++i, getHitBytes());
         pstmt.setLong(++i, getMissBytes());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     public String toString()
