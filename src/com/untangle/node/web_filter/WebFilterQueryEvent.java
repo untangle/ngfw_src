@@ -67,7 +67,7 @@ public class WebFilterQueryEvent extends LogEvent
     public void setContentLength( long contentLength ) { this.contentLength = contentLength; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
         "INSERT INTO reports.http_query_events" + getPartitionTablePostfix() + " " +
@@ -100,7 +100,7 @@ public class WebFilterQueryEvent extends LogEvent
             "?" +
         ")";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -125,7 +125,8 @@ public class WebFilterQueryEvent extends LogEvent
         pstmt.setString(++i, getSessionEvent().getHostname());
         pstmt.setString(++i, getTerm());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
 
