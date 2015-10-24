@@ -68,7 +68,7 @@ public class SessionNatEvent extends LogEvent
     public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET server_intf = ?, " +
@@ -78,8 +78,8 @@ public class SessionNatEvent extends LogEvent
             "    s_server_port = ? " +
             "WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+ 
         int i=0;
         pstmt.setInt(++i, getServerIntf());
         pstmt.setObject(++i, getSClientAddr().getHostAddress(), java.sql.Types.OTHER);
@@ -88,7 +88,8 @@ public class SessionNatEvent extends LogEvent
         pstmt.setInt(++i, getSServerPort());
         pstmt.setLong(++i, sessionEvent.getSessionId());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
     
     @Override

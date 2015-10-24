@@ -26,8 +26,6 @@ public class QuotaEvent extends LogEvent implements Serializable
 
     private long quotaSize;
 
-    // constructors -----------------------------------------------------------
-
     public QuotaEvent() { }
 
     public QuotaEvent(int action, InetAddress address, String reason, long quotaSize )
@@ -38,9 +36,6 @@ public class QuotaEvent extends LogEvent implements Serializable
         this.quotaSize = quotaSize;
     }
     
-    
-    // accessors --------------------------------------------------------------
-
     public int getAction() { return action; }
     public void setAction( int action ) { this.action = action; }
 
@@ -54,14 +49,14 @@ public class QuotaEvent extends LogEvent implements Serializable
     public void setQuotaSize( long quotaSize ) { this.quotaSize = quotaSize; }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.quotas" + getPartitionTablePostfix() + " " +
             "(time_stamp, address, action, reason, size ) " + 
             "values " +
             "( ?, ?, ?, ?, ? )";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -69,7 +64,9 @@ public class QuotaEvent extends LogEvent implements Serializable
         pstmt.setInt(++i, getAction());
         pstmt.setString(++i, getReason());
         pstmt.setLong(++i, getQuotaSize());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override

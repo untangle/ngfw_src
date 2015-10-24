@@ -41,7 +41,7 @@ public class FirewallEvent extends LogEvent
     public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
             "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
@@ -50,15 +50,16 @@ public class FirewallEvent extends LogEvent
             "    firewall_rule_index = ? " + 
             "WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+        
         int i=0;
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setLong(++i, getRuleId());
         pstmt.setLong(++i, getSessionId());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

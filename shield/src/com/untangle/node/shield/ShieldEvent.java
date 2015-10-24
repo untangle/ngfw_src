@@ -32,20 +32,21 @@ public class ShieldEvent extends LogEvent
     public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
             "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET shield_blocked = ? " +
             "WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+        
         int i=0;
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setLong(++i, getSessionId());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

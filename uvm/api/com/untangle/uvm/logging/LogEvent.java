@@ -7,11 +7,13 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.util.Map;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -23,6 +25,8 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public abstract class LogEvent implements Serializable, JSONString
 {
+    protected static final Logger logger = Logger.getLogger(LogEvent.class);
+
     public static final int DEFAULT_STRING_SIZE = 255;
     
     protected Timestamp timeStamp = new Timestamp((new Date()).getTime());
@@ -57,20 +61,31 @@ public abstract class LogEvent implements Serializable, JSONString
         return new Timestamp(time);
     }
     
-    public abstract PreparedStatement getDirectEventSql( Connection conn ) throws Exception;
+    public abstract void compileStatements( Connection conn, Map<String,PreparedStatement> statementCache ) throws Exception;
     public abstract String toSummaryString();
 
     /**
-     * Default just returns one item with the result of getDirectEventSql
+     * This either grabs a statement for a previous query from the cache
+     * or creates (and stores) one
      */
-    public List<PreparedStatement> getDirectEventSqls( Connection conn ) throws Exception
+    public PreparedStatement getStatementFromCache( String sqlString, Map<String,PreparedStatement> cache, Connection conn )
     {
-        PreparedStatement pstmt = getDirectEventSql( conn );
-        if ( pstmt == null )
+        String key = this.getClass().getName() + "," + sqlString;
+        
+        PreparedStatement cachedStatement = cache.get( key );
+        if ( cachedStatement != null )
+            return cachedStatement;
+
+        // otherwise create one and put it in the cache
+        PreparedStatement statement;
+        try {
+            statement = conn.prepareStatement( sqlString );
+        } catch (Exception e) {
+            logger.warn("Failed to compile SQL: " + sqlString, e);
             return null;
-        LinkedList<PreparedStatement> newList = new LinkedList<PreparedStatement>();
-        newList.add(pstmt);
-        return newList;
+        }
+        cache.put( key, statement );
+        return statement;
     }
     
     public String getPartitionTablePostfix()

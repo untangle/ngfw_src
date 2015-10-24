@@ -42,16 +42,16 @@ public class AlertEvent extends LogEvent
 
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
-    
-    @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+
+   @Override
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.alerts" + getPartitionTablePostfix() + " " +
             "(time_stamp, description, summary_text, json) " +
             "values " +
             "(?, ?, ?, ?); ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
@@ -59,7 +59,8 @@ public class AlertEvent extends LogEvent
         pstmt.setString(++i, getSummaryText());
         pstmt.setString(++i, json.toString());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

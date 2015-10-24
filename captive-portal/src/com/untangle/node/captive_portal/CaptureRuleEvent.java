@@ -42,7 +42,7 @@ public class CaptureRuleEvent extends LogEvent
     public void setRuleId(Integer ruleid) { this.ruleid = ruleid; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             " SET " + 
@@ -50,7 +50,7 @@ public class CaptureRuleEvent extends LogEvent
             " captive_portal_blocked = ? " + 
             " WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
 
@@ -60,7 +60,9 @@ public class CaptureRuleEvent extends LogEvent
             pstmt.setInt(++i, getRuleId());
         pstmt.setBoolean(++i, getCaptured());
         pstmt.setLong(++i, sessionEvent.getSessionId());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     public String toString()

@@ -82,7 +82,7 @@ public class SystemStatEvent extends LogEvent
     }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
             "INSERT INTO reports.server_events" + getPartitionTablePostfix() + " " +
@@ -90,7 +90,7 @@ public class SystemStatEvent extends LogEvent
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -105,7 +105,9 @@ public class SystemStatEvent extends LogEvent
         pstmt.setLong(++i, diskFree);
         pstmt.setLong(++i, swapTotal);
         pstmt.setLong(++i, swapFree);
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override

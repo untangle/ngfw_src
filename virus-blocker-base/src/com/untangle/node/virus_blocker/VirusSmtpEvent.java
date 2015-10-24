@@ -52,15 +52,8 @@ public class VirusSmtpEvent extends LogEvent
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        return null;
-    }
-
-    @Override
-    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
-    {
-        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         String sql;
         int i=0;
         java.sql.PreparedStatement pstmt;
@@ -71,12 +64,12 @@ public class VirusSmtpEvent extends LogEvent
             getNodeName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
-        pstmt = conn.prepareStatement( sql );
+        pstmt = getStatementFromCache( sql, statementCache, conn );        
         i=0;
         pstmt.setBoolean(++i, getClean());
         pstmt.setString(++i, getVirusName());
         pstmt.setLong(++i, getMessageId());
-        sqlList.add(pstmt);
+        pstmt.addBatch();
         
         sql = "UPDATE reports.mail_addrs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
@@ -84,14 +77,14 @@ public class VirusSmtpEvent extends LogEvent
             getNodeName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
-        pstmt = conn.prepareStatement( sql );
+        pstmt = getStatementFromCache( sql, statementCache, conn );        
         i=0;
         pstmt.setBoolean(++i, getClean());
         pstmt.setString(++i, getVirusName());
         pstmt.setLong(++i, getMessageId());
-        sqlList.add(pstmt);
+        pstmt.addBatch();
 
-        return sqlList;
+        return;
     }
 
     @Override

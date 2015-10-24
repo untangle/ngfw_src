@@ -40,7 +40,7 @@ public class AdBlockerEvent extends LogEvent
     public void setReason( String reason ) { this.reason = reason; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
             "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
@@ -49,12 +49,14 @@ public class AdBlockerEvent extends LogEvent
             "WHERE " +
             "request_id = ? ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
         int i = 0;
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getRequestId());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override

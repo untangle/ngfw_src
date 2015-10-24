@@ -26,14 +26,14 @@ public class IntrusionPreventionLogEvent extends LogEvent
     }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.intrusion_prevention_events" + getPartitionTablePostfix() + " " +
             "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
 
@@ -53,7 +53,8 @@ public class IntrusionPreventionLogEvent extends LogEvent
         pstmt.setString(++i, ipsEvent.getClasstype() );
         pstmt.setString(++i, ipsEvent.getMsg() );
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

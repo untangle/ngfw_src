@@ -172,13 +172,7 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
     }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
-    {
-        return null;
-    }
-
-    @Override
-    public List<java.sql.PreparedStatement> getDirectEventSqls(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.mail_msgs" + getPartitionTablePostfix() + " " +
             "(time_stamp, session_id, client_intf, server_intf, " +
@@ -188,7 +182,8 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -210,13 +205,13 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
         pstmt.setString(++i, getSender());
         pstmt.setString(++i, getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname());
 
-        sqlList.add(pstmt);
+        pstmt.addBatch();
 
         for (SmtpMessageAddressEvent addr : this.addresses) {
-            sqlList.add(addr.getDirectEventSql(conn));
+            addr.compileStatements(conn, statementCache);
         }
 
-        return sqlList;
+        return;
     }
 
     @Override

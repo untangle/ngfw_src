@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
@@ -337,25 +338,58 @@ public class EventWriterImpl implements Runnable
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
+        HashMap<String,PreparedStatement> statementCache = new LinkedHashMap<String,PreparedStatement>();
+        
+        logger.debug("Compiling PreparedStatement(s)... (event count: " + logQueue.size() + ")");
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
-
-            /**
-             * Write event to database using SQL
-             * If fails, just move on
-             */
+            
             try {
-                List<PreparedStatement> pstmts = event.getDirectEventSqls( this.dbConnection );
-                if (pstmts != null) {
+                event.compileStatements( this.dbConnection, statementCache );
+            } catch (Exception e) {
+                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString(), e);
+            }
+
+            i.remove();
+        }
+        logger.debug("Compiling PreparedStatement(s)... Complete");
+
+        int statementCount = statementCache.size();
+        logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCache.size() + ")");
+        java.util.Set<Map.Entry<String,PreparedStatement>> entries = statementCache.entrySet();
+        for (int i=0;i<2;i++) {
+            for (Iterator<Map.Entry<String,PreparedStatement>> j = entries.iterator(); j.hasNext(); ) {
+                Map.Entry<String,PreparedStatement> entry = j.next();
+
+                PreparedStatement statement = entry.getValue();
+                String str = entry.getKey();
+                String[] splits = str.split(",",2);
+                String className = splits[0];
+                String sql = splits[1];
+
+                if (className == null)
+                    logger.warn("Invalid Key: " + sql);
+
+                // only handle INSERTS on first 
+                if ( i == 0 && !sql.substring(0,10).contains("INSERT") ) continue;
+                // only handle UPDATES on second 
+                if ( i == 1 && !sql.substring(0,10).contains("UPDATE") ) continue;
+                
+                // remove it from the list
+                j.remove();
+            
+                /**
+                 * Write event to database using SQL
+                 * If fails, just move on
+                 */
+                try {
                     long write_t0 = System.currentTimeMillis();
-                    for (PreparedStatement pstmt : pstmts) {
-                        logger.debug("Write direct event: " + pstmt);
-                        try {
-                            pstmt.execute();
-                        } catch (SQLException e) {
-                            logger.warn("Failed SQL query for " + event.getClass() + ": \"" + pstmt + "\"", e);
-                        }
+                    logger.debug("Write event: " + statement);
+                    try {
+                        //statement.execute();
+                        statement.executeBatch();
+                    } catch (Exception e) {
+                        logger.warn("Failed SQL query for " + statement, e);
                     }
                     long write_t1 = System.currentTimeMillis();
 
@@ -363,23 +397,27 @@ public class EventWriterImpl implements Runnable
                         /**
                          * Update the stats
                          */
-                        String eventTypeName = event.getClass().getSimpleName();
+                        String[] parts = className.split("\\.");
+                        String eventTypeName = parts[parts.length-1];
+                        //String eventTypeName = statements.get(statement).getClass().getSimpleName();
                         Long currentTime = timeMap.get(eventTypeName);
                         if (currentTime == null)
                             currentTime = 0L;
                         currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
                         timeMap.put(eventTypeName, currentTime);
                     }
+                } catch (Exception e) {
+                    logger.warn("Failed SQL query for " + statement, e);
                 }
-            } catch (Exception e) {
-                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString(), e);
             }
-
-
-            i.remove();
         }
 
-        logger.debug("Writing events to database... Complete");
+        for (Iterator<Map.Entry<String,PreparedStatement>> j = entries.iterator(); j.hasNext(); ) {
+            Map.Entry<String,PreparedStatement> entry = j.next();
+            PreparedStatement statement = entry.getValue();
+            logger.warn("Unhandled Event! : " + statement);
+        }
+        logger.debug("Executing PreparedStatement(s)... Complete");
 
         /**
          * This looks at the event queue to be written and builds a summary string of the type of objects about to be written
@@ -412,12 +450,13 @@ public class EventWriterImpl implements Runnable
             double avgTime = ((double)elapsedTime/((double)count));
             double ratePerSec = ((double)1000)/avgTime;
             logger.info("persist(): EventStats " +
-                        String.format("%5d",count) +
-                        " events [" + String.format("%5d",elapsedTime) +
-                        " ms] [" + String.format("%.1f",ratePerSec) +
-                        " event/s] [" + String.format("%4.1f",avgTime) +
-                        " avg] [" + String.format("%5d",writeDelaySec) +
-                        "s delay] [" + String.format("%5d",inputQueue.size()) + " pending]");
+                        String.format("%5d",count) + " events, " +
+                        String.format("%5d",statementCount) + " statements " +
+                        "[" + String.format("%5d",elapsedTime) + " ms] " +
+                        "[" + String.format("%5.0f",ratePerSec) + " event/s] " + 
+                        "[" + String.format("%4.1f",avgTime) + " avg] " +
+                        "[" + String.format("%5d",writeDelaySec) + "s delay] " + 
+                        "[" + String.format("%5d",inputQueue.size()) + " pending]");
             logger.info("persist(): EventMap   " + mapOutput);
 
             /**

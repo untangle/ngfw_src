@@ -330,7 +330,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
 
         /* Enable to run event writing performance tests */
-        //new Thread(new PerformanceTest()).start();
+        // new Thread(new PerformanceTest()).start();
     }
 
     protected void preStart()
@@ -481,9 +481,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     {
         public void run()
         {
-            logger.warn("--- Running Performance Tests ---");
-            logger.warn("--- Running Performance Tests ---");
-            logger.warn("--- Running Performance Tests ---");
+            for (int i=0; i<5; i++) logger.warn("--- Running Performance Tests ---");
 
             java.util.Random r = new java.util.Random();
             long sessionId = r.nextLong();

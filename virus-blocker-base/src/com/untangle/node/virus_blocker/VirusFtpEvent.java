@@ -46,7 +46,7 @@ public class VirusFtpEvent extends LogEvent
     public void setUri(String uri) { this.uri = uri; }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.ftp_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, " + 
@@ -55,7 +55,7 @@ public class VirusFtpEvent extends LogEvent
             getNodeName().toLowerCase() + "_clean, " + getNodeName().toLowerCase() + "_name "  +  ") values " + 
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -73,7 +73,8 @@ public class VirusFtpEvent extends LogEvent
         pstmt.setBoolean(++i,getClean());
         pstmt.setString(++i, getVirusName());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

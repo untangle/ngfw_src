@@ -158,17 +158,16 @@ public class SessionEvent extends LogEvent
         }
     }
     
-
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
             "(session_id, bypassed, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+        
         int i=0;
         pstmt.setLong(++i,getSessionId());
         pstmt.setBoolean(++i,getBypassed());
@@ -191,7 +190,8 @@ public class SessionEvent extends LogEvent
         pstmt.setInt(++i, getClientIntf());
         pstmt.setInt(++i, getServerIntf());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
     
     public boolean equals(Object o)

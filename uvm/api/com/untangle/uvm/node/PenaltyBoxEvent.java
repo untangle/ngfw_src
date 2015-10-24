@@ -52,7 +52,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
     public Timestamp getExitTime() { return this.exitTime; }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         java.sql.PreparedStatement pstmt;
         String sql = "";
@@ -64,31 +64,34 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
                 "(start_time, end_time, address, time_stamp, reason) " +
                 "values " +
                 "( ?, ?, ?, ?, ?) ";
-            pstmt = conn.prepareStatement( sql );
+            pstmt = getStatementFromCache( sql, statementCache, conn );        
             pstmt.setTimestamp(++i, entryTime);
             pstmt.setTimestamp(++i, exitTime);
             pstmt.setObject(++i, getAddress().getHostAddress(), java.sql.Types.OTHER);
             pstmt.setTimestamp(++i, entryTime);
             pstmt.setString(++i, reason);
-            return pstmt;
+            pstmt.addBatch();
+            return;
         case ACTION_EXIT:
             sql =
                 "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " +
                 "WHERE start_time = ? ";
-            pstmt = conn.prepareStatement( sql );
+            pstmt = getStatementFromCache( sql, statementCache, conn );        
             pstmt.setTimestamp(++i, exitTime);
             pstmt.setTimestamp(++i, entryTime);
-            return pstmt;
+            pstmt.addBatch();
+            return;
         case ACTION_REENTER:
             sql =
                 "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " + 
                 "WHERE start_time = ? ";
-            pstmt = conn.prepareStatement( sql );
+            pstmt = getStatementFromCache( sql, statementCache, conn );        
             pstmt.setTimestamp(++i, exitTime);
             pstmt.setTimestamp(++i, entryTime);
-            return pstmt;
+            pstmt.addBatch();
+            return;
         default:
             throw new RuntimeException("Unknown action: " + action);
         }

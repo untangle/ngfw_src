@@ -61,15 +61,15 @@ public class SpamSmtpTarpitEvent extends LogEvent
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.smtp_tarpit_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, ipaddr, hostname, vendor_name, policy_id) " +
             "values " +
             "( ?, ?, ?, ?, ? ) ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
-
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+    
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setObject(++i, getIPAddr().getHostAddress(), java.sql.Types.OTHER);
@@ -77,7 +77,8 @@ public class SpamSmtpTarpitEvent extends LogEvent
         pstmt.setString(++i, getVendorName());
         pstmt.setLong(++i, sessionEvent.getPolicyId());
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

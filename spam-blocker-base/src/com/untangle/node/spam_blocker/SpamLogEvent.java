@@ -145,15 +145,8 @@ public class SpamLogEvent extends LogEvent
     public void setTestsString( String newValue ) { this.testsString = newValue; }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        return null;
-    }
-
-    @Override
-    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
-    {
-        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         String sql;
         int i=0;
         java.sql.PreparedStatement pstmt;
@@ -180,14 +173,14 @@ public class SpamLogEvent extends LogEvent
             "WHERE " +
             "msg_id = ? ";
 
-        pstmt = conn.prepareStatement( sql );
+        pstmt = getStatementFromCache( sql, statementCache, conn );        
         i=0;
         pstmt.setBoolean(++i, isSpam());
         pstmt.setFloat(++i, getScore());
         pstmt.setString(++i, getTestsString());
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
-        sqlList.add(pstmt);
+        pstmt.addBatch();
         
         sql = "UPDATE reports.mail_addrs" + messageInfo.getPartitionTablePostfix() + " " + 
             "SET " +
@@ -197,16 +190,17 @@ public class SpamLogEvent extends LogEvent
             prefix + "_action = ? " +
             "WHERE " +
             "msg_id = ? ";
-        pstmt = conn.prepareStatement( sql );
+        pstmt = getStatementFromCache( sql, statementCache, conn );        
         i=0;
         pstmt.setBoolean(++i, isSpam());
         pstmt.setFloat(++i, getScore());
         pstmt.setString(++i, getTestsString());
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
-        sqlList.add(pstmt);
-        
-        return sqlList;
+        pstmt = getStatementFromCache( sql, statementCache, conn );        
+        pstmt.addBatch();
+
+        return;
     }
 
     protected String get(AddressKind kind)

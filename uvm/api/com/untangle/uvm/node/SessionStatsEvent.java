@@ -103,12 +103,8 @@ public class SessionStatsEvent extends LogEvent
     public void setSessionId( Long sessionId ) { this.sessionId = sessionId; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        // if there are no stats, don't even log an event
-        if ( c2pBytes == 0 && p2sBytes == 0 && s2pBytes == 0 && p2cBytes == 0 )
-            return null;
-
         String sql = "UPDATE reports.sessions" + getPostfix() + " " +
             "SET " +
             " c2p_bytes = ?, " +
@@ -119,7 +115,7 @@ public class SessionStatsEvent extends LogEvent
             " WHERE " + 
             " session_id = ?";
         
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
         int i = 0;
         pstmt.setLong(++i,getC2pBytes());
@@ -129,7 +125,8 @@ public class SessionStatsEvent extends LogEvent
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setLong(++i,getSessionId());
         
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

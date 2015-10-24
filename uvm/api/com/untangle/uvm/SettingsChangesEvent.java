@@ -31,23 +31,23 @@ public class SettingsChangesEvent extends LogEvent
     }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.settings_changes" + getPartitionTablePostfix() + " " +
             "( time_stamp, settings_file, username, hostname)" +
             " values " +
             "( ?, ?, ?, ?); ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setString(++i, this.settings_file);
         pstmt.setString(++i, this.username);
         pstmt.setString(++i, this.hostname);
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

@@ -93,7 +93,7 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
     }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.mail_addrs" +  getPartitionTablePostfix() + " " +
             "(time_stamp, " + 
@@ -103,7 +103,8 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
             "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         SessionEvent se = messageInfo.getSessionEvent();
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -128,7 +129,8 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
         pstmt.setString(++i, messageInfo.getSender());
         pstmt.setString(++i, (se.getHostname() == null ? "" : se.getHostname()));
 
-        return pstmt;
+        pstmt.addBatch();
+        return;
     }
 
     @Override

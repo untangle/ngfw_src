@@ -37,21 +37,23 @@ public class HostTableEvent extends LogEvent
     public void setValue( String newValue ) { this.value = newValue; }
     
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.host_table_updates" + getPartitionTablePostfix() + " " +
             "(time_stamp, address, key, value) " +
             "values " +
             "(?, ?, ?, ?); ";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setObject(++i, address.getHostAddress(), java.sql.Types.OTHER);
         pstmt.setString(++i, getKey());
         pstmt.setString(++i, getValue());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override
