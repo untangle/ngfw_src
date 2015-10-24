@@ -62,16 +62,16 @@ public class WanFailoverTestEvent extends LogEvent
      */
     public String getDescription() { return this.description; }
     public void setDescription( String newValue ) { this.description = newValue; }
-        
+
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.wan_failover_test_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, interface_id, name, success, description) " + 
             "values " +
             "( ?, ?, ?, ?, ?)";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -79,7 +79,9 @@ public class WanFailoverTestEvent extends LogEvent
         pstmt.setString(++i, getName());
         pstmt.setBoolean(++i, getSuccess());
         pstmt.setString(++i, getDescription());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override

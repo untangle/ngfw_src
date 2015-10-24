@@ -52,16 +52,16 @@ public class WanFailoverEvent extends LogEvent
      */
     public Action getAction() { return action; }
     public void setAction( Action action ) { this.action = action; }
-    
+
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.wan_failover_action_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, interface_id, name, os_name, action) " + 
             "values " +
             "( ?, ?, ?, ?, ? )";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -69,7 +69,9 @@ public class WanFailoverEvent extends LogEvent
         pstmt.setString(++i, getName());
         pstmt.setString(++i, getOsName());
         pstmt.setString(++i, getAction().toString());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override
