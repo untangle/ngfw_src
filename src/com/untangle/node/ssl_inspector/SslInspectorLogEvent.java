@@ -41,7 +41,7 @@ public class SslInspectorLogEvent extends LogEvent
     public void setDetail(String detail) { this.detail = detail; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +"SET ";
         if (ruleid != null)
@@ -49,7 +49,8 @@ public class SslInspectorLogEvent extends LogEvent
         sql += " ssl_inspector_status = ?, ";
         sql += " ssl_inspector_detail = ? ";
         sql += " WHERE session_id = ? ";
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         if (ruleid != null)
@@ -57,7 +58,9 @@ public class SslInspectorLogEvent extends LogEvent
         pstmt.setString(++i, getStatus());
         pstmt.setString(++i, getDetail());
         pstmt.setLong(++i, sessionEvent.getSessionId());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     public String toString()
