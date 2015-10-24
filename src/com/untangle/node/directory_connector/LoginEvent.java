@@ -46,14 +46,14 @@ public class LoginEvent extends LogEvent
     public void setEvent( String newEvent ) { this.event = newEvent; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.directory_connector_login_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, login_name, domain, type, client_addr) " + 
             "values " +
             "( ?, ?, ?, ?, ?)";
 
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
@@ -61,7 +61,9 @@ public class LoginEvent extends LogEvent
         pstmt.setString(++i, getDomain());
         pstmt.setString(++i, getEvent());
         pstmt.setObject(++i, getClientAddr().getHostAddress(), java.sql.Types.OTHER);
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     @Override
