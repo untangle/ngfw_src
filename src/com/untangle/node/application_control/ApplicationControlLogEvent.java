@@ -81,7 +81,7 @@ public class ApplicationControlLogEvent extends LogEvent
     public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
+    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " + "SET ";
         if (application != null)
@@ -97,7 +97,8 @@ public class ApplicationControlLogEvent extends LogEvent
         sql += " application_control_flagged = ?, ";
         sql += " application_control_blocked = ? ";
         sql += " WHERE session_id = ? ";
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
         if (application != null)
@@ -113,7 +114,9 @@ public class ApplicationControlLogEvent extends LogEvent
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setLong(++i, sessionEvent.getSessionId());
-        return pstmt;
+
+        pstmt.addBatch();
+        return;
     }
 
     public String toString()
