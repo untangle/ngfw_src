@@ -12,7 +12,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.buildTabPanel([this.panelNodeConfiguration, this.gridIgnoreRules]);
         this.callParent(arguments);
     },
-    getMatchers: function () {
+    getConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -415,9 +415,9 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.ssl_inspector.SslInspectorRuleMatcher",
+                    javaClass: "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getMatchers()
+                    matchers: this.getConditions()
                 }]
             }, {
                 xtype: 'fieldset',

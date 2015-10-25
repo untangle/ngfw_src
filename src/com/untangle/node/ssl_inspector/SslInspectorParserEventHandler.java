@@ -385,7 +385,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     /*
      * If we're on the client side and dataMode is not yet active, we have the
      * initial TLS ClientHello message. We first try to extract the SNI hostname
-     * from the message. Next we check the session against the RuleMatcher. This
+     * from the message. Next we check the session against the RuleCondition. This
      * is the only time we can decide to release the session without messing up
      * the SSL handshake, since once we kick off either side we can't extricate
      * ourselves from playing man-in-the-middle. See RFC-5746 for details. If we

@@ -17,7 +17,7 @@ public class SslInspectorRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<SslInspectorRuleMatcher> matchers;
+    private List<SslInspectorRuleCondition> matchers;
     private SslInspectorRuleAction action;
 
     private int ruleId;
@@ -28,12 +28,12 @@ public class SslInspectorRule implements JSONString, Serializable
     {
     }
 
-    public List<SslInspectorRuleMatcher> getMatchers()
+    public List<SslInspectorRuleCondition> getConditions()
     {
         return this.matchers;
     }
 
-    public void setMatchers(List<SslInspectorRuleMatcher> matchers)
+    public void setConditions(List<SslInspectorRuleCondition> matchers)
     {
         this.matchers = matchers;
     }
@@ -100,7 +100,7 @@ public class SslInspectorRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for (SslInspectorRuleMatcher matcher : matchers) {
+        for (SslInspectorRuleCondition matcher : matchers) {
             if (!matcher.matches(sess))
                 return false;
         }
