@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Route Rule
  *
- * A rule is basically a collection of RouteRuleMatchers (matchers)
+ * A rule is basically a collection of RouteRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class RouteRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<RouteRuleMatcher> matchers;
+    private List<RouteRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -31,16 +31,16 @@ public class RouteRule implements JSONString, Serializable
     
     public RouteRule() { }
 
-    public RouteRule(boolean enabled, List<RouteRuleMatcher> matchers, Integer destinationWan, String description)
+    public RouteRule(boolean enabled, List<RouteRuleCondition> matchers, Integer destinationWan, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setDestinationWan(destinationWan);
         this.setDescription(description);
     }
     
-    public List<RouteRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<RouteRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<RouteRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<RouteRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

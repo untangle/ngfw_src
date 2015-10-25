@@ -9,7 +9,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
         this.buildTabPanel([this.panelStatus, this.panelTrafficAllocation, this.panelRouteRules]);
         this.callParent(arguments);
     },
-    getRouteRuleMatchers: function () {
+    getRouteRuleConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -197,9 +197,9 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.wan_balancer.RouteRuleMatcher",
+                    javaClass: "com.untangle.node.wan_balancer.RouteRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getRouteRuleMatchers()
+                    matchers: this.getRouteRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',

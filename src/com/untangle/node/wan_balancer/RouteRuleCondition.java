@@ -3,7 +3,7 @@
  */
 package com.untangle.node.wan_balancer;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A RouteRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class RouteRuleMatcher extends RuleMatcher
+public class RouteRuleCondition extends RuleCondition
 {
-    public RouteRuleMatcher( )
+    public RouteRuleCondition( )
     {
         super();
     }
 
-    public RouteRuleMatcher( MatcherType matcherType, String value )
+    public RouteRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public RouteRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public RouteRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

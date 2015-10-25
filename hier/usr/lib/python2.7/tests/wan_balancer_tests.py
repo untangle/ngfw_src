@@ -83,8 +83,8 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
     ruleCounter +=1
     ruleCondition = {
         "invert": False, 
-        "javaClass": "com.untangle.uvm.network.NatRuleMatcher",
-        "matcherType": ruleType, 
+        "javaClass": "com.untangle.uvm.network.NatRuleCondition",
+        "conditionType": ruleType, 
         "value": ruleValue
     }
     rule = {
@@ -92,7 +92,7 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
         "description": name, 
         "enabled": True, 
         "javaClass": "com.untangle.uvm.network.NatRule", 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
             ]
@@ -100,7 +100,7 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
         "newSource": newSource, 
         "ruleId": ruleCounter
     }
-    rule["matchers"]["list"].append(ruleCondition)
+    rule["conditions"]["list"].append(ruleCondition)
     return rule
 
 def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
@@ -111,8 +111,8 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
     ruleCounter +=1
     ruleCondition = {
         "invert": False, 
-        "javaClass": "com.untangle.node.wan_balancer.RouteRuleMatcher", 
-        "matcherType": ruleType, 
+        "javaClass": "com.untangle.node.wan_balancer.RouteRuleCondition", 
+        "conditionType": ruleType, 
         "value": ruleValue
     }
     rule = {
@@ -120,13 +120,13 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
         "destinationWan": wanDestination, 
         "enabled": True, 
         "javaClass": "com.untangle.node.wan_balancer.RouteRule", 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": []
         }, 
         "ruleId": ruleCounter
     }
-    rule["matchers"]["list"].append(ruleCondition)
+    rule["conditions"]["list"].append(ruleCondition)
     nodeData["routeRules"]["list"].append(rule)
     node.setSettings(nodeData)
 
