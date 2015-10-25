@@ -3,7 +3,7 @@
  */
 package com.untangle.node.firewall;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A FirewallRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class FirewallRuleMatcher extends RuleMatcher
+public class FirewallRuleCondition extends RuleCondition
 {
-    public FirewallRuleMatcher( )
+    public FirewallRuleCondition( )
     {
         super();
     }
 
-    public FirewallRuleMatcher( MatcherType matcherType, String value )
+    public FirewallRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public FirewallRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public FirewallRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Capture Rule
  * 
- * A rule is basically a collection of CaptureRuleMatchers (matchers) and what
+ * A rule is basically a collection of CaptureRuleConditions (matchers) and what
  * to do if the matchers match (capture, log, etc)
  */
 
@@ -27,7 +27,7 @@ public class CaptureRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<CaptureRuleMatcher> matchers;
+    private List<CaptureRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -38,20 +38,20 @@ public class CaptureRule implements JSONString, Serializable
     {
     }
 
-    public CaptureRule(boolean enabled, List<CaptureRuleMatcher> matchers, boolean capture, String description)
+    public CaptureRule(boolean enabled, List<CaptureRuleCondition> matchers, boolean capture, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setCapture(Boolean.valueOf(capture));
         this.setDescription(description);
     }
 
-    public List<CaptureRuleMatcher> getMatchers()
+    public List<CaptureRuleCondition> getConditions()
     {
         return this.matchers;
     }
 
-    public void setMatchers(List<CaptureRuleMatcher> matchers)
+    public void setConditions(List<CaptureRuleCondition> matchers)
     {
         this.matchers = matchers;
     }
@@ -134,7 +134,7 @@ public class CaptureRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for (CaptureRuleMatcher matcher : matchers) {
+        for (CaptureRuleCondition matcher : matchers) {
             if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
                 return false;
         }
@@ -161,7 +161,7 @@ public class CaptureRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for (CaptureRuleMatcher matcher : matchers) {
+        for (CaptureRuleCondition matcher : matchers) {
             if ( ! matcher.matches( sess ) )
                 return false;
         }

@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a PortForward Rule
  *
- * A rule is basically a collection of PortForwardRuleMatchers (matchers)
+ * A rule is basically a collection of PortForwardRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class PortForwardRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<PortForwardRuleMatcher> matchers;
+    private List<PortForwardRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -33,9 +33,9 @@ public class PortForwardRule implements JSONString, Serializable
     
     public PortForwardRule() { }
 
-    public PortForwardRule(boolean enabled, List<PortForwardRuleMatcher> matchers, InetAddress newDestination, Integer newPort, String description)
+    public PortForwardRule(boolean enabled, List<PortForwardRuleCondition> matchers, InetAddress newDestination, Integer newPort, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setNewDestination(newDestination);
         this.setNewPort(newPort);
@@ -43,8 +43,8 @@ public class PortForwardRule implements JSONString, Serializable
         this.setSimple(false);
     }
     
-    public List<PortForwardRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<PortForwardRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<PortForwardRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<PortForwardRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

@@ -4,7 +4,7 @@
 
 package com.untangle.node.captive_portal;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -19,19 +19,19 @@ import com.untangle.uvm.node.RuleMatcher;
 // THIS IS FOR ECLIPSE - @formatter:on
 
 @SuppressWarnings("serial")
-public class CaptureRuleMatcher extends RuleMatcher
+public class CaptureRuleCondition extends RuleCondition
 {
-    public CaptureRuleMatcher()
+    public CaptureRuleCondition()
     {
         super();
     }
 
-    public CaptureRuleMatcher(MatcherType matcherType, String value)
+    public CaptureRuleCondition(ConditionType matcherType, String value)
     {
         super(matcherType, value);
     }
 
-    public CaptureRuleMatcher(MatcherType matcherType, String value, Boolean invert)
+    public CaptureRuleCondition(ConditionType matcherType, String value, Boolean invert)
     {
         super(matcherType, value, invert);
     }

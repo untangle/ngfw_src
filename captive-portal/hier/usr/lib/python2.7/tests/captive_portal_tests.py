@@ -37,12 +37,12 @@ def createCaptureInternalNicRule():
         "enabled": True,
         "id": 1,
         "javaClass": "com.untangle.node.captive_portal.CaptureRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [{
                 "invert": False,
-                "javaClass": "com.untangle.node.captive_portal.CaptureRuleMatcher",
-                "matcherType": "SRC_INTF",
+                "javaClass": "com.untangle.node.captive_portal.CaptureRuleCondition",
+                "conditionType": "SRC_INTF",
                 "value": faceValue
                 }]
             },

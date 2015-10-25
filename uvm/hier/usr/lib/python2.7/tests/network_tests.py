@@ -31,30 +31,30 @@ orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 run_ftp_inbound_tests = None
 
-def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
+def createPortForwardTripleCondition( conditionType1, value1, conditionType2, value2, conditionType3, value3, destinationIP, destinationPort):
     return {
         "description": "port forward  -> " + str(destinationIP) + ":" + str(destinationPort) + " test",
         "enabled": True,
         "javaClass": "com.untangle.uvm.network.PortForwardRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
-                    "matcherType": str(matcherType1),
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleCondition",
+                    "conditionType": str(conditionType1),
                     "value": str(value1)
                 },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
-                    "matcherType": str(matcherType2),
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleCondition",
+                    "conditionType": str(conditionType2),
                     "value": str(value2)
                 },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher",
-                    "matcherType": str(matcherType3),
+                    "javaClass": "com.untangle.uvm.network.PortForwardRuleCondition",
+                    "conditionType": str(conditionType3),
                     "value": str(value3)
                 }
             ]
@@ -64,26 +64,26 @@ def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2
         "ruleId": 1
     }
 
-def createFilterRule( matcherType1, value1, matcherType2, value2, blocked ):
+def createFilterRule( conditionType1, value1, conditionType2, value2, blocked ):
     return {
         "bypass": True,
-        "description": "test rule " + str(matcherType1) + " " + str(value1) + " " + str(matcherType2) + " " + str(value2),
+        "description": "test rule " + str(conditionType1) + " " + str(value1) + " " + str(conditionType2) + " " + str(value2),
         "enabled": True,
         "blocked": blocked,
         "javaClass": "com.untangle.uvm.network.FilterRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher",
-                    "matcherType": str(matcherType1),
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType1),
                     "value": str(value1)
                 },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher",
-                    "matcherType": str(matcherType2),
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType2),
                     "value": str(value2)
                 }
             ]
@@ -91,25 +91,25 @@ def createFilterRule( matcherType1, value1, matcherType2, value2, blocked ):
         "ruleId": 1
     }
 
-def createBypassMatcherRule( matcherType, value ):
+def createBypassConditionRule( conditionType, value ):
     return {
         "bypass": True,
-        "description": "test bypass " + str(matcherType) + " " + str(value),
+        "description": "test bypass " + str(conditionType) + " " + str(value),
         "enabled": True,
         "javaClass": "com.untangle.uvm.network.BypassRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher",
-                    "matcherType": str(matcherType),
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": str(conditionType),
                     "value": str(value)
                 },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher",
-                    "matcherType": "PROTOCOL",
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": "PROTOCOL",
                     "value": "TCP,UDP"
                 }
             ]
@@ -117,24 +117,24 @@ def createBypassMatcherRule( matcherType, value ):
         "ruleId": 1
     }
 
-def createQoSMatcherRule( matcherType, value, priority):
+def createQoSConditionRule( conditionType, value, priority):
     return {
-        "description": "test QoS " + str(matcherType) + " " + str(value),
+        "description": "test QoS " + str(conditionType) + " " + str(value),
         "enabled": True,
         "javaClass": "com.untangle.uvm.network.QosRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher",
-                    "matcherType": str(matcherType),
+                    "javaClass": "com.untangle.uvm.network.QosRuleCondition",
+                    "conditionType": str(conditionType),
                     "value": str(value)
                 },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher",
-                    "matcherType": "PROTOCOL",
+                    "javaClass": "com.untangle.uvm.network.QosRuleCondition",
+                    "conditionType": "PROTOCOL",
                     "value": "TCP,UDP"
                 }
             ]
@@ -143,21 +143,21 @@ def createQoSMatcherRule( matcherType, value, priority):
         "ruleId": 3
     }
 
-def createSingleMatcherFirewallRule( matcherType, value, blocked=True, flagged=True ):
+def createSingleConditionFirewallRule( conditionType, value, blocked=True, flagged=True ):
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule",
         "id": 1,
         "enabled": True,
-        "description": "Single Matcher: " + str(matcherType) + " = " + str(value),
+        "description": "Single Condition: " + str(conditionType) + " = " + str(value),
         "flag": flagged,
         "block": blocked,
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher",
-                    "matcherType": str(matcherType),
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "conditionType": str(conditionType),
                     "value": str(value)
                     }
                 ]
@@ -176,19 +176,19 @@ def createRouteRule( networkAddr, netmask, gateway):
         "toDev": False
         }
 
-def createNATRule( name, matcherType, value, source):
+def createNATRule( name, conditionType, value, source):
     return {
         "auto": False,
         "description": name,
         "enabled": True,
         "javaClass": "com.untangle.uvm.network.NatRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.NatRuleMatcher",
-                    "matcherType": str(matcherType),
+                    "javaClass": "com.untangle.uvm.network.NatRuleCondition",
+                    "conditionType": str(conditionType),
                     "value": value
                 }
             ]
@@ -643,12 +643,12 @@ class NetworkTests(unittest2.TestCase):
         # verify port 80 is open
         result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
         # Block port 80 and verify it's closed
-        appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","80"))
+        appendFWRule(nodeFW, createSingleConditionFirewallRule("DST_PORT","80"))
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         # add bypass rule for the client and enable bypass logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['bypassRules']['list'].append( createBypassMatcherRule("SRC_ADDR",remote_control.clientIP) )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
         netsettings['logBypassedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
@@ -694,8 +694,8 @@ class NetworkTests(unittest2.TestCase):
 
         nukeFirstLevelRule('bypassRules')
 
-        appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","21", blocked=False))
-        appendFWRule(nodeFW, createSingleMatcherFirewallRule("PROTOCOL","TCP", blocked=True))
+        appendFWRule(nodeFW, createSingleConditionFirewallRule("DST_PORT","21", blocked=False))
+        appendFWRule(nodeFW, createSingleConditionFirewallRule("PROTOCOL","TCP", blocked=True))
 
         pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
         portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
@@ -713,7 +713,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test FTP (outbound) in active and passive modes with bypass
     def test_072_ftpModesBypassed(self):
-        setFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
+        setFirstLevelRule(createBypassConditionRule("DST_PORT","21"),'bypassRules')
 
         pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
         portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
@@ -731,7 +731,7 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
     def test_073_ftpModesBypassedFiltered(self):
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['bypassRules']['list'] = [ createBypassMatcherRule("DST_PORT","21") ]
+        netsettings['bypassRules']['list'] = [ createBypassConditionRule("DST_PORT","21") ]
         netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
@@ -775,7 +775,7 @@ class NetworkTests(unittest2.TestCase):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['bypassRules']['list'] = [ createBypassMatcherRule("DST_PORT","21") ]
+        netsettings['bypassRules']['list'] = [ createBypassConditionRule("DST_PORT","21") ]
         netsettings['portForwardRules']['list'] = [ createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"") ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
@@ -829,9 +829,9 @@ class NetworkTests(unittest2.TestCase):
         for packetFilter in netsettings['inputFilterRules']['list']:
             if packetFilter['description'] == "Allow DNS on non-WANs":
                 j = 0
-                for pktRule in packetFilter['matchers']['list']:
-                    if pktRule["matcherType"] == "SRC_INTF":
-                        netsettings['inputFilterRules']['list'][i]['matchers']['list'][j]["value"] = "non_wan,wan"
+                for pktRule in packetFilter['conditions']['list']:
+                    if pktRule["conditionType"] == "SRC_INTF":
+                        netsettings['inputFilterRules']['list'][i]['conditions']['list'][j]["value"] = "non_wan,wan"
                     j += 1
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)

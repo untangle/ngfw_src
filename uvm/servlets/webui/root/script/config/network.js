@@ -100,7 +100,7 @@ Ext.define('Webui.config.network', {
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
-    getNatRuleMatchers: function () {
+    getNatRuleConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -111,7 +111,7 @@ Ext.define('Webui.config.network', {
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
-    getBypassRuleMatchers: function () {
+    getBypassRuleConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -122,7 +122,7 @@ Ext.define('Webui.config.network', {
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
         ];
     },
-    getQosRuleMatchers: function () {
+    getQosRuleConditions: function () {
         return [
             {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
@@ -133,7 +133,7 @@ Ext.define('Webui.config.network', {
             {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode}
         ];
     },
-    getFilterRuleMatchers: function () {
+    getFilterRuleConditions: function () {
         return [
             {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
@@ -2765,17 +2765,17 @@ Ext.define('Webui.config.network', {
                             matcherType:'DST_LOCAL',
                             invert: false,
                             value: "true",
-                            javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                            javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                         }, {
                             matcherType: 'PROTOCOL',
                             invert: false,
                             value: "TCP",
-                            javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                            javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                         }, {
                             matcherType:'DST_PORT',
                             invert: false,
                             value: "80",
-                            javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                            javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                         }]
                     },
                     "newPort": 80
@@ -3076,17 +3076,17 @@ Ext.define('Webui.config.network', {
                                 matcherType:'DST_LOCAL',
                                 invert: false,
                                 value: "true",
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                             }, {
                                 matcherType: 'PROTOCOL',
                                 invert: false,
                                 value: protocol,
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                             }, {
                                 matcherType:'DST_PORT',
                                 invert: false,
                                 value: port,
-                                javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher"
+                                javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                             }]
                         };
                     } else {
@@ -3147,7 +3147,7 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.PortForwardRuleCondition",
                     dataIndex: "matchers",
                     matchers: this.getPortForwardMatchers()
                 }]
@@ -3292,9 +3292,9 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.NatRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.NatRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getNatRuleMatchers()
+                    matchers: this.getNatRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -3434,9 +3434,9 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.BypassRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.BypassRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getBypassRuleMatchers()
+                    matchers: this.getBypassRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4586,9 +4586,9 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.QosRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.QosRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getQosRuleMatchers()
+                    matchers: this.getQosRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4819,9 +4819,9 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.FilterRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getFilterRuleMatchers()
+                    matchers: this.getFilterRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4864,9 +4864,9 @@ Ext.define('Webui.config.network', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
+                    javaClass: "com.untangle.uvm.network.FilterRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getFilterRuleMatchers()
+                    matchers: this.getFilterRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',

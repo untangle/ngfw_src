@@ -33,24 +33,24 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.BypassRuleMatcher;
+import com.untangle.uvm.network.BypassRuleCondition;
 import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.NatRuleMatcher;
+import com.untangle.uvm.network.NatRuleCondition;
 import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.PortForwardRuleMatcher;
+import com.untangle.uvm.network.PortForwardRuleCondition;
 import com.untangle.uvm.network.FilterRule;
-import com.untangle.uvm.network.FilterRuleMatcher;
+import com.untangle.uvm.network.FilterRuleCondition;
 import com.untangle.uvm.network.QosSettings;
 import com.untangle.uvm.network.QosRule;
-import com.untangle.uvm.network.QosRuleMatcher;
+import com.untangle.uvm.network.QosRuleCondition;
 import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DnsStaticEntry;
 import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
@@ -1051,46 +1051,52 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             for ( PortForwardRule rule : networkSettings.getPortForwardRules() ) {
-                List<PortForwardRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<PortForwardRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
             for ( NatRule rule : networkSettings.getNatRules() ) {
-                List<NatRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<NatRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
             for ( BypassRule rule : networkSettings.getBypassRules() ) {
-                List<BypassRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<BypassRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
             for ( QosRule rule : networkSettings.getQosSettings().getQosRules() ) {
-                List<QosRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<QosRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
             for ( FilterRule rule : networkSettings.getForwardFilterRules() ) {
-                List<FilterRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<FilterRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
             for ( FilterRule rule : networkSettings.getInputFilterRules() ) {
-                List<FilterRuleMatcher> matchers = rule.getMatchers();
-                for ( RuleMatcher matcher : matchers ) {
-                    if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
-                        throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
-                }
+                List<FilterRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null ) 
+                    for ( RuleCondition matcher : conditions ) {
+                        if ( matcher.getInvert() && matcher.getValue() != null && matcher.getValue().contains(",") )
+                            throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
+                    }
             }
         }
 
@@ -1410,17 +1416,17 @@ public class NetworkManagerImpl implements NetworkManager
         qosRule1.setDescription( "VoIP (SIP) Traffic" );
         qosRule1.setPriority( 1 );
         
-        List<QosRuleMatcher> rule1Matchers = new LinkedList<QosRuleMatcher>();
-        QosRuleMatcher rule1Matcher1 = new QosRuleMatcher();
-        rule1Matcher1.setMatcherType(QosRuleMatcher.MatcherType.DST_PORT);
+        List<QosRuleCondition> rule1Conditions = new LinkedList<QosRuleCondition>();
+        QosRuleCondition rule1Matcher1 = new QosRuleCondition();
+        rule1Matcher1.setConditionType(QosRuleCondition.ConditionType.DST_PORT);
         rule1Matcher1.setValue("5060,5061");
-        QosRuleMatcher rule1Matcher2 = new QosRuleMatcher();
-        rule1Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
+        QosRuleCondition rule1Matcher2 = new QosRuleCondition();
+        rule1Matcher2.setConditionType(QosRuleCondition.ConditionType.PROTOCOL);
         rule1Matcher2.setValue("TCP,UDP");
-        rule1Matchers.add(rule1Matcher1);
-        rule1Matchers.add(rule1Matcher2);
+        rule1Conditions.add(rule1Matcher1);
+        rule1Conditions.add(rule1Matcher2);
 
-        qosRule1.setMatchers( rule1Matchers );
+        qosRule1.setConditions( rule1Conditions );
 
 
         /**
@@ -1431,17 +1437,17 @@ public class NetworkManagerImpl implements NetworkManager
         qosRule2.setDescription( "VoIP (IAX) Traffic" );
         qosRule2.setPriority( 1 );
         
-        List<QosRuleMatcher> rule2Matchers = new LinkedList<QosRuleMatcher>();
-        QosRuleMatcher rule2Matcher1 = new QosRuleMatcher();
-        rule2Matcher1.setMatcherType(QosRuleMatcher.MatcherType.DST_PORT);
+        List<QosRuleCondition> rule2Conditions = new LinkedList<QosRuleCondition>();
+        QosRuleCondition rule2Matcher1 = new QosRuleCondition();
+        rule2Matcher1.setConditionType(QosRuleCondition.ConditionType.DST_PORT);
         rule2Matcher1.setValue("4569");
-        QosRuleMatcher rule2Matcher2 = new QosRuleMatcher();
-        rule2Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
+        QosRuleCondition rule2Matcher2 = new QosRuleCondition();
+        rule2Matcher2.setConditionType(QosRuleCondition.ConditionType.PROTOCOL);
         rule2Matcher2.setValue("TCP,UDP");
-        rule2Matchers.add(rule2Matcher1);
-        rule2Matchers.add(rule2Matcher2);
+        rule2Conditions.add(rule2Matcher1);
+        rule2Conditions.add(rule2Matcher2);
 
-        qosRule2.setMatchers( rule2Matchers );
+        qosRule2.setConditions( rule2Conditions );
 
         /**
          * Add Rules
@@ -1482,16 +1488,16 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
         filterRuleSsh.setReadOnly( true );
-        List<FilterRuleMatcher> ruleSshMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleSshMatcher1 = new FilterRuleMatcher();
-        ruleSshMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleSshConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleSshMatcher1 = new FilterRuleCondition();
+        ruleSshMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleSshMatcher1.setValue("22");
-        FilterRuleMatcher ruleSshMatcher2 = new FilterRuleMatcher();
-        ruleSshMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleSshMatcher2 = new FilterRuleCondition();
+        ruleSshMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleSshMatcher2.setValue("TCP");
-        ruleSshMatchers.add(ruleSshMatcher1);
-        ruleSshMatchers.add(ruleSshMatcher2);
-        filterRuleSsh.setMatchers( ruleSshMatchers );
+        ruleSshConditions.add(ruleSshMatcher1);
+        ruleSshConditions.add(ruleSshMatcher2);
+        filterRuleSsh.setConditions( ruleSshConditions );
 
         FilterRule filterRuleHttpsWan = new FilterRule();
         filterRuleHttpsWan.setReadOnly( true );
@@ -1500,20 +1506,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
         filterRuleHttpsWan.setReadOnly( true );
-        List<FilterRuleMatcher> ruleHttpsWanMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpsWanMatcher1 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleHttpsWanConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleHttpsWanMatcher1 = new FilterRuleCondition();
+        ruleHttpsWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleHttpsWanMatcher1.setValue("443");
-        FilterRuleMatcher ruleHttpsWanMatcher2 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleHttpsWanMatcher2 = new FilterRuleCondition();
+        ruleHttpsWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleHttpsWanMatcher2.setValue("TCP");
-        FilterRuleMatcher ruleHttpsWanMatcher3 = new FilterRuleMatcher();
-        ruleHttpsWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleHttpsWanMatcher3 = new FilterRuleCondition();
+        ruleHttpsWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleHttpsWanMatcher3.setValue("wan");
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher1);
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher2);
-        ruleHttpsWanMatchers.add(ruleHttpsWanMatcher3);
-        filterRuleHttpsWan.setMatchers( ruleHttpsWanMatchers );
+        ruleHttpsWanConditions.add(ruleHttpsWanMatcher1);
+        ruleHttpsWanConditions.add(ruleHttpsWanMatcher2);
+        ruleHttpsWanConditions.add(ruleHttpsWanMatcher3);
+        filterRuleHttpsWan.setConditions( ruleHttpsWanConditions );
 
         FilterRule filterRuleHttpsNonWan = new FilterRule();
         filterRuleHttpsNonWan.setReadOnly( true );
@@ -1522,20 +1528,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
         filterRuleHttpsNonWan.setBlocked( false );
         filterRuleHttpsNonWan.setReadOnly( true );
-        List<FilterRuleMatcher> ruleHttpsNonWanMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpsNonWanMatcher1 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleHttpsNonWanConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleHttpsNonWanMatcher1 = new FilterRuleCondition();
+        ruleHttpsNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleHttpsNonWanMatcher1.setValue("443");
-        FilterRuleMatcher ruleHttpsNonWanMatcher2 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleHttpsNonWanMatcher2 = new FilterRuleCondition();
+        ruleHttpsNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleHttpsNonWanMatcher2.setValue("TCP");
-        FilterRuleMatcher ruleHttpsNonWanMatcher3 = new FilterRuleMatcher();
-        ruleHttpsNonWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleHttpsNonWanMatcher3 = new FilterRuleCondition();
+        ruleHttpsNonWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleHttpsNonWanMatcher3.setValue("non_wan");
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher1);
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher2);
-        ruleHttpsNonWanMatchers.add(ruleHttpsNonWanMatcher3);
-        filterRuleHttpsNonWan.setMatchers( ruleHttpsNonWanMatchers );
+        ruleHttpsNonWanConditions.add(ruleHttpsNonWanMatcher1);
+        ruleHttpsNonWanConditions.add(ruleHttpsNonWanMatcher2);
+        ruleHttpsNonWanConditions.add(ruleHttpsNonWanMatcher3);
+        filterRuleHttpsNonWan.setConditions( ruleHttpsNonWanConditions );
 
         FilterRule filterRulePing = new FilterRule();
         filterRulePing.setReadOnly( true );
@@ -1544,12 +1550,12 @@ public class NetworkManagerImpl implements NetworkManager
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
         filterRulePing.setReadOnly( true );
-        List<FilterRuleMatcher> rulePingMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher rulePingMatcher1 = new FilterRuleMatcher();
-        rulePingMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> rulePingConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition rulePingMatcher1 = new FilterRuleCondition();
+        rulePingMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         rulePingMatcher1.setValue("ICMP");
-        rulePingMatchers.add(rulePingMatcher1);
-        filterRulePing.setMatchers( rulePingMatchers );
+        rulePingConditions.add(rulePingMatcher1);
+        filterRulePing.setConditions( rulePingConditions );
 
         FilterRule filterRuleDns = new FilterRule();
         filterRuleDns.setReadOnly( true );
@@ -1557,20 +1563,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDns.setIpv6Enabled( true );
         filterRuleDns.setDescription( "Allow DNS on non-WANs" );
         filterRuleDns.setBlocked( false );
-        List<FilterRuleMatcher> ruleDnsMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleDnsMatcher1 = new FilterRuleMatcher();
-        ruleDnsMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleDnsConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleDnsMatcher1 = new FilterRuleCondition();
+        ruleDnsMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleDnsMatcher1.setValue("53");
-        FilterRuleMatcher ruleDnsMatcher2 = new FilterRuleMatcher();
-        ruleDnsMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleDnsMatcher2 = new FilterRuleCondition();
+        ruleDnsMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleDnsMatcher2.setValue("TCP,UDP");
-        FilterRuleMatcher ruleDnsMatcher3 = new FilterRuleMatcher();
-        ruleDnsMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleDnsMatcher3 = new FilterRuleCondition();
+        ruleDnsMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleDnsMatcher3.setValue("non_wan");
-        ruleDnsMatchers.add(ruleDnsMatcher1);
-        ruleDnsMatchers.add(ruleDnsMatcher2);
-        ruleDnsMatchers.add(ruleDnsMatcher3);
-        filterRuleDns.setMatchers( ruleDnsMatchers );
+        ruleDnsConditions.add(ruleDnsMatcher1);
+        ruleDnsConditions.add(ruleDnsMatcher2);
+        ruleDnsConditions.add(ruleDnsMatcher3);
+        filterRuleDns.setConditions( ruleDnsConditions );
 
         FilterRule filterRuleDhcp = new FilterRule();
         filterRuleDhcp.setReadOnly( true );
@@ -1579,20 +1585,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
         filterRuleDhcp.setBlocked( false );
         filterRuleDhcp.setReadOnly( true );
-        List<FilterRuleMatcher> ruleDhcpMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleDhcpMatcher1 = new FilterRuleMatcher();
-        ruleDhcpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleDhcpConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleDhcpMatcher1 = new FilterRuleCondition();
+        ruleDhcpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleDhcpMatcher1.setValue("67");
-        FilterRuleMatcher ruleDhcpMatcher2 = new FilterRuleMatcher();
-        ruleDhcpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleDhcpMatcher2 = new FilterRuleCondition();
+        ruleDhcpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleDhcpMatcher2.setValue("UDP");
-        FilterRuleMatcher ruleDhcpMatcher3 = new FilterRuleMatcher();
-        ruleDhcpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleDhcpMatcher3 = new FilterRuleCondition();
+        ruleDhcpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleDhcpMatcher3.setValue("non_wan");
-        ruleDhcpMatchers.add(ruleDhcpMatcher1);
-        ruleDhcpMatchers.add(ruleDhcpMatcher2);
-        ruleDhcpMatchers.add(ruleDhcpMatcher3);
-        filterRuleDhcp.setMatchers( ruleDhcpMatchers );
+        ruleDhcpConditions.add(ruleDhcpMatcher1);
+        ruleDhcpConditions.add(ruleDhcpMatcher2);
+        ruleDhcpConditions.add(ruleDhcpMatcher3);
+        filterRuleDhcp.setConditions( ruleDhcpConditions );
         
         FilterRule filterRuleHttp = new FilterRule();
         filterRuleHttp.setReadOnly( true );
@@ -1601,20 +1607,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
         filterRuleHttp.setBlocked( false );
         filterRuleHttp.setReadOnly( true );
-        List<FilterRuleMatcher> ruleHttpMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleHttpMatcher1 = new FilterRuleMatcher();
-        ruleHttpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleHttpConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleHttpMatcher1 = new FilterRuleCondition();
+        ruleHttpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleHttpMatcher1.setValue("80");
-        FilterRuleMatcher ruleHttpMatcher2 = new FilterRuleMatcher();
-        ruleHttpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleHttpMatcher2 = new FilterRuleCondition();
+        ruleHttpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleHttpMatcher2.setValue("TCP");
-        FilterRuleMatcher ruleHttpMatcher3 = new FilterRuleMatcher();
-        ruleHttpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleHttpMatcher3 = new FilterRuleCondition();
+        ruleHttpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleHttpMatcher3.setValue("non_wan");
-        ruleHttpMatchers.add(ruleHttpMatcher1);
-        ruleHttpMatchers.add(ruleHttpMatcher2);
-        ruleHttpMatchers.add(ruleHttpMatcher3);
-        filterRuleHttp.setMatchers( ruleHttpMatchers );
+        ruleHttpConditions.add(ruleHttpMatcher1);
+        ruleHttpConditions.add(ruleHttpMatcher2);
+        ruleHttpConditions.add(ruleHttpMatcher3);
+        filterRuleHttp.setConditions( ruleHttpConditions );
 
         FilterRule filterRuleSnmp = new FilterRule();
         filterRuleSnmp.setReadOnly( true );
@@ -1623,20 +1629,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
         filterRuleSnmp.setBlocked( false );
         filterRuleSnmp.setReadOnly( true );
-        List<FilterRuleMatcher> ruleSnmpMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleSnmpMatcher1 = new FilterRuleMatcher();
-        ruleSnmpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        List<FilterRuleCondition> ruleSnmpConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleSnmpMatcher1 = new FilterRuleCondition();
+        ruleSnmpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleSnmpMatcher1.setValue("161");
-        FilterRuleMatcher ruleSnmpMatcher2 = new FilterRuleMatcher();
-        ruleSnmpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        FilterRuleCondition ruleSnmpMatcher2 = new FilterRuleCondition();
+        ruleSnmpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleSnmpMatcher2.setValue("UDP");
-        FilterRuleMatcher ruleSnmpMatcher3 = new FilterRuleMatcher();
-        ruleSnmpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleSnmpMatcher3 = new FilterRuleCondition();
+        ruleSnmpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleSnmpMatcher3.setValue("non_wan");
-        ruleSnmpMatchers.add(ruleSnmpMatcher1);
-        ruleSnmpMatchers.add(ruleSnmpMatcher2);
-        ruleSnmpMatchers.add(ruleSnmpMatcher3);
-        filterRuleSnmp.setMatchers( ruleSnmpMatchers );
+        ruleSnmpConditions.add(ruleSnmpMatcher1);
+        ruleSnmpConditions.add(ruleSnmpMatcher2);
+        ruleSnmpConditions.add(ruleSnmpMatcher3);
+        filterRuleSnmp.setConditions( ruleSnmpConditions );
 
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
@@ -1645,12 +1651,12 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleAhEsp.setDescription( "Allow AH/ESP for IPsec" );
         filterRuleAhEsp.setBlocked( false );
         filterRuleAhEsp.setReadOnly( true );
-        List<FilterRuleMatcher> ruleAhEspMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleAhEspMatcher1 = new FilterRuleMatcher();
-        ruleAhEspMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> ruleAhEspConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleAhEspMatcher1 = new FilterRuleCondition();
+        ruleAhEspMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleAhEspMatcher1.setValue("AH,ESP");
-        ruleAhEspMatchers.add(ruleAhEspMatcher1);
-        filterRuleAhEsp.setMatchers( ruleAhEspMatchers );
+        ruleAhEspConditions.add(ruleAhEspMatcher1);
+        filterRuleAhEsp.setConditions( ruleAhEspConditions );
 
         FilterRule filterRuleIke = new FilterRule();
         filterRuleIke.setReadOnly( true );
@@ -1659,16 +1665,16 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleIke.setDescription( "Allow IKE for IPsec" );
         filterRuleIke.setBlocked( false );
         filterRuleIke.setReadOnly( true );
-        List<FilterRuleMatcher> ruleIkeMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleIkeMatcher1 = new FilterRuleMatcher();
-        ruleIkeMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> ruleIkeConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleIkeMatcher1 = new FilterRuleCondition();
+        ruleIkeMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleIkeMatcher1.setValue("UDP");
-        FilterRuleMatcher ruleIkeMatcher2 = new FilterRuleMatcher();
-        ruleIkeMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        FilterRuleCondition ruleIkeMatcher2 = new FilterRuleCondition();
+        ruleIkeMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleIkeMatcher2.setValue("500");
-        ruleIkeMatchers.add(ruleIkeMatcher1);
-        ruleIkeMatchers.add(ruleIkeMatcher2);
-        filterRuleIke.setMatchers( ruleIkeMatchers );
+        ruleIkeConditions.add(ruleIkeMatcher1);
+        ruleIkeConditions.add(ruleIkeMatcher2);
+        filterRuleIke.setConditions( ruleIkeConditions );
 
         FilterRule filterRuleNatT = new FilterRule();
         filterRuleNatT.setReadOnly( true );
@@ -1677,16 +1683,16 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleNatT.setDescription( "Allow NAT-T for IPsec" );
         filterRuleNatT.setBlocked( false );
         filterRuleNatT.setReadOnly( true );
-        List<FilterRuleMatcher> ruleNatTMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleNatTMatcher1 = new FilterRuleMatcher();
-        ruleNatTMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> ruleNatTConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleNatTMatcher1 = new FilterRuleCondition();
+        ruleNatTMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleNatTMatcher1.setValue("UDP");
-        FilterRuleMatcher ruleNatTMatcher2 = new FilterRuleMatcher();
-        ruleNatTMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        FilterRuleCondition ruleNatTMatcher2 = new FilterRuleCondition();
+        ruleNatTMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleNatTMatcher2.setValue("4500");
-        ruleNatTMatchers.add(ruleNatTMatcher1);
-        ruleNatTMatchers.add(ruleNatTMatcher2);
-        filterRuleNatT.setMatchers( ruleNatTMatchers );
+        ruleNatTConditions.add(ruleNatTMatcher1);
+        ruleNatTConditions.add(ruleNatTMatcher2);
+        filterRuleNatT.setConditions( ruleNatTConditions );
 
         FilterRule filterRuleL2tp = new FilterRule();
         filterRuleL2tp.setReadOnly( true );
@@ -1695,16 +1701,16 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleL2tp.setDescription( "Allow L2TP" );
         filterRuleL2tp.setBlocked( false );
         filterRuleL2tp.setReadOnly( true );
-        List<FilterRuleMatcher> ruleL2tpMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleL2tpMatcher1 = new FilterRuleMatcher();
-        ruleL2tpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> ruleL2tpConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleL2tpMatcher1 = new FilterRuleCondition();
+        ruleL2tpMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleL2tpMatcher1.setValue("UDP");
-        FilterRuleMatcher ruleL2tpMatcher2 = new FilterRuleMatcher();
-        ruleL2tpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        FilterRuleCondition ruleL2tpMatcher2 = new FilterRuleCondition();
+        ruleL2tpMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleL2tpMatcher2.setValue("1701");
-        ruleL2tpMatchers.add(ruleL2tpMatcher1);
-        ruleL2tpMatchers.add(ruleL2tpMatcher2);
-        filterRuleL2tp.setMatchers( ruleL2tpMatchers );
+        ruleL2tpConditions.add(ruleL2tpMatcher1);
+        ruleL2tpConditions.add(ruleL2tpMatcher2);
+        filterRuleL2tp.setConditions( ruleL2tpConditions );
 
         FilterRule filterRuleOpenVpn = new FilterRule();
         filterRuleOpenVpn.setReadOnly( true );
@@ -1713,20 +1719,20 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleOpenVpn.setDescription( "Allow OpenVPN" );
         filterRuleOpenVpn.setBlocked( false );
         filterRuleOpenVpn.setReadOnly( true );
-        List<FilterRuleMatcher> ruleOpenVpnMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleOpenVpnMatcher1 = new FilterRuleMatcher();
-        ruleOpenVpnMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        List<FilterRuleCondition> ruleOpenVpnConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleOpenVpnMatcher1 = new FilterRuleCondition();
+        ruleOpenVpnMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleOpenVpnMatcher1.setValue("UDP");
-        FilterRuleMatcher ruleOpenVpnMatcher2 = new FilterRuleMatcher();
-        ruleOpenVpnMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        FilterRuleCondition ruleOpenVpnMatcher2 = new FilterRuleCondition();
+        ruleOpenVpnMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
         ruleOpenVpnMatcher2.setValue("1194");
-        FilterRuleMatcher ruleOpenVpnMatcher3 = new FilterRuleMatcher();
-        ruleOpenVpnMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        FilterRuleCondition ruleOpenVpnMatcher3 = new FilterRuleCondition();
+        ruleOpenVpnMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
         ruleOpenVpnMatcher3.setValue("wan");
-        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher1);
-        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher2);
-        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher3);
-        filterRuleOpenVpn.setMatchers( ruleOpenVpnMatchers );
+        ruleOpenVpnConditions.add(ruleOpenVpnMatcher1);
+        ruleOpenVpnConditions.add(ruleOpenVpnMatcher2);
+        ruleOpenVpnConditions.add(ruleOpenVpnMatcher3);
+        filterRuleOpenVpn.setConditions( ruleOpenVpnConditions );
         
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
@@ -1735,8 +1741,8 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleBlock.setDescription( "Block All" );
         filterRuleBlock.setBlocked( true );
         filterRuleBlock.setReadOnly( true );
-        List<FilterRuleMatcher> rule4Matchers = new LinkedList<FilterRuleMatcher>();
-        filterRuleBlock.setMatchers( rule4Matchers );
+        List<FilterRuleCondition> rule4Conditions = new LinkedList<FilterRuleCondition>();
+        filterRuleBlock.setConditions( rule4Conditions );
         
         rules.add( filterRuleSsh );
         rules.add( filterRuleHttpsWan );
@@ -1764,49 +1770,49 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDns.setEnabled( false );
         filterRuleDns.setDescription( "Bypass DNS Sessions" );
         filterRuleDns.setBypass( true );
-        List<BypassRuleMatcher> ruleDnsMatchers = new LinkedList<BypassRuleMatcher>();
-        BypassRuleMatcher ruleDnsMatcher1 = new BypassRuleMatcher();
-        ruleDnsMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        List<BypassRuleCondition> ruleDnsConditions = new LinkedList<BypassRuleCondition>();
+        BypassRuleCondition ruleDnsMatcher1 = new BypassRuleCondition();
+        ruleDnsMatcher1.setConditionType(BypassRuleCondition.ConditionType.DST_PORT);
         ruleDnsMatcher1.setValue("53");
-        ruleDnsMatchers.add(ruleDnsMatcher1);
-        filterRuleDns.setMatchers( ruleDnsMatchers );
+        ruleDnsConditions.add(ruleDnsMatcher1);
+        filterRuleDns.setConditions( ruleDnsConditions );
         
         BypassRule filterRuleSip = new BypassRule();
         filterRuleSip.setEnabled( true );
         filterRuleSip.setDescription( "Bypass VoIP (SIP) Sessions" );
         filterRuleSip.setBypass( true );
-        List<BypassRuleMatcher> ruleSipMatchers = new LinkedList<BypassRuleMatcher>();
-        BypassRuleMatcher ruleSipMatcher1 = new BypassRuleMatcher();
-        ruleSipMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        List<BypassRuleCondition> ruleSipConditions = new LinkedList<BypassRuleCondition>();
+        BypassRuleCondition ruleSipMatcher1 = new BypassRuleCondition();
+        ruleSipMatcher1.setConditionType(BypassRuleCondition.ConditionType.DST_PORT);
         ruleSipMatcher1.setValue("5060");
-        ruleSipMatchers.add(ruleSipMatcher1);
-        filterRuleSip.setMatchers( ruleSipMatchers );
+        ruleSipConditions.add(ruleSipMatcher1);
+        filterRuleSip.setConditions( ruleSipConditions );
 
         BypassRule filterRuleIax = new BypassRule();
         filterRuleIax.setEnabled( true );
         filterRuleIax.setDescription( "Bypass VoIP (IAX2) Sessions" );
         filterRuleIax.setBypass( true );
-        List<BypassRuleMatcher> ruleIaxMatchers = new LinkedList<BypassRuleMatcher>();
-        BypassRuleMatcher ruleIaxMatcher1 = new BypassRuleMatcher();
-        ruleIaxMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        List<BypassRuleCondition> ruleIaxConditions = new LinkedList<BypassRuleCondition>();
+        BypassRuleCondition ruleIaxMatcher1 = new BypassRuleCondition();
+        ruleIaxMatcher1.setConditionType(BypassRuleCondition.ConditionType.DST_PORT);
         ruleIaxMatcher1.setValue("4569");
-        ruleIaxMatchers.add(ruleIaxMatcher1);
-        filterRuleIax.setMatchers( ruleIaxMatchers );
+        ruleIaxConditions.add(ruleIaxMatcher1);
+        filterRuleIax.setConditions( ruleIaxConditions );
 
         BypassRule filterRulePptp = new BypassRule();
         filterRulePptp.setEnabled( true );
         filterRulePptp.setDescription( "Bypass PPTP Sessions" );
         filterRulePptp.setBypass( true );
-        List<BypassRuleMatcher> rulePptpMatchers = new LinkedList<BypassRuleMatcher>();
-        BypassRuleMatcher rulePptpMatcher1 = new BypassRuleMatcher();
-        rulePptpMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        List<BypassRuleCondition> rulePptpConditions = new LinkedList<BypassRuleCondition>();
+        BypassRuleCondition rulePptpMatcher1 = new BypassRuleCondition();
+        rulePptpMatcher1.setConditionType(BypassRuleCondition.ConditionType.DST_PORT);
         rulePptpMatcher1.setValue("1723");
-        rulePptpMatchers.add(rulePptpMatcher1);
-        BypassRuleMatcher rulePptpMatcher2 = new BypassRuleMatcher();
-        rulePptpMatcher2.setMatcherType(BypassRuleMatcher.MatcherType.PROTOCOL);
+        rulePptpConditions.add(rulePptpMatcher1);
+        BypassRuleCondition rulePptpMatcher2 = new BypassRuleCondition();
+        rulePptpMatcher2.setConditionType(BypassRuleCondition.ConditionType.PROTOCOL);
         rulePptpMatcher2.setValue("TCP");
-        rulePptpMatchers.add(rulePptpMatcher2);
-        filterRulePptp.setMatchers( rulePptpMatchers );
+        rulePptpConditions.add(rulePptpMatcher2);
+        filterRulePptp.setConditions( rulePptpConditions );
         
         rules.add( filterRuleDns );
         rules.add( filterRuleSip );

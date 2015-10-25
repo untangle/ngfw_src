@@ -8,7 +8,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
         this.buildTabPanel([this.panelRules]);
         this.callParent(arguments);
     },
-    getMatchers: function () {
+    getConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -132,9 +132,9 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
-                        javaClass: "com.untangle.node.firewall.FirewallRuleMatcher",
+                        javaClass: "com.untangle.node.firewall.FirewallRuleCondition",
                         dataIndex: "matchers",
-                        matchers: this.getMatchers()
+                        matchers: this.getConditions()
                     }]
                 }, {
                     xtype: 'fieldset',

@@ -99,23 +99,23 @@ def findEmailContent(searchTerm1,searchTerm2):
     grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
     return(ifFound, grepContext, grepContext2)
     
-def createFirewallSingleMatcherRule( matcherType, value, blocked=True ):
-    matcherTypeStr = str(matcherType)
+def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
         "log": True, 
         "block": blocked, 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
                 ]
@@ -158,26 +158,26 @@ def createAlertRule(description, matcherField, value, matcherField2, value2,):
             "enabled": True,
             "javaClass": "com.untangle.node.reports.AlertRule",
             "log": True,
-            "matchers": {
+            "conditions": {
                 "javaClass": "java.util.LinkedList",
                 "list": [
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleMatcher",
-                        "matcherType": "FIELD_CONDITION",
+                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": "=",
                             "field": matcherField,
-                            "javaClass": "com.untangle.node.reports.AlertRuleMatcherField",
+                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
                             "value": value
                         }
                     },
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleMatcher",
-                        "matcherType": "FIELD_CONDITION",
+                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": ">",
                             "field": matcherField2,
-                            "javaClass": "com.untangle.node.reports.AlertRuleMatcherField",
+                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
                             "value": value2
                         }
                     }
@@ -337,7 +337,7 @@ class ReportsTests(unittest2.TestCase):
             raise unittest2.SkipTest("Syslog server unreachable")        
         # Install firewall rule to generate syslog events
         rules = nodeFirewall.getRules()
-        rules["list"].append(createFirewallSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
+        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
         nodeFirewall.setRules(rules);
         rules = nodeFirewall.getRules()
         # Get rule ID

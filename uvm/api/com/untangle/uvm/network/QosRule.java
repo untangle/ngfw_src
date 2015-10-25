@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Qos Rule
  *
- * A rule is basically a collection of QosRuleMatchers (matchers)
+ * A rule is basically a collection of QosRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class QosRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<QosRuleMatcher> matchers;
+    private List<QosRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -32,15 +32,15 @@ public class QosRule implements JSONString, Serializable
     
     public QosRule() { }
 
-    public QosRule(boolean enabled, String description, List<QosRuleMatcher> matchers, int priority)
+    public QosRule(boolean enabled, String description, List<QosRuleCondition> matchers, int priority)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setPriority(priority);
     }
     
-    public List<QosRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<QosRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<QosRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<QosRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

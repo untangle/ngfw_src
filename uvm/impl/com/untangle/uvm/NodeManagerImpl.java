@@ -88,8 +88,8 @@ public class NodeManagerImpl implements NodeManager
         }
 
         // global renames
-        oldNames = new String[] {"SITEFILTER","CLASSD","HTTPS_"};
-        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","SSL_INSPECTOR_"};
+        oldNames = new String[] {"SITEFILTER","CLASSD","HTTPS_SNI_HOSTNAME","HTTPS_SUBJECT_DN","HTTPS_ISSUER_DN","RuleMatcher","\"matchers\":","\"matcherType\":"};
+        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","SSL_INSPECTOR_SNI_HOSTNAME","SSL_INSPECTOR_SUBJECT_DN","SSL_INSPECTOR_ISSUER_DN","RuleCondition","\"conditions\":","\"conditionType\":"};
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
@@ -264,7 +264,7 @@ public class NodeManagerImpl implements NodeManager
         newNames = new String[] {"com.untangle.node.bandwidth_control.BandwidthControlApp",
                                  "com.untangle.node.bandwidth_control.BandwidthControlRule",
                                  "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
-                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                                 "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                                  "com.untangle.node.bandwidth_control.BandwidthControlSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -291,7 +291,7 @@ public class NodeManagerImpl implements NodeManager
         newNames = new String[] {"com.untangle.node.application_control.ApplicationControlApp",
                                  "com.untangle.node.application_control.ApplicationControlLogicRule",
                                  "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
-                                 "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
+                                 "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
                                  "com.untangle.node.application_control.ApplicationControlProtoRule",
                                  "com.untangle.node.application_control.ApplicationControlProtoRuleAction",
                                  "com.untangle.node.application_control.ApplicationControlSettings"};
@@ -338,8 +338,8 @@ public class NodeManagerImpl implements NodeManager
                                  "com.untangle.node.https.HttpsSettings"};
         newNames = new String[] {"com.untangle.node.ssl_inspector.SslInspectorApp",
                                  "com.untangle.node.ssl_inspector.SslInspectorRule",
-                                 "com.untangle.node.ssl_inspector.SslInspectorAction",
-                                 "com.untangle.node.ssl_inspector.SslInspectorMatcher",
+                                 "com.untangle.node.ssl_inspector.SslInspectorRuleAction",
+                                 "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
                                  "com.untangle.node.ssl_inspector.SslInspectorSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
@@ -363,7 +363,7 @@ public class NodeManagerImpl implements NodeManager
                                  "com.untangle.node.capture.CaptureSettings"};
         newNames = new String[] {"com.untangle.node.captive_portal.CaptivePortalApp",
                                  "com.untangle.node.captive_portal.CaptureRule",
-                                 "com.untangle.node.captive_portal.CaptureRuleMatcher",
+                                 "com.untangle.node.captive_portal.CaptureRuleCondition",
                                  "com.untangle.node.captive_portal.PassedAddress",
                                  "com.untangle.node.captive_portal.CaptivePortalSettings"};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -425,7 +425,7 @@ public class NodeManagerImpl implements NodeManager
                                  "com.untangle.node.reports.EventEntry",
                                  "com.untangle.node.reports.SqlCondition",
                                  "com.untangle.node.reports.AlertRule",
-                                 "com.untangle.node.reports.AlertRuleMatcher",
+                                 "com.untangle.node.reports.AlertRuleCondition",
                                  "com.untangle.node.reports"
         };
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -451,7 +451,7 @@ public class NodeManagerImpl implements NodeManager
         newNames = new String[] {"com.untangle.node.policy_manager.PolicyManagerApp",
                                  "com.untangle.node.policy_manager.PolicyManagerSettings",
                                  "com.untangle.node.policy_manager.PolicyRule",
-                                 "com.untangle.node.policy_manager.PolicyRuleMatcher",
+                                 "com.untangle.node.policy_manager.PolicyRuleCondition",
                                  "com.untangle.node.policy_manager.PolicySettings",};
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);

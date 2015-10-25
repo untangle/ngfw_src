@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.network;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A NatRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class NatRuleMatcher extends RuleMatcher
+public class NatRuleCondition extends RuleCondition
 {
-    public NatRuleMatcher( )
+    public NatRuleCondition( )
     {
         super();
     }
 
-    public NatRuleMatcher( MatcherType matcherType, String value )
+    public NatRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public NatRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public NatRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

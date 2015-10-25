@@ -212,24 +212,24 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         /* A few sample settings */
         List<FirewallRule> ruleList = new LinkedList<FirewallRule>();
-        LinkedList<FirewallRuleMatcher> matcherList = null;
+        LinkedList<FirewallRuleCondition> matcherList = null;
             
         /* example rule 1 */
-        FirewallRuleMatcher portMatch1 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_PORT, "21");
-        matcherList = new LinkedList<FirewallRuleMatcher>();
+        FirewallRuleCondition portMatch1 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_PORT, "21");
+        matcherList = new LinkedList<FirewallRuleCondition>();
         matcherList.add(portMatch1);
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
                              
         /* example rule 2 */
-        FirewallRuleMatcher addrMatch2 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_ADDR, "1.2.3.4/255.255.255.0");
-        matcherList = new LinkedList<FirewallRuleMatcher>();
+        FirewallRuleCondition addrMatch2 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.SRC_ADDR, "1.2.3.4/255.255.255.0");
+        matcherList = new LinkedList<FirewallRuleCondition>();
         matcherList.add(addrMatch2);
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
 
         /* example rule 3 */
-        FirewallRuleMatcher addrMatch3 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_ADDR, "1.2.3.4/255.255.255.0");
-        FirewallRuleMatcher portMatch3 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_PORT, "1000-5000");
-        matcherList = new LinkedList<FirewallRuleMatcher>();
+        FirewallRuleCondition addrMatch3 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_ADDR, "1.2.3.4/255.255.255.0");
+        FirewallRuleCondition portMatch3 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_PORT, "1000-5000");
+        matcherList = new LinkedList<FirewallRuleCondition>();
         matcherList.add(addrMatch3);
         matcherList.add(portMatch3);
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));

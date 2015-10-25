@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.network;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A PortForwardRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class PortForwardRuleMatcher extends RuleMatcher
+public class PortForwardRuleCondition extends RuleCondition
 {
-    public PortForwardRuleMatcher( )
+    public PortForwardRuleCondition( )
     {
         super();
     }
 
-    public PortForwardRuleMatcher( MatcherType matcherType, String value )
+    public PortForwardRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public PortForwardRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public PortForwardRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

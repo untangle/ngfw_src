@@ -1,5 +1,5 @@
 /**
- * $Id: AlertRuleMatcherField.java 37267 2014-02-26 23:42:19Z dmorris $
+ * $Id: AlertRuleConditionField.java 37267 2014-02-26 23:42:19Z dmorris $
  */
 package com.untangle.node.reports;
 
@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 import com.untangle.uvm.node.GlobMatcher;
 
 /**
@@ -16,9 +16,9 @@ import com.untangle.uvm.node.GlobMatcher;
  * A AlertRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class AlertRuleMatcherField
+public class AlertRuleConditionField
 {
-    private static final Logger logger = Logger.getLogger( AlertRuleMatcherField.class );
+    private static final Logger logger = Logger.getLogger( AlertRuleConditionField.class );
 
     private String field;
     private String comparator;
@@ -26,9 +26,9 @@ public class AlertRuleMatcherField
 
     private GlobMatcher stringGlobMatcher = null;
     
-    public AlertRuleMatcherField() { }
+    public AlertRuleConditionField() { }
 
-    public AlertRuleMatcherField( String field, String comparator, String value )
+    public AlertRuleConditionField( String field, String comparator, String value )
     {
         this.field = field;
         this.comparator = comparator;

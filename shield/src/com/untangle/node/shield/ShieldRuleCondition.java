@@ -3,7 +3,7 @@
  */
 package com.untangle.node.shield;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A ShieldRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class ShieldRuleMatcher extends RuleMatcher
+public class ShieldRuleCondition extends RuleCondition
 {
-    public ShieldRuleMatcher( )
+    public ShieldRuleCondition( )
     {
         super();
     }
 
-    public ShieldRuleMatcher( MatcherType matcherType, String value )
+    public ShieldRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public ShieldRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public ShieldRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

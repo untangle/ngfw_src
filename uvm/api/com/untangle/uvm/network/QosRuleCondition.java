@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.network;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 /**
  * This is a matching criteria for a Qos Rule
@@ -12,19 +12,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A QosRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class QosRuleMatcher extends RuleMatcher
+public class QosRuleCondition extends RuleCondition
 {
-    public QosRuleMatcher( )
+    public QosRuleCondition( )
     {
         super();
     }
 
-    public QosRuleMatcher( MatcherType matcherType, String value )
+    public QosRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public QosRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public QosRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

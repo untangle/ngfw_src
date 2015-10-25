@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Alert Rule
  * 
- * A rule is basically a collection of AlertRuleMatchers (matchers) and what
+ * A rule is basically a collection of AlertRuleConditions (matchers) and what
  * to do if the matchers match (log, alert, or both)
  */
 @SuppressWarnings("serial")
@@ -36,16 +36,16 @@ public class AlertRule implements JSONString, Serializable
 
     private long lastAlertTime = 0; /* stores the last time this rule sent an alert */
     
-    private List<AlertRuleMatcher> matchers;
+    private List<AlertRuleCondition> matchers;
 
     public AlertRule()
     {
     }
 
-    public AlertRule( boolean enabled, List<AlertRuleMatcher> matchers, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes )
+    public AlertRule( boolean enabled, List<AlertRuleCondition> matchers, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes )
     {
         this.setEnabled( enabled );
-        this.setMatchers( matchers );
+        this.setConditions( matchers );
         this.setLog( log );
         this.setAlert( alert );
         this.setDescription( description );
@@ -53,8 +53,8 @@ public class AlertRule implements JSONString, Serializable
         this.setAlertLimitFrequencyMinutes( frequencyMinutes );
     }
 
-    public List<AlertRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<AlertRuleMatcher> newValue ) { this.matchers = newValue; }
+    public List<AlertRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<AlertRuleCondition> newValue ) { this.matchers = newValue; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -95,7 +95,7 @@ public class AlertRule implements JSONString, Serializable
 
     public boolean isMatch( JSONObject obj )
     {
-        for ( AlertRuleMatcher matcher : matchers ) {
+        for ( AlertRuleCondition matcher : matchers ) {
             if ( ! matcher.isMatch ( obj ) )
                 return false;
         }

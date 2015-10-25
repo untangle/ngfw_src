@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.network;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A BypassRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class BypassRuleMatcher extends RuleMatcher
+public class BypassRuleCondition extends RuleCondition
 {
-    public BypassRuleMatcher( )
+    public BypassRuleCondition( )
     {
         super();
     }
 
-    public BypassRuleMatcher( MatcherType matcherType, String value )
+    public BypassRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public BypassRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public BypassRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

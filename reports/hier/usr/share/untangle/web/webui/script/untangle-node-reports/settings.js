@@ -29,7 +29,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildTabPanel(panels);
         this.callParent(arguments);
     },
-    getAlertRuleMatchers: function () {
+    getAlertRuleConditions: function () {
         return [
             {name:"FIELD_CONDITION",displayName: i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, disableInvert: true, allowMultiple: true, allowBlank: false, formatValue: function(value) {
                 var result= "";
@@ -946,9 +946,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.reports.AlertRuleMatcher",
+                    javaClass: "com.untangle.node.reports.AlertRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getAlertRuleMatchers()
+                    matchers: this.getAlertRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',

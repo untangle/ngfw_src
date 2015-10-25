@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Filter Rule
  *
- * A rule is basically a collection of FilterRuleMatchers (matchers)
+ * A rule is basically a collection of FilterRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class FilterRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<FilterRuleMatcher> matchers;
+    private List<FilterRuleCondition> matchers;
 
     private Integer ruleId;
     private boolean enabled = true;
@@ -33,17 +33,17 @@ public class FilterRule implements JSONString, Serializable
     
     public FilterRule() { }
 
-    public FilterRule(boolean enabled, boolean ipv6Enabled, List<FilterRuleMatcher> matchers, boolean blocked, String description)
+    public FilterRule(boolean enabled, boolean ipv6Enabled, List<FilterRuleCondition> matchers, boolean blocked, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setIpv6Enabled(Boolean.valueOf(ipv6Enabled));
         this.setBlocked(blocked);
         this.setDescription(description);
     }
     
-    public List<FilterRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<FilterRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<FilterRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<FilterRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

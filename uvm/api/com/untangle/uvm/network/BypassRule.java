@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Bypass Rule
  *
- * A rule is basically a collection of BypassRuleMatchers (matchers)
+ * A rule is basically a collection of BypassRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class BypassRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<BypassRuleMatcher> matchers;
+    private List<BypassRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -31,16 +31,16 @@ public class BypassRule implements JSONString, Serializable
     
     public BypassRule() { }
 
-    public BypassRule(boolean enabled, List<BypassRuleMatcher> matchers, boolean bypass, String description)
+    public BypassRule(boolean enabled, List<BypassRuleCondition> matchers, boolean bypass, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setBypass(bypass);
         this.setDescription(description);
     }
     
-    public List<BypassRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<BypassRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<BypassRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<BypassRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

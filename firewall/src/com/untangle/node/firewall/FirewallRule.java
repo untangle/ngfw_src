@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Firewall Rule
  *
- * A rule is basically a collection of FirewallRuleMatchers (matchers)
+ * A rule is basically a collection of FirewallRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class FirewallRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<FirewallRuleMatcher> matchers;
+    private List<FirewallRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -37,17 +37,17 @@ public class FirewallRule implements JSONString, Serializable
     {
     }
 
-    public FirewallRule(boolean enabled, List<FirewallRuleMatcher> matchers, boolean flag, boolean block, String description)
+    public FirewallRule(boolean enabled, List<FirewallRuleCondition> matchers, boolean flag, boolean block, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setFlag(Boolean.valueOf(flag));
         this.setBlock(Boolean.valueOf(block));
         this.setDescription(description);
     }
     
-    public List<FirewallRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<FirewallRuleMatcher> newValue ) { this.matchers = newValue; }
+    public List<FirewallRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<FirewallRuleCondition> newValue ) { this.matchers = newValue; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -91,7 +91,7 @@ public class FirewallRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( FirewallRuleMatcher matcher : matchers ) {
+        for ( FirewallRuleCondition matcher : matchers ) {
             if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
                 return false;
         }

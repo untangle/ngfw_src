@@ -585,7 +585,7 @@ Ext.define('Ung.FieldConditionWindow', {
             field: this.down('textfield[name="field"]').getValue(),
             comparator: this.down('combo[name="comparator"]').getValue(),
             value: this.down('textfield[name="value"]').getValue(),
-            javaClass: "com.untangle.node.reports.AlertRuleMatcherField"
+            javaClass: "com.untangle.node.reports.AlertRuleConditionField"
         };
         return jsonobj;
     }

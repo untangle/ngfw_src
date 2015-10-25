@@ -1140,7 +1140,7 @@ Ext.define('Webui.config.system', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.shield.ShieldRuleMatcher",
+                    javaClass: "com.untangle.node.shield.ShieldRuleCondition",
                     dataIndex: "matchers",
                     matchers: this.getShieldMatchers()
                 }]

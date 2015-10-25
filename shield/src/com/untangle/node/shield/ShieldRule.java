@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Shield Rule
  *
- * A rule is basically a collection of ShieldRuleMatchers (matchers)
+ * A rule is basically a collection of ShieldRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class ShieldRule implements JSONString, Serializable
 {
     private static final Logger logger = Logger.getLogger(ShieldRule.class);
 
-    private List<ShieldRuleMatcher> matchers;
+    private List<ShieldRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -36,15 +36,15 @@ public class ShieldRule implements JSONString, Serializable
     {
     }
 
-    public ShieldRule(boolean enabled, List<ShieldRuleMatcher> matchers, boolean flag, boolean block, String description)
+    public ShieldRule(boolean enabled, List<ShieldRuleCondition> matchers, boolean flag, boolean block, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setDescription(description);
     }
     
-    public List<ShieldRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<ShieldRuleMatcher> newValue ) { this.matchers = newValue; }
+    public List<ShieldRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<ShieldRuleCondition> newValue ) { this.matchers = newValue; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -83,7 +83,7 @@ public class ShieldRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( ShieldRuleMatcher matcher : matchers ) {
+        for ( ShieldRuleCondition matcher : matchers ) {
             if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
                 return false;
         }

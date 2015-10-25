@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Nat Rule
  *
- * A rule is basically a collection of NatRuleMatchers (matchers)
+ * A rule is basically a collection of NatRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public class NatRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<NatRuleMatcher> matchers;
+    private List<NatRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -32,16 +32,16 @@ public class NatRule implements JSONString, Serializable
     
     public NatRule() { }
 
-    public NatRule(boolean enabled, List<NatRuleMatcher> matchers, InetAddress newSource, String description)
+    public NatRule(boolean enabled, List<NatRuleCondition> matchers, InetAddress newSource, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setNewSource(newSource);
         this.setDescription(description);
     }
     
-    public List<NatRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<NatRuleMatcher> matchers ) { this.matchers = matchers; }
+    public List<NatRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<NatRuleCondition> matchers ) { this.matchers = matchers; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

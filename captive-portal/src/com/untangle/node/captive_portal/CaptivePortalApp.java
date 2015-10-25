@@ -193,11 +193,11 @@ public class CaptivePortalApp extends NodeBase
 
         // create a few example rules
         List<CaptureRule> ruleList = new LinkedList<CaptureRule>();
-        LinkedList<CaptureRuleMatcher> matcherList = null;
+        LinkedList<CaptureRuleCondition> matcherList = null;
 
         // example interface rule
-        CaptureRuleMatcher interfaceMatch = new CaptureRuleMatcher(CaptureRuleMatcher.MatcherType.SRC_INTF, "non_wan");
-        matcherList = new LinkedList<CaptureRuleMatcher>();
+        CaptureRuleCondition interfaceMatch = new CaptureRuleCondition(CaptureRuleCondition.ConditionType.SRC_INTF, "non_wan");
+        matcherList = new LinkedList<CaptureRuleCondition>();
         matcherList.add(interfaceMatch);
         ruleList.add(new CaptureRule(false, matcherList, true, "Capture all traffic on all non-WAN interfaces"));
 

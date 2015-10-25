@@ -36,14 +36,14 @@ import com.untangle.uvm.util.GlobUtil;
  * A Rule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class RuleMatcher implements JSONString, Serializable
+public class RuleCondition implements JSONString, Serializable
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
     /**
      * The different type of matchers currently available
      */
-    public enum MatcherType {
+    public enum ConditionType {
         /* Generic IP matchers */
         SRC_ADDR, /* IPMatcher syntax */
             DST_ADDR, /* IPMatcher syntax */
@@ -109,7 +109,7 @@ public class RuleMatcher implements JSONString, Serializable
             ESOFT_WEB_FILTER_CATEGORY_FLAGGED, /* DEPRECATED */
     }
 
-    protected RuleMatcher.MatcherType matcherType = null;
+    protected RuleCondition.ConditionType matcherType = null;
     protected String value = null;
     protected Boolean invert = Boolean.FALSE;
 
@@ -131,32 +131,32 @@ public class RuleMatcher implements JSONString, Serializable
     private Integer          intValue        = null;
     private Long             longValue        = null;
     
-    public RuleMatcher( )
+    public RuleCondition( )
     {
 
     }
     
-    public RuleMatcher( MatcherType matcherType, String value )
+    public RuleCondition( ConditionType matcherType, String value )
     {
         this.setValue(value);
-        this.setMatcherType(matcherType);
+        this.setConditionType(matcherType);
         computeMatchers();
     }
 
-    public RuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public RuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         this.setValue(value);
-        this.setMatcherType(matcherType);
+        this.setConditionType(matcherType);
         this.setInvert(invert);
         computeMatchers();
     }
     
-    public MatcherType getMatcherType()
+    public ConditionType getConditionType()
     {
         return this.matcherType;
     }
 
-    public void setMatcherType( MatcherType type ) 
+    public void setConditionType( ConditionType type ) 
     {
         this.matcherType = type;
         /* If the object is sufficiently initialized compute the cached computers */

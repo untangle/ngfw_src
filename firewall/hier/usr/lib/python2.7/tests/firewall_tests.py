@@ -29,54 +29,54 @@ stopRangeIP2 = ipObj + 255
 testsiteIPRange2 = str(startRangeIP2) + "-" + str(stopRangeIP2)
 dnsServer = "74.123.28.4"
 
-def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True, invert=False ):
-    matcherTypeStr = str(matcherType)
+def createSingleConditionRule( conditionType, value, blocked=True, flagged=True, invert=False ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
         "flag": flagged, 
         "block": blocked, 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
                 ]
             }
         };
 
-def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=True, flagged=True, invert=False ):
-    matcherTypeStr = str(matcherType)
+def createDualConditionRule( conditionType, value, conditionType2, value2, blocked=True, flagged=True, invert=False ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
-    matcherTypeStr2 = str(matcherType2)
+    conditionTypeStr2 = str(conditionType2)
     valueStr2 = str(value2)
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Dual Matcher: " + matcherTypeStr + " = " + valueStr + " && " + matcherTypeStr2 + " = " + valueStr2, 
+        "description": "Dual Matcher: " + conditionTypeStr + " = " + valueStr + " && " + conditionTypeStr2 + " = " + valueStr2, 
         "flag": flagged, 
         "block": blocked, 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr, 
                     "value": valueStr
                     },
                 {
                     "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr2, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr2, 
                     "value": valueStr2
                     }
 
@@ -125,154 +125,154 @@ class FirewallTests(unittest2.TestCase):
     # verify a block port 80 rule works
     def test_020_blockDstPort80(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","80"));
+        appendRule(createSingleConditionRule("DST_PORT","80"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79-81 rule works
     def test_021_blockDstPort79to81(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","79-81"));
+        appendRule(createSingleConditionRule("DST_PORT","79-81"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79,80,81 rule works
     def test_022_blockDstPort79comma80comma81(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","79,80,81"));
+        appendRule(createSingleConditionRule("DST_PORT","79,80,81"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79,81 rule doesnt match 80
     def test_023_blockDstPort79comma81(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","79,81"));
+        appendRule(createSingleConditionRule("DST_PORT","79,81"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify a block port 79,80,81 rule works
     def test_024_blockDstPortList(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","1- 5,80, 90-100"));
+        appendRule(createSingleConditionRule("DST_PORT","1- 5,80, 90-100"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port any rule works
     def test_025_blockDstPortAny(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","any"));
+        appendRule(createSingleConditionRule("DST_PORT","any"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port >79 rule blocks 80
     def test_026_blockDstPortGreaterThan(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT",">79"));
+        appendRule(createSingleConditionRule("DST_PORT",">79"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port <81 rule blocks 80
     def test_027_blockDstPortLessThan(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","<81"));
+        appendRule(createSingleConditionRule("DST_PORT","<81"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port <1 rule doesnt block 80
     def test_028_blockDstPortLessThanInverse(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","<1"));
+        appendRule(createSingleConditionRule("DST_PORT","<1"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify a block udp rule
     def test_028_blockUdpPort53(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","53"));
+        appendRule(createSingleConditionRule("DST_PORT","53"));
         result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result != 0)
 
     # verify src addr rule with any works
     def test_030_blockSrcAddrAny(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR","any"));
+        appendRule(createSingleConditionRule("SRC_ADDR","any"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with IP works
     def test_031_blockSrcAddrIP(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
+        appendRule(createSingleConditionRule("SRC_ADDR",remote_control.clientIP));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with CIDR works
     def test_032_blockSrcAddrCIDR(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR",remote_control.clientIP+"/24"));
+        appendRule(createSingleConditionRule("SRC_ADDR",remote_control.clientIP+"/24"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with commas works
     def test_033_blockSrcAddrComma(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR","4.3.2.1, "+ remote_control.clientIP + ",  1.2.3.4/31"));
+        appendRule(createSingleConditionRule("SRC_ADDR","4.3.2.1, "+ remote_control.clientIP + ",  1.2.3.4/31"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with any works
     def test_040_blockDstAddrAny(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR","Any", blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR","Any", blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with IP works
     def test_041_blockDstAddr(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR",testsiteIP, blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR",testsiteIP, blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with CIDR works
     def test_042_blockDstAddrCIDR(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR",testsiteIP+"/31", blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR",testsiteIP+"/31", blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
     def test_043_blockDstAddrComma(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR","1.2.3.4/31," + testsiteIP+",5.6.7.8", blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR","1.2.3.4/31," + testsiteIP+",5.6.7.8", blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
     def test_044_blockDstAddrRange(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR",testsiteIPRange, blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR",testsiteIPRange, blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
     def test_045_blockDstAddrRange2(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_ADDR",testsiteIPRange2, blocked=True) );
+        appendRule( createSingleConditionRule("DST_ADDR",testsiteIPRange2, blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify protocol rule works
     def test_046_blockProtocolTCP(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("PROTOCOL","TCP", blocked=True) );
+        appendRule( createSingleConditionRule("PROTOCOL","TCP", blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify protocol UDP not TCP block rule works
     def test_047_blockProtocolUDPnotTCP(self):
         nukeRules();
-        appendRule( createDualMatcherRule("PROTOCOL","UDP", "DST_PORT", 53) );
+        appendRule( createDualConditionRule("PROTOCOL","UDP", "DST_PORT", 53) );
         result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result != 0)
         # Use TCP version of DNS lookup.
@@ -282,7 +282,7 @@ class FirewallTests(unittest2.TestCase):
     # verify protocol TCP not UDP block rule works
     def test_048_blockProtocolTCPnotUDP(self):
         nukeRules();
-        appendRule( createDualMatcherRule("PROTOCOL","TCP", "DST_PORT", 53) );
+        appendRule( createDualConditionRule("PROTOCOL","TCP", "DST_PORT", 53) );
         result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result == 0)
         # Use TCP version of DNS lookup.
@@ -292,35 +292,35 @@ class FirewallTests(unittest2.TestCase):
     # verify src intf any rule works
     def test_050_blockDstIntfAny(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", "any" ) );
+        appendRule( createSingleConditionRule( "DST_INTF", "any" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf number rule works
     def test_051_blockDstIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", remote_control.interfaceExternal ) );
+        appendRule( createSingleConditionRule( "DST_INTF", remote_control.interfaceExternal ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf number rule doesnt match everythin
     def test_052_blockDstIntfWrongIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", int(remote_control.interfaceExternal) + 1 ) );
+        appendRule( createSingleConditionRule( "DST_INTF", int(remote_control.interfaceExternal) + 1 ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify dst intf with commas blocks
     def test_053_blockDstIntfCommas(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) );
+        appendRule( createSingleConditionRule( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf wan is blockde
     def test_054_blockDstIntfWan(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", "wan" ) );
+        appendRule( createSingleConditionRule( "DST_INTF", "wan" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -328,56 +328,56 @@ class FirewallTests(unittest2.TestCase):
     def test_055_blockDstIntfNonWan(self):
         nukeRules();
         # specify TCP so the DNS UDP session doesn't get blocked (if it happens to be inbound)
-        appendRule( createDualMatcherRule( "DST_INTF", "non_wan", "PROTOCOL", "tcp") );
+        appendRule( createDualConditionRule( "DST_INTF", "non_wan", "PROTOCOL", "tcp") );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify src intf any rule works
     def test_060_blockSrcIntfAny(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", "any" ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", "any" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf number rule works
     def test_061_blockSrcIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", remote_control.interface ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", remote_control.interface ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf number rule doesnt match everythin
     def test_062_blockSrcIntfWrongIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", int(remote_control.interface) + 1 ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", int(remote_control.interface) + 1 ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify src intf with commas blocks
     def test_063_blockSrcIntfCommas(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", "99," + str(remote_control.interface) +  ", 100" ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", "99," + str(remote_control.interface) +  ", 100" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf non_wan is blocked
     def test_064_blockSrcIntfNonWan(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", "non_wan" ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", "non_wan" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf wan not blocked
     def test_065_blockSrcIntfWan(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", "wan" ) );
+        appendRule( createSingleConditionRule( "SRC_INTF", "wan" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify src penalty box wan not blocked
     def test_066_blockSrcPenaltyBox(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
+        appendRule( createSingleConditionRule( "CLIENT_IN_PENALTY_BOX", None ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -386,7 +386,7 @@ class FirewallTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         nukeRules();
         uvmContext.hostTable().addHostToPenaltyBox( remote_control.clientIP, 60, fname );
-        appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
+        appendRule( createSingleConditionRule( "CLIENT_IN_PENALTY_BOX", None ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         uvmContext.hostTable().releaseHostFromPenaltyBox( remote_control.clientIP );
@@ -394,14 +394,14 @@ class FirewallTests(unittest2.TestCase):
     # verify src penalty box wan not blocked
     def test_068_blockDstPenaltyBox(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SERVER_IN_PENALTY_BOX", None ) );
+        appendRule( createSingleConditionRule( "SERVER_IN_PENALTY_BOX", None ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify bogus user agent match not blocked
     def test_070_blockUserAgent(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*testtesttesttesttesttesttest*" ) );
+        appendRule( createSingleConditionRule( "HTTP_USER_AGENT", "*testtesttesttesttesttesttest*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -413,7 +413,7 @@ class FirewallTests(unittest2.TestCase):
         entry['httpUserAgent'] = "Mozilla foo bar";
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
+        appendRule( createSingleConditionRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -423,7 +423,7 @@ class FirewallTests(unittest2.TestCase):
     # verify bogus user agent OS match not blocked
     def test_072_blockUserAgentOs(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT_OS", "*testtesttesttesttesttesttest*" ) );
+        appendRule( createSingleConditionRule( "HTTP_USER_AGENT_OS", "*testtesttesttesttesttesttest*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -435,7 +435,7 @@ class FirewallTests(unittest2.TestCase):
         entry['httpUserAgentOs'] = "foobar Linux barbaz" ;
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "HTTP_USER_AGENT_OS", "*Linux*" ) );
+        appendRule( createSingleConditionRule( "HTTP_USER_AGENT_OS", "*Linux*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -445,7 +445,7 @@ class FirewallTests(unittest2.TestCase):
     # verify bogus hostname match not blocked
     def test_074_blockClientHostname(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", "*testtesttesttesttesttesttest*" ) );
+        appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", "*testtesttesttesttesttesttest*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -458,7 +458,7 @@ class FirewallTests(unittest2.TestCase):
         entry['hostname'] = hostname
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", hostname ) );
+        appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", hostname ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -468,7 +468,7 @@ class FirewallTests(unittest2.TestCase):
     # verify bogus username match not blocked
     def test_076_blockClientUsername(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "USERNAME", "*testtesttesttesttesttesttest*" ) );
+        appendRule( createSingleConditionRule( "USERNAME", "*testtesttesttesttesttesttest*" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -483,7 +483,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameCaptive'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", "[unauthenticated]" ) );
+        appendRule( createSingleConditionRule( "USERNAME", "[unauthenticated]" ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -496,7 +496,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", username ) );
+        appendRule( createSingleConditionRule( "USERNAME", username ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -512,7 +512,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username.upper()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", username.lower() ) );
+        appendRule( createSingleConditionRule( "USERNAME", username.lower() ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -528,7 +528,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username.lower()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", username.upper() ) );
+        appendRule( createSingleConditionRule( "USERNAME", username.upper() ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -544,7 +544,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", '[authenticated]' ) );
+        appendRule( createSingleConditionRule( "USERNAME", '[authenticated]' ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -560,7 +560,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username.lower()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", username[:1].upper()+'*' ) );
+        appendRule( createSingleConditionRule( "USERNAME", username[:1].upper()+'*' ) );
 
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
@@ -584,7 +584,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", username[:1]+'*' ) );
+        appendRule( createSingleConditionRule( "USERNAME", username[:1]+'*' ) );
 
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
@@ -609,7 +609,7 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
-        appendRule( createSingleMatcherRule( "USERNAME", '' ) );
+        appendRule( createSingleConditionRule( "USERNAME", '' ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -623,51 +623,51 @@ class FirewallTests(unittest2.TestCase):
     # verify username is NOT '*' matches null username
     def test_084_blockClientUsernameBlank2(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "USERNAME", '*', invert=True ) );
+        appendRule( createSingleConditionRule( "USERNAME", '*', invert=True ) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules that a rule with two matching matchers works
-    def test_090_dualMatcherRule(self):
+    def test_090_dualConditionRule(self):
         nukeRules();
-        appendRule( createDualMatcherRule("SRC_ADDR", remote_control.clientIP, "DST_PORT", 80) );
+        appendRule( createDualConditionRule("SRC_ADDR", remote_control.clientIP, "DST_PORT", 80) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules that both MUST match for the session to be blocked
-    def test_091_dualMatcherRuleAnd(self):
+    def test_091_dualConditionRuleAnd(self):
         nukeRules();
-        appendRule( createDualMatcherRule("SRC_ADDR", remote_control.clientIP, "DST_PORT", 79) );
+        appendRule( createDualConditionRule("SRC_ADDR", remote_control.clientIP, "DST_PORT", 79) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify rules that both MUST match for the session to be blocked
     def test_092_quotaAttainment(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("CLIENT_QUOTA_ATTAINMENT", "<1.3", blocked=True) );
+        appendRule( createSingleConditionRule("CLIENT_QUOTA_ATTAINMENT", "<1.3", blocked=True) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules evaluated in order
     def test_100_ruleOrder(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("SRC_ADDR", remote_control.clientIP, blocked=False) );
-        appendRule( createSingleMatcherRule("DST_PORT", "80") );
+        appendRule( createSingleConditionRule("SRC_ADDR", remote_control.clientIP, blocked=False) );
+        appendRule( createSingleConditionRule("DST_PORT", "80") );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify rules evaluated in order
     def test_101_ruleOrderReverse(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("DST_PORT", "80") );
-        appendRule( createSingleMatcherRule("SRC_ADDR", remote_control.clientIP, blocked=False) );
+        appendRule( createSingleConditionRule("DST_PORT", "80") );
+        appendRule( createSingleConditionRule("SRC_ADDR", remote_control.clientIP, blocked=False) );
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 80 rule works
     def test_500_blockDstPort80EventLog(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","80"));
+        appendRule(createSingleConditionRule("DST_PORT","80"));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -683,7 +683,7 @@ class FirewallTests(unittest2.TestCase):
     # verify a flag port 80 rule works
     def test_501_flagDstPort80EventLog(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=True));
+        appendRule(createSingleConditionRule("DST_PORT","80",blocked=False,flagged=True));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -699,7 +699,7 @@ class FirewallTests(unittest2.TestCase):
     # verify a port 80 rule log
     def test_502_logDstPort80EventLog(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False,flagged=False));
+        appendRule(createSingleConditionRule("DST_PORT","80",blocked=False,flagged=False));
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
