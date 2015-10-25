@@ -54,22 +54,22 @@ def removeRack(id):
         node.setSettings(currentSettings)
     return removed
 
-def createPolicySingleMatcherRule( matcherType, value, targetPolicy, blocked=True ):
-    matcherTypeStr = str(matcherType)
+def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked=True ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.policy_manager.PolicyRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
         "targetPolicy" : targetPolicy,
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.policy_manager.PolicyRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
+                    "javaClass": "com.untangle.node.policy_manager.PolicyRuleCondition", 
+                    "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
                 ]
@@ -88,23 +88,23 @@ def nukeRules():
     settings['rules']['list'] = [];
     node.setSettings(settings);
 
-def createFirewallSingleMatcherRule( matcherType, value, blocked=True ):
-    matcherTypeStr = str(matcherType)
+def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
         "log": True, 
         "block": blocked, 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
                 ]
@@ -178,7 +178,7 @@ class PolicyManagerTests(unittest2.TestCase):
         assert (secondRackFirewall != None)
         # add a block rule for the client IP
         rules = secondRackFirewall.getRules()
-        rules["list"].append(createFirewallSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
+        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
         secondRackFirewall.setRules(rules);
 
     # verify client is online
@@ -189,7 +189,7 @@ class PolicyManagerTests(unittest2.TestCase):
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
         rules = blockRackFirewall.getRules()
-        rules["list"].append(createFirewallSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
+        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
         blockRackFirewall.setRules(rules);
         # client should still be online
         result = remote_control.isOnline()
@@ -211,7 +211,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # send client's traffic to second rack - should now be blocked by firewall
     def test_024_addRuleForSecondRack(self):
         global secondRackId
-        appendRule(createPolicySingleMatcherRule("SRC_ADDR",remote_control.clientIP, secondRackId))
+        appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, secondRackId))
         # client should be offline
         result = remote_control.isOnline()
         assert (result != 0)
@@ -232,7 +232,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # send client's traffic to third rack - should now be blocked by firewall inherited from second rack
     def test_027_addRuleForThirdRack(self):
         global thirdRackId
-        appendRule(createPolicySingleMatcherRule("SRC_ADDR",remote_control.clientIP, thirdRackId))
+        appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, thirdRackId))
         # client should be offline
         result = remote_control.isOnline()
         assert (result != 0)
@@ -293,7 +293,7 @@ class PolicyManagerTests(unittest2.TestCase):
         # userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         # print userHost
         nukeRules()
-        appendRule(createPolicySingleMatcherRule("USERNAME","[authenticated]", secondRackId))
+        appendRule(createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
         # check that basic captive page is shown
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/policy_test_040.log -O /tmp/policy_test_040.out http://www.google.com/")

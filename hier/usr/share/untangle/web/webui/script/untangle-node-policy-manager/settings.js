@@ -8,7 +8,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
         this.buildTabPanel([this.panelPolicies, this.gridRules]);
         this.callParent(arguments);
     },
-    getMatchers: function () {
+    getConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -255,9 +255,9 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.policy_manager.PolicyRuleMatcher",
+                    javaClass: "com.untangle.node.policy_manager.PolicyRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getMatchers()
+                    matchers: this.getConditions()
                 }]
             },{
                 xtype: 'fieldset',

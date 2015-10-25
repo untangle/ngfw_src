@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Policy Rule
  *
- * A rule is basically a collection of PolicyRuleMatchers (matchers)
+ * A rule is basically a collection of PolicyRuleConditions (matchers)
  * and what to do if the matchers match (targetPolicy)
  */
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class PolicyRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<PolicyRuleMatcher> matchers;
+    private List<PolicyRuleCondition> matchers;
 
     private Integer id;
     private Boolean enabled;
@@ -36,20 +36,20 @@ public class PolicyRule implements JSONString, Serializable
     {
     }
 
-    public PolicyRule(boolean enabled, List<PolicyRuleMatcher> matchers, Long targetPolicy, String description)
+    public PolicyRule(boolean enabled, List<PolicyRuleCondition> matchers, Long targetPolicy, String description)
     {
-        this.setMatchers(matchers);
+        this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setTargetPolicy(targetPolicy);
         this.setDescription(description);
     }
     
-    public List<PolicyRuleMatcher> getMatchers()
+    public List<PolicyRuleCondition> getConditions()
     {
         return this.matchers;
     }
 
-    public void setMatchers( List<PolicyRuleMatcher> matchers )
+    public void setConditions( List<PolicyRuleCondition> matchers )
     {
         this.matchers = matchers;
     }
@@ -119,7 +119,7 @@ public class PolicyRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( PolicyRuleMatcher matcher : matchers ) {
+        for ( PolicyRuleCondition matcher : matchers ) {
             if (!matcher.matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
                 return false;
         }

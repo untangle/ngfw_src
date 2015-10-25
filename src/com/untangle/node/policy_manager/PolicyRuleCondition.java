@@ -3,7 +3,7 @@
  */
 package com.untangle.node.policy_manager;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 
 /**
@@ -13,19 +13,19 @@ import com.untangle.uvm.node.RuleMatcher;
  * A PolicyRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class PolicyRuleMatcher extends RuleMatcher
+public class PolicyRuleCondition extends RuleCondition
 {
-    public PolicyRuleMatcher( )
+    public PolicyRuleCondition( )
     {
         super();
     }
 
-    public PolicyRuleMatcher( MatcherType matcherType, String value )
+    public PolicyRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public PolicyRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public PolicyRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }
