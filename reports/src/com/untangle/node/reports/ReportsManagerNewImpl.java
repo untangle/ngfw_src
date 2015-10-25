@@ -283,12 +283,12 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
         try {
             ResultSet rs = getColumnMetaData( tableName );
             synchronized( rs ) {
-                rs.first();
-                do {
+                rs.beforeFirst();
+                while(rs.next()) {
                     String columnName = rs.getString(4);
                     //String columnType = rs.getString(6);
                     columnNames.add( columnName );
-                } while(rs.next());
+                }
             }
         } catch ( Exception e ) {
             logger.warn("Failed to retrieve column names", e);
@@ -306,9 +306,10 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
 
             ResultSet rs = getColumnMetaData( tableName );
             synchronized( rs ) {
-                rs.first();
+                rs.beforeFirst();
                 while(rs.next()){
                     String name = rs.getString(4);
+
                     if ( columnName.equals( name ) ) {
                         return rs.getString(6);
                     }
@@ -341,7 +342,7 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
                 cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
                 rs = cacheTablesResults;
             } else {
-                rs.first();
+                rs.beforeFirst();
             }
 
             while(rs.next()){
