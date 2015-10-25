@@ -28,14 +28,14 @@ def touchProtoRule( protoGusername, flag = True, block =True ):
             rec['block'] = block
     node.setSettings(nodeSettings)
 
-def create2MatcherRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value, blocked=True ):
+def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value, blocked=True ):
     matcher1TypeStr = str(matcher1Type)
     matcher1ValueStr = str(matcher1Value)
     matcher2TypeStr = str(matcher2Type)
     matcher2ValueStr = str(matcher2Value)
     return {
         "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRule",
-        "description": "2-MatcherRule: " + matcher1TypeStr + " = " + matcher1ValueStr + " && " + matcher2TypeStr + " = " + matcher2ValueStr,
+        "description": "2-ConditionRule: " + matcher1TypeStr + " = " + matcher1ValueStr + " && " + matcher2TypeStr + " = " + matcher2ValueStr,
         "live": True,
         "id": 1,
         "action": {
@@ -43,19 +43,19 @@ def create2MatcherRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value
             "actionType": "BLOCK",
             "flag": True
             },
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
-                    "matcherType": matcher1TypeStr,
+                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
+                    "conditionType": matcher1TypeStr,
                     "value": matcher1ValueStr
                     },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
-                    "matcherType": matcher2TypeStr,
+                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
+                    "conditionType": matcher2TypeStr,
                     "value": matcher2ValueStr
                     }
                 ]
@@ -158,7 +158,7 @@ class ApplicationControlTests(unittest2.TestCase):
         
     def test_031_logicRule_Block_Secure(self):
         nukeLogicRules()
-        appendLogicRule(create2MatcherRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
+        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
         result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 

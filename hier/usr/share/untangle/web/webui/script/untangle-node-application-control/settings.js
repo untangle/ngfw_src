@@ -17,7 +17,7 @@ Ext.define('Webui.untangle-node-application-control.settings', {
         this.buildTabPanel([this.panelStatus, this.gridProtoRules, this.gridLogicRules]);
         this.callParent(arguments);
     },
-    getMatchers: function () {
+    getConditions: function () {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
@@ -366,9 +366,9 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.application_control.ApplicationControlLogicRuleMatcher",
+                    javaClass: "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
                     dataIndex: "matchers",
-                    matchers: this.getMatchers()
+                    matchers: this.getConditions()
                 }]
             }, {
                 xtype: 'fieldset',

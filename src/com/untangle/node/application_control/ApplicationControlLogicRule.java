@@ -15,7 +15,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a ApplicationControlLogicRule
  * 
- * A rule is basically a collection of ApplicationControlLogicRuleMatchers (matchers) and a
+ * A rule is basically a collection of ApplicationControlLogicRuleConditions (matchers) and a
  * ApplicationControlLogicRuleAction (action) to be taken if they match
  */
 
@@ -24,7 +24,7 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<ApplicationControlLogicRuleMatcher> matchers;
+    private List<ApplicationControlLogicRuleCondition> matchers;
     private ApplicationControlLogicRuleAction action;
 
     private int id;
@@ -35,12 +35,12 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
     {
     }
 
-    public List<ApplicationControlLogicRuleMatcher> getMatchers()
+    public List<ApplicationControlLogicRuleCondition> getConditions()
     {
         return this.matchers;
     }
 
-    public void setMatchers(List<ApplicationControlLogicRuleMatcher> matchers)
+    public void setConditions(List<ApplicationControlLogicRuleCondition> matchers)
     {
         this.matchers = matchers;
     }
@@ -107,7 +107,7 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for (ApplicationControlLogicRuleMatcher matcher : matchers) {
+        for (ApplicationControlLogicRuleCondition matcher : matchers) {
             if (!matcher.matches(sess))
                 return false;
         }
