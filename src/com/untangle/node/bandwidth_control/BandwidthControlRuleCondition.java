@@ -3,27 +3,27 @@
  */
 package com.untangle.node.bandwidth_control;
 
-import com.untangle.uvm.node.RuleMatcher;
+import com.untangle.uvm.node.RuleCondition;
 
 /**
  * This is a matching criteria for a Bandwidth Control Rule
  */
 @SuppressWarnings("serial")
-public class BandwidthControlRuleMatcher extends RuleMatcher 
+public class BandwidthControlRuleCondition extends RuleCondition 
 {
     private BandwidthControlApp node;
     
-    public BandwidthControlRuleMatcher( )
+    public BandwidthControlRuleCondition( )
     {
         super();
     }
     
-    public BandwidthControlRuleMatcher( MatcherType matcherType, String value )
+    public BandwidthControlRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
-    public BandwidthControlRuleMatcher( MatcherType matcherType, String value, Boolean invert )
+    public BandwidthControlRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

@@ -18,7 +18,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "SERVER_IN_PENALTY_BOX",
                             "value": "true"
                         }
@@ -40,7 +40,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "CLIENT_IN_PENALTY_BOX",
                             "value": "true"
                         }
@@ -62,7 +62,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "53"
                         }
@@ -84,12 +84,12 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "PROTOCOL",
                             "value": "TCP"
                         },
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "22"
                         }
@@ -111,12 +111,12 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "PROTOCOL",
                             "value": "TCP"
                         },
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "3389,5300"
                         }
@@ -138,7 +138,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "110,995,143,993"
                         }
@@ -160,7 +160,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "APPLICATION_CONTROL_CATEGORY",
                             "value": "Remote Access"
                         }
@@ -182,7 +182,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "WEB_FILTER_FLAGGED",
                             "value": ""
                         }
@@ -204,7 +204,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*windowsupdate.com"
                         }
@@ -226,7 +226,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*update.microsoft.com"
                         }
@@ -248,7 +248,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*dropbox.com"
                         }
@@ -270,7 +270,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*pandora.com"
                         }
@@ -292,7 +292,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*last.fm"
                         }
@@ -314,7 +314,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "WEB_FILTER_CATEGORY",
                             "value": "Games"
                         }
@@ -336,7 +336,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*hulu.com"
                         }
@@ -358,7 +358,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "netflix.com"
                         }
@@ -380,7 +380,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_HOST",
                             "value": "*dropbox.com"
                         }
@@ -403,7 +403,7 @@
                     "list": [
                         {
                             "invert": false,
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "HTTP_CONTENT_LENGTH",
                             "value": ">10000000"
                         }
@@ -425,7 +425,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "80"
                         }
@@ -447,7 +447,7 @@
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                             "matcherType": "DST_PORT",
                             "value": "443"
                         }

@@ -27,8 +27,8 @@ origNetworkSettingsWithQoS = None
 wanLimitKbit = None
 wanLimitMbit = None
 
-def createBandwidthSingleMatcherRule( matcherType, value, actionType="SET_PRIORITY", priorityValue=3 ):
-    matcherTypeStr = str(matcherType)
+def createBandwidthSingleConditionRule( conditionType, value, actionType="SET_PRIORITY", priorityValue=3 ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "action": {
@@ -40,21 +40,21 @@ def createBandwidthSingleMatcherRule( matcherType, value, actionType="SET_PRIORI
         "ruleId": 1,
         "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
         "enabled": True,
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
-                    "matcherType": matcherTypeStr,
+                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                 }
             ]                
         }
     }
 
-def createBandwidthPenaltyRule( matcherType, value, actionType="PENALTY_BOX_CLIENT_HOST", penaltyValue=1000 ):
-    matcherTypeStr = str(matcherType)
+def createBandwidthPenaltyRule( conditionType, value, actionType="PENALTY_BOX_CLIENT_HOST", penaltyValue=1000 ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "action": {
@@ -66,21 +66,21 @@ def createBandwidthPenaltyRule( matcherType, value, actionType="PENALTY_BOX_CLIE
         "ruleId": 1,
         "enabled": True,
         "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
-                    "matcherType": matcherTypeStr,
+                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": value
                 }
             ]
         }
     }
             
-def createBandwidthQuotaRule( matcherType, value, actionType="GIVE_CLIENT_HOST_QUOTA", quotaValue=100 ):
-    matcherTypeStr = str(matcherType)
+def createBandwidthQuotaRule( conditionType, value, actionType="GIVE_CLIENT_HOST_QUOTA", quotaValue=100 ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "action": {
@@ -93,39 +93,39 @@ def createBandwidthQuotaRule( matcherType, value, actionType="GIVE_CLIENT_HOST_Q
         "ruleId": 2,
         "enabled": True,
         "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
-                    "matcherType": matcherTypeStr,
+                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                 }
             ]
         },
     }
     
-def createQoSCustomRule( matcherType, value, priorityValue=3 ):
-    matcherTypeStr = str(matcherType)
+def createQoSCustomRule( conditionType, value, priorityValue=3 ):
+    conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "description": "bypass " + matcherTypeStr + " ATS",
+        "description": "bypass " + conditionTypeStr + " ATS",
         "enabled": True,
         "javaClass": "com.untangle.uvm.network.QosRule",
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher",
-                    "matcherType": matcherTypeStr,
+                    "javaClass": "com.untangle.uvm.network.QosRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                 },
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
+                    "javaClass": "com.untangle.uvm.network.QosRuleCondition", 
+                    "conditionType": "PROTOCOL", 
                     "value": "TCP,UDP"
                 }
                 
@@ -135,25 +135,25 @@ def createQoSCustomRule( matcherType, value, priorityValue=3 ):
         "ruleId": 5
     }
     
-def createBypassMatcherRule( matcherType, value):
+def createBypassConditionRule( conditionType, value):
     return {
         "bypass": True, 
-        "description": "test bypass " + str(matcherType) + " " + str(value), 
+        "description": "test bypass " + str(conditionType) + " " + str(value), 
         "enabled": True, 
         "javaClass": "com.untangle.uvm.network.BypassRule", 
-        "matchers": {
+        "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
-                    "matcherType": str(matcherType), 
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition", 
+                    "conditionType": str(conditionType), 
                     "value": str(value)
                 }, 
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition", 
+                    "conditionType": "PROTOCOL", 
                     "value": "TCP,UDP"
                 }
             ]
@@ -278,7 +278,7 @@ class BandwidthControlTests(unittest2.TestCase):
         # Create SRC_ADDR based custom Q0S rule to limit bypass QoS
         netsettings = copy.deepcopy( origNetworkSettingsWithQoS )
         netsettings['qosSettings']['qosRules']["list"].append( createQoSCustomRule("SRC_ADDR",remote_control.clientIP,priority_level) )
-        netsettings['bypassRules']['list'].append( createBypassMatcherRule("SRC_ADDR",remote_control.clientIP) )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
         
         # Download file and record the average speed in which the file was download
@@ -304,7 +304,7 @@ class BandwidthControlTests(unittest2.TestCase):
             raise unittest2.SkipTest("Iperf server and/or iperf not available")
 
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['bypassRules']['list'].append( createBypassMatcherRule("DST_PORT","5000") )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("DST_PORT","5000") )
         netsettings['qosSettings']['qosRules']["list"].append( createQoSCustomRule("DST_PORT","5000", 1) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
@@ -356,7 +356,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
 
         # Create SRC_ADDR based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("SRC_ADDR",remote_control.clientIP,"SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("SRC_ADDR",remote_control.clientIP,"SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True
@@ -388,7 +388,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create DST_ADDR based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("DST_ADDR",test_untangle_IP,"SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("DST_ADDR",test_untangle_IP,"SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True
@@ -418,7 +418,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create DST_PORT based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("DST_PORT","80","SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("DST_PORT","80","SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True
@@ -459,13 +459,13 @@ class BandwidthControlTests(unittest2.TestCase):
             uvmContext.networkManager().setNetworkSettings( netsettings )
         nukeRules()
 
-        appendRule(createBandwidthSingleMatcherRule("DST_PORT","5000","SET_PRIORITY",1))
+        appendRule(createBandwidthSingleConditionRule("DST_PORT","5000","SET_PRIORITY",1))
             
         pre_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
         nukeRules()
-        appendRule(createBandwidthSingleMatcherRule("DST_PORT","5000","SET_PRIORITY",7))
+        appendRule(createBandwidthSingleConditionRule("DST_PORT","5000","SET_PRIORITY",7))
 
         post_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
@@ -481,7 +481,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create HTTP_HOST based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("HTTP_HOST","test.untangle.com","SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("HTTP_HOST","test.untangle.com","SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True
@@ -511,7 +511,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create DST_ADDR based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("HTTP_CONTENT_LENGTH",">3000000","SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("HTTP_CONTENT_LENGTH",">3000000","SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True
@@ -541,7 +541,7 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
-        appendRule(createBandwidthSingleMatcherRule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
         # Set the configured flag otherwise bandwidth fails to power on.
         settings = node.getSettings()
         settings["configured"] = True

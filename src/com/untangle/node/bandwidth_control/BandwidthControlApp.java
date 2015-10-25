@@ -187,15 +187,15 @@ public class BandwidthControlApp extends NodeBase
         newRule0Action.setActionType(BandwidthControlRuleAction.ActionType.GIVE_CLIENT_HOST_QUOTA);
         newRule0Action.setQuotaTime(quotaTimeSec);
         newRule0Action.setQuotaBytes(quotaBytes);
-        BandwidthControlRuleMatcher newRule0Matcher = new BandwidthControlRuleMatcher(BandwidthControlRuleMatcher.MatcherType.CLIENT_HAS_NO_QUOTA, null);
-        BandwidthControlRuleMatcher newRule0Matcher2 = new BandwidthControlRuleMatcher(BandwidthControlRuleMatcher.MatcherType.SRC_INTF, "non_wan");
-        BandwidthControlRuleMatcher newRule0Matcher3 = new BandwidthControlRuleMatcher(BandwidthControlRuleMatcher.MatcherType.SRC_ADDR, network);
-        List<BandwidthControlRuleMatcher> newRule0matchers = new LinkedList<BandwidthControlRuleMatcher>();
+        BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.CLIENT_HAS_NO_QUOTA, null);
+        BandwidthControlRuleCondition newRule0Matcher2 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_INTF, "non_wan");
+        BandwidthControlRuleCondition newRule0Matcher3 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_ADDR, network);
+        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<BandwidthControlRuleCondition>();
         newRule0matchers.add(newRule0Matcher);
         newRule0matchers.add(newRule0Matcher2);
         newRule0matchers.add(newRule0Matcher3);
         newRule0.setAction(newRule0Action);
-        newRule0.setMatchers(newRule0matchers);
+        newRule0.setConditions(newRule0matchers);
         newRule0.setDescription("Give Client a Quota if no Quota");
         newRule0.setEnabled(true);
 
@@ -206,11 +206,11 @@ public class BandwidthControlApp extends NodeBase
         BandwidthControlRuleAction newRule1Action = new BandwidthControlRuleAction();
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
         newRule1Action.setPriority(new Integer(overQuotaPriority));
-        BandwidthControlRuleMatcher newRule1Matcher = new BandwidthControlRuleMatcher(BandwidthControlRuleMatcher.MatcherType.CLIENT_QUOTA_EXCEEDED, null);
-        List<BandwidthControlRuleMatcher> newRule1matchers = new LinkedList<BandwidthControlRuleMatcher>();
+        BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.CLIENT_QUOTA_EXCEEDED, null);
+        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<BandwidthControlRuleCondition>();
         newRule1matchers.add(newRule1Matcher);
         newRule1.setAction(newRule1Action);
-        newRule1.setMatchers(newRule1matchers);
+        newRule1.setConditions(newRule1matchers);
         newRule1.setDescription("Penalize Clients over Quota");
         newRule1.setEnabled(true);
 

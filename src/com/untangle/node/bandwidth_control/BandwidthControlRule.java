@@ -15,7 +15,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * This in the implementation of a Bandwidth Rule
  *
- * A rule is basically a collection of BandwidthControlRuleMatchers (matchers)
+ * A rule is basically a collection of BandwidthControlRuleConditions (matchers)
  * and a BandwidthControlRuleAction (action) to be taken if they match
  */
 @SuppressWarnings("serial")
@@ -23,7 +23,7 @@ public class BandwidthControlRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<BandwidthControlRuleMatcher> matchers;
+    private List<BandwidthControlRuleCondition> matchers;
     private BandwidthControlRuleAction action;
 
     private int ruleId;
@@ -32,8 +32,8 @@ public class BandwidthControlRule implements JSONString, Serializable
     
     public BandwidthControlRule() { }
 
-    public List<BandwidthControlRuleMatcher> getMatchers() { return this.matchers; }
-    public void setMatchers( List<BandwidthControlRuleMatcher> newValue ) { this.matchers = newValue; }
+    public List<BandwidthControlRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<BandwidthControlRuleCondition> newValue ) { this.matchers = newValue; }
 
     public int getRuleId() { return this.ruleId; }
     public void setRuleId(int newValue) { this.ruleId = newValue; }
@@ -77,7 +77,7 @@ public class BandwidthControlRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( BandwidthControlRuleMatcher matcher : matchers ) {
+        for ( BandwidthControlRuleCondition matcher : matchers ) {
             if (!matcher.matches(sess))
                 return false;
         }

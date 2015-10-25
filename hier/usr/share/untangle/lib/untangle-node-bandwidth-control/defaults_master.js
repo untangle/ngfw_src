@@ -12,7 +12,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"true",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"SERVER_IN_PENALTY_BOX"
                 }]
             },
@@ -31,7 +31,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"true",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"CLIENT_IN_PENALTY_BOX"
                 }]
             },
@@ -50,7 +50,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"53",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
@@ -69,11 +69,11 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"TCP",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"PROTOCOL"
                 }, {
                     "value":"22",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
@@ -92,11 +92,11 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"TCP",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"PROTOCOL"
                 }, {
                     "value":"3389,5300",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
@@ -115,7 +115,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"110,995,143,993",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
@@ -134,7 +134,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Remote Access",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"APPLICATION_CONTROL_CATEGORY"
                 }]
             },
@@ -153,7 +153,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "invert":false,
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "value":"<2",
                     "matcherType":"APPLICATION_CONTROL_PRODUCTIVITY"
                 }]
@@ -176,7 +176,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"WEB_FILTER_FLAGGED"
                 }]
             },
@@ -195,7 +195,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*windowsupdate.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -214,7 +214,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*update.microsoft.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -233,7 +233,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*windowsupdates.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -252,7 +252,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*update.microsoft.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -271,7 +271,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*dropbox.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -290,7 +290,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Bittorrent",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"PROTOCOL_CONTROL_SIGNATURE"
                 }]
             },
@@ -309,7 +309,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"BITTORRE",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"APPLICATION_CONTROL_APPLICATION"
                 }]
             },
@@ -328,7 +328,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Peer to Peer",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"PROTOCOL_CONTROL_CATEGORY"
                 }]
             },
@@ -347,7 +347,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"File Transfer",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"APPLICATION_CONTROL_CATEGORY"
                 }]
             },
@@ -366,7 +366,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Download Sites",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"WEB_FILTER_CATEGORY"
                 }]
             },
@@ -385,7 +385,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*pandora.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -404,7 +404,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*last.fm",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -423,7 +423,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Games",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"WEB_FILTER_CATEGORY"
                 }]
             },
@@ -442,7 +442,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*hulu.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -461,7 +461,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"netflix.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -480,7 +480,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*dropbox.com",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"HTTP_HOST"
                 }]
             },
@@ -500,7 +500,7 @@
                 "list": [
                     {
                         "invert": false, 
-                        "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher", 
+                        "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition", 
                         "matcherType": "HTTP_CONTENT_LENGTH", 
                         "value": ">10000000"
                     }
@@ -521,7 +521,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"80",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
@@ -540,7 +540,7 @@
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"443",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleMatcher",
+                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
                     "matcherType":"DST_PORT"
                 }]
             },
