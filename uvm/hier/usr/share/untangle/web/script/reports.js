@@ -1327,11 +1327,13 @@ Ext.define('Ung.panel.Reports', {
             return isNegative? -result : result;
         },
         renderValue: function(value, entry) {
-            var showValue = value;
+            var showValue;
             if(entry.units == "bytes" || entry.units == "bytes/s") {
                 showValue = Ung.Util.bytesRenderer(value, entry.units == "bytes/s");
+            } else {
+                showValue = value + (Ext.isEmpty(entry.units)? "" : " " + i18n._(entry.units));
             }
-            return showValue + (Ext.isEmpty(entry.units)? "" : " " + i18n._(entry.units));
+            return showValue;
         },
         getColumnRenderer: function(columnName) {
             if(!this.columnRenderers) {
