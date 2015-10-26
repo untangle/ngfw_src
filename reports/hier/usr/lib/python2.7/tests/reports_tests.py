@@ -280,7 +280,6 @@ class ReportsTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         # test if PDF is mailed out.
         settings = node.getSettings()
-        settings["attachmentSizeLimit"] = 5
         settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         node.setSettings(settings)
         
@@ -309,7 +308,6 @@ class ReportsTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         # test if PDF is mailed out.
         settings = node.getSettings()
-        settings["attachmentSizeLimit"] = 5
         settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         node.setSettings(settings)
         netsettings = uvmContext.networkManager().getNetworkSettings()

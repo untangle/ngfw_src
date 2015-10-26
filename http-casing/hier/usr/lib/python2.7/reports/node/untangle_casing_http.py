@@ -3,12 +3,7 @@ import reports.sql_helper as sql_helper
 import mx
 import sys
 
-from psycopg2.extensions import DateFromMx
-from psycopg2.extensions import TimestampFromMx
-from reports.engine import Column
-from reports.engine import FactTable
 from reports.engine import Node
-from reports.sql_helper import print_timing
 
 class HttpCasing(Node):
     def __init__(self):
@@ -16,18 +11,6 @@ class HttpCasing(Node):
 
     def parents(self):
         return ['untangle-vm']
-
-    @sql_helper.print_timing
-    def setup(self):
-        ft = FactTable('reports.http_totals', 'reports.http_events',
-                       'time_stamp',
-                       [Column('hostname', 'text'),
-                        Column('username', 'text'),
-                        Column('host', 'text')],
-                       [Column('hits', 'bigint', 'count(*)'),
-                        Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
-                        Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
-        reports.engine.register_fact_table(ft)
 
     def create_tables(self):
         self.__create_http_events()
@@ -94,28 +77,7 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
 
-        sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
-        sql_helper.drop_column('http_events','adblocker_blocked') # 11.2 - drop unused column
-
-        sql_helper.add_column('http_events','domain', 'text') # 11.2 - new column
-
-        sql_helper.rename_column('http_events','adblocker_cookie_ident','ad_blocker_cookie_ident') # 11.2
-        sql_helper.rename_column('http_events','adblocker_action','ad_blocker_action') # 11.2
-        sql_helper.rename_column('http_events','webfilter_reason','web_filter_lite_reason') # 11.2
-        sql_helper.rename_column('http_events','webfilter_category','web_filter_lite_category') # 11.2
-        sql_helper.rename_column('http_events','webfilter_blocked','web_filter_lite_blocked') # 11.2
-        sql_helper.rename_column('http_events','webfilter_flagged','web_filter_lite_flagged') # 11.2
-        sql_helper.rename_column('http_events','sitefilter_reason','web_filter_reason') # 11.2
-        sql_helper.rename_column('http_events','sitefilter_category','web_filter_category') # 11.2
-        sql_helper.rename_column('http_events','sitefilter_blocked','web_filter_blocked') # 11.2
-        sql_helper.rename_column('http_events','sitefilter_flagged','web_filter_flagged') # 11.2
-        sql_helper.rename_column('http_events','clam_clean','virus_blocker_lite_clean') # 11.2
-        sql_helper.rename_column('http_events','clam_name','virus_blocker_lite_name') # 11.2
-        sql_helper.rename_column('http_events','virusblocker_clean','virus_blocker_clean') # 11.2
-        sql_helper.rename_column('http_events','virusblocker_name','virus_blocker_name') # 11.2
-
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("http_events", cutoff)
-        sql_helper.clean_table("http_totals", cutoff)
 
 reports.engine.register_node(HttpCasing())

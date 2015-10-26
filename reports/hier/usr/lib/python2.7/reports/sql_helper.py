@@ -236,7 +236,7 @@ def create_schema(schema):
     run_sql(sql)
 
 def clean_table(tablename, cutoff):
-    for t, date in find_fact_tables(tablename):
+    for t, date in find_table_partitions(tablename):
         if date < cutoff:
             logger.info("DROP TABLE " + str(t))
             drop_table( t )
@@ -318,111 +318,6 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
 
         __make_trigger( tablename, 'time_stamp', trigger_times )
 
-def get_update_info(tablename, default=None, delay=0):
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-
-        curs.execute("""\
-SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE tablename = %s
-""", (tablename,))
-        
-        row = curs.fetchone()
-
-        if row:
-            rv = row[0]
-        else:
-            rv = default
-
-    finally:
-        conn.commit()
-
-    return date_convert(rv, delay)
-
-def get_max_timestamp_with_interval(table, time_column='date', interval='1 day'):
-    connection = get_connection()
-
-    curs = connection.cursor()
-    try:
-        curs.execute("SELECT max(%s) + interval '%s' FROM %s" % (time_column, interval, table))
-        connection.commit()
-    except:
-        connection.rollback()
-        raise
-    
-    sd = curs.fetchone()
-    if not sd or not sd[0]:
-        sd = '1-1-1'
-    else:
-        sd = sd[0]
-    return sd
-
-def set_update_info(tablename, last_update, connection=None, auto_commit=True, origin_table=None):
-    # XXX: last_update is now ignored and re-calculated from the
-    # info in the corresponding table; change all the calls to this
-    # new signature at some point
-    if not connection:
-        connection = get_connection()
-    else:
-        try:
-            connection.commit()
-        except:
-            pass
-
-    try:
-        curs = connection.cursor()
-
-        if not origin_table:
-            origin_tablename = re.sub(r'(\-[a-z]+|\[.+\])', '', tablename)
-        else:
-            origin_tablename = re.sub(r'(\-[a-z]+|\[.+\])', '', origin_table)
-
-        last_update_origin = last_update
-        try:
-            curs.execute("SELECT max(time_stamp) FROM %s" % (origin_tablename,))
-        except psycopg2.ProgrammingError, e:
-            connection.rollback()
-            if e.pgerror.find('column "time_stamp" does not exist') > 0:
-                try:
-                    curs = connection.cursor()
-                    curs.execute("SELECT max(time_stamp) FROM %s" % (origin_tablename,))
-                except:
-                    connection.rollback()
-
-        last_update = curs.fetchone()
-        if not last_update or not last_update[0]:
-            last_update = last_update_origin
-        else:
-            last_update = last_update[0]
-            
-        logger.debug("About to set last_update to %s (last was %s) for %s" % (last_update,
-                                                                              last_update_origin,
-                                                                              tablename))
-
-        curs = connection.cursor()
-        curs.execute("""\
-SELECT count(*) FROM reports.table_updates WHERE tablename = %s
-""", (tablename,))
-        row = curs.fetchone()
-
-        if row[0] == 0:
-            curs = connection.cursor()
-            curs.execute("""\
-INSERT INTO reports.table_updates (tablename, last_update) VALUES (%s, %s)
-""", (tablename, last_update))
-        else:
-            curs = connection.cursor()
-            curs.execute("""\
-UPDATE reports.table_updates SET last_update = %s WHERE tablename = %s
-""", (last_update, tablename))
-
-        if auto_commit:
-            connection.commit()
-    except Exception, e:
-        if auto_commit:
-            connection.rollback()
-        raise e
-
 def drop_table( table ):
     tn = '%s.%s' % (SCHEMA, table)
 
@@ -454,7 +349,7 @@ def get_tables( prefix ):
 
     return rv
 
-def find_fact_tables(tablename=None):
+def find_table_partitions(tablename=None):
     if not tablename:
         prefix = ''
     else:

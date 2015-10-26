@@ -65,6 +65,6 @@ class NodeBuilder
   ## Helper to retrieve the standard dependencies
   def NodeBuilder.baseJars
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    Jars::Base + [Jars::JFreeChart, uvm_lib['api']]
+    Jars::Base + [uvm_lib['api']]
   end
 end

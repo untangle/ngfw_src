@@ -15,7 +15,7 @@ UNZIP=unzip
 #* EDIT HERE WHEN ADDING, UPGRADING, OR REMOVING.
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
-	apache-tomcat-7.0.47-embed.tar.gz jfreechart-1.0.13.tar.gz \
+	apache-tomcat-7.0.47-embed.tar.gz \
 	logging-log4j-1.2.16.tar.gz commons-logging-1.1.3.tar.gz \
 	velocity-1.4.tar.gz \
 	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \

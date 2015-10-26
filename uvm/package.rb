@@ -38,7 +38,7 @@ jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm/api", 'v
 BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Implementation
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::JFreeChart + 
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + 
   [ uvm_lib['bootstrap'], uvm_lib['api'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', ["./uvm/impl"])

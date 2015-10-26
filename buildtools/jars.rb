@@ -63,10 +63,6 @@ class Jars
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)
 
-    ## GUIJars
-    const_set(:JFreeChart, [ Jars.downloadTarget('jfreechart-1.0.13/lib/jfreechart-1.0.13.jar'),
-                            Jars.downloadTarget('jfreechart-1.0.13/lib/jcommon-1.0.16.jar')])
-
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
     const_set(:Postgres, [ Jars.downloadTarget('postgresql-9.4-1201.jdbc4/postgresql-9.4-1201.jdbc4.jar')])
@@ -91,12 +87,10 @@ class Jars
 
     ## Groups used for compiling
     # This is available to everything?
-    const_set(:Base, Jars.makeGroup(Log4j, Postgres,
-                                   JavaMailApi,
+    const_set(:Base, Jars.makeGroup(Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
-                                   HttpClient, 
-                                   Jstl, Json, Jabsorb, Slf4j, DnsJava,
-                                   JFreeChart, Ant))
+                                   HttpClient, Jstl, Json, Jabsorb,
+                                   Slf4j, DnsJava, Ant))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ])
   end

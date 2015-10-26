@@ -18,7 +18,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildAlertRules();
-        var panels = [this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.gridReportEntries, this.panelAlertRules];
+        var panels = [this.panelStatus, this.gridReportEntries, this.panelAlertRules, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
         
         // only show DB settings if set to something other than localhost
         if (this.getSettings().dbHost != "localhost") {
@@ -84,7 +84,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'panel',
-                    html: i18n._('The new reports.'),
+                    html: i18n._('Click to open the reports in a new window.'),
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
@@ -95,45 +95,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         handler: Ext.bind(function() {
                             var viewReportsUrl = "../reports/";
                             window.open(viewReportsUrl);
-                        }, this)
-                    }]
-                }]
-            }, {
-                title: i18n._('Old Reports'),
-                xtype: 'fieldset',
-                items: [{
-                    xtype: 'panel',
-                    html: i18n._('Reports are automatically generated each night.'),
-                    buttonAlign: 'center',
-                    border: false,
-                    buttons: [{
-                        xtype: 'button',
-                        text: i18n._('View Old Reports'),
-                        name: 'View Reports',
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function() {
-                            var viewReportsUrl = "../reports/?old";
-                            window.open(viewReportsUrl);
-                        }, this)
-                    }]
-                }, {
-                    xtype: 'panel',
-                    margin: '20 0 0 0',
-                    html: i18n._('Report generation for the current day can be forced with the ') + "<b>" + i18n._('Generate Today\'s Reports') + "</b>" + i18n._(" button.") + "<br/>" +
-                        "<b>" + i18n._("Caution") + ":  </b>" + i18n._("Real-time report generation may cause network slowness."),
-                    buttonAlign: 'center',
-                    border: false,
-                    buttons: [{
-                        xtype: 'button',
-                        text: i18n._('Generate Today\'s Reports'),
-                        name: 'Generate Reports',
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function(callback) {
-                            Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
-                            this.getRpcNode().runDailyReport(Ext.bind(function(result, exception) {
-                                Ext.MessageBox.hide();
-                                if(Ung.Util.handleException(exception)) return;
-                            }, this));
                         }, this)
                     }]
                 }]
@@ -159,69 +120,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-                title: i18n._("Daily Reports"),
-                items: [{
-                    xtype: 'component',
-                    margin: '0 0 5 0',
-                    html: i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
-                },  {
-                    xtype: 'udayfield',
-                    name: 'Daily Days',
-                    i18n: i18n,
-                    value: this.getSettings().generateDailyReports,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().generateDailyReports = elem.getValue();
-                            }, this)
-                        }
-                    }
-                }]
-            },{
-                title: i18n._("Weekly Reports"),
-                items: [{
-                    xtype: 'component',
-                    margin: '0 0 5 0',
-                    html: i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
-                },  {
-                    xtype: 'udayfield',
-                    name: 'Weekly Days',
-                    i18n: i18n,
-                    value: this.getSettings().generateWeeklyReports,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().generateWeeklyReports = elem.getValue();
-                            }, this)
-                        }
-                    }
-                }]
-            },{
-                title: i18n._("Monthly Reports"),
-                items: [{
-                    xtype: 'component',
-                    margin: '0 0 5 0',
-                    html: i18n._('Monthly Reports are generated on the 1st and cover the previous month.')
-                },  {
-                    xtype: 'checkbox',
-                    name: "Monthly Enabled",
-                    boxLabel: i18n._("Enabled"),
-                    hideLabel: true,
-                    checked: this.getSettings().generateMonthlyReports,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().generateMonthlyReports = elem.getValue();
-                            }, this)
-                        }
-                    }
-                }]
-            }, {
-                title: i18n._("Generation Time"),
+                title: i18n._("Daily Maintanence Time"),
                 labelWidth: 150,
                 items: [{
                     xtype: 'timefield',
-                    fieldLabel: i18n._("Scheduled time to generate the reports"),
+                    fieldLabel: i18n._("Scheduled time to run daily database maintanence"),
                     labelWidth: 260,
                     width: 360,
                     name: 'Generation Time',
@@ -245,10 +148,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: 'component',
                     margin: '0 0 5 0',
                     html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
-                },{
-                    xtype: 'component',
-                    margin: '0 0 5 0',
-                    html: Ext.String.format("{0}" + i18n._("Warning") + ":{1} " +  i18n._("Depending on the server and network, increasing this value may cause performance issues."),"<font color=\"red\">","</font>")
                 },{
                     xtype: 'numberfield',
                     fieldLabel: i18n._('Data Retention days'),
@@ -405,44 +304,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         validator: this.passwordValidator
                     }]
                 })]
-            },{
-                title: i18n._("Email Attachment Settings"),
-                flex: 0,
-                items: [{
-                    xtype: 'checkbox',
-                    boxLabel: i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
-                    name: 'Email Detail',
-                    hideLabel: true,
-                    checked: this.getSettings().emailDetail,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().emailDetail = newValue;
-                            }, this)
-                        }
-                    }
-                },{
-                    xtype: 'numberfield',
-                    fieldLabel: i18n._('Attachment size limit (MB)'),
-                    name: 'Attachement size limit',
-                    id: 'reports_attachment_size_limit',
-                    value: this.getSettings().attachmentSizeLimit,
-                    toValidate: true,
-                    labelWidth: 150,
-                    labelAlign:'right',
-                    width: 200,
-                    allowDecimals: false,
-                    minValue: 1,
-                    maxValue: 30,
-                    hideTrigger: true,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().attachmentSizeLimit = newValue;
-                            }, this)
-                        }
-                    }
-                }]
             }]
         });
         /* Create the row editor for updating the password */

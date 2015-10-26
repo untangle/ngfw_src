@@ -4,12 +4,7 @@ import reports.sql_helper as sql_helper
 import mx
 import sys
 
-from psycopg2.extensions import DateFromMx
-from psycopg2.extensions import TimestampFromMx
-from reports.engine import Column
-from reports.engine import FactTable
 from reports.engine import Node
-from reports.sql_helper import print_timing
 
 class SmtpCasing(Node):
     def __init__(self):
@@ -18,36 +13,13 @@ class SmtpCasing(Node):
     def parents(self):
         return ['untangle-vm']
 
-    @sql_helper.print_timing
-    def setup(self):
-        ft = FactTable('reports.mail_msg_totals', 'reports.mail_msgs', 'time_stamp',
-                       [Column('hostname', 'text'), 
-                        Column('username', 'text'),
-                        Column('client_intf', 'smallint')],
-                       [Column('msgs', 'bigint', 'count(*)')])
-        reports.engine.register_fact_table(ft)
-
-        ft = FactTable('reports.mail_addr_totals', 'reports.mail_addrs', 'time_stamp',
-                       [Column('hostname', 'text'), 
-                        Column('username', 'text'),
-                        Column('client_intf', 'smallint'),
-                        Column('addr', 'text'),
-                        Column('addr_kind', 'char(1)')],
-                       [Column('msgs', 'bigint', 'count(*)')])
-        reports.engine.register_fact_table(ft)
-
     def create_tables(self):
         self.__create_mail_msgs()
         self.__create_mail_addrs()
 
-    def post_facttable_setup(self, start_date, end_date):
-        pass
-
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("mail_addrs", cutoff)
-        sql_helper.clean_table("mail_addr_totals", cutoff)
         sql_helper.clean_table("mail_msgs", cutoff)
-        sql_helper.clean_table("mail_msg_totals", cutoff)
 
     @sql_helper.print_timing
     def __create_mail_addrs(self):

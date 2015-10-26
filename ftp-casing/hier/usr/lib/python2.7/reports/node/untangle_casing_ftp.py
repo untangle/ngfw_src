@@ -3,12 +3,7 @@ import reports.sql_helper as sql_helper
 import mx
 import sys
 
-from psycopg2.extensions import DateFromMx
-from psycopg2.extensions import TimestampFromMx
-from reports.engine import Column
-from reports.engine import FactTable
 from reports.engine import Node
-from reports.sql_helper import print_timing
 
 class FtpCasing(Node):
     def __init__(self):
@@ -16,15 +11,6 @@ class FtpCasing(Node):
 
     def parents(self):
         return ['untangle-vm']
-
-    @sql_helper.print_timing
-    def setup(self):
-        ft = FactTable('reports.ftp_totals', 'reports.ftp_events',
-                       'time_stamp',
-                       [Column('hostname', 'text'),
-                        Column('username', 'text')],
-                       [Column('hits', 'bigint', 'count(*)')])
-        reports.engine.register_fact_table(ft)
 
     def create_tables(self):
         self.__create_ftp_events()
@@ -70,6 +56,5 @@ CREATE TABLE reports.ftp_events (
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("ftp_events", cutoff)
-        sql_helper.clean_table("ftp_totals", cutoff)
 
 reports.engine.register_node(FtpCasing())

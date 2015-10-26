@@ -21,7 +21,6 @@ if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
 import reports.engine
-import reports.mailer
 import reports.sql_helper as sql_helper
 
 from reports.log import *

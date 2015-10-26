@@ -54,7 +54,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
-    protected static ReportsManagerImpl    reportsManager = null;
 
     private ReportsSettings settings;
     
@@ -66,12 +65,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             eventWriter = new EventWriterImpl( this );
         if (eventReader == null)
             eventReader = new EventReaderImpl( this );
-        if (reportsManager == null)
-            reportsManager = new ReportsManagerImpl( this );
         ReportsManagerNewImpl.getInstance().setReportsNode( this );
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
     }
 
@@ -255,11 +251,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Failed to connect to DB", e);
             return null;
         }
-    }
-
-    public ReportsManager getReportsManager()
-    {
-        return ReportsApp.reportsManager;
     }
 
     public ReportsManagerNew getReportsManagerNew()
@@ -528,44 +519,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
     }
     
-    private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler
-    {
-        @Override
-        public String getName()
-        {
-            return REPORTS_EVENT_LOG_DOWNLOAD_HANDLER;
-        }
-        
-        @Override
-        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
-        {
-            String appName = req.getParameter("app");
-            String detailName = req.getParameter("section");
-            String type = req.getParameter("type");
-            String value = req.getParameter("value");
-            String dateArg = req.getParameter("date");
-            String columnListStr = req.getParameter("colList");
-            int numDays = 0;
-            Date d;
-            
-            try {
-                numDays = Integer.parseInt(req.getParameter("numDays"));
-                long timestamp = Long.parseLong(dateArg);
-                d = new Date(timestamp);
-            } catch (Exception e) {
-                logger.warn("Invalid parameters: " + numDays);
-                return;
-            }
-            
-            logger.info("Export CSV( name:" + appName + " detailName: " + detailName + " date: " + d + ")");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
-            String name = sdf.format(d) + "-" + appName + "-" + detailName;
-            ResultSetReader resultSetReader = reportsManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
-            
-            toCsv(resultSetReader, resp, columnListStr, name);
-        }
-    }
-
     private class EventLogExportDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";

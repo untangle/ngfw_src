@@ -260,10 +260,6 @@ Ext.define("Ung.Main", {
                         xtype: 'component',
                         html: '<a class="link" href="/auth/logout?url=/reports&realm=Reports">'+i18n._('Logout')+"</a>",
                         margin: '0 0 10 0'
-                    }, {
-                        xtype: 'component',
-                        html: '<a class="link" href="/reports?old">'+i18n._('Go to the old reports page')+"</a>"
-                        
                     }]
                 }]
             }, {

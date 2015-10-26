@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.reports.EventEntry;
 import com.untangle.node.reports.ReportEntry;
-import com.untangle.node.reports.ReportsManager;
 import com.untangle.node.reports.ReportsManagerNew;
 import com.untangle.node.reports.ReportsApp;
 import com.untangle.uvm.LanguageManager;
@@ -38,16 +37,6 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private ReportsContextImpl( UvmContext context )
     {
         this.context = context;
-    }
-
-    public ReportsManager reportsManager()
-    {
-        ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-        if (reports == null) {
-            logger.warn("reports node not found");
-            return null;
-        }
-        return reports.getReportsManager();
     }
 
     public ReportsManagerNew reportsManagerNew()

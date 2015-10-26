@@ -20,20 +20,12 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 public class ReportsSettings implements Serializable, JSONString
 {
     private Integer dbRetention = 7; // days
-    private Integer fileRetention = 90; // days
     private Integer generationHour = 2;
     private Integer generationMinute = 0;
-    private boolean emailDetail = false;
-    private Integer attachmentSizeLimit = 10; // MB
-
     private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<ReportsHostnameMapEntry>();
     private LinkedList<ReportsUser> reportsUsers = new LinkedList<ReportsUser>();
     private LinkedList<AlertRule> alertRules = null;
     
-    private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
-    private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");
-    private boolean generateMonthlyReports = false;
-
     private String dbHost = "localhost";
     private int    dbPort = 5432;
     private String dbUser = "postgres";
@@ -62,30 +54,12 @@ public class ReportsSettings implements Serializable, JSONString
     public int getGenerationMinute() { return generationMinute; }
     public void setGenerationMinute( int generationMinute ) { this.generationMinute = generationMinute; }
 
-    public int getFileRetention() { return fileRetention; }
-    public void setFileRetention( int fileRetention ) { this.fileRetention = fileRetention; }
-
-    public boolean getEmailDetail() { return emailDetail; }
-    public void setEmailDetail( boolean emailDetail ) { this.emailDetail = emailDetail; }
-
-    public int getAttachmentSizeLimit() { return attachmentSizeLimit; }
-    public void setAttachmentSizeLimit( int limit ) { attachmentSizeLimit = limit; }
-
     public LinkedList<ReportsUser> getReportsUsers() { return this.reportsUsers; }
     public void setReportsUsers( LinkedList<ReportsUser> reportsUsers ) { this.reportsUsers = reportsUsers; }
 
     public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
     public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
     
-    public DayOfWeekMatcher getGenerateDailyReports() { return this.generateDailyReports; }
-    public void setGenerateDailyReports( DayOfWeekMatcher generateDailyReports ) { this.generateDailyReports = generateDailyReports; }
-
-    public DayOfWeekMatcher getGenerateWeeklyReports() { return this.generateWeeklyReports; }
-    public void setGenerateWeeklyReports( DayOfWeekMatcher generateWeeklyReports ) { this.generateWeeklyReports = generateWeeklyReports; }
-
-    public boolean getGenerateMonthlyReports() { return this.generateMonthlyReports; }
-    public void setGenerateMonthlyReports( boolean generateMonthlyReports ) { this.generateMonthlyReports = generateMonthlyReports; }
-
     public boolean isSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
 
