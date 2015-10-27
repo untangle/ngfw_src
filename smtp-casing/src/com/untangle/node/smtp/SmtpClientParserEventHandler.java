@@ -23,6 +23,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.util.AsciiUtil;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -295,8 +296,13 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
                     }
 
                     if (cmd.getType() == CommandType.STARTTLS) {
-                        logger.debug("Enqueue observer for response to STARTTLS, " + "to go into passthru if accepted");
-                        clientSideSharedState.commandReceived( cmd, new TLSResponseCallback( session ) );
+                        if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER) != null) {
+                            logger.debug("Skipping STARTTLS passthru because the SSL Inspector is active");
+                        }
+                        else {
+                            logger.debug("Enqueue observer for response to STARTTLS, " + "to go into passthru if accepted");
+                            clientSideSharedState.commandReceived( cmd, new TLSResponseCallback( session ) );
+                        }
                     } else if (cmd.getType() == CommandType.DATA) {
                         logger.debug("entering data transmission (DATA)");
                         if ( ! openSAC( session ) ) {

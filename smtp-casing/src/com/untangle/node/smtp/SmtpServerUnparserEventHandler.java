@@ -22,6 +22,7 @@ import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.MetadataToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -222,8 +223,13 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
                         + "this is an errant command");
                 serverSideSharedState.commandReceived( command, new CommandParseErrorResponseCallback( session, command.getBytes() ) );
             } else if (command.getType() == CommandType.STARTTLS) {
-                logger.debug("Saw STARTTLS command.  Enqueue response action to go into " + "passthru if accepted");
-                serverSideSharedState.commandReceived( command, new TLSResponseCallback( session ) );
+                if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
+                    logger.debug("Skipping STARTTLS passthru because the SSL Inspector is active");
+                }
+                else {
+                    logger.debug("Saw STARTTLS command.  Enqueue response action to go into " + "passthru if accepted");
+                    serverSideSharedState.commandReceived( command, new TLSResponseCallback( session ) );
+                }
             } else {
                 logger.debug("Send command to server: " + command.toDebugString());
                 serverSideSharedState.commandReceived( command );
