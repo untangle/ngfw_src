@@ -204,7 +204,7 @@ public class ReportEntry implements Serializable, JSONString
         if ( endDate == null )
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
         if ( startDate == null ) {
-            logger.warn("startDate not specified, using 1 day ago");
+            //logger.warn("startDate not specified, using 1 day ago");
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
         }
 
