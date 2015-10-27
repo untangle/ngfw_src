@@ -1,7 +1,6 @@
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
     panelStatus: null,
-    panelGeneration: null,
     panelEmail: null,
     panelSyslog: null,
     panelDatabase: null,
@@ -12,19 +11,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
     initComponent: function(container, position) {
         this.buildPasswordValidator();
         this.buildStatus();
-        this.buildGeneration();
         this.buildEmail();
         this.buildSyslog();
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildAlertRules();
-        var panels = [this.panelStatus, this.gridReportEntries, this.panelAlertRules, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
-        
-        // only show DB settings if set to something other than localhost
-        if (this.getSettings().dbHost != "localhost") {
-            this.buildDatabase();
-            panels.push(this.panelDatabase);
-        }
+        this.buildDatabase();
+
+        var panels = [this.panelStatus, this.gridReportEntries, this.panelDatabase, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
         
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -101,81 +95,15 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }]
         });
     },
-    // Generation panel
-    buildGeneration: function() {
-        var fieldID = "" + Math.round( Math.random() * 1000000 );
-
-        var generationTime=new Date();
-        generationTime.setTime(0);
-        generationTime.setHours(this.getSettings().generationHour);
-        generationTime.setMinutes(this.getSettings().generationMinute);
-
-        this.panelGeneration = Ext.create('Ext.panel.Panel',{
-            name: 'Generation',
-            helpSource: 'reports_generation',
-            title: i18n._('Generation'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            items: [{
-                title: i18n._("Daily Maintanence Time"),
-                labelWidth: 150,
-                items: [{
-                    xtype: 'timefield',
-                    fieldLabel: i18n._("Scheduled time to run daily database maintanence"),
-                    labelWidth: 260,
-                    width: 360,
-                    name: 'Generation Time',
-                    value: generationTime,
-                    toValidate: true,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                if (newValue && newValue instanceof Date) {
-                                    this.getSettings().generationMinute = newValue.getMinutes();
-                                    this.getSettings().generationHour = newValue.getHours();
-                                }
-                            }, this)
-                        }
-                    }
-                }]
-            }, {
-                title: i18n._("Data Retention"),
-                labelWidth: 150,
-                items: [{
-                    xtype: 'component',
-                    margin: '0 0 5 0',
-                    html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
-                },{
-                    xtype: 'numberfield',
-                    fieldLabel: i18n._('Data Retention days'),
-                    name: 'Data Retention days',
-                    id: 'reports_daysToKeepDB',
-                    value: this.getSettings().dbRetention,
-                    toValidate: true,
-                    labelWidth: 150,
-                    width: 200,
-                    allowDecimals: false,
-                    minValue: 1,
-                    maxValue: 366,
-                    hideTrigger:true,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().dbRetention = newValue;
-                            }, this)
-                        }
-                    }
-                }]
-            }]
-        });
-    },
     // Email panel
     buildEmail: function() {
         var fieldID = "" + Math.round( Math.random() * 1000000 );
 
+        var emailTime=new Date();
+        emailTime.setTime(0);
+        emailTime.setHours(this.getSettings().generationHour);
+        emailTime.setMinutes(this.getSettings().generationMinute);
+        
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
             header: i18n._("Change Password"),
@@ -198,6 +126,28 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset'
             },
             items: [{
+                title: i18n._("Daily Sending Time"),
+                labelWidth: 150,
+                items: [{
+                    xtype: 'timefield',
+                    fieldLabel: i18n._("Scheduled time to email report summary"),
+                    labelWidth: 260,
+                    width: 360,
+                    name: 'Email Time',
+                    value: emailTime,
+                    toValidate: true,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                if (newValue && newValue instanceof Date) {
+                                    this.getSettings().generationMinute = newValue.getMinutes();
+                                    this.getSettings().generationHour = newValue.getHours();
+                                }
+                            }, this)
+                        }
+                    }
+                }]
+            }, {
                 title: i18n._('Email'),
                 flex: 1,
                 layout: 'fit',
@@ -454,9 +404,38 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset'
             },
             items: [{
+                title: i18n._("Data Retention"),
+                labelWidth: 150,
+                items: [{
+                    xtype: 'component',
+                    margin: '0 0 5 0',
+                    html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                },{
+                    xtype: 'numberfield',
+                    fieldLabel: i18n._('Data Retention days'),
+                    name: 'Data Retention days',
+                    id: 'reports_daysToKeepDB',
+                    value: this.getSettings().dbRetention,
+                    toValidate: true,
+                    labelWidth: 150,
+                    width: 200,
+                    allowDecimals: false,
+                    minValue: 1,
+                    maxValue: 366,
+                    hideTrigger:true,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.getSettings().dbRetention = newValue;
+                            }, this)
+                        }
+                    }
+                }]
+            },{
                 title: i18n._('Database'),
                 height: 350,
-                items: [{
+                hidden: !rpc.isExpertMode,
+                items: [,{
                     xtype: 'textfield',
                     fieldLabel: i18n._('Host'),
                     name: 'databaseHost',
@@ -601,71 +580,71 @@ Ext.define('Webui.untangle-node-reports.settings', {
         var chartTypeRenderer = function(value) {
             return chartTypeMap[value]?chartTypeMap[value]:value;
         };
-        this.gridReportEntries= Ext.create('Ung.grid.Panel',{
-            name: 'Manage Reports',
-            helpSource: 'reports_manage_reports',
-            settingsCmp: this,
-            hasReadOnly: true,
-            changableFields: ['enabled'],
-            title: i18n._("Manage Reports"),
-            features: [{
-                ftype: 'grouping'
-            }],
-            groupField: 'category',
-            recordJavaClass: "com.untangle.node.reports.ReportEntry",
-            emptyRow: {
-                "uniqueId": null,
-                "enabled": true,
-                "readOnly": false,
-                "displayOrder": 500,
-                "type": "PIE_GRAPH"
-            },
-            dataProperty: "reportEntries",
-            sortField: 'displayOrder',
-            columnsDefaultSortable: false,
-            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions', 
-                     'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
-            columns: [{
-                header: i18n._("Title"),
-                width: 230,
-                dataIndex: 'title'
-            }, {
-                xtype:'checkcolumn',
-                header: i18n._("Enabled"),
-                dataIndex: 'enabled',
-                resizable: false,
-                width: 55
-            }, {
-                header: i18n._("Type"),
-                width: 110,
-                dataIndex: 'type',
-                renderer: chartTypeRenderer
-            }, {
-                header: i18n._("Description"),
-                width: 200,
-                dataIndex: 'description',
-                flex: 1
-            }, {
-                header: i18n._("Units"),
-                width: 90,
-                dataIndex: 'units'
-            }, {
-                header: i18n._("Display Order"),
-                width: 90,
-                dataIndex: 'displayOrder'
-            }, {
-                header: i18n._("View"),
-                xtype: 'actioncolumn',
-                width: 70,
-                items: [{
-                    iconCls: 'icon-play-row',
-                    tooltip: i18n._('View Report'),
-                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        this.viewReport(Ext.clone(record.getData()));
-                    }, this)
+            this.gridReportEntries= Ext.create('Ung.grid.Panel',{
+                name: 'Manage Reports',
+                helpSource: 'reports_manage_reports',
+                settingsCmp: this,
+                hasReadOnly: true,
+                changableFields: ['enabled'],
+                title: i18n._("Manage Reports"),
+                features: [{
+                    ftype: 'grouping'
+                }],
+                groupField: 'category',
+                recordJavaClass: "com.untangle.node.reports.ReportEntry",
+                emptyRow: {
+                    "uniqueId": null,
+                    "enabled": true,
+                    "readOnly": false,
+                    "displayOrder": 500,
+                    "type": "PIE_GRAPH"
+                },
+                dataProperty: "reportEntries",
+                sortField: 'displayOrder',
+                columnsDefaultSortable: false,
+                fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions', 
+                         'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
+                columns: [{
+                    header: i18n._("Title"),
+                    width: 230,
+                    dataIndex: 'title'
+                }, {
+                    xtype:'checkcolumn',
+                    header: i18n._("Enabled"),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width: 55
+                }, {
+                    header: i18n._("Type"),
+                    width: 110,
+                    dataIndex: 'type',
+                    renderer: chartTypeRenderer
+                }, {
+                    header: i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1
+                }, {
+                    header: i18n._("Units"),
+                    width: 90,
+                    dataIndex: 'units'
+                }, {
+                    header: i18n._("Display Order"),
+                    width: 90,
+                    dataIndex: 'displayOrder'
+                }, {
+                    header: i18n._("View"),
+                    xtype: 'actioncolumn',
+                    width: 70,
+                    items: [{
+                        iconCls: 'icon-play-row',
+                        tooltip: i18n._('View Report'),
+                        handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                            this.viewReport(Ext.clone(record.getData()));
+                        }, this)
+                    }]
                 }]
-            }]
-        });
+            });
         this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
             parentCmp: this
         }));

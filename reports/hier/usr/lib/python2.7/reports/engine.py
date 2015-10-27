@@ -101,7 +101,7 @@ def register_node(node):
 def reports_cleanup(cutoff):
     logger.info("Cleaning reports data for all dates < %s" % (cutoff,))
 
-    for name in __get_node_partial_order():
+    for name in __get_available_nodes():
         try:
             node = __nodes.get(name, None)
             logger.info("Cleaning data for %s" % (name,))
