@@ -422,15 +422,15 @@ Ext.define("Ung.Main", {
         }
         return rpc.networkSettings;
     },
-    getReportsManagerNew: function(forceReload) {
-        if (forceReload || rpc.reportsManagerNew === undefined) {
+    getReportsManager: function(forceReload) {
+        if (forceReload || rpc.reportsManager === undefined) {
             try {
-                rpc.reportsManagerNew = this.getNodeReports().getReportsManagerNew();
+                rpc.reportsManager = this.getNodeReports().getReportsManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return rpc.reportsManagerNew;
+        return rpc.reportsManager;
     },
     // get node reports
     getNodeReports: function(forceReload) {

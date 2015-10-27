@@ -65,7 +65,7 @@ public class EventEntry implements Serializable, JSONString
         query +=  "SELECT * FROM reports." + this.table + " WHERE true";
         if ( getConditions() != null ) {
             for ( SqlCondition condition : getConditions() ) {
-                if ( ! ReportsManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                if ( ! ReportsManagerImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
                     logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
                     continue;
                 }
@@ -75,7 +75,7 @@ public class EventEntry implements Serializable, JSONString
         }
         if ( extraConditions != null ) {
             for ( SqlCondition condition : extraConditions )  {
-                if ( ! ReportsManagerNewImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
+                if ( ! ReportsManagerImpl.getInstance().tableHasColumn( table, condition.getColumn() ) ) {
                     logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
                     continue;
                 }

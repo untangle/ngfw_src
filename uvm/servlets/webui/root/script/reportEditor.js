@@ -53,7 +53,7 @@ Ext.define("Ung.window.ReportEditor", {
                         this.record.set("uniqueId", this.getUniqueId());
                         var entry = this.record.getData();
                         
-                        Ung.Main.getReportsManagerNew().saveReportEntry(Ext.bind(function(result, exception) {
+                        Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.closeWindow();
                             this.parentCmp.loadReportEntries(entry.uniqueId);
@@ -86,7 +86,7 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["name"],
             data: []
         });
-        Ung.Main.getReportsManagerNew().getTables(Ext.bind(function(result, exception) {
+        Ung.Main.getReportsManager().getTables(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var tables = [];
             for (var i=0; i< result.length; i++) {

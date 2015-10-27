@@ -1,5 +1,5 @@
 /**
- * $Id: ReportsManagerNewImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
+ * $Id: ReportsManagerImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
  */
 package com.untangle.node.reports;
 
@@ -24,11 +24,11 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
 
-public class ReportsManagerNewImpl implements ReportsManagerNew
+public class ReportsManagerImpl implements ReportsManager
 {
-    private static final Logger logger = Logger.getLogger(ReportsManagerNewImpl.class);
+    private static final Logger logger = Logger.getLogger(ReportsManagerImpl.class);
 
-    private static ReportsManagerNewImpl instance = null;
+    private static ReportsManagerImpl instance = null;
 
     private static ReportsApp node = null;
     
@@ -49,7 +49,7 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
      */
     private List<NodeProperties> nodePropertiesList = null;
 
-    protected ReportsManagerNewImpl()
+    protected ReportsManagerImpl()
     {
         this.nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();
 
@@ -70,11 +70,11 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
 
     }
 
-    public static ReportsManagerNewImpl getInstance()
+    public static ReportsManagerImpl getInstance()
     {
-        synchronized ( ReportsManagerNewImpl.class ) {
+        synchronized ( ReportsManagerImpl.class ) {
             if ( instance == null ) {
-                instance = new ReportsManagerNewImpl();
+                instance = new ReportsManagerImpl();
             }
         }
 
@@ -83,7 +83,7 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
 
     public void setReportsNode( ReportsApp node )
     {
-        ReportsManagerNewImpl.node = node;
+        ReportsManagerImpl.node = node;
     }
     
     

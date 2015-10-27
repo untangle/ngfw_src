@@ -111,7 +111,7 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
 
     reports.flushEvents()
 
-    reportsManager = reports.getReportsManagerNew()
+    reportsManager = reports.getReportsManager()
 
     eventEntry = reportsManager.getEventEntry( eventEntryCategory, eventEntryTitle )
     if eventEntryTitle == None:

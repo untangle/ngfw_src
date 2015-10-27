@@ -49,17 +49,17 @@ Ext.define("Ung.Main", {
             },this));
         }, this));
         
-        rpc.jsonrpc.ReportsContext.reportsManagerNew(Ext.bind(function(result,exception) {
+        rpc.jsonrpc.ReportsContext.reportsManager(Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
-            rpc.reportsManagerNew = result;
-            rpc.reportsManagerNew.isReportsEnabled(Ext.bind(function( result, exception ) {
+            rpc.reportsManager = result;
+            rpc.reportsManager.isReportsEnabled(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.isReportsEnabled = result;
                 if(rpc.isReportsEnabled) {
-                    rpc.reportsManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
+                    rpc.reportsManager.getCurrentApplications(Ext.bind(function( result, exception ) {
                         if(Ung.Util.handleException(exception)) return;
                         rpc.currentApplications = result.list;
-                        rpc.reportsManagerNew.getPoliciesInfo(Ext.bind(function( result, exception ) {
+                        rpc.reportsManager.getPoliciesInfo(Ext.bind(function( result, exception ) {
                             if(Ung.Util.handleException(exception)) return;
                             rpc.policyNamesMap = {};
                             rpc.policyNamesMap[0] = i18n._("No Rack");
@@ -75,7 +75,7 @@ Ext.define("Ung.Main", {
                     this.startApplication();
                 }
             },this));
-            rpc.reportsManagerNew.getTimeZoneOffset(Ext.bind(function( result, exception ) {
+            rpc.reportsManager.getTimeZoneOffset(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.timeZoneOffset = result;
                 this.startApplication();

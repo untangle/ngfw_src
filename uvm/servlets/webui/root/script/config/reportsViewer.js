@@ -83,7 +83,7 @@ Ext.define('Webui.config.reportsViewer', {
         
         var treepanel = this.down("treepanel"); 
         treepanel.getSelectionModel().select(0);
-        rpc.reportsManagerNew.getCurrentApplications(Ext.bind(function( result, exception ) {
+        rpc.reportsManager.getCurrentApplications(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             var currentApplications = result.list;
             if (currentApplications) {

@@ -65,7 +65,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             eventWriter = new EventWriterImpl( this );
         if (eventReader == null)
             eventReader = new EventReaderImpl( this );
-        ReportsManagerNewImpl.getInstance().setReportsNode( this );
+        ReportsManagerImpl.getInstance().setReportsNode( this );
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
@@ -253,9 +253,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
-    public ReportsManagerNew getReportsManagerNew()
+    public ReportsManager getReportsManager()
     {
-        return ReportsManagerNewImpl.getInstance();
+        return ReportsManagerImpl.getInstance();
     }
     
     @Override
@@ -303,8 +303,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         /**
          * Report updates
          */
-        ReportsManagerNewImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
-        ReportsManagerNewImpl.getInstance().updateSystemEventEntries( settings.getEventEntries(), true );
+        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+        ReportsManagerImpl.getInstance().updateSystemEventEntries( settings.getEventEntries(), true );
         
         /* intialize schema (if necessary) */
         this.createSchemas();
@@ -629,7 +629,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     logger.warn("reports node not found");
                     return;
                 }
-                ResultSetReader resultSetReader = ReportsManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);
+                ResultSetReader resultSetReader = ReportsManagerImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);
                 toCsv( resultSetReader, resp, columnListStr, name );
             } catch (Exception e) {
                 logger.warn( "Failed to build CSV.", e );

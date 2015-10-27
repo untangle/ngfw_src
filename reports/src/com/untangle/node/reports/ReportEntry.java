@@ -432,7 +432,7 @@ public class ReportEntry implements Serializable, JSONString
 
         for ( Iterator<SqlCondition> itr = conditions.iterator() ; itr.hasNext() ; ) {
             SqlCondition condition = itr.next();
-            String type = ReportsManagerNewImpl.getInstance().getColumnType( getTable(), condition.getColumn() );
+            String type = ReportsManagerImpl.getInstance().getColumnType( getTable(), condition.getColumn() );
 
             if ( type == null ) {
                 logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );

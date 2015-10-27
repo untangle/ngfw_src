@@ -15,7 +15,7 @@ import org.jabsorb.JSONRPCServlet;
 
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
-import com.untangle.node.reports.ReportsManagerNew;
+import com.untangle.node.reports.ReportsManager;
 
 import com.untangle.uvm.servlet.ServletUtils;
 
@@ -103,7 +103,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     
     public interface ReportsContext
     {
-        public ReportsManagerNew reportsManagerNew();
+        public ReportsManager reportsManager();
 
         public SkinManager skinManager();
 

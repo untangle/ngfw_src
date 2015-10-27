@@ -31,7 +31,7 @@ Ext.define('Ung.panel.Reports', {
                     return;
                 }
             }
-            rpc.reportsManagerNew = Ung.Main.getReportsManagerNew();
+            rpc.reportsManager = Ung.Main.getReportsManager();
         }
         
         this.filterFeature = Ext.create('Ung.grid.feature.GlobalFilter', {});
@@ -352,7 +352,7 @@ Ext.define('Ung.panel.Reports', {
         if(!this.reportEntriesGrid) {
             this.reportEntriesGrid = this.down("grid[name=reportEntriesGrid]");
         }
-        rpc.reportsManagerNew.getReportEntries(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getReportEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var reportEntries = [];
             this.initialEntryIndex = null;
@@ -386,7 +386,7 @@ Ext.define('Ung.panel.Reports', {
         if(!this.eventEntriesGrid) {
             this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
         }
-        rpc.reportsManagerNew.getEventEntries(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getEventEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
@@ -892,7 +892,7 @@ Ext.define('Ung.panel.Reports', {
     loadReportEntry: function(entry) {
         this.setLoading(i18n._('Loading report... '));
         this.buildReportEntry(entry);
-        rpc.reportsManagerNew.getDataForReportEntry(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             this.loadReportData(result.list);
@@ -979,7 +979,7 @@ Ext.define('Ung.panel.Reports', {
             return;
         }
         if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Refreshing report... ')); }
-        rpc.reportsManagerNew.getDataForReportEntry(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             this.loadReportData(result.list);
@@ -994,7 +994,7 @@ Ext.define('Ung.panel.Reports', {
         }
         var limit = this.limitSelector.getValue();
             if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Querying Database...')); }
-            rpc.reportsManagerNew.getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
+            rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
                 this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
                 this.loadResultSet(result);
@@ -1494,7 +1494,7 @@ Ext.define('Ung.panel.Reports', {
                         if(!Ung.panel.Reports.interfaceMap) {
                             var interfacesList = [];
                             try {
-                                interfacesList = rpc.reportsManagerNew.getInterfacesInfo().list;
+                                interfacesList = rpc.reportsManager.getInterfacesInfo().list;
                             } catch (e) {
                                 Ung.Util.rpcExHandler(e);
                             }
@@ -1543,7 +1543,7 @@ Ext.define("Ung.panel.ExtraConditions", {
                 value: item.value
             });
         }, this);
-        rpc.reportsManagerNew.getConditionQuickAddHints(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getConditionQuickAddHints(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var column, hintMenus = [], columnItems, i, text, value;
             for(column in result) {

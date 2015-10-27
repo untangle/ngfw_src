@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.reports.EventEntry;
 import com.untangle.node.reports.ReportEntry;
-import com.untangle.node.reports.ReportsManagerNew;
+import com.untangle.node.reports.ReportsManager;
 import com.untangle.node.reports.ReportsApp;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.LanguageSettings;
@@ -32,16 +32,16 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
-    private final ReportsManagerNew reportsManagerNew = ReportsManagerNewImpl.getInstance();
+    private final ReportsManager reportsManager = ReportsManagerImpl.getInstance();
 
     private ReportsContextImpl( UvmContext context )
     {
         this.context = context;
     }
 
-    public ReportsManagerNew reportsManagerNew()
+    public ReportsManager reportsManager()
     {
-        return this.reportsManagerNew;
+        return this.reportsManager;
     }
 
     public SkinManager skinManager()
@@ -85,9 +85,9 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     }
     
     /**
-     * This class is used extend ReportsManagerNewImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
+     * This class is used extend ReportsManagerImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
      */
-    public class ReportsManagerNewImpl extends com.untangle.node.reports.ReportsManagerNewImpl
+    public class ReportsManagerImpl extends com.untangle.node.reports.ReportsManagerImpl
     {
         public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
         public void setEventEntries( List<EventEntry> newEntries ) { throw new RuntimeException("Unable to set the event entries."); }

@@ -122,7 +122,7 @@ public class SqlCondition implements Serializable, JSONString
                 }
                     
                 i++;
-                String columnType = ReportsManagerNewImpl.getInstance().getColumnType( table, condition.getColumn() );
+                String columnType = ReportsManagerImpl.getInstance().getColumnType( table, condition.getColumn() );
                 String value = condition.getValue();
 
                 if ( value == null ) {

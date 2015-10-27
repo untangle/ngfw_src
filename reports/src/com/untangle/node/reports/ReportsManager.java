@@ -1,5 +1,5 @@
 /**
- * $Id: ReportsManagerNew.java,v 1.00 2015/03/04 13:45:51 dmorris Exp $
+ * $Id: ReportsManager.java,v 1.00 2015/03/04 13:45:51 dmorris Exp $
  */
 package com.untangle.node.reports;
 
@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * The API for interacting/viewing/editing reports
  */
-public interface ReportsManagerNew
+public interface ReportsManager
 {
     List<ReportEntry> getReportEntries();
 
