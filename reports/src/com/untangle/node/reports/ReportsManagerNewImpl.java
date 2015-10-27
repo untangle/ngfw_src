@@ -260,7 +260,7 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
                 node.flushEvents();
         }
 
-        logger.info("Getting Data for : " + entry.getTitle());
+        logger.info("Getting Data for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement        : " + statement);
 
         long t0 = System.currentTimeMillis();
@@ -393,8 +393,16 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
         if ( extraConditions != null )
             System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
 
-        logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
-        return ReportsApp.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
+        logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
+        logger.info("Statement        : " + entry.toSqlQuery( extraConditions ));
+
+        long t0 = System.currentTimeMillis();
+        ArrayList<org.json.JSONObject> results =  ReportsApp.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
+        long t1 = System.currentTimeMillis();
+
+        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+
+        return results;
     }
 
     public ResultSetReader getEventsResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
@@ -442,7 +450,17 @@ public class ReportsManagerNewImpl implements ReportsManagerNew
         if ( extraConditions != null )
             System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
 
-        return ReportsApp.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
+
+        logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
+        logger.info("Statement        : " + entry.toSqlQuery( extraConditions ));
+
+        long t0 = System.currentTimeMillis();
+        ResultSetReader result = ReportsApp.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
+        long t1 = System.currentTimeMillis();
+
+        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+
+        return result;
     }
 
     public org.json.JSONObject getConditionQuickAddHints()
