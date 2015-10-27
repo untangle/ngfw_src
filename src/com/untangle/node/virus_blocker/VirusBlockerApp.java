@@ -59,7 +59,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         // automatically when the daemon count reaches zero
         String transmit = "INFO 1\r\n";
         String search = "200 1";
-        UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 60, "127.0.0.1", 1344, transmit, search);
+        UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 1200, "127.0.0.1", 1344, transmit, search);
         super.preStart();
     }
 
