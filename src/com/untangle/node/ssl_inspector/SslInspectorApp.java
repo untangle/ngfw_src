@@ -199,8 +199,13 @@ public class SslInspectorApp extends NodeBase
 
         if (settings == null) return;
 
-        for (PipelineConnector connector : this.connectors)
-            connector.setEnabled(settings.isEnabled());
+        // enable the SMTPS connectors using the node enabled flag and SMTPS enabled flag
+        clientMailConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedMailTraffic());
+        serverMailConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedMailTraffic());
+
+        // enable th HTTPS connectors using the node enabled flag and HTTPS enabled flag 
+        clientWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
+        serverWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
 
         if (settings.getJavaxDebug() == true) System.setProperty("javax.net.debug", "all");
 

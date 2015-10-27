@@ -14,6 +14,8 @@ import org.json.JSONObject;
 public class SslInspectorSettings implements Serializable
 {
     private LinkedList<SslInspectorRule> ignoreList;
+    private boolean processEncryptedMailTraffic;
+    private boolean processEncryptedWebTraffic;
     private boolean blockInvalidTraffic;
     private boolean serverFakeHostname;
     private boolean serverBlindTrust;
@@ -25,6 +27,8 @@ public class SslInspectorSettings implements Serializable
     public SslInspectorSettings()
     {
         ignoreList = new LinkedList<SslInspectorRule>();
+        processEncryptedMailTraffic = true;
+        processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
         serverFakeHostname = true;
         serverBlindTrust = false;
@@ -50,6 +54,26 @@ public class SslInspectorSettings implements Serializable
             entry.setRuleId(count);
             count += 1;
         }
+    }
+
+    public boolean getProcessEncryptedMailTraffic()
+    {
+        return processEncryptedMailTraffic;
+    }
+
+    public void setProcessEncryptedMailTraffic(boolean flag)
+    {
+        this.processEncryptedMailTraffic = flag;
+    }
+
+    public boolean getProcessEncryptedWebTraffic()
+    {
+        return processEncryptedWebTraffic;
+    }
+
+    public void setProcessEncryptedWebTraffic(boolean flag)
+    {
+        this.processEncryptedWebTraffic = flag;
     }
 
     public boolean getBlockInvalidTraffic()

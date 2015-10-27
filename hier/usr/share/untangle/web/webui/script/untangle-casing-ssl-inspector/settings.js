@@ -78,7 +78,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
             },
             items: [{
                 title: i18n._("Description"),
-                html: i18n._("The SSL Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS and port 25 SMTPS traffic just like unencrypted port 80 HTTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
+                html: i18n._("The SSL Inspector is an SSL decryption engine that allows other applications and services to process port 443 HTTPS and port 25 SMTPS traffic just like unencrypted port 80 HTTP and port 25 SMTP traffic. To do this, the application generates new SSL certificates on the fly which it uses to perform a the man-in-the-middle style inspection of traffic. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
             }, {
                 xtype: 'fieldset',
                 layout: 'column',
@@ -123,7 +123,25 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 labelWidth: 230,
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: i18n._("Block Invalid Traffic"),
+                    fieldLabel: i18n._("Enable SMTPS Traffic Processing"),
+                    labelWidth: 200,
+                    name: 'scanMailTraffic',
+                    checked: this.settings.processEncryptedMailTraffic,
+                    handler: Ext.bind(function(elem, checked) {
+                                this.settings.processEncryptedMailTraffic = checked;
+                            }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("Enable HTTPS Traffic Processing"),
+                    labelWidth: 200,
+                    name: 'scanWebTraffic',
+                    checked: this.settings.processEncryptedWebTraffic,
+                    handler: Ext.bind(function(elem, checked) {
+                                this.settings.processEncryptedWebTraffic = checked;
+                            }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("Block Invalid HTTPS Traffic"),
                     labelWidth: 200,
                     name: 'blockInvalidTraffic',
                     checked: this.settings.blockInvalidTraffic,
@@ -176,7 +194,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.gridTrustList = Ext.create('Ung.grid.Panel',{
             title: i18n._("Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"),
             autoGenerateId: true,
-            height: 400,
+            height: 280,
             hasDelete: false,
             hasEdit: false,
             hasAdd: false,
