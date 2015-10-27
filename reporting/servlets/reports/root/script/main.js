@@ -179,14 +179,6 @@ Ext.define("Ung.Main", {
                     children : apps
                 });
             }
-            if(services.length > 0) {
-                treeNodes.push({
-                    text : i18n._("Services"),
-                    leaf : false,
-                    expanded : true,
-                    children : services
-                });
-            }
         }
 
         var items = [{
