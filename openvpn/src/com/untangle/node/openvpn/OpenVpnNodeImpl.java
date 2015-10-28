@@ -637,7 +637,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
                 results.add( result );
             }
             catch ( Exception e ) {
-                logger.warn("Malformed openvpn status file: " + "/var/run/openvpn." + server.getName() + ".status", e );
+                logger.warn("Malformed openvpn status file: " + "/var/run/openvpn/" + server.getName() + ".status", e );
             }
         }
 
