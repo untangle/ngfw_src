@@ -254,7 +254,44 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName + "&appliance=" + UvmContextFactory.context().isAppliance();
         String oldName = nodeName.replace("node","libitem").replace("casing","libitem");
         String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
-
+        String oldName2 = null;
+        String urlStr3 = null;
+        
+        switch ( nodeName ) {
+        case License.DIRECTORY_CONNECTOR:
+            oldName2 = License.DIRECTORY_CONNECTOR_OLDNAME; break;
+        case License.BANDWIDTH_CONTROL:
+            oldName2 = License.BANDWIDTH_CONTROL_OLDNAME; break;
+        case License.CONFIGURATION_BACKUP:
+            oldName2 = License.CONFIGURATION_BACKUP_OLDNAME; break;
+        case License.BRANDING_MANAGER:
+            oldName2 = License.BRANDING_MANAGER_OLDNAME; break;
+        case License.VIRUS_BLOCKER:
+            oldName2 = License.VIRUS_BLOCKER_OLDNAME; break;
+        case License.SPAM_BLOCKER:
+            oldName2 = License.SPAM_BLOCKER_OLDNAME; break;
+        case License.COMMTOUCHAV:
+            oldName2 = License.COMMTOUCHAS; break;
+        case License.WAN_FAILOVER:
+            oldName2 = License.WAN_FAILOVER_OLDNAME; break;
+        case License.IPSEC_VPN:
+            oldName2 = License.IPSEC_VPN_OLDNAME; break;
+        case License.POLICY_MANAGER:
+            oldName2 = License.POLICY_MANAGER_OLDNAME; break;
+        case License.WEB_FILTER:
+            oldName2 = License.WEB_FILTER_OLDNAME; break;
+        case License.WAN_BALANCER:
+            oldName2 = License.WAN_BALANCER_OLDNAME; break;
+        case License.WEB_CACHE:
+            oldName2 = License.WEB_CACHE_OLDNAME; break;
+        case License.APPLICATION_CONTROL:
+            oldName2 = License.APPLICATION_CONTROL_OLDNAME; break;
+        case License.SSL_INSPECTOR:
+            oldName2 = License.SSL_INSPECTOR_OLDNAME; break;
+        }
+        if ( oldName2 != null ) 
+            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName2 + "&appliance=" + UvmContextFactory.context().isAppliance();
+        
         URL url;
         HttpClient hc;
         HttpMethod get;
@@ -266,11 +303,21 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             get = new GetMethod(url.toString());
             hc.executeMethod(get);
 
-            logger.info("Requesting Trial: " + urlStr);
-            url = new URL(urlStr2);
-            hc = new HttpClient();
-            get = new GetMethod(url.toString());
-            hc.executeMethod(get);
+            if ( urlStr2 != null ) {
+                logger.info("Requesting Trial: " + urlStr2);
+                url = new URL(urlStr2);
+                hc = new HttpClient();
+                get = new GetMethod(url.toString());
+                hc.executeMethod(get);
+            }
+
+            if ( urlStr3 != null ) {
+                logger.info("Requesting Trial: " + urlStr3);
+                url = new URL(urlStr3);
+                hc = new HttpClient();
+                get = new GetMethod(url.toString());
+                hc.executeMethod(get);
+            }
         } catch ( java.net.UnknownHostException e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: DNS lookup failed.", e ) );
