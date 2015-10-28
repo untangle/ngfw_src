@@ -143,6 +143,16 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         License license = this.licenseMap.get(identifier);
         if (license != null)
             return license;
+
+        /**
+         * Try old names for backwards compatibility
+         */
+        String oldIdentifier = getOldIdentifier(identifier);
+        if ( oldIdentifier != null ) {
+            license = this.licenseMap.get(oldIdentifier);
+            if (license != null)
+                return license;
+        }
         
         /**
          * Special for development environment
@@ -766,6 +776,45 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         return false;
     }
 
+    private String getOldIdentifier(String identifier)
+    {
+        switch (identifier) {
+        case License.DIRECTORY_CONNECTOR:
+            return License.DIRECTORY_CONNECTOR_OLDNAME;
+        case License.BANDWIDTH_CONTROL:
+            return License.BANDWIDTH_CONTROL_OLDNAME;
+        case License.CONFIGURATION_BACKUP:
+            return License.CONFIGURATION_BACKUP_OLDNAME;
+        case License.BRANDING_MANAGER:
+            return License.BRANDING_MANAGER_OLDNAME;
+        case License.VIRUS_BLOCKER:
+            return License.VIRUS_BLOCKER_OLDNAME;
+        case License.SPAM_BLOCKER:
+            return License.SPAM_BLOCKER_OLDNAME;
+        case License.COMMTOUCHAV:
+            return License.COMMTOUCHAS;
+        case License.WAN_FAILOVER:
+            return License.WAN_FAILOVER_OLDNAME;
+        case License.IPSEC_VPN:
+            return License.IPSEC_VPN_OLDNAME;
+        case License.POLICY_MANAGER:
+            return License.POLICY_MANAGER_OLDNAME;
+        case License.WEB_FILTER:
+            return License.WEB_FILTER_OLDNAME;
+        case License.WAN_BALANCER:
+            return License.WAN_BALANCER_OLDNAME;
+        case License.WEB_CACHE:
+            return License.WEB_CACHE_OLDNAME;
+        case License.APPLICATION_CONTROL:
+            return License.APPLICATION_CONTROL_OLDNAME;
+        case License.SSL_INSPECTOR:
+            return License.SSL_INSPECTOR_OLDNAME;
+        }            
+
+        return null;
+    }
+
+    
     private void _setValidAndStatus(License license)
     {
         if (_isLicenseValid(license)) {
