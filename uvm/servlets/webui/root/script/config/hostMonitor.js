@@ -139,7 +139,7 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 name: "username",
                 type: 'string',
-                convert: preventEmptyValueFn
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "usernameAdConnector",
                 type: 'string'
