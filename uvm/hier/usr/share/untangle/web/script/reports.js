@@ -81,6 +81,8 @@ Ext.define('Ung.panel.Reports', {
                     name:'gridEvents',
                     reserveScrollbar: true,
                     title: ".",
+                    stateful: true,
+                    stateId: "eventGrid",
                     viewConfig: {
                         enableTextSelection: true
                     },
@@ -143,7 +145,7 @@ Ext.define('Ung.panel.Reports', {
                             iconCls: 'icon-export',
                             handler: Ext.bind(this.exportEventsHandler, this)
                         }]
-                    }] 
+                    }]
                 }],
                 dockedItems: [{
                     xtype: 'toolbar',
@@ -208,6 +210,14 @@ Ext.define('Ung.panel.Reports', {
                             } else {
                                 this.stopAutoRefresh();
                             }
+                        }, this)
+                    },{
+                        text: i18n._('Reset View'),
+                        tooltip: i18n._('Restore default columns positions, widths and visibility'),
+                        handler: Ext.bind(function () {
+                            var gridEvents = this.down("grid[name=gridEvents]") 
+                            Ext.state.Manager.clear(gridEvents.stateId);
+                            gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
                         }, this)
                     }]
                 }] 
@@ -913,7 +923,10 @@ Ext.define('Ung.panel.Reports', {
         this.limitSelector.show();
         
         this.gridEvents.setTitle(entry.title);
+        this.gridEvents.stateId = "eventGrid-" + entry.table;
+        
         var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
+        var state = Ext.state.Manager.get(this.gridEvents.stateId);
         if(!tableConfig) {
             console.log("Warning: table '"+entry.table+"' is not defined");
             tableConfig = {
@@ -929,6 +942,9 @@ Ext.define('Ung.panel.Reports', {
                 if((entry.defaultColumns.length>0) && (entry.defaultColumns.indexOf(col.dataIndex) < 0)) {
                     col.hidden = true;
                 }
+                if( col.stateId === undefined ){
+                    col.stateId = col.dataIndex;
+                }
             }
             for(i=0; i<entry.defaultColumns.length; i++) {
                 col = entry.defaultColumns[i];
@@ -936,6 +952,7 @@ Ext.define('Ung.panel.Reports', {
                     console.log("Warning: column '"+col+"' is not defined in the tableConfig for "+entry.table);
                 }
             }
+            this.gridEvents.defaultTableConfig = tableConfig;
         }
         var store = Ext.create('Ext.data.Store', {
             fields: tableConfig.fields,
@@ -948,6 +965,25 @@ Ext.define('Ung.panel.Reports', {
             }
         });
         this.gridEvents.reconfigure(store, tableConfig.columns);
+        state = Ext.state.Manager.get(this.gridEvents.stateId);
+        if(state != null && state.columns != undefined){
+            // Performing a state restore to a dynamic grid is very picky.
+            Ext.suspendLayouts();
+            this.gridEvents.getView().getHeaderCt().purgeCache();
+            this.gridEvents.applyState(state);
+            this.gridEvents.updateLayout();
+            Ext.Array.each(this.gridEvents.getColumns(), function(column, index) {
+                if(column.hidden == true){
+                    column.setVisible(true);
+                    column.setVisible(false);
+                }else{
+                    column.setVisible(false);
+                    column.setVisible(true);                    
+                }
+            });
+            Ext.resumeLayouts(true);
+        }
+
         this.gridEvents.getStore().addFilter(this.filterFeature.globalFilter);
         this.refreshHandler();
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
