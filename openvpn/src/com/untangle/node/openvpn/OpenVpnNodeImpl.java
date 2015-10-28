@@ -572,7 +572,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         for ( OpenVpnRemoteServer server : settings.getRemoteServers() ) {
             try {
                 JSONObject result = new JSONObject();
-                File statusFile = new File( "/var/run/openvpn." + server.getName() + ".status" );
+                File statusFile = new File( "/var/run/openvpn/" + server.getName() + ".status" );
 
                 result.put( "name", server.getName() );
                 result.put( "connected", false );
