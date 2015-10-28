@@ -7,15 +7,15 @@ Ext.define('Ung.RuleBuilder', {
     alias: 'widget.rulebuilder',
     javaClass: null,
     initComponent: function() {
-        this.matchersMap=Ung.Util.createRecordsMap(this.matchers, 'name');
+        this.conditionsMap=Ung.Util.createRecordsMap(this.conditions, 'name');
         this.visibleFilter = new Ext.util.Filter({
             property: 'visible',
             value: true
         });
-        this.matcherTypeStore = Ext.create('Ext.data.Store', {
+        this.conditionTypeStore = Ext.create('Ext.data.Store', {
             filters: [this.visibleFilter],
             fields: ["name", "displayName"],
-            data: [{name: "", displayName: ""}].concat(this.matchers)
+            data: [{name: "", displayName: ""}].concat(this.conditions)
         });
         this.invertStore = Ext.create('Ext.data.Store', {
             fields: ["name", "displayName"],
@@ -43,7 +43,7 @@ Ext.define('Ung.RuleBuilder', {
     },
     generateRow: function(data, disableInvert) {
         if(!data) {
-            data = {matcherType: "", invert: false, value: ""};
+            data = {conditionType: "", invert: false, value: ""};
         }
         return {
             xtype: 'container',
@@ -56,17 +56,17 @@ Ext.define('Ung.RuleBuilder', {
             items: [{
                 xtype: 'combo',
                 width: 300,
-                ruleDataIndex: "matcherType",
+                ruleDataIndex: "conditionType",
                 editable: false,
                 valueField: "name",
                 displayField: "displayName",
                 queryMode: 'local',
-                store: this.matcherTypeStore,
-                value: data.matcherType,
+                store: this.conditionTypeStore,
+                value: data.conditionType,
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {
-                            this.matcherTypeChangeHandler(combo, newValue);
+                            this.conditionTypeChangeHandler(combo, newValue);
                         },
                         scope: this
                     }
@@ -99,7 +99,7 @@ Ext.define('Ung.RuleBuilder', {
             }]
         };
     },
-    matcherTypeChangeHandler: function(combo, newValue) {
+    conditionTypeChangeHandler: function(combo, newValue) {
         this.dirtyFlag=true;
         var ruleContainer = combo.up("container");
         var invertCombo = ruleContainer.down("[ruleDataIndex=invert]");
@@ -110,16 +110,16 @@ Ext.define('Ung.RuleBuilder', {
         if (Ext.isEmpty(newValue)) {
             return;
         }
-        var rule = this.matchersMap[newValue];
+        var rule = this.conditionsMap[newValue];
         if (!rule) {
             return;
         }
         if(!rule.allowMultiple) {
             var isDuplicate = false;
             Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
-                var matcherTypeCombo=item.down("[ruleDataIndex=matcherType]");
-                if(matcherTypeCombo!=combo && newValue==matcherTypeCombo.getValue()) {
-                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
+                var conditionTypeCombo=item.down("[ruleDataIndex=conditionType]");
+                if(conditionTypeCombo!=combo && newValue==conditionTypeCombo.getValue()) {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A condition of this type already exists in this rule."));
                     combo.setValue("");
                     isDuplicate = true;
                     return false;
@@ -134,11 +134,11 @@ Ext.define('Ung.RuleBuilder', {
             invertCombo.setValue(false);
             invertCombo.setReadOnly(true);
         }
-        valueContainer.add(this.buildValueItems({matcherType: newValue, invert: invertCombo.getValue(), value: ""}));
+        valueContainer.add(this.buildValueItems({conditionType: newValue, invert: invertCombo.getValue(), value: ""}));
     },
     buildValueItems: function(data) {
         var items= [], me = this;
-        var rule=this.matchersMap[data.matcherType];
+        var rule=this.conditionsMap[data.conditionType];
         if (!rule) {
             return items;
         }
@@ -207,7 +207,7 @@ Ext.define('Ung.RuleBuilder', {
     },
     getRuleValue: function(item) {
         var value= "";
-        var rule=this.matchersMap[item.down("[ruleDataIndex=matcherType]").getValue()];
+        var rule=this.conditionsMap[item.down("[ruleDataIndex=conditionType]").getValue()];
         if (!rule) {
             return value;
         }
@@ -244,30 +244,30 @@ Ext.define('Ung.RuleBuilder', {
         });
         if (value != null && value.list != null) {
             for(var i=0; i<value.list.length; i++) {
-                rule=this.matchersMap[value.list[i].matcherType];
+                rule=this.conditionsMap[value.list[i].conditionType];
                 disableInvert = rule && rule.disableInvert;
-                //if the matcher is hidden and ther is a value for it make it visible
+                //if the condition is hidden and ther is a value for it make it visible
                 if (rule && rule.visible === false) {
-                    this.matcherTypeStore.clearFilter();
-                    record = this.matcherTypeStore.findRecord("name", value.list[i].matcherType, 0, false, false, true);
+                    this.conditionTypeStore.clearFilter();
+                    record = this.conditionTypeStore.findRecord("name", value.list[i].conditionType, 0, false, false, true);
                     if(record) {
                         record.set("visible", true);
                     }
-                    this.matcherTypeStore.setFilters(this.visibleFilter);
+                    this.conditionTypeStore.setFilters(this.visibleFilter);
                 }
                 this.add(this.generateRow(value.list[i], disableInvert));
             }
         }
     },
     getValue: function() {
-        var list=[], matcherType, me = this;
+        var list=[], conditionType, me = this;
         
         Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
-            matcherType = item.down("[ruleDataIndex=matcherType]").getValue();
-            if(!Ext.isEmpty(matcherType)) {
+            conditionType = item.down("[ruleDataIndex=conditionType]").getValue();
+            if(!Ext.isEmpty(conditionType)) {
                 list.push({
                     javaClass: me.javaClass,
-                    matcherType: matcherType,
+                    conditionType: conditionType,
                     invert: item.down("[ruleDataIndex=invert]").getValue(),
                     value: me.getRuleValue(item)
                 });
@@ -287,9 +287,9 @@ Ext.define('Ung.RuleBuilder', {
         return "rulebuilder";
     },
     beforeDestroy: function() {
-        for (var i = 0; i < this.matchers.length; i++) {
-            if (this.matchers[i].editor !=null ) {
-                Ext.destroy(this.matchers[i].editor);
+        for (var i = 0; i < this.conditions.length; i++) {
+            if (this.conditions[i].editor !=null ) {
+                Ext.destroy(this.conditions[i].editor);
             }
         }
         Ext.destroy(this.visibleFilter);
@@ -300,7 +300,7 @@ Ext.define('Ung.RuleBuilder', {
         var rule, i, val;
         for(i=0; i<valuesList.length; i++) {
             val = valuesList[i];
-            rule=this.matchersMap[val.matcherType];
+            rule=this.conditionsMap[val.conditionType];
             if(rule && rule.type=='text') {
                 if(Ext.isEmpty(val.value)) {
                     if(rule.allowBlank!==true) {
@@ -321,13 +321,13 @@ Ext.define('Ung.RuleBuilder', {
         var portRulesFound = false;
         for( i=0 ; i<valuesList.length ; i++ ) {
             val = valuesList[i];
-            if ( val.matcherType == "DST_PORT" || val.matcherType == "SRC_PORT" )
+            if ( val.conditionType == "DST_PORT" || val.conditionType == "SRC_PORT" )
                 portRulesFound = true;
         }
         if ( portRulesFound ) {
             for( i=0 ; i<valuesList.length ; i++ ) {
                 val = valuesList[i];
-                if ( val.matcherType == "PROTOCOL" ) {
+                if ( val.conditionType == "PROTOCOL" ) {
                     var value = val.value;
                     value = value.replace("TCP","").replace("UDP","").replace("tcp","").replace("udp","");
                     var testvalue = value.replace(",","");

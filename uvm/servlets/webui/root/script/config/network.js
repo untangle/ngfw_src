@@ -89,7 +89,7 @@ Ext.define('Webui.config.network', {
             }
         },100, this);
     },
-    getPortForwardMatchers: function () {
+    getPortForwardConditions: function () {
         return [
             {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
@@ -2759,20 +2759,20 @@ Ext.define('Webui.config.network', {
             addSimpleRuleHandler:function() {
                 var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.apply(Ext.decode(Ext.encode(this.emptyRow)), {
                     "simple":true,
-                    "matchers": {
+                    "conditions": {
                         javaClass: "java.util.LinkedList",
                         list:[{
-                            matcherType:'DST_LOCAL',
+                            conditionType:'DST_LOCAL',
                             invert: false,
                             value: "true",
                             javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                         }, {
-                            matcherType: 'PROTOCOL',
+                            conditionType: 'PROTOCOL',
                             invert: false,
                             value: "TCP",
                             javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                         }, {
-                            matcherType:'DST_PORT',
+                            conditionType:'DST_PORT',
                             invert: false,
                             value: "80",
                             javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
@@ -2814,7 +2814,7 @@ Ext.define('Webui.config.network', {
                 name: 'newPort',
                 sortType: 'asInt'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             },{
@@ -2937,10 +2937,10 @@ Ext.define('Webui.config.network', {
                             this.recordData = record.getData();
                             //Show connect_test_button buton only if it has TCP protocol
                             var hasTcpProtocol=false;
-                            var matchersList=this.recordData.matchers.list;
-                            for(var i=0;i<matchersList.length;i++) {
-                                if(matchersList[i].matcherType == "PROTOCOL") {
-                                    hasTcpProtocol = (matchersList[i].value.indexOf("TCP") != -1);
+                            var conditionsList=this.recordData.conditions.list;
+                            for(var i=0;i<conditionsList.length;i++) {
+                                if(conditionsList[i].conditionType == "PROTOCOL") {
+                                    hasTcpProtocol = (conditionsList[i].value.indexOf("TCP") != -1);
                                     break;
                                 }
                             }
@@ -2995,8 +2995,8 @@ Ext.define('Webui.config.network', {
             rowEditorLabelWidth: 160,
             populate: function(record, addMode) {
                 //reinitialize dataIndex on both editors
-                this.down('fieldset[name="simple_portforward_editor"]').dataIndex="matchers";
-                this.down('rulebuilder').dataIndex="matchers";
+                this.down('fieldset[name="simple_portforward_editor"]').dataIndex="conditions";
+                this.down('rulebuilder').dataIndex="conditions";
                 Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
             },
             syncComponents: function () {
@@ -3007,11 +3007,11 @@ Ext.define('Webui.config.network', {
                 simpleEditor.setVisible(isSimple);
                 advancedEditor.setVisible(!isSimple);
                 if(isSimple) {
-                    simpleEditor.dataIndex="matchers";
+                    simpleEditor.dataIndex="conditions";
                     rulebuilder.dataIndex="";
                 } else {
                     simpleEditor.dataIndex="";
-                    rulebuilder.dataIndex="matchers";
+                    rulebuilder.dataIndex="conditions";
                 }
                 this.down('[name="switch_advanced_btn"]').setVisible(isSimple);
                 this.down('[name="new_port_container"]').setVisible(!isSimple);
@@ -3040,14 +3040,14 @@ Ext.define('Webui.config.network', {
                 xtype : 'fieldset',
                 name: 'simple_portforward_editor',
                 autoHeight : true,
-                dataIndex: "matchers",
+                dataIndex: "conditions",
                 setValue: function(value, record) {
                     if(record.get("simple")) {
-                        var matchersMap=Ung.Util.createRecordsMap(record.get("matchers").list, "matcherType");
-                        var protocol = matchersMap["PROTOCOL"]?matchersMap["PROTOCOL"].value:"TCP";
+                        var conditionsMap=Ung.Util.createRecordsMap(record.get("conditions").list, "conditionType");
+                        var protocol = conditionsMap["PROTOCOL"]?conditionsMap["PROTOCOL"].value:"TCP";
                         this.down('combo[name="simple_protocol"]').setValue(protocol);
 
-                        var dstPort = matchersMap["DST_PORT"]?matchersMap["DST_PORT"].value:"";
+                        var dstPort = conditionsMap["DST_PORT"]?conditionsMap["DST_PORT"].value:"";
                         var dstPortOther=this.down('numberfield[name="simple_destination_port"]');
                         dstPortOther.setValue(dstPort);
                         var dstPortCombo=this.down('combo[name="simple_basic_port"]');
@@ -3073,17 +3073,17 @@ Ext.define('Webui.config.network', {
                         return {
                             javaClass: "java.util.LinkedList",
                             list:[{
-                                matcherType:'DST_LOCAL',
+                                conditionType:'DST_LOCAL',
                                 invert: false,
                                 value: "true",
                                 javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                             }, {
-                                matcherType: 'PROTOCOL',
+                                conditionType: 'PROTOCOL',
                                 invert: false,
                                 value: protocol,
                                 javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
                             }, {
-                                matcherType:'DST_PORT',
+                                conditionType:'DST_PORT',
                                 invert: false,
                                 value: port,
                                 javaClass: "com.untangle.uvm.network.PortForwardRuleCondition"
@@ -3148,8 +3148,8 @@ Ext.define('Webui.config.network', {
                     xtype: 'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.PortForwardRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getPortForwardMatchers()
+                    dataIndex: "conditions",
+                    conditions: this.getPortForwardConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -3188,9 +3188,9 @@ Ext.define('Webui.config.network', {
                 text: i18n._( "Switch to Advanced" ),
                 handler: function() {
                     var rowEditor = this.gridPortForwardRules.rowEditor;
-                    var matchers = rowEditor.down('fieldset[name="simple_portforward_editor"]').getValue();
+                    var conditions = rowEditor.down('fieldset[name="simple_portforward_editor"]').getValue();
                     rowEditor.down('checkbox[dataIndex="simple"]').setValue(false);
-                    rowEditor.down('rulebuilder').setValue(matchers);
+                    rowEditor.down('rulebuilder').setValue(conditions);
                     rowEditor.syncComponents();
                 },
                 scope: this
@@ -3223,7 +3223,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'newSource'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -3293,8 +3293,8 @@ Ext.define('Webui.config.network', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.NatRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getNatRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getNatRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -3359,7 +3359,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'bypass'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -3435,8 +3435,8 @@ Ext.define('Webui.config.network', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.BypassRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getBypassRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getBypassRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4170,7 +4170,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'priority'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -4587,8 +4587,8 @@ Ext.define('Webui.config.network', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.QosRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getQosRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getQosRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4662,7 +4662,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'blocked'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -4736,7 +4736,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'blocked'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -4820,8 +4820,8 @@ Ext.define('Webui.config.network', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.FilterRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getFilterRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getFilterRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4865,8 +4865,8 @@ Ext.define('Webui.config.network', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.FilterRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getFilterRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getFilterRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
