@@ -78,7 +78,7 @@ Ext.define('Webui.config.hostMonitor', {
     buildGridCurrentHosts: function(columns, groupField) {
         var dateConvertFn = function(value) {
             if( value == 0 || value == "") {
-                return "";
+                return " ";
             } else {
                 var d=new Date();
                 d.setTime(value);
@@ -101,16 +101,20 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 name: "address",
                 type: 'string',
-                sortType: 'asIp'
+                sortType: 'asIp',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "macAddress",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "macVendor",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "hostname",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "lastAccessTime"
             }, {
@@ -118,36 +122,45 @@ Ext.define('Webui.config.hostMonitor', {
                 mapping: "lastAccessTime",
                 convert: dateConvertFn
             }, {
-                name: "lastSessionTime"
+                name: "lastSessionTime",
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "lastSessionTimeDate",
                 mapping: "lastSessionTime",
                 convert: dateConvertFn
             }, {
                 name: "licensed",
-                type: 'boolean'
+                type: 'boolean',
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "active",
-                type: 'boolean'
+                type: 'boolean',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "username",
-                type: 'string'
+                type: 'string',
+                convert: preventEmptyValueFn
             },{
                 name: "usernameAdConnector",
                 type: 'string'
             },{
-                name: "captivePortalAuthenticated"
+                name: "captivePortalAuthenticated",
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "usernameCapture",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "usernameTunnel",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "usernameOpenvpn",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
-                name: "penaltyBoxed"
+                name: "penaltyBoxed",
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "penaltyBoxEntryTime"
             },{
@@ -161,9 +174,11 @@ Ext.define('Webui.config.hostMonitor', {
                 mapping: "penaltyBoxExitTime",
                 convert: dateConvertFn
             },{
-                name: "quotaSize"
+                name: "quotaSize",
+                convert: Ung.Util.preventEmptyValueConverter
             },{
-                name: "quotaRemaining"
+                name: "quotaRemaining",
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "quotaIssueTime"
             },{
@@ -178,10 +193,12 @@ Ext.define('Webui.config.hostMonitor', {
                 convert: dateConvertFn
             },{
                 name: "httpUserAgent",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "httpUserAgentOs",
-                type: 'string'
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             }],
             columns: [{
                 header: i18n._("IP"),

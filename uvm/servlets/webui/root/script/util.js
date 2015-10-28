@@ -435,6 +435,10 @@ Ext.define('Ung.Util', {
             win.doSize();
         }
     },
+    // use this field converter to prevent issues with grid grouping.
+    preventEmptyValueConverter: function(value) {
+        return (value == null || value == "")?" ":value;
+    },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
             value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
@@ -650,4 +654,5 @@ Ung.Util.RetryHandler = {
 
         fn.apply( fnScope, params );
     }
+
 };

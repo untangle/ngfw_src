@@ -520,9 +520,6 @@ Ext.define('Webui.config.sessionMonitor', {
             var interfaceName=interfaceMap[value];
             return (interfaceName == null)?( value==null || value<0 )?" ":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
         };
-        this.fieldConvert = function( value, record){
-            return (value === undefined || value === null || value === "")?" ":value;
-        };
         this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
             name: this.name+"Grid",
             settingsCmp: this,
@@ -539,51 +536,51 @@ Ext.define('Webui.config.sessionMonitor', {
             fields: [{
                 name: "creationTime",
                 sortType: 'asTimestamp',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "id",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "protocol",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "bypassed",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "policy",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "preNatClient",
                 sortType: 'asIp',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "preNatServer",
                 sortType: 'asIp',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "preNatClientPort",
                 sortType: 'asInt',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "preNatServerPort",
                 sortType: 'asInt',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "postNatClient",
                 sortType: 'asIp',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "postNatServer",
                 sortType: 'asIp',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "postNatClientPort",
                 sortType: 'asInt',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "postNatServerPort",
                 sortType: 'asInt',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "clientIntf",
                 convert: this.fieldConvertInterface
@@ -592,75 +589,75 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: this.fieldConvertInterface
             },{
                 name: "natted",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "portForwarded",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "platform-hostname",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "platform-username",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-lite-protocol",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-lite-category",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-lite-description",
                 type: 'string',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-lite-matched",
                 type: 'string',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "http-hostname",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "http-uri",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "web_filter-best-category-name",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "web_filter-best-category-description",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "web_filter-best-category-flagged",
                 type: 'string',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "web_filter-best-category-blocked",
                 type: 'string',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "web_filter-flagged",
                 type: 'string',
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-application",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-category",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-protochain",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-detail",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-confidence",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-productivity",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "application-control-risk",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "clientKBps",
                 convert: function(val, rec) {
@@ -683,13 +680,13 @@ Ext.define('Webui.config.sessionMonitor', {
                 }
             },{
                 name: "priority",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "qosPriority",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "pipeline",
-                convert: this.fieldConvert
+                convert: Ung.Util.preventEmptyValueConverter
             }]
         });
     },

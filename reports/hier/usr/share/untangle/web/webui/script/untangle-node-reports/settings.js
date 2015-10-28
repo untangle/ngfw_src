@@ -435,7 +435,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 title: i18n._('Database'),
                 height: 350,
                 hidden: !rpc.isExpertMode,
-                items: [,{
+                items: [{
                     xtype: 'textfield',
                     fieldLabel: i18n._('Host'),
                     name: 'databaseHost',
