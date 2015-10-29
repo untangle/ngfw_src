@@ -13,17 +13,22 @@ dist_dir = BuildEnv::SRC['untangle-libuvmcore'].distDirectory
 dest_libuvmcore_dir = "#{dist_dir}/usr/lib/uvm/"
 dest_libuvmcore_so = "#{dest_libuvmcore_dir}/libuvmcore.so"
 
+# make sure we properly check if dependencies are up-to-date; for some
+# reason this happens automatically when those those Targets are
+# registered as dependencies, but not otherwise
+pkgs.map { |a| BuildEnv::SRC[a]['archive'].task.invoke }
+
 # make the .so dependent on all packages generated from arch-dep sub
 # packages, and describe how to build it
-file file_libuvmcore_so => pkgs.map { |a| BuildEnv::SRC[a]['archive'] } do
+archiveFiles = pkgs.map { |a| BuildEnv::SRC[a]['archive'].filename }
+file file_libuvmcore_so => archiveFiles do
   # define compiler
   flags = "-pthread #{CCompilerEnv.defaultDebugFlags}"
   compilerEnv = CCompilerEnv.new( {"flags" => flags} )
   cbuilder = CBuilder.new(BuildEnv::SRC, compilerEnv)
 
   # shared lib building
-  pkgsFiles = pkgs.map { |a| BuildEnv::SRC[a]['archive'].filename }
-  cbuilder.makeSharedLibrary(pkgsFiles, file_libuvmcore_so, [],
+  cbuilder.makeSharedLibrary(archiveFiles, file_libuvmcore_so, [],
                              ['netfilter_queue','netfilter_conntrack'],
                              [])
 end

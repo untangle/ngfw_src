@@ -8,7 +8,7 @@ rescue LoadError
 end
 
 class Target
-  attr_reader :package, :dependencies
+  attr_reader :package, :dependencies, :task
 
   def initialize(package, dependencies = [], targetname = nil)
     @package = package
