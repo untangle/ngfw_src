@@ -309,7 +309,7 @@ Ext.define('Webui.untangle-node-application-control.settings', {
             },{
                 name: "action"
             },{
-                name: "matchers"
+                name: "conditions"
             }],
             columns:[{
                 xtype:'checkcolumn',
@@ -367,8 +367,8 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                     xtype: 'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getConditions()
                 }]
             }, {
                 xtype: 'fieldset',
