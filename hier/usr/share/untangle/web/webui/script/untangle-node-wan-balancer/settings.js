@@ -142,7 +142,7 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             }, {
                 name: 'destinationWan'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -198,8 +198,8 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.wan_balancer.RouteRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getRouteRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getRouteRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
