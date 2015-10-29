@@ -381,7 +381,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
             },{
                 name: 'action'
             },{
-                name: 'matchers'
+                name: 'conditions'
             }],
             columns:[
             {
@@ -434,8 +434,8 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     xtype: 'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getConditions()
                 }]
             }, {
                 xtype: 'fieldset',
