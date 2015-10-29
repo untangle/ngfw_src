@@ -1,3 +1,4 @@
+
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
     panelStatus: null,
@@ -726,7 +727,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }, {
                     name: 'alertLimitFrequencyMinutes'
                 }, {
-                    name: 'matchers'
+                    name: 'conditions'
                 },{
                     name: 'description'
                 }, {
@@ -787,8 +788,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.reports.AlertRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getAlertRuleConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getAlertRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',

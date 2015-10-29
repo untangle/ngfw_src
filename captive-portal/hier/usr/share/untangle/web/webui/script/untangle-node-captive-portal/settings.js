@@ -175,7 +175,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 }, {
                     name: 'capture'
                 }, {
-                    name: 'matchers'
+                    name: 'conditions'
                 },{
                     name: 'description'
                 }, {
@@ -229,8 +229,8 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.node.captive_portal.CaptureRuleCondition",
-                        dataIndex: "matchers",
-                        matchers: this.getConditions()
+                        dataIndex: "conditions",
+                        conditions: this.getConditions()
                     }]
                 },{
                     xtype: 'fieldset',

@@ -75,7 +75,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                 }, {
                     name: 'flag'
                 }, {
-                    name: 'matchers'
+                    name: 'conditions'
                 },{
                     name: 'description'
                 }, {
@@ -133,8 +133,8 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                         xtype:'rulebuilder',
                         settingsCmp: this,
                         javaClass: "com.untangle.node.firewall.FirewallRuleCondition",
-                        dataIndex: "matchers",
-                        matchers: this.getConditions()
+                        dataIndex: "conditions",
+                        conditions: this.getConditions()
                     }]
                 }, {
                     xtype: 'fieldset',
