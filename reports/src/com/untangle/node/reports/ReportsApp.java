@@ -353,7 +353,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         AlertRule alertRule;
         
         matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*FailDEvent*" ) );
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WanFailoverEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "DISCONNECTED" ) );
         matchers.add( matcher2 );
@@ -385,7 +385,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ClassDLogEvent*" ) );
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
         matchers.add( matcher2 );
