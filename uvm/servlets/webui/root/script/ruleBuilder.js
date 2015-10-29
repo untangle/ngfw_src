@@ -7,7 +7,8 @@ Ext.define('Ung.RuleBuilder', {
     alias: 'widget.rulebuilder',
     javaClass: null,
     initComponent: function() {
-        this.conditionsMap=Ung.Util.createRecordsMap(this.conditions, 'name');
+        if (this.conditions)
+            this.conditionsMap=Ung.Util.createRecordsMap(this.conditions, 'name');
         this.visibleFilter = new Ext.util.Filter({
             property: 'visible',
             value: true
