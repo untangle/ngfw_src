@@ -202,7 +202,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
             }, {
                 name: 'targetPolicy'
             }, {
-                name: 'matchers'
+                name: 'conditions'
             },{
                 name: 'description'
             }, {
@@ -256,8 +256,8 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
                     xtype:'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.policy_manager.PolicyRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getConditions()
                 }]
             },{
                 xtype: 'fieldset',
