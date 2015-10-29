@@ -274,62 +274,6 @@ class ReportsTests(unittest2.TestCase):
         result = remote_control.isOnline()
         assert (result == 0)
     
-    def test_020_sendReportOut(self):
-        # raise unittest2.SkipTest("Review changes in test")        
-        if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
-        # test if PDF is mailed out.
-        settings = node.getSettings()
-        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
-        node.setSettings(settings)
-        
-        createFakeEmailEnvironment(emailLogFile="test_020.log")
-
-        report_date = time.strftime("%Y-%m-%d")
-        # print "report_date %s" % report_date
-
-        report_results = subprocess.call(["/usr/share/untangle/bin/reports-generate-reports.py", "-r", "1", "-d",report_date],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        # print "report_results %s" % report_results
-
-        emailFound, emailContext, emailContext2 = findEmailContent('Untangle PDF Summary Reports', 'Content-Disposition')
-        # Kill the mail sink
-
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-        # reset all settings to base.
-
-        node.setSettings(orig_settings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # test if PDF is attached
-        assert(("are attached" in emailContext) and ("pdf" in emailContext2))
-        
-    def test_025_sendToSameDomain(self):
-        # raise unittest2.SkipTest("Review changes in test")        
-        if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
-        # test if PDF is mailed out.
-        settings = node.getSettings()
-        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
-        node.setSettings(settings)
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        netsettings['hostName'] = "untangle"
-        netsettings['domainName'] = testdomain
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        
-        createFakeEmailEnvironment(emailLogFile="test_025.log")
-
-        report_date = time.strftime("%Y-%m-%d")
-        # print "report_date %s" % report_date
-        report_results = subprocess.call(["/usr/share/untangle/bin/reports-generate-reports.py", "-r", "1", "-d",report_date],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        # print "report_results %s" % report_results
-        emailFound, emailContext, emailContext2 = findEmailContent('Untangle PDF Summary Reports', 'Content-Disposition')
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-        # reset all settings to base.
-        node.setSettings(orig_settings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # test if PDF is attached
-        assert(("are attached" in emailContext) and ("pdf" in emailContext2))
-
     def test_040_remoteSyslog(self):
         if (fakeSmtpServerHostResult != 0):
             raise unittest2.SkipTest("Syslog server unreachable")        
