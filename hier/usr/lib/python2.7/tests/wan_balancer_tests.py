@@ -410,12 +410,6 @@ class WanBalancerTests(unittest2.TestCase):
             setWeightOfWan(wanIndex, 0)
             buildWanTestRule(wanIndex)
 
-        events = global_functions.get_events('WAN Balancer','Outage Events',None,1)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 1, 
-                                            "action", "DISCONNECTED")
-        assert( found )
-
         # return settings to default
         nukeWanBalancerRules();
         nukeFailoverRules()
