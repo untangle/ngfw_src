@@ -141,6 +141,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             return null;
 
         License license = this.licenseMap.get(identifier);
+        logger.debug("getLicense(" + identifier + ") = " + license );
         if (license != null)
             return license;
 
@@ -150,10 +151,11 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         String oldIdentifier = getOldIdentifier(identifier);
         if ( oldIdentifier != null ) {
             license = this.licenseMap.get(oldIdentifier);
+            logger.debug("getLicense(" + oldIdentifier + ") = " + license );
             if (license != null)
                 return license;
         }
-        
+
         /**
          * Special for development environment
          * Assume all licenses are valid
