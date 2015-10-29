@@ -152,11 +152,11 @@ public class SpamLogEvent extends LogEvent
         java.sql.PreparedStatement pstmt;
         
         String prefix = ""; /* XXX this is a hack - we should use proper column names */
-        if ("SpamBlockerLite".equals(getVendorName().toLowerCase()))
+        if ("spamblockerlite".equals(getVendorName().toLowerCase()))
             prefix = "spam_blocker_lite";
-        else if ("SpamBlocker".equals(getVendorName().toLowerCase()))
+        else if ("spamblocker".equals(getVendorName().toLowerCase()))
             prefix = "spam_blocker";
-        else if ("PhishBlocker".equals(getVendorName().toLowerCase()))
+        else if ("phishblocker".equals(getVendorName().toLowerCase()))
             prefix = "phish_blocker";
         else {
             throw new RuntimeException("Unknown vendor name: " + getVendorName());
