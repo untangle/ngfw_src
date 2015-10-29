@@ -8,7 +8,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Apply Penalty Box Penalties (Server)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"true",
@@ -27,7 +27,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Apply Penalty Box Penalties (Client)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"true",
@@ -46,7 +46,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize DNS",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"53",
@@ -65,7 +65,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize SSH",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"TCP",
@@ -88,7 +88,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize Remote Desktop (RDP,VNC)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"TCP",
@@ -111,7 +111,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize eMail (POP3,POP3S,IMAP,IMAPS)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"110,995,143,993",
@@ -130,7 +130,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize \"Remote Access\" traffic (requires Application Control)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Remote Access",
@@ -149,7 +149,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description" : "Deprioritize \"Unproductive\" Applications (requires Application Control)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "invert":false,
@@ -172,7 +172,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Deprioritize site violations (requires Web Filter)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"",
@@ -191,7 +191,7 @@
             "set" : "business,school,home",
             "ruleId":12345,
             "description":"Deprioritize Windows updates (download.windowsupdate.com)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*windowsupdate.com",
@@ -210,7 +210,7 @@
             "set" : "business,school,home",
             "ruleId":12345,
             "description":"Deprioritize Microsoft updates (update.microsoft.com)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*update.microsoft.com",
@@ -229,7 +229,7 @@
             "set" : "metered",
             "ruleId":12345,
             "description":"Limit Microsoft updates (windowsupdates.com)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*windowsupdates.com",
@@ -248,7 +248,7 @@
             "set" : "metered",
             "ruleId":12345,
             "description":"Limit Microsoft updates (update.microsoft.com)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*update.microsoft.com",
@@ -267,7 +267,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Deprioritize dropbox.net sync",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*dropbox.com",
@@ -286,7 +286,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Penalty Box Bittorrent users for 30 minutes (requires Application Control Lite)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Bittorrent",
@@ -305,7 +305,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Penalty Box Bittorrent users for 30 minutes (requires Application Control)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"BITTORRE",
@@ -324,7 +324,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Deprioritize P2P traffic (requires Application Control Lite)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Peer to Peer",
@@ -343,7 +343,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Deprioritize File Transfers (requires Application Control)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"File Transfer",
@@ -362,7 +362,7 @@
             "set" : "business,school,metered",
             "ruleId":12345,
             "description":"Deprioritize HTTP to Download Sites (requires Web Filter)",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Download Sites",
@@ -381,7 +381,7 @@
             "set" : "home",
             "ruleId":12345,
             "description":"Prioritize pandora streaming audio",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*pandora.com",
@@ -400,7 +400,7 @@
             "set" : "home",
             "ruleId":12345,
             "description":"Prioritize last.fm streaming audio",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*last.fm",
@@ -419,7 +419,7 @@
             "set" : "home",
             "ruleId":12345,
             "description":"Prioritize HTTP to Games sites",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"Games",
@@ -438,7 +438,7 @@
             "set" : "home",
             "ruleId":12345,
             "description":"Prioritize Hulu streaming video",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*hulu.com",
@@ -457,7 +457,7 @@
             "set" : "home",
             "ruleId":12345,
             "description":"Prioritize Netflix streaming video",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"netflix.com",
@@ -476,7 +476,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Limit dropbox.com sync",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"*dropbox.com",
@@ -495,7 +495,7 @@
             "set" : "standard",
             "ruleId": 12345, 
             "description": "Do not Prioritize large HTTP downloads (>10meg)", 
-            "matchers": {
+            "conditions": {
                 "javaClass": "java.util.LinkedList", 
                 "list": [
                     {
@@ -517,7 +517,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize HTTP",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"80",
@@ -536,7 +536,7 @@
             "set" : "standard",
             "ruleId":12345,
             "description":"Prioritize HTTPS",
-            "matchers":{
+            "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"443",

@@ -14,7 +14,7 @@
                 "enabled": true,
                 "id": 1,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -36,7 +36,7 @@
                 "enabled": true,
                 "id": 2,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -58,7 +58,7 @@
                 "enabled": true,
                 "id": 3,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -80,7 +80,7 @@
                 "enabled": true,
                 "id": 4,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -107,7 +107,7 @@
                 "enabled": true,
                 "id": 5,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -134,7 +134,7 @@
                 "enabled": true,
                 "id": 6,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -156,7 +156,7 @@
                 "enabled": true,
                 "id": 7,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -178,7 +178,7 @@
                 "enabled": true,
                 "id": 8,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -200,7 +200,7 @@
                 "enabled": true,
                 "id": 9,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -222,7 +222,7 @@
                 "enabled": true,
                 "id": 10,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -244,7 +244,7 @@
                 "enabled": true,
                 "id": 11,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -266,7 +266,7 @@
                 "enabled": true,
                 "id": 12,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -288,7 +288,7 @@
                 "enabled": true,
                 "id": 13,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -310,7 +310,7 @@
                 "enabled": true,
                 "id": 14,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -332,7 +332,7 @@
                 "enabled": true,
                 "id": 15,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -354,7 +354,7 @@
                 "enabled": true,
                 "id": 16,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -376,7 +376,7 @@
                 "enabled": true,
                 "id": 17,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -398,7 +398,7 @@
                 "enabled": true,
                 "id": 18,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -421,7 +421,7 @@
                 "enabled": true,
                 "id": 19,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
@@ -443,7 +443,7 @@
                 "enabled": true,
                 "id": 20,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
-                "matchers": {
+                "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {

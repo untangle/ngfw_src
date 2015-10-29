@@ -396,7 +396,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             },{
                 name: 'action'
             },{
-                name: 'matchers'
+                name: 'conditions'
             }],
             columns:[{
                 xtype:'checkcolumn',
@@ -486,8 +486,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     xtype: 'rulebuilder',
                     settingsCmp: this,
                     javaClass: "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                    dataIndex: "matchers",
-                    matchers: this.getConditions()
+                    dataIndex: "conditions",
+                    conditions: this.getConditions()
                 }]
             }, {
                 xtype: 'fieldset',
