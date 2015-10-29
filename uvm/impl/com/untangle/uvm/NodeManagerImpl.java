@@ -88,8 +88,26 @@ public class NodeManagerImpl implements NodeManager
         }
 
         // global renames
-        oldNames = new String[] {"SITEFILTER","CLASSD","HTTPS_SNI_HOSTNAME","HTTPS_SUBJECT_DN","HTTPS_ISSUER_DN","RuleMatcher","\"matchers\":","\"matcherType\":"};
-        newNames = new String[] {"WEB_FILTER","APPLICATION_CONTROL","SSL_INSPECTOR_SNI_HOSTNAME","SSL_INSPECTOR_SUBJECT_DN","SSL_INSPECTOR_ISSUER_DN","RuleCondition","\"conditions\":","\"conditionType\":"};
+        oldNames = new String[] {"SITEFILTER",
+                                 "CLASSD",
+                                 "HTTPS_SNI_HOSTNAME",
+                                 "HTTPS_SUBJECT_DN",
+                                 "HTTPS_ISSUER_DN",
+                                 "RuleMatcher",
+                                 "\"matchers\":",
+                                 "\"matcherType\":",
+                                 "FailDEvent",
+                                 "ClassDLogEvent"};
+        newNames = new String[] {"WEB_FILTER",
+                                 "APPLICATION_CONTROL",
+                                 "SSL_INSPECTOR_SNI_HOSTNAME",
+                                 "SSL_INSPECTOR_SUBJECT_DN",
+                                 "SSL_INSPECTOR_ISSUER_DN",
+                                 "RuleCondition",
+                                 "\"conditions\":",
+                                 "\"conditionType\":",
+                                 "WanFailoverEvent",
+                                 "ApplicationControlLogEvent"};
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
