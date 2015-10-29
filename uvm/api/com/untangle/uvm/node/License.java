@@ -38,7 +38,7 @@ public class License implements Serializable
     public static final String IPSEC_VPN = "untangle-node-ipsec-vpn";
     public static final String IPSEC_VPN_OLDNAME = "untangle-node-ipsec";
     public static final String POLICY_MANAGER = "untangle-node-policy-manager";
-    public static final String POLICY_MANAGER_OLDNAME = "untangle-node-policy-manager";
+    public static final String POLICY_MANAGER_OLDNAME = "untangle-node-policy";
     public static final String WEB_FILTER = "untangle-node-web-filter";
     public static final String WEB_FILTER_OLDNAME = "untangle-node-sitefilter";
     public static final String WAN_BALANCER = "untangle-node-wan-balancer";
