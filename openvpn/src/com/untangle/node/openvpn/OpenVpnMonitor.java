@@ -59,7 +59,7 @@ class OpenVpnMonitor implements Runnable
     private static final int RX_INDEX      = 4;
     private static final int TX_INDEX      = 5;
     private static final int START_INDEX   = 7;
-    private static final int TOTAL_INDEX   = 8;
+    private static final int TOTAL_INDEX   = 9;
 
     protected static final Logger logger = Logger.getLogger( OpenVpnMonitor.class );
 
