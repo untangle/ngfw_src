@@ -378,7 +378,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * returns true if the SMTP extension (advertisement) is allowed
      * can be overridden to customize supported extensions
      */
-    protected boolean isAllowedExtension( String extension )
+    protected boolean isAllowedExtension( String extension, NodeTCPSession session )
     {
         // Thread safety
         String str = extension.toUpperCase();
@@ -394,7 +394,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * returns true if the SMTP command is allowed
      * can be overridden to customize supported commands
      */
-    protected boolean isAllowedCommand( String command )
+    protected boolean isAllowedCommand( String command, NodeTCPSession session )
     {
         // Thread safety
         String str = command.toUpperCase();
@@ -432,7 +432,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     /**
      * Method which removes any unknown ESMTP extensions
      */
-    private Response fixupEHLOResponse(Response resp)
+    private Response fixupEHLOResponse(Response resp, NodeTCPSession session)
     {
 
         String[] respLines = resp.getArgs();
@@ -446,7 +446,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
 
         for (int i = 1; i < respLines.length; i++) {
             String verb = getCapabilitiesLineVerb(respLines[i]);
-            if ( isAllowedExtension( verb ) ) {
+            if ( isAllowedExtension( verb, session ) ) {
                 logger.debug("Allowing ESMTP response line \"" + respLines[i] + "\" to go to client");
                 finalList.add(respLines[i]);
             } else {
@@ -479,7 +479,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         List<Response> immediateActions = new LinkedList<Response>();
 
         // Check for allowed commands
-        if ((!(cmd instanceof UnparsableCommand)) && !isAllowedCommand( cmd.getCmdString() )) {
+        if ((!(cmd instanceof UnparsableCommand)) && !isAllowedCommand( cmd.getCmdString(), session )) {
             logger.warn("Enqueuing negative response to " + "non-allowed command \"" + cmd.getCmdString() + "\"" + " (" + cmd.getArgString() + ")");
             appendSyntheticResponse( session, new Response(500, "Syntax error, command unrecognized"), immediateActions);
             if (immediateActions.size() > 0) {
@@ -496,7 +496,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
                     public void handleResponse( NodeTCPSession session, Response resp )
                     {
                         logger.debug("Processing response to EHLO Command");
-                        sendResponseToClient( session, fixupEHLOResponse(resp) );
+                        sendResponseToClient( session, fixupEHLOResponse(resp, session) );
                     }
                 });
             state.heloName = cmd.getArgString();

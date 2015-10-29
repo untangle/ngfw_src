@@ -39,6 +39,7 @@ import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
@@ -58,56 +59,52 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     private final SafelistNodeView safelist;
 
     private final long timeout;
-    
+
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
-    public SpamSmtpHandler( SpamBlockerBaseApp node )
+    public SpamSmtpHandler(SpamBlockerBaseApp node)
     {
         super();
 
         this.node = node;
-        
+
         MailExport mailExport = MailExportFactory.factory().getExport();
         this.quarantine = mailExport.getQuarantineNodeView();
         this.safelist = mailExport.getSafelistNodeView();
         this.timeout = mailExport.getExportSettings().getSmtpTimeout();
-        
+
         msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
-    
+
     @Override
-    public final void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
+    public final void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
     {
         SpamSettings spamSettings = node.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
-        if( ! spamConfig.getScan() ) {
+        if (!spamConfig.getScan()) {
             sessionRequest.release();
             return;
         }
 
         int activeCount = node.getScanner().getActiveScanCount();
-        if ( SpamLoadChecker.reject( activeCount, logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit() ) ) {
+        if (SpamLoadChecker.reject(activeCount, logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit())) {
             logger.warn("Load too high, rejecting connection from: " + sessionRequest.getOrigClientAddr());
             sessionRequest.rejectReturnRst();
         }
 
-        super.handleTCPNewSessionRequest( sessionRequest );
+        super.handleTCPNewSessionRequest(sessionRequest);
     }
-    
+
     @Override
     public String getTranslatedBodyTemplate()
     {
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String bodyTemplate = i18nUtil.tr("The attached message from")
-                              + " $MIMEMessage:FROM$\r\n"
-                              + i18nUtil.tr("was determined by the Spam Blocker to be spam based on a score of")
-                              + " $SPAMReport:SCORE$\r\n" + i18nUtil.tr("where anything above")
-                              + " $SPAMReport:THRESHOLD$ " + i18nUtil.tr("is spam.") + "\r\n";
+        String bodyTemplate = i18nUtil.tr("The attached message from") + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was determined by the Spam Blocker to be spam based on a score of") + " $SPAMReport:SCORE$\r\n" + i18nUtil.tr("where anything above") + " $SPAMReport:THRESHOLD$ " + i18nUtil.tr("is spam.") + "\r\n";
         return bodyTemplate;
     }
-    
+
     @Override
     public String getTranslatedSubjectTemplate()
     {
@@ -116,7 +113,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
     /**
      * Method for subclasses (i.e. clamphish) to set the
-     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineCategory category} for a Quarantine submission.
+     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineCategory
+     * category} for a Quarantine submission.
      */
     protected String getQuarantineCategory()
     {
@@ -125,7 +123,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
     /**
      * Method for subclasses (i.e. clamphish) to set the
-     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineDetail detail} for a Quarantine submission.
+     * {@link com.untangle.node.smtp.quarantine.MailSummary#getQuarantineDetail
+     * detail} for a Quarantine submission.
      */
     protected String getQuarantineDetail(SpamReport report)
     {
@@ -142,49 +141,63 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    public boolean getScanningEnabled( NodeTCPSession session ) { return node.getSettings().getSmtpConfig().getScan(); }
+    public boolean getScanningEnabled(NodeTCPSession session)
+    {
+        return node.getSettings().getSmtpConfig().getScan();
+    }
+
     @Override
-    public long getMaxServerWait( NodeTCPSession session ) { return this.timeout; }
+    public long getMaxServerWait(NodeTCPSession session)
+    {
+        return this.timeout;
+    }
+
     @Override
-    public long getMaxClientWait( NodeTCPSession session ) { return this.timeout; }
+    public long getMaxClientWait(NodeTCPSession session)
+    {
+        return this.timeout;
+    }
+
     @Override
-    public int getGiveUpSz( NodeTCPSession session ) { return node.getSettings().getSmtpConfig().getMsgSizeLimit(); }
-    
+    public int getGiveUpSz(NodeTCPSession session)
+    {
+        return node.getSettings().getSmtpConfig().getMsgSizeLimit();
+    }
+
     @Override
-    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo )
+    public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("[handleMessageCanBlock]");
 
         boolean isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
 
         // If greylist is enable, check greylist
-        if ( node.getSettings().getSmtpConfig().getGreylist() && !isWanBound ) { 
+        if (node.getSettings().getSmtpConfig().getGreylist() && !isWanBound) {
             InetAddress client = session.getClientAddr();
             String from = msgInfo.getEnvelopeFromAddress();
             String to = msgInfo.getEnvelopeToAddress();
-            
-            GreyListKey key = new GreyListKey( client, from, to );
-            logger.debug( "greylist: check message " + key );
-            
-            Boolean found = SpamBlockerBaseApp.getGreylist().get( key );
-            if ( found == null ) {
-                logger.info( "greylist: missed. adding new key: " + key );
 
-                SpamBlockerBaseApp.getGreylist().put( key, Boolean.TRUE );
+            GreyListKey key = new GreyListKey(client, from, to);
+            logger.debug("greylist: check message " + key);
+
+            Boolean found = SpamBlockerBaseApp.getGreylist().get(key);
+            if (found == null) {
+                logger.info("greylist: missed. adding new key: " + key);
+
+                SpamBlockerBaseApp.getGreylist().put(key, Boolean.TRUE);
 
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.GREYLIST);
                 node.incrementBlockCount();
                 return new ScannedMessageResult(BlockOrPassResult.TEMPORARILY_REJECT);
-            }
-            else {
-                logger.warn( "greylist: hit. " + key );
+            } else {
+                logger.warn("greylist: hit. " + key);
             }
         }
-        
+
         // Scan the message
         File f = null;
         try {
-            f = messageToFile( session, msg, tx );
+            f = messageToFile(session, msg, tx);
             if (f == null) {
                 logger.error("Error writing to file.  Unable to scan.  Assume pass");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
@@ -192,8 +205,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                 return new ScannedMessageResult(BlockOrPassResult.PASS);
             }
 
-            if (f.length() > getGiveUpSz( session )) {
-                logger.debug("Message larger than " + getGiveUpSz( session ) + ".  Don't bother to scan");
+            if (f.length() > getGiveUpSz(session)) {
+                logger.debug("Message larger than " + getGiveUpSz(session) + ".  Don't bother to scan");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
                 node.incrementPassCount();
                 return new ScannedMessageResult(BlockOrPassResult.PASS);
@@ -289,15 +302,14 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             }
         } finally {
             try {
-                if (f != null)
-                    f.delete();
+                if (f != null) f.delete();
             } catch (Exception ignore) {
             }
         }
     }
 
     @Override
-    public void handleOpeningResponse( NodeTCPSession session, Response resp )
+    public void handleOpeningResponse(NodeTCPSession session, Response resp)
     {
         // Note the receivedBy
         String[] rargs = resp.getArgs();
@@ -306,11 +318,11 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         } else {
             receivedBy = rargs[0];
         }
-        super.handleOpeningResponse( session, resp );
+        super.handleOpeningResponse(session, resp);
     }
 
     @Override
-    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public BlockOrPassResult blockOrPass(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
 
         logger.debug("[handleMessageCanNotBlock]");
@@ -318,7 +330,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         // node.incrementScanCount();
 
         // Scan the message
-        File f = messageToFile( session, msg, tx );
+        File f = messageToFile(session, msg, tx);
         if (f == null) {
             logger.error("Error writing to file.  Unable to scan.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
@@ -326,8 +338,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             return BlockOrPassResult.PASS;
         }
 
-        if (f.length() > getGiveUpSz( session )) {
-            logger.debug("Message larger than " + getGiveUpSz( session ) + ".  Don't bother to scan");
+        if (f.length() > getGiveUpSz(session)) {
+            logger.debug("Message larger than " + getGiveUpSz(session) + ".  Don't bother to scan");
             postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
             node.incrementPassCount();
             return BlockOrPassResult.PASS;
@@ -380,8 +392,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         if (action == SpamMessageAction.QUARANTINE && isWanBound) {
             // Change action now, as it'll make the event logs
             // more accurate
-            logger.debug("Implicitly converting policy from \"QUARANTINE\""
-                    + " to \"MARK\" as we have a message going out WAN");
+            logger.debug("Implicitly converting policy from \"QUARANTINE\"" + " to \"MARK\" as we have a message going out WAN");
             action = SpamMessageAction.MARK;
         }
 
@@ -389,8 +400,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         if (action == SpamMessageAction.MARK) {
             // Change action now, as it'll make the event logs
             // more accurate
-            logger.debug("Implicitly converting policy from \"MARK\""
-                    + " to \"PASS\" as we have already begun to trickle");
+            logger.debug("Implicitly converting policy from \"MARK\"" + " to \"PASS\" as we have already begun to trickle");
             action = SpamMessageAction.PASS;
         }
 
@@ -439,26 +449,32 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    protected boolean isAllowedExtension( String extension )
+    protected boolean isAllowedExtension(String extension, NodeTCPSession session)
     {
         // Thread safety
         String str = extension.toUpperCase();
-        if ( "STARTTLS".equals( str ) ) 
+        if ("STARTTLS".equals(str)) {
+            // if the SSL inspector is active we always allow STARTTLS
+            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpConfig().getAllowTls();
-        else
-            return super.isAllowedExtension( extension );
+        } else {
+            return super.isAllowedExtension(extension, session);
+        }
     }
 
     @Override
-    protected boolean isAllowedCommand( String command )
+    protected boolean isAllowedCommand(String command, NodeTCPSession session)
     {
         String str = command.toUpperCase();
-        if ( "STARTTLS".equals( str ) )
+        if ("STARTTLS".equals(str)) {
+            // if the SSL inspector is active we always allow STARTTLS
+            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpConfig().getAllowTls();
-        else
-            return super.isAllowedCommand( command );
+        } else {
+            return super.isAllowedCommand(command, session);
+        }
     }
-    
+
     private void markHeaders(MimeMessage msg, SpamReport report)
     {
         if (node.getSettings().getSmtpConfig().getAddSpamHeaders()) {
@@ -482,12 +498,12 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     {
         String testsString = "";
         boolean first = true;
-        for ( ReportItem ri : report.getItems() ) {
+        for (ReportItem ri : report.getItems()) {
             if (!first)
                 testsString += " ";
             else
                 first = false;
-            testsString +=  ri.getCategory() + "[" + ri.getScore() + "]";
+            testsString += ri.getCategory() + "[" + ri.getScore() + "]";
         }
 
         SpamLogEvent spamEvent = new SpamLogEvent(msgInfo, report.getScore(), report.isSpam(), action, node.getScanner().getVendorName(), testsString);
@@ -497,38 +513,25 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     /**
      * Wrapper that handles exceptions, and returns null if there is a problem
      */
-    private File messageToFile( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx )
+    private File messageToFile(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx)
     {
         // Build the "fake" received header for SpamAssassin
         InetAddress clientAddr = session.getClientAddr();
         StringBuilder sb = new StringBuilder();
         sb.append("Received: ");
-        sb.append("from ")
-            .append(getHeloName( session ))
-            .append(" (")
-            .append(clientAddr.getHostName())
-            .append(" [")
-            .append(clientAddr.getHostAddress())
-            .append("])")
-            .append(CRLF);
+        sb.append("from ").append(getHeloName(session)).append(" (").append(clientAddr.getHostName()).append(" [").append(clientAddr.getHostAddress()).append("])").append(CRLF);
         InternetAddress envFrom = tx.getFrom();
         if (envFrom != null) {
             String smtpEnvFrom = MIMEUtil.toSMTPString(envFrom);
-            sb.append("\t(envelope-from ")
-                .append(smtpEnvFrom)
-                .append(")")
-                .append(CRLF);
+            sb.append("\t(envelope-from ").append(smtpEnvFrom).append(")").append(CRLF);
         }
-        sb.append("\tby ")
-            .append(receivedBy == null ? "untangle" : receivedBy).append("; ")
-            .append(MIMEUtil.getRFC822Date());
+        sb.append("\tby ").append(receivedBy == null ? "untangle" : receivedBy).append("; ").append(MIMEUtil.getRFC822Date());
 
         File ret = null;
         FileOutputStream fOut = null;
         try {
             ret = File.createTempFile("SpamSmtpHandler-", null);
-            if (ret != null)
-                session.attachTempFile(ret.getAbsolutePath());
+            if (ret != null) session.attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
@@ -554,7 +557,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     /**
-     * Wrapper method around the real scanner, which swallows exceptions and simply returns null
+     * Wrapper method around the real scanner, which swallows exceptions and
+     * simply returns null
      */
     private SpamReport scanFile(File f)
     {
@@ -597,7 +601,6 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         } else {
             sender = from.getAddress();
         }
-        return quarantine.quarantineMail(file, new MailSummary(sender, getSubjectNoEx(msg), getQuarantineCategory(),
-            getQuarantineDetail(report), MIMEUtil.attachmentCount(msg), file.length()), addresses);
+        return quarantine.quarantineMail(file, new MailSummary(sender, getSubjectNoEx(msg), getQuarantineCategory(), getQuarantineDetail(report), MIMEUtil.attachmentCount(msg), file.length()), addresses);
     }
 }

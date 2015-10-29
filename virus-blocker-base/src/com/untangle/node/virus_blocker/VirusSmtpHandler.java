@@ -32,12 +32,14 @@ import com.untangle.node.smtp.mime.MIMEOutputStream;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.GlobUtil;
 
 /**
- * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
+ * Protocol Handler which is called-back as messages are found which are
+ * candidates for Virus Scanning.
  */
 public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTranslator
 {
@@ -48,10 +50,10 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     private final VirusBlockerBaseApp node;
 
     private final long timeout;
-    
+
     private final WrappedMessageGenerator generator;
 
-    public VirusSmtpHandler( VirusBlockerBaseApp node )
+    public VirusSmtpHandler(VirusBlockerBaseApp node)
     {
         super();
 
@@ -59,31 +61,43 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         MailExport mailExport = MailExportFactory.factory().getExport();
         this.timeout = mailExport.getExportSettings().getSmtpTimeout();
-        
+
         this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
-    
+
     @Override
-    public boolean getScanningEnabled( NodeTCPSession session ) { return node.getSettings().getScanSmtp(); }
+    public boolean getScanningEnabled(NodeTCPSession session)
+    {
+        return node.getSettings().getScanSmtp();
+    }
+
     @Override
-    public long getMaxServerWait( NodeTCPSession session ) { return timeout; }
+    public long getMaxServerWait(NodeTCPSession session)
+    {
+        return timeout;
+    }
+
     @Override
-    public long getMaxClientWait( NodeTCPSession session ) { return timeout; }
+    public long getMaxClientWait(NodeTCPSession session)
+    {
+        return timeout;
+    }
+
     @Override
-    public int getGiveUpSz( NodeTCPSession session ) { return Integer.MAX_VALUE; }
+    public int getGiveUpSz(NodeTCPSession session)
+    {
+        return Integer.MAX_VALUE;
+    }
 
     @Override
     public String getTranslatedBodyTemplate()
     {
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String bodyTemplate = i18nUtil.tr("The attached message from")
-                              + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was found to contain the virus")
-                              + " \"$VirusReport:VIRUS_NAME$\".\r\n"
-                              + i18nUtil.tr("The infected portion of the message was removed by Virus Blocker.")+"\r\n";
+        String bodyTemplate = i18nUtil.tr("The attached message from") + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was found to contain the virus") + " \"$VirusReport:VIRUS_NAME$\".\r\n" + i18nUtil.tr("The infected portion of the message was removed by Virus Blocker.") + "\r\n";
         return bodyTemplate;
     }
-    
+
     @Override
     public String getTranslatedSubjectTemplate()
     {
@@ -91,7 +105,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo )
+    public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         this.logger.debug("[handleMessageCanBlock] called");
         this.node.incrementScanCount();
@@ -117,17 +131,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             }
 
             VirusScannerResult scanResult;
-            if( ignoredHost( session.sessionEvent().getSServerAddr() ) ||
-                ignoredHost( session.sessionEvent().getCClientAddr() ) ){
+            if (ignoredHost(session.sessionEvent().getSServerAddr()) || ignoredHost(session.sessionEvent().getCClientAddr())) {
                 scanResult = VirusScannerResult.CLEAN;
                 logger.warn("Passed in SMTP");
-            }else{
-                scanResult = scanPart( session, part );
+            } else {
+                scanResult = scanPart(session, part);
             }
 
             if (scanResult == null) {
-                this.logger.warn("Scanning returned null (error already reported).  Skip "
-                        + "part assuming local error");
+                this.logger.warn("Scanning returned null (error already reported).  Skip " + "part assuming local error");
                 continue;
             }
             if (scanResult.isClean())
@@ -155,8 +167,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                     break;
                 } else { /* remove */
                     if (part == msg) {
-                        this.logger.debug("Top-level message itself was infected.  \"Remove\""
-                                + "virus by converting part to text");
+                        this.logger.debug("Top-level message itself was infected.  \"Remove\"" + "virus by converting part to text");
                     } else {
                         this.logger.debug("Removing infected part");
                     }
@@ -191,7 +202,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public BlockOrPassResult blockOrPass(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         this.logger.debug("[handleMessageCanNotBlock]");
         this.node.incrementScanCount();
@@ -206,8 +217,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         if ("remove".equals(action)) {
             // Change action now, as it'll make the event logs
             // more accurate
-            this.logger.debug("Implicitly converting policy from \"REMOVE\""
-                    + " to \"BLOCK\" as we have already begun to trickle");
+            this.logger.debug("Implicitly converting policy from \"REMOVE\"" + " to \"BLOCK\" as we have already begun to trickle");
             action = "block";
         }
 
@@ -221,17 +231,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             }
 
             VirusScannerResult scanResult;
-            if( ignoredHost( session.sessionEvent().getSServerAddr() ) ||
-                ignoredHost( session.sessionEvent().getCClientAddr() ) ){
+            if (ignoredHost(session.sessionEvent().getSServerAddr()) || ignoredHost(session.sessionEvent().getCClientAddr())) {
                 scanResult = VirusScannerResult.CLEAN;
                 logger.warn("Passed in SMTP");
-            }else{
-                scanResult = scanPart( session, part );
+            } else {
+                scanResult = scanPart(session, part);
             }
 
             if (scanResult == null) {
-                this.logger.warn("Scanning returned null (error already reported).  Skip "
-                        + "part assuming local error");
+                this.logger.warn("Scanning returned null (error already reported).  Skip " + "part assuming local error");
                 continue;
             }
 
@@ -268,35 +276,41 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    protected boolean isAllowedExtension( String extension )
+    protected boolean isAllowedExtension(String extension, NodeTCPSession session)
     {
         // Thread safety
         String str = extension.toUpperCase();
-        if ( "STARTTLS".equals( str ) ) 
+        if ("STARTTLS".equals(str)) {
+            // if the SSL inspector is active we always allow STARTTLS
+            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpAllowTls();
-        else
-            return super.isAllowedExtension( extension );
+        } else {
+            return super.isAllowedExtension(extension, session);
+        }
     }
 
     @Override
-    protected boolean isAllowedCommand( String command )
+    protected boolean isAllowedCommand(String command, NodeTCPSession session)
     {
         String str = command.toUpperCase();
-        if ( "STARTTLS".equals( str ) )
+        if ("STARTTLS".equals(str)) {
+            // if the SSL inspector is active we always allow STARTTLS
+            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpAllowTls();
-        else
-            return super.isAllowedCommand( command );
+        } else {
+            return super.isAllowedCommand(command, session);
+        }
     }
 
     /**
      * Returns null if there was an error.
      */
-    private VirusScannerResult scanPart( NodeTCPSession session, Part part )
+    private VirusScannerResult scanPart(NodeTCPSession session, Part part)
     {
         // Get the part as a file
         File f = null;
         try {
-            f = partToFile( session, part );
+            f = partToFile(session, part);
         } catch (Exception ex) {
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
@@ -320,14 +334,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
-    private File partToFile( NodeTCPSession session, Part part )
+    private File partToFile(NodeTCPSession session, Part part)
     {
         File ret = null;
         FileOutputStream fOut = null;
         try {
             ret = File.createTempFile("MimePart-", null);
-            if (ret != null)
-                session.attachTempFile(ret.getAbsolutePath());
+            if (ret != null) session.attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
@@ -339,7 +352,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             bOut.flush();
             fOut.flush();
             fOut.close();
-            
+
             return ret;
         } catch (Exception ex) {
             try {
@@ -355,9 +368,9 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
-    private boolean ignoredHost( InetAddress host )
+    private boolean ignoredHost(InetAddress host)
     {
-        if (host == null){
+        if (host == null) {
             return false;
         }
 
@@ -365,20 +378,20 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
-            if (sr.getEnabled() ){
+            if (sr.getEnabled()) {
                 p = (Pattern) sr.attachment();
-                if( null == p ){
-                    try{
-                        p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
-                    }catch( Exception error ){
-                        logger.error("Unable to compile passSite="+sr.getString());
+                if (null == p) {
+                    try {
+                        p = Pattern.compile(GlobUtil.globToRegex(sr.getString()));
+                    } catch (Exception error) {
+                        logger.error("Unable to compile passSite=" + sr.getString());
                     }
-                    sr.attach( p );
+                    sr.attach(p);
                 }
-                if( p.matcher( host.getHostName() ).matches() ){
+                if (p.matcher(host.getHostName()).matches()) {
                     return true;
                 }
-                if( p.matcher( host.getHostAddress() ).matches() ){
+                if (p.matcher(host.getHostAddress()).matches()) {
                     return true;
                 }
             }
