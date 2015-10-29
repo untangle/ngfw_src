@@ -968,6 +968,8 @@ Ext.define('Ung.panel.Reports', {
         state = Ext.state.Manager.get(this.gridEvents.stateId);
         if(state != null && state.columns != undefined){
             // Performing a state restore to a dynamic grid is very picky.
+            // If you decide to revisit, see the test procedures in
+            // https://bugzilla.untangle.com/show_bug.cgi?id=12594
             Ext.suspendLayouts();
             this.gridEvents.getView().getHeaderCt().purgeCache();
             this.gridEvents.applyState(state);
