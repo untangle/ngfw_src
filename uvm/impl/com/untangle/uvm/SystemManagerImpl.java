@@ -675,7 +675,7 @@ public class SystemManagerImpl implements SystemManager
                 snmpdShare_config.append(l).append(EOL);
             }
         } catch (Exception x) {
-            logger.warn("Unable to open SNMP share configuration file: s" + SNMP_CONF_SHARE_FILE_NAME );
+            logger.warn("Unable to open SNMP share configuration file: " + SNMP_CONF_SHARE_FILE_NAME );
             return;
         }
         if( ( false == foundExistingUser ) &&

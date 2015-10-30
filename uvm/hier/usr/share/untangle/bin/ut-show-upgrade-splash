@@ -38,8 +38,8 @@ case "$1" in
     cp -f $APACHE_HTML_PAGE $APACHE_UPGRADE_HTML_PAGE
     cp -f $APACHE_JS_PAGE $APACHE_UPGRADE_JS_PAGE
     echo -e $APACHE_UPGRADE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
-    a2ensite upgrade
-    a2dissite uvm
+    a2ensite -q upgrade
+    a2dissite -q uvm
 
     # setup consolidated upgrade log
     rm -f $CONSOLIDATED_UPGRADE_LOG
@@ -47,13 +47,13 @@ case "$1" in
     nohup tail -f $UPGRADE_LOGS >> $CONSOLIDATED_UPGRADE_LOG 2>&1 &
     echo $! >| $PIDFILE
 
-    /etc/init.d/apache2 restart ;;
+    /etc/init.d/apache2 reload ;;
 
   stop)
-    a2ensite uvm
-    a2dissite upgrade
+    a2ensite -q uvm
+    a2dissite -q upgrade
     echo -e $APACHE_UPGRADEDONE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
-    /etc/init.d/apache2 restart
+    /etc/init.d/apache2 reload
     if [ -f $PIDFILE ] ; then
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
