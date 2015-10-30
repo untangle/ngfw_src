@@ -4373,76 +4373,6 @@ Ext.define('Webui.config.network', {
             }]
         });
 
-        this.gridQosSessions = Ext.create('Ung.grid.Panel', {
-            name: 'QoS Sessions',
-            margin: '5 0 0 0',
-            height: 190,
-            settingsCmp: this,
-            hasAdd: false,
-            hasDelete: false,
-            hasEdit: false,
-            hasRefresh: true,
-            dataFn: function(handler) {
-                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    var list = [];
-                    try {
-                        list = eval(result);
-                    } catch (e) {
-                        console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
-                    }
-                    handler ({list: list}, exception);
-                }, this), "/usr/share/untangle-netd/bin/qos-service.py sessions");
-            },
-            initialLoad: function() {}, //Don't load automatically
-            fields: [{
-                name: 'proto'
-            },{
-                name: 'src',
-                sortType: 'asIp'
-            },{
-                name: 'dst',
-                sortType: 'asIp'
-            },{
-                name: 'src_port',
-                sortType: 'asInt'
-            },{
-                name: 'dst_port',
-                sortType: 'asInt'
-            },{
-                name:'priority'
-            }],
-            columns: [{
-                header: i18n._("Protocol"),
-                width: 150,
-                dataIndex: 'proto'
-            }, {
-                header: i18n._("Source IP"),
-                dataIndex: 'src',
-                width: 150
-            }, {
-                header: i18n._("Destination IP"),
-                dataIndex: 'dst',
-                width: 150
-            }, {
-                header: i18n._("Source port"),
-                dataIndex: 'src_port',
-                width: 150
-            }, {
-                header: i18n._("Destination port"),
-                dataIndex: 'dst_port',
-                width: 150
-            }, {
-                header: i18n._("Priority"),
-                dataIndex: 'priority',
-                width: 150,
-                flex: 1,
-                renderer: Ext.bind(function( value, metadata, record ) {
-                    return this.qosPriorityMap[value];
-                }, this )
-            }]
-        });
-
         this.panelQoS = Ext.create('Ext.panel.Panel',{
             name: 'QoS',
             helpSource: 'network_qos',
@@ -4562,10 +4492,6 @@ Ext.define('Webui.config.network', {
                 xtype: 'fieldset',
                 title: i18n._('QoS Statistics'),
                 items: [this.gridQosStatistics]
-            },{
-                xtype: 'fieldset',
-                title: i18n._('QoS Sessions'),
-                items: [this.gridQosSessions]
             }]
         });
         this.gridQosRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
