@@ -1,14 +1,16 @@
-function doIt() {
+function doIt()
+{
     request.open("GET", "/uvm-upgrade.log", false);
     request.send(null);
     if (request.readyState == 4) {
-        if (request.status != 404 ) {
+        if (request.status == 200 ) {
             var lines = request.responseText.split("\n");
             var lastLog = "";
-            for (i=Math.max(0,lines.length-30) ; i < lines.length-1; i++) {
-            lastLog += lines[i] + "<br>";
+            for (var i=Math.max(0,lines.length-30) ; i < lines.length-1; i++) {
+                lastLog += lines[i] + "<br>";
             }
             document.getElementById("upgrade").innerHTML = lastLog;
+            return;
         } else {
             location.href = "/webui";
         }
@@ -20,15 +22,15 @@ var request = false;
 /*@if (@_jscript_version >= 5)
 // JScript gives us Conditional compilation, we can cope with old IE versions.
 // and security blocked creation of the objects.
- try {
-  request = new ActiveXObject("Msxml2.REQUEST");
- } catch (e) {
-  try {
-   request = new ActiveXObject("Microsoft.REQUEST");
-  } catch (E) {
-   request = false;
-  }
- }
+try {
+request = new ActiveXObject("Msxml2.REQUEST");
+} catch (e) {
+try {
+request = new ActiveXObject("Microsoft.REQUEST");
+} catch (E) {
+request = false;
+}
+}
 @end @*/
 
 if (!request && typeof XMLHttpRequest != 'undefined') {
