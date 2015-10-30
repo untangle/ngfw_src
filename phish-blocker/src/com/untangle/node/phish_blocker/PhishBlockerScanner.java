@@ -33,7 +33,7 @@ public class PhishBlockerScanner implements SpamScanner
 
     public String getVendorName()
     {
-        return "Clam"; // also referenced in SpamSpamFilter
+        return "PhishBlocker"; // also referenced in SpamSpamFilter
     }
 
     public int getActiveScanCount()
