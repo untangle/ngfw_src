@@ -18,6 +18,7 @@ PIDFILE=/var/run/${BASENAME}.pid
 
 case "$1" in
   start)
+    a2enmod -q rewrite
     a2ensite -q upgrade
     a2dissite -q uvm
 
