@@ -1,0 +1,17 @@
+body {
+	margin: 0;
+	padding: 20px;
+	background: #fff url(background_body.gif) repeat-x top left;
+	text-align: center;
+}
+table, div, span {
+    font: 10pt/14pt arial,sans-serif;
+    text-align: left;
+    color: #606060;
+}
+.banner {
+    color:white;
+    min-width: 200px;
+    width: 90%;
+    margin: 0 auto;
+}

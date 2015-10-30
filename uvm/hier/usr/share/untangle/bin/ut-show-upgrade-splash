@@ -20,8 +20,8 @@ APACHE_UPGRADEDONE_CONFIG="RedirectMatch 302 ^/$(basename $APACHE_HTML_PAGE).* /
 #APACHE_UPGRADE_CONFIG="RewriteEngine On\nRewriteRule ^/(webui|auth|login|index).* /uvm-upgrade.html [R=302]\nRewriteRule ^/$ /uvm-upgrade.html [R=302]\n"
 #APACHE_UPGRADEDONE_CONFIG="RewriteEngine On\nRewriteRule ^/$(basename $APACHE_HTML_PAGE).* /webui [R=302]\n"
 
-CONSOLIDATED_UPGRADE_LOG="/var/www/${BASENAME}.log"
-UPGRADE_LOGS=$(ls /var/log/uvm/{wrapper,uvm,console,apt}.log)
+CONSOLIDATED_UPGRADE_LOG="/usr/share/untangle/web/upgrade/${BASENAME}.log"
+UPGRADE_LOGS=$(ls /var/log/uvm/{wrapper,uvm,console,apt}.log 2>/dev/null)
 
 # The PID file stores the pid of the tail process dumping to the log
 # It is also the indicator the untangle-vm checks to see if the upgrade screen is being displayed
@@ -38,7 +38,8 @@ case "$1" in
     cp -f $APACHE_HTML_PAGE $APACHE_UPGRADE_HTML_PAGE
     cp -f $APACHE_JS_PAGE $APACHE_UPGRADE_JS_PAGE
     echo -e $APACHE_UPGRADE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
-    a2ensite default
+    a2ensite upgrade
+    a2dissite uvm
 
     # setup consolidated upgrade log
     rm -f $CONSOLIDATED_UPGRADE_LOG
@@ -49,13 +50,15 @@ case "$1" in
     /etc/init.d/apache2 restart ;;
 
   stop)
-    a2dissite default
+    a2ensite uvm
+    a2dissite upgrade
     echo -e $APACHE_UPGRADEDONE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
     /etc/init.d/apache2 restart
     if [ -f $PIDFILE ] ; then
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
     fi
+    rm -f /var/www/uvm-upgrade.log # remove old location - 12.0
     rm -f $CONSOLIDATED_UPGRADE_LOG $APACHE_UPGRADE_HTML_PAGE $APACHE_UPGRADE_JS_PAGE ;;
 esac
 
