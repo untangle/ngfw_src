@@ -20,6 +20,12 @@
   </servlet>
 
   <servlet>
+    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
+    <servlet-class>com.untangle.node.smtp.web.euv.InboxMaintenenceControlerNew</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
     <servlet-class>com.untangle.node.smtp.web.euv.UtJsonRpcServlet</servlet-class>
     <init-param>
@@ -37,6 +43,12 @@
     <servlet-name>InboxMaintenenceControler</servlet-name>
     <url-pattern>/manageuser</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
+    <url-pattern>/manageuserNew</url-pattern>
+  </servlet-mapping>
+
 
   <welcome-file-list>
     <welcome-file>/request.jspx</welcome-file>

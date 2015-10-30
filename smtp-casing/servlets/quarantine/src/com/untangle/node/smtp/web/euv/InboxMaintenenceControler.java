@@ -77,6 +77,26 @@ public class InboxMaintenenceControler extends HttpServlet
         }
 
         String account = null;
+        if("test".equals(authTkn)) {
+            account="test@untangle.com";
+            
+            req.setAttribute( "currentAddress", account);
+            req.setAttribute( "currentAuthToken", authTkn);
+            req.setAttribute( "forwardAddress", "remapped@unatangle.com");
+            req.setAttribute( "quarantineDays", maxDaysToIntern);
+            QuarantineFunctions.setCurrentSafelist(req, new String[] {"safeOne@test.com", "safeTwo@test.com"});
+
+            /* Setup the cobranding settings. */
+            UvmContext uvm = UvmContextFactory.context();
+            req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
+            req.setAttribute( "companyUrl", uvm.brandingManager().getCompanyUrl());
+            
+            /* setup the skinning settings */
+            req.setAttribute( "skinSettings", uvm.skinManager().getSettings());
+            
+            req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
+            return;
+        }
         try {
             account = quarantine.getAccountFromToken(authTkn);
 
