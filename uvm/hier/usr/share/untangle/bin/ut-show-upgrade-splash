@@ -1,20 +1,11 @@
 #! /bin/bash
 
-BASENAME="uvm-upgrade"
-
-SHARE="@PREFIX@/usr/share/untangle/web/upgrade"
-
-CONSOLIDATED_UPGRADE_LOG="/usr/share/untangle/web/upgrade/${BASENAME}.log"
 UPGRADE_LOGS="/var/log/uvm/apt.log /var/log/uvm/uvm.log /var/log/uvm/wrapper.log"
+CONSOLIDATED_UPGRADE_LOG="/usr/share/untangle/web/upgrade/upgrade.log"
 
 # The PID file stores the pid of the tail process dumping to the log
 # It is also the indicator the untangle-vm checks to see if the upgrade screen is being displayed
-PIDFILE=/var/run/${BASENAME}.pid
-
-# during the preinst of the 1st untangle-vm package containing the
-# show-upgrade mechanism, the necessary files are not there yet, so do
-# not proceed
-[ -d "$SHARE" ] || exit 0
+PIDFILE=/var/run/upgrade.pid
 
 case "$1" in
   start)

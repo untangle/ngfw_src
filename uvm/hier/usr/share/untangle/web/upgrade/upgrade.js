@@ -1,6 +1,6 @@
 function doIt()
 {
-    request.open("GET", "/uvm-upgrade.log", false);
+    request.open("GET", "/upgrade.log", false);
     request.send(null);
     if (request.readyState == 4) {
         if (request.status == 200 ) {
