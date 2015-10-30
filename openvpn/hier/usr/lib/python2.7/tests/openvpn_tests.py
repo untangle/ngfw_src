@@ -70,6 +70,7 @@ def waitForClientVPNtoConnect():
         if (len(listOfServers['list']) > 0):
             if (listOfServers['list'][0]['clientName']):
                 # VPN has connected
+                time.sleep(5) # wait for client to get connectivity
                 break;
     return timeout
 
