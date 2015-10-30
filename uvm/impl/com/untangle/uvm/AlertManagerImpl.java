@@ -688,7 +688,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testEventWriteTime(List<String> alertList)
     {
-        final double MAX_AVG_TIME_WARN = 15.0;
+        final double MAX_AVG_TIME_WARN = 50.0;
 
         Reporting reports = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
         /* if reports not installed - no events - just return */

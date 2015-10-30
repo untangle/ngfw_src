@@ -463,7 +463,11 @@ public class EventWriterImpl implements Runnable
              * update avgWriteTimePerEvent and totalEventsWritten
              */
             this.totalEventsWritten += count;
-            this.avgWriteTimePerEvent = (this.avgWriteTimePerEvent * .8) + (avgTime * .2);
+            if ( count > 10000 ) {
+                this.avgWriteTimePerEvent = avgTime;
+            } else {
+                this.avgWriteTimePerEvent = (this.avgWriteTimePerEvent * ((10000.0d-(double)count)/10000.0d)) + (avgTime * ((double)count)/10000.0d);
+            }
         }
     }
 
