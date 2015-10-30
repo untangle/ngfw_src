@@ -142,12 +142,8 @@ public class ResultSetReader implements Runnable
             this.statement = null;
         }
         if ( this.connection != null ) {
-            try { this.connection.commit(); } catch (Exception e) {
-                logger.warn("Commit Exception",e);
-            }
-            try { this.connection.close(); } catch (Exception e) {
-                logger.warn("Close Exception",e);
-            }
+            try { this.connection.commit(); } catch (Exception e) {}
+            try { this.connection.close(); } catch (Exception e) {}
             this.connection = null;
         }
         if ( this.thread != null )
