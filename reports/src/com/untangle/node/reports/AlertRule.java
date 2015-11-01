@@ -29,6 +29,8 @@ public class AlertRule implements JSONString, Serializable
 {
     private static final Logger logger = Logger.getLogger( AlertRule.class );
 
+    private static final int LOAD_STATE_CACHE_MAX_SIZE = 100;
+    
     private Integer ruleId;
     private Boolean enabled;
     private Boolean log;
@@ -160,7 +162,7 @@ public class AlertRule implements JSONString, Serializable
         } catch (Exception e) {/* if the key doesnt exist we do not care*/}
 
         if ( this.loadStateCache == null )
-            this.loadStateCache = createLoadCache( 100 /* FIXME */);
+            this.loadStateCache = createLoadCache( LOAD_STATE_CACHE_MAX_SIZE );
 
         LoadState loadState = this.loadStateCache.get( groupingFieldValue );
         if ( loadState == null ) {
