@@ -727,6 +727,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }, {
                     name: 'alertLimitFrequencyMinutes'
                 }, {
+                    name: 'thresholdEnabled'
+                }, {
+                    name: 'thresholdLimit'
+                }, {
+                    name: 'thresholdTimeframeSec'
+                }, {
+                    name: 'thresholdGroupingField'
+                }, {
                     name: 'conditions'
                 },{
                     name: 'description'
@@ -793,6 +801,56 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
+                title: i18n._('And the following conditions:'),
+                items:[{
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    dataIndex: "thresholdEnabled",
+                    fieldLabel: i18n._("Enable Thresholds"),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.gridAlertRules.rowEditor.syncComponents();
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype:'fieldset',
+                    collapsible: false,
+                    items: [{
+                        xtype:'numberfield',
+                        labelWidth: 160,
+                        width: 230,
+                        dataIndex: "thresholdLimit",
+                        fieldLabel: i18n._("Exceeds Threshold Limit")
+                    },{
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'numberfield',
+                            labelWidth: 160,
+                            width: 230,
+                            dataIndex: "thresholdTimeframeSec",
+                            allowDecimals: false,
+                            allowBlank: false,
+                            minValue: 60,
+                            maxValue: 60*24*60*7, // 1 week
+                            fieldLabel: i18n._('Over Timeframe')
+                        }, {
+                            xtype: 'label',
+                            html: i18n._("(seconds)"),
+                            cls: 'boxlabel'
+                        }]
+                    },{
+                        xtype:'textfield',
+                        labelWidth: 160,
+                        dataIndex: "thresholdGroupingField",
+                        fieldLabel: i18n._("Grouping Field")
+                    }]
+                }]
+            }, {
+                xtype: 'fieldset',
                 title: i18n._('Perform the following action(s):'),
                 items:[{
                     xtype:'checkbox',
@@ -845,7 +903,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 var sendAlert=this.down('checkbox[dataIndex=alert]').getValue();
                 this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendAlert);
                 this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
-            }
+
+                var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
+                this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
+                this.down('numberfield[dataIndex=thresholdTimeframeSec]').setDisabled(!thresholdEnabled);
+                this.down('textfield[dataIndex=thresholdGroupingField]').setDisabled(!thresholdEnabled);            }
         }));
     },
     beforeSave: function(isApply,handler) {

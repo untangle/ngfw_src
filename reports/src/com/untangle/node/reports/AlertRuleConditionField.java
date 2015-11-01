@@ -3,6 +3,8 @@
  */
 package com.untangle.node.reports;
 
+import java.util.Iterator;
+
 import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
@@ -48,15 +50,12 @@ public class AlertRuleConditionField
     {
         if ( field == null || comparator == null || value == null )
             return false;
-        if ( ! obj.has(  field ) ) {
-            //logger.warn("DEBUG missing field: " + field );
-            return false;
-        }
+
         Object actualValueObj;
         try {
             actualValueObj = obj.get( field );
             if ( actualValueObj == null ) {
-                //logger.warn("DEBUG missing actual field: " + actualValueObj );
+                //logger.warn("DEBUG missing field: " + field + " value: " + actualValueObj );
                 return false;
             }
         } catch (Exception e) {
@@ -70,6 +69,28 @@ public class AlertRuleConditionField
         if ( actualValueObj instanceof Number ) {
             //logger.warn("DEBUG number eval: " + actualValueObj);
             
+            try {
+                int specifiedValue = Integer.parseInt( value );
+                int actualValue = (int) actualValueObj;
+                //logger.warn("DEBUG integer check: " + specifiedValue + " against " + actualValueObj );
+
+                if ( "=".equals(comparator) ) {
+                    return (actualValue == specifiedValue);
+                } else if ( "!=".equals(comparator) ) {
+                    return (actualValue != specifiedValue);
+                } else if ( ">".equals(comparator) ) {
+                    return (actualValue > specifiedValue);
+                } else if ( ">=".equals(comparator) ) {
+                    return (actualValue >= specifiedValue);
+                } else if ( "<".equals(comparator) ) {
+                    return (actualValue < specifiedValue);
+                } else if ( "<=".equals(comparator) ) {
+                    return (actualValue <= specifiedValue);
+                }
+            } catch ( Exception e ) {
+                //logger.warn("DEBUG Exception",e );
+            }
+
             try {
                 long specifiedValue = Long.parseLong( value );
                 long actualValue = (long) actualValueObj;
@@ -163,5 +184,4 @@ public class AlertRuleConditionField
         logger.warn("constraint failed");
         return false;
     }
-
 }

@@ -707,8 +707,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return json;
     }
     
-    // UvmContextBase methods --------------------------------------------------
-
     @Override
     protected void init()
     {
@@ -855,8 +853,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         logger.info("UvmContext destroyed");
     }
 
-    // package protected methods ----------------------------------------------
-
     protected boolean refreshLibs()
     {
         return main.refreshLibs();
@@ -871,8 +867,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         return main.loadUvmResource(name);
     }
-
-    // private methods --------------------------------------------------------
 
     /**
      * Create a UID file if one does not already exist

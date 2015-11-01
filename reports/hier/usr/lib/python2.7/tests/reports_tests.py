@@ -20,20 +20,17 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-nodeFirewall = None
-nodeWanFailover = None
-nodeWeb = None
 orig_settings = None
 orig_netsettings = None
-canRelay = False
+canRelay = None
 # special box with testshell in the sudoer group  - used to connect to as client
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
 listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.84','16','untangletest.com')]
 specialDnsServer = "10.111.56.57"
 fakeSmtpServerHost = ""
+fakeSmtpServerHostResult = -1
 testdomain = ""
 testEmailAddress = ""
-
 
 # pdb.set_trace()
 
@@ -149,11 +146,15 @@ def createAdminUser(useremail=testEmailAddress):
             "username": username
         }
 
-def createAlertRule(description, matcherField, value, matcherField2, value2,):
+def createAlertRule(description, matcherField, operator, value, matcherField2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None):
     return {
             "alert": True,
             "alertLimitFrequency": False,
             "alertLimitFrequencyMinutes": 60,
+            "thresholdEnabled": thresholdEnabled,
+            "thresholdLimit": thresholdLimit,
+            "thresholdTimeframeSec": thresholdTimeframeSec,
+            "thresholdGroupingField": thresholdGroupingField,
             "description": description,
             "enabled": True,
             "javaClass": "com.untangle.node.reports.AlertRule",
@@ -165,7 +166,7 @@ def createAlertRule(description, matcherField, value, matcherField2, value2,):
                         "javaClass": "com.untangle.node.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
-                            "comparator": "=",
+                            "comparator": operator,
                             "field": matcherField,
                             "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
                             "value": value
@@ -175,7 +176,7 @@ def createAlertRule(description, matcherField, value, matcherField2, value2,):
                         "javaClass": "com.untangle.node.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
-                            "comparator": ">",
+                            "comparator": operator2,
                             "field": matcherField2,
                             "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
                             "value": value2
@@ -194,24 +195,19 @@ class ReportsTests(unittest2.TestCase):
         return "untangle-node-reports"
 
     @staticmethod
-    def nodeFWName():
+    def nodeFirewallName():
         return "untangle-node-firewall"
 
     @staticmethod
-    def nodeFDName():
+    def nodeWanFailoverName():
         return "untangle-node-wan-failover"
-
-    @staticmethod
-    def nodeWebName():
-        return "untangle-node-web-filter"
 
     @staticmethod
     def vendorName():
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFirewall, nodeWanFailover, nodeWeb, orig_settings, orig_netsettings, \
-               fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
+        global node, orig_settings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "Node %s already installed" % self.nodeName()
@@ -220,36 +216,12 @@ class ReportsTests(unittest2.TestCase):
                 node = uvmContext.nodeManager().node(self.nodeName())
             else:
                 node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-
-        if nodeFirewall == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeFWName())):
-                print "Node %s already installed" % self.nodeFWName()
-                nodeFirewall = uvmContext.nodeManager().node(self.nodeFWName())
-            else:
-                nodeFirewall = uvmContext.nodeManager().instantiate(self.nodeFWName(), defaultRackId)
-        if nodeWanFailover == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeFDName())):
-                print "Node %s already installed" % self.nodeFDName()
-                nodeWanFailover = uvmContext.nodeManager().node(self.nodeFDName())
-            else:
-                nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeFDName(), defaultRackId)
-
-        if nodeWeb == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
-                print "Node %s already installed" % self.nodeWebName()
-                nodeWeb = uvmContext.nodeManager().node(self.nodeWebName())
-            else:
-                nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
-
         if orig_settings == None:
             reportSettings = node.getSettings()
             orig_settings = copy.deepcopy(reportSettings)
-        if orig_netsettings == None:
-            netsettings = uvmContext.networkManager().getNetworkSettings()
-            orig_netsettings = copy.deepcopy(netsettings)
 
         # Skip checking relaying is possible if we have determined it as true on previous test.
-        if canRelay == False:
+        if canRelay == None:
             wan_IP = uvmContext.networkManager().getFirstWanAddress()
             for smtpServerHostIP in listFakeSmtpServerHosts:
                 interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
@@ -259,15 +231,15 @@ class ReportsTests(unittest2.TestCase):
                     testEmailAddress = "qa@" + testdomain                
             print "fakeSmtpServerHost " + fakeSmtpServerHost
             if (fakeSmtpServerHost == ""):
-                raise unittest2.SkipTest("No local SMTP server")
-            fakeSmtpServerHostResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
-            if (fakeSmtpServerHostResult == 0):
-                try:
-                    canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
-                except Exception,e:
-                    canRelay = False
-        print "canRelay " + str(canRelay)
+                canRelay = None
+            else: 
+                fakeSmtpServerHostResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
+                if (fakeSmtpServerHostResult == 0):
+                    try:
+                        canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
+                    except Exception,e:
+                        canRelay = False
                 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -275,8 +247,18 @@ class ReportsTests(unittest2.TestCase):
         assert (result == 0)
     
     def test_040_remoteSyslog(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         if (fakeSmtpServerHostResult != 0):
             raise unittest2.SkipTest("Syslog server unreachable")        
+
+        nodeFirewall = None
+        if (uvmContext.nodeManager().isInstantiated(self.nodeFirewallName())):
+            print "Node %s already installed" % self.nodeFirewallName()
+            nodeFirewall = uvmContext.nodeManager().node(self.nodeFirewallName())
+        else:
+            nodeFirewall = uvmContext.nodeManager().instantiate(self.nodeFirewallName(), defaultRackId)
+
         # Install firewall rule to generate syslog events
         rules = nodeFirewall.getRules()
         rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
@@ -300,11 +282,15 @@ class ReportsTests(unittest2.TestCase):
         # flush out events
         node.flushEvents()
 
-
         # remove the firewall rule aet syslog back to original settings
         node.setSettings(orig_settings)
         rules["list"]=[];
         nodeFirewall.setRules(rules);
+
+        # remove firewall
+        if nodeFirewall != None:
+            uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
+        nodeFirewall = None
         
         # parse the output and look for a rule that matches the expected values
         timeout = 5
@@ -327,60 +313,72 @@ class ReportsTests(unittest2.TestCase):
 
         assert(found_count == len(strings_to_find))
 
-    def test_080_download_alerts(self):
-        # raise unittest2.SkipTest("Review changes in test")        
-        if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+    def test_070_basic_alert(self):
+        fname = sys._getframe().f_code.co_name
         settings = node.getSettings()
-        # set email address and alert for downloads
-        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
-        settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","*HttpResponseEvent*","contentLength","1000"))
+        settings["alertRules"]["list"].append(createAlertRule(fname,"class","=","*SessionEvent*","SServerPort","=","80"))
+        print settings["alertRules"]["list"]
         node.setSettings(settings)
 
-        # Create settings to receive testEmailAddress 
-        createFakeEmailEnvironment("test_080.log")
-        
-        # set admin email to get alerts
-        adminsettings = uvmContext.adminManager().getSettings()
-        orig_adminsettings = copy.deepcopy(adminsettings)
-        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
-        uvmContext.adminManager().setSettings(adminsettings)
-
-        # start download
-        global_functions.getDownloadSpeed()
-
-        # look for alert email
-        emailFound, emailContext, emailContext2 = findEmailContent('alert','Host is doing')
-
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-        
-        # reset all settings to default.
-        node.setSettings(orig_settings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        uvmContext.adminManager().setSettings(orig_adminsettings)
-
-        assert(emailFound)
-        assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
-
+        result = remote_control.isOnline()
+        node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
+
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
+        found = global_functions.check_events( events.get('list'), 5, 'description', fname)
         assert(found)
 
-    def test_082_WAN_alerts(self):
+    def test_071_threshold_alert_under(self):
+        fname = sys._getframe().f_code.co_name
+        settings = node.getSettings()
+        settings["alertRules"]["list"] = []
+        settings["alertRules"]["list"].append(createAlertRule(fname,"class","=","*SessionEvent*","SServerPort","=","80",True,10,60,None))
+        print settings["alertRules"]["list"]
+        node.setSettings(settings)
+
+        result = remote_control.isOnline()
+        node.flushEvents() # flush events so the rules are evaluated
+        events = global_functions.get_events('Reports','Alert Events',None,5)
+
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'description', fname)
+        assert(not found)
+
+    def test_072_threshold_alert_over(self):
+        fname = sys._getframe().f_code.co_name
+        settings = node.getSettings()
+        settings["alertRules"]["list"] = []
+        settings["alertRules"]["list"].append(createAlertRule(fname,"class","=","*SessionEvent*","SServerPort","=","80",True,10,60,None))
+        print settings["alertRules"]["list"]
+        node.setSettings(settings)
+
+        for x in range(0,20): remote_control.isOnline()
+        node.flushEvents() # flush events so the rules are evaluated
+        events = global_functions.get_events('Reports','Alert Events',None,5)
+
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'description', fname)
+        assert(found)
+        
+    def test_080_WAN_down_alert(self):
         # Just check the event log for the alert.
         settings = node.getSettings()
-        # set email address and alert for downloads
-        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
-        settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","*WanFailoverEvent*","action","DISCONNECTED"))
+        settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","=","*WanFailoverEvent*","action","=","DISCONNECTED"))
         node.setSettings(settings)
+
+        # Install WAN Failover
+        nodeWanFailover = None
+        if (uvmContext.nodeManager().isInstantiated(self.nodeWanFailoverName())):
+            raise unittest2.SkipTest('WAN Failover already installed')
+        else:
+            nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeWanFailoverName(), defaultRackId)
 
         # WAN is offine test
         wanIndex = 0
         netsettings = uvmContext.networkManager().getNetworkSettings()
+        timeout = 50000
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
                 wanIndex =  interface['interfaceId']
@@ -403,8 +401,7 @@ class ReportsTests(unittest2.TestCase):
             nodeWanFailoverData = nodeWanFailover.getSettings()
             nodeWanFailoverData["tests"]["list"].append(rule)
             nodeWanFailover.setSettings(nodeWanFailoverData)
-            # Wait for all the WANs to be off line before checking for alert email.
-            timeout = 50000
+            # Wait for all the WANs to be off line before checking for alert.
             wanUp = True
             while wanUp and timeout > 0:
                 timeout -= 1
@@ -412,35 +409,65 @@ class ReportsTests(unittest2.TestCase):
                 for statusInterface in wanStatus['list']:
                     if not statusInterface['online'] and statusInterface['interfaceId'] == wanIndex:
                         wanUp = False
-            assert (timeout != 0)
-
-        # reset all settings to base.
-        nodeWanFailoverData["tests"]["list"] = []
-        nodeWanFailover.setSettings(nodeWanFailoverData)
-        node.setSettings(orig_settings)
 
         # Check event log for admin alert for WAN down.
         time.sleep(15) # There is a delay in the alert event.
-
+        node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
+
+        if nodeWanFailover != None:
+            uvmContext.nodeManager().destroy( nodeWanFailover.getNodeSettings()["id"] )
+        nodeWanFailover = None
+
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)
 
+    def test_090_email_alert(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+        settings = node.getSettings()
+        # set email address and alert for downloads
+        settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
+        settings["alertRules"]["list"] = []
+        settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","=","*HttpResponseEvent*","contentLength",">","1000"))
+        node.setSettings(settings)
+
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment("test_080.log")
+        
+        # set admin email to get alerts
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
+        uvmContext.adminManager().setSettings(adminsettings)
+
+        # start download
+        global_functions.getDownloadSpeed()
+
+        # look for alert email
+        emailFound, emailContext, emailContext2 = findEmailContent('alert','Host is doing')
+
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        
+        # restore admin settings
+        uvmContext.adminManager().setSettings(orig_adminsettings)
+
+        assert(emailFound)
+        assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
+
+        node.flushEvents() # flush events so the rules are evaluated
+        events = global_functions.get_events('Reports','Alert Events',None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
+        assert(found)
+        
     @staticmethod
     def finalTearDown(self):
-        global node, nodeFirewall, nodeWanFailover, nodeWeb
+        global node
         if node != None:
             node.setSettings(orig_settings)
         node = None
-        if nodeFirewall != None:
-            uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
-        nodeFirewall = None
-        if nodeWanFailover != None:
-            uvmContext.nodeManager().destroy( nodeWanFailover.getNodeSettings()["id"] )
-        nodeWanFailover = None
-        if nodeWeb != None:
-            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
-        nodeWeb = None
 
 test_registry.registerNode("reports", ReportsTests)
