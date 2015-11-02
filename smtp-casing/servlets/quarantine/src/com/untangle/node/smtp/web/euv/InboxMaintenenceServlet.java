@@ -14,24 +14,32 @@ import org.json.JSONArray;
 
 import com.untangle.node.smtp.quarantine.BadTokenException;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
+import com.untangle.node.smtp.quarantine.WebConstants;
 import com.untangle.node.smtp.safelist.SafelistManipulation;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
- * Controler used for inbox maintenence (purge/rescue/refresh/view).
+ * Servlet used for inbox maintenence.
  */
 @SuppressWarnings("serial")
-public class InboxMaintenenceControlerNew extends HttpServlet
+public class InboxMaintenenceServlet extends HttpServlet
 {
+    /**
+     * Page to forward end-users to, if the system is
+     * hosed and cannot fufill request.
+     */
+    private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
+    private static final String INBOX_VIEW = "/WEB-INF/jsp/inbox.jsp";
+
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
 
-        String authTkn = req.getParameter(ConstantsNew.AUTH_TOKEN_RP);
+        String authTkn = req.getParameter(WebConstants.AUTH_TOKEN_RP);
         if(authTkn == null) {
             log("[MaintenenceControlerBase] Auth token null");
-            req.getRequestDispatcher(ConstantsNew.REQ_DIGEST_VIEW).forward(req, resp);
+            req.getRequestDispatcher("/request").forward(req, resp);
             return;
         }
 
@@ -39,20 +47,20 @@ public class InboxMaintenenceControlerNew extends HttpServlet
         SafelistManipulation safelistManipulation = QuarantineEnduserServlet.instance().getSafelist();
         if(safelistManipulation == null) {
             log("[MaintenenceControlerBase] Safelist Hosed");
-            req.getRequestDispatcher(ConstantsNew.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
         QuarantineUserView quarantine = QuarantineEnduserServlet.instance().getQuarantine();
         if(quarantine == null) {
             log("[MaintenenceControlerBase] Quarantine Hosed");
-            req.getRequestDispatcher(ConstantsNew.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
         String maxDaysToIntern =
             QuarantineEnduserServlet.instance().getMaxDaysToIntern();
         if(maxDaysToIntern == null) {
             log("[MaintenenceControlerBase] Quarantine Settings (days to intern) Hosed");
-            req.getRequestDispatcher(ConstantsNew.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
 
@@ -79,12 +87,12 @@ public class InboxMaintenenceControlerNew extends HttpServlet
             }
         }
         catch(BadTokenException ex) {
-            req.getRequestDispatcher(ConstantsNew.REQ_DIGEST_VIEW).forward(req, resp);
+            req.getRequestDispatcher("/request").forward(req, resp);
             return;
         }
         catch(Exception ex) {
             log("[MaintenenceControlerBase] Exception servicing request", ex);
-            req.getRequestDispatcher(ConstantsNew.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
         
@@ -95,11 +103,10 @@ public class InboxMaintenenceControlerNew extends HttpServlet
         /* Setup the cobranding settings. */
         UvmContext uvm = UvmContextFactory.context();
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
-        req.setAttribute( "companyUrl", uvm.brandingManager().getCompanyUrl());
         
         /* setup the skinning settings */
         req.setAttribute( "skinSettings", uvm.skinManager().getSettings());
-        req.getRequestDispatcher(ConstantsNew.INBOX_VIEW).forward(req, resp);
+        req.getRequestDispatcher(INBOX_VIEW).forward(req, resp);
     }
 
     private static final String buildJsonList( String[] values )
