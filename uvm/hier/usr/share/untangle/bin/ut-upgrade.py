@@ -20,8 +20,9 @@ os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 os.environ['PATH'] = '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:' + os.environ['PATH']
 
 # apt-get options for various commands
+INSTALL_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
-UPDATE_OPTS = " --yes --force-yes --purge "
+UPDATE_OPTS = " --yes --force-yes "
 AUTOREMOVE_OPTS = " --yes --force-yes --purge "
 
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
@@ -88,6 +89,10 @@ def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
 
+def install_gateway():
+    log("apt-get install %s untangle-gateway" % INSTALL_OPTS)
+    return cmd_to_log("apt-get install %s untangle-gateway" % INSTALL_OPTS)
+
 log_date( os.path.basename( sys.argv[0]) )
 
 log("")
@@ -109,6 +114,9 @@ upgrade()
 log("")
 
 autoremove()
+log("")
+
+install_gateway()
 log("")
 
 log_date( os.path.basename( sys.argv[0]) + " done." )
