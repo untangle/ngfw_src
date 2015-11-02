@@ -333,7 +333,7 @@ Ext.define("Ung.Inbox", {
 
         return this.addToSafelistWindow;
     },
-    buildSafeList : function() {
+    buildSafelist : function() {
         var updateActionItems = function(selModel, selected, eOpts) {
             var count = selModel.getCount();
             var deleteButton = this.gridSafeList.down("button[name=deleteButton]");
