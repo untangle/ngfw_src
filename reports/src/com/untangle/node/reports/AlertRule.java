@@ -53,7 +53,8 @@ public class AlertRule implements JSONString, Serializable
     {
     }
 
-    public AlertRule( boolean enabled, List<AlertRuleCondition> conditions, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes )
+    public AlertRule( boolean enabled, List<AlertRuleCondition> conditions, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes,
+                      Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
         this.setEnabled( enabled );
         this.setConditions( conditions );
@@ -62,6 +63,15 @@ public class AlertRule implements JSONString, Serializable
         this.setDescription( description );
         this.setAlertLimitFrequency( frequencyLimit );
         this.setAlertLimitFrequencyMinutes( frequencyMinutes );
+        this.thresholdEnabled = thresholdEnabled;
+        this.thresholdLimit = thresholdLimit;
+        this.thresholdTimeframeSec = thresholdTimeframeSec;
+        this.thresholdGroupingField = thresholdGroupingField;
+    }
+    
+    public AlertRule( boolean enabled, List<AlertRuleCondition> conditions, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes )
+    {
+        this( enabled, conditions, log, alert, description, frequencyLimit, frequencyMinutes, null, null, null, null );
     }
 
     public List<AlertRuleCondition> getConditions() { return this.conditions; }

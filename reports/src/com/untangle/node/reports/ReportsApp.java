@@ -385,6 +385,22 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "SServerPort", "=", "22" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "SServerPort", "=", "3389" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        rules.add( alertRule );
+        
+        matchers = new LinkedList<AlertRuleCondition>();
         matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
@@ -397,7 +413,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "1" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Host put in penalty box", false, 0 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
