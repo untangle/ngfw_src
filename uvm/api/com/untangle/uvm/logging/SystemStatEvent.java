@@ -30,6 +30,8 @@ public class SystemStatEvent extends LogEvent
     private long swapFree;
     private long swapTotal;
 
+    private int activeHosts;
+    
     public SystemStatEvent() { }
 
     public long getMemTotal() { return memTotal; }
@@ -71,6 +73,9 @@ public class SystemStatEvent extends LogEvent
     public long getSwapTotal() { return swapTotal; }
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
 
+    public int getActiveHosts() { return activeHosts; }
+    public void setActiveHosts(final int newValue) { this.activeHosts = newValue; }
+    
     public float getDiskFreePercent()
     {
         return ( ((float)getDiskFree()) / ((float)getDiskTotal()) );
@@ -86,9 +91,9 @@ public class SystemStatEvent extends LogEvent
     {
         String sql =
             "INSERT INTO reports.server_events" + getPartitionTablePostfix() + " " +
-            "(time_stamp, mem_total, mem_free, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
+            "(time_stamp, mem_total, mem_free, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free, active_hosts) " +
             " values " +
-            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -105,6 +110,7 @@ public class SystemStatEvent extends LogEvent
         pstmt.setLong(++i, diskFree);
         pstmt.setLong(++i, swapTotal);
         pstmt.setLong(++i, swapFree);
+        pstmt.setInt(++i, activeHosts);
 
         pstmt.addBatch();
         return;

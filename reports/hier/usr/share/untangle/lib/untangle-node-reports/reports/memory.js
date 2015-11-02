@@ -15,7 +15,7 @@
     "colors": [
         "#396c2b"
     ],
-    "timeDataInterval": "MINUTE",
+    "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
     "title": "Memory Usage",
     "type": "TIME_GRAPH"

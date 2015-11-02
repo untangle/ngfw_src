@@ -164,6 +164,7 @@ public class MetricManagerImpl implements MetricManager
                     sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
                     sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
                     sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
+                    sse.setActiveHosts(UvmContextFactory.context().hostTable().getCurrentLicensedSize());
                     logger.debug("Logging SystemStatEvent");
                     UvmContextFactory.context().logEvent(sse);
 

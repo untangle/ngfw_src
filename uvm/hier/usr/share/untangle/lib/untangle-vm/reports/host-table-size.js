@@ -1,22 +1,22 @@
 {
     "uniqueId": "host-viewer-pfRvYDKKQx",
     "category": "Host Viewer",
-    "description": "The amount of hosts add and removed from the host table over time.",
+    "description": "The amount of active hosts by time.",
     "displayOrder": 100,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "hosts",
     "readOnly": true,
-    "table": "host_table_updates",
-     "timeDataColumns": [
-         "count(distinct(address)) as size"
+    "table": "server_events",
+    "timeDataColumns": [
+         "max(active_hosts) as active_hosts"
     ],
     "colors": [
         "#b2b2b2"
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",
-    "title": "Host Table Size",
+    "title": "Active Hosts",
     "type": "TIME_GRAPH"
 }
