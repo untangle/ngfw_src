@@ -57,20 +57,12 @@ def sendSpamMail(host=smtpServerHost):
 class SpamBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
-        return "untangle-base-spam-blocker"
-
-    @staticmethod
     def shortName():
         return "untangle"
 
     @staticmethod
     def nodeNameSpamCase():
         return "untangle-casing-smtp"
-
-    @staticmethod
-    def displayName():
-        return "Spam Blocker Lite"
 
     def setUp(self):
         global node, nodeData, nodeSP, nodeDataSP, canRelay
