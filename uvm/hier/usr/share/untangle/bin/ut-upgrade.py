@@ -89,10 +89,6 @@ def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
 
-def install_gateway():
-    log("apt-get install %s untangle-gateway" % INSTALL_OPTS)
-    return cmd_to_log("apt-get install %s untangle-gateway" % INSTALL_OPTS)
-
 log_date( os.path.basename( sys.argv[0]) )
 
 log("")
@@ -114,9 +110,6 @@ upgrade()
 log("")
 
 autoremove()
-log("")
-
-install_gateway()
 log("")
 
 log_date( os.path.basename( sys.argv[0]) + " done." )
