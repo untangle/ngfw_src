@@ -53,15 +53,18 @@ def foundWans():
                 myWANs.append(wanTup)
     return myWANs
     
-def setWeightOfWan(selectedInterface, weight):
+def setWeightOfWan(interfaceId, weight):
+    if interfaceId == None or interfaceId == 0:
+        print "Invalid interface: " + str(interfaceId)
+        return
     nodeData = node.getSettings()
-    if (selectedInterface == "all"):
+    if (interfaceId == "all"):
         i = 0
         for intefaceIndex in nodeData["weights"]:
             nodeData["weights"][i] = weight
             i += 1
     else:
-        nodeData["weights"][selectedInterface] = weight
+        nodeData["weights"][interfaceId-1] = weight
     node.setSettings(nodeData)
 
 def createRouteRule( networkAddr, netmask, gateway):
@@ -223,7 +226,7 @@ class WanBalancerTests(unittest2.TestCase):
         result = remote_control.isOnline()
         assert (result == 0)
     
-    def test_020_stickSession(self):
+    def test_020_stickySession(self):
         result = global_functions.getIpAddress()
         print "Initial IP address %s" % result
         for x in range(0, 8):
