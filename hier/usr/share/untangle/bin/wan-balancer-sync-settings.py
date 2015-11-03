@@ -83,7 +83,7 @@ def checkSettings( settings ):
 def write_iptables_route_rule( file, route_rule, verbosity=0 ):
     if 'enabled' in route_rule and not route_rule['enabled']:
         return
-    if 'matchers' not in route_rule or 'list' not in route_rule['matchers']:
+    if 'conditions' not in route_rule or 'list' not in route_rule['conditions']:
         return
     if 'ruleId' not in route_rule:
         return
@@ -98,7 +98,7 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
         return
 
     description = "Route Rule #%i" % int(route_rule['ruleId'])
-    iptables_conditions = IptablesUtil.conditions_to_iptables_string( route_rule['matchers']['list'], description, verbosity );
+    iptables_conditions = IptablesUtil.conditions_to_iptables_string( route_rule['conditions']['list'], description, verbosity );
 
     iptables_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + target for ipt in iptables_conditions ]
     iptables_commands_return = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j RETURN " for ipt in iptables_conditions ]
