@@ -426,11 +426,12 @@ class ReportsTests(unittest2.TestCase):
     def test_090_email_alert(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+        fname = sys._getframe().f_code.co_name
         settings = node.getSettings()
         # set email address and alert for downloads
         settings["reportsUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
-        settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","=","*HttpResponseEvent*","contentLength",">","1000"))
+        settings["alertRules"]["list"].append(createAlertRule(fname,"class","=","*SessionEvent*","SServerPort","=","80"))
         node.setSettings(settings)
 
         # Create settings to receive testEmailAddress 
@@ -442,11 +443,11 @@ class ReportsTests(unittest2.TestCase):
         adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
         uvmContext.adminManager().setSettings(adminsettings)
 
-        # start download
-        global_functions.getDownloadSpeed()
+        # trigger alert
+        result = remote_control.isOnline()
 
         # look for alert email
-        emailFound, emailContext, emailContext2 = findEmailContent('alert','Host is doing')
+        emailFound, emailContext, emailContext2 = findEmailContent('alert',fname)
 
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
@@ -455,12 +456,12 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(emailFound)
-        assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
+        assert(("Server Alert" in emailContext) and (fname in emailContext2))
 
         node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
+        found = global_functions.check_events( events.get('list'), 5, 'description', fname)
         assert(found)
         
     @staticmethod
