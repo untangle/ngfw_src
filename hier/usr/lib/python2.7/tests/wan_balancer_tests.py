@@ -566,7 +566,8 @@ class WanBalancerTests(unittest2.TestCase):
     def finalTearDown(self):
         global node, nodeWanFailover
         # Restore original settings to return to initial settings
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        if orig_netsettings != None:
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
