@@ -582,8 +582,13 @@ class NetworkTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
-        if not global_functions.verifyIperf(wan_IP):
-            raise unittest2.SkipTest("Iperf server not reachable")
+        iperfResult = global_functions.verifyIperf(wan_IP)
+        pingIperfServer = subprocess.call(["ping","-c","1",global_functions.iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (pingIperfServer != 0):
+            raise unittest2.SkipTest("iperfServer " + global_functions.iperfServer + " is unreachable, skipping")
+        # Only if iperf is used
+        # if not iperfResult:
+        #     raise unittest2.SkipTest("Iperf server not reachable")
 
         # port forward UDP 5000 to client box
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
