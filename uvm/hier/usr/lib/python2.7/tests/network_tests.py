@@ -819,7 +819,7 @@ class NetworkTests(unittest2.TestCase):
     def test_090_DNS(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nukeDNSRules()
-        result = remote_control.runCommand("host test.untangle.com", stdout=True)
+        result = remote_control.runCommand("host -R3 -4 test.untangle.com", stdout=True)
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = (match.group()).replace('address ','')
@@ -841,7 +841,7 @@ class NetworkTests(unittest2.TestCase):
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        result = remote_control.runCommand("host -4 www.foobar.com " + wan_IP, stdout=True)
+        result = remote_control.runCommand("host -R3 -4 www.foobar.com " + wan_IP, stdout=True)
         # print "Results of www.foobar.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_foobar = (match.group()).replace('address ','')
