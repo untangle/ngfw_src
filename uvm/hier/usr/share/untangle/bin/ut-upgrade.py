@@ -21,7 +21,7 @@ os.environ['PATH'] = '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sb
 
 # apt-get options for various commands
 INSTALL_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
-UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
+UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge -o Debug::Pkgproblemresolver=1 -o Debug::Pkgpolicy=1 "
 UPDATE_OPTS = " --yes --force-yes "
 AUTOREMOVE_OPTS = " --yes --force-yes --purge "
 
