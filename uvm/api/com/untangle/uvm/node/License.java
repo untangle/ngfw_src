@@ -47,7 +47,7 @@ public class License implements Serializable
     public static final String WEB_CACHE_OLDNAME = "untangle-node-webcache";
     public static final String APPLICATION_CONTROL = "untangle-node-application-control";
     public static final String APPLICATION_CONTROL_OLDNAME = "untangle-node-classd";
-    public static final String SSL_INSPECTOR = "untangle-casing-ssl";
+    public static final String SSL_INSPECTOR = "untangle-casing-ssl-inspector";
     public static final String SSL_INSPECTOR_OLDNAME = "untangle-casing-https";
     
     /** Identifier for the product this license is for */
