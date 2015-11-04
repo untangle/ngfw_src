@@ -13,6 +13,8 @@ import org.json.JSONObject;
 @SuppressWarnings("serial")
 public class SslInspectorSettings implements Serializable
 {
+    private Integer version;
+
     private LinkedList<SslInspectorRule> ignoreList;
     private boolean processEncryptedMailTraffic;
     private boolean processEncryptedWebTraffic;
@@ -38,6 +40,16 @@ public class SslInspectorSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
+    public Integer getVersion()
+    {
+        return (version);
+    }
+
+    public void setVersion(Integer value)
+    {
+        this.version = value;
+    }
+
     public LinkedList<SslInspectorRule> getIgnoreRules()
     {
         return (ignoreList);
@@ -58,7 +70,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getProcessEncryptedMailTraffic()
     {
-        return processEncryptedMailTraffic;
+        return (processEncryptedMailTraffic);
     }
 
     public void setProcessEncryptedMailTraffic(boolean flag)
@@ -68,7 +80,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getProcessEncryptedWebTraffic()
     {
-        return processEncryptedWebTraffic;
+        return (processEncryptedWebTraffic);
     }
 
     public void setProcessEncryptedWebTraffic(boolean flag)
@@ -78,7 +90,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getBlockInvalidTraffic()
     {
-        return blockInvalidTraffic;
+        return (blockInvalidTraffic);
     }
 
     public void setBlockInvalidTraffic(boolean flag)
@@ -88,7 +100,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getServerFakeHostname()
     {
-        return serverFakeHostname;
+        return (serverFakeHostname);
     }
 
     public void setServerFakeHostname(boolean flag)
@@ -98,7 +110,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getServerBlindTrust()
     {
-        return serverBlindTrust;
+        return (serverBlindTrust);
     }
 
     public void setServerBlindTrust(boolean flag)
@@ -108,7 +120,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getJavaxDebug()
     {
-        return javaxDebug;
+        return (javaxDebug);
     }
 
     public void setJavaxDebug(boolean flag)
@@ -118,7 +130,7 @@ public class SslInspectorSettings implements Serializable
 
     public boolean isEnabled()
     {
-        return enabled;
+        return (enabled);
     }
 
     public void setEnabled(boolean flag)
@@ -129,6 +141,6 @@ public class SslInspectorSettings implements Serializable
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
-        return jO.toString();
+        return (jO.toString());
     }
 }

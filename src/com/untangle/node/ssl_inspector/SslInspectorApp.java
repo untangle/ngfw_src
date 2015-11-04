@@ -109,6 +109,26 @@ public class SslInspectorApp extends NodeBase
             // otherwise apply the loaded or imported settings from the file
             else {
                 logger.info("Loaded settings from " + settingsFile);
+
+                // no version really means version one
+                if (readSettings.getVersion() == null) readSettings.setVersion(new Integer(1));
+
+                // between v1 and v2 we added a new default rule to scan secure SMTP traffic
+                if (readSettings.getVersion().intValue() < 2) {
+                    SslInspectorRule addRule = createDefaultRule(0, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);
+                    readSettings.getIgnoreRules().addFirst(addRule);
+                    int idx = 1;
+                    for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
+                        rule.setRuleId(idx++);
+                    }
+
+                    // calling the setter here will write our changes, update the version
+                    // and handle the reconfigure so we can return directly from here so
+                    // we don't call reconfigure twice in a row
+                    setSettings(readSettings);
+                    return;
+                }
+
                 this.settings = readSettings;
 
                 // appy the settings to the node
@@ -147,6 +167,7 @@ public class SslInspectorApp extends NodeBase
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ssl-inspector/settings_" + nodeID + ".js";
 
         try {
+            newSettings.setVersion(new Integer(2));
             UvmContextFactory.context().settingsManager().save(settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("setSettings()", exn);
@@ -227,11 +248,11 @@ public class SslInspectorApp extends NodeBase
         LinkedList<SslInspectorRule> defaultRules = new LinkedList<SslInspectorRule>();
         int ruleNumber = 1;
 
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*gotomeeting.com", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect All Traffic", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, false));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*youtube.com", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Google Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Google*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Facebook Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Facebook*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
