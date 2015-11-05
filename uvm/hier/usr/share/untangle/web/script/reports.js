@@ -215,7 +215,7 @@ Ext.define('Ung.panel.Reports', {
                         text: i18n._('Reset View'),
                         tooltip: i18n._('Restore default columns positions, widths and visibility'),
                         handler: Ext.bind(function () {
-                            var gridEvents = this.down("grid[name=gridEvents]") 
+                            var gridEvents = this.down("grid[name=gridEvents]"); 
                             Ext.state.Manager.clear(gridEvents.stateId);
                             gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
                         }, this)

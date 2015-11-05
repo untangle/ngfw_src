@@ -105,7 +105,7 @@ public class InboxMaintenenceServlet extends HttpServlet
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
         
         /* setup the skinning settings */
-        req.setAttribute( "skinSettings", uvm.skinManager().getSettings());
+        req.setAttribute( "skinName", uvm.skinManager().getSettings().getSkinName());
         req.getRequestDispatcher(INBOX_VIEW).forward(req, resp);
     }
 

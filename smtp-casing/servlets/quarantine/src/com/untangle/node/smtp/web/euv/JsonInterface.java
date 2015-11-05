@@ -44,6 +44,11 @@ public interface JsonInterface
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
                InboxAlreadyRemappedException;
 
+    /* Delete the account associated with token to address. */
+    public void deleteRemap( String token, String address )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
+               InboxAlreadyRemappedException;
+
     /* Delete a set of remaps to the account associated with token, this returns the new list
      * of addresses that are mapped to this address. */
     public String[] deleteRemaps( String token, String[] address )

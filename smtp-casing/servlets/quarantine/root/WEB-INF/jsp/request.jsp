@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<%
-String companyName = com.untangle.uvm.UvmContextFactory.context().brandingManager().getCompanyName();
-%>
+
 <html>
 <head>
     <meta charset="UTF-8"/>

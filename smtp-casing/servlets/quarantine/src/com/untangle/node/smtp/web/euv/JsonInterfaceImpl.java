@@ -129,6 +129,22 @@ public class JsonInterfaceImpl implements JsonInterface
         quarantine.remapSelfService(account, address);
     }
 
+    /* Delete the account associated with token to address. */
+    public void deleteRemap(String token, String address) throws BadTokenException, NoSuchInboxException,
+            QuarantineUserActionFailedException, InboxAlreadyRemappedException
+    {
+        /* This just seems wrong */
+        QuarantineUserView quarantine = QuarantineEnduserServlet.instance().getQuarantine();
+
+        /* First grab the account */
+        String account = quarantine.getAccountFromToken(token);
+
+        if (account == null)
+            return;
+
+        quarantine.unmapSelfService(address, account);
+    }
+
     /* Delete a set of remaps to the account associated with token. */
     public String[] deleteRemaps(String token, String[] addresses) throws BadTokenException, NoSuchInboxException,
             QuarantineUserActionFailedException
