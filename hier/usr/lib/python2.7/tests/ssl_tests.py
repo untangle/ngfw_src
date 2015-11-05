@@ -31,7 +31,7 @@ def nukeBlockedUrls():
     rules["list"] = []
     nodeWeb.setBlockedUrls(rules)
 
-class SslTests(unittest2.TestCase):
+class SslInspectorTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
@@ -81,7 +81,7 @@ class SslTests(unittest2.TestCase):
             result = remote_control.runCommand('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
             assert (result == 0)
 
-    def test_030_checkSslInspectorEventLog(self):
+    def test_030_checkSslInspectorInspectorEventLog(self):
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
         assert(events != None)
         print "List of events"
@@ -177,4 +177,4 @@ class SslTests(unittest2.TestCase):
             uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"])
             nodeWeb = None
 
-test_registry.registerNode("ssl", SslTests)
+test_registry.registerNode("ssl-inspector", SslInspectorTests)

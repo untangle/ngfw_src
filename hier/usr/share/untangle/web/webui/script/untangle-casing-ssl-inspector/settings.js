@@ -58,9 +58,9 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
 //            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: rpc.isExpertMode},
 //            {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Site is Flagged"), type: "boolean", visible: rpc.isExpertMode},
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            {name:"SSL_SNI_HOSTNAME",displayName: i18n._("SSL: SNI Host Name"), type: "text", visible: true},
-            {name:"SSL_SUBJECT_DN",displayName: i18n._("SSL: Certificate Subject"), type: "text", visible: true},
-            {name:"SSL_ISSUER_DN",displayName: i18n._("SSL: Certificate Issuer"), type: "text", visible: true}
+            {name:"SSL_INSPECTOR_SNI_HOSTNAME",displayName: i18n._("SSL: SNI Host Name"), type: "text", visible: true},
+            {name:"SSL_INSPECTOR_SUBJECT_DN",displayName: i18n._("SSL: Certificate Subject"), type: "text", visible: true},
+            {name:"SSL_INSPECTOR_ISSUER_DN",displayName: i18n._("SSL: Certificate Issuer"), type: "text", visible: true}
         ];
     },
     buildPanelConfiguration: function() {
