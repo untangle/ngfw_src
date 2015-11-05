@@ -1,35 +1,32 @@
 <%@page language="java" import="com.untangle.uvm.*"%>
-<%--
- * $Id$
---%>
+<!DOCTYPE html>
 
 <%
 UvmContext uvm = UvmContextFactory.context();
-String company = uvm.brandingManager().getCompanyName();
-String companyUrl = uvm.brandingManager().getCompanyUrl();
+String companyName = uvm.brandingManager().getCompanyName();
 %>
-<!DOCTYPE html>
-
 <html>
 <head>
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title><%=company%> | Try Later</title>
-<style type="text/css">
-    @import "/skins/default/css/user.css";
-</style>
-</head>
-<body class="quarantine">
-<div id="content" class="service-error-height">
-    <div id="header"><a href="<%=companyUrl%>"><img src="/images/BrandingLogo.png" border="0" alt="<%=company%> logo"/></a><div class="title">Quarantine Service Error</div></div>
-    <div id="main">
-        <div style="padding: 7em 0 0 10px;  ">
-            The <%=company%> Server has encountered an error.
-            Please try later.
-            Thanks and sorry.
-        </div>
-    </div>
-</div>
+    <title><%=companyName%> | Try Later</title>
+    <style type="text/css">
+        @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css";
+    </style>
+    <script type="text/javascript" src="/ext5/ext-all.js"></script>
+    <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js"></script>
+
+    <script type="text/javascript" src="script/tryLater.js"></script>
+
+    <script type="text/javascript">
+        Ext.onReady(function() {
+            Ung.TryLater.init({
+                companyName: '<%=companyName%>',
+            })
+        });
+    </script>
+ </head>
+<body>
 </body>
 </html>
