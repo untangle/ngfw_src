@@ -1,12 +1,20 @@
 {
     "uniqueId": "captive-portal-upl31dqKb1",
     "category": "Captive Portal",
-    "description": "A summary of Application Control actions.",
+    "description": "A summary of Captiev Portal actions.",
     "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
         "count(*) as logins"
+    ],
+    "conditions": [
+        {
+            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "column": "event_info",
+            "operator": "=",
+            "value": "LOGIN"
+        }
     ],
     "textString": "Captive Portal processed {0} user logins.", 
     "readOnly": true,
