@@ -1,7 +1,7 @@
 {
     "uniqueId": "captive-portal-upl31dqKb1",
     "category": "Captive Portal",
-    "description": "A summary of Captiev Portal actions.",
+    "description": "A summary of Captive Portal actions.",
     "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
