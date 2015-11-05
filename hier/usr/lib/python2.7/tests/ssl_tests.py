@@ -75,8 +75,8 @@ class SslInspectorTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_checkIgnoreCertificate(self):
-        if nodeData['ignoreRules']['list'][2]['description'] != 'Ignore Dropbox':
-            raise unittest2.SkipTest('Rule 2 of SSL Inspector is not Ignore Dropbox')
+        if nodeData['ignoreRules']['list'][3]['description'] != 'Ignore Dropbox':
+            raise unittest2.SkipTest('Rule 3 of SSL Inspector is not Ignore Dropbox')
         else:
             result = remote_control.runCommand('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
             assert (result == 0)
