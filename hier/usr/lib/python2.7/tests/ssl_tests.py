@@ -59,10 +59,10 @@ class SslInspectorTests(unittest2.TestCase):
 
     def test_005_setInspectAllTraffic(self):
         # print nodeData['ignoreRules']['list']
-        if nodeData['ignoreRules']['list'][3]['description'] != 'Inspect All Traffic':
-            raise unittest2.SkipTest('Rule 3 of SSL Inspector is not Inspect All traffic')
+        if nodeData['ignoreRules']['list'][4]['description'] != 'Inspect All Traffic':
+            raise unittest2.SkipTest('Rule 4 of SSL Inspector is not Inspect All traffic')
         else:
-            nodeData['ignoreRules']['list'][3]['live'] = True
+            nodeData['ignoreRules']['list'][4]['live'] = True
             node.setSettings(nodeData)
 
     # verify client is online
