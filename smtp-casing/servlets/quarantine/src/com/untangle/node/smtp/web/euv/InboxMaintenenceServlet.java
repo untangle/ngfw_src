@@ -14,7 +14,6 @@ import org.json.JSONArray;
 
 import com.untangle.node.smtp.quarantine.BadTokenException;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
-import com.untangle.node.smtp.quarantine.WebConstants;
 import com.untangle.node.smtp.safelist.SafelistManipulation;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -29,17 +28,19 @@ public class InboxMaintenenceServlet extends HttpServlet
      * Page to forward end-users to, if the system is
      * hosed and cannot fufill request.
      */
-    private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
+    private static final String AUTH_TOKEN_RP = "tkn";
     private static final String INBOX_VIEW = "/WEB-INF/jsp/inbox.jsp";
-
+    private static final String REQUEST_FWD = "/request";
+    private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
+    
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
 
-        String authTkn = req.getParameter(WebConstants.AUTH_TOKEN_RP);
+        String authTkn = req.getParameter(AUTH_TOKEN_RP);
         if(authTkn == null) {
             log("[MaintenenceControlerBase] Auth token null");
-            req.getRequestDispatcher("/request").forward(req, resp);
+            req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);
             return;
         }
 
@@ -87,7 +88,7 @@ public class InboxMaintenenceServlet extends HttpServlet
             }
         }
         catch(BadTokenException ex) {
-            req.getRequestDispatcher("/request").forward(req, resp);
+            req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);
             return;
         }
         catch(Exception ex) {

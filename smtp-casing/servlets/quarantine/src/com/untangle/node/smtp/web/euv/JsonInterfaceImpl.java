@@ -51,7 +51,7 @@ public class JsonInterfaceImpl implements JsonInterface
 
         QuarantineUserView quarantine = QuarantineEnduserServlet.instance().getQuarantine();
         if (quarantine == null) {
-            throw new QuarantineUserActionFailedException(Constants.SERVER_UNAVAILABLE_ERRO_VIEW);
+            throw new QuarantineUserActionFailedException();
         }
 
         try {
