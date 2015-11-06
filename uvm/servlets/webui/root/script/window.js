@@ -73,8 +73,12 @@ Ext.define('Ung.Window', {
     },
     setSizeToRack: function () {
         var objSize = Ung.Main.viewport.getSize();
-        objSize.width = objSize.width - Ung.Main.contentLeftWidth;
-        this.setPosition(Ung.Main.contentLeftWidth, 0);
+        var left = 0;
+        if( objSize.width > 1000 ) {
+            left = Ung.Main.contentLeftWidth;
+            objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+        }
+        this.setPosition(left, 0);
         this.setSize(objSize);
     },
     // to override if needed
