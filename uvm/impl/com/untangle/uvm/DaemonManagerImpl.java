@@ -263,9 +263,9 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             // catch and log any exceptions and set the restart flag
             catch (Exception exn) {
                 String reason = exn.getMessage();
-                if (reason == null)
+                if (reason == null && exn.getCause() != null)
                     reason = exn.getCause().toString();
-                if (reason == null)
+                if (reason == null && exn.getClass() != null)
                     reason = exn.getClass().toString();
                 if (reason == null)
                     reason = "unknown";
