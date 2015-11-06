@@ -73,7 +73,14 @@ Ext.define('Ung.panel.Reports', {
                     itemId: 'chartContainer',
                     name: 'chartContainer',
                     layout: 'fit',
-                    html: ""
+                    items: [{
+                        xtype: 'component',
+                        name: 'pleaseSelectEntry',
+                        padding: '25 10 0 20',
+                        hidden: true,
+                        style: 'font-size: 16px;',
+                        html: i18n._('Please select an entry to view.')
+                    }]
                 }, {
                     region: 'center',
                     xtype: 'grid',
@@ -154,6 +161,7 @@ Ext.define('Ung.panel.Reports', {
                         xtype: 'combo',
                         width: 100,
                         name: "limitSelector",
+                        hidden: true,
                         editable: false,
                         valueField: "value",
                         displayField: "name",
@@ -213,8 +221,13 @@ Ext.define('Ung.panel.Reports', {
                         }, this)
                     },{
                         text: i18n._('Reset View'),
+                        name: "resetView",
+                        hidden: true,
                         tooltip: i18n._('Restore default columns positions, widths and visibility'),
                         handler: Ext.bind(function () {
+                            if(!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
+                                return;
+                            }
                             var gridEvents = this.down("grid[name=gridEvents]"); 
                             Ext.state.Manager.clear(gridEvents.stateId);
                             gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
@@ -242,6 +255,7 @@ Ext.define('Ung.panel.Reports', {
         this.searchField=this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.limitSelector = this.down("combo[name=limitSelector]");
+        this.resetView = this.down("button[name=resetView]");
         
         this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
             title: i18n._('Start date and time'),
@@ -486,6 +500,7 @@ Ext.define('Ung.panel.Reports', {
         this.cardsContainer.setActiveItem("chartContainer");
         this.reportDataGrid.show();
         this.limitSelector.hide();
+        this.resetView.hide();
         
         this.chartContainer.removeAll();
         
@@ -921,6 +936,7 @@ Ext.define('Ung.panel.Reports', {
         this.cardsContainer.setActiveItem("gridEvents");
         this.reportDataGrid.hide();
         this.limitSelector.show();
+        this.resetView.show();
         
         this.gridEvents.setTitle(entry.title);
         this.gridEvents.stateId = "eventGrid-" + entry.table;
@@ -1335,7 +1351,7 @@ Ext.define('Ung.panel.Reports', {
         "activate": {
             fn: function() {
                 if(this.category && !this.entry) {
-                    this.selectInitialEntry();
+                    this.down("component[name=pleaseSelectEntry]").show();
                 }
             }
         },
