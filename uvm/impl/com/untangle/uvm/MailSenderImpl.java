@@ -357,6 +357,9 @@ public class MailSenderImpl implements MailSender
             }
             // String host = settings.getSmtpHost();
             String logId = getMessageIdFromLog(messageId, lines);
+            if ( logId == null ) {
+                return i18nUtil.tr("Message failed to send.");
+            }
             
             //we need to wait until exim finishes processing this email (flushing it now would not work,
             // since it might result in having 2 processes trying to access the same email)
@@ -955,7 +958,8 @@ public class MailSenderImpl implements MailSender
      * In exim logs, each mail has an ID.
      * This method identifies the ID from a given line of text.
      */
-    private String getMessageIdFromLogLine(String line){
+    private String getMessageIdFromLogLine(String line)
+    {
         StringTokenizer st = new StringTokenizer(line, " ");
         if (st.countTokens() > 3) {
             st.nextToken();
