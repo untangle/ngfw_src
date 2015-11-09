@@ -547,7 +547,8 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_052.out"
-        if (not os.path.isfile(savedCookieFileName)):
+        cookieExistsResults = remote_control.runCommand("test -e " + savedCookieFileName)
+        if (cookieExistsResults == 1):
             raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captureCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
