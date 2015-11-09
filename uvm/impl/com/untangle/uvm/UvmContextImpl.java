@@ -42,7 +42,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
-    private static final String UPGRADE_HTML_FILE = "/var/www/upgrade.html";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
@@ -911,23 +910,22 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return;
     }
 
+    /**
+     * This changes apache to show the regular screen again if it is
+     * currently showing the upgrade log (which is displayed during
+     * upgrades)
+     */
     private void hideUpgradeSplash()
     {
         /**
-         * This changes apache to show the regular screen again if it is
-         * currently showing the upgrade log (which is displayed during
-         * upgrades)
-         */
-
-        /**
          * The PID file seems to sometimes mysteriously disappear so also check
-         * for the HTML file
+         * if the upgrade page is enabled
          */
         File upgradePidFile = new File(UPGRADE_PID_FILE);
-        File upgradeHtmlFile = new File(UPGRADE_HTML_FILE);
+        File upgradeConfFile = new File("/etc/apache2/sites-enabled/upgrade.conf");
 
         /* If the upgrade is in progress */
-        if (upgradePidFile.exists() || upgradeHtmlFile.exists()) {
+        if (upgradePidFile.exists() || upgradeConfFile.exists()) {
             logger.info("Upgrade complete. Removing upgrade splash screen...");
 
             try {
