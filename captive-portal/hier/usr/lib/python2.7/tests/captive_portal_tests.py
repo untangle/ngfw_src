@@ -158,6 +158,8 @@ class CaptivePortalTests(unittest2.TestCase):
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # Create local directory user 'test20'
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # Get the IP address of test.untangle.com
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")   
 
@@ -285,8 +287,6 @@ class CaptivePortalTests(unittest2.TestCase):
 
     def test_030_captureLocalDirLogin(self):
         global node, nodeData
-        # Create local directory user 'test20'
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
 
         # Create Internal NIC capture rule with basic login page
         nodeData['authenticationType']="LOCAL_DIRECTORY"
@@ -535,7 +535,7 @@ class CaptivePortalTests(unittest2.TestCase):
         cookie_expires = remote_control.runCommand("tail -1 " + cookie_file_name + " | cut -f5",stdout=True)
         assert(cookie_expires) # verify there is a cookie time
         # Save the cookie file since it is used in the next test.
-        remote_control.runCommand("cp /tmp/" + cookie_file_name + " " + savedCookieFileName)
+        remote_control.runCommand("cp " + cookie_file_name + " " + savedCookieFileName)
         second_difference = int(remote_control.runCommand("expr $(date +%s) - " + cookie_expires,stdout=True))
         assert(second_difference > cookie_timeout)
 
