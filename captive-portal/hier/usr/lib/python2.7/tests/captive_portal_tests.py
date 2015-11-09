@@ -27,6 +27,8 @@ adHost = "10.111.56.48"
 radiusHost = "10.112.56.71"
 localUserName = 'test20'
 adUserName = 'atsadmin'
+captureIP = None
+savedCookieFileName = "/tmp/capture_cookie.txt";
 
 # pdb.set_trace()
 def createCaptureInternalNicRule():
@@ -531,6 +533,9 @@ class CaptivePortalTests(unittest2.TestCase):
         # Cookie expiration is handled by browser so check that after the cookie timeout,
         # the client side's expiration difference from current is greater than timeout.
         cookie_expires = remote_control.runCommand("tail -1 " + cookie_file_name + " | cut -f5",stdout=True)
+        assert(cookie_expires) # verify there is a cookie time
+        # Save the cookie file since it is used in the next test.
+        remote_control.runCommand("cp /tmp/" + cookie_file_name + " " + savedCookieFileName)
         second_difference = int(remote_control.runCommand("expr $(date +%s) - " + cookie_expires,stdout=True))
         assert(second_difference > cookie_timeout)
 
@@ -542,7 +547,8 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_052.out"
-        cookie_file_name = "/tmp/capture_test_051_cookie.txt"
+        if (not os.path.isfile(savedCookieFileName)):
+            raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captureCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
@@ -557,8 +563,9 @@ class CaptivePortalTests(unittest2.TestCase):
         # # check if local directory login and password 
         appid = str(node.getNodeSettings()["id"])
 
-        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + cookie_file_name)
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + savedCookieFileName)
         assert (result == 0)
+        remote_control.runCommand("rm " + savedCookieFileName)
         search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
         assert (search == 1)
 
