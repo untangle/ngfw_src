@@ -74,8 +74,6 @@ public class TomcatManagerImpl implements TomcatManager
     
     private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","untangle-casing-smtp-servlet-quarantine.jar"};
 
-    // constructors -----------------------------------------------------------
-
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
@@ -119,8 +117,6 @@ public class TomcatManagerImpl implements TomcatManager
         ctx.setAttribute("threadRequest", threadRequest);
         writeWelcomeFile();
     }
-
-    // package protected methods ----------------------------------------------
 
     public ServletContext loadServlet(String urlBase, String rootDir)
     {
@@ -233,8 +229,6 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Tomcat started");
     }
 
-    // private classes --------------------------------------------------------
-
     private static class WebAppOptions
     {
         public static final int DEFAULT_SESSION_TIMEOUT = 30;
@@ -266,8 +260,6 @@ public class TomcatManagerImpl implements TomcatManager
 
         }
     }
-
-    // private methods --------------------------------------------------------
 
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {

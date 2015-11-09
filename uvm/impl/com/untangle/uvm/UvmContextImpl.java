@@ -41,8 +41,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
-    private static final String UPGRADE_PID_FILE = "/var/run/uvm-upgrade.pid";
-    private static final String UPGRADE_HTML_FILE = "/var/www/uvm-upgrade.html";
+    private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
+    private static final String UPGRADE_HTML_FILE = "/var/www/upgrade.html";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
