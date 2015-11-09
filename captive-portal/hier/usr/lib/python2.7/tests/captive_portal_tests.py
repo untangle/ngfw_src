@@ -176,6 +176,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
     def test_021_captureTrafficCheck(self):
         global node, nodeData, captureIP
+        nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         node.setSettings(nodeData)
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
@@ -200,6 +201,8 @@ class CaptivePortalTests(unittest2.TestCase):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         node.setSettings(nodeData)
@@ -231,6 +234,8 @@ class CaptivePortalTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         nodeData['userTimeout'] = 120
@@ -259,6 +264,8 @@ class CaptivePortalTests(unittest2.TestCase):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         nodeData['userTimeout'] = 3600  # back to default setting
@@ -289,6 +296,8 @@ class CaptivePortalTests(unittest2.TestCase):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
@@ -328,6 +337,8 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeAD.setSettings(createADSettings())
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="ACTIVE_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
@@ -397,6 +408,8 @@ class CaptivePortalTests(unittest2.TestCase):
         print 'testResultString %s attempts %s' % (testResultString, attempts) # debug line
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="RADIUS"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
@@ -446,6 +459,7 @@ class CaptivePortalTests(unittest2.TestCase):
         cookie_file_name = "/tmp/capture_test_050_cookie.txt"
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
@@ -503,6 +517,7 @@ class CaptivePortalTests(unittest2.TestCase):
         cookie_timeout = 60
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
@@ -552,6 +567,7 @@ class CaptivePortalTests(unittest2.TestCase):
             raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captureCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
