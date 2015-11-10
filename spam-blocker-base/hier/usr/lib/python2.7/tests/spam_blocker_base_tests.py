@@ -19,6 +19,8 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 nodeData = None
+nodeSSL = None
+nodeSSLData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
 listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.84','16')]
@@ -64,8 +66,12 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     def nodeNameSpamCase():
         return "untangle-casing-smtp"
 
+    @staticmethod
+    def nodeNameSSLInspector():
+        return "untangle-casing-ssl-inspector"
+
     def setUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, canRelay
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
@@ -86,6 +92,14 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             for checkAddress in curQuarantineList['list']:
                 if checkAddress['address']:
                     curQuarantine.deleteInbox(checkAddress['address'])
+        
+        if nodeSSL == None:
+            if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
+                print "ERROR: Node %s already installed" % self.nodeNameSSLInspector()
+                raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
+            nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
+            # nodeSSL.start() # leave node off. node doesn't auto-start
+            nodeSSLData = nodeSSL.getSettings()
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -249,10 +263,34 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
         # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
-        
+    
+    def test_090_checkTLSwSSLInspector(self):
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
+        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
+        # Get latest TLS test command file
+        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
+        assert(testCopyResult == 0)
+        nodeData['smtpConfig']['scanWanMail'] = True
+        nodeData['smtpConfig']['allowTls'] = False
+        node.setSettings(nodeData)
+        # Turn on SSL Inspector
+        nodeSSL.start()
+        # print "TLS 1 : " + str(tlsSMTPResult)
+        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        nodeSSL.stop()
+        # print "TLS 2 : " + str(tlsSMTPResult)
+        assert(tlsSMTPResult == 0)
+            
     @staticmethod
     def finalTearDown(self):
-        global node
+        global node,nodeSSL
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
+        if nodeSSL != None:
+            uvmContext.nodeManager().destroy( nodeSSL.getNodeSettings()["id"] )
+            nodeSSL = None
