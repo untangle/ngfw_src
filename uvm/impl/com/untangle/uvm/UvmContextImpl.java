@@ -92,6 +92,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private SystemManagerImpl systemManager;
+    private DashboardManagerImpl dashboardManager;
     private JSONSerializer serializer;
     private Reporting reportsNode = null;
     private HostTableImpl hostTableImpl = null;
@@ -186,6 +187,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.systemManager;
     }
 
+    public DashboardManagerImpl dashboardManager()
+    {
+        return this.dashboardManager;
+    }
+    
     public NetworkManager networkManager()
     {
         return this.networkManager;
@@ -610,6 +616,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("alertManager", this.alertManager());
             json.put("adminManager", this.adminManager());
             json.put("systemManager", this.systemManager());
+            json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
             json.put("sessionMonitor", this.sessionMonitor());
             json.put("networkManager", this.networkManager());
@@ -767,6 +774,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.systemManager = new SystemManagerImpl();
 
+        this.dashboardManager = new DashboardManagerImpl();
+        
         this.nodeManager = new NodeManagerImpl();
 
         this.metricManager = new MetricManagerImpl();
