@@ -31,6 +31,7 @@ fakeSmtpServerHost = ""
 fakeSmtpServerHostResult = -1
 testdomain = ""
 testEmailAddress = ""
+orig_netsettings = None
 
 # pdb.set_trace()
 
@@ -62,15 +63,16 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
 
 def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
-    wan_IP = uvmContext.networkManager().getFirstWanAddress()
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # Change DNS to point at special DNS server with entry for fake domain untangletest.com
-    # Only run test if WAN IP is static
+    # Only run test if WAN IP is static or DHCP
     for i in range(len(netsettings['interfaces']['list'])):
-        if netsettings['interfaces']['list'][i]['v4StaticAddress'] == wan_IP:
+        if not netsettings['interfaces']['list'][i]['disabled'] and  netsettings['interfaces']['list'][i]['isWan']:
+        # if netsettings['interfaces']['list'][i]['v4StaticAddress'] == wan_IP:
             if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
                 netsettings['interfaces']['list'][i]['v4StaticDns1'] = specialDnsServer
-                break;
+            elif netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "AUTO":
+                netsettings['interfaces']['list'][i]['v4AutoDns1Override'] = specialDnsServer
             else:
                 # only use if interface is addressed
                 raise unittest2.SkipTest('Unable to use Interface ' + netsettings['interfaces']['list'][i]['name'])
@@ -207,7 +209,9 @@ class ReportsTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, orig_settings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
+        global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
+        if orig_netsettings == None:
+            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "Node %s already installed" % self.nodeName()
@@ -452,8 +456,9 @@ class ReportsTests(unittest2.TestCase):
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
         
-        # restore admin settings
+        # restore admin settings and network settings
         uvmContext.adminManager().setSettings(orig_adminsettings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert(emailFound)
         assert(("Server Alert" in emailContext) and (fname in emailContext2))
