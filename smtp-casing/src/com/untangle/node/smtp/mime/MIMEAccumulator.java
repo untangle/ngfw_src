@@ -49,19 +49,19 @@ import com.untangle.uvm.vnet.TCPStreamer;
 public class MIMEAccumulator
 {
 
-    private final Logger m_logger = Logger.getLogger(MIMEAccumulator.class);
+    private final Logger logger = Logger.getLogger(MIMEAccumulator.class);
     private static final int CHUNK_SZ = 1024 * 4;
-
-    private File m_file;
-    private FileOutputStream m_fileOut;
-    private FileChannel m_fileChannel;
-    private InternetHeaders m_headers;
-    private FileMIMESource m_fileMIMESource;
-    private int m_headersLen;
-    private boolean m_unparsed = false;
-    private int m_greatestChunkTokenAppendedAndUnparsed = -1;
-    private int m_chunkIndex = 0;
-    private MimeMessage m_mimeMessage;
+    private static final int MAX_FILE_SIZE = 100 * 1024 * 1024; /* 100M */
+    private File file;
+    private FileOutputStream fileOut;
+    private FileChannel fileChannel;
+    private InternetHeaders headers;
+    private FileMIMESource fileMIMESource;
+    private int headersLen;
+    private boolean unparsed = false;
+    private int greatestChunkTokenAppendedAndUnparsed = -1;
+    private int chunkIndex = 0;
+    private MimeMessage mimeMessage;
 
     /**
      * Class used to represent a chunk of MIME accociated with a given MIMEAccumulator. MIMEChunkTokens may not have useful
@@ -75,15 +75,16 @@ public class MIMEAccumulator
      */
     public class MIMEChunkToken
     {
-        private boolean m_isLast = false;
-        private int m_index;
-        private ByteBuffer m_buf;
-        private boolean m_writtenToFile = false;
+        private boolean isLast = false;
+        private int index;
+        private ByteBuffer buf;
+        private boolean writtenToFile = false;
 
-        private MIMEChunkToken(ByteBuffer buf, boolean isLast, int index) {
-            m_isLast = isLast;
-            m_buf = buf;
-            m_index = index;
+        private MIMEChunkToken(ByteBuffer buf, boolean isLast, int index)
+        {
+            this.isLast = isLast;
+            this.buf = buf;
+            this.index = index;
         }
 
         /**
@@ -91,7 +92,7 @@ public class MIMEAccumulator
          */
         public boolean isLast()
         {
-            return m_isLast;
+            return this.isLast;
         }
 
         /**
@@ -99,7 +100,7 @@ public class MIMEAccumulator
          */
         public boolean hasData()
         {
-            return m_buf != null && m_buf.hasRemaining();
+            return this.buf != null && this.buf.hasRemaining();
         }
 
         /**
@@ -110,7 +111,7 @@ public class MIMEAccumulator
          */
         public ByteBuffer getData()
         {
-            return m_buf == null ? null : m_buf.duplicate();
+            return this.buf == null ? null : this.buf.duplicate();
         }
 
         /**
@@ -118,22 +119,22 @@ public class MIMEAccumulator
          */
         public int length()
         {
-            return m_buf == null ? 0 : m_buf.remaining();
+            return this.buf == null ? 0 : this.buf.remaining();
         }
 
         private void writtenToFile()
         {
-            m_writtenToFile = true;
+            this.writtenToFile = true;
         }
 
         private boolean isWrittenToFile()
         {
-            return m_writtenToFile;
+            return this.writtenToFile;
         }
 
         private int getIndex()
         {
-            return m_index;
+            return this.index;
         }
 
         /**
@@ -175,21 +176,21 @@ public class MIMEAccumulator
      */
     public MIMEAccumulator( NodeTCPSession session ) throws IOException
     {
-        m_logger.debug("Opening temp file to buffer MIME");
+        this.logger.debug("Opening temp file to buffer MIME");
         try {
-            m_file = File.createTempFile("MIMEAccumulator-", null);
-            if (m_file != null)
-                session.attachTempFile(m_file.getAbsolutePath());
-            m_fileOut = new FileOutputStream(m_file);
-            m_fileChannel = m_fileOut.getChannel();
+            this.file = File.createTempFile("MIMEAccumulator-", null);
+            if (this.file != null)
+                session.attachTempFile(this.file.getAbsolutePath());
+            this.fileOut = new FileOutputStream(this.file);
+            this.fileChannel = this.fileOut.getChannel();
         } catch (IOException ex) {
-            m_logger.error("Exception creating a temp file for MIME message", ex);
+            this.logger.error("Exception creating a temp file for MIME message", ex);
             try {
-                m_fileOut.close();
+                this.fileOut.close();
             } catch (Exception ignore) {
             }
             try {
-                m_file.delete();
+                this.file.delete();
             } catch (Exception ignore) {
             }
             IOException ex2 = new IOException("Exception creating a temp file for MIME message");
@@ -210,7 +211,7 @@ public class MIMEAccumulator
     public MIMEAccumulator.MIMEChunkToken createChunkToken(ByteBuffer buf, boolean isLast)
     {
         int next = nextIndex();
-        m_logger.debug("[createChunkToken()] Creating MIMEChunkToken " + next + " with "
+        this.logger.debug("[createChunkToken()] Creating MIMEChunkToken " + next + " with "
                 + (buf == null ? "0" : Integer.toString(buf.remaining())) + " bytes");
         return new MIMEChunkToken(buf, isLast, nextIndex());
     }
@@ -235,20 +236,20 @@ public class MIMEAccumulator
             throw new RuntimeException("ChunkToken not for this MIME file");
         }
         if (!chunk.hasData()) {
-            m_logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " has no data.  Nothing to append");
+            this.logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " has no data.  Nothing to append");
             return true;
         }
         if (chunk.isWrittenToFile()) {
-            m_logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " already appended to this file");
+            this.logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " already appended to this file");
             return true;
         }
         if (!appendToFile(chunk.getData())) {
-            m_logger.debug("[appendChunkTokenToFile()] Error appending chunk " + chunk);
+            this.logger.debug("[appendChunkTokenToFile()] Error appending chunk " + chunk);
             return false;
         }
-        if (!m_unparsed) {
-            m_logger.debug("[appendChunkTokenToFile()] Assign chunk " + chunk + " greatest chunk yet unparsed");
-            m_greatestChunkTokenAppendedAndUnparsed = chunk.getIndex();
+        if (!this.unparsed) {
+            this.logger.debug("[appendChunkTokenToFile()] Assign chunk " + chunk + " greatest chunk yet unparsed");
+            this.greatestChunkTokenAppendedAndUnparsed = chunk.getIndex();
         }
         chunk.writtenToFile();
         return true;
@@ -282,11 +283,11 @@ public class MIMEAccumulator
         }
         if (isLast) {
             try {
-                m_fileOut.flush();
+                this.fileOut.flush();
             } catch (Exception wtf) {
-                m_logger.error("Error adding header bytes", wtf);
+                this.logger.error("Error adding header bytes", wtf);
             }
-            m_headersLen = (int) m_file.length();
+            this.headersLen = (int) this.file.length();
         }
         return true;
     }
@@ -304,30 +305,30 @@ public class MIMEAccumulator
      */
     public InternetHeaders parseHeaders()
     {
-        if (m_headers != null) {
-            return m_headers;
+        if (this.headers != null) {
+            return this.headers;
         }
         if (getHeadersLength() == 0) {
-            m_logger.debug("Parsing headers, yet no header bytes.  Assume " + "blank headers");
+            this.logger.debug("Parsing headers, yet no header bytes.  Assume " + "blank headers");
 
-            m_headers = new InternetHeaders();
-            return m_headers;
+            this.headers = new InternetHeaders();
+            return this.headers;
         }
         MIMEParsingInputStream in = null;
         try {
-            m_fileMIMESource = new FileMIMESource(m_file);
-            in = m_fileMIMESource.getInputStream();
-            m_headers = new InternetHeaders(in);
-            m_headersLen = (int) in.position();
+            this.fileMIMESource = new FileMIMESource(this.file);
+            in = this.fileMIMESource.getInputStream();
+            this.headers = new InternetHeaders(in);
+            this.headersLen = (int) in.position();
             in.close();
-            return m_headers;
+            return this.headers;
         } catch (Exception ex) {
-            m_logger.error("Error parsing MIME body", ex);
+            this.logger.error("Error parsing MIME body", ex);
             try {
                 in.close();
             } catch (Exception ignore) {
             }
-            m_fileMIMESource = null;
+            this.fileMIMESource = null;
             return null;
         }
     }
@@ -337,7 +338,7 @@ public class MIMEAccumulator
      */
     public int getHeadersLength()
     {
-        return m_headersLen;
+        return this.headersLen;
     }
 
     /**
@@ -354,13 +355,13 @@ public class MIMEAccumulator
      */
     public ByteBuffer drainFileToByteBuffer()
     {
-        if (m_file.length() == 0) {
+        if (this.file.length() == 0) {
             return ByteBuffer.allocate(0);
         }
         FileInputStream fIn = null;
         try {
-            fIn = new FileInputStream(m_file);
-            ByteBuffer buf = ByteBuffer.allocate((int) m_file.length());
+            fIn = new FileInputStream(this.file);
+            ByteBuffer buf = ByteBuffer.allocate((int) this.file.length());
             FileChannel fc = fIn.getChannel();
             while (buf.hasRemaining()) {
                 fc.read(buf);
@@ -373,7 +374,7 @@ public class MIMEAccumulator
                 fIn.close();
             } catch (Exception ignore) {
             }
-            m_logger.error("Error draining headers trapped in file to buffer");
+            this.logger.error("Error draining headers trapped in file to buffer");
             return null;
         }
     }
@@ -383,7 +384,7 @@ public class MIMEAccumulator
      */
     public int fileSize()
     {
-        return (int) m_file.length();
+        return (int) this.file.length();
     }
 
     /**
@@ -401,44 +402,44 @@ public class MIMEAccumulator
      */
     public MimeMessage parseBody(SmtpMessageEvent messageInfo)
     {
-        if (m_mimeMessage != null) {
-            return m_mimeMessage;
+        if (this.mimeMessage != null) {
+            return this.mimeMessage;
         }
-        if (m_fileMIMESource == null) {
-            m_fileMIMESource = new FileMIMESource(m_file);
+        if (this.fileMIMESource == null) {
+            this.fileMIMESource = new FileMIMESource(this.file);
         }
         MIMEParsingInputStream mimeIn = null;
         try {
-            mimeIn = m_fileMIMESource.getInputStream();
-            m_mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()), mimeIn);
-            String contentType[] = m_mimeMessage.getHeader(HeaderNames.CONTENT_TYPE);
-            String encoding[] = m_mimeMessage.getHeader(HeaderNames.CONTENT_TRANSFER_ENCODING);
-            MIMEUtil.setContentForPart(m_mimeMessage);
+            mimeIn = this.fileMIMESource.getInputStream();
+            this.mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()), mimeIn);
+            String contentType[] = this.mimeMessage.getHeader(HeaderNames.CONTENT_TYPE);
+            String encoding[] = this.mimeMessage.getHeader(HeaderNames.CONTENT_TRANSFER_ENCODING);
+            MIMEUtil.setContentForPart(this.mimeMessage);
             if (contentType != null) {
-                m_mimeMessage.removeHeader(HeaderNames.CONTENT_TYPE);
+                this.mimeMessage.removeHeader(HeaderNames.CONTENT_TYPE);
                 for (String s : contentType) {
-                    m_mimeMessage.addHeader(HeaderNames.CONTENT_TYPE, s);
+                    this.mimeMessage.addHeader(HeaderNames.CONTENT_TYPE, s);
                 }
             }
 
             if (encoding != null) {
-                m_mimeMessage.removeHeader(HeaderNames.CONTENT_TRANSFER_ENCODING);
+                this.mimeMessage.removeHeader(HeaderNames.CONTENT_TRANSFER_ENCODING);
                 for (String s : encoding) {
-                    m_mimeMessage.addHeader(HeaderNames.CONTENT_TRANSFER_ENCODING, s);
+                    this.mimeMessage.addHeader(HeaderNames.CONTENT_TRANSFER_ENCODING, s);
                 }
             }
 
             if (messageInfo != null)
-                messageInfo.setTmpFile(m_file);
+                messageInfo.setTmpFile(this.file);
             mimeIn.close();
             closeInput();
-            return m_mimeMessage;
+            return this.mimeMessage;
         } catch (Exception ex) {
             try {
                 mimeIn.close();
             } catch (Exception ignore) {
             }
-            m_logger.error("Error parsing MIME body", ex);
+            this.logger.error("Error parsing MIME body", ex);
             return null;
         }
     }
@@ -460,13 +461,13 @@ public class MIMEAccumulator
      */
     public void closeInput()
     {
-        m_logger.debug("Closing input");
+        this.logger.debug("Closing input");
         try {
-            m_fileOut.close();
+            this.fileOut.close();
         } catch (Exception ignore) {
         }
-        m_fileOut = null;
-        m_fileChannel = null;
+        this.fileOut = null;
+        this.fileChannel = null;
     }
 
     /**
@@ -474,20 +475,20 @@ public class MIMEAccumulator
      */
     public void dispose()
     {
-        m_logger.debug("Disposing of accumulator file");
+        this.logger.debug("Disposing of accumulator file");
         closeInput();
         try {
-            m_fileMIMESource.close();
+            this.fileMIMESource.close();
         } catch (Exception ignore) {
         }
         try {
-            m_file.delete();
+            this.file.delete();
         } catch (Exception ignore) {
         }
-        m_file = null;
-        m_headers = null;
-        m_mimeMessage = null;
-        m_fileMIMESource = null;
+        this.file = null;
+        this.headers = null;
+        this.mimeMessage = null;
+        this.fileMIMESource = null;
     }
 
     /**
@@ -497,13 +498,15 @@ public class MIMEAccumulator
      */
     private boolean appendToFile(ByteBuffer buf)
     {
+        if ( this.file.length() > MAX_FILE_SIZE )
+            return false;
         try {
             while (buf.hasRemaining()) {
-                m_fileChannel.write(buf);
+                this.fileChannel.write(buf);
             }
             return true;
         } catch (Exception ex) {
-            m_logger.error("Error writing bytes to file", ex);
+            this.logger.error("Error writing bytes to file", ex);
             return false;
         }
     }
@@ -513,10 +516,10 @@ public class MIMEAccumulator
      */
     private boolean shouldUnparseImpl(MIMEChunkToken chunk)
     {
-        if (m_unparsed) {
+        if (this.unparsed) {
             // The starting bytes have been unparsed.
             // We skip writing this out if this was within the chunks written out.
-            return chunk.isWrittenToFile() ? chunk.getIndex() > m_greatestChunkTokenAppendedAndUnparsed : true;
+            return chunk.isWrittenToFile() ? chunk.getIndex() > this.greatestChunkTokenAppendedAndUnparsed : true;
         } else {
             return !chunk.isWrittenToFile();
         }
@@ -524,8 +527,8 @@ public class MIMEAccumulator
 
     private void setUnparsed()
     {
-        m_logger.debug("Unparsed at chunk " + m_greatestChunkTokenAppendedAndUnparsed);
-        m_unparsed = true;
+        this.logger.debug("Unparsed at chunk " + this.greatestChunkTokenAppendedAndUnparsed);
+        this.unparsed = true;
     }
 
     /**
@@ -533,7 +536,7 @@ public class MIMEAccumulator
      */
     private synchronized int nextIndex()
     {
-        return m_chunkIndex++;
+        return this.chunkIndex++;
     }
 
     // ----------------- Inner Class -----------------------
@@ -541,30 +544,30 @@ public class MIMEAccumulator
     private class PartialTCPStreamer implements TCPStreamer
     {
 
-        private FileInputStream m_fis;
-        private FileChannel m_fileInChannel;
-        private final ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
-        private Logger m_logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
+        private FileInputStream fis;
+        private FileChannel fileInChannel;
+        private final ByteBuffer readBuf = ByteBuffer.allocate(CHUNK_SZ);
+        private Logger logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
 
         PartialTCPStreamer() {
-            m_logger.debug("Created Partial MIME message streamer");
+            this.logger.debug("Created Partial MIME message streamer");
 
             try {
-                m_logger.debug("File is of length: " + m_file.length());
-                m_fis = new FileInputStream(m_file);
-                if (m_headers == null) {
-                    m_logger.debug("Headers null.  Likely a parse error.  Write-out raw bytes");
+                this.logger.debug("File is of length: " + file.length());
+                this.fis = new FileInputStream(file);
+                if ( headers == null ) {
+                    this.logger.debug("Headers null.  Likely a parse error.  Write-out raw bytes");
                 }
                 // else {
-                // m_logger.debug("Advance " + m_headersLen + " bytes to get past headers");
-                // long toSkip = m_headersLen;
+                // this.logger.debug("Advance " + this.headersLen + " bytes to get past headers");
+                // long toSkip = this.headersLen;
                 // while (toSkip > 0) {
-                // toSkip -= m_fis.skip(toSkip);
+                // toSkip -= this.fis.skip(toSkip);
                 // }
                 // }
-                m_fileInChannel = m_fis.getChannel();
+                this.fileInChannel = this.fis.getChannel();
             } catch (Exception ex) {
-                m_logger.error("Error opening streamer file", ex);
+                this.logger.error("Error opening streamer file", ex);
                 close();
             }
         }
@@ -572,11 +575,11 @@ public class MIMEAccumulator
         private void close()
         {
             try {
-                m_fis.close();
+                this.fis.close();
             } catch (Exception ignore) {
             }
-            m_fis = null;
-            m_fileInChannel = null;
+            this.fis = null;
+            this.fileInChannel = null;
         }
 
         public boolean closeWhenDone()
@@ -586,27 +589,27 @@ public class MIMEAccumulator
 
         public ByteBuffer nextChunk()
         {
-            m_logger.debug("Next ChunkToken called");
-            if (m_fileInChannel == null) {
-                m_logger.error("Cannot return anything.  Channel never opened");
+            this.logger.debug("Next ChunkToken called");
+            if (this.fileInChannel == null) {
+                this.logger.error("Cannot return anything.  Channel never opened");
                 setUnparsed();
                 return null;
             }
             try {
-                m_readBuf.clear();
-                int read = m_fileInChannel.read(m_readBuf);
+                this.readBuf.clear();
+                int read = this.fileInChannel.read(this.readBuf);
                 if (read > 0) {
-                    m_readBuf.flip();
-                    m_logger.debug("Read a chunk of MIME from file of size: " + read);
-                    return m_readBuf;
+                    this.readBuf.flip();
+                    this.logger.debug("Read a chunk of MIME from file of size: " + read);
+                    return this.readBuf;
                 } else {
-                    m_logger.debug("No more MIME to read");
+                    this.logger.debug("No more MIME to read");
                     close();
                     setUnparsed();
                     return null;
                 }
             } catch (Exception ex) {
-                m_logger.error(ex);
+                this.logger.error(ex);
                 close();
                 setUnparsed();
                 return null;
