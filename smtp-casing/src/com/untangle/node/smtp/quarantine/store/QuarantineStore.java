@@ -333,7 +333,14 @@ public class QuarantineStore
     public Pair<GenericStatus, InboxIndex> getIndex(String address)
     {
         address = address.toLowerCase();
-
+        
+        // Get the inbox directory
+        File dirRF = getInboxDir(address, false);
+        if (dirRF == null) {
+            logger.warn("Unable to get inbox folderfor " + address);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.NO_SUCH_INBOX);
+        }
+        
         // lock the inbox
         addressLock.lock(address);
 

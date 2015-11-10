@@ -43,7 +43,6 @@ Ext.define("Ung.Inbox", {
             // Unavailable"
             exception.message.indexOf("method not found") != -1 || exception.message.indexOf("Service Unavailable") != -1 || exception.message.indexOf("Service Temporarily Unavailable") != -1 || exception.message.indexOf("This application is not currently available") != -1) {
                 message = i18n._("The connection to the server has been lost.") + "<br/>";
-                message += i18n._("Press OK to return to the login page.") + "<br/>";
 
             }
             // worst case - just say something
