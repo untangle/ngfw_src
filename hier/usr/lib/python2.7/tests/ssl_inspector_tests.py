@@ -104,6 +104,7 @@ class SslInspectorTests(unittest2.TestCase):
 
     # check Youtube for school feature
     def test_050_youtubeForSchools(self):
+        raise unittest2.SkipTest('Youtube For Schools API has changed, waiting on bug 12566 fix')
         settings = nodeWeb.getSettings()
         settings["youtubeForSchoolsIdentifier"] = "Wc1bnoBwWO8Di_TKQQ3IqA"
         settings["enforceYoutubeForSchools"] = True
