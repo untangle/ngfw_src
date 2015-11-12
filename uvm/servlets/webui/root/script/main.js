@@ -91,7 +91,7 @@ Ext.define("Ung.Main", {
         }
         document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
         if(rpc.languageSettings.language) {
-            Ung.Util.loadScript('/var/www/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
+            Ung.Util.loadScript('/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
         }
         Ung.VTypes.init(i18n);
         Ext.tip.QuickTipManager.init();

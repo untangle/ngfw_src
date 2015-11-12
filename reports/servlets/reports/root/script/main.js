@@ -88,7 +88,7 @@ Ext.define("Ung.Main", {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.languageSettings = result;
                 if(rpc.languageSettings.language) {
-                    Ung.Util.loadScript('/var/www/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
+                    Ung.Util.loadScript('/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
                     this.startApplication();
                 }
             },this));
