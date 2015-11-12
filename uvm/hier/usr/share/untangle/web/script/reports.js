@@ -640,8 +640,8 @@ Ext.define('Ung.panel.Reports', {
                         showDelay: 0,
                         dismissDelay: 0,
                         hideDelay: 0,
-                        renderer: function(storeItem, item) {
-                            this.setHtml(storeItem.get("description")+me.pieLegendHint);
+                        renderer: function(tooltip, storeItem, item) {
+                            tooltip.setHtml(storeItem.get("description")+me.pieLegendHint);
                         }
                     }
                 }]
@@ -821,9 +821,9 @@ Ext.define('Ung.panel.Reports', {
                         tooltip: {
                             trackMouse: true,
                             style: 'background: #fff',
-                            renderer: function(storeItem, item) {
+                            renderer: function(tooltip, storeItem, item) {
                                 var title = item.series.getTitle();
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
+                                tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
                             }
                         }
                     });
@@ -850,9 +850,9 @@ Ext.define('Ung.panel.Reports', {
                         tooltip: {
                             trackMouse: true,
                             style: 'background: #fff',
-                            renderer: function(storeItem, item) {
+                            renderer: function(tooltip, storeItem, item) {
                                 var title = item.series.getTitle();
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
+                                tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
                             }
                         }
                     });
@@ -870,9 +870,9 @@ Ext.define('Ung.panel.Reports', {
                         tooltip: {
                             trackMouse: true,
                             style: 'background: #fff',
-                            renderer: function(storeItem, item) {
+                            renderer: function(tooltip, storeItem, item) {
                                 var title = item.series.getTitle();
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
+                                tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(entry.units) + legendHint);
                             }
                         }
                     });
@@ -894,9 +894,9 @@ Ext.define('Ung.panel.Reports', {
                     tooltip: {
                         trackMouse: true,
                         style: 'background: #fff',
-                        renderer: function(storeItem, item) {
+                        renderer: function(tooltip, storeItem, item) {
                             var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                            this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(entry.units) + legendHint);
+                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(entry.units) + legendHint);
                         }
                     }
                 }];

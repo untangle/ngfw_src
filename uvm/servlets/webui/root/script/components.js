@@ -1148,8 +1148,8 @@ Ext.define("Ung.FaceplateMetric", {
                     trackMouse: true,
                     style: 'background: #fff',
                     dismissDelay: 2000,
-                    renderer: function(record, item) {
-                        this.setHtml(
+                    renderer: function(tooltip, record, item) {
+                        tooltip.setHtml(
                             i18n._("Session History:") + record.get('sessions') + '<br/>' +
                             i18n._("Current Sessions:") + me.currentSessions + '<br/>' +
                             i18n._("Click chart to open Sesion Viewer for") + " " + me.displayName
