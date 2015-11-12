@@ -21,13 +21,13 @@ tunnelUp = False
 
 # hardcoded for ats testing
 radiusHost = "10.112.56.71"
-l2tpServerHosts = ["10.111.56.49","10.112.11.53"]
+l2tpServerHosts = ["10.111.56.49","10.111.56.56","10.112.11.53"]
 l2tpClientHost = "10.111.56.33"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
 l2tpRadiusUser = "normal"
 l2tpRadiusPassword = "passwd"
-ipsecHost = "10.111.56.57"
+ipsecHost = "10.111.56.96"
 ipsecHostLANIP = "192.168.235.57"
 ipsecHostLAN = "192.168.235.0/24"
 configuredHostIPs = [('10.112.11.53','192.168.2.1','192.168.2.0/24'), # ATS
@@ -164,7 +164,7 @@ class IPsecTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.runCommand(("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecHostLANIP))
+            ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
         tunnelUp = True
 
@@ -175,7 +175,7 @@ class IPsecTests(unittest2.TestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(10) # wait for networking to restart
-        ipsecHostLANResult = remote_control.runCommand(("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecHostLANIP))
+        ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
         
     def test_040_windowsL2TPlocalDirectory(self):
