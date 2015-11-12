@@ -1,12 +1,4 @@
 //Reports servlet main
-Ext.Loader.setConfig({
-    enabled: true,
-    disableCaching: false,
-    paths: {
-        'Ext.ux': '/ext5/examples/ux'
-    }
-});
-
 var rpc = {}; // the main json rpc object
 var testMode = false;
 
@@ -96,7 +88,7 @@ Ext.define("Ung.Main", {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.languageSettings = result;
                 if(rpc.languageSettings.language) {
-                    Ung.Util.loadScript('/ext5/packages/ext-locale/build/ext-locale-' + rpc.languageSettings.language + '.js');
+                    Ung.Util.loadScript('/var/www/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
                     this.startApplication();
                 }
             },this));

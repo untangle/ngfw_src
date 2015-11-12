@@ -3,7 +3,6 @@ Ext.Loader.setConfig({
     enabled: true,
     disableCaching: false,
     paths: {
-        'Ext.ux': '/ext5/examples/ux',
         'Webui': 'script'
     }
 });
@@ -92,7 +91,7 @@ Ext.define("Ung.Main", {
         }
         document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
         if(rpc.languageSettings.language) {
-            Ung.Util.loadScript('/ext5/packages/ext-locale/build/ext-locale-' + rpc.languageSettings.language + '.js');
+            Ung.Util.loadScript('/var/www/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
         }
         Ung.VTypes.init(i18n);
         Ext.tip.QuickTipManager.init();

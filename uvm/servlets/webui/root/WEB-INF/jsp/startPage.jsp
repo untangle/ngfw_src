@@ -8,19 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>${companyName}</title>
     <style type="text/css">
-        @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=${buildStamp}";
-        @import "/ext5/packages/sencha-charts/build/classic/resources/sencha-charts-all-debug.css?s=${buildStamp}";
+        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=${buildStamp}";
+        @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=${buildStamp}";
     </style>
 
 <c:if test="${isDebug==false}">
-    <script type="text/javascript" src="/ext5/ext-all.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
-    <script type="text/javascript" src="/ext5/ext-all-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/ext-all-debug.js?s=?s=${buildStamp}"></script>
 </c:if>
 
-    <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext5/packages/sencha-charts/build/sencha-charts-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/packages/charts/classic/charts.js?s=${buildStamp}"></script>
     <script type="text/javascript">
         Ext.buildStamp='${buildStamp}';
     </script>

@@ -8,11 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Quarantine Digest</title>
     <style type="text/css">
-        @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css";
+        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css";
     </style>
     <uvm:skin src="quarantine.css" name="${skinName}"/>
-    <script type="text/javascript" src="/ext5/ext-all.js"></script>
-    <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js"></script>
+    <script type="text/javascript" src="/ext6/ext-all.js"></script>
+    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
     <script type="text/javascript" src="/script/i18n.js"></script>
