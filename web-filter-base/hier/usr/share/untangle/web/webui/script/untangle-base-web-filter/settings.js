@@ -723,7 +723,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     }
                 },{
                     xtype: "checkbox",
-                    boxLabel: i18n._("Pass if referers match Pass Sites"),
+                    boxLabel: i18n._("Pass if referers matches Pass Sites"),
                     hideLabel: true,
                     name: 'Pass Referers',
                     checked: this.settings.passReferers,

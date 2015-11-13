@@ -36,9 +36,7 @@ public class WebFilterSettings implements Serializable
     private String  unblockMode = UNBLOCK_MODE_NONE;
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
-    private Boolean enforceYoutubeForSchools = false;
     private Boolean blockQuic = true;
-    private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
@@ -124,18 +122,6 @@ public class WebFilterSettings implements Serializable
     public Boolean getBlockQuic() { return blockQuic; }
     public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
     
-    /**
-     * If true, enforces safe search on popular search engines.
-     */
-    public Boolean getEnforceYoutubeForSchools() { return enforceYoutubeForSchools; }
-    public void setEnforceYoutubeForSchools( Boolean newValue ) { this.enforceYoutubeForSchools = newValue; }
-
-    /**
-     * If true, enforces safe search on popular search engines.
-     */
-    public String getYoutubeForSchoolsIdentifier() { return youtubeForSchoolsIdentifier; }
-    public void setYoutubeForSchoolsIdentifier( String newValue ) { this.youtubeForSchoolsIdentifier = newValue; }
-
     /**
      * If true, ask for a password to unblock a site.
      */
