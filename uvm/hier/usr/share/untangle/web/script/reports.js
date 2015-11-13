@@ -780,7 +780,7 @@ Ext.define('Ung.panel.Reports', {
                     position: 'left',
                     grid: true,
                     minimum: 0,
-                    renderer: function (v) {
+                    renderer: function (axis, v) {
                         var significantValue = Ung.panel.Reports.significantFigures(v, 3);
                         return Ung.panel.Reports.renderValue(significantValue, entry);
                     }
