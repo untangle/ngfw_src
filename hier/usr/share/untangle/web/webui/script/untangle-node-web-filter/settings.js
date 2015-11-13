@@ -118,6 +118,19 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                     }, this)
                 }
             }
+        },{
+            xtype: "checkbox",
+            boxLabel: i18n._("Block QUIC (UDP port 443)"),
+            hideLabel: true,
+            name: 'Block QUIC',
+            checked: this.settings.blockQuic,
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        this.settings.blockQuic = checked;
+                    }, this)
+                }
+            }
         }]);
         //Extend bypass to allow optional passworded access.
         var combo = this.panelAdvanced.down('combo[name="user_bypass"]');
