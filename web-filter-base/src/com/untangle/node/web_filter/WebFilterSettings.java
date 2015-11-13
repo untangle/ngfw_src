@@ -37,6 +37,7 @@ public class WebFilterSettings implements Serializable
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
     private Boolean enforceYoutubeForSchools = false;
+    private Boolean blockQuic = true;
     private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = true;
@@ -120,6 +121,9 @@ public class WebFilterSettings implements Serializable
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
     public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
+    public Boolean getBlockQuic() { return blockQuic; }
+    public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
+    
     /**
      * If true, enforces safe search on popular search engines.
      */
