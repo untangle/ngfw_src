@@ -34,31 +34,6 @@ public class WebFilterHandler extends WebFilterBaseHandler
         }
 
         if (nonce == null) {
-            String host = requestHeader.getValue("Host");
-            URI uri = getRequestLine( session ).getRequestUri();
-
-            if (node.getSettings().getEnforceSafeSearch()) {
-                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + uri + "'");
-
-                URI safeSearchUri = UrlRewriter.getSafeSearchUri(host, uri);
-
-                if (safeSearchUri != null)
-                    getRequestLine( session ).setRequestUri(safeSearchUri);
-
-                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + getRequestLine( session ).getRequestUri() + "'");
-            }
-
-            if (node.getSettings().getEnforceYoutubeForSchools()) {
-                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + uri + "'");
-
-                URI youtubeForSchoolsUri = UrlRewriter.getYoutubeForSchoolsUri(host, uri, node.getSettings().getYoutubeForSchoolsIdentifier());
-
-                if (youtubeForSchoolsUri != null)
-                    getRequestLine( session ).setRequestUri(youtubeForSchoolsUri);
-
-                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + getRequestLine( session ).getRequestUri() + "'");
-            }
-
             releaseRequest( session );
         } else {
             node.incrementBlockCount();

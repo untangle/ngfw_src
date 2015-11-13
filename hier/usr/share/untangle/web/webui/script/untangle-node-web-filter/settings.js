@@ -68,43 +68,6 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                 }
             }
         },{
-            //Youtube for Schools
-            xtype: "checkbox",
-            boxLabel: i18n._("Enforce") + ' Youtube&#153; ' + i18n._("for Schools."),
-            hideLabel: true,
-            name: "Enforce Youtube for Schools",
-            checked: this.settings.enforceYoutubeForSchools,
-            listeners: {
-                "change": {
-                    fn: Ext.bind(function(elem, checked) {
-                        this.panelAdvanced.query('fieldset[name="enforceYoutubeForSchoolsFieldset"]')[0].setVisible( checked );
-                        this.settings.enforceYoutubeForSchools = checked;
-                    }, this)
-                }
-            }
-        },{
-            xtype: 'fieldset',
-            name: 'enforceYoutubeForSchoolsFieldset',
-            hidden: !this.settings.enforceYoutubeForSchools,
-            items: [{
-                xtype: "textfield",
-                maskRe: /[a-zA-Z0-9]+/,
-                regex: /[a-zA-Z0-9]+/,
-                fieldLabel: "Identifier",
-                tooltip: i18n._('Enter your unique Youtube for Schools indentifier provided by youtube. (Example: Jvagw07BzSxAntTxXxaBcx'),
-                passwordField: true,
-                name: "youtubeForSchoolsIdentifier",
-                value: this.settings.youtubeForSchoolsIdentifier,
-                listeners: {
-                    "change": {
-                        fn: function(elem,newValue,oldValue) {
-                            this.settings.youtubeForSchoolsIdentifier = newValue;
-                        },
-                        scope: this
-                    }
-                }
-            }]
-        },{
             //Safe search
             xtype: "checkbox",
             boxLabel: i18n._("Enforce safe search on popular search engines"),
