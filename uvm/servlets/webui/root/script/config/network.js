@@ -2754,6 +2754,7 @@ Ext.define('Webui.config.network', {
             name: 'Port Forward Rules',
             settingsCmp: this,
             hasReorder: true,
+            hasAdd: false,
             addAtTop: false,
             dataProperty:'portForwardRules',
             addSimpleRuleHandler:function() {
@@ -2787,7 +2788,7 @@ Ext.define('Webui.config.network', {
             },
             initComponent : function() {
                 this.tbar= [{
-                    text: i18n._('Add Simple Rule'),
+                    text: i18n._('Add'),
                     iconCls: 'icon-add-row',
                     handler: this.addSimpleRuleHandler,
                     scope: this
