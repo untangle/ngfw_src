@@ -880,8 +880,8 @@ Ext.define("Ung.SystemStats", {
 
         // hosts tooltip
         var hostsArr=[
-            '<div class="title">'+i18n._("Total Hosts:")+'</div>',
-            '<div class="values"><span name="totalHosts"></span></div>',
+            '<div class="title">'+i18n._("Active Hosts:")+'</div>',
+            '<div class="values"><span name="activeHosts"></span></div>',
             '<div class="title">'+i18n._("Click to open Host Viewer")+'</div>'
         ];
         this.hostsToolTip= Ext.create('Ext.tip.ToolTip',{
@@ -1000,7 +1000,7 @@ Ext.define("Ung.SystemStats", {
         }
         if(this.hostsToolTip.rendered) {
             toolTipEl=this.hostsToolTip.getEl();
-            toolTipEl.down("span[name=totalHosts]").dom.innerHTML=stats.hosts;
+            toolTipEl.down("span[name=activeHosts]").dom.innerHTML=stats.hosts;
         }
 
         if(this.cpuToolTip.rendered) {
