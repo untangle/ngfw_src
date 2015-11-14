@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 
 class SslInspectorManager
 {
+    private static final String apacheCertFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
+    private static final String apacheCertPass = "password";
     private static String keyStorePath = "/var/cache/untangle-ssl";
     private static String keyStorePass = "password";
     private static HashMap<String, String> validSubjectList = new HashMap<String, String>();
@@ -159,95 +161,108 @@ class SslInspectorManager
 
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
-        // certs are now stored in files named with the SHA-1 thumbprint
-        // instead of the old method of using the host name contained in the
-        // server certificate which could cause us to load the wrong one
-        String certThumbprint = generateThumbPrint(baseCert);
-        String certFileName = (certThumbprint + ".p12");
-        String certPathFile = keyStorePath + "/" + certFileName;
-        String certHostName = new String();
         KeyStore keyStore = null;
 
-        // grab the subject distinguished name from the certificate
-        LdapName ldapDN = new LdapName(baseCert.getSubjectDN().getName());
-
-        // we only want the CN from the certificate
-        for (Rdn rdn : ldapDN.getRdns()) {
-            if (rdn.getType().equals("CN") == false) continue;
-            certHostName += rdn.getValue().toString();
-            break;
+        // for SMTP we can just use our own certificate rather than creating a fake
+        if (session.getServerPort() == 25) {
+            // our cert generator script creates certificates in PKCS12 format
+            keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(new FileInputStream(apacheCertFile), apacheCertPass.toCharArray());
         }
 
-        // by doing sync on the keyStorePath we prevent a certificate from
-        // being generated multiple times when several threads all attempt
-        // to create a certificate that doesn't yet exist.
-        synchronized (keyStorePath) {
-            // see if the cert file already exists
-            File tester = new File(certPathFile);
+        // for everything else we generate a fake cert that mimics the server cert
+        else {
+            // certs are now stored in files named with the SHA-1 thumbprint
+            // instead of the old method of using the host name contained in the
+            // server certificate which could cause us to load the wrong one
+            String certThumbprint = generateThumbPrint(baseCert);
+            String certFileName = (certThumbprint + ".p12");
+            String certPathFile = keyStorePath + "/" + certFileName;
+            String certHostName = new String();
 
-            // file not found so call the external script to generate a new cert
-            if ((tester.exists() == false) || (tester.length() == 0)) {
-                logger.info("Creating new certificate for " + certHostName + " in " + certFileName);
-                generateFakeCertificate(baseCert, certFileName);
+            // grab the subject distinguished name from the certificate
+            LdapName ldapDN = new LdapName(baseCert.getSubjectDN().getName());
+
+            // we only want the CN from the certificate
+            for (Rdn rdn : ldapDN.getRdns()) {
+                if (rdn.getType().equals("CN") == false) continue;
+                certHostName += rdn.getValue().toString();
+                break;
             }
 
-            else {
-                logger.debug("Loading existing certificate " + certPathFile);
-            }
-        }
-
-        // our cert generator script creates certificates in PKCS12 format
-        keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(new FileInputStream(certPathFile), keyStorePass.toCharArray());
-
-        /*
-         * Because Java 6 doesn't support SNI we see cases where the cert
-         * returned by a server without SNI may be different than the cert
-         * returned if SNI had been included in the request. I've seen this with
-         * t0.gstatic.com (and also t1, t2, and t3) where the server returns a
-         * generic google cert. The end result is the browser may show a
-         * hostname/certname warning message, or may ignore the content
-         * altogether. As a workaround, if the client included an SNI hostname,
-         * we search the CN and ALT names in the standard server cert to make
-         * sure it will validate. If not, we create a special certificate that
-         * matches the SNI received from the client.
-         */
-
-        // grab the SNI hostname so we can check against loaded cert
-        String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-        X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
-        if ((node.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
-
-            // we put special certs in files named with the SNI hostname 
-            String hackFileName = (sniHostname + ".p12");
-            String hackPathFile = keyStorePath + "/" + hackFileName;
-
+            // by doing sync on the keyStorePath we prevent a certificate from
+            // being generated multiple times when several threads all attempt
+            // to create a certificate that doesn't yet exist.
             synchronized (keyStorePath) {
-                // see if the special file already exists
-                File special = new File(hackPathFile);
+                // see if the cert file already exists
+                File tester = new File(certPathFile);
 
                 // file not found so call the external script to generate a new cert
-                if ((special.exists() == false) || (special.length() == 0)) {
-                    logger.info("Creating new certificate for " + sniHostname + " in " + hackFileName);
-
-                    // call the external script to generate the new certificate
-                    String argList[] = new String[2];
-                    argList[0] = hackFileName;
-                    argList[1] = "/CN=" + sniHostname;
-                    String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-                    logger.debug("SCRIPT_ARGS = " + argString);
-                    UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+                if ((tester.exists() == false) || (tester.length() == 0)) {
+                    logger.info("Creating new certificate for " + certHostName + " in " + certFileName);
+                    generateFakeCertificate(baseCert, certFileName);
                 }
 
                 else {
-                    logger.debug("Loading existing certificate " + hackPathFile);
+                    logger.debug("Loading existing certificate " + certPathFile);
                 }
             }
 
-            // now that we know the special cert file exists we initialize
-            // the keystore again and load it with the special certificate
+            // our cert generator script creates certificates in PKCS12 format
             keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(hackPathFile), keyStorePass.toCharArray());
+            keyStore.load(new FileInputStream(certPathFile), keyStorePass.toCharArray());
+
+            /*
+             * Because Java 6 doesn't support SNI we see cases where the cert
+             * returned by a server without SNI may be different than the cert
+             * returned if SNI had been included in the request. I've seen this
+             * with t0.gstatic.com (and also t1, t2, and t3) where the server
+             * returns a generic google cert. The end result is the browser may
+             * show a hostname/certname warning message, or may ignore the
+             * content altogether. As a workaround, if the client included an
+             * SNI hostname, we search the CN and ALT names in the standard
+             * server cert to make sure it will validate. If not, we create a
+             * special certificate that matches the SNI received from the
+             * client.
+             */
+
+            // grab the SNI hostname so we can check against loaded cert
+            String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
+            if ((node.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
+
+                // we put special certs in files named with the SNI hostname 
+                String hackFileName = (sniHostname + ".p12");
+                String hackPathFile = keyStorePath + "/" + hackFileName;
+
+                synchronized (keyStorePath) {
+                    // see if the special file already exists
+                    File special = new File(hackPathFile);
+
+                    // file not found so call the external script to generate a new cert
+                    if ((special.exists() == false) || (special.length() == 0)) {
+                        logger.info("Creating new certificate for " + sniHostname + " in " + hackFileName);
+
+                        // call the external script to generate the new certificate
+                        String argList[] = new String[2];
+                        argList[0] = hackFileName;
+                        argList[1] = "/CN=" + sniHostname;
+                        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
+                        logger.debug("SCRIPT_ARGS = " + argString);
+                        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+                    }
+
+                    else {
+                        logger.debug("Loading existing certificate " + hackPathFile);
+                    }
+                }
+
+                // now that we know the special cert file exists we initialize
+                // the keystore again and load it with the special certificate
+                keyStore = KeyStore.getInstance("PKCS12");
+                keyStore.load(new FileInputStream(hackPathFile), keyStorePass.toCharArray());
+            }
+
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");

@@ -385,18 +385,19 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     /*
      * If we're on the client side and dataMode is not yet active, we have the
      * initial TLS ClientHello message. We first try to extract the SNI hostname
-     * from the message. Next we check the session against the RuleCondition. This
-     * is the only time we can decide to release the session without messing up
-     * the SSL handshake, since once we kick off either side we can't extricate
-     * ourselves from playing man-in-the-middle. See RFC-5746 for details. If we
-     * match a rule configured for ignore then we release the session and pass
-     * the initial client chunk directly to the server. If no ignore rules
-     * match, the we setup to inspect the stream. First we need to kick off the
-     * server handshake. We can't do the client handshake until the server side
-     * is done since we need the server certificate to generate a fake cert for
-     * the client. So on the first packet from the client we save the initial
-     * chunk of data for later and pass a dummy message to the server unparser
-     * to start the handshake between us and the external server.
+     * from the message. Next we check the session against the RuleCondition.
+     * This is the only time we can decide to release the session without
+     * messing up the SSL handshake, since once we kick off either side we can't
+     * extricate ourselves from playing man-in-the-middle. See RFC-5746 for
+     * details. If we match a rule configured for ignore then we release the
+     * session and pass the initial client chunk directly to the server. If no
+     * ignore rules match, the we setup to inspect the stream. First we need to
+     * kick off the server handshake. We can't do the client handshake until the
+     * server side is done since we need the server certificate to generate a
+     * fake cert for the client. So on the first packet from the client we save
+     * the initial chunk of data for later and pass a dummy message to the
+     * server unparser to start the handshake between us and the external
+     * server.
      */
 
     private void handleClientHello(NodeTCPSession session, ByteBuffer data) throws Exception
@@ -459,8 +460,10 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logger.debug("SSL_INSPECTOR_SNI_HOSTNAME = " + sniHostname);
         }
 
-        // grab the cached certificate for the server
-        serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(session.getServerAddr().getHostAddress().toString());
+        // grab the cached certificate for the server but only for non-SMTP traffic 
+        if (session.getServerPort() != 25) {
+            serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(session.getServerAddr().getHostAddress().toString());
+        }
 
         // attach the subject and issuer names for use by the rule matcher
         if (serverCert != null) {
@@ -613,9 +616,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             manager.setPeerCertificate(session.getServerAddr().getHostAddress(), (java.security.cert.X509Certificate) peerCert);
             logger.debug("CERTIFICATE = " + peerCert.toString());
 
-            // we also save the certificate in the global certificate cache
-            // so it will always be up to date
-            UvmContextFactory.context().certCacheManager().updateServerCertificate(session.getServerAddr().getHostAddress().toString(), (java.security.cert.X509Certificate) peerCert);
+            // if not SMTP we also save the certificate in the global
+            // certificate cache so it will always be up to date
+            if (session.getServerPort() != 25) {
+                UvmContextFactory.context().certCacheManager().updateServerCertificate(session.getServerAddr().getHostAddress().toString(), (java.security.cert.X509Certificate) peerCert);
+            }
 
             // Once the server side handshake is finished we need to handle the
             // client side handshake so we craft a wakeup message and send
