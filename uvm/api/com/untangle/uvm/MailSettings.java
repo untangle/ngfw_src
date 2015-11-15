@@ -14,8 +14,10 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class MailSettings implements Serializable, JSONString
 {
+    public enum SendMethod { RELAY, DIRECT, CUSTOM } 
+        
     private String fromAddress;
-    private boolean useMxRecords = true;
+    private SendMethod sendMethod = SendMethod.RELAY;
     private String smtpHost;
     private int smtpPort = 25;
     private String authUser;
@@ -28,13 +30,13 @@ public class MailSettings implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
+
     /**
-     * Specifies if we should send emails using MX records or the
-     * outgoing mail server.
+     * Specifies if we should send email using our mail relay server, direct via
+     * MX records, or using the custom configured mail server.
      */
-    public boolean isUseMxRecords() { return useMxRecords; }
-    public void setUseMxRecords(boolean useMxRecords) { this.useMxRecords = useMxRecords; }
+    public SendMethod getSendMethod() { return sendMethod; }
+    public void setSendMethod(SendMethod sendMethod) { this.sendMethod = sendMethod; }
 
     /**
      * The SMTP mail host used to send internal reports and error

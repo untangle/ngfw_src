@@ -57,9 +57,15 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class MailSenderImpl implements MailSender
 {
-    public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
-
     public static final String Mailer = "UVM MailSender";
+    
+    /**
+     * When using the cloud based mail relay server, we will connect to xinetd
+     * on localhost, which will launch stunnel to connect to the cloud server
+     * which will then pass the traffic to the relay server.  This is the port
+     * where the localhost inetd is listening for these connections.
+     */
+    public static int STUNNEL_RELAY_PORT = 2525;
 
     // JavaMail constants
     private static final String MAIL_HOST_PROP = "mail.host";
@@ -355,7 +361,7 @@ public class MailSenderImpl implements MailSender
                 lines.add(str);
                 str = br.readLine();
             }
-            // String host = settings.getSmtpHost();
+
             String logId = getMessageIdFromLog(messageId, lines);
             if ( logId == null ) {
                 return i18nUtil.tr("Message failed to send.");
@@ -415,123 +421,135 @@ public class MailSenderImpl implements MailSender
      */
     private void writeConfiguration()
     {
-        File exim_dir = new File(EXIM_CONF_DIR);
-        if (exim_dir.isDirectory()) {
+        NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        String hostName = null;
+        if (netSettings != null)
+            hostName = netSettings.getHostName();
+        if (hostName == null) {
+            logger.warn("null hostname, using untangle-server");
+            hostName = "untangle-server";
+        }
 
-            NetworkSettings netSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-            String hostName = null;
-            if (netSettings != null)
-                hostName = netSettings.getHostName();
-            if (hostName == null) {
-                logger.warn("null hostname, using untangle-server");
-                hostName = "untangle-server";
-            }
+        StringBuilder sb = new StringBuilder();
+        sb.append(EXIM_CONF_START);
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(EXIM_CONF_START);
+        sb.append("dc_other_hostnames='");
+        sb.append(hostName);
+        sb.append("'\n");
 
-            sb.append("dc_other_hostnames='");
-            sb.append(hostName);
+        sb.append("dc_readhost='");
+        sb.append(hostName);
+        sb.append("'\n");
+            
+        if ( settings.getSendMethod() == MailSettings.SendMethod.DIRECT ) {
+            /**
+             * Send mail directly using MX Records
+             */
+            sb.append("dc_eximconfig_configtype='");
+            sb.append("internet");
             sb.append("'\n");
 
-            sb.append("dc_readhost='");
-            sb.append(hostName);
-            sb.append("'\n");
-            
-            if ( settings.isUseMxRecords() ) {
-                /**
-                 * Send mail directly using MX Records
-                 */
-                sb.append("dc_eximconfig_configtype='");
-                sb.append("internet");
-                sb.append("'\n");
-
-                sb.append("dc_smarthost=''\n");
-
-
-                /**
-                 * Substitute the port in the exim template
-                 * Set it back to 25 in case it was previously configured to something else in smarthost
-                 */
-                // remove all "  port = xx"
-                String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
-                UvmContextFactory.context().execManager().exec(cmd1);
-                // insert new "  port = xx"
-                String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g\" -i " + EXIM_TEMPLATE_FILE;
-                UvmContextFactory.context().execManager().exec(cmd2);
-
-            } else {
-                /**
-                 * Send mail to smarthost
-                 */
-                sb.append("dc_eximconfig_configtype='");
-                sb.append("satellite");
-                sb.append("'\n");
-
-                sb.append("dc_smarthost='");
-                sb.append(settings.getSmtpHost());
-                sb.append("'\n");
-
-                /**
-                 * write auth file
-                 */
-                String user = settings.getAuthUser();
-                if ("".equals(user)) user = null;
-                String pass = settings.getAuthPass();
-                if ("".equals(pass)) pass = null;
-                
-                if ((user == null && pass != null) || (user != null && pass == null)) {
-                    logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
-                    user = null;
-                    pass = null;
-                }
-                else if (user != null) {
-                    StringBuilder sbpasswd = new StringBuilder();
-                    sbpasswd.append("*");
-                    sbpasswd.append(":");
-                    sbpasswd.append(user);
-                    sbpasswd.append(":");
-                    sbpasswd.append(pass);
-                    sbpasswd.append("\n");
-                    this.writeFile( sbpasswd, EXIM_AUTH_FILE );
-                }
-                else if (user == null && pass == null) {
-                    StringBuilder blank = new StringBuilder();
-                    blank.append("");
-                    this.writeFile( blank, EXIM_AUTH_FILE );
-                }
-                    
-
-                /**
-                 * Substitute the port in the exim template
-                 */
-                // remove all "  port = xx"
-                String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
-                UvmContextFactory.context().execManager().exec(cmd1);
-                // insert new "  port = xx"
-                String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + settings.getSmtpPort() + "|g\" -i " + EXIM_TEMPLATE_FILE;
-                UvmContextFactory.context().execManager().exec(cmd2);
-            }
-            
-            this.writeFile( sb, EXIM_CONF_FILE );
+            sb.append("dc_smarthost=''\n");
 
             /**
-             * touch all files so we know that a sync has occurred
+             * Substitute the port in the exim template
+             * Set it back to 25 in case it was previously configured to something else in smarthost
              */
-            new File( EXIM_AUTH_FILE ).setLastModified( System.currentTimeMillis() );
-            new File( EXIM_TEMPLATE_FILE ).setLastModified( System.currentTimeMillis() );
-            new File( EXIM_CONF_FILE ).setLastModified( System.currentTimeMillis() );
+            // remove all "  port = xx"
+            String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
+            UvmContextFactory.context().execManager().exec(cmd1);
+            // insert new "  port = xx"
+            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g\" -i " + EXIM_TEMPLATE_FILE;
+            UvmContextFactory.context().execManager().exec(cmd2);
+
+        } else {
+            /**
+             * Send mail to smarthost
+             */
+            sb.append("dc_eximconfig_configtype='");
+            sb.append("satellite");
+            sb.append("'\n");
+
+            /**
+             * If we're doing cloud relay, we must use 127.0.0.2 because exim knows
+             * that 127.0.0.1 is the local host, and it gets mad and freezes the mail.
+             * Removing "dc_local_interfaces='127.0.0.1'\n" from the configuration
+             * also solves the problem, but then exim listens on all interfaces.
+             * My solution was to have xinetd only bind to 127.0.0.2 which linux
+             * loopback magic seems to allow.  So it looks crazy but actually works.
+             */
+            String targetHost = null;
+            if (settings.getSendMethod() == MailSettings.SendMethod.CUSTOM) targetHost = settings.getSmtpHost();
+            if (settings.getSendMethod() == MailSettings.SendMethod.RELAY) targetHost = "127.0.0.2"; // dot-two is NOT a typo
+
+            sb.append("dc_smarthost='");
+            sb.append(targetHost);
+            sb.append("'\n");
+
+            /**
+             * write auth file
+             */
+            String user = settings.getAuthUser();
+            if ("".equals(user)) user = null;
+            String pass = settings.getAuthPass();
+            if ("".equals(pass)) pass = null;
                 
-            // remove any paniclog from previous configs
-            if ( new File("/var/log/exim4/paniclog").exists() ) {
-                UvmContextFactory.context().execManager().exec("rm -rf /var/log/exim4/paniclog");
+            if ((user == null && pass != null) || (user != null && pass == null)) {
+                logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
+                user = null;
+                pass = null;
             }
+            else if (user != null) {
+                StringBuilder sbpasswd = new StringBuilder();
+                sbpasswd.append("*");
+                sbpasswd.append(":");
+                sbpasswd.append(user);
+                sbpasswd.append(":");
+                sbpasswd.append(pass);
+                sbpasswd.append("\n");
+                this.writeFile( sbpasswd, EXIM_AUTH_FILE );
+            }
+            else if (user == null && pass == null) {
+                StringBuilder blank = new StringBuilder();
+                blank.append("");
+                this.writeFile( blank, EXIM_AUTH_FILE );
+            }
+
+            /**
+             * Substitute the port in the exim template
+             */
             
-            // restart exim
-            // run it in the background because this runs whenever networking is saved
-            // and this takes several seconds
-            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM + " >/dev/null 2>&1 & " );
+            int targetPort = 0;
+            if (settings.getSendMethod() == MailSettings.SendMethod.CUSTOM) targetPort = settings.getSmtpPort();
+            if (settings.getSendMethod() == MailSettings.SendMethod.RELAY) targetPort = STUNNEL_RELAY_PORT; 
+            
+            // remove all "  port = xx"
+            String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
+            UvmContextFactory.context().execManager().exec(cmd1);
+            // insert new "  port = xx"
+            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + targetPort + "|g\" -i " + EXIM_TEMPLATE_FILE;
+            UvmContextFactory.context().execManager().exec(cmd2);
         }
+            
+        this.writeFile( sb, EXIM_CONF_FILE );
+
+        /**
+         * touch all files so we know that a sync has occurred
+         */
+        new File( EXIM_AUTH_FILE ).setLastModified( System.currentTimeMillis() );
+        new File( EXIM_TEMPLATE_FILE ).setLastModified( System.currentTimeMillis() );
+        new File( EXIM_CONF_FILE ).setLastModified( System.currentTimeMillis() );
+                
+        // remove any paniclog from previous configs
+        if ( new File("/var/log/exim4/paniclog").exists() ) {
+            UvmContextFactory.context().execManager().exec("rm -rf /var/log/exim4/paniclog");
+        }
+            
+        // restart exim
+        // run it in the background because this runs whenever networking is saved
+        // and this takes several seconds
+        UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM + " >/dev/null 2>&1 & " );
+
     }
 
     /**
@@ -545,15 +563,10 @@ public class MailSenderImpl implements MailSender
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, settings.getFromAddress());
         commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
 
-        File exim_dir = new File(EXIM_CONF_DIR);
-        if (exim_dir.isDirectory()) {
-            commonProps.put(MAIL_HOST_PROP, "localhost");
-            // Sometimes Java can't find our name, and exim allows connections
-            // from localhost so just hardwire it.
-            commonProps.put(MAIL_SMTP_LOCALHOST_PROP, "localhost");
-        } else if ( !settings.isUseMxRecords() ) {
-            commonProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
-        }
+        commonProps.put(MAIL_HOST_PROP, "localhost");
+        // Sometimes Java can't find our name, and exim allows connections
+        // from localhost so just hardwire it.
+        commonProps.put(MAIL_SMTP_LOCALHOST_PROP, "localhost");
 
         Properties reportProps = (Properties) commonProps.clone();
         mailSession = Session.getInstance(reportProps);
@@ -907,23 +920,7 @@ public class MailSenderImpl implements MailSender
                 transport.addTransportListener(tl);
             }
             
-            File exim_dir = new File(EXIM_CONF_DIR);
-            if (exim_dir.isDirectory()) {
-                transport.connect(host, null, null);
-            } else {
-                int port = settings.getSmtpPort();
-                String user = settings.getAuthUser();
-                String pass = settings.getAuthPass();
-                if ((user == null && pass != null) || (user != null && pass == null)) {
-                    logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
-                    user = null;
-                    pass = null;
-                }
-                transport.setStartTLS(false);
-                transport.setLocalHost("");
-                transport.connect(host, port, user, pass);
-            }
-
+            transport.connect(host, null, null);
             transport.sendMessage(msg, recipients);
         } catch (MessagingException x) {
             throw x;

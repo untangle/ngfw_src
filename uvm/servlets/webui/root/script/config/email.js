@@ -47,20 +47,6 @@ Ext.define('Webui.config.email', {
         Ext.getCmp('email_smtpLogin').setVisible(useAuthentication);
         Ext.getCmp('email_smtpPassword').setVisible(useAuthentication);
 
-        var useSmtp = Ext.getCmp('email_smtpEnabled').getValue();
-        if(useSmtp == false) {
-            Ext.getCmp('email_smtpHost').disable();
-            Ext.getCmp('email_smtpPort').disable();
-            Ext.getCmp('email_smtpUseAuthentication').disable();
-            Ext.getCmp('email_smtpLogin').disable();
-            Ext.getCmp('email_smtpPassword').disable();
-        } else {
-            Ext.getCmp('email_smtpHost').enable();
-            Ext.getCmp('email_smtpPort').enable();
-            Ext.getCmp('email_smtpUseAuthentication').enable();
-            Ext.getCmp('email_smtpLogin').enable();
-            Ext.getCmp('email_smtpPassword').enable();
-        }
         Ung.Util.clearDirty(this.panelOutgoingServer);
 
         if ( this.isMailLoaded() ) {
@@ -142,6 +128,28 @@ Ext.define('Webui.config.email', {
         }, this), emailAddress);
     },
     buildOutgoingServer: function() {
+        var onUpdateSendMethod = Ext.bind(function( elem, checked ) {
+            if (! checked) return;
+            this.getMailSettings().sendMethod = elem.inputValue;
+            if (elem.inputValue == "CUSTOM") {
+                Ext.getCmp('email_smtpHost').enable();
+                Ext.getCmp('email_smtpPort').enable();
+                Ext.getCmp('email_smtpUseAuthentication').enable();
+                Ext.getCmp('email_smtpLogin').enable();
+                Ext.getCmp('email_smtpPassword').enable();
+            } else {
+                Ext.getCmp('email_smtpHost').disable();
+                Ext.getCmp('email_smtpPort').disable();
+                Ext.getCmp('email_smtpUseAuthentication').disable();
+                Ext.getCmp('email_smtpLogin').disable();
+                Ext.getCmp('email_smtpPassword').disable();
+            }
+        }, this);
+        var onRenderSendMethod = Ext.bind(function( elem ) {
+            elem.setValue(this.getMailSettings().sendMethod);
+            elem.clearDirty();
+        }, this);
+
         this.panelOutgoingServer = Ext.create('Ext.panel.Panel', {
             name: 'Outgoing Server',
             helpSource: 'email_outgoing_server',
@@ -241,47 +249,45 @@ Ext.define('Webui.config.email', {
             items: [{
                 title: i18n._('Outgoing Email Server'),
                 items: [{
-                    xtype: 'label',
-                    html: Ext.String.format(i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify a valid SMTP server that will relay mail for the {0} Server."),
-                            rpc.companyName)
+                    xtype: 'component',
+                    margin: '0 200 10 0',
+                    html: Ext.String.format(i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the cloud hosted mail relay server is preferred. Alternatively, you can configure mail to be sent directly to mail account servers. You can also specify a valid SMTP server that will relay mail for the {0} Server."), rpc.companyName)
                 }, {
                     xtype: 'radio',
-                    id: 'email_smtpDisabled',
-                    name: 'email_smtpEnabled',
-                    boxLabel: i18n._('Send email directly (default)'),
+                    name: "sendMethod",
+                    id: 'email_sendMethod_relay',
+                    boxLabel: i18n._('Send email using the cloud hosted mail relay server'),
                     hideLabel: true,
+                    inputValue: "RELAY",
                     style: "margin-left: 50px;",
-                    checked: this.getMailSettings().useMxRecords,
                     listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, checked) {
-                                if (checked) {
-                                    this.getMailSettings().useMxRecords = true;
-                                    Ext.getCmp('email_smtpHost').disable();
-                                    Ext.getCmp('email_smtpPort').disable();
-                                    Ext.getCmp('email_smtpUseAuthentication').disable();
-                                    Ext.getCmp('email_smtpLogin').disable();
-                                    Ext.getCmp('email_smtpPassword').disable();
-                                }
-                                else {
-                                    this.getMailSettings().useMxRecords = false;
-                                    Ext.getCmp('email_smtpHost').enable();
-                                    Ext.getCmp('email_smtpPort').enable();
-                                    Ext.getCmp('email_smtpUseAuthentication').enable();
-                                    Ext.getCmp('email_smtpLogin').enable();
-                                    Ext.getCmp('email_smtpPassword').enable();
-                                }
-                            }, this)
-                        }
+                        "change": onUpdateSendMethod,
+                        "afterrender": onRenderSendMethod
                     }
                 }, {
                     xtype: 'radio',
-                    id: 'email_smtpEnabled',
-                    name: 'email_smtpEnabled',
+                    name: "sendMethod",
+                    id: 'email_sendMethod_direct',
+                    boxLabel: i18n._('Send email directly'),
+                    hideLabel: true,
+                    inputValue: "DIRECT",
+                    style: "margin-left: 50px;",
+                        listeners: {
+                            "change": onUpdateSendMethod,
+                            "afterrender": onRenderSendMethod
+                        }
+                }, {
+                    xtype: 'radio',
+                    name: "sendMethod",
+                    id: 'email_sendMethod_custom',
                     boxLabel: i18n._('Send email using the specified SMTP Server'),
                     hideLabel: true,
+                    inputValue: "CUSTOM",
                     style: "margin-left: 50px;",
-                    checked: !this.getMailSettings().useMxRecords
+                        listeners: {
+                            "change": onUpdateSendMethod,
+                            "afterrender": onRenderSendMethod
+                        }
                 }, {
                     xtype: 'fieldset',
                     height: 150,
@@ -1188,7 +1194,7 @@ Ext.define('Webui.config.email', {
         }
 
         // CHECK THAT A HOSTNAME/IP IS GIVEN if using specified SMTP server
-        if (!this.getMailSettings().useMxRecords && hostCmp.getValue().length == 0) {
+        if ((this.getMailSettings().sendMethod == "CUSTOM") && (hostCmp.getValue().length == 0)) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._('A Server Address or Hostname must be specified for an SMTP server.'),
                 Ext.bind(function () {
                     this.tabs.setActiveTab(this.panelOutgoingServer);
@@ -1210,7 +1216,7 @@ Ext.define('Webui.config.email', {
         }
 
         // SAVE SETTINGS
-        if (!this.getMailSettings().useMxRecords) {
+        if (this.getMailSettings().sendMethod == "CUSTOM") {
             this.getMailSettings().smtpHost = hostCmp.getValue();
             this.getMailSettings().smtpPort = portCmp.getValue();
             //set login/password to blank if the 'Use Authentication' is not checked
