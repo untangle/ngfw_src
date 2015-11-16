@@ -141,7 +141,7 @@ class UvmTests(unittest2.TestCase):
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = remote_control.clientIP
         newMailsettings['smtpPort'] = "6800"
-        newMailsettings['useMxRecords'] = False
+        newMailsettings['sendMethod'] = 'CUSTOM'
 
         uvmContext.mailSender().setSettings(newMailsettings)
         time.sleep(10) # give it time for exim to restart
