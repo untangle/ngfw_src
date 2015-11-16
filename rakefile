@@ -91,7 +91,7 @@ task :devel => [:build, :hier, :installuvmcore] do
   Rake::Task[BuildEnv::SRC.installTarget].invoke
 end
 
-task :i18n => [:builduvmcore ] do
+task :i18n => [:builduvmcore, :targets ] do
   Rake::Task[BuildEnv::SRC.i18nTarget].invoke
 end
 

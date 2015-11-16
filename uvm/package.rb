@@ -106,11 +106,17 @@ if ( jsFiles.length > 0 )
   end
 end
 
+poFiles = FileList["./i18ntools/po/**/*.po"]
+if ( poFiles.length > 0 ) 
+  poFiles.each do |f|
+    pol = PoMsgFmtTarget.new(uvm_lib, [f], 'msgfmt', f, "#{uvm.distDirectory}")
+    BuildEnv::SRC.i18nTarget.register_dependency(pol)
+  end
+end
+
 # Localization
 JavaMsgFmtTarget.make_po_targets(uvm, "#{BuildEnv::SRC.home}/i18ntools/po",
-                                 "#{uvm.distDirectory}/usr/share/untangle/lang/",
-                                 'untangle').each do |t|
-  BuildEnv::SRC.i18nTarget.register_dependency(t)
-  # Comment out to avoid always building in dev env. install target already depends on i18n target... Why is this needed?
-  # BuildEnv::SRC.installTarget.register_dependency(t)
+                                  "#{uvm.distDirectory}/usr/share/untangle/lang/",
+                                  'untangle').each do |t|
+   BuildEnv::SRC.i18nTarget.register_dependency(t)
 end

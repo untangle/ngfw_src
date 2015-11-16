@@ -492,6 +492,44 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
+class PoMsgFmtTarget < Target
+  attr_reader :filename
+
+  def initialize(package, deps, taskName, filename, dest_dir)
+    @targetName = "msgfmt:#{package.name}-#{taskName}-#{filename}"
+    super(package, deps, @targetName)
+    @filename = filename
+    @basename = File.basename(@filename, '.po')
+    @lang = @basename.split('-').last
+    @lang_root_dir = "#{dest_dir}/usr/share/untangle/lang"
+    @lang_dest_dir = "#{@lang_root_dir}/official/#{@lang}"
+    @locale_dest_dir = "#{dest_dir}/usr/share/locale/#{@lang}/LC_MESSAGES"
+  end
+
+  def to_s
+    @targetName
+  end
+
+  protected
+
+  def build()
+    info "[msgfmt  ] #{@filename}"
+    ensureDirectory @lang_root_dir
+    command = "msgfmt --java2 -d #{@lang_root_dir} -r \"i18n.official.#{@basename.split('-').first}\" -l #{@lang} #{@filename} 2> /dev/null"
+    raise "msgfmt failed: " + command unless Kernel.system command
+
+    ensureDirectory @lang_dest_dir
+    command = "msgfmt -o #{@lang_dest_dir}/#{@basename}.mo #{@filename} 2> /dev/null"
+    raise "msgfmt failed: " + command unless Kernel.system command
+
+    ensureDirectory @locale_dest_dir
+    command = "msgfmt -o #{@locale_dest_dir}/#{@basename}.mo #{@filename} 2> /dev/null"
+    raise "msgfmt failed: " + command unless Kernel.system command
+
+  end
+end
+
+
 class JavaMsgFmtTarget
   include Rake::DSL if defined?(Rake::DSL)
 
