@@ -8,11 +8,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-spam-blocker-lite
     untangle-node-directory-connector untangle-node-bandwidth-control untangle-node-configuration-backup
     untangle-node-branding-manager untangle-node-spam-blocker
-<<<<<<< .mine
-    untangle-node-faild untangle-node-ipsec-vpn
-=======
     untangle-node-wan-failover untangle-node-ipsec
->>>>>>> .r41260
     untangle-node-policy-manager untangle-node-web-filter untangle-node-wan-balancer
     untangle-node-live-support untangle-node-web-cache untangle-node-classd
     untangle-node-captive-portal untangle-casing-ssl'
@@ -69,7 +65,7 @@ case "$1" in
     find $HADES/src -type f -name '*.java' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot
 
     # jspx files
-    find $WORK/src/uvm/servlets -type f -name '*.jspx' | xargs ruby $WORK/src/i18ntools/xi18ntags.rb >> ./tmp_keys.pot
+#    find $WORK/src/uvm/servlets -type f -name '*.jspx' | xargs ruby $WORK/src/i18ntools/xi18ntags.rb >> ./tmp_keys.pot
 
     msgcat tmp_keys.pot $WORK/src/uvm/po/fmt_keys.pot -o tmp_keys.pot
     msgmerge -U -N  $WORK/src/uvm/po/$1.pot tmp_keys.pot
@@ -82,11 +78,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-<<<<<<< .mine
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reports"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth-control"|"untangle-node-configuration-backup"|"untangle-node-faild"|"untangle-node-policy-manager"|"untangle-node-faild"|"untangle-node-wan-balancer"|"untangle-node-web-cache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding-manager"|"untangle-node-ipsec-vpn"|"untangle-node-live-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
-=======
 "untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reports"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth-control"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy-manager"|"untangle-node-wan-failover"|"untangle-node-wan-balancer"|"untangle-node-web-cache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding-manager"|"untangle-node-ipsec"|"untangle-node-live-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
->>>>>>> .r41260
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""
@@ -115,7 +107,7 @@ case "$1" in
         xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot $WORK/src/http-casing/src/com/untangle/node/http/BlockPageUtil.java
 
         # jspx
-        find $WORK/src/uvm/servlets -type f -name '*.jspx' | xargs ruby $WORK/src/i18ntools/xi18ntags.rb >> ./tmp_keys.pot
+#        find $WORK/src/uvm/servlets -type f -name '*.jspx' | xargs ruby $WORK/src/i18ntools/xi18ntags.rb >> ./tmp_keys.pot
     fi
     # spam-blocker-base
     if [ $1 = "untangle-node-phish-blocker" ] || [ $1 = "untangle-node-spam-blocker-lite" ] || [ $1 = "untangle-node-spam-blocker" ] ; then
