@@ -116,19 +116,18 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         test_untangle_IP = socket.gethostbyname("test.untangle.com")
 
         sendSpamMail()
-
+        
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
         assert( events != None )
-        # Verify Quarantined events occurred..
-        assert(events['list'][0]['c_server_addr'] == test_untangle_IP)
-        assert(events['list'][0]['s_server_port'] == 25)
-        assert(events['list'][0]['addr'] == 'qa@example.com')
-        assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
-        if (not 'spam_blocker_score' in events['list'][0]):
-            assert(events['list'][0]['spam_blocker_lite_score'] >= 3.0)
-        else:
-            assert(events['list'][0]['spam_blocker_score'] >= 3.0)
-        assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
+        assert( events.get('list') != None )
+
+        print events['list'][0]
+        found = global_functions.check_events( events.get('list'), 10,
+                                               's_server_addr', test_untangle_IP,
+                                               's_server_port', 25,
+                                               'addr', 'qa@example.com',
+                                               'c_client_addr', remote_control.clientIP)
+        assert( found ) 
 
     def test_030_adminQuarantine(self):
         if (not canRelay):
