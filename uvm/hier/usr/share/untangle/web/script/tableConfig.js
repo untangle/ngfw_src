@@ -100,9 +100,15 @@ Ext.define('Ung.TableConfig', {
             if(tableConfig!=null && Ext.isArray(tableConfig.columns)) {
                 for(var i = 0; i<tableConfig.columns.length; i++) {
                     col = tableConfig.columns[i];
+                    var name = col.header;
+                    var nameLength = 50;
+                    var padding = ( nameLength - name.length > 0 ? nameLength - name.length : 0);
+                    //FIXME this doesnt really look right because variable length characters
+                    //XXX
+                    name = name + (new Array(padding).join('&nbsp;'));
                     columns.push({
                         dataIndex: col.dataIndex,
-                        header: col.header + " [" + col.dataIndex + "]"
+                        header: name + " [" + col.dataIndex + "]"
                     });
                 }
             }
