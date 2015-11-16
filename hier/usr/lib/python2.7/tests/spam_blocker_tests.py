@@ -25,7 +25,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod
     def displayName():
-        return "Spam Blocker Lite"
+        return "Spam Blocker"
 
     # verify daemon is running
     def test_009_IsRunning(self):
