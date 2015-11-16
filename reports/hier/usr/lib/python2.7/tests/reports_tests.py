@@ -20,8 +20,6 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-orig_settings = None
-orig_netsettings = None
 canRelay = None
 # special box with testshell in the sudoer group  - used to connect to as client
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
@@ -31,7 +29,9 @@ fakeSmtpServerHost = ""
 fakeSmtpServerHostResult = -1
 testdomain = ""
 testEmailAddress = ""
+orig_settings = None
 orig_netsettings = None
+orig_mailsettings = None
 
 # pdb.set_trace()
 
@@ -62,6 +62,12 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
     return relaySuccess
 
 def createFakeEmailEnvironment(emailLogFile="report_test.log"):
+    global orig_mailsettings
+    orig_mailsettings = uvmContext.mailSender().getSettings()
+    new_mailsettings = copy.deepcopy(orig_mailsettings)
+    new_mailsettings['sendMethod'] = 'DIRECT'
+    uvmContext.mailSender().setSettings(new_mailsettings)
+
     # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # Change DNS to point at special DNS server with entry for fake domain untangletest.com
@@ -474,6 +480,8 @@ class ReportsTests(unittest2.TestCase):
         global node
         if node != None:
             node.setSettings(orig_settings)
+        if orig_mailsettings != None:
+            uvmContext.mailSender().setSettings(orig_mailsettings)
         node = None
 
 test_registry.registerNode("reports", ReportsTests)
