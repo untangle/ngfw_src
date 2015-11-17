@@ -30,6 +30,8 @@ defaultRackId = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 run_ftp_inbound_tests = None
+wan_IP = None
+device_in_office = False
 
 def createPortForwardTripleCondition( conditionType1, value1, conditionType2, value2, conditionType3, value3, destinationIP, destinationPort):
     return {
@@ -441,9 +443,11 @@ class NetworkTests(unittest2.TestCase):
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
 
     def setUp(self):
-        global orig_netsettings, run_ftp_inbound_tests
+        global orig_netsettings, run_ftp_inbound_tests, wan_IP, device_in_office
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        device_in_office = global_functions.isInOfficeNetwork(wan_IP)
 
         if run_ftp_inbound_tests == None:
             try:
@@ -561,8 +565,7 @@ class NetworkTests(unittest2.TestCase):
         if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not device_in_office:
             raise unittest2.SkipTest("Not on office network, skipping")
 
         # start netcat on client
@@ -579,8 +582,7 @@ class NetworkTests(unittest2.TestCase):
     def test_040_portForwardUDPInbound(self):
         # We will use iperf server and iperf for this test.
         # Also test that it can probably reach us (we're on a 10.x network)
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not device_in_office:
             raise unittest2.SkipTest("Not on office network, skipping")
         iperfResult = global_functions.verifyIperf(wan_IP)
         pingIperfServer = subprocess.call(["ping","-c","1",global_functions.iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -757,6 +759,8 @@ class NetworkTests(unittest2.TestCase):
     def test_074_ftpModesIncoming(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
+        if not device_in_office:
+            raise unittest2.SkipTest("Not on office network, skipping")
 
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
 
@@ -779,6 +783,8 @@ class NetworkTests(unittest2.TestCase):
     def test_075_ftpModesIncomingBypassed(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
+        if not device_in_office:
+            raise unittest2.SkipTest("Not on office network, skipping")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ createBypassConditionRule("DST_PORT","21") ]
         netsettings['portForwardRules']['list'] = [ createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"") ]
