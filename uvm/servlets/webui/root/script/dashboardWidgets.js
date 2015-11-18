@@ -10,7 +10,6 @@ Ext.define('Ung.dashboard.Widget', {
     }],
     padding: '5 0 0 5',
     bodyPadding: 5,
-    style: "display: inline-block;",
     initComponent: function() {
         this.callParent(arguments);
     },

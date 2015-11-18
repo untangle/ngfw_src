@@ -328,17 +328,31 @@ Ext.define("Ung.Main", {
                 id: 'center',
                 xtype: 'container',
                 layout: 'card',
-                cls: 'center-region',
+                
                 activeItem: 1,
                 items: [{
-                    xtype: 'container',
-                    name: 'dashboard',
+                    xtype: 'panel',
                     itemId: 'dashboard',
-                    scrollable: true
+                    layout: {
+                        type: 'table',
+                        columns: 2
+                    },
+                    scrollable: true,
+                    bodyCls: 'center-region',
+                    bbar: [{
+                        xtype: "button",
+                        text : i18n._( "Add Widget" ),
+                        iconCls : "icon-add-row",
+                        handler: function() {
+                            
+                        },
+                        scope : this
+                    }]
                 }, {
                     xtype: 'container',
                     itemId: 'rack',
                     layout: "border",
+                    bodyCls: 'center-region',
                     items: [{
                         region: 'west',
                         xtype: 'panel',
@@ -369,13 +383,17 @@ Ext.define("Ung.Main", {
     loadDashboard: function() {
         var dashboardSettings = {
             widgets: [{
-                type: 'Information'
+                type: 'Information',
+                height: 300
             }, {
-                type: 'Server'
+                type: 'Server',
+                height: 300
             }, {
-                type: 'Sessions'
+                type: 'Sessions',
+                height: 300
             }, {
-                type: 'Devices'
+                type: 'Devices',
+                height: 300
             }]
         }; 
         var widgets = [];
@@ -385,7 +403,7 @@ Ext.define("Ung.Main", {
             widget = dashboardSettings.widgets[i];
             widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
         }
-        var dashboardPanel = this.viewport.down("container[itemId=dashboard]");
+        var dashboardPanel = this.viewport.down("#dashboard");
         dashboardPanel.add(widgets);
     },
     about: function (forceReload) {
