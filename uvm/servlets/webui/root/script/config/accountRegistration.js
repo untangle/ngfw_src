@@ -3,9 +3,9 @@ Ext.define('Webui.config.accountRegistration', {
     helpSource: 'account_registration',
     doSize: function() {
         var objSize = Ung.Main.viewport.getSize();
-        var width = Math.min(770, objSize.width - Ung.Main.contentLeftWidth);
+        var width = Math.min(770, objSize.width - Ung.Main.menuWidth);
         var height = Math.min(650, objSize.height);
-        var x = Ung.Main.contentLeftWidth + Math.round((objSize.width - Ung.Main.contentLeftWidth-width)/2); 
+        var x = Ung.Main.menuWidth + Math.round((objSize.width - Ung.Main.menuWidth-width)/2); 
         var y = Math.round((objSize.height-height)/2);
         this.setPosition(x, y);
         this.setSize({width:width, height: height});

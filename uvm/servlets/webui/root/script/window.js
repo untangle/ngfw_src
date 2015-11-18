@@ -75,8 +75,8 @@ Ext.define('Ung.Window', {
         var objSize = Ung.Main.viewport.getSize();
         var left = 0;
         if( objSize.width > 1000 ) {
-            left = Ung.Main.contentLeftWidth;
-            objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+            left = Ung.Main.menuWidth;
+            objSize.width = objSize.width - Ung.Main.menuWidth;
         }
         this.setPosition(left, 0);
         this.setSize(objSize);
@@ -152,8 +152,8 @@ Ext.define("Ung.SettingsWin", {
         var objSize = Ung.Main.viewport.getSize();
         Ext.applyIf(config, {
             height: objSize.height,
-            width: objSize.width - Ung.Main.contentLeftWidth,
-            x: Ung.Main.contentLeftWidth,
+            width: objSize.width - Ung.Main.menuWidth,
+            x: Ung.Main.menuWidth,
             y: 0
         });
         this.callParent(arguments);

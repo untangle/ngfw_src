@@ -24,7 +24,7 @@ Ext.define("Ung.Main", {
     nodes: null,
     // the Ext.Viewport object for the application
     viewport: null,
-    contentLeftWidth: null,
+    menuWidth: null,
     iframeWin: null,
     initialScreenAlreadyShown: false,
 
@@ -109,90 +109,284 @@ Ext.define("Ung.Main", {
                     '</div>',
                 '</div>',
             '</div>'];
-
-        var cssRule = Ext.util.CSS.getRule(".content-left",true);
-        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width, 10 ): 215;
+        
+        var menuItems = [{
+            text: i18n._('Dashboard'),
+            iconCls: 'icon-dashboard',
+            
+            toggleGroup: 'viewToggle',
+            handler: function() {
+                Ext.getCmp("center").setActiveItem("dashboard");
+            }
+        }, {
+            text: i18n._('Apps'),
+            pressed: true,
+            iconCls: 'icon-apps',
+            toggleGroup: 'viewToggle',
+            handler: function() {
+                Ext.getCmp("center").setActiveItem("rack");
+            }
+        }, {
+            xtype: 'component',
+            height: 2
+        }, {
+            text: i18n._('Config'),
+            iconCls: 'icon-config',
+            menuAlign: 'tr-tl?',
+            menu: {
+                xtype: 'menu',
+                plain: true,
+                defaults: {
+                    height: 32,
+                    padding: 3
+                },
+                items: [{
+                    text: i18n._('Network'),
+                    iconCls: 'icon-config-network',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["network"]);
+                    }
+                }, {
+                    text: i18n._('Administration'),
+                    iconCls: 'icon-config-admin',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["administration"]);
+                    }
+                }, {
+                    text: i18n._('Email'),
+                    iconCls: 'icon-config-email',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["email"]);
+                    }
+                }, {
+                    text: i18n._('Local Directory'),
+                    iconCls: 'icon-config-directory',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
+                    }
+                }, {
+                    text: i18n._('Upgrade'),
+                    iconCls: 'icon-config-upgrade',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["upgrade"]);
+                    }
+                }, {
+                    text: i18n._('System'),
+                    iconCls: 'icon-config-system',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["system"]);
+                    }
+                }, {
+                    text: i18n._('About'),
+                    iconCls: 'icon-config-about',
+                    handler: function() {
+                        Ung.Main.openConfig(Ung.Main.configMap["about"]);
+                    }
+                }]
+            }
+        }, {
+            text: i18n._('Tools'),
+            iconCls: 'icon-tools',
+            menuAlign: 'tr-tl?',
+            menu: {
+                xtype: 'menu',
+                plain: true,
+                defaults: {
+                    height: 32,
+                    padding: 3
+                },
+                items: [{
+                    text: i18n._('Policy Manager'),
+                    name: 'policyManager',
+                    handler: Ung.Main.showPolicyManager
+                }, {
+                    text: i18n._('Session Viewer'),
+                    handler: Ung.Main.showSessions
+                }, {
+                    text: i18n._('Host Viewer'),
+                    handler: Ung.Main.showHosts
+                }, {
+                    text: i18n._('Reports Viewer'),
+                    handler: Ung.Main.showReports
+                }]
+            }
+        }, {
+            xtype: 'component',
+            height: 30
+        }, {
+            name: 'Help',
+            iconCls: 'icon-help',
+            text: i18n._('Help'),
+            scale: 'medium',
+            cls: '',
+            handler: function() {
+                Ung.Main.openHelp(null);
+            }
+        }, {
+            name: 'MyAccount',
+            iconCls: 'icon-myaccount',
+            text: i18n._('My Account'),
+            scale: 'medium',
+            cls: '',
+            tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
+            handler: function() {
+                Ung.Main.openMyAccountScreen();
+            }
+        }, {
+            name: 'Logout',
+            iconCls: 'icon-logout',
+            scale: 'medium',
+            cls: '',
+            text: i18n._('Logout'),
+            handler: function() {
+                window.location.href = '/auth/logout?url=/webui&realm=Administrator';
+            }
+        }]; 
+        this.menuLargeWidth = 150;
+        this.menuSmallWidth = 54;
+        this.menuWidth = this.menuLargeWidth;
+        this.logoHeight = 96;
+        
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items:[{
                 region: 'west',
                 id: 'west',
-                cls: "content-left",
-                xtype: 'container',
-                width: this.contentLeftWidth,
-                layout: { type: 'vbox', align: 'stretch' },
-                items: [{
-                    xtype: 'container',
-                    cls: "logo",
-                    html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
-                    height: 141,
-                    flex: 0
-                }, {
-                    xtype: 'tabpanel',
-                    activeTab: 0,
-                    deferredRender: false,
-                    border: false,
-                    plain: true,
-                    flex: 1,
-                    bodyStyle: 'background-color: transparent;',
-                    defaults: {
-                        autoScroll: true,
-                        border: false,
-                        bodyStyle: 'background-color: transparent;'
+                xtype: 'panel',
+                name: 'panelMenu',
+                title: " ",
+                headerPosition: 'bottom',
+                bodyCls: "content-left",
+                width: this.menuWidth,
+                layout: { type: 'vbox'},
+                scrollable: 'y',
+                tools: [{
+                    type: 'collapse',
+                    tooltip: i18n._('Toggle Menu'),
+                    tooltipType: 'title',
+                    callback: function (panel) {
+                        if(this.menuWidth==this.menuLargeWidth) {
+                            this.menuWidth = this.menuSmallWidth;
+                            this.initialLogoHeight=panel.down("#logoImage").getHeight(); 
+                            this.logoHeight = 32;
+                            
+                            Ext.Array.each(panel.down("#mainMenu").items.items, function(item, index, menuItems) {
+                                if(item.xtype=='button') {
+                                    item.initialText = item.getText();
+                                    item.setTooltip(item.initialText);
+                                    item.setText("");
+                                }
+                                
+                            });
+                        } else {
+                            this.menuWidth=this.menuLargeWidth;
+                            this.logoHeight = this.initialLogoHeight;
+                            Ext.Array.each(panel.down("#mainMenu").items.items, function(item, index, menuItems) {
+                                if(item.xtype=='button') {
+                                    item.setText(item.initialText);
+                                    item.setTooltip("");
+                                }
+                            });
+                        }
+                        panel.setWidth(this.menuWidth);
+                        panel.down("#logoImage").setHeight(this.logoHeight);
                     },
-                    items:[{
-                        xtype: 'panel',
-                        title: i18n._('Apps'),
-                        id: 'leftTabApps',
-                        html:'<div id="appsItems"></div>',
-                        name:'Apps'
-                    },{
-                        xtype: 'panel',
-                        title: i18n._('Config'),
-                        id: 'leftTabConfig',
-                        html: '<div id="configItems"></div>',
-                        name: 'Config'
-                    }],
-                    bbar: [{
-                        xtype: 'button',
-                        name: 'Help',
-                        iconCls: 'icon-help',
-                        text: i18n._('Help'),
-                        handler: function() {
-                            Ung.Main.openHelp(null);
+                    scope: this
+                }],
+                items: [{
+                    xtype: 'image',
+                    itemId: 'logoImage',
+                    alt: rpc.companyName,
+                    margin: '2 0 2 0',
+                    src: '/images/BrandingLogo.png?'+(new Date()).getTime(),
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'phone': {
+                            height: 50
+                        },
+                        '!phone': {
+                            height: this.logoHeight
                         }
-                    }, {
-                        name: 'MyAccount',
-                        iconCls: 'icon-myaccount',
-                        text: i18n._('My Account'),
-                        tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
-                        handler: function() {
-                            Ung.Main.openMyAccountScreen();
-                        }
-                    }, {
-                        xtype: 'button',
-                        name: 'Logout',
-                        iconCls: 'icon-logout',
-                        text: i18n._('Logout'),
-                        handler: function() {
-                            window.location.href = '/auth/logout?url=/webui&realm=Administrator';
-                        }
-                    }]
+                    }
+                }, {
+                    xtype: 'segmentedbutton',
+                    itemId: 'mainMenu',
+                    vertical: true,
+                    allowToggle: false,
+                    defaults: {
+                        scale: 'large',
+                        textAlign: 'left',
+                        tooltipType: 'title',
+                        cls: 'menu-button'
+                            
+                    },
+                    width: '100%',
+                    items: menuItems
                 }
             ]}, {
-                region:'center',
+                region: 'center',
                 id: 'center',
                 xtype: 'container',
-                html: contentRightArr.join(""),
+                layout: 'card',
                 cls: 'center-region',
-                autoScroll: true
+                activeItem: 1,
+                items: [{
+                    xtype: 'container',
+                    name: 'dashboard',
+                    itemId: 'dashboard',
+                    scrollable: true
+                }, {
+                    xtype: 'container',
+                    itemId: 'rack',
+                    layout: "border",
+                    items: [{
+                        region: 'west',
+                        xtype: 'panel',
+                        headerPosition: 'bottom',
+                        title: i18n._("Install Apps"),
+                        collapsible: true,
+                        collapsed: false,
+                        html:'<div id="appsItems"></div>',
+                        width: 202,
+                        scrollable: true
+                    }, {
+                        region: 'center',
+                        xtype: 'component',
+                        flex: 1,
+                        html: contentRightArr.join(""),
+                        scrollable: true
+                    }]
+                }]
             }
         ]});
         Ext.QuickTips.init();
-
+        this.panelMenu = this.viewport.down("panel[name=panelMenu]");
         Ung.Main.systemStats = Ext.create('Ung.SystemStats',{});
+        this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
+    },
+    loadDashboard: function() {
+        var dashboardSettings = {
+            widgets: [{
+                type: 'Information'
+            }, {
+                type: 'Server'
+            }, {
+                type: 'Sessions'
+            }, {
+                type: 'Devices'
+            }]
+        }; 
+        var widgets = [];
+        var widget = null;
+        
+        for(var i=0; i < dashboardSettings.widgets.length; i++) {
+            widget = dashboardSettings.widgets[i];
+            widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
+        }
+        var dashboardPanel = this.viewport.down("container[itemId=dashboard]");
+        dashboardPanel.add(widgets);
     },
     about: function (forceReload) {
         if(forceReload || rpc.about === undefined) {
@@ -739,7 +933,7 @@ Ext.define("Ung.Main", {
         }, {
             name: 'system',
             displayName: i18n._('System'),
-            iconClass: 'icon-config-setup',
+            iconClass: 'icon-config-system',
             helpSource: 'system',
             className: 'Webui.config.system'
         }, {
@@ -750,11 +944,6 @@ Ext.define("Ung.Main", {
             className: 'Webui.config.about'
         }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
-        for(var i=0;i<this.config.length;i++) {
-            Ext.create('Ung.ConfigItem', {
-                item: this.config[i]
-            });
-        }
     },
     checkForIE: function (handler) {
         if (Ext.isIE || 
@@ -1065,13 +1254,13 @@ Ext.define("Ung.Main", {
                 },
                 doSize: function() {
                     var objSize = Ung.Main.viewport.getSize();
-                    objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+                    objSize.width = objSize.width - Ung.Main.menuWidth;
                     
                     if(objSize.width < 850 || objSize.height < 470) {
-                        this.setPosition(Ung.Main.contentLeftWidth, 0);
+                        this.setPosition(Ung.Main.menuWidth, 0);
                     } else {
                         var scale = 0.9;
-                        this.setPosition(Ung.Main.contentLeftWidth + Math.round(objSize.width*(1-scale)/2), Math.round(objSize.height*(1-scale)/2));
+                        this.setPosition(Ung.Main.menuWidth + Math.round(objSize.width*(1-scale)/2), Math.round(objSize.height*(1-scale)/2));
                         objSize.width = Math.round(objSize.width * scale);
                         objSize.height = Math.round(objSize.height * scale);
                         

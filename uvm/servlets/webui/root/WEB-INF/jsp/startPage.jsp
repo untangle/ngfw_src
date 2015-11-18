@@ -10,6 +10,7 @@
     <style type="text/css">
         @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=${buildStamp}";
         @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=${buildStamp}";
+        @import "/ext6/packages/ux/classic/classic/resources/ux-all.css?s=${buildStamp}";
     </style>
 
 <c:if test="${isDebug==false}">
@@ -21,6 +22,7 @@
 
     <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext6/packages/charts/classic/charts.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/packages/ux/classic/ux.js?s=${buildStamp}"></script>
     <script type="text/javascript">
         Ext.buildStamp='${buildStamp}';
     </script>
@@ -37,6 +39,7 @@
     <script type="text/javascript" src="/script/tableConfig.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
