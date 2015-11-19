@@ -597,9 +597,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
                             continue;
                         }
                     
-                        int i;
+                        long i;
                         try {
-                            i = Integer.parseInt( parts[1] );
+                            i = Long.parseLong( parts[1] );
                         } catch ( Exception e) {
                             logger.warn("Malformed int in openvpn status: " + currentLine );
                             continue;
@@ -622,9 +622,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
                             continue;
                         }
                     
-                        int i;
+                        long i;
                         try {
-                            i = Integer.parseInt( parts[1] );
+                            i = Long.parseLong( parts[1] );
                         } catch ( Exception e) {
                             logger.warn("Malformed int in openvpn status: " + currentLine );
                             continue;
