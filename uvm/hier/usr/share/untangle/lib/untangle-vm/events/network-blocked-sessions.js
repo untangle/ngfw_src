@@ -8,7 +8,7 @@
             "value": "not null"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","s_server_addr","s_server_port","filter_prefix"],
     "description": "All sessions blocked by filter rules.",
     "displayOrder": 40,
     "javaClass": "com.untangle.node.reports.EventEntry",
