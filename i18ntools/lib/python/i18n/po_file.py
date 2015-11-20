@@ -113,7 +113,7 @@ class PoFile:
 
         # Perform argument check
         if new_record.arguments_match() == False:
-            print "Arguments do not match; clearing msgstr"
+            print "WARNING: Arguments do not match; clearing msgstr"
             print new_record
             new_record.msg_str = []
 
