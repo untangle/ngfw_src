@@ -43,3 +43,19 @@ class Languages:
             if language["enabled"] == True:
                 enabled.append(language)
         return enabled
+
+    def get_enabled_ids(self):
+        """
+        Return enabled languae ids
+        """
+        enabled = []
+        for language in self.languages:
+            if language["enabled"] == True:
+                enabled.append(language["id"])
+        return enabled
+
+    def get_by_id(self,id):
+        for language in self.languages:
+            if language["id"] == id:
+                return language
+        return None
