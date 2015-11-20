@@ -564,9 +564,9 @@
 			"name": "Telugu",
 			"enabled": false
 		},{
-			"id": "test",
+			"id": "xx",
 			"name": "Testing (Untangle)",
-			"enabled": false
+			"enabled": true
 		},{
 			"id": "th",
 			"name": "Thai",
