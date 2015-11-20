@@ -22,7 +22,6 @@ public class ApplicationControlStatistics implements java.io.Serializable, JSONS
     private long protoTotalCount;
     private long protoFlagCount;
     private long protoBlockCount;
-    private long protoTarpitCount;
     private long logicTotalCount;
     private long logicLiveCount;
 
@@ -31,7 +30,6 @@ public class ApplicationControlStatistics implements java.io.Serializable, JSONS
         protoTotalCount = 0;
         protoFlagCount = 0;
         protoBlockCount = 0;
-        protoTarpitCount = 0;
         logicTotalCount = 0;
         logicLiveCount = 0;
     }
@@ -110,16 +108,6 @@ public class ApplicationControlStatistics implements java.io.Serializable, JSONS
     public void setProtoBlockCount(long value)
     {
         protoBlockCount = value;
-    }
-
-    public long getProtoTarpitCount()
-    {
-        return (protoTarpitCount);
-    }
-
-    public void setProtoTarpitCount(long value)
-    {
-        protoTarpitCount = value;
     }
 
     public long getLogicTotalCount()

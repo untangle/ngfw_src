@@ -381,10 +381,10 @@ public class ApplicationControlApp extends NodeBase
         matchers = new LinkedList<ApplicationControlLogicRuleCondition>();
         ruleMatcher1 = new ApplicationControlLogicRuleCondition(ApplicationControlLogicRuleCondition.ConditionType.APPLICATION_CONTROL_CATEGORY, "Proxy");
         matchers.add(ruleMatcher1);
-        action = new ApplicationControlLogicRuleAction(ApplicationControlLogicRuleAction.ActionType.TARPIT, Boolean.TRUE);
+        action = new ApplicationControlLogicRuleAction(ApplicationControlLogicRuleAction.ActionType.BLOCK, Boolean.TRUE);
         rule.setConditions(matchers);
         rule.setAction(action);
-        rule.setDescription("Tarpit all traffic classified as \"Proxy\" applications.");
+        rule.setDescription("Block all traffic classified as \"Proxy\" applications.");
         rule.setId(ruleNumber++);
         logicRules.add(rule);
 

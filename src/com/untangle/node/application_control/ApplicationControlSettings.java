@@ -53,24 +53,36 @@ public class ApplicationControlSettings implements java.io.Serializable, JSONStr
         long liveCount = 0;
         long flagCount = 0;
         long blockCount = 0;
-        long tarpitCount = 0;
         ApplicationControlProtoRule local;
 
         // add all the active protocol rules to the hashset
         for (ApplicationControlProtoRule protoRule : protoList) {
             protoHash.put(protoRule.getGuid(), protoRule);
+
+            // block==tarpit
+            // block is gone and tarpit is now block so we pick up the old flag
+            // if set and then clear so it doesn't ever get picked up again 
+            if (protoRule.getTarpit() == true) {
+                protoRule.setBlock(true);
+                protoRule.setTarpit(false);
+            }
+
             if (protoRule.getFlag() == true) flagCount++;
             if (protoRule.getBlock() == true) blockCount++;
-            if (protoRule.getTarpit() == true) tarpitCount++;
         }
 
         statistics.setProtoTotalCount(protoList.size());
         statistics.setProtoFlagCount(flagCount);
         statistics.setProtoBlockCount(blockCount);
-        statistics.setProtoTarpitCount(tarpitCount);
 
         for (ApplicationControlLogicRule logicRule : logicList) {
             if (logicRule.isLive()) liveCount++;
+
+            // block==tarpit
+            // block is gone and tarpit is now block so we must update the logic rules
+            if (logicRule.getAction().getActionType() == ApplicationControlLogicRuleAction.ActionType.TARPIT) {
+                logicRule.getAction().setActionType(ApplicationControlLogicRuleAction.ActionType.BLOCK);
+            }
         }
 
         statistics.setLogicTotalCount(logicList.size());

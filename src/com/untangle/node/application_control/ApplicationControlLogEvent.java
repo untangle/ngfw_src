@@ -34,10 +34,7 @@ public class ApplicationControlLogEvent extends LogEvent
         this.state = status.state;
         this.ruleid = null;
         this.flagged = rule.getFlag();
-        if (rule.getBlock() || rule.getTarpit())
-            this.blocked = true;
-        else
-            this.blocked = false;
+        this.blocked = rule.getBlock();
     }
 
     public ApplicationControlLogEvent(SessionEvent sessionEvent, ApplicationControlStatus status, Integer ruleid, boolean flagged, boolean blocked)

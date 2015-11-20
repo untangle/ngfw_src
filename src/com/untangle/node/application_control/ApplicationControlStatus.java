@@ -27,7 +27,7 @@ public class ApplicationControlStatus
     public int confidence;
     public int state;
 
-    public boolean tarpit;
+    public boolean discard;
     public int modcount;
 
     public ApplicationControlStatus(String sessionInfo, IPNewSessionRequest ipr)
@@ -63,7 +63,7 @@ public class ApplicationControlStatus
         this.confidence = 0;
         this.state = 0;
 
-        this.tarpit = false;
+        this.discard = false;
         this.modcount = 1;
     }
 
