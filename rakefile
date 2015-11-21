@@ -93,8 +93,8 @@ end
 
 task :i18n => [:builduvmcore, :targets ] do
   ## Generate and update po files
-  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
-  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
+#  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
+#  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
   Rake::Task[BuildEnv::SRC.i18nTarget].invoke
 end
 
