@@ -96,7 +96,7 @@ class BuildEnv
 
   SERVLET_COMMON = "./servlet/common"
 
-  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget, :i18nTarget, :hierTarget, :jsLintTarget
+  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget, :i18nTarget, :hierTarget, :jsLintTarget, :i18ntools
   attr_writer :prefix, :target, :isDevel
 
   def initialize(home, name)
@@ -126,6 +126,9 @@ class BuildEnv
 
     ## Collection of all available jars built so far
     @grabbag = "#{@staging}/grabbag"
+
+    ## i18ntools is where internationalization tools and po file exist
+    @i18ntools   =  File.expand_path("#{SRC_HOME || '.'}/i18ntools")
 
     @mutex = Mutex.new
     @cache = {}

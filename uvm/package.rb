@@ -113,10 +113,3 @@ if ( poFiles.length > 0 )
     BuildEnv::SRC.i18nTarget.register_dependency(pol)
   end
 end
-
-# Localization
-JavaMsgFmtTarget.make_po_targets(uvm, "#{BuildEnv::SRC.home}/i18ntools/po",
-                                  "#{uvm.distDirectory}/usr/share/untangle/lang/",
-                                  'untangle').each do |t|
-   BuildEnv::SRC.i18nTarget.register_dependency(t)
-end
