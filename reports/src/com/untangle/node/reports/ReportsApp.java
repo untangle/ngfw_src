@@ -48,7 +48,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reports-generate-reports.py";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reporter.log";
 
-    private static final File CRON_FILE = new File("/etc/cron.daily/reports-clean");
+    private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
 
     protected static EventWriterImpl eventWriter = null;
@@ -453,11 +453,14 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String cleanStr = "#!/bin/sh\n/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " > /dev/null 2>&1\n";
+        String cronStr = "#!/bin/sh" + "\n" +
+            "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " > /dev/null 2>&1" + "\n" +
+            "/usr/share/untangle/bin/reports-generate-tables.py > /dev/null 2>&1" + "\n";
+            
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));
-            out.write(cleanStr, 0, cleanStr.length());
+            out.write(cronStr, 0, cronStr.length());
             out.write("\n");
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
