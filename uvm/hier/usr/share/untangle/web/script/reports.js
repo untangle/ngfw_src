@@ -939,7 +939,7 @@ Ext.define('Ung.panel.Reports', {
         this.resetView.show();
         
         this.gridEvents.setTitle(entry.title);
-        this.gridEvents.stateId = "eventGrid-" + entry.table;
+        this.gridEvents.stateId = "eventGrid-" + entry.category + "-" + entry.table;
         
         var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
         var state = Ext.state.Manager.get(this.gridEvents.stateId);
@@ -996,7 +996,7 @@ Ext.define('Ung.panel.Reports', {
                     column.setVisible(false);
                 }else{
                     column.setVisible(false);
-                    column.setVisible(true);                    
+                    column.setVisible(true);
                 }
             });
             Ext.resumeLayouts(true);
