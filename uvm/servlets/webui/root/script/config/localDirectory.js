@@ -68,7 +68,7 @@ Ext.define('Webui.config.localDirectory', {
                     xtype: 'textfield',
                     allowBlank: false,
                     emptyText: i18n._('[enter login]'),
-                    regex: /^[\w ]+$/,
+                    regex: /^[\w\. ]+$/,
                     regexText: i18n._("The field user/login ID can have only alphanumeric characters.")
                 }
             }, {
@@ -140,7 +140,7 @@ Ext.define('Webui.config.localDirectory', {
                  fieldLabel: i18n._("User/Login ID"),
                  emptyText: i18n._('[enter login]'),
                  allowBlank: false,
-                 regex: /^[\w ]+$/,
+                 regex: /^[\w\. ]+$/,
                  regexText: i18n._("The field user/login ID can have only alphanumeric character."),
                  width: 300
              }, {
