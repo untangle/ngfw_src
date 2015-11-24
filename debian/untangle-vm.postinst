@@ -36,8 +36,15 @@ if [ -z "$2" ]; then
     fi
 fi
 
-# 11.2 upgrade, change sources.list
+# 11.2.0 upgrade, change sources.list
 sed -e 's/stable-11\s/stable-112 /g' -i /etc/apt/sources.list.d/untangle.list
+
+# 11.2.1 upgrade, change sources.list
+# Prepare for 12.0 upgrade, preemptively rewrite sources to point at 12.0
+# Normally rewrite sources.list to point at stable-120 during the 12.0 upgrade
+# However, we are doing this now because it makes the upgrade easier
+sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/wheezy/jessie/g' -i /etc/apt/sources.list.d/untangle.list
 
 ourInit apache2 reload
 
