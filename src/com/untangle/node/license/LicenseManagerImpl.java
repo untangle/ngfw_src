@@ -110,11 +110,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         logger.debug("postStart()");
 
         /* Reload the licenses */
-        try {
-            UvmContextFactory.context().licenseManager().reloadLicenses();
-        } catch ( Exception ex ) {
-            logger.warn( "Unable to reload the licenses." );
-        }
+        UvmContextFactory.context().licenseManager().reloadLicenses( false );
     }
 
     @Override
@@ -127,11 +123,29 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      * Reload all of the licenses from the file system.
      */
     @Override
-    public final void reloadLicenses()
+    public final void reloadLicenses( boolean blocking )
     {
         // we actually want to block here so call reloadLicenses directly instead of
         // firing the pulse
-        _syncLicensesWithServer();
+        if ( blocking ) {
+            try {
+                _syncLicensesWithServer();
+            } catch ( Exception ex ) {
+                logger.warn( "Unable to reload the licenses.", ex );
+            }
+        } else {
+            Thread t = new Thread(new Runnable() {
+                    public void run()
+                    {
+                        try {
+                            _syncLicensesWithServer();
+                        } catch ( Exception ex ) {
+                            logger.warn( "Unable to reload the licenses.", ex );
+                        }
+                    }
+                });
+            t.run();
+        }
     }
 
     @Override
@@ -330,8 +344,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
         }
-         
-        try { UvmContextFactory.context().licenseManager().reloadLicenses(); } catch ( Exception e ) {}
+
+        // blocking call because we need the new trial license
+        UvmContextFactory.context().licenseManager().reloadLicenses( true );
     }
 
     public Object getSettings()
