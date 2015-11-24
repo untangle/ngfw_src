@@ -24,7 +24,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     /**
      * Reload all of the available licenses
      */
-    public void reloadLicenses()
+    public void reloadLicenses( boolean blocking )
     {
         //no-op
         return;

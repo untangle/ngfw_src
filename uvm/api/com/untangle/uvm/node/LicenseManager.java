@@ -10,7 +10,7 @@ public interface LicenseManager
     /**
      * Reload all of the available licenses.
      */
-    public void reloadLicenses();
+    public void reloadLicenses( boolean blocking );
 
     /**
      * Return a list of all licenses for this server
