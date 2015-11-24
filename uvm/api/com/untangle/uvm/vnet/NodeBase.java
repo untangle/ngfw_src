@@ -591,9 +591,21 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
 
-            preStart();
+            try {
+                preStart();
+            } catch (Exception e) {
+                logger.warn("Exception in preStart(). Reverting to INITIALIZED state.", e);
+                changeState(NodeState.INITIALIZED, saveNewTargetState);
+                throw e;
+            }
+
             connectPipelineConnectors();
-            postStart(); 
+
+            try {
+                postStart(); 
+            } catch (Exception e) {
+                logger.warn("Exception in postStart().", e);
+            }
 
             logger.info("Started    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
         } finally {
