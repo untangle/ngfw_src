@@ -125,8 +125,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     @Override
     public final void reloadLicenses( boolean blocking )
     {
-        // we actually want to block here so call reloadLicenses directly instead of
-        // firing the pulse
         if ( blocking ) {
             try {
                 _syncLicensesWithServer();
