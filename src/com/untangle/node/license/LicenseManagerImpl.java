@@ -251,60 +251,76 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         return seats;
     }
 
+    @Override
     public void requestTrialLicense( String nodeName ) throws Exception
     {
-        // if already have a valid license, just return
-        if ( UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) )
+        if ( nodeName == null ) {
+            logger.warn("Invalid name: " + nodeName);
             return;
+        }
+        // if already have a valid license, just return
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) ) {
+            logger.warn("Already have a valid license for: " + nodeName);
+            return;
+        }
         
-        /**
-         * the API specifies libitem, however libitems no longer exist
-         * specify the node, but also hit the old API with the old libitem name
-         */
         String licenseUrl = System.getProperty( "uvm.license.url" );
         if ( licenseUrl == null )
             licenseUrl = "https://license.untangle.com/license.php";
 
+
+        /**
+         * The API specifies libitem, however libitems no longer exist
+         * First we try with the actual name, then the libitem time
+         * Then we try with the old app name (if it has an old name), then we try with the old libitem name
+         * We do all these different calls so that the product supports any version of the license server
+         */
+
+        String libitemName = nodeName.replace("node","libitem").replace("casing","libitem");
         String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName + "&appliance=" + UvmContextFactory.context().isAppliance();
-        String oldName = nodeName.replace("node","libitem").replace("casing","libitem");
-        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
-        String oldName2 = null;
+        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+
+        String oldName = null;
         String urlStr3 = null;
+        String urlStr4 = null;
         
         switch ( nodeName ) {
         case License.DIRECTORY_CONNECTOR:
-            oldName2 = License.DIRECTORY_CONNECTOR_OLDNAME; break;
+            oldName = License.DIRECTORY_CONNECTOR_OLDNAME; break;
         case License.BANDWIDTH_CONTROL:
-            oldName2 = License.BANDWIDTH_CONTROL_OLDNAME; break;
+            oldName = License.BANDWIDTH_CONTROL_OLDNAME; break;
         case License.CONFIGURATION_BACKUP:
-            oldName2 = License.CONFIGURATION_BACKUP_OLDNAME; break;
+            oldName = License.CONFIGURATION_BACKUP_OLDNAME; break;
         case License.BRANDING_MANAGER:
-            oldName2 = License.BRANDING_MANAGER_OLDNAME; break;
+            oldName = License.BRANDING_MANAGER_OLDNAME; break;
         case License.VIRUS_BLOCKER:
-            oldName2 = License.VIRUS_BLOCKER_OLDNAME; break;
+            oldName = License.VIRUS_BLOCKER_OLDNAME; break;
         case License.SPAM_BLOCKER:
-            oldName2 = License.SPAM_BLOCKER_OLDNAME; break;
+            oldName = License.SPAM_BLOCKER_OLDNAME; break;
         case License.COMMTOUCHAV:
-            oldName2 = License.COMMTOUCHAS; break;
+            oldName = License.COMMTOUCHAS; break;
         case License.WAN_FAILOVER:
-            oldName2 = License.WAN_FAILOVER_OLDNAME; break;
+            oldName = License.WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
-            oldName2 = License.IPSEC_VPN_OLDNAME; break;
+            oldName = License.IPSEC_VPN_OLDNAME; break;
         case License.POLICY_MANAGER:
-            oldName2 = License.POLICY_MANAGER_OLDNAME; break;
+            oldName = License.POLICY_MANAGER_OLDNAME; break;
         case License.WEB_FILTER:
-            oldName2 = License.WEB_FILTER_OLDNAME; break;
+            oldName = License.WEB_FILTER_OLDNAME; break;
         case License.WAN_BALANCER:
-            oldName2 = License.WAN_BALANCER_OLDNAME; break;
+            oldName = License.WAN_BALANCER_OLDNAME; break;
         case License.WEB_CACHE:
-            oldName2 = License.WEB_CACHE_OLDNAME; break;
+            oldName = License.WEB_CACHE_OLDNAME; break;
         case License.APPLICATION_CONTROL:
-            oldName2 = License.APPLICATION_CONTROL_OLDNAME; break;
+            oldName = License.APPLICATION_CONTROL_OLDNAME; break;
         case License.SSL_INSPECTOR:
-            oldName2 = License.SSL_INSPECTOR_OLDNAME; break;
+            oldName = License.SSL_INSPECTOR_OLDNAME; break;
         }
-        if ( oldName2 != null ) 
-            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName2 + "&appliance=" + UvmContextFactory.context().isAppliance();
+        if ( oldName != null ) {
+            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
+            String oldLibitemName = oldName.replace("node","libitem").replace("casing","libitem");
+            urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+        }
         
         URL url;
         HttpClient hc;
@@ -332,6 +348,15 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
                 get = new GetMethod(url.toString());
                 hc.executeMethod(get);
             }
+
+            if ( urlStr4 != null ) {
+                logger.info("Requesting Trial: " + urlStr4);
+                url = new URL(urlStr4);
+                hc = new HttpClient();
+                get = new GetMethod(url.toString());
+                hc.executeMethod(get);
+            }
+
         } catch ( java.net.UnknownHostException e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: DNS lookup failed.", e ) );
