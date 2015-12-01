@@ -81,7 +81,7 @@ def index(req):
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
 
-    if captureSettings["sessionCookiesEnabled"] == True:       
+    if captureSettings.get("sessionCookiesEnabled") == True:       
         captureNode = load_rpc_manager(appid)
         # Process cookie if exists.
         address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
@@ -95,8 +95,9 @@ def index(req):
             (cookie.is_valid() == True) and 
             (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
             # Cookie checks out.  Active them, let them through.
-            if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
-                target = str(captureSettings['redirectUrl'])
+            redirectUrl = captureSettings.get('redirectUrl')    
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
             else:
                 host = args['HOST']
                 uri = args['URI']
@@ -112,7 +113,7 @@ def index(req):
             return
 
     # if not using a custom capture page we generate and return a standard page
-    if (captureSettings['pageType'] != 'CUSTOM'):
+    if (captureSettings.get('pageType') != 'CUSTOM'):
         page = generate_page(req,captureSettings,args)
         return(page)
 
@@ -161,12 +162,13 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
-        if captureSettings["sessionCookiesEnabled"] == True:
+        if captureSettings.get("sessionCookiesEnabled") == True:
             # Hand the user a cookie
             cookie = HandlerCookie(req,appid)
             cookie.set(username)
-        if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
-            target = str(captureSettings['redirectUrl'])
+        redirectUrl = captureSettings.get('redirectUrl')    
+        if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+            target = str(redirectUrl)
         else:
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
@@ -225,8 +227,9 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
-        if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
-            target = str(captureSettings['redirectUrl'])
+        redirectUrl = captureSettings.get('redirectUrl')    
+        if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+            target = str(redirectUrl)
         else:
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
@@ -349,13 +352,13 @@ def custom_remove(req,custom_file,appid):
 def generate_page(req,captureSettings,args,extra=''):
 
     # use the path from the request filename to locate the correct template
-    if (captureSettings['pageType'] == 'BASIC_LOGIN'):
+    if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
         name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
 
-    if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
+    if (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
         name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
 
-    if (captureSettings['pageType'] == 'CUSTOM'):
+    if (captureSettings.get('pageType') == 'CUSTOM'):
         name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
 
     file = open(name, "r")
@@ -372,30 +375,30 @@ def generate_page(req,captureSettings,args,extra=''):
     else:
         page = replace_marker(page,'$.SecureEndpointCheck.$','')
 
-    if (captureSettings['pageType'] == 'BASIC_LOGIN'):
-        page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
-        page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
-        page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicLoginPageWelcome'])
-        page = replace_marker(page,'$.MessageText.$', captureSettings['basicLoginMessageText'])
-        page = replace_marker(page,'$.UserLabel.$', captureSettings['basicLoginUsername'])
-        page = replace_marker(page,'$.PassLabel.$', captureSettings['basicLoginPassword'])
-        page = replace_marker(page,'$.FooterText.$', captureSettings['basicLoginFooter'])
+    if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
+        page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
+        page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicLoginPageTitle'))
+        page = replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicLoginPageWelcome'))
+        page = replace_marker(page,'$.MessageText.$', captureSettings.get('basicLoginMessageText'))
+        page = replace_marker(page,'$.UserLabel.$', captureSettings.get('basicLoginUsername'))
+        page = replace_marker(page,'$.PassLabel.$', captureSettings.get('basicLoginPassword'))
+        page = replace_marker(page,'$.FooterText.$', captureSettings.get('basicLoginFooter'))
 
-    if (captureSettings['pageType'] == 'BASIC_MESSAGE'):
-        page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
-        page = replace_marker(page,'$.PageTitle.$', captureSettings['basicMessagePageTitle'])
-        page = replace_marker(page,'$.WelcomeText.$', captureSettings['basicMessagePageWelcome'])
-        page = replace_marker(page,'$.MessageText.$', captureSettings['basicMessageMessageText'])
-        page = replace_marker(page,'$.FooterText.$', captureSettings['basicMessageFooter'])
+    if (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
+        page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
+        page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicMessagePageTitle'))
+        page = replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicMessagePageWelcome'))
+        page = replace_marker(page,'$.MessageText.$', captureSettings.get('basicMessageMessageText'))
+        page = replace_marker(page,'$.FooterText.$', captureSettings.get('basicMessageFooter'))
 
-        if (captureSettings['basicMessageAgreeBox'] == True):
-            page = replace_marker(page,'$.AgreeText.$', captureSettings['basicMessageAgreeText'])
+        if (captureSettings.get('basicMessageAgreeBox') == True):
+            page = replace_marker(page,'$.AgreeText.$', captureSettings.get('basicMessageAgreeText'))
             page = replace_marker(page,'$.AgreeBox.$','checkbox')
         else:
             page = replace_marker(page,'$.AgreeText.$', '')
             page = replace_marker(page,'$.AgreeBox.$','hidden')
 
-    if (captureSettings['pageType'] == 'CUSTOM'):
+    if (captureSettings.get('pageType') == 'CUSTOM'):
         path = "/capture/custom_" + str(args['APPID'])
         page = replace_marker(page,'$.CustomPath.$',path)
 
@@ -476,6 +479,9 @@ def load_capture_settings(req,appid=None):
         captureSettings = get_node_settings('untangle-node-captive-portal')
     else:
         captureSettings = get_nodeid_settings(long(appid))
+
+    if captureSettings == None:
+        req.log_error("handler.py: Unable to retrieve capture settings.")
 
     # add the company name to the node settings dictionary
     captureSettings['companyName'] = companyName
