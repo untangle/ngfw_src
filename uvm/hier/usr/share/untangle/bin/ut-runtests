@@ -186,7 +186,7 @@ def runTestSuite(suite):
             else:
                 rc += 1
         elif (len(results.skipped) > 0):
-            print "Test skipped  : %s " % test_name
+            print "Test skipped  : %s %s" % (test_name, timeString)
             skipc += 1
         else:
             print "Test success : %s %s " % (test_name, timeString)
