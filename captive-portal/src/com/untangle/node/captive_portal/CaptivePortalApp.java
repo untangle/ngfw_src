@@ -663,6 +663,16 @@ public class CaptivePortalApp extends NodeBase
     }
 
     /**
+     * This runs the periodic cleanup task now.
+     * It is used by the test suite
+     */
+    public void runCleanup()
+    {
+        if (captureTimer != null)
+            captureTimer.run();
+    }
+    
+    /**
      * Attempt to load any relevent user state from a file if it exists
      */
     @SuppressWarnings("unchecked")
