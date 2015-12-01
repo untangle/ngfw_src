@@ -113,8 +113,7 @@ def createRadiusSettings():
 def findNameInHostTable (hostname='test'):
     #  Test for username in session
     foundTestSession = False
-    remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80",stdout=False,nowait=True)
-    time.sleep(2) # since we launched netcat in background, give it a second to establish connection
+    remote_control.isOnline()
     hostList = uvmContext.hostTable().getHosts()
     sessionList = hostList['list']
     # find session generated with netcat in session table.
@@ -205,6 +204,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
+        nodeData['userTimeout'] = 3600  # default
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -238,7 +238,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
-        nodeData['userTimeout'] = 120
+        nodeData['userTimeout'] = 10
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -254,7 +254,9 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
         
         # Wait for captive timeout
-        time.sleep(180)
+        time.sleep(20)
+        node.runCleanup() # run the periodic cleanup task to remove expired users
+
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_024b.out http://test.untangle.com/")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Captive Portal' /tmp/capture_test_024b.out")
@@ -268,7 +270,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
-        nodeData['userTimeout'] = 3600  # back to default setting
+        nodeData['userTimeout'] = 3600  # default
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -300,6 +302,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -341,6 +344,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="ACTIVE_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -412,6 +416,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         nodeData['authenticationType']="RADIUS"
         nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -453,6 +458,8 @@ class CaptivePortalTests(unittest2.TestCase):
         Cookie test
         """
         global node, nodeData, captureIP
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_050.out"
@@ -464,9 +471,9 @@ class CaptivePortalTests(unittest2.TestCase):
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 120
         nodeData['sessionCookiesEnabled'] = True
         nodeData['sessionCookiesTimeout'] = 86400
+        nodeData['userTimeout'] = 10
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -485,7 +492,8 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Wait for captive timeout
-        time.sleep(180)
+        time.sleep(20)
+        node.runCleanup() # run the periodic cleanup task to remove expired users
 
         # try again without cookie (confirm session not active)
         result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -503,18 +511,21 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(foundUsername)        
 
         # Wait for captive timeout
-        time.sleep(180)
+        time.sleep(20)
+        node.runCleanup() # run the periodic cleanup task to remove expired users
 
     def test_051_captureCookie_timeout(self):
         """
         Cookie expiration
         """
         global node, nodeData, captureIP
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_051.out"
         cookie_file_name = "/tmp/capture_test_051_cookie.txt"
-        cookie_timeout = 60
+        cookie_timeout = 10
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
@@ -522,9 +533,9 @@ class CaptivePortalTests(unittest2.TestCase):
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 120
         nodeData['sessionCookiesEnabled'] = True
         nodeData['sessionCookiesTimeout'] = cookie_timeout
+        nodeData['userTimeout'] = 10
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
@@ -543,7 +554,8 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Wait for captive timeout
-        time.sleep(180)
+        time.sleep(20)
+        node.runCleanup() # run the periodic cleanup task to remove expired users
 
         # Cookie expiration is handled by browser so check that after the cookie timeout,
         # the client side's expiration difference from current is greater than timeout.
@@ -552,6 +564,7 @@ class CaptivePortalTests(unittest2.TestCase):
         # Save the cookie file since it is used in the next test.
         remote_control.runCommand("cp " + cookie_file_name + " " + savedCookieFileName)
         second_difference = int(remote_control.runCommand("expr $(date +%s) - " + cookie_expires,stdout=True))
+        print "second_difference: %i cookie_timeout: %i" %(second_difference, cookie_timeout)
         assert(second_difference > cookie_timeout)
 
     def test_052_captureCookie_disabled_try_cookie(self):
@@ -572,9 +585,9 @@ class CaptivePortalTests(unittest2.TestCase):
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 120
         nodeData['sessionCookiesEnabled'] = False
-        nodeData['sessionCookiesTimeout'] = 120
+        nodeData['sessionCookiesTimeout'] = 10
+        nodeData['userTimeout'] = 3600
         node.setSettings(nodeData)
 
         # # check if local directory login and password 
