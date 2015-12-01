@@ -174,13 +174,13 @@ def runTestSuite(suite):
 
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime
-            timeString = "in %d secs" % testElapsedTime
+            timeString = "[%.1fs]" % testElapsedTime
 
         sys.stdout = orig_stdout
         sys.stderr = orig_stderr
 
         if (len(results.failures) > 0 or len(results.errors) > 0):
-            print "Test FAILED  : %s " % test_name
+            print "Test FAILED  : %s %s" % (test_name, timeString)
             if (parser.fastfail):
                 exit(1)
             else:
