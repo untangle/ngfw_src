@@ -200,7 +200,7 @@ def runTestSuite(suite):
 
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
-        print "== Testing %s in %d secs ==" % (suite.nodeName(),suiteElapsedTime)
+        print "== Testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
     else:
         print "== Testing %s ==" % suite.nodeName()
     return rc, skipc, total
