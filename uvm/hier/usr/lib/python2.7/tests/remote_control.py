@@ -92,11 +92,10 @@ def runCommand( command, host=None, stdout=False, nowait=False):
             __restoreOutput()
 
 def isOnline( host=None ):
-    timeout = 12
+    tries = 12
     onlineResults = runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
-    while timeout > 0 and onlineResults != 0:
-        timeout -= 1
-        time.sleep(10) # wait for network setup
+    while tries > 0 and onlineResults != 0:
+        tries -= 1
         onlineResults = runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
     return onlineResults
 
