@@ -187,7 +187,7 @@ Ext.define("Ung.Main", {
             split : true,
             collapsible: true,
             collapsed: false,
-            store : Ext.create('Ext.data.TreeStore', {
+            store: Ext.create('Ext.data.TreeStore', {
                 root : {
                     expanded : true,
                     children : treeNodes
@@ -214,12 +214,12 @@ Ext.define("Ung.Main", {
         if (this.initSemaphore != 0) {
             return;
         }
-        
+
         i18n = Ext.create('Ung.I18N',{
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset()*60000) + rpc.timeZoneOffset
         });
-        var contentItems = rpc.isReportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
+
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items: [
@@ -260,10 +260,12 @@ Ext.define("Ung.Main", {
                 xtype:'panel',
                 border: false,
                 region:"center",
-                layout:"border",
-                items: contentItems
+                layout:"border"
             }]
         });
+        
+        var contentItems = rpc.isReportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
+        this.viewport.down("panel[region=center]").add(contentItems);
         
         Ext.MessageBox.hide();
         if(rpc.isReportsEnabled) {

@@ -1580,7 +1580,7 @@ Ext.define("Ung.panel.ExtraConditions", {
     layout: { type: 'vbox'},
     initComponent: function() {
         this.title = Ext.String.format( i18n._("Conditions: {0}"), i18n._("None"));
-        this.collapsed = Ung.Main.viewport.getHeight()<400;
+        this.collapsed = Ung.Main.viewport.getHeight()<500;
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
             fields: ["dataIndex", "header"],
