@@ -31,8 +31,7 @@ captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
 
 # pdb.set_trace()
-def createCaptureInternalNicRule():
-    faceValue = str(remote_control.interface)
+def createCaptureNonWanNicRule():
     return {
         "capture": True,
         "description": "Test Rule - Capture all internal traffic",
@@ -45,7 +44,7 @@ def createCaptureInternalNicRule():
                 "invert": False,
                 "javaClass": "com.untangle.node.captive_portal.CaptureRuleCondition",
                 "conditionType": "SRC_INTF",
-                "value": faceValue
+                "value": "non_wan"
                 }]
             },
         "ruleId": 1
@@ -186,7 +185,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_021_captureTrafficCheck(self):
         global node, nodeData, captureIP
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         node.setSettings(nodeData)
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
         assert (result == 0)
@@ -211,7 +210,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         nodeData['userTimeout'] = 3600  # default
@@ -245,7 +244,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         nodeData['userTimeout'] = 10
@@ -277,7 +276,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="NONE"
         nodeData['pageType'] = "BASIC_MESSAGE"
         nodeData['userTimeout'] = 3600  # default
@@ -309,7 +308,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         nodeData['userTimeout'] = 3600  # default
@@ -351,7 +350,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="ACTIVE_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         nodeData['userTimeout'] = 3600  # default
@@ -423,7 +422,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         nodeData['authenticationType']="RADIUS"
         nodeData['pageType'] = "BASIC_LOGIN"
         nodeData['userTimeout'] = 3600  # default
@@ -477,7 +476,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
@@ -541,7 +540,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
@@ -593,7 +592,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
