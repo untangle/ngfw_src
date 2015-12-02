@@ -531,6 +531,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, TCP log
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Log", type="tcp", block=False, directive="content:\"CompanySecret\"; nocase;")
 
@@ -552,6 +554,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, TCP block
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
 
@@ -568,6 +572,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, UDP log
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Log", type="udp", block=False, directive="content:\"CompanySecret\"; nocase;")
 
@@ -584,6 +590,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, UDP block
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
 
@@ -600,6 +608,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, ICMP log
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Log", type="icmp", dest_ip=dest_ip_address, block=False)
@@ -617,6 +627,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         Functional, ICMP block
         """
         global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)

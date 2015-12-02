@@ -152,6 +152,7 @@ def runTestSuite(suite):
     timeString = ""
     if (parser.timedTests):
         suiteStartTime = time.time()
+
     for test in tests:
         test_name = test._testMethodName
 

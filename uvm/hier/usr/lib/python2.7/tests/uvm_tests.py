@@ -123,6 +123,8 @@ class UvmTests(unittest2.TestCase):
         assert(match)
 
     def test_030_testSMTPSettings(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpamCase())):
             print "smtp case present"

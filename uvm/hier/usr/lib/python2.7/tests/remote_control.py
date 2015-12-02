@@ -91,9 +91,8 @@ def runCommand( command, host=None, stdout=False, nowait=False):
         if logfile != None:
             __restoreOutput()
 
-def isOnline( host=None ):
+def isOnline( tries=12, host=None ):
     onlineResults = -1
-    tries = 12
     while tries > 0 and onlineResults != 0:
         onlineResults = runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
         tries -= 1
