@@ -136,9 +136,9 @@ class ApplicationControlTests(unittest2.TestCase):
 
     def test_025_protoRule_Ftp(self):
         touchProtoRule("FTP",False,False)
-        result1 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null ftp://test.untangle.com/")
+        result1 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://test.untangle.com/")
         touchProtoRule("FTP",True,True)
-        result2 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null ftp://test.untangle.com")
+        result2 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://test.untangle.com")
         touchProtoRule("FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -182,6 +182,8 @@ class ApplicationControlTests(unittest2.TestCase):
         assert( found )
 
     def test_500_classdDaemonReconnect(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         for i in range(10):
             print "Test %i" % i
             result = os.system("/etc/init.d/untangle-classd restart >/dev/null 2>&1")
