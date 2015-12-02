@@ -213,7 +213,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global secondRackId
         appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, secondRackId))
         # client should be offline
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
         assert (result != 0)
         
     # send client back to default rack
