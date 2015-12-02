@@ -110,26 +110,7 @@ Ext.define("Ung.Main", {
                 '</div>',
             '</div>'];
         
-        var menuItems = [{
-            text: i18n._('Dashboard'),
-            iconCls: 'icon-dashboard',
-            
-            toggleGroup: 'viewToggle',
-            handler: function() {
-                Ext.getCmp("center").setActiveItem("dashboard");
-            }
-        }, {
-            text: i18n._('Apps'),
-            pressed: true,
-            iconCls: 'icon-apps',
-            toggleGroup: 'viewToggle',
-            handler: function() {
-                Ext.getCmp("center").setActiveItem("rack");
-            }
-        }, {
-            xtype: 'component',
-            height: 2
-        }, {
+        var toolsItems = [{
             text: i18n._('Config'),
             iconCls: 'icon-config',
             menuAlign: 'tr-tl?',
@@ -141,6 +122,12 @@ Ext.define("Ung.Main", {
                     padding: 3
                 },
                 items: [{
+                    text: i18n._('Install Apps'),
+                    iconCls: 'icon-arrow-install',
+                    handler: function() {
+                        Ung.Main.openInstallApps();
+                    }
+                }, {
                     text: i18n._('Network'),
                     iconCls: 'icon-config-network',
                     handler: function() {
@@ -210,109 +197,50 @@ Ext.define("Ung.Main", {
                     handler: Ung.Main.showReports
                 }]
             }
-        }, {
-            xtype: 'component',
-            height: 30
-        }, {
-            name: 'Help',
-            iconCls: 'icon-help',
-            text: i18n._('Help'),
-            scale: 'medium',
-            cls: '',
-            handler: function() {
-                Ung.Main.openHelp(null);
-            }
-        }, {
-            name: 'MyAccount',
-            iconCls: 'icon-myaccount',
-            text: i18n._('My Account'),
-            scale: 'medium',
-            cls: '',
-            tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
-            handler: function() {
-                Ung.Main.openMyAccountScreen();
-            }
-        }, {
-            name: 'Logout',
-            iconCls: 'icon-logout',
-            scale: 'medium',
-            cls: '',
-            text: i18n._('Logout'),
-            handler: function() {
-                window.location.href = '/auth/logout?url=/webui&realm=Administrator';
-            }
         }]; 
-        this.menuLargeWidth = 150;
-        this.menuSmallWidth = 54;
-        this.menuWidth = this.menuLargeWidth;
-        this.logoHeight = 96;
         
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
+            responsiveFormulas: {
+                small: 'width < 600'
+            },
             items:[{
                 region: 'west',
-                id: 'west',
                 xtype: 'panel',
                 name: 'panelMenu',
-                title: " ",
-                headerPosition: 'bottom',
+                header: false,
+                title: ' ',
                 bodyCls: "content-left",
-                width: this.menuWidth,
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'small': {
+                        width: 97
+                    },
+                    '!small': {
+                        width: 150
+                    }
+                },
                 layout: { type: 'vbox'},
                 scrollable: 'y',
-                tools: [{
-                    type: 'collapse',
-                    tooltip: i18n._('Toggle Menu'),
-                    tooltipType: 'title',
-                    callback: function (panel) {
-                        if(this.menuWidth==this.menuLargeWidth) {
-                            this.menuWidth = this.menuSmallWidth;
-                            this.initialLogoHeight=panel.down("#logoImage").getHeight(); 
-                            this.logoHeight = 32;
-                            
-                            Ext.Array.each(panel.down("#mainMenu").items.items, function(item, index, menuItems) {
-                                if(item.xtype=='button') {
-                                    item.initialText = item.getText();
-                                    item.setTooltip(item.initialText);
-                                    item.setText("");
-                                }
-                                
-                            });
-                        } else {
-                            this.menuWidth=this.menuLargeWidth;
-                            this.logoHeight = this.initialLogoHeight;
-                            Ext.Array.each(panel.down("#mainMenu").items.items, function(item, index, menuItems) {
-                                if(item.xtype=='button') {
-                                    item.setText(item.initialText);
-                                    item.setTooltip("");
-                                }
-                            });
-                        }
-                        panel.setWidth(this.menuWidth);
-                        panel.down("#logoImage").setHeight(this.logoHeight);
-                    },
-                    scope: this
-                }],
                 items: [{
                     xtype: 'image',
                     itemId: 'logoImage',
                     alt: rpc.companyName,
-                    margin: '2 0 2 0',
+                    margin: '2 0 3 2',
                     src: '/images/BrandingLogo.png?'+(new Date()).getTime(),
                     plugins: 'responsive',
                     responsiveConfig: {
-                        'phone': {
+                        'phone || small': {
                             height: 50
                         },
-                        '!phone': {
-                            height: this.logoHeight
+                        '!(phone || small)': {
+                            height: 82
                         }
                     }
                 }, {
                     xtype: 'segmentedbutton',
-                    itemId: 'mainMenu',
+                    itemId: 'viewsMenu',
                     vertical: true,
-                    allowToggle: false,
                     defaults: {
                         scale: 'large',
                         textAlign: 'left',
@@ -321,11 +249,89 @@ Ext.define("Ung.Main", {
                             
                     },
                     width: '100%',
-                    items: menuItems
-                }
-            ]}, {
+                    items: [{
+                        text: i18n._('Dashboard'),
+                        iconCls: 'icon-dashboard',
+                        handler: function() {
+                            this.panelCenter.setActiveItem("dashboard");
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'splitbutton',
+                        text: i18n._('Apps'),
+                        pressed: true,
+                        iconCls: 'icon-apps',
+                        handler: function() {
+                            this.panelCenter.setActiveItem("rack");
+                        },
+                        scope: this,
+                        menuAlign: 'tr-tl?',
+                        menu: {
+                            xtype: 'menu',
+                            plain: true,
+                            defaults: {
+                                height: 32,
+                                padding: 3
+                            },
+                            items: [{
+                                text: i18n._('Install Apps'),
+                                iconCls: 'icon-arrow-install',
+                                handler: function() {
+                                    Ung.Main.openInstallApps();
+                                }
+                            }]
+                        } 
+                    }]
+                }, {
+                    xtype: 'segmentedbutton',
+                    itemId: 'toolsMenu',
+                    vertical: true,
+                    allowToggle: false,
+                    defaults: {
+                        scale: 'large',
+                        textAlign: 'left',
+                        tooltipType: 'title',
+                        cls: 'menu-button'
+                    },
+                    width: '100%',
+                    items: toolsItems
+                }],
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    vertical: true,
+                    defaults: {
+                        textAlign: 'left',
+                        tooltipType: 'title',
+                        width: '100%'
+                    },
+                    items: [{
+                        name: 'Help',
+                        iconCls: 'icon-help',
+                        text: i18n._('Help'),
+                        handler: function() {
+                            Ung.Main.openHelp(null);
+                        }
+                    }, {
+                        name: 'MyAccount',
+                        iconCls: 'icon-myaccount',
+                        text: i18n._('My Account'),
+                        tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
+                        handler: function() {
+                            Ung.Main.openMyAccountScreen();
+                        }
+                    }, {
+                        name: 'Logout',
+                        iconCls: 'icon-logout',
+                        text: i18n._('Logout'),
+                        handler: function() {
+                            window.location.href = '/auth/logout?url=/webui&realm=Administrator';
+                        }
+                    }]
+                }]
+            }, {
                 region: 'center',
-                id: 'center',
+                itemId: 'panelCenter',
                 xtype: 'container',
                 layout: 'card',
                 
@@ -349,33 +355,23 @@ Ext.define("Ung.Main", {
                         scope : this
                     }]
                 }, {
-                    xtype: 'container',
+                    xtype: 'component',
                     itemId: 'rack',
                     layout: "border",
                     bodyCls: 'center-region',
-                    items: [{
-                        region: 'west',
-                        xtype: 'panel',
-                        headerPosition: 'bottom',
-                        title: i18n._("Install Apps"),
-                        collapsible: true,
-                        collapsed: false,
-                        html:'<div id="appsItems"></div>',
-                        width: 202,
-                        scrollable: true
-                    }, {
-                        region: 'center',
-                        xtype: 'component',
-                        flex: 1,
-                        html: contentRightArr.join(""),
-                        scrollable: true
-                    }]
+                    html: contentRightArr.join(""),
+                    scrollable: true
                 }]
             }
         ]});
         Ext.QuickTips.init();
         this.panelMenu = this.viewport.down("panel[name=panelMenu]");
-        Ung.Main.systemStats = Ext.create('Ung.SystemStats',{});
+        this.menuWidth = this.panelMenu.getWidth();
+        this.installApps = Ext.create("Ung.InstallAppsWin", {});
+        this.installApps.show();
+        this.installApps.hide();
+        this.panelCenter = this.viewport.down("#panelCenter");
+        this.systemStats = Ext.create('Ung.SystemStats', {});
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
@@ -903,6 +899,7 @@ Ext.define("Ung.Main", {
 
         Ung.AppItem.setLoading(nodeProperties.name, true);
         Ung.Main.addNodePreview( nodeProperties );
+
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
                 Ung.AppItem.setLoading(nodeProperties.name, false);
@@ -915,6 +912,9 @@ Ext.define("Ung.Main", {
             if (completeFn)
                 completeFn();
         }, this), nodeProperties.name, rpc.currentPolicy.policyId);
+    },
+    openInstallApps: function() {
+        Ung.Main.installApps.show();
     },
     // build Config
     buildConfig: function() {
@@ -1165,12 +1165,15 @@ Ext.define("Ung.Main", {
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
         items.push({text: i18n._('Show Reports'), value: 'SHOW_REPORTS', handler: Ung.Main.showReports, id:'reportsMenuItem', disabled: true, hideDelay: 0});
-        Ung.Main.rackSelect = Ext.create('Ext.SplitButton', {
+        Ung.Main.rackSelect = Ext.create({
+            xtype: 'button',
+            maxWidth: 180,
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
             id:'rack-select',
             menu: Ext.create('Ext.menu.Menu', {
                 hideDelay: 0,
+                plain: true,
                 items: items
             })
         });

@@ -428,8 +428,6 @@ Ext.define("Ung.ConfigWin", {
     // class constructor
     constructor: function(config) {
         this.id = "configWin_" + config.name;
-        // for config elements we have the untangle-libuvm translation map
-        i18n = i18n;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -484,8 +482,6 @@ Ext.define("Ung.StatusWin", {
     // class constructor
     constructor: function(config) {
         this.id = "statusWin_" + config.name;
-        // for config elements we have the untangle-libuvm translation map
-        i18n = i18n;
         this.callParent(arguments);
     },
     initComponent: function() {

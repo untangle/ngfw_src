@@ -130,28 +130,24 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     }
 });
 
-Ext.define("Ung.ConfigItem", {
-    extend: "Ext.Component",
-    item: null,
-    renderTo: 'configItems',
-    cls: 'app-item',
-    statics: {
-        template: new Ext.Template('<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>')
-    },
-    afterRender: function() {
+Ext.define('Ung.InstallAppsWin', {
+    extend : 'Ung.StatusWin',
+    helpSource : 'install_apps',
+    displayName : 'Install Apps',
+    initComponent : function() {
+        this.breadcrumbs = [ {
+            title : i18n._('Install Apps')
+        } ];
+        
+        this.items = {
+            xtype : "component",
+            scrollable: 'y',
+            html:'<div id="appsItems"></div>'
+        };
         this.callParent(arguments);
-        var html = Ung.ConfigItem.template.applyTemplate({
-            iconCls: this.item.iconClass,
-            text: this.item.displayName
-        });
-        this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-        this.getEl().on("click", this.onClick, this);
     },
-    onClick: function(e) {
-        if (e!=null) {
-            e.stopEvent();
-        }
-        Ung.Main.openConfig(this.item);
+    closeWindow : function() {
+        this.hide();
     }
 });
 
@@ -162,8 +158,7 @@ Ext.define("Ung.AppItem", {
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
-        template: new Ext.Template('<div class="icon"><img src="/skins/{skin}/images/admin/apps/{name}_42x42.png" style="vertical-align: middle;"/></div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action icon-arrow-install">{installText}</div>', '<div class="state-pos" id="state_{id}"></div>'),
-        buttonTemplate: new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>'),
+        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_42x42.png"/><div class="app-icon-install icon-arrow-install"></div></div>', '<div class="app-name">{text}</div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
         setLoading: function(name, loadingFlag) {
             Ung.AppItem.loadingFlags[name] = loadingFlag;
             var app = Ung.AppItem.getApp(name);
@@ -190,20 +185,19 @@ Ext.define("Ung.AppItem", {
             skin: rpc.skinSettings.skinName,
             id: this.getId(),
             name: this.nodeProperties.name,
-            text: this.nodeProperties.displayName,
-            installText: i18n._("Install")
+            text: this.nodeProperties.displayName
         });
-        this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-
+        this.getEl().insertHtml("afterBegin", html);
         this.getEl().on("click", this.installNodeFn, this);
         this.syncProgress();
     },
     getProgressBar: function() {
         if(!this.progressBar) {
             this.progressBar = Ext.create('Ext.ProgressBar',{
-                renderTo: "state_" + this.getId(),
-                height: 17,
-                width: 140,
+                renderTo: 'app_progress_'+this.getId(),
+                style: "position: absolute",
+                height: '100%',
+                width: '100%',
                 hidden: true
             });
         }
@@ -211,21 +205,18 @@ Ext.define("Ung.AppItem", {
     },
     //Sync progress bar status
     syncProgress: function() {
-        this.actionEl = Ext.get("action_" + this.getId());
         if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
-            this.actionEl.setVisible(false);
             this.getEl().mask();
             if(!this.getProgressBar().isVisible()) {
                 this.progressBar.show();
             }
             this.progressBar.reset();
             this.progressBar.wait({
-                text: '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;margin:0px;">' + i18n._("Loading App...") + '</p>',
+                text: '<p class="app-progress-text">' +this.nodeProperties.displayName + '</p>',
                 interval: 100,
                 increment: 15
             });
         } else {
-            this.actionEl.setVisible(true);
             this.getEl().unmask();
             if(this.progressBar) {
                 this.progressBar.reset(true);
@@ -337,7 +328,7 @@ Ext.define("Ung.Node", {
         });
         if(this.fadeIn) {
             var el=this.getEl();
-            el.scrollIntoView(Ext.getCmp("center").body);
+            el.scrollIntoView(Ung.Main.panelCenter.body);
             el.setOpacity(0.5);
             el.fadeIn({opacity: 1, duration: 2500, callback: function() {
                 el.setOpacity(1);
@@ -726,7 +717,7 @@ Ext.define("Ung.NodePreview", {
             'displayName': this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
-        this.getEl().scrollIntoView(Ext.getCmp("center").body);
+        this.getEl().scrollIntoView(Ung.Main.panelCenter.body);
         this.getEl().setOpacity(0.1);
         this.getEl().fadeIn({ opacity: 0.6, duration: 12000});
     },
