@@ -157,7 +157,7 @@ public class SkinManagerImpl implements SkinManager
                     }
                 }
             }
-            zis.close();                
+            zis.close();
             uploadedStream.close();
         } catch (IOException e) {
             logger.error(e);
@@ -195,7 +195,7 @@ public class SkinManagerImpl implements SkinManager
                 }
             }
         }        
-        return skins;        
+        return skins;
     }
 
     public SkinInfo getSkinInfo( File skinXML  )

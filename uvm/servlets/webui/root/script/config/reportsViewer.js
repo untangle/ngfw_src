@@ -59,6 +59,8 @@ Ext.define('Webui.config.reportsViewer', {
                 minWidth : 65,
                 maxWidth : 350,
                 split : true,
+                collapsible: true,
+                collapsed: false,
                 store : Ext.create('Ext.data.TreeStore', {
                     root : {
                         expanded : true,

@@ -41,8 +41,8 @@ Ext.define('Ung.panel.Reports', {
             width: 330,
             split: true,
             collapsible: true,
-            collapsed: false,
-            floatable: false,
+            collapsed: Ung.Main.viewport.getWidth()<1200,
+            floatable: true,
             name: 'reportDataGrid',
             xtype: 'grid',
             store:  Ext.create('Ext.data.Store', {
@@ -284,8 +284,8 @@ Ext.define('Ung.panel.Reports', {
             width: 250,
             split: true,
             collapsible: true,
-            collapsed: false,
-            floatable: false,
+            collapsed: Ung.Main.viewport.getWidth()<800,
+            floatable: true,
             items:[{
                 name: 'reportEntriesGrid',
                 title: i18n._("Select Report"),
@@ -1580,6 +1580,7 @@ Ext.define("Ung.panel.ExtraConditions", {
     layout: { type: 'vbox'},
     initComponent: function() {
         this.title = Ext.String.format( i18n._("Conditions: {0}"), i18n._("None"));
+        this.collapsed = Ung.Main.viewport.getHeight()<400;
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
             fields: ["dataIndex", "header"],
