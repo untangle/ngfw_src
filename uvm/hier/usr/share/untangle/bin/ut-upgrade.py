@@ -89,6 +89,10 @@ def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
 
+def remove_libitems():
+    log("apt-get remove %s untangle-libitem-*" % AUTOREMOVE_OPTS)
+    return cmd_to_log("apt-get remove %s untangle-libitem-*" % AUTOREMOVE_OPTS)
+
 log_date( os.path.basename( sys.argv[0]) )
 
 log("")
@@ -105,6 +109,9 @@ r = check_upgrade();
 if r != 0:
     log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
     sys.exit(1)
+
+remove_libitems()
+log("")
 
 upgrade()
 log("")
