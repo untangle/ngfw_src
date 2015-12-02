@@ -17,16 +17,12 @@ import org.json.JSONString;
 public class NodeManagerSettings implements Serializable, JSONString
 {
     private long nextNodeId = 1;
-    private Long version = null;
     private LinkedList<NodeSettings> nodes = new LinkedList<NodeSettings>();
 
     public NodeManagerSettings() {}
 
     public long getNextNodeId() { return nextNodeId; }
     public void setNextNodeId( long nextNodeId ) { this.nextNodeId = nextNodeId; }
-
-    public Long getVersion() { return version; }
-    public void setVersion( Long newValue ) { this.version = newValue; }
     
     public LinkedList<NodeSettings> getNodes() { return nodes; }
     public void setNodes( LinkedList<NodeSettings> nodes ) { this.nodes = nodes; }

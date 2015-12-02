@@ -16,6 +16,7 @@ import org.json.JSONString;
 public class AdminSettings implements Serializable, JSONString
 {
     private LinkedList<AdminUserSettings> users = new LinkedList<AdminUserSettings>();
+    private Long version = null;
 
     public AdminSettings() { }
 
@@ -25,6 +26,9 @@ public class AdminSettings implements Serializable, JSONString
     public LinkedList<AdminUserSettings> getUsers() { return users; }
     public void setUsers( LinkedList<AdminUserSettings> users ) { this.users = users; }
 
+    public Long getVersion() { return version; }
+    public void setVersion( Long newValue ) { this.version = newValue; }
+    
     public void addUser(AdminUserSettings user)
     {
         this.users.add(user);
