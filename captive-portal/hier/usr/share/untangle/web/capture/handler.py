@@ -475,14 +475,19 @@ def load_capture_settings(req,appid=None):
     if (brandco != None):
         companyName = brandco
 
-    if (appid == None):
-        captureSettings = get_node_settings('untangle-node-captive-portal')
-    else:
-        captureSettings = get_nodeid_settings(long(appid))
+    try:
+        if (appid == None):
+            captureSettings = get_node_settings('untangle-node-captive-portal')
+        else:
+            captureSettings = get_nodeid_settings(long(appid))
+    except Execption as e:
+        req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
     if captureSettings == None:
         req.log_error("handler.py: Unable to retrieve capture settings.")
-
+    if captureSettings.get('pageType') == None:
+        req.log_error("handler.py: Missing required setting: pageType")
+        
     # add the company name to the node settings dictionary
     captureSettings['companyName'] = companyName
 
