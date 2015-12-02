@@ -125,6 +125,16 @@ def findNameInHostTable (hostname='test'):
             break
     remote_control.runCommand("pkill netcat")
     return foundTestSession
+    
+def timeOfClientOff (timediff=60):
+    # Check the time differential betwen the Untangle and client is less than 1 min.
+    client_time = int(remote_control.runCommand("date +%s",stdout=True))
+    local_time = int(time.time())
+    diff_time = abs(client_time - local_time)
+    if diff_time > timediff:
+        return True
+    else:
+        return False
 
 class CaptivePortalTests(unittest2.TestCase):
 
@@ -521,7 +531,9 @@ class CaptivePortalTests(unittest2.TestCase):
         global node, nodeData, captureIP
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-
+        if timeOfClientOff():
+            raise unittest2.SkipTest('Client time different than Untangle server')
+            
         # variable for local test
         capture_file_name = "/tmp/capture_test_051.out"
         cookie_file_name = "/tmp/capture_test_051_cookie.txt"
