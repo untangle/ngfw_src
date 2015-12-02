@@ -285,8 +285,7 @@ Ext.define("Ung.Main", {
                     vertical: true,
                     defaults: {
                         textAlign: 'left',
-                        tooltipType: 'title',
-                        width: '100%'
+                        tooltipType: 'title'
                     },
                     items: [{
                         name: 'Help',
