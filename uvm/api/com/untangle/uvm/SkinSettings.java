@@ -15,6 +15,7 @@ import org.json.JSONString;
 public class SkinSettings implements Serializable, JSONString
 {
     private String skinName = "default";
+    private String appsViewType = "default";
 
     public SkinSettings() { }
 
@@ -29,4 +30,10 @@ public class SkinSettings implements Serializable, JSONString
      */
     public String getSkinName() { return skinName; }
     public void setSkinName( String skinName ) { this.skinName = skinName; }
+
+    /**
+     * Get the application view type used in the administration client 
+     */
+    public String getAppsViewType() { return appsViewType; }
+    public void setAppsViewType(String appsViewType) { this.appsViewType = appsViewType; }
 }

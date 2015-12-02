@@ -71,24 +71,7 @@ Ext.define("Ung.Main", {
         });
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/common.css");
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
-        if (rpc.skinSettings.outOfDate) {
-            var win = Ext.create('Ext.Window', {
-                layout: 'fit',
-                width: 300,
-                height: 200,
-                closeAction: 'hide',
-                plain: true,
-                html: i18n._('The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Where can I find updated skins and new skins?</a>'),
-                title: i18n._('Skin Out of Date'),
-                buttons: [ {
-                    text: i18n._('Ok'),
-                    handler: function() {
-                        win.hide();
-                    }
-                }]
-            });
-            win.show();
-        }
+
         document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
         if(rpc.languageSettings.language) {
             Ung.Util.loadScript('/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');

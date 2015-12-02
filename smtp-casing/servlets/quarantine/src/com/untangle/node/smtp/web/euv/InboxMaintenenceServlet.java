@@ -107,6 +107,7 @@ public class InboxMaintenenceServlet extends HttpServlet
         
         /* setup the skinning settings */
         req.setAttribute( "skinName", uvm.skinManager().getSettings().getSkinName());
+        req.setAttribute( "extjsTheme", uvm.skinManager().getSkinInfo().getExtjsTheme());
         req.getRequestDispatcher(INBOX_VIEW).forward(req, resp);
     }
 

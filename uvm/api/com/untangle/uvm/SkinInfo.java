@@ -18,14 +18,15 @@ public class SkinInfo
     // specifies if the skin provides styling for user facing pages
     private boolean userFacingSkin = false;
     private int userFacingSkinVersion = 0;
+    private String extjsTheme = null;
 
     /* Compatible skin version */
-    private static final int COMPATIBLE_ADMIN_SKIN = 2;
+    private static final int COMPATIBLE_ADMIN_SKIN = 3;
     private static final int COMPATIBLE_USER_SKIN = 2;
 
     public SkinInfo() {}
     
-    public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion)
+    public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion, String extjsTheme)
     {
         super();
         this.name = name;
@@ -34,6 +35,7 @@ public class SkinInfo
         this.adminSkinVersion = adminSkinVersion;
         this.userFacingSkin = userFacingSkin;
         this.userFacingSkinVersion = userFacingSkinVersion;
+        this.setExtjsTheme(extjsTheme);
     }
 
     public String getName() { return name; }
@@ -49,4 +51,8 @@ public class SkinInfo
     public void setAdminSkinVersion(int adminSkinVersion) { this.adminSkinVersion = adminSkinVersion; }
 
     public boolean isAdminSkinOutOfDate() { return getAdminSkinVersion() < COMPATIBLE_ADMIN_SKIN; }
+
+    public String getExtjsTheme() { return extjsTheme; }
+
+    public void setExtjsTheme(String extjsTheme) { this.extjsTheme = extjsTheme; }
 }

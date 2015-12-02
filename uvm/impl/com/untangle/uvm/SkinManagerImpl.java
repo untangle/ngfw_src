@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,16 +23,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-
 import org.w3c.dom.Document;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SkinManager;
-import com.untangle.uvm.SkinInfo;
-import com.untangle.uvm.SkinSettings;
-import com.untangle.uvm.UvmException;
-import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
 
 /**
@@ -220,7 +211,8 @@ public class SkinManagerImpl implements SkinManager
             String displayName = xPath.compile("/skin/displayName").evaluate(doc);
             String adminSkin = xPath.compile("/skin/adminSkin").evaluate(doc);
             String skinVersion = xPath.compile("/skin/adminSkinVersion").evaluate(doc);
-            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion),false,0);
+            String extjsTheme = xPath.compile("/skin/extjsTheme").evaluate(doc);
+            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion),false,0, extjsTheme);
             if(!skinInfo.isAdminSkinOutOfDate()) {
                 return skinInfo;
             }
@@ -232,6 +224,13 @@ public class SkinManagerImpl implements SkinManager
             logger.error("Error while processing skin:", ex);
         }
         return null;
+    }
+
+    public SkinInfo getSkinInfo() {
+        String skin = this.settings.getSkinName();
+        File skinXML = new File( SKINS_DIR + File.separator + skin + File.separator + "skin.xml" );
+        SkinInfo skinInfo = getSkinInfo( skinXML );
+        return skinInfo;
     }
 
     // private methods --------------------------------------------------------

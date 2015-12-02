@@ -8,14 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Setup Wizard</title>
     <style type="text/css">
-        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=${buildStamp}";
+        @import "/ext6/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css?s=${buildStamp}";
     </style>
     
-    <uvm:skin src="common.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
-    <uvm:skin src="admin.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
+    <uvm:skin src="common.css?s=${buildStamp}" name="${skinName}"/>
+    <uvm:skin src="admin.css?s=${buildStamp}" name="${skinName}"/>
 
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>

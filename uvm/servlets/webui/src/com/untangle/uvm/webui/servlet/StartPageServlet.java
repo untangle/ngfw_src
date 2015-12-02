@@ -22,18 +22,14 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class StartPageServlet extends HttpServlet
 {
-    /* ??? Perhaps this should live in a global place. */
-    private static final int STORE_WINDOW_ID = new Random().nextInt(Integer.MAX_VALUE);
-
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
         String url="/WEB-INF/jsp/startPage.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
-        req.setAttribute( "companyName", companyName );
-        req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
+        req.setAttribute( "companyName", UvmContextFactory.context().brandingManager().getCompanyName() );
+        req.setAttribute( "extjsTheme", UvmContextFactory.context().skinManager().getSkinInfo().getExtjsTheme() );
         req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(req, resp);
     }

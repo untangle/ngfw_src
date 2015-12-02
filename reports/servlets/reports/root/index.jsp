@@ -3,11 +3,9 @@
 
 <%
 String buildStamp = getServletContext().getInitParameter("buildStamp");
-
 UvmContext uvm = UvmContextFactory.context();
-
 String company = uvm.brandingManager().getCompanyName();
-String companyUrl = uvm.brandingManager().getCompanyUrl();
+String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
 
 %>
 <html>
@@ -17,11 +15,11 @@ String companyUrl = uvm.brandingManager().getCompanyUrl();
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title><%=company%> | Reports</title>
     <style type="text/css">
-        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=<%=buildStamp%>";
+        @import "/ext6/classic/theme-<%=extjsTheme%>/resources/theme-<%=extjsTheme%>-all.css?s=<%=buildStamp%>";
         @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=<%=buildStamp%>";
     </style>
     <script type="text/javascript" src="/ext6/ext-all.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext6/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/ext6/packages/charts/classic/charts.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>

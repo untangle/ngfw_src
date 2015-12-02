@@ -14,7 +14,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <title><c:out value="${pageTitle}"/></title>
-    <uvm:skin src="user.css" name="${skinSettings.skinName}"/>
+    <uvm:skin src="user.css" name="${skinName}"/>
     <c:out escapeXml="false" value="${requestScope.javascript}"/>
   </head>
 

@@ -5,9 +5,6 @@ package com.untangle.uvm.setup.servlet;
 
 import java.io.IOException;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -17,10 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import org.json.JSONObject;
-
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * A servlet which will display the start page
@@ -35,7 +30,8 @@ public class SetupServlet extends HttpServlet
     {
         UvmContext context = UvmContextFactory.context();
         request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
-        request.setAttribute( "skinSettings", context.skinManager().getSettings());
+        request.setAttribute( "skinName", context.skinManager().getSettings().getSkinName());
+        request.setAttribute( "extjsTheme", context.skinManager().getSkinInfo().getExtjsTheme());
 
         String url="/WEB-INF/jsp/setup.jsp";
         ServletContext sc = getServletContext();

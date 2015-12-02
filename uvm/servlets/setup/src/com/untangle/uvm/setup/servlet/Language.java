@@ -31,7 +31,8 @@ public class Language extends HttpServlet
     {
         UvmContext context = UvmContextFactory.context();
         request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
-        request.setAttribute( "skinSettings", context.skinManager().getSettings());
+        request.setAttribute( "skinName", context.skinManager().getSettings().getSkinName());
+        request.setAttribute( "extjsTheme", context.skinManager().getSkinInfo().getExtjsTheme());
 
         /* Retrieve the list of languages and serialize it for the setup wizard. */
 

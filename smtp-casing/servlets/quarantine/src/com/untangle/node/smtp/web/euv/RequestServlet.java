@@ -27,6 +27,7 @@ public class RequestServlet extends HttpServlet
 
         UvmContext uvm = UvmContextFactory.context();
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
+        req.setAttribute( "extjsTheme", uvm.skinManager().getSkinInfo().getExtjsTheme());
         req.getRequestDispatcher(REQ_DIGEST_VIEW).forward(req, resp);
     }
 }

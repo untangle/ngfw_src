@@ -70,6 +70,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         public void setSettings( SkinSettings skinSettings ) { throw new RuntimeException("Unable to change the skin settings."); }
         public void uploadSkin(FileItem item) { throw new RuntimeException("Unable to change the skin settings."); }
         public List<SkinInfo> getSkinsList( ) { return context.skinManager().getSkinsList(); }
+        public SkinInfo getSkinInfo() { return context.skinManager().getSkinInfo(); }
     }
 
     /**

@@ -35,4 +35,11 @@ public interface SkinManager
      * Return all available skins
      */
     List<SkinInfo> getSkinsList();
+    
+    /**
+     * Get the current skin info.
+     *
+     * @return the settings.
+     */
+    SkinInfo getSkinInfo();
 }
