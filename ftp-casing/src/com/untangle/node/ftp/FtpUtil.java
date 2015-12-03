@@ -38,7 +38,13 @@ class FtpUtil
             throw new RuntimeException("bad address");
         }
 
-        int port = 256 * Integer.parseInt(toks[4]) + Integer.parseInt(toks[5]);
+        int portOctet1 = Integer.parseInt(toks[4]);
+        int portOctet2 = Integer.parseInt(toks[5]);
+        if((portOctet1 < 0) || (portOctet1 > 255) ||
+           (portOctet2 < 0) || (portOctet2 > 255)){
+            throw new RuntimeException("bad port");
+        }
+        int port = 256 * portOctet1 + portOctet2;
 
         return new InetSocketAddress(addr, port);
     }
