@@ -157,7 +157,8 @@ def runTestSuite(suite):
         try:
             suite.initialSetUp(suite)
         except Exception, e:
-            print "initialSetUp EXCEPTION: "
+            # print "initialSetUp EXCEPTION: "
+            unittest2.skip("initialSetUp EXCEPTION: ")(suite)
             traceback.print_exc( e )
 
     for test in tests:
