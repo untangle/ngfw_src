@@ -14,28 +14,26 @@ public class SkinInfo
     // specifies if the skin provides styling for admin pages
     private boolean adminSkin = false;
     private int adminSkinVersion = 0;
-    
-    // specifies if the skin provides styling for user facing pages
-    private boolean userFacingSkin = false;
-    private int userFacingSkinVersion = 0;
+    //extjs framework theme to be used for this skin
     private String extjsTheme = null;
+    // application view type used in the administration client 
+    private String appsViewType = "rack";
+    
 
     /* Compatible skin version */
     private static final int COMPATIBLE_ADMIN_SKIN = 3;
-    private static final int COMPATIBLE_USER_SKIN = 2;
 
     public SkinInfo() {}
     
-    public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion, String extjsTheme)
+    public SkinInfo(String name, String displayName, boolean adminSkin, int adminSkinVersion, String extjsTheme, String appsViewType)
     {
         super();
         this.name = name;
         this.displayName = displayName;
         this.adminSkin = adminSkin;
         this.adminSkinVersion = adminSkinVersion;
-        this.userFacingSkin = userFacingSkin;
-        this.userFacingSkinVersion = userFacingSkinVersion;
-        this.setExtjsTheme(extjsTheme);
+        this.extjsTheme = extjsTheme;
+        this.appsViewType = appsViewType;
     }
 
     public String getName() { return name; }
@@ -53,6 +51,9 @@ public class SkinInfo
     public boolean isAdminSkinOutOfDate() { return getAdminSkinVersion() < COMPATIBLE_ADMIN_SKIN; }
 
     public String getExtjsTheme() { return extjsTheme; }
-
     public void setExtjsTheme(String extjsTheme) { this.extjsTheme = extjsTheme; }
+
+    public String getAppsViewType() { return appsViewType; }
+    public void setAppsViewType(String appsViewType) { this.appsViewType = appsViewType; }
+
 }

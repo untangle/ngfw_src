@@ -35,12 +35,12 @@ public class SkinManagerImpl implements SkinManager
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_SKIN = "default";
     private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
-    private static final String DEFAULT_USER_SKIN = DEFAULT_SKIN;
     private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private SkinSettings settings;
+    private SkinInfo skinInfo;
 
     public SkinManagerImpl()
     {
@@ -76,10 +76,12 @@ public class SkinManagerImpl implements SkinManager
          */
         String skin = this.settings.getSkinName();
         File skinXML = new File( SKINS_DIR + File.separator + skin + File.separator + "skin.xml" );
-        SkinInfo skinInfo = getSkinInfo( skinXML );
-        if ( skinInfo == null || skinInfo.isAdminSkinOutOfDate() ) {
+        this.skinInfo = getSkinInfo( skinXML );
+        if ( this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate() ) {
             this.settings.setSkinName( DEFAULT_ADMIN_SKIN );
             this.setSettings( this.settings );
+            skinXML = new File( SKINS_DIR + File.separator + DEFAULT_ADMIN_SKIN + File.separator + "skin.xml" );
+            this.skinInfo = getSkinInfo( skinXML );
         }
 
         this.reconfigure();
@@ -96,7 +98,11 @@ public class SkinManagerImpl implements SkinManager
     {
         this._setSettings( newSettings );
     }
-    
+
+    public SkinInfo getSkinInfo() {
+        return skinInfo;
+    }
+
     public void uploadSkin(FileItem item) throws UvmException
     {
         try {
@@ -212,7 +218,8 @@ public class SkinManagerImpl implements SkinManager
             String adminSkin = xPath.compile("/skin/adminSkin").evaluate(doc);
             String skinVersion = xPath.compile("/skin/adminSkinVersion").evaluate(doc);
             String extjsTheme = xPath.compile("/skin/extjsTheme").evaluate(doc);
-            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion),false,0, extjsTheme);
+            String appsViewType = xPath.compile("/skin/appsViewType").evaluate(doc);
+            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion), extjsTheme, appsViewType);
             if(!skinInfo.isAdminSkinOutOfDate()) {
                 return skinInfo;
             }
@@ -224,13 +231,6 @@ public class SkinManagerImpl implements SkinManager
             logger.error("Error while processing skin:", ex);
         }
         return null;
-    }
-
-    public SkinInfo getSkinInfo() {
-        String skin = this.settings.getSkinName();
-        File skinXML = new File( SKINS_DIR + File.separator + skin + File.separator + "skin.xml" );
-        SkinInfo skinInfo = getSkinInfo( skinXML );
-        return skinInfo;
     }
 
     // private methods --------------------------------------------------------
@@ -255,6 +255,8 @@ public class SkinManagerImpl implements SkinManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
+        File skinXML = new File( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skin.xml" );
+        this.skinInfo = getSkinInfo( skinXML );
     }
     
     private void reconfigure() 
