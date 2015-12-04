@@ -135,6 +135,11 @@ class PolicyManagerTests(unittest2.TestCase):
     def nodeName():
         return "untangle-node-policy-manager"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global nodeData, node
         if node == None:
