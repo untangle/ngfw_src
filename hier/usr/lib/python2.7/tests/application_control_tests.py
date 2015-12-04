@@ -82,6 +82,11 @@ class ApplicationControlTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global nodeSettings, node
         if node == None:
