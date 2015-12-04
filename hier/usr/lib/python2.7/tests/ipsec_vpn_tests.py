@@ -98,8 +98,8 @@ def createRadiusSettings():
             "LDAPHost": "", 
             "superuser": "Administrator"}, 
         "radiusSettings": {
-            "acctPort": 1812, 
-            "authPort": 1813, 
+            "acctPort": 1813, 
+            "authPort": 1812, 
             "enabled": True, 
             "authenticationMethod": "MSCHAPV2", 
             "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
