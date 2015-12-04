@@ -108,13 +108,12 @@ class FirewallTests(unittest2.TestCase):
     def initialSetUp(self):
         global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            print "ERROR: Node %s already installed" % self.nodeName();
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
 
     def setUp(self):
         pass
-        
+
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
