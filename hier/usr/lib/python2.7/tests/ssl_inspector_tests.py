@@ -41,6 +41,11 @@ class SslInspectorTests(unittest2.TestCase):
     def nodeWeb():
         return "untangle-node-web-filter"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node, nodeData, nodeWeb, nodeWebData
         if node == None:
