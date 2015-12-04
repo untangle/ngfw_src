@@ -153,6 +153,13 @@ def runTestSuite(suite):
     if (parser.timedTests):
         suiteStartTime = time.time()
 
+    if "initialSetUp" in dir(suite):
+        try:
+            suite.initialSetUp(suite)
+        except Exception, e:
+            print "initialSetUp EXCEPTION: "
+            traceback.print_exc( e )
+
     for test in tests:
         test_name = test._testMethodName
 

@@ -251,6 +251,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         return "untangle-node-intrusion-prevention"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node
         if node == None:

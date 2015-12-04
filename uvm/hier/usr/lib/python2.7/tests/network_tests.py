@@ -440,7 +440,10 @@ class NetworkTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
-    # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
 
     def setUp(self):
         global orig_netsettings, run_ftp_inbound_tests, wan_IP, device_in_office

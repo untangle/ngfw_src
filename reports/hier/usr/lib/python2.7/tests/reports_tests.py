@@ -214,6 +214,10 @@ class ReportsTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        pass
+
     def setUp(self):
         global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
         if orig_netsettings == None:

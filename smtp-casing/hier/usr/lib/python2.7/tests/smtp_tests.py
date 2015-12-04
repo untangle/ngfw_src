@@ -20,6 +20,11 @@ class SmtpTests(unittest2.TestCase):
     def nodeName():
         return "untangle-casing-smtp"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node
         if node == None:

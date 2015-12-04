@@ -66,6 +66,11 @@ class AdBlockerTests(unittest2.TestCase):
     def nodeName():
         return "untangle-node-ad-blocker"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node
         if node == None:

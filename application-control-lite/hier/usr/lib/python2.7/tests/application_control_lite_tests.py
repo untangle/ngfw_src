@@ -49,6 +49,10 @@ class ApplicationControlLiteTests(unittest2.TestCase):
     def nodeName():
         return "untangle-node-application-control-lite"
 
+    @staticmethod
+    def initialSetUp(self):
+        pass
+
     def setUp(self):
         global node
         if node == None:

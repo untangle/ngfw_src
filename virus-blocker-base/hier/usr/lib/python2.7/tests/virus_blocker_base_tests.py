@@ -45,6 +45,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def displayName():
         return "Virus Blocker Lite"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node,md5StdNum
         if node == None:

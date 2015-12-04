@@ -23,6 +23,11 @@ class ShieldTests(unittest2.TestCase):
     def nodeName():
         return "untangle-node-shield"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node
         if node == None:

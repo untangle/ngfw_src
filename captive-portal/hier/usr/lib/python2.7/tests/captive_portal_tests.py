@@ -149,6 +149,11 @@ class CaptivePortalTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult, test_untangle_com_ip
         if node == None:

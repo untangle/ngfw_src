@@ -70,6 +70,11 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     def nodeNameSSLInspector():
         return "untangle-casing-ssl-inspector"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay
         if node == None:
