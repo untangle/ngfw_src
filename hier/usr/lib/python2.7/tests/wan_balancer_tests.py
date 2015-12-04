@@ -199,6 +199,11 @@ class WanBalancerTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination
         if node == None:
