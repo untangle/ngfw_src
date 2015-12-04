@@ -16,11 +16,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -35,7 +30,6 @@ public class SkinManagerImpl implements SkinManager
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_SKIN = "default";
     private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
-    private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -75,13 +69,17 @@ public class SkinManagerImpl implements SkinManager
          * If the skin is out of date, revert to default
          */
         String skin = this.settings.getSkinName();
-        File skinXML = new File( SKINS_DIR + File.separator + skin + File.separator + "skin.xml" );
-        this.skinInfo = getSkinInfo( skinXML );
-        if ( this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate() ) {
+        String skinInfoFile = SKINS_DIR + File.separator + skin + File.separator + "skinInfo.js";
+        this.skinInfo = null;
+        try {
+            skinInfo = settingsManager.load( SkinInfo.class, skinInfoFile );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load skin:",e);
+        }
+        if ( skinInfo == null || skinInfo.isAdminSkinOutOfDate() ) {
             this.settings.setSkinName( DEFAULT_ADMIN_SKIN );
             this.setSettings( this.settings );
-            skinXML = new File( SKINS_DIR + File.separator + DEFAULT_ADMIN_SKIN + File.separator + "skin.xml" );
-            this.skinInfo = getSkinInfo( skinXML );
+            this.skinInfo = getSkinInfo( DEFAULT_ADMIN_SKIN );
         }
 
         this.reconfigure();
@@ -99,7 +97,8 @@ public class SkinManagerImpl implements SkinManager
         this._setSettings( newSettings );
     }
 
-    public SkinInfo getSkinInfo() {
+    public SkinInfo getSkinInfo()
+    {
         return skinInfo;
     }
 
@@ -144,19 +143,25 @@ public class SkinManagerImpl implements SkinManager
                     }
                     
                     int count;
-                    byte data[] = new byte[BUFFER];
+                    int bufferSize = 2048;
+                    byte data[] = new byte[bufferSize];
                     // write the files to the disk
                     FileOutputStream fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
-                    dest = new BufferedOutputStream(fos, BUFFER);
-                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                    dest = new BufferedOutputStream(fos, bufferSize);
+                    while ((count = zis.read(data, 0, bufferSize)) != -1) {
                         dest.write(data, 0, count);
                     }
                     dest.flush();
                     dest.close();
-                    if (entry.getName().contains("skin.xml")) {
-                        File skinXML = new File( SKINS_DIR + File.separator + entry.getName() );
-                        SkinInfo skinInfo = getSkinInfo( skinXML );
-                        if ( skinInfo == null || skinInfo.isAdminSkinOutOfDate() ) {
+                    if (entry.getName().contains("skinInfo.js")) {
+                        String skinInfoFile = SKINS_DIR + File.separator + entry.getName();
+                        SkinInfo skinInfoTmp = null;
+                        try {
+                            skinInfoTmp = UvmContextFactory.context().settingsManager().load( SkinInfo.class, skinInfoFile );
+                        } catch (SettingsManager.SettingsException e) {
+                            logger.warn("Failed to load skin:",e);
+                        }
+                        if ( skinInfoTmp == null || skinInfoTmp.isAdminSkinOutOfDate() ) {
                             logger.error("Upload Skin Failed, Out of Date");
                             throw new UvmException("Upload Skin Failed, Out of Date");
                         }
@@ -186,16 +191,16 @@ public class SkinManagerImpl implements SkinManager
                 if (file.isDirectory() && !file.getName().startsWith(".")) {
                     File[] skinFiles = file.listFiles(new FilenameFilter(){
                             public boolean accept(File dir, String name) {
-                                return name.equals("skin.xml");
+                                return name.equals("skinInfo.js");
                             }
                         });
                     if (skinFiles.length < 1) {
-                        logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
+                        logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skinInfo.js");
                     } else {
-                        SkinInfo skinInfo;
-                        skinInfo = getSkinInfo( skinFiles[0] );
-                        if (skinInfo != null) {
-                            skins.add(skinInfo);
+                        SkinInfo skinInfoTmp;
+                        skinInfoTmp = getSkinInfo( skinFiles[0].getPath() );
+                        if (skinInfoTmp != null) {
+                            skins.add(skinInfoTmp);
                         }
                     }
                 }
@@ -204,32 +209,16 @@ public class SkinManagerImpl implements SkinManager
         return skins;
     }
 
-    public SkinInfo getSkinInfo( File skinXML  )
+    public SkinInfo getSkinInfo( String skinInfoFileName  )
     {
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        SkinInfo skinInfo;
+        SkinInfo skinInfoTmp;
         try {
-            builder = builderFactory.newDocumentBuilder();
-            Document doc = builder.parse(new FileInputStream(skinXML));
-            XPath xPath =  XPathFactory.newInstance().newXPath();
-            String name = xPath.compile("/skin/name").evaluate(doc);
-            String displayName = xPath.compile("/skin/displayName").evaluate(doc);
-            String adminSkin = xPath.compile("/skin/adminSkin").evaluate(doc);
-            String skinVersion = xPath.compile("/skin/adminSkinVersion").evaluate(doc);
-            String extjsTheme = xPath.compile("/skin/extjsTheme").evaluate(doc);
-            String appsViewType = xPath.compile("/skin/appsViewType").evaluate(doc);
-            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion), extjsTheme, appsViewType);
-            if(!skinInfo.isAdminSkinOutOfDate()) {
-                return skinInfo;
-            }
+            skinInfoTmp = UvmContextFactory.context().settingsManager().load( SkinInfo.class, skinInfoFileName );
+            return skinInfoTmp;
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load skin:",e);
         }
-        catch (FileNotFoundException e) {
-            logger.error("Error reading skin info from skin foder \"" + skinXML.getName() + "\"");
-        }
-        catch (Exception ex) {
-            logger.error("Error while processing skin:", ex);
-        }
+
         return null;
     }
 
@@ -240,9 +229,8 @@ public class SkinManagerImpl implements SkinManager
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin.js", newSettings );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "skin.js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -255,14 +243,14 @@ public class SkinManagerImpl implements SkinManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
-        File skinXML = new File( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skin.xml" );
-        this.skinInfo = getSkinInfo( skinXML );
     }
     
     private void reconfigure() 
     {
         /* Register a handler to upload skins */
         UvmContextImpl.context().servletFileManager().registerUploadHandler( new SkinUploadHandler() );
+
+        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

@@ -15,7 +15,7 @@ public class SkinInfo
     private boolean adminSkin = false;
     private int adminSkinVersion = 0;
     //extjs framework theme to be used for this skin
-    private String extjsTheme = null;
+    private String extjsTheme = "gray";
     // application view type used in the administration client 
     private String appsViewType = "rack";
     
