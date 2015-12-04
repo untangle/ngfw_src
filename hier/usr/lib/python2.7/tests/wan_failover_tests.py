@@ -137,6 +137,11 @@ class WanFailoverTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global indexOfWans, nodeData, node, orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
