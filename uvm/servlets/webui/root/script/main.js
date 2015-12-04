@@ -83,8 +83,7 @@ Ext.define("Ung.Main", {
         var contentRightArr=[
             '<div id="content-right">',
                 '<div id="racks" style="">',
-                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div>',
-                    '</div>',
+                    '<div id="rack-list"><div id="install-apps-container"></div><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div></div>',
                     '<div id="rack-nodes">',
                         '<div id="filter_nodes"></div>',
                         '<div id="nodes-separator" style="display:none;"><div id="nodes-separator-text"></div></div>',
@@ -92,96 +91,7 @@ Ext.define("Ung.Main", {
                     '</div>',
                 '</div>',
             '</div>'];
-        
-        var toolsItems = [{
-            text: i18n._('Config'),
-            iconCls: 'icon-config',
-            menuAlign: 'tr-tl?',
-            menu: {
-                xtype: 'menu',
-                plain: true,
-                defaults: {
-                    height: 32,
-                    padding: 3
-                },
-                items: [{
-                    text: i18n._('Install Apps'),
-                    iconCls: 'icon-arrow-install',
-                    handler: function() {
-                        Ung.Main.openInstallApps();
-                    }
-                }, {
-                    text: i18n._('Network'),
-                    iconCls: 'icon-config-network',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["network"]);
-                    }
-                }, {
-                    text: i18n._('Administration'),
-                    iconCls: 'icon-config-admin',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["administration"]);
-                    }
-                }, {
-                    text: i18n._('Email'),
-                    iconCls: 'icon-config-email',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["email"]);
-                    }
-                }, {
-                    text: i18n._('Local Directory'),
-                    iconCls: 'icon-config-directory',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
-                    }
-                }, {
-                    text: i18n._('Upgrade'),
-                    iconCls: 'icon-config-upgrade',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["upgrade"]);
-                    }
-                }, {
-                    text: i18n._('System'),
-                    iconCls: 'icon-config-system',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["system"]);
-                    }
-                }, {
-                    text: i18n._('About'),
-                    iconCls: 'icon-config-about',
-                    handler: function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["about"]);
-                    }
-                }]
-            }
-        }, {
-            text: i18n._('Tools'),
-            iconCls: 'icon-tools',
-            menuAlign: 'tr-tl?',
-            menu: {
-                xtype: 'menu',
-                plain: true,
-                defaults: {
-                    height: 32,
-                    padding: 3
-                },
-                items: [{
-                    text: i18n._('Policy Manager'),
-                    name: 'policyManager',
-                    handler: Ung.Main.showPolicyManager
-                }, {
-                    text: i18n._('Session Viewer'),
-                    handler: Ung.Main.showSessions
-                }, {
-                    text: i18n._('Host Viewer'),
-                    handler: Ung.Main.showHosts
-                }, {
-                    text: i18n._('Reports Viewer'),
-                    handler: Ung.Main.showReports
-                }]
-            }
-        }]; 
-        
+ 
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             responsiveFormulas: {
@@ -240,44 +150,21 @@ Ext.define("Ung.Main", {
                         },
                         scope: this
                     }, {
-                        xtype: 'splitbutton',
                         text: i18n._('Apps'),
                         pressed: true,
                         iconCls: 'icon-apps',
                         handler: function() {
-                            this.panelCenter.setActiveItem("rack");
+                            this.panelCenter.setActiveItem("apps");
                         },
-                        scope: this,
-                        menuAlign: 'tr-tl?',
-                        menu: {
-                            xtype: 'menu',
-                            plain: true,
-                            defaults: {
-                                height: 32,
-                                padding: 3
-                            },
-                            items: [{
-                                text: i18n._('Install Apps'),
-                                iconCls: 'icon-arrow-install',
-                                handler: function() {
-                                    Ung.Main.openInstallApps();
-                                }
-                            }]
-                        } 
+                        scope: this
+                    }, {
+                        text: i18n._('Config'),
+                        iconCls: 'icon-config',
+                        handler: function() {
+                            this.panelCenter.setActiveItem("config");
+                        },
+                        scope: this
                     }]
-                }, {
-                    xtype: 'segmentedbutton',
-                    itemId: 'toolsMenu',
-                    vertical: true,
-                    allowToggle: false,
-                    defaults: {
-                        scale: 'large',
-                        textAlign: 'left',
-                        tooltipType: 'title',
-                        cls: 'menu-button'
-                    },
-                    width: '100%',
-                    items: toolsItems
                 }],
                 dockedItems: [{
                     xtype: 'toolbar',
@@ -314,9 +201,9 @@ Ext.define("Ung.Main", {
             }, {
                 region: 'center',
                 itemId: 'panelCenter',
-                xtype: 'container',
+                xtype: 'panel',
+                header: false,
                 layout: 'card',
-                
                 activeItem: 1,
                 items: [{
                     xtype: 'panel',
@@ -326,7 +213,6 @@ Ext.define("Ung.Main", {
                         columns: 2
                     },
                     scrollable: true,
-                    bodyCls: 'center-region',
                     bbar: [{
                         xtype: "button",
                         text : i18n._( "Add Widget" ),
@@ -338,25 +224,63 @@ Ext.define("Ung.Main", {
                     }]
                 }, {
                     xtype: 'component',
-                    itemId: 'rack',
-                    layout: "border",
-                    bodyCls: 'center-region',
+                    itemId: 'apps',
+                    cls: 'center-region',
                     html: contentRightArr.join(""),
                     scrollable: true
+                }, {
+                    xtype : "panel",
+                    itemId: 'installApps',
+                    title : i18n._('Install Apps'),
+                    bodyPadding: '15px 0 0 0',
+                    scrollable: 'y',
+                    html:'<div id="appsItems"></div>',
+                    bbar: ["->", {
+                        xtype: "button",
+                        text : i18n._( "Done" ),
+                        iconCls: 'save-icon',
+                        handler: function() {
+                            this.panelCenter.setActiveItem("apps");
+                        },
+                        scope : this
+                    }] 
+                },{
+                    xtype: 'container',
+                    itemId: 'config',
+                    scrollable: 'y',
+                    items: [{
+                        xtype: 'panel',
+                        border: false,
+                        title: i18n._('Config'),
+                        bodyPadding: '15px 0 0 0',
+                        html:'<div id="configItems"></div>'
+                    }, {
+                        xtype: 'panel',
+                        border: false,
+                        title: i18n._('Tools'),
+                        bodyPadding: '15px 0 0 0',
+                        html:'<div id="toolItems"></div>'
+                    }]
                 }]
             }
         ]});
         Ext.QuickTips.init();
         this.panelMenu = this.viewport.down("panel[name=panelMenu]");
         this.menuWidth = this.panelMenu.getWidth();
-        this.installApps = Ext.create("Ung.InstallAppsWin", {});
-        this.installApps.show();
-        this.installApps.hide();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.systemStats = Ext.create('Ung.SystemStats', {});
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
+        Ext.create({
+            xtype: 'button',
+            iconCls: 'icon-arrow-install',
+            renderTo: 'install-apps-container',
+            text: i18n._('Install Apps'),
+            handler: function() {
+                Ung.Main.openInstallApps();
+            }
+        });
     },
     loadDashboard: function() {
         var dashboardSettings = {
@@ -896,7 +820,7 @@ Ext.define("Ung.Main", {
         }, this), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     openInstallApps: function() {
-        Ung.Main.installApps.show();
+        Ung.Main.panelCenter.setActiveItem("installApps");
     },
     // build Config
     buildConfig: function() {
@@ -939,11 +863,51 @@ Ext.define("Ung.Main", {
         }, {
             name: 'about',
             displayName: i18n._('About'),
-            iconClass: 'icon-config-support',
+            iconClass: 'icon-config-about',
             helpSource: 'about',
             className: 'Webui.config.about'
         }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
+        for(var i=0; i<this.config.length; i++) {
+            Ext.create('Ung.ConfigItem', {
+                item: this.config[i]
+            });
+        }
+        
+        Ext.create('Ung.ConfigItem', {
+            item: {
+                itemId: 'policyManagerTool',
+                displayName: i18n._('Policy Manager'),
+                iconClass: 'icon-policy-manager'
+                
+            },
+            renderTo: 'toolItems',
+            handler: Ung.Main.showPolicyManager
+        });
+        Ext.create('Ung.ConfigItem', {
+            item: {
+                displayName: i18n._('Session Viewer'),
+                iconClass: 'icon-tools'
+            },
+            renderTo: 'toolItems',
+            handler: Ung.Main.showSessions
+        });
+        Ext.create('Ung.ConfigItem', {
+            item: {
+                displayName: i18n._('Host Viewer'),
+                iconClass: 'icon-tools'
+            },
+            renderTo: 'toolItems',
+            handler: Ung.Main.showHosts
+        });
+        Ext.create('Ung.ConfigItem', {
+            item: {
+                displayName: i18n._('Reports Viewer'),
+                iconClass: 'icon-tools'
+            },
+            renderTo: 'toolItems',
+            handler: Ung.Main.showReports
+        });
     },
     checkForIE: function (handler) {
         if (Ext.isIE || 

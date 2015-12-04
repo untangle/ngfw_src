@@ -130,27 +130,6 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     }
 });
 
-Ext.define('Ung.InstallAppsWin', {
-    extend : 'Ung.StatusWin',
-    helpSource : 'install_apps',
-    displayName : 'Install Apps',
-    initComponent : function() {
-        this.breadcrumbs = [ {
-            title : i18n._('Install Apps')
-        } ];
-        
-        this.items = {
-            xtype : "component",
-            scrollable: 'y',
-            html:'<div id="appsItems"></div>'
-        };
-        this.callParent(arguments);
-    },
-    closeWindow : function() {
-        this.hide();
-    }
-});
-
 Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
     nodeProperties: null,
@@ -188,7 +167,10 @@ Ext.define("Ung.AppItem", {
             text: this.nodeProperties.displayName
         });
         this.getEl().insertHtml("afterBegin", html);
-        this.getEl().on("click", this.installNodeFn, this);
+        this.getEl().on("click", function(e) {
+            e.preventDefault();
+            this.installNode();
+        }, this);
         this.syncProgress();
     },
     getProgressBar: function() {
@@ -237,11 +219,33 @@ Ext.define("Ung.AppItem", {
             return;
         }
         Ung.Main.installNode(this.nodeProperties, this, completeFn);
+    }
+});
+
+Ext.define("Ung.ConfigItem", {
+    extend: "Ext.Component",
+    item: null,
+    renderTo: 'configItems',
+    cls: 'app-item',
+    statics: {
+        template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div>', '<div class="app-name">{text}</div>')
     },
-    // click install node
-    installNodeFn: function(e) {
-        e.preventDefault();
-        this.installNode();
+    afterRender: function() {
+        this.callParent(arguments);
+        var html = Ung.ConfigItem.template.applyTemplate({
+            iconCls: this.item.iconClass,
+            text: this.item.displayName
+        });
+        this.getEl().insertHtml("afterBegin", html);
+        this.getEl().on("click", function(e) {
+            if (e!=null) {
+                e.stopEvent();
+            }
+            this.handler();
+        }, this);
+    },
+    handler: function() {
+        Ung.Main.openConfig(this.item);
     }
 });
 
