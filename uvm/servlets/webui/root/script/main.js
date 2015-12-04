@@ -203,10 +203,13 @@ Ext.define("Ung.Main", {
                 itemId: 'panelCenter',
                 xtype: 'panel',
                 header: false,
+                title: ' ',
                 layout: 'card',
                 activeItem: 1,
                 items: [{
                     xtype: 'panel',
+                    header: false,
+                    title: ' ',
                     itemId: 'dashboard',
                     layout: {
                         type: 'table',
@@ -638,7 +641,10 @@ Ext.define("Ung.Main", {
         //build nodes
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
+        Ext.getCmp('policyManagerToolItem').hide();
         Ext.getCmp('reportsMenuItem').disable();
+        Ext.getCmp('reportsToolItem').hide();
+        
         var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
         this.destoyNodes();
         delete rpc.reportsAppInstalledAndEnabled;
@@ -875,8 +881,8 @@ Ext.define("Ung.Main", {
         }
         
         Ext.create('Ung.ConfigItem', {
+            id: 'policyManagerToolItem',
             item: {
-                itemId: 'policyManagerTool',
                 displayName: i18n._('Policy Manager'),
                 iconClass: 'icon-policy-manager'
                 
@@ -901,10 +907,12 @@ Ext.define("Ung.Main", {
             handler: Ung.Main.showHosts
         });
         Ext.create('Ung.ConfigItem', {
+            id: 'reportsToolItem',
             item: {
                 displayName: i18n._('Reports Viewer'),
                 iconClass: 'icon-tools'
             },
+            hidden: true,
             renderTo: 'toolItems',
             handler: Ung.Main.showReports
         });
@@ -1023,13 +1031,16 @@ Ext.define("Ung.Main", {
         Ung.AppItem.setLoading(node.name, false);
         if ( node.name == 'untangle-node-policy-manager') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
+            rpc.nodeManager.node(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 Ext.getCmp('policyManagerMenuItem').enable();
+                Ext.getCmp('policyManagerToolItem').show();
+                rpc.policyManager = result;
             }, this),"untangle-node-policy-manager");
         }
         if ( node.name == 'untangle-node-reports') {
             Ext.getCmp('reportsMenuItem').enable();
+            Ext.getCmp('reportsToolItem').show();
         }
     },
     addNodePreview: function ( nodeProperties ) {
