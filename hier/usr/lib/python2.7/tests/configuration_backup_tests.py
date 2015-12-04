@@ -30,6 +30,11 @@ class BoxBackupTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node
         if node == None:
