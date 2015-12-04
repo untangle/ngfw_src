@@ -184,6 +184,11 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         return "Untangle"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         """
         Setup
