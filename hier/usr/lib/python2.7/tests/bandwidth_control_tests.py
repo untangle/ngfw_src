@@ -196,6 +196,11 @@ class BandwidthControlTests(unittest2.TestCase):
     def displayName():
         return "Bandwidth Control"
 
+    @staticmethod
+    def initialSetUp(self):
+        # FIXME
+        pass
+
     def setUp(self):
         global node, nodeWF, origNetworkSettings
         if node == None:
