@@ -137,18 +137,15 @@ class PolicyManagerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global nodeData, node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeData = node.getSettings()
+        remote_control.runCommand("rm -f ./authpost\?*")
 
     def setUp(self):
-        global nodeData, node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getSettings()
-        remote_control.runCommand("rm -f ./authpost\?*")
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
