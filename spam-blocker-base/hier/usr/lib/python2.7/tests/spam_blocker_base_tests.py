@@ -72,39 +72,32 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeData = node.getSettings()
+        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
+        nodeDataSP = nodeSP.getSmtpNodeSettings()
+        if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
+            raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
+        nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
+        # nodeSSL.start() # leave node off. node doesn't auto-start
+        nodeSSLData = nodeSSL.getSettings()
+        try:
+            canRelay = sendTestmessage()
+        except Exception,e:
+            canRelay = False
+        getLatestMailSender()
+        # flush quarantine.
+        curQuarantine = nodeSP.getQuarantineMaintenenceView()
+        curQuarantineList = curQuarantine.listInboxes()
+        for checkAddress in curQuarantineList['list']:
+            if checkAddress['address']:
+                curQuarantine.deleteInbox(checkAddress['address'])
 
     def setUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getSettings()
-            nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
-            nodeDataSP = nodeSP.getSmtpNodeSettings()
-            try:
-                canRelay = sendTestmessage()
-            except Exception,e:
-                canRelay = False
-            getLatestMailSender()
-
-            # flush quarantine.
-            curQuarantine = nodeSP.getQuarantineMaintenenceView()
-            curQuarantineList = curQuarantine.listInboxes()
-            for checkAddress in curQuarantineList['list']:
-                if checkAddress['address']:
-                    curQuarantine.deleteInbox(checkAddress['address'])
-        
-        if nodeSSL == None:
-            if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
-                print "ERROR: Node %s already installed" % self.nodeNameSSLInspector()
-                raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
-            nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
-            # nodeSSL.start() # leave node off. node doesn't auto-start
-            nodeSSLData = nodeSSL.getSettings()
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
