@@ -123,27 +123,22 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
         tunnelUp = False
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        if nodeAD == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
-                print "ERROR: Node %s already installed" % self.nodeNameAD()
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
-            nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
+        nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-           
+
+    def setUp(self):
+        pass
+
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
