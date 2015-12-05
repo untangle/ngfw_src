@@ -47,25 +47,22 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node,md5StdNum
+        # download eicar and trojan files before installing virus blocker
+        remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
+        result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
+        assert (result == 0)
+        result = remote_control.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
+        assert (result == 0)
+        md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        print "md5StdNum <%s>" % md5StdNum
+        assert (result == 0)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
 
     def setUp(self):
-        global node,md5StdNum
-        if node == None:
-            # download eicar and trojan files before installing virus blocker
-            remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-            result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
-            assert (result == 0)
-            result = remote_control.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
-            assert (result == 0)
-            md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-            print "md5StdNum <%s>" % md5StdNum
-            assert (result == 0)
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -245,6 +242,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_105_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
+        print "fname: %s" % fname
         result = remote_control.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
