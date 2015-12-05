@@ -216,23 +216,17 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        pass
-
-    def setUp(self):
         global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
-        if orig_netsettings == None:
-            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "Node %s already installed" % self.nodeName()
-                # report node is normally installed.
-                # raise Exception('node %s already instantiated' % self.nodeName())
-                node = uvmContext.nodeManager().node(self.nodeName())
-            else:
-                node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        if orig_settings == None:
-            reportSettings = node.getSettings()
-            orig_settings = copy.deepcopy(reportSettings)
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            print "Node %s already installed" % self.nodeName()
+            # report node is normally installed.
+            # raise Exception('node %s already instantiated' % self.nodeName())
+            node = uvmContext.nodeManager().node(self.nodeName())
+        else:
+            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        reportSettings = node.getSettings()
+        orig_settings = copy.deepcopy(reportSettings)
 
         # Skip checking relaying is possible if we have determined it as true on previous test.
         if canRelay == None:
@@ -254,6 +248,9 @@ class ReportsTests(unittest2.TestCase):
                         canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
                     except Exception,e:
                         canRelay = False
+
+    def setUp(self):
+        pass
                 
     # verify client is online
     def test_010_clientIsOnline(self):
