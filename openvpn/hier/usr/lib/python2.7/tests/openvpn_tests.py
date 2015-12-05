@@ -103,29 +103,25 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node.start()
+        nodeWeb = None
+        if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
+            raise Exception('node %s already instantiated' % self.nodeWebName())
+        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
+        vpnHostResult = subprocess.call(["ping","-W","5","-c","1",vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnClientResult = subprocess.call(["ping","-W","5","-c","1",vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        wanIP = uvmContext.networkManager().getFirstWanAddress()
+        if vpnClientResult == 0:
+            vpnServerResult = remote_control.runCommand("ping -W 5 -c 1 " + wanIP, host=vpnClientVpnIP)
+        else:
+            vpnServerResult = 1
 
     def setUp(self):
-        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node.start()
-            nodeWeb = None
-            if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
-                print "ERROR: Node %s already installed" % self.nodeWebName()
-                raise Exception('node %s already instantiated' % self.nodeWebName())
-            nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
-            vpnHostResult = subprocess.call(["ping","-W","5","-c","1",vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            vpnClientResult = subprocess.call(["ping","-W","5","-c","1",vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            wanIP = uvmContext.networkManager().getFirstWanAddress()
-            if vpnClientResult == 0:
-                vpnServerResult = remote_control.runCommand("ping -W 5 -c 1 " + wanIP, host=vpnClientVpnIP)
-            else:
-                vpnServerResult = 1
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
