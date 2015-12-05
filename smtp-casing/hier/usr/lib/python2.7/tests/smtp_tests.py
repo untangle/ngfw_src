@@ -22,16 +22,14 @@ class SmtpTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            node = uvmContext.nodeManager().node(self.nodeName())
+        else:
+            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
 
     def setUp(self):
-        global node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                node = uvmContext.nodeManager().node(self.nodeName())
-            else:
-                node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        pass
 
     # verify client is online
     def test_010_runTests(self):
