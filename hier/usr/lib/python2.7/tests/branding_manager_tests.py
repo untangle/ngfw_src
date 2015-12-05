@@ -57,27 +57,23 @@ class BrandingManagerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global nodeData, node, nodeWeb, nodeSpam
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            print "ERROR: Node %s already installed" % self.nodeName()
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeData = node.getSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWeb())):
+            print "ERROR: Node %s already installed" % self.nodeNameWeb()
+            raise Exception('node %s already instantiated' % self.nodeNameWeb())
+        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpam())):
+            print "ERROR: Node %s already installed" % self.nodeNameSpam()
+            raise Exception('node %s already instantiated' % self.nodeNameSpam())
+        nodeSpam = uvmContext.nodeManager().instantiate(self.nodeNameSpam(), defaultRackId)
 
     def setUp(self):
-        global nodeData, node, nodeWeb, nodeSpam
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getSettings()
-        if nodeWeb == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameWeb())):
-                print "ERROR: Node %s already installed" % self.nodeNameWeb()
-                raise Exception('node %s already instantiated' % self.nodeNameWeb())
-            nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
-        if nodeSpam == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpam())):
-                print "ERROR: Node %s already installed" % self.nodeNameSpam()
-                raise Exception('node %s already instantiated' % self.nodeNameSpam())
-            nodeSpam = uvmContext.nodeManager().instantiate(self.nodeNameSpam(), defaultRackId)
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
