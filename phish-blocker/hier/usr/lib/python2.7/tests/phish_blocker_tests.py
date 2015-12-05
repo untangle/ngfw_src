@@ -69,28 +69,28 @@ class PhishBlockerTests(unittest2.TestCase):
     def nodeNameSpamCase():
         return "untangle-casing-smtp"
 
-    def setUp(self):
+    @staticmethod
+    def initialSetUp(self):
         global node, nodeData, nodeSP, nodeDataSP, canRelay
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getSettings()
-            nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
-            nodeDataSP = nodeSP.getSmtpNodeSettings()
-            try:
-                canRelay = sendTestmessage()
-            except Exception,e:
-                canRelay = False
-            getLatestMailSender()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeData = node.getSettings()
+        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
+        nodeDataSP = nodeSP.getSmtpNodeSettings()
+        try:
+            canRelay = sendTestmessage()
+        except Exception,e:
+            canRelay = False
+        getLatestMailSender()
 
-            # flush quarantine.
-            curQuarantine = nodeSP.getQuarantineMaintenenceView()
-            curQuarantineList = curQuarantine.listInboxes()
-            for checkAddress in curQuarantineList['list']:
-                if checkAddress['address']:
-                    curQuarantine.deleteInbox(checkAddress['address'])
+    def setUp(self):
+        # flush quarantine.
+        curQuarantine = nodeSP.getQuarantineMaintenenceView()
+        curQuarantineList = curQuarantine.listInboxes()
+        for checkAddress in curQuarantineList['list']:
+            if checkAddress['address']:
+                curQuarantine.deleteInbox(checkAddress['address'])
             
     # verify daemon is running
     def test_009_clamdIsRunning(self):
