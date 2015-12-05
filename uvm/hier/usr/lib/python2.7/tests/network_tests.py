@@ -442,10 +442,6 @@ class NetworkTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global orig_netsettings, run_ftp_inbound_tests, wan_IP, device_in_office
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -464,6 +460,9 @@ class NetworkTests(unittest2.TestCase):
                     run_ftp_inbound_tests = False
             except:
                 run_ftp_inbound_tests = False
+
+    def setUp(self):
+        pass
 
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
