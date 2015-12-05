@@ -151,24 +151,18 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult, test_untangle_com_ip
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeData = node.getCaptivePortalSettings()
-        if nodeAD == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
-                print "ERROR: Node %s already installed" % self.nodeNameAD()
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
-            nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
-            nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            print "ERROR: Node %s already installed" % self.nodeName()
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeData = node.getCaptivePortalSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
+            print "ERROR: Node %s already installed" % self.nodeNameAD()
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
+        nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
+        nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
@@ -178,6 +172,9 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # remove previous temp files
         remote_control.runCommand("rm -f /tmp/capture_test_*")
+
+    def setUp(self):
+        pass
 
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
