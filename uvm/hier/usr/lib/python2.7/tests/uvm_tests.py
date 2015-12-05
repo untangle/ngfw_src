@@ -51,6 +51,10 @@ class UvmTests(unittest2.TestCase):
     def nodeNameSpamCase():
         return "untangle-casing-smtp"
 
+    @staticmethod
+    def initialSetUp(self):
+        pass
+
     def setUp(self):
         pass
 
