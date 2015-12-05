@@ -84,19 +84,16 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global nodeSettings, node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodeSettings = node.getSettings()
+        # run a few sessions so that the classd daemon starts classifying
+        for i in range(2): remote_control.isOnline()
 
     def setUp(self):
-        global nodeSettings, node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            nodeSettings = node.getSettings()
-            # run a few sessions so that the classd daemon starts classifying
-            for i in range(2): remote_control.isOnline()
+        pass
             
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
