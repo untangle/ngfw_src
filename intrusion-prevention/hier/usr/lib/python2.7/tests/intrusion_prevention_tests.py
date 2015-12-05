@@ -16,8 +16,8 @@ import remote_control
 import global_functions
 import test_registry
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
-if ( "@PREFIX@" != ''):
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "", sys.version_info[0], sys.version_info[1] )
+if ( "" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
 uvmContext = Uvm().getUvmContext()
@@ -253,21 +253,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
+        node.start() # must be called since intrusion-prevention doesn't auto-start
 
     def setUp(self):
-        global node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
-            node.start() # must be called since intrusion-prevention doesn't auto-start
-            flush_events()
-
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
         self.intrusion_prevention_interface.setup()
+        flush_events()
 
     def test_010_client_is_online(self):
         """
