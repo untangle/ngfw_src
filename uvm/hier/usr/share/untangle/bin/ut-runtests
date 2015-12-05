@@ -266,10 +266,11 @@ for testName in parser.suitesToExclude:
     if testName in parser.suitesToRun:
         parser.suitesToRun.remove(testName)
 
+startTime = time.time()
 while True:
-    rc = 0
     total = 0
-    skiptotal = 0
+    failedCount = 0
+    skipCount = 0
 
     for node in parser.suitesToRun:
         if node == "environment":
@@ -279,20 +280,30 @@ while True:
            print "Unable to find tests for \"%s\"" % node
            exit(1)
         errors, skipc, subTotal = runTestSuite(testClz)
-        rc += errors
+        failedCount += errors
         total += subTotal
-        skiptotal += skipc
+        skipCount += skipc
 
     if not parser.repeat:
         break
 
+elapsedTime = time.time() - startTime
+    
 # if reports was added earlier, revert to original settings
 if reportsNode != None:
     print "== UnInstalling untangle-node-reports =="
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
-print "%s passed, %s skipped, %s failed" % (total-rc-skiptotal, skiptotal, rc)
+print "Tests complete. [%.1f seconds]" % elapsedTime
+print "%s passed, %s skipped, %s failed" % (total-failedCount-skipCount, skipCount, failedCount)
+print ""
+print "Total          : %4i" % total
+print "Passed         : %4i" % (total-failedCount-skipCount)
+print "Skipped        : %4i" % (skipCount)
+print "Passed/Skipped : %4i [%5.1f%%]" % (total-failedCount, (100*(total-failedCount)/total))
+print "Failed         : %4i [%5.1f%%]" % (failedCount, 100*failedCount/total)
+print ""
 print "More details found in %s" % parser.logfile
 
-exit(rc)
+exit(failedCount)
