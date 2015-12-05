@@ -186,23 +186,17 @@ class DirectoryConnectorTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
-        """
-        Setup
-        """
         global node, AD_NOT_SECURE_RESULT, AD_SECURE_RESULT, RADIUS_RESULT
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         AD_NOT_SECURE_RESULT = subprocess.call(["ping", "-c", "1", AD_NOT_SECURE_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         AD_SECURE_RESULT = subprocess.call(["ping", "-c", "1", AD_SECURE_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-           
+
+    def setUp(self):
+        pass
+
     def test_010_clientIsOnline(self):
         """
         Verify client is online
