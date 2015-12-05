@@ -198,23 +198,18 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global node, nodeWF, origNetworkSettings
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        if nodeWF == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameWF())):
-                print "ERROR: Node %s already installed" % self.nodeNameWF()
-                raise Exception('node %s already instantiated' % self.nodeNameWF())
-            nodeWF = uvmContext.nodeManager().instantiate(self.nodeNameWF(), defaultRackId)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWF())):
+            raise Exception('node %s already instantiated' % self.nodeNameWF())
+        nodeWF = uvmContext.nodeManager().instantiate(self.nodeNameWF(), defaultRackId)
         if origNetworkSettings == None:
             origNetworkSettings = uvmContext.networkManager().getNetworkSettings()
+
+    def setUp(self):
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
