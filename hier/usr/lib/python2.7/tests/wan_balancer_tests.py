@@ -201,30 +201,25 @@ class WanBalancerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node.start()
-            nodeData = node.getSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node.start()
+        nodeData = node.getSettings()
 
-        if nodeWanFailover == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameWanFailover())):
-                print "ERROR: Node %s already installed" % self.nodeNameWanFailover()
-                raise Exception('node %s already instantiated' % self.nodeNameWanFailover())
-            nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeNameWanFailover(), defaultRackId)
-            nodeWanFailover.start()
-            nodeWanFailoverData = nodeWanFailover.getSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWanFailover())):
+            raise Exception('node %s already instantiated' % self.nodeNameWanFailover())
+        nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeNameWanFailover(), defaultRackId)
+        nodeWanFailover.start()
+        nodeWanFailoverData = nodeWanFailover.getSettings()
 
         indexOfWans = foundWans()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
+
+    def setUp(self):
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
