@@ -25,16 +25,13 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node
+        if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().node(self.nodeName())
 
     def setUp(self):
-        global node
-        if node == None:
-            if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s is not installed" % self.nodeName();
-                raise Exception('node %s is not installed' % self.nodeName())
-            node = uvmContext.nodeManager().node(self.nodeName())
+        pass
 
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
