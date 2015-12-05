@@ -139,21 +139,17 @@ class WanFailoverTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
-
-    def setUp(self):
         global indexOfWans, nodeData, node, orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node.start()
-            nodeData = node.getSettings()
-            indexOfWans = foundWans()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node.start()
+        nodeData = node.getSettings()
+        indexOfWans = foundWans()
 
+    def setUp(self):
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
