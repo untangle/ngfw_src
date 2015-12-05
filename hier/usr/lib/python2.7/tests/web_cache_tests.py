@@ -23,17 +23,14 @@ class WebCacheTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node.start() # must be called since web cache doesn't auto-start
 
     def setUp(self):
-        global node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node.start() # must be called since web cache doesn't auto-start
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
