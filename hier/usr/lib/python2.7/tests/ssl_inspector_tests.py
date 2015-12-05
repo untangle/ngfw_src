@@ -43,24 +43,19 @@ class SslInspectorTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        # FIXME
-        pass
+        global node, nodeData, nodeWeb, nodeWebData
+        if uvmContext.nodeManager().isInstantiated(self.nodeName()):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node.start() # must be called since the node doesn't auto-start
+        nodeData = node.getSettings()
+        if (uvmContext.nodeManager().isInstantiated(self.nodeWeb())):
+            raise Exception('node %s already instantiated' % self.nodeWeb())
+        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWeb(), defaultRackId)
+        nodeWebData = nodeWeb.getSettings()
 
     def setUp(self):
-        global node, nodeData, nodeWeb, nodeWebData
-        if node == None:
-            if uvmContext.nodeManager().isInstantiated(self.nodeName()):
-                print "ERROR: Node %s already installed" % self.nodeName()
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node.start() # must be called since the node doesn't auto-start
-            nodeData = node.getSettings()
-        if nodeWeb == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeWeb())):
-                print "ERROR: Node %s already installed" % self.nodeWeb()
-                raise Exception('node %s already instantiated' % self.nodeWeb())
-            nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWeb(), defaultRackId)
-            nodeWebData = nodeWeb.getSettings()
+        pass
 
     def test_005_setInspectAllTraffic(self):
         # print nodeData['ignoreRules']['list']
