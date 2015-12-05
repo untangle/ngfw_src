@@ -77,14 +77,15 @@ class WebFilterBaseTests(unittest2.TestCase):
     def displayName():
         return "Web Filter Lite"
 
-    def setUp(self):
+    @staticmethod
+    def initialSetUp(self):
         global node
-        if node == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-                print "ERROR: Node %s already installed" % self.nodeName();
-                raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        self.node = node
+        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+            raise Exception('node %s already instantiated' % self.nodeName())
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+
+    def setUp(self):
+        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
