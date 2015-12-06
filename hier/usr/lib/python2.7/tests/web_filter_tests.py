@@ -88,6 +88,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings["unblockMode"] = "None"
         settings["unblockPassword"] = ""
         settings["unblockPasswordEnabled"] = False
+
         self.node.setSettings(settings)        
         nukeBlockedUrls(self.node)
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
