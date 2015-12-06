@@ -9,8 +9,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.buildUserNotificationApi();
         this.buildActiveDirectoryConnector();
         this.buildRadius();
+        this.buildGoogle();
 
-        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelRadius]);
+        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelGoogle, this.panelRadius]);
         this.callParent(arguments);
     },
 
@@ -30,7 +31,18 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         }
         return this.rpc.activeDirectoryManager;
     },
+    getGoogleManager: function(forceReload) {
+        if (forceReload || this.rpc.activeDirectoryManager === undefined) {
+            try {
+                this.rpc.googleManager = this.getRpcNode().getGoogleManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.activeDirectoryManager;
+    },
 
+    
     openUserGroupMap: function() {
         if(!this.winUserGroupMap) {
             this.winUserGroupMap = Ext.create('Ung.Window', {
@@ -679,6 +691,48 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
             }, this)
         });
     },
+
+    buildGoogle: function() {
+        this.panelGoogle = Ext.create('Ext.panel.Panel',{
+            name: 'Google Connector',
+            helpSource: 'directory_connector_google',
+            title: i18n._('Google Connector'),
+            cls: 'ung-panel',
+            autoScroll: true,
+            items: [{
+                title: i18n._('Google Connector'),
+                name: 'Google Connector',
+                xtype: 'fieldset',
+                labelWidth: 250,
+                items: [{
+                    xtype: 'container',
+                    html: Ext.String.format(i18n._('This allows your server to connect to varius {0}Google APIs{1} such as Google Drive.'),'<b>','</b>')
+                },
+                {
+                    xtype: 'button',
+                    text: i18n._('Configure Google Connector'),
+                    name: 'configure_google_connector',
+                    disabled: false, /* XXX */
+                    handler: Ext.bind(function() {
+                        this.panelGoogle.onConfigureGoogleClick();
+                    }, this)
+                }]
+            }],
+
+            onConfigureGoogleClick: Ext.bind(function() {
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("RADIUS Test"));
+
+                this.getRpcNode().getGoogleManager().startAuthorizationProcess();
+                
+                var message = this.getRpcNode().getGoogleManager().getAuthorizationUrl( Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var message = result;
+                    Ext.MessageBox.alert(i18n._("Result"), message);
+                }, this), window.location.protocol, window.location.host );
+            }, this)
+        });
+    },
+
     //validate AD connector settings
     validate: function() {
         if(this.getSettings().activeDirectorySettings.enabled) {

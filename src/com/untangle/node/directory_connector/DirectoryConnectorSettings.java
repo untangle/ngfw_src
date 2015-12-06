@@ -19,15 +19,19 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     
     private ActiveDirectorySettings activeDirectorySettings;
     private RadiusSettings radiusSettings;
-
+    private GoogleSettings googleSettings;
+    
     public DirectoryConnectorSettings() { }
 
     public ActiveDirectorySettings getActiveDirectorySettings() { return this.activeDirectorySettings; }
-    public void setActiveDirectorySettings( ActiveDirectorySettings activeDirectorySettings ) { this.activeDirectorySettings = activeDirectorySettings; }
+    public void setActiveDirectorySettings( ActiveDirectorySettings newValue ) { this.activeDirectorySettings = newValue; }
 
     public RadiusSettings getRadiusSettings() { return radiusSettings; }
-    public void setRadiusSettings( RadiusSettings rss ) { radiusSettings = rss; }
+    public void setRadiusSettings( RadiusSettings newValue ) { radiusSettings = newValue; }
 
+    public GoogleSettings getGoogleSettings() { return googleSettings; }
+    public void setGoogleSettings( GoogleSettings newValue ) { googleSettings = newValue; }
+    
     public int getVersion() { return this.version; }
     public void setVersion( int newValue ) { this.version = newValue; }
 

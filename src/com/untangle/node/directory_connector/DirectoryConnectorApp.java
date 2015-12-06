@@ -20,8 +20,9 @@ import com.untangle.uvm.util.I18nUtil;
 public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.node.DirectoryConnector
 {
     private static final String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Directory Connector\n# service. If you modify this file manually, your changes may be overridden.\n\n";
-    private static final String WEBAPP_OLD = "adpb";
-    private static final String WEBAPP = "userapi";
+    private static final String USERAPI_WEBAPP_OLD = "adpb";
+    private static final String USERAPI_WEBAPP = "userapi";
+    private static final String OAUTH_WEBAPP = "oauth";
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
@@ -49,6 +50,11 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
      */
     private RadiusManagerImpl radiusManager = null;
 
+    /**
+     * The Google API Manager
+     */
+    private GoogleManagerImpl googleManager = null;
+    
     public DirectoryConnectorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
     {
         super(nodeSettings, nodeProperties);
@@ -63,15 +69,17 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         this.refreshGroupCache();
 
         /* Start the servlet */
-        UvmContextFactory.context().tomcatManager().loadServlet("/" + WEBAPP, WEBAPP);
-        UvmContextFactory.context().tomcatManager().loadServlet("/" + WEBAPP_OLD, WEBAPP); //load the old URL for backwards compat
+        UvmContextFactory.context().tomcatManager().loadServlet("/" + OAUTH_WEBAPP, OAUTH_WEBAPP);
+        UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP, USERAPI_WEBAPP);
+        UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP_OLD, USERAPI_WEBAPP); //load the old URL for backwards compat
     }
 
     @Override
     protected void postStop()
     {
-        UvmContextFactory.context().tomcatManager().unloadServlet("/" + WEBAPP);
-        UvmContextFactory.context().tomcatManager().unloadServlet("/" + WEBAPP_OLD);
+        UvmContextFactory.context().tomcatManager().unloadServlet("/" + OAUTH_WEBAPP);
+        UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP);
+        UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
 
         super.postStop();
     }
@@ -135,6 +143,11 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         return this.radiusManager;
     }
 
+    public GoogleManagerImpl getGoogleManager()
+    {
+        return this.googleManager;
+    }
+    
     public List<UserEntry> getUserEntries()
     {
         LinkedList<UserEntry> users = new LinkedList<UserEntry>();
@@ -272,6 +285,14 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         else
             this.radiusManager.setSettings(settings.getRadiusSettings());
 
+        /**
+         * Initialize the Google manager (or update settings on current)
+         */
+        if (googleManager == null)
+            this.googleManager = new GoogleManagerImpl(settings.getGoogleSettings(), this);
+        else
+            this.googleManager.setSettings(settings.getGoogleSettings());
+        
         /**
          * Initialize the Group manager (if necessary) and Refresh
          */
