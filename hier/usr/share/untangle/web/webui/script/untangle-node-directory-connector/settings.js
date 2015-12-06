@@ -697,7 +697,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.configuredState = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
             name: 'Google Connector',
-            helpSource: 'directory_connector_google',
+            helpSource: 'directory_connector_google_connector',
             title: i18n._('Google Connector'),
             cls: 'ung-panel',
             autoScroll: true,
