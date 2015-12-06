@@ -53,14 +53,19 @@ def create_ad_settings(ldap_secure=False):
             "enabled": True,
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
-            "superuserPass": AD_PASSWORD },
+            "superuserPass": AD_PASSWORD
+       },
         "radiusSettings": {
             "port": 1812, 
             "enabled": False, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": RADIUS_HOST, 
-            "sharedSecret": "mysharedsecret"}
+            "sharedSecret": "mysharedsecret"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings", 
+        }
     }
 
 def create_radius_settings():
@@ -78,15 +83,20 @@ def create_radius_settings():
             "domain": AD_SECURE_DOMAIN, 
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": AD_SECURE_HOST, 
-            "superuser": AD_ADMIN}, 
+            "superuser": AD_ADMIN
+        }, 
         "radiusSettings": {
             "port": 1812, 
             "enabled": True, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": RADIUS_HOST, 
-            "sharedSecret": "chakas"}
+            "sharedSecret": "chakas"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings", 
         }
+    }
 
 def get_list_of_username_mapped():
     """
