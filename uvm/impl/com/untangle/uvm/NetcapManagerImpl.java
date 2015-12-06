@@ -11,7 +11,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 public class NetcapManagerImpl implements NetcapManager

@@ -77,10 +77,12 @@ class Jars
     ## Jars required to run/compile unit tests
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
 
-    const_set(:HttpClient, [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
-                            Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
-                            Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
-                            Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
+    const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpclient-4.5.1.jar'),
+                             Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar'),
+                             Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
+                             Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
+                             Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
+                             Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
               
     const_set(:Jstl, [ Jars.downloadTarget('Ajax/jars/jstl.jar'),
                    Jars.downloadTarget('Ajax/jars/standard.jar') ])

@@ -2,8 +2,9 @@ apache-ant: used to build other things in download
 apache-tomcat: used in the untangle-vm (servlets)
 logging-log4j: used in the untangle-vm (logging)
 velocity: used in templates for quarantine email
+httpcomponents-client: settings manager (uvm)
+commons-httpclient: settings manager (uvm) (XXX this should be replaced by httpcomponents-client)
 commons-fileupload: file upload (uvm & servlets)
-commons-httpclient: settings manager (uvm)
 commons-codec: base64 encoding (uvm & apps)
 commons-io: used for file upload servlets internally in tomcat (not needed for compile, only runtime)
 slf4j: logging

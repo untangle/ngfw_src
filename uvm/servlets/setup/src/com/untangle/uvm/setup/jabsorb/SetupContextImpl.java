@@ -17,7 +17,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
-import com.untangle.uvm.util.JsonClient;
 
 import org.json.JSONObject;
 
