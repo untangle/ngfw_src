@@ -17,7 +17,13 @@ def allNodes():
         nodeList.insert(0, nodeList.pop(nodeList.index('web-filter')))
     if 'firewall' in nodeList:
         nodeList.insert(0, nodeList.pop(nodeList.index('firewall')))
-
+    if 'spam-blocker' in nodeList:
+        nodeList.append(nodeList.pop(nodeList.index('spam-blocker')))
+    if 'spam-blocker-lite' in nodeList:
+        nodeList.append(nodeList.pop(nodeList.index('spam-blocker-lite')))
+    if 'intrusion-prevention' in nodeList:
+        nodeList.append(nodeList.pop(nodeList.index('intrusion-prevention')))
+        
     return nodeList
 
 def allTests():
