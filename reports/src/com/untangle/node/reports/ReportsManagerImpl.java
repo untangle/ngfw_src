@@ -86,7 +86,6 @@ public class ReportsManagerImpl implements ReportsManager
         ReportsManagerImpl.node = node;
     }
     
-    
     public boolean isReportsEnabled()
     {
         return node != null && NodeSettings.NodeState.RUNNING.equals(node.getRunState());
@@ -490,7 +489,8 @@ public class ReportsManagerImpl implements ReportsManager
         return 0;
     }
     
-    public List<JSONObject> getPoliciesInfo() {
+    public List<JSONObject> getPoliciesInfo()
+    {
         ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
         if ( policyManager != null ) {
@@ -499,7 +499,8 @@ public class ReportsManagerImpl implements ReportsManager
         return policiesInfo;
     }
     
-    public List<JSONObject> getInterfacesInfo() {
+    public List<JSONObject> getInterfacesInfo()
+    {
         ArrayList<JSONObject> interfacesInfo = new ArrayList<JSONObject>();
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ){
             try {
@@ -547,14 +548,14 @@ public class ReportsManagerImpl implements ReportsManager
                     
                     ReportEntry oldEntry = findReportEntry( existingEntries, newEntry.getUniqueId() );
                     if ( oldEntry == null ) {
-                        logger.info( "Report Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
+                        logger.info( "Report Entries Update: Adding  \"" + newEntry.getTitle() + "\" [" + line + "]");
                         existingEntries.add( newEntry );
                         updates = true;
                     } else {
                         boolean changed = updateReportEntry( existingEntries, newEntry, oldEntry );
                         if ( changed ) {
                             updates = true;
-                            logger.info( "Report Entries Update: Updated \"" + newEntry.getTitle() + "\"");
+                            logger.info( "Report Entries Update: Updated \"" + newEntry.getTitle() + "\" [" + line + "]");
                         }
                     }
                 } catch (Exception e) {
