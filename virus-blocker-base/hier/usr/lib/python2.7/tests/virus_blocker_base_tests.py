@@ -55,7 +55,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5StdNum <%s>" % md5StdNum
+        # print "md5StdNum <%s>" % md5StdNum
         assert (result == 0)
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())

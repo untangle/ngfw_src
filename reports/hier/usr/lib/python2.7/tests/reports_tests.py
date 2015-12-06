@@ -219,8 +219,8 @@ class ReportsTests(unittest2.TestCase):
         global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            print "Node %s already installed" % self.nodeName()
             # report node is normally installed.
+            # print "Node %s already installed" % self.nodeName()
             # raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().node(self.nodeName())
         else:
@@ -237,7 +237,7 @@ class ReportsTests(unittest2.TestCase):
                     fakeSmtpServerHost = smtpServerHostIP[0]
                     testdomain = smtpServerHostIP[2]
                     testEmailAddress = "qa@" + testdomain                
-            print "fakeSmtpServerHost " + fakeSmtpServerHost
+            # print "fakeSmtpServerHost " + fakeSmtpServerHost
             if (fakeSmtpServerHost == ""):
                 canRelay = None
             else: 

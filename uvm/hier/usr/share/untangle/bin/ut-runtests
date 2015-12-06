@@ -301,8 +301,8 @@ if total > 0:
     print "Total          : %4i" % total
     print "Passed         : %4i" % (total-failedCount-skipCount)
     print "Skipped        : %4i" % (skipCount)
-    print "Passed/Skipped : %4i [%5.1f%%]" % (total-failedCount, (100*(total-failedCount)/total))
-    print "Failed         : %4i [%5.1f%%]" % (failedCount, 100*failedCount/total)
+    print "Passed/Skipped : %4i [%6.2f%%]" % (total-failedCount, (100*(total-failedCount)/total))
+    print "Failed         : %4i [%6.2f%%]" % (failedCount, 100*failedCount/total)
     print ""
 print "More details found in %s" % parser.logfile
 

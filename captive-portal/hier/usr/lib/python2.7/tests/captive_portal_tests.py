@@ -79,14 +79,19 @@ def createADSettings():
             "enabled": True,
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
             "superuser": "ATSadmin",
-            "superuserPass": "passwd"},
+            "superuserPass": "passwd"
+       },
         "radiusSettings": {
             "port": 1812, 
             "enabled": False, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": radiusHost, 
-            "sharedSecret": "mysharedsecret"}
+            "sharedSecret": "mysharedsecret"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
+        }
     }
 
 def createRadiusSettings():
@@ -99,15 +104,20 @@ def createRadiusSettings():
             "domain": "adtest.metaloft.com", 
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": adHost, 
-            "superuser": "Administrator"}, 
+            "superuser": "Administrator"
+        }, 
         "radiusSettings": {
             "port": 1812, 
             "enabled": True, 
             "authenticationMethod": "PAP", 
             "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
             "server": radiusHost, 
-            "sharedSecret": "chakas"}
+            "sharedSecret": "chakas"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
         }
+    }
 
 def findNameInHostTable (hostname='test'):
     #  Test for username in session
