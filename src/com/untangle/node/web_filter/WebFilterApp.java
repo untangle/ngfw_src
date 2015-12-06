@@ -56,27 +56,19 @@ public class WebFilterApp extends WebFilterBase
         super( nodeSettings, nodeProperties );
     }
     
-    @Override
-    public boolean unblockSite(String nonce, boolean global)
-    {
-        return unblockSite(nonce,global,"");
-    }
-
     public boolean unblockSite(String nonce, boolean global, String password)
     {
         if ( !this.verifyPassword(password)) {
             if ( this.logger.isInfoEnabled()) {
                 logger.info( "Unable to verify the password for nonce: '" + nonce + "'" );
             }
-            
             return false;
         } else {
             if ( this.logger.isInfoEnabled()) {
                 logger.info( "Verified the password for nonce: '" + nonce + "'" );
             }
+            return super.unblockSite(nonce, global);
         }
-
-        return super.unblockSite(nonce, global);
     }
     
     public void clearCache( boolean expireAll )
