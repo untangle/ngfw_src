@@ -142,6 +142,12 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         }
     }
 
+    public void flushAllUnblockedSites()
+    {
+        logger.warn("Flushing all Unblocked sites...");
+        getDecisionEngine().removeAllUnblockedSites();
+    }
+    
     public WebFilterSettings getSettings()
     {
         return this.settings;

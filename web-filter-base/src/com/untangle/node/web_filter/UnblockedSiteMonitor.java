@@ -39,7 +39,7 @@ class UnblockedSitesMonitor
     {
         monitor.addUnblockedSite(addr, site);
     }
-
+    
     void start()
     {
         this.monitor.running = true;
@@ -61,6 +61,11 @@ class UnblockedSitesMonitor
         
         private SortedSet<UnblockedSite> unblockedSites = new TreeSet<UnblockedSite>();
     
+        public synchronized void flushAll()
+        {
+            this.unblockedSites = new TreeSet<UnblockedSite>();
+        }
+
         public synchronized void addUnblockedSite(InetAddress addr, String site)
         {
             UnblockedSite bs = new UnblockedSite(addr, site);

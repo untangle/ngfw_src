@@ -433,9 +433,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
         resultUnBlock = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         
-        # remove and re-install web app to reset the host unblock list
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nukeBlockedUrls()
+        node.flushAllUnblockedSites()
+
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
 
@@ -449,9 +449,6 @@ class WebFilterBaseTests(unittest2.TestCase):
         node.setSettings(settings)
         resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
-        # remove and re-install web app to reset the host unblock list
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         assert( resultReferer == 1 )        
 
     # disable pass referer and verify that a page with content that would be blocked is allowed.
@@ -464,9 +461,6 @@ class WebFilterBaseTests(unittest2.TestCase):
         node.setSettings(settings)
         resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
-        # remove and re-install web app to reset the host unblock list
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         print "block %s passReferers %s" % (resultReferer,settings["passReferers"])
         assert( resultReferer == 0 )        
 
