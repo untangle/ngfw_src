@@ -1,6 +1,6 @@
 #! /bin/dash
 
-url='http://localhost/setup/language.do?console=1'
+url='http://localhost/'
 wh=$(xdpyinfo | awk '/dimensions:/ { gsub(/x/, ",", $2) ; print $2 }')
 
 if [ -f /usr/bin/chromium ] ; then
