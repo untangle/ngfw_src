@@ -531,7 +531,7 @@ public class ReportsManagerImpl implements ReportsManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
             for ( String line : lines ) {
-                logger.info("Reading file: " + line);
+                logger.debug("Reading file: " + line);
                 try {
                     ReportEntry newEntry = UvmContextFactory.context().settingsManager().load( ReportEntry.class, line );
 
@@ -589,7 +589,7 @@ public class ReportsManagerImpl implements ReportsManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
             for ( String line : lines ) {
-                logger.info("Reading file: " + line);
+                logger.debug("Reading file: " + line);
                 try {
                     EventEntry newEntry = UvmContextFactory.context().settingsManager().load( EventEntry.class, line );
 
