@@ -448,7 +448,10 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings["passReferers"] = False
         node.setSettings(settings)
         resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
+        nukeBlockedUrls()
+        nukePassedUrls()
         assert( resultReferer == 1 )        
 
     # disable pass referer and verify that a page with content that would be blocked is allowed.
@@ -460,8 +463,10 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings["passReferers"] = True
         node.setSettings(settings)
         resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
-        print "block %s passReferers %s" % (resultReferer,settings["passReferers"])
+        nukeBlockedUrls()
+        nukePassedUrls()
         assert( resultReferer == 0 )        
 
     @staticmethod
