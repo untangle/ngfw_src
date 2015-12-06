@@ -10,7 +10,15 @@ def registerNode(nodeName, clz):
 
 def allNodes():
     global __nodeDict
-    return __nodeDict.keys()
+    nodeList = sorted(__nodeDict.keys())
+
+    # move these to front
+    if 'web-filter' in nodeList:
+        nodeList.insert(0, nodeList.pop(nodeList.index('web-filter')))
+    if 'firewall' in nodeList:
+        nodeList.insert(0, nodeList.pop(nodeList.index('firewall')))
+
+    return nodeList
 
 def allTests():
     global __nodeDict

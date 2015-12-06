@@ -17,7 +17,6 @@ import uvm
 import tests
 from   tests import *
 
-
 class ArgumentParser(object):
     def __init__(self):
         self.clientIP = None
@@ -298,12 +297,13 @@ print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime
 print "%s passed, %s skipped, %s failed" % (total-failedCount-skipCount, skipCount, failedCount)
 print ""
-print "Total          : %4i" % total
-print "Passed         : %4i" % (total-failedCount-skipCount)
-print "Skipped        : %4i" % (skipCount)
-print "Passed/Skipped : %4i [%5.1f%%]" % (total-failedCount, (100*(total-failedCount)/total))
-print "Failed         : %4i [%5.1f%%]" % (failedCount, 100*failedCount/total)
-print ""
+if total > 0:
+    print "Total          : %4i" % total
+    print "Passed         : %4i" % (total-failedCount-skipCount)
+    print "Skipped        : %4i" % (skipCount)
+    print "Passed/Skipped : %4i [%5.1f%%]" % (total-failedCount, (100*(total-failedCount)/total))
+    print "Failed         : %4i [%5.1f%%]" % (failedCount, 100*failedCount/total)
+    print ""
 print "More details found in %s" % parser.logfile
 
 exit(failedCount)
