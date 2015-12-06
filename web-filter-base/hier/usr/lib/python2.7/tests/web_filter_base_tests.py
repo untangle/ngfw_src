@@ -83,7 +83,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-
+        self.node = node
+        
     def setUp(self):
         pass
 
