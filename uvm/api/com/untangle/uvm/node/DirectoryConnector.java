@@ -31,4 +31,9 @@ public interface DirectoryConnector
      * Authenticate a user using RADIUS
      */
     public boolean radiusAuthenticate( String username, String group );
+
+    /**
+     * Return true if Google Drive is configured, false otherwise
+     */
+    public boolean isGoogleDriveConnected();
 }
