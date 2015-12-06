@@ -34,7 +34,7 @@ public class WebFilterUnblockerServlet extends HttpServlet
             Long nodeId = Long.parseLong(tidStr);
             WebFilterApp node = (WebFilterApp) tman.node( nodeId );
 
-            if (node.unblockSite(nonce, global,password)) {
+            if (node.unblockSite(nonce, global, password)) {
                 resp.getOutputStream().println("<success/>");
             } else {
                 resp.getOutputStream().println("<failure/>");

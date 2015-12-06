@@ -56,20 +56,22 @@ class WebFilterTests(WebFilterBaseTests):
 
     # verify that a block page is shown but unblock if correct password.
     def test_520_unblockOptionWithPassword(self):
+        fname = sys._getframe().f_code.co_name
         addBlockedUrl(self.node, "test.untangle.com/test/testPage2.html")
         settings = self.node.getSettings()
         settings["unblockMode"] = "Host"
         settings["unblockPassword"] = "atstest"
         settings["unblockPasswordEnabled"] = True
         self.node.setSettings(settings)        
+
         # this test URL should be blocked but allow  
-        remote_control.runCommand("rm -f /tmp/web_filter_base_test_130.log")
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_130.log -O /tmp/web_filter_base_test_130.out http://test.untangle.com/test/testPage2.html")
-        resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/web_filter_base_test_130.out")
-        resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/web_filter_base_test_130.out")
+        remote_control.runCommand("rm -f /tmp/%s.log"%fname)
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/%s.log -O /tmp/%s.out http://test.untangle.com/test/testPage2.html"%(fname,fname))
+        resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/%s.out"%fname)
+        resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/%s.out"%fname)
 
         # get the IP address of the block page 
-        ipfind = remote_control.runCommand("grep 'Location' /tmp/web_filter_base_test_130.log",stdout=True)
+        ipfind = remote_control.runCommand("grep 'Location' /tmp/%s.log"%fname,stdout=True)
         print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
