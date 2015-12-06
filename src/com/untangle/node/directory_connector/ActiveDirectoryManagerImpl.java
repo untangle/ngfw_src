@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 /**
  * ActiveDirectoryManagerImpl provides the API implementation of all Active Directory related functionality
  */
-public class ActiveDirectoryManagerImpl implements ActiveDirectoryManager
+public class ActiveDirectoryManagerImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 

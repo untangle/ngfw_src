@@ -693,6 +693,8 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     },
 
     buildGoogle: function() {
+        this.authorizationUrl = this.getRpcNode().getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host);
+        this.configuredState = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
             name: 'Google Connector',
             helpSource: 'directory_connector_google',
@@ -706,30 +708,24 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 labelWidth: 250,
                 items: [{
                     xtype: 'container',
-                    html: Ext.String.format(i18n._('This allows your server to connect to varius {0}Google APIs{1} such as Google Drive.'),'<b>','</b>')
-                },
-                {
-                    xtype: 'button',
-                    text: i18n._('Configure Google Connector'),
+                    margin: '5 0 15 20',
+                    html: i18n._('This allows your server to connect to various Google APIs such as Google Drive.')
+                }, {
+                    xtype: 'component',
+                    html: (this.configuredState ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
+                    style: (this.configuredState ? {color:'green'} : {color:'red'}),
+                    cls: (this.configuredState ? null : 'warning')
+                }, {
+                    xtype: "button",
+                    margin: '15 0 0 0',
                     name: 'configure_google_connector',
-                    disabled: false, /* XXX */
+                    text: (this.configuredState ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
+                    iconCls: "action-icon",
                     handler: Ext.bind(function() {
-                        this.panelGoogle.onConfigureGoogleClick();
+                        window.open(this.authorizationUrl);
                     }, this)
                 }]
-            }],
-
-            onConfigureGoogleClick: Ext.bind(function() {
-                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("RADIUS Test"));
-
-                this.getRpcNode().getGoogleManager().startAuthorizationProcess();
-                
-                var message = this.getRpcNode().getGoogleManager().getAuthorizationUrl( Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    var message = result;
-                    Ext.MessageBox.alert(i18n._("Result"), message);
-                }, this), window.location.protocol, window.location.host );
-            }, this)
+            }]
         });
     },
 

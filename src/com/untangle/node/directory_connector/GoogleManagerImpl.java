@@ -5,6 +5,9 @@ package com.untangle.node.directory_connector;
 
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -14,10 +17,15 @@ import java.util.Collections;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
+import com.untangle.uvm.UvmContextFactory;
+
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
  */
-public class GoogleManagerImpl implements GoogleManager
+public class GoogleManagerImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -48,31 +56,142 @@ public class GoogleManagerImpl implements GoogleManager
     {
         this.settings = settings;
 
-        /* FIXME */
-        /* if refreshtoken is set */
-        /*     if settings file newer than /var/lib/google-drive/.gd/credentials.json (or if it doesnt exist) */
-        /*          write /var/lib/google-drive/.gd/credentials.json */
+        if ( isGoogleDriveConnected() ) {
+            String credentialsJson = "{\"client_id\":\"661509598543-1p2n8foedn1n0t7t767q9sgd0accml07.apps.googleusercontent.com\",\"client_secret\":\"eJDmfgIrqJvFvk5ZoH05CJz-\",\"refresh_token\":\"";
+            credentialsJson += settings.getDriveRefreshToken();
+            credentialsJson += "\"}";
+
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(new File("/var/lib/google-drive/.gd/credentials.json")));            
+                bw.write(credentialsJson);
+                bw.close();
+            } catch (Exception ex) {
+                logger.warn("Error writing credentials.json.", ex);
+            }
+        }
     }
 
+    /**
+     * This returns true if google drive is configured.
+     * False otherwise
+     */
     public boolean isGoogleDriveConnected()
     {
-        if (settings.getDriveRefreshToken() != null && !settings.getDriveRefreshToken().equals(""))
-            return true;
-        else
+        String token = settings.getDriveRefreshToken();
+
+        if ( token == null )
             return false;
+        token = token.replaceAll("\\s+","");
+        if ( "".equals( token ))
+            return false;
+
+        return true;
     }
 
+    /**
+     * This returns the URL that the user should visit and click allow for the google connector app to be authorized.
+     * Once the user clicks the allow button, they will be redirected to Untangle with the redirect_url. The untangle redirect_url
+     * will redirect them to their local server oauth servlet (the IP is passed in the state variable).
+     * The servlet will later call provideDriveCode() with the token
+     */
+    public String getAuthorizationUrl( String windowProtocol, String windowLocation )
+    {
+        startAuthorizationProcess();
+        
+        if (driveProcIn == null || driveProcOut == null || driveProc == null) {
+            throw new RuntimeException("Authorization process not running.");
+        }
 
-    public void startAuthorizationProcess()
+        if (windowProtocol == null || windowLocation == null) {
+            throw new RuntimeException("Invalid arguments." + windowProtocol + " " + windowLocation);
+        }
+        
+        try {
+            String line;
+            while ((line=driveProcIn.readLine())!=null) {
+                logger.info("drive parsing line: " + line);
+                if (!line.contains("https"))
+                    continue;
+
+                URIBuilder builder = new URIBuilder(line);
+                String state = windowProtocol + "//" + windowLocation + "/" + "oauth" + "/" + "oauth";
+                builder.setParameter("state",state);
+                builder.setParameter("approval_prompt","force");
+
+                logger.info("Providing authorization URL: " + builder.toString());
+                stopAuthorizationProcess();
+                return builder.toString();
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Failed to parse drive output.",e);
+            return null;
+        }
+        
+    }
+
+    /**
+     * This launches the google drive command line app and provides the code
+     * The google drive app will then fetch and save the refreshToken for future use.
+     *
+     * This also reads the refershToken and saves it in settings.
+     *
+     * Returns null on success or the error string
+     */
+    public String provideDriveCode( String code )
+    {
+        logger.info("Providing code [" + code + "] to drive");
+        startAuthorizationProcess();
+        
+        try {
+            driveProcOut.write(code);
+            driveProcOut.write("\n");
+            driveProcOut.flush();
+            driveProcOut.close();
+        } catch (Exception e) {
+            logger.error("Failed to write code to drive.",e);
+            return e.toString();
+        }
+
+        /* wait up until ten seconds for drive to create credentials.json */
+        String refreshToken = null;
+        for ( int i = 0; i < 10 ; i++ ) {
+            try { Thread.sleep(1000); } catch (Exception e) {}
+
+            logger.info("Checking for refresh token...");
+            refreshToken = UvmContextFactory.context().execManager().execOutput("python -m simplejson.tool /var/lib/google-drive/.gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'");
+            if ( refreshToken == null )
+                continue;
+            refreshToken = refreshToken.replaceAll("\\s+","");
+            if ( "".equals(refreshToken) )
+                continue;
+            break;
+        }
+
+        /**
+         * save the settings with the refresh token
+         */
+        if ( refreshToken != null && !"".equals(refreshToken) ) {
+            refreshToken = refreshToken.replaceAll("\\s+","");
+            logger.info("Refresh Token: " + refreshToken);
+        
+            DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
+            directoryConnectorSettings.getGoogleSettings().setDriveRefreshToken( refreshToken );
+            directoryConnector.setSettings( directoryConnectorSettings );
+        } else {
+            logger.warn("Unable to parse refreshToken");
+            return "Unable to parse refresh_token";
+        }
+
+        stopAuthorizationProcess();
+        return null;
+    }
+
+    private void startAuthorizationProcess()
     {
         if (driveProcIn != null || driveProcOut != null || driveProc != null) {
             logger.warn("Shutting down previously running drive.");
-            try { driveProcIn.close(); } catch (Exception ex) { }
-            try { driveProcOut.close(); } catch (Exception ex) { }
-            try { driveProc.destroy(); } catch (Exception ex) { }
-            driveProcIn = null;
-            driveProcOut = null;
-            driveProc = null;
+            stopAuthorizationProcess();
         }
 
         try {
@@ -91,58 +210,14 @@ public class GoogleManagerImpl implements GoogleManager
         driveProcIn  = new BufferedReader(new InputStreamReader(driveProc.getInputStream()));
     }
 
-    public String getAuthorizationUrl( String windowProtocol, String windowLocation )
+    private void stopAuthorizationProcess()
     {
-        if (driveProcIn == null || driveProcOut == null || driveProc == null) {
-            throw new RuntimeException("Authorization process not running.");
-        }
-
-        if (windowProtocol == null || windowLocation == null) {
-            throw new RuntimeException("Invalid arguments." + windowProtocol + " " + windowLocation);
-        }
-        
-        try {
-            String line;
-            while ((line=driveProcIn.readLine())!=null) {
-                logger.info("drive parsing line: " + line);
-                if (!line.contains("https"))
-                    continue;
-
-                //java.net.URI uri = new java.net.URI(line);
-                URIBuilder builder = new URIBuilder(line);
-                String state = windowProtocol + "//" + windowLocation + "/" + "oauth" + "/" + "oauth";
-                builder.setParameter("state",state);
-                builder.setParameter("approval_prompt","force");
-
-                return builder.toString();
-            }
-            return null;
-        } catch (Exception e) {
-            logger.error("Failed to parse drive output.",e);
-            return null;
-        }
-        
+        try { driveProcIn.close(); } catch (Exception ex) { }
+        try { driveProcOut.close(); } catch (Exception ex) { }
+        try { driveProc.destroy(); } catch (Exception ex) { }
+        driveProcIn = null;
+        driveProcOut = null;
+        driveProc = null;
     }
-
-    /**
-     * Returns null on success or the error string
-     */
-    public String provideDriveCode( String code )
-    {
-        try {
-            driveProcOut.write(code);
-            driveProcOut.write("\n");
-            driveProcOut.flush();
-            driveProcOut.close();
-
-            driveProcIn.close();
-
-            driveProc.destroy();
-        } catch (Exception e) {
-            logger.error("Failed to write code to drive.",e);
-            return e.toString();
-        }
-        
-        return null;
-    }
+    
 }

@@ -110,6 +110,12 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
 
             // UPDATE settings if necessary
 
+            /* 12.0 - new google settings */
+            if (readSettings.getGoogleSettings() == null) {
+                readSettings.setGoogleSettings( new GoogleSettings() );
+                setSettings( readSettings );
+            }
+            
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -130,7 +136,35 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
 
     public void setSettings(final DirectoryConnectorSettings newSettings)
     {
-        _setSettings(newSettings);
+        if (newSettings.getActiveDirectorySettings() == null) {
+            throw new IllegalArgumentException("Must provide settings for ActiveDirectory");
+        }
+        if (newSettings.getRadiusSettings() == null) {
+            throw new IllegalArgumentException("Must provide settings for RADIUS");
+        }
+        if (newSettings.getGoogleSettings() == null) {
+            throw new IllegalArgumentException("Must provide settings for Google");
+        }
+
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-directory-connector/" + "settings_" + nodeID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
+
+        this.reconfigure();
     }
 
     public ActiveDirectoryManagerImpl getActiveDirectoryManager()
@@ -263,6 +297,7 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         this.settings = new DirectoryConnectorSettings();
         this.settings.setActiveDirectorySettings(new ActiveDirectorySettings("Administrator", "mypassword", "mydomain.int", "ad_server.mydomain.int", 636, true ));
         this.settings.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
+        this.settings.setGoogleSettings(new GoogleSettings());
         setSettings(this.settings);
     }
 
@@ -302,39 +337,6 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         }
         this.refreshGroupCache();
         this.updateRadiusClient(settings.getRadiusSettings());
-    }
-
-    private void _setSettings(DirectoryConnectorSettings newSettings)
-    {
-        if (newSettings.getActiveDirectorySettings() == null) {
-            throw new IllegalArgumentException("Must provide settings for ActiveDirectory");
-        }
-        if (newSettings.getRadiusSettings() == null) {
-            throw new IllegalArgumentException("Must provide settings for RADIUS");
-        }
-
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-directory-connector/" + "settings_" + nodeID + ".js", newSettings );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.", e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
-        } catch (Exception e) {
-        }
-
-        this.reconfigure();
     }
 
     private void updateRadiusClient(RadiusSettings radiusSettings)

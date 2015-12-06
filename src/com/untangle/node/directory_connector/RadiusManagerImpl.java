@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 /**
  * RadiusManagerImpl provides the API implementation of all RADIUS related functionality
  */
-public class RadiusManagerImpl implements RadiusManager
+public class RadiusManagerImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
