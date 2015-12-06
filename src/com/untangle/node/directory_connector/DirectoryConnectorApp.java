@@ -282,6 +282,11 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         this.groupManager.refreshGroupCache();
     }
 
+    public boolean isGoogleDriveConnected()
+    {
+        return getGoogleManager().isGoogleDriveConnected();
+    }
+
     protected boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))
