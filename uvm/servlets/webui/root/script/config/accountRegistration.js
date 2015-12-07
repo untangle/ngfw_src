@@ -705,6 +705,8 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
+                majorVersion: rpc.version,
+                uid: rpc.serverUID,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -739,6 +741,8 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
+                majorVersion: rpc.version,
+                uid: rpc.serverUID,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -857,7 +861,9 @@ Ext.define('Webui.config.accountRegistration', {
                 city: creditCity,
                 state: creditState,
                 postCode: creditPostal,
-                country: creditCountry
+                country: creditCountry,
+                uid: rpc.serverUID,
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
@@ -899,7 +905,8 @@ Ext.define('Webui.config.accountRegistration', {
                 version: rpc.version,
                 activationCode: activationCode,
                 uid: rpc.serverUID,
-                uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName
+                uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName,
+                majorVersion: rpc.version
             },
             success: function(response, opts) {
                 this.setLoading(false);
