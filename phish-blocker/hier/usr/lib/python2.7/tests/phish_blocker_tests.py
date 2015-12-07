@@ -39,10 +39,10 @@ def sendTestmessage():
     try:
        smtpObj = smtplib.SMTP(smtpServerHost)
        smtpObj.sendmail(sender, receivers, message)         
-       print "Successfully sent email"
+       # print "Successfully sent email"
        return 1
     except smtplib.SMTPException:
-       print "Error: unable to send email"
+       # print "Error: unable to send email"
        return 0
 
 def getLatestMailSender():
