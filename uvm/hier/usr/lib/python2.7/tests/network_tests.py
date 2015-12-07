@@ -836,19 +836,6 @@ class NetworkTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         print "wan_IP <%s>" % wan_IP
 
-        # allow DNS on the WAN
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        i = 0
-        for packetFilter in netsettings['inputFilterRules']['list']:
-            if packetFilter['description'] == "Allow DNS on non-WANs":
-                j = 0
-                for pktRule in packetFilter['conditions']['list']:
-                    if pktRule["conditionType"] == "SRC_INTF":
-                        netsettings['inputFilterRules']['list'][i]['conditions']['list'][j]["value"] = "non_wan,wan"
-                    j += 1
-            i += 1
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-
         result = remote_control.runCommand("host -R3 -4 www.foobar.com " + wan_IP, stdout=True)
         # print "Results of www.foobar.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)

@@ -705,7 +705,6 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: rpc.version,
                 uid: rpc.serverUID,
                 majorVersion: rpc.version
             },
@@ -741,7 +740,6 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: rpc.version,
                 uid: rpc.serverUID,
                 majorVersion: rpc.version
             },
@@ -851,7 +849,6 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: rpc.version,
                 ccType: creditType,
                 ccNumber: creditNumber,
                 ccExpMonth: creditMonth,
@@ -901,7 +898,6 @@ Ext.define('Webui.config.accountRegistration', {
             params: {
                 email: this.email,
                 token: this.token,
-                majorVersion: rpc.version,
                 version: rpc.version,
                 activationCode: activationCode,
                 uid: rpc.serverUID,
