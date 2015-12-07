@@ -280,6 +280,7 @@ Ext.define('Ung.panel.Reports', {
     buildEntriesSection: function () {
         var entriesSection = {
             region: 'west',
+            itemId: 'panelEntries',
             layout: {type: 'vbox', align: 'stretch'},
             width: 250,
             split: true,
@@ -291,7 +292,7 @@ Ext.define('Ung.panel.Reports', {
                 title: i18n._("Select Report"),
                 xtype: 'grid',
                 border: false,
-                margin: '0 0 10 0',
+                margin: '1 0 10 0',
                 flex: 5,
                 hideHeaders: true,
                 store:  Ext.create('Ext.data.Store', {

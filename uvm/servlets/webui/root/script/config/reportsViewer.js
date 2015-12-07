@@ -46,11 +46,11 @@ Ext.define('Webui.config.reportsViewer', {
         this.items = {
             xtype : "panel",
             border : false,
+            margin : '1 0 0 0',
             layout : "border",
             items : [ {
                 xtype : 'treepanel',
                 region : 'west',
-                margin : '1 1 0 1',
                 autoScroll : true,
                 rootVisible : false,
                 title : i18n._('Reports'),
@@ -72,13 +72,14 @@ Ext.define('Webui.config.reportsViewer', {
                     listeners : {
                         select : Ext.bind(function(rowModel, record, rowIndex, eOpts) {
                             this.panelReports.setConfig("icon", record.get("icon"));
-                            this.panelReports.setTitle(record.get("category"));
+                            this.panelReports.down('#panelEntries').setTitle(record.get("category"));
                             this.panelReports.setCategory(record.get("category"));
                         }, this)
                     }
                 }
             }, this.panelReports = Ext.create('Ung.panel.Reports', {
-                region : "center"
+                region : "center",
+                header: false
             }) ]
         };
         this.callParent(arguments);
