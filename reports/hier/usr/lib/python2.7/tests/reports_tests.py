@@ -52,10 +52,10 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
     try:
        smtpObj = smtplib.SMTP(smtpHost)
        smtpObj.sendmail(sender, receivers, message)
-       print "Successfully sent email"
+       # print "Successfully sent email"
        relaySuccess = True
     except smtplib.SMTPException, e:
-       print "Error: unable to send email" + str(e)
+       # print "Error: unable to send email" + str(e)
        relaySuccess =  False
        
     remote_control.runCommand("sudo pkill -INT python",host=smtpHost)
@@ -242,7 +242,7 @@ class ReportsTests(unittest2.TestCase):
                 canRelay = None
             else: 
                 fakeSmtpServerHostResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
+                # print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
                 if (fakeSmtpServerHostResult == 0):
                     try:
                         canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
