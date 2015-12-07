@@ -472,6 +472,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.error("Unable to close file", ex);
             return;
         }
+
+        // Make it executable
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
     }
 
     private void sanityCheck( ReportsSettings settings )
