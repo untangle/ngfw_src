@@ -134,6 +134,7 @@ dict = {
     'captive_portal_rule_index' : '\'Captive Portal \' + ' + i18n._('Rule ID'),
     'application_control_application' : '\'Application Control \' + ' + i18n._('Application'),
     'application_control_protochain' : '\'Application Control \' + ' + i18n._('Protochain'),
+    'application_control_category' : '\'Application Control \' + ' + i18n._('Category'),
     'application_control_blocked' : '\'Application Control \' + ' + i18n._('Blocked'),
     'application_control_flagged' : '\'Application Control \' + ' + i18n._('Flagged'),
     'application_control_confidence' : '\'Application Control \' + ' + i18n._('Confidence'),

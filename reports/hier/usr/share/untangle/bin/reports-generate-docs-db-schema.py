@@ -313,6 +313,7 @@ dict['sessions'].update({
     'captive_portal_rule_index' : 'The matching rule in Captive Portal (if any)',
     'application_control_application' : 'The application according to Application Control',
     'application_control_protochain' : 'The protochain according to Application Control',
+    'application_control_category' : 'The category according to Application Control',
     'application_control_blocked' : 'True if Application Control blocked the session',
     'application_control_flagged' : 'True if Application Control flagged the session',
     'application_control_confidence' : 'True if Application Control confidence of this session\'s identification',

@@ -78,6 +78,7 @@ CREATE TABLE reports.sessions (
         captive_portal_rule_index integer,
         application_control_application text,
         application_control_protochain text,
+        application_control_category text,
         application_control_blocked boolean,
         application_control_flagged boolean,
         application_control_confidence integer,
@@ -112,6 +113,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','icmp_type','int2') # 11.2
         sql_helper.add_column('sessions','bypassed','boolean') # 11.2
         sql_helper.add_column('sessions','filter_prefix','text') #11.2
+
+        sql_helper.add_column('sessions','application_control_category','text') #12.0
 
         sql_helper.rename_column('sessions','capture_blocked','captive_portal_blocked') # 11.2
         sql_helper.rename_column('sessions','capture_rule_index','captive_portal_rule_index') # 11.2

@@ -262,6 +262,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'application_control_protochain',
                     type: 'string'
                 }, {
+                    name: 'application_control_category',
+                    type: 'string'
+                }, {
                     name: 'application_control_flagged',
                     type: 'boolean'
                 }, {
@@ -466,6 +469,11 @@ Ext.define('Ung.TableConfig', {
                     width: 180,
                     sortable: true,
                     dataIndex: 'application_control_protochain'
+                }, {
+                    header: i18n._('Category') + ' (Application Control)',
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'application_control_category'
                 }, {
                     header: i18n._('Blocked') + ' (Application Control)',
                     width: Ung.TableConfig.booleanFieldWidth,
