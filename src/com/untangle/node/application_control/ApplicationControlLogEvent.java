@@ -13,6 +13,7 @@ public class ApplicationControlLogEvent extends LogEvent
     private SessionEvent sessionEvent;
     private String application = null;
     private String protochain = null;
+    private String category = null;
     private String detail = null;
     private Integer confidence = null;
     private Integer state = null;
@@ -29,6 +30,7 @@ public class ApplicationControlLogEvent extends LogEvent
         this.sessionEvent = sessionEvent;
         this.application = status.application;
         this.protochain = status.protochain;
+        this.category = rule.getCategory();
         this.detail = status.detail;
         this.confidence = status.confidence;
         this.state = status.state;
@@ -42,6 +44,7 @@ public class ApplicationControlLogEvent extends LogEvent
         this.sessionEvent = sessionEvent;
         this.application = status.application;
         this.protochain = status.protochain;
+        this.category = null;
         this.detail = status.detail;
         this.confidence = status.confidence;
         this.state = status.state;
@@ -55,6 +58,9 @@ public class ApplicationControlLogEvent extends LogEvent
 
     public String getProtochain() { return protochain; }
     public void setProtochain(String protochain) { this.protochain = protochain; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
     public String getDetail() { return detail; }
     public void setDetail(String detail) { this.detail = detail; }
@@ -87,6 +93,8 @@ public class ApplicationControlLogEvent extends LogEvent
             sql += " application_control_detail = ?, ";
         if (protochain != null)
             sql += " application_control_protochain = ?, ";
+        if (category != null)
+            sql += " application_control_category = ?, ";
         if (confidence != null)
             sql += " application_control_confidence = ?, ";
         if (ruleid != null)
@@ -95,7 +103,7 @@ public class ApplicationControlLogEvent extends LogEvent
         sql += " application_control_blocked = ? ";
         sql += " WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
+        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
 
         int i = 0;
         if (application != null)
@@ -104,6 +112,8 @@ public class ApplicationControlLogEvent extends LogEvent
             pstmt.setString(++i, getDetail());
         if (protochain != null)
             pstmt.setString(++i, getProtochain());
+        if (category != null)
+            pstmt.setString(++i,  getCategory());
         if (confidence != null)
             pstmt.setInt(++i, getConfidence());
         if (ruleid != null)
@@ -127,6 +137,7 @@ public class ApplicationControlLogEvent extends LogEvent
         string += (" serverport:" + pe.getCServerPort());
         string += (" application:" + application);
         string += (" protochain:" + protochain);
+        string += (" category:" + category);
         string += (" detail:" + detail);
         string += (" confidence:" + confidence);
         string += (" state:" + state);
