@@ -21,7 +21,7 @@ tunnelUp = False
 
 # hardcoded for ats testing
 radiusHost = "10.112.56.71"
-l2tpServerHosts = ["10.111.56.49","10.111.56.56","10.112.11.53"]
+l2tpServerHosts = ["10.111.56.49","10.111.56.56","10.112.11.53","10.111.56.91"]
 l2tpClientHost = "10.111.56.33"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
@@ -97,6 +97,8 @@ def createRadiusSettings():
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": "", 
             "superuser": "Administrator"}, 
+        "googleSettings": {
+                "javaClass": "com.untangle.node.directory_connector.GoogleSettings"},
         "radiusSettings": {
             "acctPort": 1813, 
             "authPort": 1812, 
@@ -189,6 +191,7 @@ class IPsecTests(unittest2.TestCase):
         createL2TPconfig("LOCAL_DIRECTORY")
         timeout = 180
         found = False
+        # Send command for Windows VPN connect.
         vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
         while not found and timeout > 0:
             timeout -= 1
@@ -197,6 +200,8 @@ class IPsecTests(unittest2.TestCase):
             for user in virtUsers['list']:
                 if user['clientUsername'] == l2tpLocalUser:
                     found = True
+        # Send command for Windows VPN disconnect.
+        vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
 
@@ -222,7 +227,8 @@ class IPsecTests(unittest2.TestCase):
             for user in virtUsers['list']:
                 if user['clientUsername'] == l2tpRadiusUser:
                     found = True
-        # uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        # Send command for Windows VPN disconnect.
+        vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         assert(found)
 
     @staticmethod
