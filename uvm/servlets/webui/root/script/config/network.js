@@ -3812,7 +3812,7 @@ Ext.define('Webui.config.network', {
                         } );
                     }
                     handler({list: leases});
-                    me.setTitle(Ext.String.format(i18n._("Current DHCP Leases: {0}"), leases.length));
+                    me.setTitle( i18n._("Current DHCP Leases") + " " + Ext.String.format("[{0}]", leases.length));
                 }, this),"cat /var/lib/misc/dnsmasq.leases");
 
             },
