@@ -81,7 +81,6 @@ int  netcap_udp_cleanup()
 int  netcap_udp_send (char* data, int data_len, netcap_pkt_t* pkt)
 {
     if ( !data || !pkt ) return -1;
-    if ( !data_len ) return 0;
         
     return _netcap_udp_sendto( _udp_send_sock, data, data_len, 0, pkt ); 
 }
