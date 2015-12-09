@@ -179,6 +179,7 @@ class ApplicationControlTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "application_control_application", "GOOGLE", 
+                                            "application_control_category", "Web Services", 
                                             "application_control_blocked", True,
                                             "application_control_flagged", True)
         assert( found )
