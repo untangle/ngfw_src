@@ -463,6 +463,14 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
+        // in the development enviroment save these to a global location
+        // so they will survive a rake clean
+        if (UvmContextFactory.context().isDevel()) {
+            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
+            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
+        }
+        
         return (true);
     }
 }
