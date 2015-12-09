@@ -1960,7 +1960,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("Changing file: " + filename);
 
             /**
-             * If only /etc/hosts and /etc/hosts.dnsmasq have been written, nothing is needed!
+             * If only /etc/hosts and /etc/hosts.dnsmasq have been written, just restart dnsmasq
              */
             if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};

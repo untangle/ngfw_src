@@ -842,7 +842,7 @@ class NetworkTests(unittest2.TestCase):
         ip_address_foobar = (match.group()).replace('address ','')
         # print "IP address of www.foobar.com <%s>" % ip_address_foobar
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        print "Result DNS lookup 1:\"%s\" 2:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
+        print "Result expected:\"%s\" actual:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
         assert(ip_address_testuntangle == ip_address_foobar)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
