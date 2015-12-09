@@ -1970,7 +1970,7 @@ public class NetworkManagerImpl implements NetworkManager
              * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
              * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
              * We still need to do a full network restart so new /var/lib/untangle-netd/interface-x-status.js files are written
-             * with the new values
+             * with the new values (bug #12669 for more info)
              */
             //if ( changedFiles.contains("/etc/dnsmasq.conf") && changedFiles.size() == 1 ) {
             //    return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
