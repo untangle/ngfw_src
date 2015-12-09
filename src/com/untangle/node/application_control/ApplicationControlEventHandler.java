@@ -267,7 +267,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // if we detect a failure parsing the daemon response then
         // something is really screwed up so log an event and release
         if (check == ApplicationControlStatus.StatusCode.FAILURE) {
-            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, false, false);
+            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, null, false, false);
             node.logStatusEvent(evt, "FAILURE");
             logger.warn("Error processing daemon response - " + traffic);
             return (TrafficAction.RELEASE);
@@ -358,25 +358,30 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             }
         }
 
+        // use the application to grab the category from the protocol rules
+        String category = null;
+        ApplicationControlProtoRule categoryRule = node.settings.searchProtoRules(status.application);
+        if (categoryRule != null) category = categoryRule.getCategory();
+
         switch (action)
         {
         case RELEASE:
             this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
             node.statistics.IncrementAllowedCount();
-            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, ruleid, flag, false);
+            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, false);
             node.logStatusEvent(evt, "RulePass");
             return (TrafficAction.RELEASE);
         case BLOCK:
             this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
             node.statistics.IncrementBlockedCount();
-            evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, ruleid, flag, true);
+            evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, true);
             node.logStatusEvent(evt, "RuleBlock");
             return (TrafficAction.BLOCK);
         default:
             logger.warn("Unknown action: " + action);
             this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
             node.statistics.IncrementAllowedCount();
-            evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, ruleid, flag, false);
+            evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, false);
             node.logStatusEvent(evt, "RuleUnknown");
             return (TrafficAction.RELEASE);
         }
@@ -411,7 +416,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         if ((isFinalized == true) && (status.discard == false)) {
             this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
             node.statistics.IncrementAllowedCount();
-            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, false, false);
+            ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, null, false, false);
             node.logStatusEvent(evt, "FINALIZE");
         }
     }

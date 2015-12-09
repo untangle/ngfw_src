@@ -39,12 +39,12 @@ public class ApplicationControlLogEvent extends LogEvent
         this.blocked = rule.getBlock();
     }
 
-    public ApplicationControlLogEvent(SessionEvent sessionEvent, ApplicationControlStatus status, Integer ruleid, boolean flagged, boolean blocked)
+    public ApplicationControlLogEvent(SessionEvent sessionEvent, ApplicationControlStatus status, String category, Integer ruleid, boolean flagged, boolean blocked)
     {
         this.sessionEvent = sessionEvent;
         this.application = status.application;
         this.protochain = status.protochain;
-        this.category = null;
+        this.category = category;
         this.detail = status.detail;
         this.confidence = status.confidence;
         this.state = status.state;
