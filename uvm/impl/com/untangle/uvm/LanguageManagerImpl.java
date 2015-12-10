@@ -54,6 +54,7 @@ public class LanguageManagerImpl implements LanguageManager
     private static final String LANGUAGES_OFFICIAL_DIR;
     private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
+    private static final String DEFAULT_DEV_LANGUAGE = "xx";
     private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";
@@ -530,7 +531,10 @@ public class LanguageManagerImpl implements LanguageManager
         if (readSettings == null) {
             logger.warn("No settings found... initializing with defaults");
             languageSettings = new LanguageSettings();
-            languageSettings.setLanguage(DEFAULT_LANGUAGE);
+            if ( UvmContextFactory.context().isDevel() )
+                languageSettings.setLanguage(DEFAULT_DEV_LANGUAGE);
+            else
+                languageSettings.setLanguage(DEFAULT_LANGUAGE);
             setLanguageSettings(languageSettings);
         }
         else {
