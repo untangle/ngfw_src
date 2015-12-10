@@ -357,9 +357,9 @@ Ext.define("Ung.NodeWin", {
         this.callParent(arguments);
     },
     removeAction: function() {
-        var message = this.displayName + " " +
-            i18n._("will be uninstalled from this policy.") + "\n" +
-            i18n._("All of its settings will be lost.") + "\n" + "\n" +
+        var message =
+            Ext.String.format( i18n._("{0} will be uninstalled from this policy."), this.displayName) + "<br/>" +
+            i18n._("All of its settings will be lost.") + "\n" + "<br/>" + "<br/>" +
             i18n._("Would you like to continue?");
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
