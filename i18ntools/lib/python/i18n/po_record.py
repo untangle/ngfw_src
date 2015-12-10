@@ -143,6 +143,16 @@ class PoRecord:
 
         return revision_date
 
+    def is_updated(self):
+
+        if len("".join(self.msg_str)) == 0:
+            return False
+
+        if "".join(self.msg_str) == self.msg_id:
+            return False
+
+        return True
+
     def __str__(self):
         """
         String representation for output

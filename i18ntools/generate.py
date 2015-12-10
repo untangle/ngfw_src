@@ -107,11 +107,9 @@ def main(argv):
     Main entry for generate
     """
     global pot
-    process_source = True
-    process_language = None
 
     try:
-        opts, args = getopt.getopt(argv, "hpl:d", ["help", "process_source=", "process_language=", "debug"] )
+        opts, args = getopt.getopt(argv, "hpl:d", ["help", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -119,85 +117,28 @@ def main(argv):
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
-        elif opt in ( "-p", "--process_source"):
-            if str(arg).lower() in ("yes", "true", "t", "1"):
-                process_source = True
-            else:
-                process_source = False
-        elif opt in ( "-l", "--process_language"):
-            process_language = arg
 
-    if process_source:
-        #
-        # Process source files
-        #
-        print "Processing source files..."
-        pot.reset()
-        modules = ngfw.modules
-        for module in modules:
-            print "\t" + module
-            get_keys(module)
+    #
+    # Process source files
+    #
+    print "Processing source files..."
+    pot.reset()
+    modules = ngfw.modules
+    for module in modules:
+        print "\t" + module
+        get_keys(module)
 
-        # Change comments to not have path leading to "ngfw"
-        print "Converting comments..."
-        pot.load()
-        for record in pot.records:
-            for (comment_index, comment) in enumerate(record.comment):
-                record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
-        pot.save()
-
-        if os.path.isfile(pot_file_name):
-            os.remove(pot_file_name)
-        pot.rename(pot_file_name)
-    else:
-        pot.set_file_name(pot_file_name)
-
+    # Change comments to not have path leading to "ngfw"
+    print "Converting comments..."
     pot.load()
+    for record in pot.records:
+        for (comment_index, comment) in enumerate(record.comment):
+            record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
+    pot.save()
 
-    print "Synchronizing po files..."
-    total_character_count = 0
-    total_word_count = 0
-    for language in languages.get_enabled():
-        if language["id"] == "en":
-            continue
-        if (process_language != None) and (language["id"] != process_language):
-            continue
-
-        po = i18n.PoFile(language=language["id"])
-        po.load()
-
-        diff = {
-            "add": [x for x in pot.records if not po.get_record_by_msgid(x.msg_id)],
-            "remove": [x for x in po.records if not pot.get_record_by_msgid(x.msg_id)]
-        }
-        print "\tSynchronizing: %s, %s," % (language["name"], po.file_name),
-
-        for diff_record in diff["remove"]:
-            po.remove_record(diff_record)
-
-        ## Add new and synchronize comments for existing
-        for record in pot.records:
-            po.add_record(record, replace_comments=True)
-
-        print "%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),
-
-        character_count = 0
-        word_count = 0
-        for record in po.records:
-            if record.msg_id == "":
-                now = datetime.datetime.now()
-                record.replace_msg_str("PO-Revision-Date:", "PO-Revision-Date: " + now.strftime("%Y-%m-%d %H:%M%z") + '\\n')
-            record.set_verified()
-            if len("".join(record.msg_str)) == 0:
-                character_count = character_count + len(record.msg_id)
-                word_count = word_count + len(re.findall(r'\w+', record.msg_id))
-        print ", %d/%d chars/words to translate" % (character_count, word_count)
-        total_character_count = total_character_count + character_count
-        total_word_count = total_word_count + word_count
-
-        po.save()
-
-    print "%d/%d chars/words total to translate" % (total_character_count, total_word_count)
+    if os.path.isfile(pot_file_name):
+        os.remove(pot_file_name)
+    pot.rename(pot_file_name)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

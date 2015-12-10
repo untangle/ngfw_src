@@ -158,7 +158,7 @@
 		},{
 			"id": "en",
 			"name": "English",
-			"enabled": true
+			"enabled": false
 	    },{
 			"id": "en_ZA",
 			"name": "English (South Africa)",
@@ -342,6 +342,10 @@
 		},{
 			"id": "ln",
 			"name": "Lingala",
+			"enabled": false
+		},{
+			"id": "lo",
+			"name": "Lao",
 			"enabled": false
 		},{
 			"id": "lt",

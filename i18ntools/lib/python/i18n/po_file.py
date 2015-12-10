@@ -209,6 +209,16 @@ class PoFile:
 
         return None
 
+    def total_record_count(self):
+        return len(self.records)
+
+    def updated_record_count(self):
+        updated_count = 1
+        for record in self.records:
+            if record.is_updated() is True:
+                updated_count += 1
+        return updated_count
+
     def remove_record(self, remove_record):
         """
         Remove the current record
