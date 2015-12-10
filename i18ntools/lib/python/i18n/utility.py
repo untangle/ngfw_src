@@ -2,6 +2,7 @@
 i18n related utilty
 """
 import os
+from os.path import expanduser
 
 class Utility:
     """
@@ -18,4 +19,8 @@ class Utility:
         full_path_ngfw_index = full_path.find(find_path)
         if full_path_ngfw_index != -1:
             base_path = full_path[0:full_path_ngfw_index + len(find_path) - 1]
+            
+        if base_path is None:
+            base_path = home = expanduser("~")
+            
         return base_path
