@@ -358,8 +358,8 @@ Ext.define("Ung.NodeWin", {
     },
     removeAction: function() {
         var message = this.displayName + " " +
-            i18n._("is about to be removed from the rack.") + "\n" +
-            i18n._("Its settings will be lost and it will stop processing network traffic.") + "\n" + "\n" +
+            i18n._("will be uninstalled from this policy.") + "\n" +
+            i18n._("All of its settings will be lost.") + "\n" + "\n" +
             i18n._("Would you like to continue?");
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
