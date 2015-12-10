@@ -10,7 +10,7 @@
     ],
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.node.reporting.SqlCondition",
             "column": "event_info",
             "operator": "=",
             "value": "LOGIN"
