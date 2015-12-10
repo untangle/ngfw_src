@@ -18,6 +18,7 @@
         "untangle-casing-smtp",
         "untangle-base-virus-blocker",
         "untangle-base-web-filter",
+        "untangle-base-spam-blocker",
         "untangle-node-ad-blocker",
         "untangle-node-firewall",
         "untangle-node-intrusion-prevention",
