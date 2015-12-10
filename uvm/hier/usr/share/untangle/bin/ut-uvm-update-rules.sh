@@ -170,6 +170,7 @@ remove_iptables_rules()
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
+    ${IPTABLES} -D PREROUTING -t mangle -p icmp --icmp-type 3/4 -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route ICMP Unreachable Frag needed traffic to local" >/dev/null 2>&1
     
     # delete the old 0xfb marking rule too in case this was a recent upgrade (we moved 0xfb to 0xfe so on the first run this will still exist)
     # this can be deleted in the future (11.0+)
