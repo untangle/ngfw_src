@@ -6,6 +6,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-node-intrusion-prevention untangle-node-openvpn untangle-node-phish-blocker
     untangle-node-application-control-lite untangle-node-reports
     untangle-node-spam-blocker-lite
+    untangle-base-spam-blocker
     untangle-node-directory-connector untangle-node-bandwidth-control untangle-node-configuration-backup
     untangle-node-branding-manager untangle-node-spam-blocker
     untangle-node-wan-failover untangle-node-ipsec
@@ -78,7 +79,7 @@ case "$1" in
     msgmerge -U -N $WORK/pkgs/untangle-apache2-config/po/$1.pot tmp_keys.pot
     update_po $WORK/pkgs/untangle-apache2-config/po $1
     ;;
-"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reports"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth-control"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy-manager"|"untangle-node-wan-failover"|"untangle-node-wan-balancer"|"untangle-node-web-cache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding-manager"|"untangle-node-ipsec"|"untangle-node-live-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
+"untangle-node-application-control-lite"|"untangle-node-intrusion-prevention"|"untangle-node-firewall"|"untangle-node-reports"|"untangle-node-ad-blocker"|"untangle-node-spam-blocker-lite"|"untangle-node-captive-portal"|"untangle-base-web-filter"|"untangle-base-spam-blocker"|"untangle-node-phish-blocker"|"untangle-node-openvpn"|"untangle-node-directory-connector"|"untangle-node-bandwidth-control"|"untangle-node-configuration-backup"|"untangle-node-wan-failover"|"untangle-node-policy-manager"|"untangle-node-wan-failover"|"untangle-node-wan-balancer"|"untangle-node-web-cache"|"untangle-node-web-filter"|"untangle-node-spam-blocker"|"untangle-node-classd"|"untangle-node-branding-manager"|"untangle-node-ipsec"|"untangle-node-live-support"|"untangle-casing-ssl"|"untangle-casing-smtp"|"untangle-base-virus-blocker")
     app=`echo "$1"|cut -d"-" -f3`
     mid=`echo "$1"|cut -d"-" -f2`
     moduleName=""
