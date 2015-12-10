@@ -1,0 +1,10 @@
+step 1) Generate: Parse all localization strings into pot/en/untangle.pot. This can take a few minutes.
+./generate.py
+
+step 2) Synchronize : Syncs that new template with po/*/untangle.po.
+./synchronize.py
+
+step 3) Translate : translates strings
+./transalte
+
+then commit new po files
