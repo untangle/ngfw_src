@@ -143,13 +143,13 @@ fi
     file.write("${IPTABLES} -t mangle -F wan-balancer-route-rules >/dev/null 2>&1" + "\n");
     file.write("\n");
 
-    file.write("# Call chains from PREROUTING in mangle" + "\n");
-    file.write("${IPTABLES} -t mangle -D PREROUTING -m conntrack --ctstate NEW -m comment --comment \"Run route rules\" -j wan-balancer-route-rules >/dev/null 2>&1" + "\n");
+    file.write("# Call chains from prerouting-wan-balancer in mangle" + "\n");
+    file.write("${IPTABLES} -t mangle -D prerouting-wan-balancer -m conntrack --ctstate NEW -m comment --comment \"Run route rules\" -j wan-balancer-route-rules >/dev/null 2>&1" + "\n");
 
     if parser.disable:
         return
 
-    file.write("${IPTABLES} -t mangle -I PREROUTING 3 -m conntrack --ctstate NEW -m comment --comment \"Run route rules\" -j wan-balancer-route-rules" + "\n");
+    file.write("${IPTABLES} -t mangle -I prerouting-wan-balancer -m conntrack --ctstate NEW -m comment --comment \"Run route rules\" -j wan-balancer-route-rules" + "\n");
     file.write("\n");
 
     try:
