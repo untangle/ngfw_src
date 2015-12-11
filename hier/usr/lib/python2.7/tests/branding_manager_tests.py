@@ -95,7 +95,6 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        
         assert(matchText == newCompanyName)
 
         # Verify email address is in the contact link
