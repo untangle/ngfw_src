@@ -1218,6 +1218,15 @@ class NetworkTests(unittest2.TestCase):
                                             "s_server_port", 80)
         assert(found)
 
+    # Test UDP traceroute bug 12663 
+    def test_160_tracerouteUDP(self):
+        tracerouteExists = remote_control.runCommand("test -x /usr/sbin/traceroute")
+        if tracerouteExists != 0:
+            raise unittest2.SkipTest("Traceroute app needs to be installed on client")
+        result = remote_control.runCommand("/usr/sbin/traceroute test.untangle.com", stdout=True)
+        # 3 occurances of ms per line so check for at least three lines of ms times.
+        assert(result.count('ms') > 9) 
+
     @staticmethod
     def finalTearDown(self):
         # Restore original settings to return to initial settings
