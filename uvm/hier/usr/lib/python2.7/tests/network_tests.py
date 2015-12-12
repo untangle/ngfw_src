@@ -1224,8 +1224,8 @@ class NetworkTests(unittest2.TestCase):
         if tracerouteExists != 0:
             raise unittest2.SkipTest("Traceroute app needs to be installed on client")
         result = remote_control.runCommand("/usr/sbin/traceroute test.untangle.com", stdout=True)
-        # 3 occurances of ms per line so check for at least three lines of ms times.
-        assert(result.count('ms') > 9) 
+        # 3 occurances of ms per line so check for at least two lines of ms times.
+        assert(result.count('ms') > 6) 
 
     @staticmethod
     def finalTearDown(self):
