@@ -1,3 +1,32 @@
+OpenVPN 2.3.8 contains the following changes:
+
+Arne Schwabe (2):
+      Report missing endtags of inline files as warnings
+      Fix commit e473b7c if an inline file happens to have a line break exactly at buffer limit
+
+Gert Doering (3):
+      Produce a meaningful error message if --daemon gets in the way of asking for passwords.
+      Document --daemon changes and consequences (--askpass, --auth-nocache).
+      Preparing for release v2.3.8 (ChangeLog, version.m4)
+
+Holger Kummert (1):
+      Del ipv6 addr on close of linux tun interface
+
+James Geboski (1):
+      Fix --askpass not allowing for password input via stdin
+
+Steffan Karger (5):
+      write pid file immediately after daemonizing
+      Make __func__ work with Visual Studio too
+      fix regression: query password before becoming daemon
+      Fix using management interface to get passwords.
+      Fix overflow check in openvpn_decrypt()
+The OpenVPN 2.3.8 source packages and Windows installers contain one additional fix:
+
+Gert Doering (1):
+      Un-break --auth-user-pass on windows
+This means that custom Windows builds should be based on 2.3.8 source packages or on the "release/2.3" branch instead of the "v2.3.8" tag in Git.
+
 OpenVPN 2.3.7
 
 Alexander Pyhalov (1):
@@ -62,7 +91,7 @@ Mike Gilbert (1):
 Robert Fischer (1):
       Updated manpage for --rport and --lport
 
-Samuli Sepp√§nen (2):
+Samuli Sepp‰nen (2):
       Properly escape dashes on the man-page
       Improve documentation in --script-security section of the man-page
 
@@ -90,7 +119,7 @@ Gert Doering (2):
       Add client-only support for peer-id.
       Preparing for release v2.3.6 (ChangeLog, version.m4)
 
-Samuli Sepp√§nen (1):
+Samuli Sepp‰nen (1):
       Fix to --shaper documentation on the man-page
 
 Steffan Karger (4):
@@ -354,7 +383,7 @@ Josh Cepek (2):
 Matthias Andree (1):
       Enable TCP_NODELAY configuration on FreeBSD.
 
-Samuli Sepp√§nen (4):
+Samuli Sepp‰nen (4):
       Removed ChangeLog.IPv6
       Added cross-compilation information INSTALL-win32.txt
       Updated README
@@ -673,7 +702,7 @@ Jonathan K. Bullard (2):
       Fix file access checks on commands
       Clarified the docs and help screen about what a 'cmd' is
 
-Samuli Sepp√§nen (1):
+Samuli Sepp‰nen (1):
       Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win32.txt
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
@@ -1124,7 +1153,7 @@ Robert Fischer (8):
       Update man page with info about --remote-random-hostname
       Added man page entry for --management-client
 
-Samuli Sepp√§nen (19):
+Samuli Sepp‰nen (19):
       Add man page entry for --redirect-private
       Change all CRLF linefeeds to LF linefeeds
       Fix a bug in devcon source code handling
