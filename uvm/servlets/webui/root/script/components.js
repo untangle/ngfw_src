@@ -464,6 +464,9 @@ Ext.define("Ung.Node", {
             if(this.faceplateMetrics!=null) {
                 this.faceplateMetrics.update(this.metrics);
             }
+            if(this.settingsWin && this.settingsWin.isVisible() && this.settingsWin.panelAppStatus) {
+                this.settingsWin.panelAppStatus.updateMetrics(this.metrics);
+            }
         } else {
             this.resetMetrics();
         }

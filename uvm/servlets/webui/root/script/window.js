@@ -291,6 +291,7 @@ Ext.define("Ung.SettingsWin", {
 Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
     hasReports: true,
+    hasStatus: true,
     node: null,
     constructor: function(config) {
         this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
@@ -419,6 +420,227 @@ Ext.define("Ung.NodeWin", {
         if(nodeCmp) {
             nodeCmp.loadSettings();
         }
+    },
+    buildTabPanel: function(itemsArray) {
+        if(this.hasStatus) {
+            itemsArray.unshift(this.buildAppStatus());
+        }
+        this.callParent(arguments);
+    },
+    getPowerMessage: function(isRunning) {
+        var powerMessage = isRunning ? Ext.String.format(i18n._("{0} is enabled."), this.nodeProperties.displayName) : Ext.String.format(i18n._("{0} is disabled."), this.nodeProperties.displayName);
+        return powerMessage;
+    },
+    buildAppStatus: function() {
+        var me = this;
+        var statusItems = [];
+        var node = Ung.Node.getCmp(this.nodeId);
+        if(testMode && node.license) {
+            //node.license.trial = true;
+            node.license.valid = false;
+        }
+        if(node.hasPowerButton) {
+            var isRunning = node.isRunning();
+            statusItems.push({
+                xtype: 'fieldset',
+                title: i18n._('Power'),
+                items: [{
+                    xtype: 'component',
+                    name: 'powerStatus',
+                    cls: isRunning ? 'app-status-enabled': 'app-status-disabled',
+                    html: this.getPowerMessage(isRunning)
+                }, {
+                    xtype: 'button',
+                    margin: '10 0 0 0',
+                    name: 'powerButton',
+                    hidden: (node.license && !node.license.valid),
+                    iconCls: isRunning ? 'icon-disable' : 'icon-enable',
+                    text: isRunning ? i18n._("Disable") : i18n._("Enable"),
+                    handler: function(button) {
+                        button.disable();
+                        Ung.Node.getCmp(this.nodeId).onPowerClick();
+                    },
+                    scope: this
+                }]
+            });
+        }
+        
+        if(node.license && (node.license.trial || !node.license.valid)) {
+            statusItems.push({
+                xtype: 'fieldset',
+                title: i18n._('License'),
+                items: [{
+                    xtype: 'component',
+                    cls: 'app-status-disabled',
+                    html: node.getLicenseMessage()
+                }, {
+                    xtype: "button",
+                    margin: '10 0 0 0',
+                    iconCls: 'icon-buy',
+                    hidden: !node.license.trial,
+                    cls: 'buy-button',
+                    text: i18n._('Buy Now'),
+                    handler: function() {
+                        Ung.Node.getCmp(this.nodeId).onBuyNowAction();
+                    },
+                    scope: this
+                }]
+            });
+        }
+        
+        if(node.metrics && node.metrics.list.length>0) {
+            var viewportWidth = Ung.Main.viewport.getWidth();
+            var metricsItems = [], metric, hasChart=false;
+            for(var i=0; i<node.metrics.list.length; i++) {
+                metric = node.metrics.list[i];
+                if(metric.name=="live-sessions") {
+                    hasChart = true;
+                    if( this.name === "untangle-node-firewall" ||
+                        this.name === "untangle-node-openvpn" ||
+                        this.name === "untangle-node-wan-balancer" ){
+                        hasChart = false;
+                    }
+                }
+                metricsItems.push({
+                    fieldLabel: i18n._(metric.displayName),
+                    name: metric.name
+                });
+            }
+            if(hasChart) {
+                var chartDataLength = Math.ceil(viewportWidth / 20);
+                var chartData=[];
+                for(i=0; i<chartDataLength; i++) {
+                    chartData.push({time: i, sessions: 0});
+                }
+
+                var chart = Ext.create({
+                    xtype: 'cartesian',
+                    name: 'sessionsChart',
+                    border: false,
+                    chartDataLength: chartDataLength,
+                    chartData: chartData,
+                    currentSessions: 0,
+                    insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
+                    width: '100%',
+                    height: 200,
+                    animation: false,
+                    theme: 'green-gradients',
+                    store: Ext.create('Ext.data.JsonStore', {
+                        fields: ['time', 'sessions'],
+                        data: chartData
+                    }),
+                    axes: [{
+                        type: 'numeric',
+                        position: 'left',
+                        fields: ['sessions'],
+                        minimum: 0,
+                        majorTickSteps: 0,
+                        minorTickSteps: 3
+                    }],
+                    series: [{
+                        type: 'line',
+                        axis: 'left',
+                        showMarkers: false,
+                        fill: true,
+                        xField: 'time',
+                        yField: 'sessions',
+                        style: {
+                            lineWidth: 2
+                        },
+                        tooltip: {
+                            trackMouse: true,
+                            style: 'background: #fff',
+                            dismissDelay: 2000,
+                            renderer: function(tooltip, record, item) {
+                                tooltip.setHtml(
+                                    i18n._("Session History:") + record.get('sessions') + '<br/>' +
+                                    i18n._("Current Sessions:") + me.panelAppStatus.chart.currentSessions + '<br/>' +
+                                    i18n._("Click chart to open Sesion Viewer for") + " " + me.nodeProperties.displayName
+                                );
+                            }
+                        }
+                    }],
+                    listeners: {
+                        afterrender: function(chart) {
+                            chart.getEl().on("click", function(e) { 
+                                Ung.Main.showNodeSessions( me.nodeId ); 
+                            }, this);
+                        }
+                    }
+                });
+                statusItems.push({
+                    xtype: 'fieldset',
+                    title: i18n._('Sessions'),
+                    items: chart
+                    
+                });
+            }
+            statusItems.push({
+                xtype: 'fieldset',
+                name: 'metrics',
+                layout: 'auto',
+                title: i18n._('Metrics'),
+                defaults: {
+                    margin: '0 10 0 0',
+                    xtype: 'displayfield',
+                    labelWidth: 190,
+                    width: 300,
+                    style: {
+                        'float': 'left'
+                    }
+                },
+                items: metricsItems
+            });
+        }
+
+        this.panelAppStatus = Ext.create('Ext.panel.Panel',{
+            name: 'status',
+            title: i18n._('App Status'),
+            cls: 'ung-panel',
+            autoScroll: true,
+            items: statusItems,
+            isDirty: function() {
+                return false;
+            },
+            updateMetrics: Ext.bind(function(metrics) {
+                if(this.panelAppStatus.hasMetrics) {
+                    var metricField, metric, chart, reloadChart, i, j;
+                    for(i=0; i<metrics.list.length; i++) {
+                        metric = metrics.list[i];
+                        if(testMode) {
+                            metric.value = Math.floor((Math.random()*200));
+                        }
+                        metricField = this.panelAppStatus.metricsSection.down("displayfield[name="+metric.name+"]");
+                        if(metricField) {
+                            metricField.setValue(metric.value);
+                        }
+                        if(this.panelAppStatus.hasChart && metric.name=="live-sessions") {
+                            chart = this.panelAppStatus.chart;
+                            reloadChart = chart.chartData[0].sessions != 0;
+                            for(j=0;j<chart.chartData.length-1;j++) {
+                                chart.chartData[j].sessions=chart.chartData[j+1].sessions;
+                                reloadChart = (reloadChart || (chart.chartData[j].sessions != 0));
+                            }
+                            chart.currentSessions = metric.value;
+                            reloadChart = (reloadChart || (chart.currentSessions!=0));
+                            chart.chartData[chart.chartData.length-1].sessions=chart.currentSessions;
+
+                            if(reloadChart) {
+                                chart.store.loadData(chart.chartData);
+                            }
+                            
+                        }
+                    }
+                }
+            }, this)
+        });
+        var metricsSection =  this.panelAppStatus.down("fieldset[name=metrics]");
+        var sessionsChart =  this.panelAppStatus.down("cartesian[name=sessionsChart]");
+        this.panelAppStatus.hasMetrics = metricsSection !== null;
+        this.panelAppStatus.hasChart = sessionsChart !== null;
+        this.panelAppStatus.metricsSection = metricsSection;
+        this.panelAppStatus.chart = sessionsChart;
+        return this.panelAppStatus;
     }
 });
 
