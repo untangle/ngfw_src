@@ -458,14 +458,27 @@ Ext.define("Ung.Node", {
         if(this.name=="untangle-node-reports") {
             delete rpc.reportsAppInstalledAndEnabled;
         }
+        if(!force) {
+            var panelAppStatus = this.getSettingsAppPanel();
+            if(panelAppStatus) {
+                panelAppStatus.updatePower(this.isRunning());
+            }
+        }
+    },
+    getSettingsAppPanel: function() {
+        if(this.settingsWin && this.settingsWin.isVisible() && this.settingsWin.panelAppStatus) {
+            return this.settingsWin.panelAppStatus;
+        }
+        return null;
     },
     updateMetrics: function() {
         if (this.powerOn && this.metrics) {
             if(this.faceplateMetrics!=null) {
                 this.faceplateMetrics.update(this.metrics);
             }
-            if(this.settingsWin && this.settingsWin.isVisible() && this.settingsWin.panelAppStatus) {
-                this.settingsWin.panelAppStatus.updateMetrics(this.metrics);
+            var panelAppStatus = this.getSettingsAppPanel();
+            if(panelAppStatus) {
+                panelAppStatus.updateMetrics(this.metrics);
             }
         } else {
             this.resetMetrics();
@@ -699,6 +712,10 @@ Ext.define("Ung.Node", {
             } else {
                 nodeBuyButton.hide();
             }
+        }
+        var panelAppStatus = this.getSettingsAppPanel();
+        if(panelAppStatus) {
+            panelAppStatus.updateLicense(this.license);
         }
     }
 });

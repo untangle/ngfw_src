@@ -452,10 +452,23 @@ Ext.define("Ung.NodeWin", {
                 }, {
                     xtype: 'button',
                     margin: '10 0 0 0',
-                    name: 'powerButton',
-                    hidden: (node.license && !node.license.valid),
-                    iconCls: isRunning ? 'icon-disable' : 'icon-enable',
-                    text: isRunning ? i18n._("Disable") : i18n._("Enable"),
+                    name: 'enableButton',
+                    disabled: (node.license && !node.license.valid),
+                    hidden:  isRunning,
+                    iconCls: 'icon-enable',
+                    text: i18n._("Enable"),
+                    handler: function(button) {
+                        button.disable();
+                        Ung.Node.getCmp(this.nodeId).onPowerClick();
+                    },
+                    scope: this
+                }, {
+                    xtype: 'button',
+                    margin: '10 0 0 0',
+                    name: 'disableButton',
+                    hidden: !isRunning,
+                    iconCls: 'icon-disable',
+                    text: i18n._("Disable"),
                     handler: function(button) {
                         button.disable();
                         Ung.Node.getCmp(this.nodeId).onPowerClick();
@@ -469,12 +482,15 @@ Ext.define("Ung.NodeWin", {
             statusItems.push({
                 xtype: 'fieldset',
                 title: i18n._('License'),
+                name: 'licenseSection',
                 items: [{
                     xtype: 'component',
+                    name: 'licenseStatus',
                     cls: 'app-status-disabled',
                     html: node.getLicenseMessage()
                 }, {
                     xtype: "button",
+                    name: 'licenseBuyButton',
                     margin: '10 0 0 0',
                     iconCls: 'icon-buy',
                     hidden: !node.license.trial,
@@ -592,16 +608,38 @@ Ext.define("Ung.NodeWin", {
                 items: metricsItems
             });
         }
-
+        
         this.panelAppStatus = Ext.create('Ext.panel.Panel',{
             name: 'status',
-            title: i18n._('App Status'),
+            title: i18n._('App'),
             cls: 'ung-panel',
             autoScroll: true,
             items: statusItems,
             isDirty: function() {
                 return false;
             },
+            updatePower: Ext.bind(function(isRunning) {
+                var powerStatus = this.panelAppStatus.down("[name=powerStatus]");
+                if(powerStatus) {
+                    powerStatus.update({
+                        'html': this.getPowerMessage(isRunning),
+                        'cls': isRunning ? 'app-status-enabled': 'app-status-disabled'
+                    });
+                    var enableButton = this.panelAppStatus.down("button[name=enableButton]");
+                    var disableButton = this.panelAppStatus.down("button[name=disableButton]");
+                    enableButton.setVisible(!isRunning);
+                    disableButton.setVisible(isRunning);
+                    enableButton.enable();
+                    disableButton.enable();
+                    
+                }
+            }, this),
+            updateLicense: Ext.bind(function(license) {
+                var licenseStatus = this.panelAppStatus.down("[name=licenseStatus]");
+                if(licenseStatus) {
+                    
+                }
+            }, this),
             updateMetrics: Ext.bind(function(metrics) {
                 if(this.panelAppStatus.hasMetrics) {
                     var metricField, metric, chart, reloadChart, i, j;
