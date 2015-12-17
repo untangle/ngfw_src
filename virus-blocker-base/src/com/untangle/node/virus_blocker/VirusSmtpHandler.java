@@ -3,7 +3,6 @@
  */
 package com.untangle.node.virus_blocker;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
@@ -11,7 +10,11 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.security.MessageDigest;
+import java.security.DigestOutputStream;
+import java.security.NoSuchAlgorithmException;
 
 import javax.activation.DataHandler;
 import javax.mail.Part;
@@ -342,15 +345,18 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             ret = File.createTempFile("MimePart-", null);
             if (ret != null) session.attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
-            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
-            MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
-
+            MessageDigest msgDigest = MessageDigest.getInstance("MD5");
+            DigestOutputStream dOut = new DigestOutputStream(fOut, msgDigest);
+            MIMEOutputStream mimeOut = new MIMEOutputStream(dOut);
             DataHandler dh = part.getDataHandler();
             dh.writeTo(mimeOut);
-
             mimeOut.flush();
-            bOut.flush();
+            dOut.flush();
             fOut.flush();
+            
+            BigInteger val = new BigInteger(1, msgDigest.digest());
+            logger.info("SmtpHandler MD5 = " + String.format("%1$032x", val));
+            
             fOut.close();
 
             return ret;

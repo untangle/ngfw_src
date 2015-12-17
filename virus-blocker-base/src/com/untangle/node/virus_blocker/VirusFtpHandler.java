@@ -7,9 +7,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
@@ -46,9 +52,14 @@ class VirusFtpHandler extends FtpEventHandler
 
     private class VirusFtpState
     {
-        private File file;
-        private FileChannel inChannel;
-        private FileChannel outChannel;
+        private File file = null;
+        private FileInputStream inStream = null;
+        private FileOutputStream outStream = null;
+        private FileChannel inChannel = null;
+        private FileChannel outChannel = null;
+        private MessageDigest msgDigest = null;
+        private DigestOutputStream msgStream = null;
+        private WritableByteChannel msgChannel = null;
         private boolean c2s;
     }
 
@@ -127,6 +138,8 @@ class VirusFtpHandler extends FtpEventHandler
 
         if ( node.getSettings().getScanFtp() && state.c2s && state.file != null ) {
             try {
+                BigInteger val = new BigInteger(1, state.msgDigest.digest());
+                logger.info("FtpHandler MD5 = " + String.format("%1$032x", val));
                 state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close out channel");
@@ -153,6 +166,8 @@ class VirusFtpHandler extends FtpEventHandler
 
         if ( node.getSettings().getScanFtp() && !state.c2s && state.file != null ) {
             try {
+                BigInteger val = new BigInteger(1, state.msgDigest.digest());
+                logger.info("FtpHandler MD5 = " + String.format("%1$032x", val));
                 state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close out channel", exn);
@@ -212,7 +227,7 @@ class VirusFtpHandler extends FtpEventHandler
 
         try {
             while (b.hasRemaining()) {
-                state.outChannel.write(b);
+                state.msgChannel.write(b);
             }
 
             b.clear().limit(l);
@@ -276,14 +291,19 @@ class VirusFtpHandler extends FtpEventHandler
             if (state.file != null)
                 session.attachTempFile(state.file.getAbsolutePath());
             
-            FileInputStream fis = new FileInputStream( state.file );
-            state.inChannel = fis.getChannel();
+            state.inStream = new FileInputStream( state.file );
+            state.inChannel = state.inStream.getChannel();
 
-            FileOutputStream fos = new FileOutputStream( state.file );
-            state.outChannel = fos.getChannel();
-
-        } catch (IOException exn) {
+            state.outStream = new FileOutputStream( state.file );
+            state.outChannel = state.outStream.getChannel();
+            state.msgDigest = MessageDigest.getInstance("MD5");
+            state.msgStream = new DigestOutputStream(state.outStream, state.msgDigest);
+            state.msgChannel = Channels.newChannel(state.msgStream);
+        } catch (IOException ioe) {
             throw new RuntimeException("could not create tmp file");
+        }
+        catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException("could not initialize message digest");
         }
         
         /**

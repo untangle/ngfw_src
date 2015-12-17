@@ -9,12 +9,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.security.MessageDigest;
+import java.security.DigestOutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
 
@@ -76,8 +82,13 @@ class VirusHttpHandler extends HttpEventHandler
         private String host = null;
         private String uri = null;
         private File scanfile = null;
-        private FileChannel outFile = null;
-        private FileChannel inFile = null;
+        private FileInputStream inStream = null;
+        private FileOutputStream outStream = null;
+        private FileChannel inChannel = null;
+        private FileChannel outChannel = null;
+        private MessageDigest msgDigest = null;
+        private DigestOutputStream msgStream = null;
+        private WritableByteChannel msgChannel = null;
     }
 
     protected VirusHttpHandler( VirusBlockerBaseApp node )
@@ -215,7 +226,9 @@ class VirusHttpHandler extends HttpEventHandler
         VirusHttpState state = (VirusHttpState) session.attachment();
         if (state.scan) {
             try {
-                state.outFile.close();
+                BigInteger val = new BigInteger(1, state.msgDigest.digest());
+                logger.info("HttpHandler MD5 = " + String.format("%1$032x", val));
+                state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close channel", exn);
             }
@@ -264,7 +277,7 @@ class VirusHttpHandler extends HttpEventHandler
                 releaseResponse( session );
                 try { state.scanfile.delete(); } catch (Exception ignore) {}
             } else {
-                streamClient( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
+                streamClient( session, new FileChunkStreamer(state.scanfile, state.inChannel, null, null, false) );
             }
 
         } else {
@@ -367,16 +380,28 @@ class VirusHttpHandler extends HttpEventHandler
                 logger.debug("VIRUS: Using temporary file: " + state.scanfile);
             }
 
-            state.outFile = (new FileOutputStream(fileBuf)).getChannel();
-            state.inFile = (new FileInputStream(fileBuf)).getChannel();
+            state.inStream = new FileInputStream(fileBuf);
+            state.inChannel = state.inStream.getChannel();
+
+            state.outStream = new FileOutputStream(fileBuf);
+            state.outChannel = state.outStream.getChannel();
+            state.msgDigest = MessageDigest.getInstance("MD5");
+            state.msgStream = new DigestOutputStream(state.outStream, state.msgDigest);
+            state.msgChannel = Channels.newChannel(state.msgStream);
+            
             state.scanfile = fileBuf;
             state.scan = true;
             
-        } catch (IOException e) {
-            logger.warn("Unable to create temporary file: " + e);
+        } catch (IOException ioe) {
+            logger.warn("Unable to create temporary file: " + ioe);
             state.scan = false;
             releaseResponse( session );
         } 
+        catch (NoSuchAlgorithmException nsae) {
+            logger.warn("Unable to initialize message digest");
+            state.scan = false;
+            releaseResponse( session );
+        }
     }
     
     @Override
@@ -391,7 +416,7 @@ class VirusHttpHandler extends HttpEventHandler
         ByteBuffer buf = chunk.getData();
 
         try {
-            for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); state.outFile.write(bb));
+            for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); state.msgChannel.write(bb));
         } catch (IOException e) {
             logger.warn("Unable to write to buffer file: " + e);
             throw new RuntimeException(e);
@@ -414,7 +439,7 @@ class VirusHttpHandler extends HttpEventHandler
                 if (logger.isDebugEnabled())
                     logger.debug("switch to trickling after " + elaspsedTime + "ms and " + state.totalSize + " bytes.");
                 try {
-                    state.inFile.position(state.outstanding);
+                    state.inChannel.position(state.outstanding);
                 } catch (IOException exn) {
                     logger.warn("could not change file pointer", exn);
                 }
@@ -428,7 +453,7 @@ class VirusHttpHandler extends HttpEventHandler
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
                 state.scan = false;
 
-                streamClient( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
+                streamClient( session, new FileChunkStreamer(state.scanfile, state.inChannel, null, null, false) );
 
                 return ChunkToken.EMPTY;
             } else {
@@ -453,7 +478,7 @@ class VirusHttpHandler extends HttpEventHandler
         inbuf.limit(trickleLen);
 
         try {
-            for (; inbuf.hasRemaining(); state.inFile.read(inbuf));
+            for (; inbuf.hasRemaining(); state.inChannel.read(inbuf));
         } catch (IOException e) {
             logger.warn("Unable to read from buffer file: " + e);
             throw new RuntimeException(e);
