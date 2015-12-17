@@ -50,6 +50,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
     private static final String ACTIVATION_CODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/activation-code-flag";
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
+    private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
 
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store/open.php";
@@ -62,7 +63,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
-    private static String uid;
+    private static String uid = null;
+    private static String applianceModel = null;
 
     private UvmState state;
     private AdminManagerImpl adminManager;
@@ -483,6 +485,24 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         File keyFile = new File(APPLIANCE_FLAG_FILE);
         return keyFile.exists();
     }
+
+    public String getApplianceModel()
+    {
+        if (UvmContextImpl.applianceModel == null) {
+            try {
+                File keyFile = new File(APPLIANCE_MODEL_FILE);
+                if (keyFile.exists()) {
+                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                    UvmContextImpl.applianceModel = reader.readLine();
+                } else {
+                    UvmContextImpl.applianceModel = "";
+                }
+            } catch (IOException x) {
+                logger.error("Unable to get pop id: ", x);
+            }
+        }
+        return UvmContextImpl.applianceModel;
+    }
     
     /**
      * Returns true if this is a developer build in the development environment
@@ -627,6 +647,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
             json.put("languageSettings", this.languageManager().getLanguageSettings());
             json.put("version", this.version());
+            json.put("applianceModel", this.getApplianceModel());
             json.put("translations", this.languageManager().getTranslations("untangle"));
             json.put("skinSettings", this.skinManager().getSettings());
             json.put("hostname", this.networkManager().getNetworkSettings().getHostName());

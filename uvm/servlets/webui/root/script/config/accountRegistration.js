@@ -611,6 +611,7 @@ Ext.define('Webui.config.accountRegistration', {
                 email: emailAddress.getValue(),
                 password: password.getValue(),
                 uid: rpc.serverUID,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -675,6 +676,7 @@ Ext.define('Webui.config.accountRegistration', {
                 lname: lastName,
                 cname: companyName,
                 uid: rpc.serverUID,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -706,6 +708,7 @@ Ext.define('Webui.config.accountRegistration', {
                 email: this.email,
                 token: this.token,
                 uid: rpc.serverUID,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -741,6 +744,7 @@ Ext.define('Webui.config.accountRegistration', {
                 email: this.email,
                 token: this.token,
                 uid: rpc.serverUID,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -860,6 +864,7 @@ Ext.define('Webui.config.accountRegistration', {
                 postCode: creditPostal,
                 country: creditCountry,
                 uid: rpc.serverUID,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {
@@ -902,6 +907,7 @@ Ext.define('Webui.config.accountRegistration', {
                 activationCode: activationCode,
                 uid: rpc.serverUID,
                 uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName,
+                applianceModel: rpc.applianceModel,
                 majorVersion: rpc.version
             },
             success: function(response, opts) {

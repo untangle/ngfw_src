@@ -330,6 +330,11 @@ public interface UvmContext
     boolean isAppliance();
     
     /**
+     * Returns the appliance model "u50" (if it exists) 
+     */
+    String getApplianceModel();
+
+    /**
      * Returns true if this server was has an activation code
      *
      * @return a <code>boolean</code> value
