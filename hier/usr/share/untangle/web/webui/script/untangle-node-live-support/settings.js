@@ -29,16 +29,19 @@ Ext.define('Webui.untangle-node-live-support.settings', {
                 },
                 items: [this.buildAppStatus(), {
                     title: i18n._('Live Support'),
-                    html: Ext.String.format(i18n._("This {0} Server is entitled to Live Support.<br/>"), rpc.companyName)
-                },{
-                    xtype: 'button',
-                    margin: '0 0 50 20',
-                    text: i18n._('Get Support!'),
-                    name: 'Get Support',
-                    iconCls: 'action-icon',
-                    handler: Ext.bind(function() {
-                        Ung.Main.openSupportScreen();
-                    }, this)
+                    items: [{
+                        xtype: 'component',
+                        html: Ext.String.format(i18n._("This {0} Server is entitled to Live Support."), rpc.companyName) 
+                    }, {
+                        xtype: 'button',
+                        margin: '10 0 0 0',
+                        text: i18n._('Get Support!'),
+                        name: 'Get Support',
+                        iconCls: 'action-icon',
+                        handler: Ext.bind(function() {
+                            Ung.Main.openSupportScreen();
+                        }, this)
+                    }]
                 },{
                     title: i18n._('Support Information'),
                     defaults: {
