@@ -215,6 +215,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         }
 
         this.intfCombo =  Ext.create('Ext.form.field.ComboBox',{
+            margin: '10 0 0 0',
             store: intfList,
             fieldLabel: i18n._("Interface"),
             editable: false,
@@ -246,7 +247,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     this.buildStatus(),
                     {
                         xtype: "button",
-                        margin: '5 0 0 0',
+                        margin: '10 0 0 0',
                         name: 'setup_wizard_button',
                         text: i18n._("Run Bandwidth Control Setup Wizard"),
                         iconCls: "action-icon",
@@ -263,6 +264,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     xtype: "button",
                     name: "bandwidth_monitor",
                     text: i18n._("Open Bandwidth Monitor"),
+                    margin: '10 0 0 0',
                     handler: Ext.bind(function() {
                         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.defer(function() {
@@ -294,12 +296,12 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                 title: i18n._("Penalty Box"),
                 items: [{
                     xtype: 'component',
-                    html: i18n._("View hosts currently in the Penalty Box."),
-                    margin: '0 0 5 0'
+                    html: i18n._("View hosts currently in the Penalty Box.")
                 }, {
                     xtype: "button",
                     name: "bandwidth_monitor",
                     text: i18n._('View Penalty Box'),
+                    margin: '10 0 0 0',
                     handler: Ext.bind(function() {
                         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.require(['Webui.config.hostMonitor'], function() {
@@ -323,12 +325,12 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                 title: i18n._("Quotas"),
                 items: [{
                     xtype: 'component',
-                    html: i18n._("View current Quotas."),
-                    margin: '0 0 5 0'
+                    html: i18n._("View current Quotas.")
                 }, {
                     xtype: "button",
                     name: "bandwidth_monitor",
                     text: i18n._('View Quotas'),
+                    margin: '10 0 0 0',
                     handler: Ext.bind(function() {
                         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                         Ext.require(['Webui.config.hostMonitor'], function() {
