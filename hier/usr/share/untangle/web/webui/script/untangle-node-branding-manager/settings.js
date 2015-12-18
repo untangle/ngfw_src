@@ -1,6 +1,7 @@
 Ext.define('Webui.untangle-node-branding-manager.settings', {
     extend:'Ung.NodeWin',
     hasReports: false,
+    hasDefaultAppStatus: false,
     panelBranding: null,
     saveSemaphore: 0,
     initComponent: function(container, position) {
@@ -36,7 +37,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     this.down('button[name="upload_logo_file_button"]').disable();
                 }
             },
-            items: [{
+            items: [this.buildAppStatus(), {
                 xtype: 'component',
                 margin: '5 0 15 20',
                 html: i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
