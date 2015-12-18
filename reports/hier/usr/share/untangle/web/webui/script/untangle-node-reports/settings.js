@@ -1,6 +1,7 @@
 
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
+    hasDefaultAppStatus: false,
     panelStatus: null,
     panelEmail: null,
     panelSyslog: null,
@@ -74,24 +75,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
             helpSource: 'reports_status',
             autoScroll: true,
             cls: 'ung-panel',
-            items: [{
+            items: [this.buildAppStatus(), {
                 title: i18n._('Status'),
                 xtype: 'fieldset',
                 items: [{
-                    xtype: 'panel',
-                    html: i18n._('Click to open the reports in a new window.'),
-                    buttonAlign: 'center',
-                    border: false,
-                    buttons: [{
-                        xtype: 'button',
-                        text: i18n._('View Reports'),
-                        name: 'View Reports',
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function() {
-                            var viewReportsUrl = "../reports/";
-                            window.open(viewReportsUrl);
-                        }, this)
-                    }]
+                    xtype: 'component',
+                    html: i18n._('Click to open the reports in a new window.')
+                }, {
+                    xtype: 'button',
+                    margin: '10 0 0 0',
+                    text: i18n._('View Reports'),
+                    name: 'View Reports',
+                    iconCls: 'action-icon',
+                    handler: Ext.bind(function() {
+                        var viewReportsUrl = "../reports/";
+                        window.open(viewReportsUrl);
+                    }, this)
                 }]
             }]
         });
