@@ -1,6 +1,7 @@
 Ext.define('Webui.untangle-node-live-support.settings', {
     extend:'Ung.NodeWin',
     hasReports: false,
+    hasDefaultAppStatus: false,
     panelSupport: null,
     hasApply: false, // do not need save
     initComponent: function(container, position) {
@@ -26,7 +27,7 @@ Ext.define('Webui.untangle-node-live-support.settings', {
                 defaults: {
                     xtype: 'fieldset'
                 },
-                items: [{
+                items: [this.buildAppStatus(), {
                     title: i18n._('Live Support'),
                     html: Ext.String.format(i18n._("This {0} Server is entitled to Live Support.<br/>"), rpc.companyName)
                 },{
