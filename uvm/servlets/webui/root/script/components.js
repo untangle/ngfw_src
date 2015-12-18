@@ -1596,6 +1596,9 @@ Ext.define('Ung.panel.AppStatus', {
                 items: metricsItems
             });
         }
+        if(this.items.length == 0) {
+            this.hidden = true;
+        }
         
         this.callParent(arguments);
     },
