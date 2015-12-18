@@ -38,8 +38,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                 }
             },
             items: [this.buildAppStatus(), {
-                xtype: 'component',
-                margin: '5 0 15 20',
+                title: i18n._("Note"),
                 html: i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
             },{
                 title: i18n._('Logo'),
