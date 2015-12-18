@@ -6,7 +6,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     gridRemoteServers: null,
     panelServer: null,
     gridConnectionEventLog: null,
-    isNodeRunning: null,
     initComponent: function(container, position) {
         // Register the VTypes, need i18n to be initialized for the text
         Ext.applyIf(Ext.form.VTypes, {
@@ -18,7 +17,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             openvpnNameText: i18n._( "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." )
         });
 
-        this.isNodeRunning = this.getRpcNode().getRunState() === "RUNNING";
         this.buildStatus();
         this.buildServer();
         this.buildClient();
@@ -159,16 +157,8 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     },
     // Status panel
     buildStatus: function() {
-        var statusLabel = "";
         this.buildClientStatusGrid();
         this.buildServerStatusGrid();
-
-        var statusDescription = "";
-        if (this.isNodeRunning) {
-            statusDescription = "<font color=\"green\">" + i18n._("OpenVPN is currently running.") + "</font>";
-        } else {
-            statusDescription = "<font color=\"red\">" + i18n._("OpenVPN is not currently running.") + "</font>";
-        }
 
         this.panelStatus = Ext.create('Ext.panel.Panel', {
             name: 'Status',
@@ -179,12 +169,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             isDirty: function() {
                 return false;
             },
-            items: [{
-                xtype: 'fieldset',
-                title: i18n._('Status'),
-                flex: 0,
-                html: "<i>" + statusDescription + "</i>"
-            }, this.gridClientStatus, this.gridServerStatus]
+            items: [this.gridClientStatus, this.gridServerStatus]
         });
     },
     getGroupsColumn: function() {
@@ -491,7 +476,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         if(record.data.internalId<0) {
                             Ext.MessageBox.alert(i18n._("Failed"), i18n._("New clients must be saved before downloading the client."));
-                        } else if(!this.isNodeRunning) {
+                        } else if(!Ung.Node.getCmp(this.nodeId).isRunning()) {
                             Ext.MessageBox.alert(i18n._("Failed"), i18n._("OpenVPN must be turned ON in order to download the client."));
                         } else {
                             this.getDistributeWindow().populate(record);
