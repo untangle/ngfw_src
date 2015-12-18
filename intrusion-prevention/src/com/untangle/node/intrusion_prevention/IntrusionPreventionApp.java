@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 
@@ -128,6 +129,11 @@ public class IntrusionPreventionApp extends NodeBase
     protected void preStart()
     {
         super.preStart();
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        if(wizardCompleted() == false){
+            throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
+        }
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
         UvmContextFactory.context().networkManager().registerListener( this.listener );
         this.ipsEventMonitor.start();
@@ -255,6 +261,18 @@ public class IntrusionPreventionApp extends NodeBase
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to manage rules");
         }
+    }
+
+    private Boolean wizardCompleted(){
+        String settingsFileName = getSettingsFileName();
+        File f = new File(settingsFileName);
+        if(f.exists()){
+            int retCode = UvmContextFactory.context().execManager().execResult( "grep -q '\"configured\": true,' " + settingsFileName);
+            if(retCode == 0){
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getSettingsFileName()
