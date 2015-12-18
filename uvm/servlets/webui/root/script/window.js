@@ -524,7 +524,7 @@ Ext.define("Ung.NodeWin", {
             }
             if(hasChart) {
                 var chartDataLength = Math.ceil(viewportWidth / 20);
-                var chartData=[];
+                var chartData = [];
                 for(i=0; i<chartDataLength; i++) {
                     chartData.push({time: i, sessions: 0});
                 }
@@ -538,7 +538,7 @@ Ext.define("Ung.NodeWin", {
                     currentSessions: 0,
                     insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
                     width: '100%',
-                    height: 200,
+                    height: viewportWidth<600 ? 100 : viewportWidth<1200 ? 150 : 200,
                     animation: false,
                     theme: 'green-gradients',
                     store: Ext.create('Ext.data.JsonStore', {
@@ -635,9 +635,16 @@ Ext.define("Ung.NodeWin", {
                 }
             }, this),
             updateLicense: Ext.bind(function(license) {
-                var licenseStatus = this.panelAppStatus.down("[name=licenseStatus]");
-                if(licenseStatus) {
-                    
+                var licenseSection = this.panelAppStatus.down("[name=licenseSection]");
+                if(licenseSection) {
+                    var licenseSectionVisible = license && (license.trial || !license.valid);
+                    licenseSection.setVisible(licenseSectionVisible);
+                    if(licenseSectionVisible) {
+                        var licenseStatus = this.panelAppStatus.down("[name=licenseStatus]");
+                        licenseStatus.update({'html': Ung.Node.getCmp(this.nodeId).getLicenseMessage()});
+                        var licenseBuyButton = this.panelAppStatus.down("button[name=licenseBuyButton]");
+                        licenseBuyButton.setVisible(license && license.trial);
+                    }
                 }
             }, this),
             updateMetrics: Ext.bind(function(metrics) {
