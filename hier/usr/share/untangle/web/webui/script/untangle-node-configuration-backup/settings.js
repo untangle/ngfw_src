@@ -3,6 +3,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
     panelStatus: null,
     gridEventLog: null,
     hasApply: false, // do not need save
+    hasDefaultAppStatus: false,
     initComponent: function(container, position) {
         // builds the 2 tabs
         this.buildStatus();
@@ -47,7 +48,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
             helpSource: 'configuration_backup_status',
             autoScroll: true,
             cls: 'ung-panel',
-            items: [{
+            items: [this.buildAppStatus(), {
                 xtype: 'fieldset',
                 title: i18n._('Status'),
                 html: this.getStatus()
