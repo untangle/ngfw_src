@@ -38,15 +38,31 @@ class SslInspectorManager
     private static HashMap<String, String> validSubjectList = new HashMap<String, String>();
     private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
 
-    // These arrays define the protocols for both sides of the casing.
-    // Java 6 supports SSLv3, TLSv1, and SSLv2Hello but that last one is
-    // apparently some goofy hybrid that was supposed to make life easier
-    // when transitioning from SSLv2 to SSLv3 back in the day. Info I found
-    // suggests SSLv2Hello isn't supported by some servers so it seems smart
-    // to disable it and only use SSLv3/TLSv1 on our server side. On the
-    // client side we leave all three enabled for maximum compatibility.
-    private static String[] clientProtocols = { "SSLv2Hello", "SSLv3", "TLSv1" };
-    private static String[] serverProtocols = { "SSLv3", "TLSv1" };
+    /*
+     * These arrays define the protocols for both sides of the casing. On the
+     * client side of the casing, we act like a server to the client. On the
+     * server side of the casing, we act like a client talking to the external
+     * server. Keep this in mind so you don't get confused when working in here.
+     * 
+     * Java 7 supports SSLv3, TLSv1, TLSv1.1, TLSv1.2, and SSLv2Hello but that
+     * last one is apparently some goofy hybrid that was supposed to make life
+     * easier when transitioning from SSLv2 to SSLv3 back in the day. Info I
+     * found suggests SSLv2Hello isn't supported by some servers so it seems
+     * smart to disable it on our server side.
+     * 
+     * On the server side, historically we enabled SSLv3 and TLSv1 but we've
+     * recently found some servers (www.pods.com) that break with this config.
+     * The newer versions of Java also support some newer versions. My original
+     * approach was to disable SSLv3 and only enable the TLS variants which
+     * worked but isn't ideal. More testing showed it works with SSLv3 enabled
+     * as long as all the TLS versions are also enabled, so that's our new
+     * default for maximum compatibility.
+     * 
+     * On the client side we leave everything enabled for maximum compatibility.
+     */
+
+    private static String[] clientProtocols = { "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" };
+    private static String[] serverProtocols = { "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" };
 
     // This is the list of subject name tags that we know work with the
     // openssl utility. The key is the tag we retrieve from the server cert
