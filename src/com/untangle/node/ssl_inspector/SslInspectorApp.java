@@ -6,6 +6,7 @@ package com.untangle.node.ssl_inspector;
 
 import javax.net.ssl.TrustManagerFactory;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +36,8 @@ import org.apache.log4j.Logger;
 public class SslInspectorApp extends NodeBase
 {
     private final Logger logger = Logger.getLogger(SslInspectorApp.class);
+
+    private static HashSet<String> brokenServerList = new HashSet<String>();
 
     private PipelineConnector clientWebConnector = null;
     private PipelineConnector serverWebConnector = null;
@@ -312,5 +315,28 @@ public class SslInspectorApp extends NodeBase
             reconfigure();
             return result;
         }
+    }
+
+    /*
+     * Some servers are misconfigured and may return the TLS unrecognized_name
+     * warning when an misconfigured SNI name is included in the ClientHello
+     * message. Browsers normally ignore, but it causes Java to fail the
+     * handshake. Since we're a casing we can't disconnect and start the
+     * handshake over, so instead we keep a list of servers and names that
+     * generate the error. When a match is found, we'll disable SNI during
+     * subsequent handshake attempts. Most clients seem to try more than once,
+     * so the second attempt will succeed.
+     */
+
+    protected void addBrokenServer(String brokenServer)
+    {
+        if ((brokenServerList.contains(brokenServer)) == false) {
+            brokenServerList.add(brokenServer);
+        }
+    }
+
+    protected boolean checkBrokenServer(String brokenServer)
+    {
+        return (brokenServerList.contains(brokenServer));
     }
 }

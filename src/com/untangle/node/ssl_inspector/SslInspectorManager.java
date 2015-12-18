@@ -316,7 +316,18 @@ class SslInspectorManager
             sslContext.init(null, node.getTrustFactory().getTrustManagers(), null);
         }
 
-        sslEngine = sslContext.createSSLEngine(sniHostname, 443);
+        String target = (session.getServerAddr().getHostAddress().toString() + " | " + sniHostname);
+
+        // if broken server don't include any args to disable SNI in the outbound ClientHello
+        if (node.checkBrokenServer(target) == true) {
+            sslEngine = sslContext.createSSLEngine();
+        }
+
+        // not broken so include args which Java seems to use for adding SNI to ClientHello
+        else {
+            sslEngine = sslContext.createSSLEngine(sniHostname, 443);
+        }
+
         sslEngine.setEnabledProtocols(serverProtocols);
 
         // on the server side we act like an SSL client

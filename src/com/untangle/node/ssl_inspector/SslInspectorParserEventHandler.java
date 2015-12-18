@@ -177,6 +177,16 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             sslProblem = ssl.getMessage();
             if (sslProblem == null) sslProblem = "Unknown SSL exception";
 
+            if (sslProblem.contains("unrecognized_name")) {
+                String targetName = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+                String targetHost = session.getServerAddr().getHostAddress().toString();
+                if ((targetName != null) && (targetHost != null)) {
+                    String brokenServer = (targetHost + " | " + targetName);
+                    logger.warn("Adding broken SNI server: " + brokenServer);
+                    node.addBrokenServer(brokenServer);
+                }
+            }
+
             // for normal close we kill both sides and return  
             if (sslProblem.contains("close_notify")) {
                 shutdownOtherSide(session, true);
