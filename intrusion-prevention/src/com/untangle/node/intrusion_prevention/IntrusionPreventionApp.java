@@ -263,7 +263,8 @@ public class IntrusionPreventionApp extends NodeBase
         }
     }
 
-    private Boolean wizardCompleted(){
+    private Boolean wizardCompleted()
+    {
         String settingsFileName = getSettingsFileName();
         File f = new File(settingsFileName);
         if(f.exists()){
@@ -328,14 +329,18 @@ public class IntrusionPreventionApp extends NodeBase
         }
     }
 
-    public void setUpdatedSettingsFlag( boolean updatedSettingsFlag ){
+    public void setUpdatedSettingsFlag( boolean updatedSettingsFlag )
+    {
         this.updatedSettingsFlag = updatedSettingsFlag;
     }
-    public boolean getUpdatedSettingsFlag(){
+
+    public boolean getUpdatedSettingsFlag()
+    {
         return this.updatedSettingsFlag;
     }
 
-    public void reloadEventMonitorMap(){
+    public void reloadEventMonitorMap()
+    {
         this.ipsEventMonitor.unified2Parser.reloadEventMap();
     }
 

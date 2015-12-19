@@ -257,6 +257,13 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
+
+        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
+        self.intrusion_prevention_interface.setup()
+
+        patch = IntrusionPreventionInterface.config_request_patch_template
+        self.intrusion_prevention_interface.config_request( "save", patch )
+
         node.start() # must be called since intrusion-prevention doesn't auto-start
 
     def setUp(self):
