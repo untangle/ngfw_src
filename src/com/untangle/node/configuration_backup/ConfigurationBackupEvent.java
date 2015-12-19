@@ -14,28 +14,33 @@ public class ConfigurationBackupEvent extends LogEvent
 {
     private boolean success;
     private String detail;
+    private String destination;
 
     public ConfigurationBackupEvent() { }
 
-    public ConfigurationBackupEvent(boolean success, String detail)
+    public ConfigurationBackupEvent(boolean success, String detail, String destination)
     {
         this.success = success;
         this.detail = detail;
+        this.destination = destination;
     }
 
     public boolean getSuccess() { return this.success; }
-    public void setSuccess(boolean success) { this.success = success; }
+    public void setSuccess(boolean newValue) { this.success = newValue; }
 
     public String getDetail() { return this.detail; }
-    public void setDetail(String detail) { this.detail = detail; }
+    public void setDetail(String newValue) { this.detail = newValue; }
 
+    public String getDestination() { return this.destination; }
+    public void setDestination(String newValue) { this.destination = newValue; }
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.configuration_backup_events" + getPartitionTablePostfix() + " " +
-            "(time_stamp, success, description) " + 
+            "(time_stamp, success, description, destination) " + 
             "values " +
-            "( ?, ?, ? )";
+            "( ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -43,6 +48,7 @@ public class ConfigurationBackupEvent extends LogEvent
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setBoolean(++i, getSuccess());
         pstmt.setString(++i, getDetail());
+        pstmt.setString(++i, getDestination());
 
         pstmt.addBatch();
         return;

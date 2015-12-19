@@ -27,7 +27,7 @@ public class ConfigurationBackupApp extends NodeBase
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
     
-    private static final String BACKUP_URL = "https://configuration-backup.untangle.com/configuration-backup/backup.php";
+    private static final String BACKUP_URL = "https://boxbackup.untangle.com/boxbackup/backup.php";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
@@ -90,7 +90,29 @@ public class ConfigurationBackupApp extends NodeBase
 
     public void sendBackup()
     {
-        doBackup();
+        if ( !isLicenseValid()) {
+            latestEvent = new ConfigurationBackupEvent(false, "No valid license.", "" );
+            this.logEvent(latestEvent);
+            return;
+        }
+
+        File backupFile = UvmContextFactory.context().backupManager().createBackup();
+
+        if ( backupFile == null ) {
+            logger.warn("Failed to create backup file!");
+            return;
+        }
+
+        uploadBackup( backupFile );
+
+        if ( settings.getGoogleDriveEnabled() )
+            uploadBackupToGoogleDrive( backupFile );
+        
+        try {
+            backupFile.delete();
+        } catch (Exception e) {
+            logger.warn("Failed to delete backup file",e);
+        }
     }
     
     protected void postInit()
@@ -151,21 +173,16 @@ public class ConfigurationBackupApp extends NodeBase
     }
 
     /**
-     * Callback from the cron job that it is time
-     * to try a backup.
+     * upload the backup to untangle.com
      */
-    private void doBackup()
+    private void uploadBackup( File backupFile )
     {
-        if ( !isLicenseValid()) {
-            latestEvent = new ConfigurationBackupEvent(false, "No valid license." );
-            this.logEvent(latestEvent);
-            return;
-        }
+            
+        String cmd = System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh" + " -u " + BACKUP_URL + " -v -k " + UvmContextFactory.context().getServerUID() + " -t 180 " + " -f " + backupFile.getAbsoluteFile();
 
-        logger.info("Backing up server to " + BACKUP_URL);
-
-        String cmd = System.getProperty("uvm.bin.dir") + "/configuration-backup-remotebackup.sh" + " -u " + BACKUP_URL + " -v -k " + UvmContextFactory.context().getServerUID() + " -t 180 ";
-
+        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + BACKUP_URL);
+        logger.info("Backup command: " + cmd);
+        
         Integer exitCode = UvmContextFactory.context().execManager().execResult(cmd);
 
         if(exitCode != 0) {
@@ -192,16 +209,52 @@ public class ConfigurationBackupApp extends NodeBase
                 reason = "Unknown error";
             }
             logger.info("Backup failed: " + reason);
-            latestEvent = new ConfigurationBackupEvent(false, reason);
+            latestEvent = new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account"));
         }
         else {
             logger.info("Backup successful.");
-            latestEvent = new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."));
+            latestEvent = new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("My Account"));
         }
 
         this.logEvent(latestEvent);
     }
 
+    /**
+     * upload the backup to untangle.com
+     */
+    private void uploadBackupToGoogleDrive( File backupFile )
+    {
+        String directory = null;
+        if ( settings.getGoogleDriveDirectory() == null || "".equals(settings.getGoogleDriveDirectory()) )
+            directory = "";
+        else
+            directory = "-d \"" + settings.getGoogleDriveDirectory() + "\"";
+        String cmd = "/usr/share/untangle-google-connector/bin/google-drive-upload.py " + directory + " " + backupFile.getAbsoluteFile();
+
+        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to Google Drive");
+        logger.info("Backup command: " + cmd);
+        
+        Integer exitCode = UvmContextFactory.context().execManager().execResult(cmd);
+
+        if(exitCode != 0) {
+            logger.error("Backup returned non-zero error code (" + exitCode + ")");
+
+            String reason = null;
+            switch(exitCode) {
+            default:
+                reason = "Unknown error";
+            }
+            logger.info("Backup failed: " + reason);
+            latestEvent = new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive"));
+        }
+        else {
+            logger.info("Backup successful.");
+            latestEvent = new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive"));
+        }
+
+        this.logEvent(latestEvent);
+    }
+    
     private void writeCronFile()
     {
         // write the cron file for nightly runs

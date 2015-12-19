@@ -13,14 +13,20 @@ public class ConfigurationBackupSettings implements Serializable
 {
     private int hourInDay;
     private int minuteInHour;
-
+    private boolean googleDriveEnabled = true;
+    private String  googleDriveDirectory = "Configuration Backup";
+    
     public ConfigurationBackupSettings() { }
 
     public int getHourInDay() { return hourInDay; }
-
-    public void setHourInDay(int hour) { this.hourInDay = hour; }
+    public void setHourInDay( int newValue ) { this.hourInDay = newValue; }
 
     public int getMinuteInHour() { return minuteInHour; }
+    public void setMinuteInHour( int newValue ) { this.minuteInHour = newValue; }
 
-    public void setMinuteInHour(int mih) { this.minuteInHour = mih; }
+    public boolean getGoogleDriveEnabled() { return googleDriveEnabled; }
+    public void setGoogleDriveEnabledo( boolean newValue ) { this.googleDriveEnabled = newValue; }
+
+    public String getGoogleDriveDirectory() { return googleDriveDirectory; }
+    public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
 }

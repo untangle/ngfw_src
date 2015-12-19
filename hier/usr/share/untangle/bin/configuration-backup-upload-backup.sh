@@ -23,19 +23,20 @@
 # ******************** WARNING  ********************
 # **************************************************
 #
-# As this file is maintained, note that its behavior is bound
-# to com.untangle.node.configuration_backup.BoxBackupImpl.  Any changes
+# As this file is maintained, note that its behavior is bound the
+# configuration backup app.  Any changes
 # this this script should be reflected in that Java code
 #================================================================
 
 # Example:
-#./ut-remotebackup.sh -u http://localhost/boxtrack/configuration-backup/backup.php -k xyz678
+#./ut-remotebackup.sh -u http://localhost/boxtrack/backup/backup.php -k xyz678 -f /tmp/foo.backup
 
 
 # Constants
 TIMEOUT=3
 URL=INVALID
-BOX_KEY=INVALID
+SERVER_UID=INVALID
+BACKUP_FILE=INVALID
 VERBOSE=false
 
 
@@ -50,7 +51,11 @@ function err() {
 }
 
 function doHelp() {
-  echo "$0 -t [timeout] -u [URL] -k [boxKey] -h (help) -v (verbose)"
+    echo "$0 -t <timeout> -u <URL> -k <uid> -f <file>"
+    echo "Options:"
+    echo "    -h       help"
+    echo "    -v       verbose"
+    echo 
 }
 
 # Gets the HTTP status code from the output of CURL.  Note
@@ -68,29 +73,20 @@ function getHTTPStatus() {
 # returns the return of CURL
 function callCurl() {
   debug "Calling CURL.  Dumping headers to $2"
-  curl "$URL" -k -F boxkey="$BOX_KEY" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
+  echo curl "$URL" -k -F boxkey="$SERVER_UID" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT
+  curl "$URL" -k -F boxkey="$SERVER_UID" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
   return $?
-}
-
-
-#
-# 1 = Directory to dump backup files
-#
-function createBackup() {
-  @PREFIX@/usr/share/untangle/bin/ut-backup.sh -o $1
-  DUMP_EXIT=$?
-  debug "Done creating backup with return code $DUMP_EXIT"
-  return $DUMP_EXIT
 }
 
 ####################################
 # "Main" logic starts here
 
-while getopts "ht:k:u:v" opt; do
+while getopts "ht:k:u:f:v" opt; do
   case $opt in
     h) doHelp;exit 0;;
+    f) BACKUP_FILE=$OPTARG;;
     u) URL=$OPTARG;;
-    k) BOX_KEY=$OPTARG;;
+    k) SERVER_UID=$OPTARG;;
     t) TIMEOUT=$OPTARG;;
     v) VERBOSE=true;;
   esac
@@ -101,28 +97,30 @@ if [ "INVALID" == "$URL" ]; then
   exit 1;
 fi
 
-if [ "INVALID" == "$BOX_KEY" ]; then
-  echo "Please provide a box key";
+if [ "INVALID" == "$SERVER_UID" ]; then
+  echo "Please provide a UID";
   exit 1;
 fi
 
-debug "Using URL -" $URL
-debug "Using Box Key - " $BOX_KEY
-debug "Using Timeout - " $TIMEOUT
+if [ "INVALID" == "$BACKUP_FILE" ]; then
+  echo "Please provide a file";
+  exit 1;
+fi
 
-# Tar the contents of the temp directory
-BACKUP_FILE=`mktemp -t ut-remotebackup.XXXXXXXXXX`
-createBackup $BACKUP_FILE
-
+if [ ! -f $BACKUP_FILE ] ; then
+  echo "file missing: $BACKUP_FILE"
+  exit 1
+fi
+    
+debug "File: " $BACKUP_FILE
+debug "URL: " $URL
+debug "UID:" $SERVER_UID
+debug "Timeout: " $TIMEOUT
 
 HEADER_FILE=`mktemp -t ut-remotebackup.XXXXXXXXXX`
 callCurl $BACKUP_FILE $HEADER_FILE
 CURL_RET=$?
 debug "CURL returned $CURL_RET"
-
-# Clean-up tar file
-debug "Deleting Backup file $BACKUP_FILE"
-rm -f $BACKUP_FILE
 
 # Check CURL return codes
 if [ $CURL_RET -eq 7 ]; then
@@ -149,16 +147,17 @@ debug "HTTP status code $RETURN_CODE"
 debug "Remove header file $HEADER_FILE"
 rm -f $HEADER_FILE
 
-# Evaluate HTTP status code
-if [ $RETURN_CODE -eq 401 ];then
-  err "Remote server at URL $URL returned 401"
-  exit 3
+if [ ! -z "$RETURN_CODE" ] ; then
+    # Evaluate HTTP status code
+    if [ $RETURN_CODE -eq 401 ];then
+        err "Remote server at URL $URL returned 401"
+        exit 3
+    fi
+    if [ $RETURN_CODE -eq 403 ];then
+        err "Remote server at URL $URL returned 403"
+        exit 3
+    fi
 fi
-if [ $RETURN_CODE -eq 403 ];then
-  err "Remote server at URL $URL returned 403"
-  exit 3
-fi
-
 
 if [ $RETURN_CODE -gt 200 ]
 then
