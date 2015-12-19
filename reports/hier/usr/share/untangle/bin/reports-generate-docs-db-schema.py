@@ -117,6 +117,7 @@ dict['configuration_backup_events'].update({
     'table_description' : 'This table stores configuration backup events to the untangle cloud',
     'success' : 'The result of the backup (true if the backup succeeded, false otherwise)',
     'description' : 'Text detail of the event',
+    'destination' : 'The location of the backup',
 })
 
 dict['captive_portal_user_events'] = copy.deepcopy(generic)

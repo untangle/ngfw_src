@@ -1850,6 +1850,9 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'description',
                     type: 'string'
+                }, {
+                    name: 'destination',
+                    type: 'string'
                 }],
                 columns: [{
                     header: i18n._("Event Id"),
@@ -1869,6 +1872,11 @@ Ext.define('Ung.TableConfig', {
                     width: 120,
                     sortable: true,
                     dataIndex: 'success'
+                }, {
+                    header: i18n._("Destination"),
+                    width: 100,
+                    sortable: true,
+                    dataIndex: 'destination'
                 }, {
                     header: i18n._("Details"),
                     flex:1,

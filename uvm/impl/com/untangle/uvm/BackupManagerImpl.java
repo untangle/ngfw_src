@@ -29,16 +29,18 @@ import com.untangle.uvm.servlet.DownloadHandler;
 /**
  * Helper class to do backup/restore
  */
-public class BackupManager
+public class BackupManagerImpl implements BackupManager
 {
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
-    private final Logger logger = Logger.getLogger(BackupManager.class);
+    private final Logger logger = Logger.getLogger(BackupManagerImpl.class);
 
     private I18nUtil i18nUtil;
 
-    protected BackupManager()
+    protected BackupManagerImpl()
     {
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new RestoreUploadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new BackupDownloadHandler() );
@@ -47,13 +49,13 @@ public class BackupManager
         this.i18nUtil = new I18nUtil(i18nMap);
     }
     
-    private File createBackup() 
+    public File createBackup() 
     {
         File tempFile = null;
         
         try {
             //Create the temp file which will be the tar
-            tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
+            tempFile = new File("/tmp/" + createBackupFileName() + ".tar.gz" );
 
             Integer result = UvmContextFactory.context().execManager().execResult(BACKUP_SCRIPT + " -o " + tempFile.getAbsolutePath() +" -v");
 
@@ -109,6 +111,17 @@ public class BackupManager
         return new ExecManagerResult( 0, i18nUtil.tr("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."));
     }
 
+    private static String createBackupFileName()
+    {
+        String oemName = UvmContextFactory.context().oemManager().getOemName();
+        String version = UvmContextFactory.context().version().replace(".","_");
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
+        String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
+        String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
+
+        return filename;
+    }
+
     private class RestoreUploadHandler implements UploadHandler
     {
         @Override
@@ -127,9 +140,6 @@ public class BackupManager
 
     private class BackupDownloadHandler implements DownloadHandler
     {
-        private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
-        private static final String ATTR_BACKUP_DATA = "backupData";
-
         @Override
         public String getName()
         {
@@ -139,17 +149,11 @@ public class BackupManager
         @Override
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
-            String oemName = UvmContextFactory.context().oemManager().getOemName();
-            String version = UvmContextFactory.context().version().replace(".","_");
-            String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
-            String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
-            String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
-
             File backupFile = createBackup();
             
             // Set the headers.
             resp.setContentType("application/x-download");
-            resp.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            resp.setHeader("Content-Disposition", "attachment; filename=" + createBackupFileName());
 
             // Send to client
             try {

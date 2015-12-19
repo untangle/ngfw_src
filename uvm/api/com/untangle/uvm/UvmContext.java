@@ -167,6 +167,13 @@ public interface UvmContext
      * @return the AlertManager.
      */
     AlertManager alertManager();
+
+    /**
+     * Get the <code>BackupManager</code> singleton.
+     *
+     * @return the BackupManager.
+     */
+    BackupManager backupManager();
     
     /**
      * Get the NetcapManager

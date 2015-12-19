@@ -90,7 +90,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private OemManagerImpl oemManager;
     private AlertManagerImpl alertManager;
     private SessionMonitorImpl sessionMonitor;
-    private BackupManager backupManager;
+    private BackupManagerImpl backupManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private SystemManagerImpl systemManager;
@@ -246,6 +246,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.alertManager;
     }
 
+    public BackupManager backupManager()
+    {
+        return this.backupManager;
+    }
+    
     public PipelineFoundryImpl pipelineFoundry()
     {
         return this.pipelineFoundry;
@@ -765,7 +770,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.languageManager = new LanguageManagerImpl();
 
-        this.backupManager = new BackupManager();
+        this.backupManager = new BackupManagerImpl();
 
         this.oemManager = new OemManagerImpl();
 
