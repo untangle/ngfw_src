@@ -12,10 +12,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
@@ -105,8 +104,13 @@ public class ConfigurationBackupApp extends NodeBase
 
         uploadBackup( backupFile );
 
-        if ( settings.getGoogleDriveEnabled() )
+        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        
+        if ( settings.getGoogleDriveEnabled() &&
+             UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR) &&
+             directoryConnector.isGoogleDriveConnected()) {
             uploadBackupToGoogleDrive( backupFile );
+        }
         
         try {
             backupFile.delete();
