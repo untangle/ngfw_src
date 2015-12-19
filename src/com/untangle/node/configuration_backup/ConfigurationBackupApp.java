@@ -102,12 +102,19 @@ public class ConfigurationBackupApp extends NodeBase
             return;
         }
 
+        /**
+         * Upload to untangle.com
+         */
         uploadBackup( backupFile );
 
+        /**
+         * If google drive is enabled and licensed and configured
+         * upload to google drive
+         */
         DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
-        
         if ( settings.getGoogleDriveEnabled() &&
              UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR) &&
+             directoryConnector != null &&
              directoryConnector.isGoogleDriveConnected()) {
             uploadBackupToGoogleDrive( backupFile );
         }
