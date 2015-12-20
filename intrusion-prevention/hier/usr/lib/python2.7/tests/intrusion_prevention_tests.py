@@ -214,7 +214,6 @@ class IntrusionPreventionInterface:
         """
         Count variables
         """
-        print settings["variables"]["list"]
         count = 0
         for rule in settings["variables"]["list"]:
             count = count + 1
