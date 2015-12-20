@@ -428,7 +428,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 items: [{
                     xtype: 'component',
                     margin: '0 0 5 0',
-                    html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                    html: i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements.")
                 },{
                     xtype: 'numberfield',
                     fieldLabel: i18n._('Data Retention days'),

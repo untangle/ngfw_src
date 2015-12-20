@@ -75,7 +75,7 @@ public class AlertHandler
             I18nUtil.marktr("Alert!") +
             " [" + hostName + "] ";
 
-        String messageBody = I18nUtil.marktr("An following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
+        String messageBody = I18nUtil.marktr("The following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
             "\r\n\r\n" +
             rule.getDescription() + ":" + "\r\n" +
             event.toSummaryString() +
