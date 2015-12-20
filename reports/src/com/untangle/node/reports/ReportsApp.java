@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.SettingsManager;
@@ -33,6 +34,7 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -45,8 +47,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final Logger logger = Logger.getLogger(ReportsApp.class);
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
-    private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.home") + "/bin/reports-generate-tables.py";
-    private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reports-generate-reports.py";
+    private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
+    private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
+    private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
@@ -69,6 +72,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
     }
 
     public void setSettings( final ReportsSettings newSettings )
@@ -501,6 +505,28 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
+    private int restoreData( FileItem item )
+    {
+        try {
+            //validate zip
+            if (!item.getName().endsWith(".gz")) {
+                throw new RuntimeException("Invalid name: " + item.getName());
+            }
+
+            String filename = "/tmp/reports_restore_data.sql.gz";
+            File file = new File(filename);
+            if (file.exists())
+                file.delete();
+            item.write( file );
+
+            String cmd = REPORTS_RESTORE_DATA_SCRIPT + " -f " + filename;
+            return UvmContextFactory.context().execManager().execResult(cmd);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new RuntimeException("Restore Data Failed");
+        }
+    }
+
     public class PerformanceTest implements Runnable
     {
         public void run()
@@ -703,4 +729,31 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             }
         }
     }
+
+    private class ReportsDataRestoreUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "reportsDataRestore";
+        }
+        
+        @Override
+        public String handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            try {
+                int ret = restoreData(fileItem);
+
+                if ( ret == 0 ) {
+                    return I18nUtil.marktr("Successfully restored data");
+                } else {
+                    return I18nUtil.marktr("Error restoring data: " + ret);
+                }
+                    
+            } catch ( Exception e ) {
+                return I18nUtil.marktr("Error restoring data:") + " " + e.toString();
+            }
+         }
+    }
+    
 }

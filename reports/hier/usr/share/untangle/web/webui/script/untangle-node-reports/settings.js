@@ -456,7 +456,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 items: [{
                     xtype: 'container',
                     margin: '5 0 15 20',
-                    html: i18n._('If enabled, Configuration Backup uploads backup files to Google Drive.')
+                    html: i18n._('If enabled, Configuration Backup uploads reports data backup files to Google Drive.')
                 }, {
                     xtype: 'component',
                     html: (this.googleDriveConfigured ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
@@ -495,6 +495,34 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             this.getSettings().googleDriveDirectory = checked;
                         }, this)
                     }
+                }]
+            },{
+                title: i18n._("Import / Restore Data Backup Files"),
+                labelWidth: 150,
+                items: [{
+                    xtype: 'form',
+                    name: 'uploadDataForm',
+                    url: 'upload',
+                    border: false,
+                    items: [{
+                        xtype: 'filefield',
+                        fieldLabel: i18n._('File'),
+                        name: 'uploadDataFile',
+                        width: 500,
+                        labelWidth: 50,
+                        allowBlank: false,
+                        validateOnBlur: false
+                    },{
+                        xtype: 'button',
+                        text: i18n._("Upload"),
+                        handler: Ext.bind(function() {
+                            this.panelData.onUpload();
+                        }, this)
+                    },{
+                        xtype: 'hidden',
+                        name: 'type',
+                        value: 'reportsDataRestore'
+                    }]
                 }]
             },{
                 title: i18n._('Data'),
@@ -569,7 +597,24 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         }, this )
                     }
                 }]
-            }]
+            }],
+            onUpload: Ext.bind(function() {
+                var form = this.panelData.down('form[name="uploadDataForm"]');
+                form.submit({
+                    waitMsg: i18n._('Please wait while data is imported...'),
+                    success: Ext.bind(function( form, action ) {
+                        var filefield = this.panelData.down('filefield[name="uploadDataFile"]');
+                        if ( filefield) {
+                            filefield.reset();
+                        }
+                        Ext.MessageBox.alert( i18n._("Succeeded"), i18n._("Upload Data Succeeded"));
+                    }, this ),
+                    failure: Ext.bind(function( form, action ) {
+                        var errorMsg = i18n._("Upload Data Failed") + " " + action.result;
+                        Ext.MessageBox.alert(i18n._("Failed"), errorMsg);
+                    }, this )
+                });
+            }, this)
         });
     },
     // Hostname Map grid

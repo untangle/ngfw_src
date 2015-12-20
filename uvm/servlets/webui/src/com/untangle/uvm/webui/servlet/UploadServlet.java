@@ -58,6 +58,7 @@ public class UploadServlet extends HttpServlet
                     if ( handler == null ) {
                         result = "Do not know how to handler the type '" + uploadType + "'";
                         logger.error("Unable to handle an upload of type: " + uploadType );
+                        createResponse(resp, false, "Unable to handle an upload of type: " + uploadType);
                     } else {
                         result = handler.handleFile(item, arg);
                     }                    
