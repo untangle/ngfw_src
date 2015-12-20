@@ -39,6 +39,9 @@ public class ReportsSettings implements Serializable, JSONString
 
     private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
     private LinkedList<EventEntry> eventEntries  = new LinkedList<EventEntry>();
+
+    private boolean googleDriveEnabled = false;
+    private String  googleDriveDirectory = "Reports Backups";
     
     public ReportsSettings() { }
 
@@ -60,7 +63,7 @@ public class ReportsSettings implements Serializable, JSONString
     public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
     public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
     
-    public boolean isSyslogEnabled() { return syslogEnabled; }
+    public boolean getSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
 
     public LinkedList<ReportEntry> getReportEntries() { return reportEntries; }
@@ -68,7 +71,6 @@ public class ReportsSettings implements Serializable, JSONString
 
     public LinkedList<EventEntry> getEventEntries() { return eventEntries; }
     public void setEventEntries( LinkedList<EventEntry> newValue ) { this.eventEntries = newValue; }
-    
 
     /**
      * Syslog destination hostname.
@@ -103,6 +105,12 @@ public class ReportsSettings implements Serializable, JSONString
     public String getDbName() { return dbName; }
     public void setDbName( String dbName ) { this.dbName = dbName; }
     
+    public boolean getGoogleDriveEnabled() { return googleDriveEnabled; }
+    public void setGoogleDriveEnabled( boolean newValue ) { this.googleDriveEnabled = newValue; }
+
+    public String getGoogleDriveDirectory() { return googleDriveDirectory; }
+    public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

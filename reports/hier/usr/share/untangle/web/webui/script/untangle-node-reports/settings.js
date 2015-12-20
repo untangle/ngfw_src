@@ -5,7 +5,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     panelStatus: null,
     panelEmail: null,
     panelSyslog: null,
-    panelDatabase: null,
+    panelData: null,
     gridReportsUsers: null,
     gridHostnameMap: null,
     gridReportEntries: null,
@@ -18,9 +18,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildAlertRules();
-        this.buildDatabase();
+        this.buildData();
 
-        var panels = [this.panelStatus, this.gridReportEntries, this.panelDatabase, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.panelStatus, this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
         
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -393,11 +393,30 @@ Ext.define('Webui.untangle-node-reports.settings', {
         });
     },
     // database panel
-    buildDatabase: function() {
-        this.panelDatabase = Ext.create('Ext.panel.Panel',{
-            name: 'Database',
-            // helpSource: 'reports_database', //DISABLED
-            title: i18n._('Database'),
+    buildData: function() {
+        var directoryConnectorLicense;
+        try {
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-adconnector") || Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        var directoryConnectorNode;
+        try {
+            directoryConnectorNode = rpc.nodeManager.node("untangle-node-directory-connector");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        this.googleDriveConfigured =
+            directoryConnectorLicense != null &&
+            directoryConnectorLicense &&
+            directoryConnectorNode != null &&
+            directoryConnectorNode.getGoogleManager() != null &&
+            directoryConnectorNode.getGoogleManager().isGoogleDriveConnected();
+
+        this.panelData = Ext.create('Ext.panel.Panel',{
+            name: 'Data',
+            // helpSource: 'reports_data', //DISABLED
+            title: i18n._('Data'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -432,7 +451,53 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 }]
             },{
-                title: i18n._('Database'),
+                title: i18n._("Google Drive Backup"),
+                labelWidth: 150,
+                items: [{
+                    xtype: 'container',
+                    margin: '5 0 15 20',
+                    html: i18n._('If enabled, Configuration Backup uploads backup files to Google Drive.')
+                }, {
+                    xtype: 'component',
+                    html: (this.googleDriveConfigured ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
+                    style: (this.googleDriveConfigured ? {color:'green'} : {color:'red'}),
+                    cls: (this.googleDriveConfigured ? null : 'warning')
+                }, {
+                    xtype: "button",
+                    disabled: this.googleDriveConfigured,
+                    name: "configureGoogleDrive",
+                    text: i18n._("Configure Google Drive"),
+                    handler: Ext.bind(this.configureGoogleDrive, this )
+                },{
+                    xtype: "checkbox",
+                    style: {marginTop: '15px'},
+                    disabled: !this.googleDriveConfigured,
+                    boxLabel: i18n._("Upload to Google Drive"),
+                    tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
+                    hideLabel: true,
+                    checked: this.getSettings().googleDriveEnabled,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.getSettings().googleDriveEnabled = checked;
+                        }, this)
+                    }
+                },{
+                    xtype: "textfield",
+                    disabled: !this.googleDriveConfigured,
+                    regex: /^[\w\. ]+$/,
+                    regexText: i18n._("The field can have only alphanumerics, spaces, or periods."),
+                    fieldLabel: i18n._("Google Drive Directory"),
+                    labelWidth: 150,
+                    tooltip: i18n._("The destination directory in google drive."),
+                    value: this.getSettings().googleDriveDirectory,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.getSettings().googleDriveDirectory = checked;
+                        }, this)
+                    }
+                }]
+            },{
+                title: i18n._('Data'),
                 height: 350,
                 hidden: !rpc.isExpertMode,
                 items: [{
@@ -925,6 +990,16 @@ Ext.define('Webui.untangle-node-reports.settings', {
     validate: function () {
         var components = this.query("component[toValidate]");
         return this.validateComponents(components);
+    },
+    // There is no way to select the google tab because we don't get a callback once the settings are loaded.
+    configureGoogleDrive: function() {
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                nodeCmp.loadSettings();
+            }
+        }
     }
 });
 //# sourceURL=reports-settings.js

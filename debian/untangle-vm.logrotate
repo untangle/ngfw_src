@@ -61,7 +61,7 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/reporter.log {
+/var/log/uvm/reports.log {
 rotate 2
 size 500k
 compress

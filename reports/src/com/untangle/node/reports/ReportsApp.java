@@ -44,9 +44,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     
     private static final Logger logger = Logger.getLogger(ReportsApp.class);
 
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.home") + "/bin/reports-generate-tables.py";
     private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reports-generate-reports.py";
-    private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reporter.log";
+    private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
@@ -454,9 +455,20 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     {
         // write the cron file for nightly runs
         String cronStr = "#!/bin/sh" + "\n" +
-            "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " > /dev/null 2>&1" + "\n" +
-            "/usr/share/untangle/bin/reports-generate-tables.py > /dev/null 2>&1" + "\n";
+            "/usr/share/untangle/bin/reports-generate-tables.py >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            "/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh >> /var/log/uvm/reports.log 2>&1" + "\n";
+
+        if ( settings.getGoogleDriveEnabled() ) {
+            String dir = settings.getGoogleDriveDirectory();
+            if ( dir != null )
+                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
+            else
+                dir = "";
             
+            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-tables.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+        }
+        
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));

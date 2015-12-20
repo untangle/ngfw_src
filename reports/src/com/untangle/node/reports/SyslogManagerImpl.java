@@ -52,7 +52,7 @@ public class SyslogManagerImpl
 
     public static void reconfigure(ReportsSettings reportsSettings)
     {
-        if (reportsSettings != null && reportsSettings.isSyslogEnabled()) {
+        if (reportsSettings != null && reportsSettings.getSyslogEnabled()) {
             enabled = true;
             String hostname = reportsSettings.getSyslogHost();
             int port = reportsSettings.getSyslogPort();
@@ -97,7 +97,7 @@ public class SyslogManagerImpl
     public static void setEnabled(ReportsSettings reportsSettings)
     {
         enabled = 
-            ( reportsSettings != null && reportsSettings.isSyslogEnabled()) 
+            ( reportsSettings != null && reportsSettings.getSyslogEnabled()) 
             ? true : false;
     }
 }

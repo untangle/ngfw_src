@@ -3,5 +3,6 @@
 rm -f /etc/cron.d/untangle-reports-nightly #12.0
 rm -f /etc/cron.daily/untangle-vacuum #12.0
 rm -f /etc/cron.daily/untangle-clean  #12.0
+rm -f /var/log/uvm/reporter.log  #12.0
 
 exit 0
