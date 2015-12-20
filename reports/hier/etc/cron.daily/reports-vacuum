@@ -1,3 +1,0 @@
-#/bin/sh
-
-/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh > /dev/null 2>&1

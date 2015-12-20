@@ -463,15 +463,25 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
             "/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh >> /var/log/uvm/reports.log 2>&1" + "\n";
 
-        if ( settings.getGoogleDriveEnabled() ) {
+        if ( settings.getGoogleDriveUploadData() ) {
             String dir = settings.getGoogleDriveDirectory();
             if ( dir != null )
                 dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
             else
                 dir = "";
             
-            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-tables.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-data.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
         }
+        if ( settings.getGoogleDriveUploadCsv() ) {
+            String dir = settings.getGoogleDriveDirectory();
+            if ( dir != null )
+                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
+            else
+                dir = "";
+            
+            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-csv.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+        }
+
         
         BufferedWriter out = null;
         try {

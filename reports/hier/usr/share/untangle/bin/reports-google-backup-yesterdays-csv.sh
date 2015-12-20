@@ -16,14 +16,16 @@ while getopts "d:f:h" opt; do
   esac
 done
 
+YESTERDAY="`date --date='1 days ago' '+%Y_%m_%d'`"
+
 if [ -z "$FILENAME" ] ; then
     HOSTNAME="`cat /etc/hostname | sed -e 's/\s+/_/g' | sed -e 's/\./_/g'`"
-    YESTERDAY="`date --date='1 days ago' '+%Y_%m_%d'`"
-    FILENAME="${HOSTNAME}-reports-${YESTERDAY}.sql.gz"
+    FILENAME="${HOSTNAME}-reports_csv-${YESTERDAY}.zip"
 fi
 
-echo "Creating backup: /tmp/$FILENAME" 
-@PREFIX@/usr/share/untangle/bin/reports-create-backup.sh -r "*$YESTERDAY*" -f /tmp/$FILENAME
+echo "Creating zip: /tmp/$FILENAME" 
+echo @PREFIX@/usr/share/untangle/bin/reports-create-csv.sh -r "$YESTERDAY" -f /tmp/$FILENAME -d $YESTERDAY
+@PREFIX@/usr/share/untangle/bin/reports-create-csv.sh -r "$YESTERDAY" -f /tmp/$FILENAME -d $YESTERDAY
 
 DEST_DIR="/var/lib/google-drive/$DIR/"
 mkdir -p "$DEST_DIR"

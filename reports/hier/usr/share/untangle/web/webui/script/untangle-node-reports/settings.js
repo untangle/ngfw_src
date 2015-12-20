@@ -464,21 +464,33 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     cls: (this.googleDriveConfigured ? null : 'warning')
                 }, {
                     xtype: "button",
+                    style: {marginBottom: '15px'},
                     disabled: this.googleDriveConfigured,
                     name: "configureGoogleDrive",
                     text: i18n._("Configure Google Drive"),
                     handler: Ext.bind(this.configureGoogleDrive, this )
                 },{
                     xtype: "checkbox",
-                    style: {marginTop: '15px'},
                     disabled: !this.googleDriveConfigured,
-                    boxLabel: i18n._("Upload to Google Drive"),
+                    boxLabel: i18n._("Upload Data to Google Drive"),
                     tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
                     hideLabel: true,
-                    checked: this.getSettings().googleDriveEnabled,
+                    checked: this.getSettings().googleDriveUploadData,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
-                            this.getSettings().googleDriveEnabled = checked;
+                            this.getSettings().googleDriveUploadData = checked;
+                        }, this)
+                    }
+                },{
+                    xtype: "checkbox",
+                    disabled: !this.googleDriveConfigured,
+                    boxLabel: i18n._("Upload CSVs to Google Drive"),
+                    tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
+                    hideLabel: true,
+                    checked: this.getSettings().googleDriveUploadCsv,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.getSettings().googleDriveUploadCsv = checked;
                         }, this)
                     }
                 },{

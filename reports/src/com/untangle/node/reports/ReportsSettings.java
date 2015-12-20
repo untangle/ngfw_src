@@ -40,7 +40,8 @@ public class ReportsSettings implements Serializable, JSONString
     private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
     private LinkedList<EventEntry> eventEntries  = new LinkedList<EventEntry>();
 
-    private boolean googleDriveEnabled = false;
+    private boolean googleDriveUploadData = false;
+    private boolean googleDriveUploadCsv = false;
     private String  googleDriveDirectory = "Reports Backups";
     
     public ReportsSettings() { }
@@ -105,9 +106,12 @@ public class ReportsSettings implements Serializable, JSONString
     public String getDbName() { return dbName; }
     public void setDbName( String dbName ) { this.dbName = dbName; }
     
-    public boolean getGoogleDriveEnabled() { return googleDriveEnabled; }
-    public void setGoogleDriveEnabled( boolean newValue ) { this.googleDriveEnabled = newValue; }
+    public boolean getGoogleDriveUploadData() { return googleDriveUploadData; }
+    public void setGoogleDriveUploadData( boolean newValue ) { this.googleDriveUploadData = newValue; }
 
+    public boolean getGoogleDriveUploadCsv() { return googleDriveUploadCsv; }
+    public void setGoogleDriveUploadCsv( boolean newValue ) { this.googleDriveUploadCsv = newValue; }
+    
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
 
