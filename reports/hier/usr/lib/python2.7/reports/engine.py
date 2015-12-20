@@ -107,8 +107,7 @@ def reports_cleanup(cutoff):
             logger.info("Cleaning data for %s" % (name,))
             node.reports_cleanup(cutoff)
         except:
-            logger.warn('could not cleanup reports for: %s' % name,
-                         exc_info=True)
+            logger.warn('could not cleanup reports for: %s' % name, exc_info=True)
 
 @sql_helper.print_timing
 def init_engine(node_module_dir):

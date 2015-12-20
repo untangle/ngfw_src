@@ -236,6 +236,8 @@ def create_schema(schema):
     run_sql(sql)
 
 def clean_table(tablename, cutoff):
+    logger.info("clean_table " + str(tablename) + " < " + str(cutoff))
+    
     for t, date in find_table_partitions(tablename):
         if date < cutoff:
             logger.info("DROP TABLE " + str(t))

@@ -37,6 +37,8 @@ except:
      usage()
      
 reports_cutoff = mx.DateTime.today() - mx.DateTime.DateTimeDelta(db_retention)
+
+reports.engine.init_engine(NODE_MODULE_DIR)
 reports.engine.reports_cleanup(reports_cutoff)     
     
 
