@@ -14,7 +14,7 @@ public class ConfigurationBackupSettings implements Serializable
     private int hourInDay;
     private int minuteInHour;
     private boolean googleDriveEnabled = true;
-    private String  googleDriveDirectory = "Configuration Backup";
+    private String  googleDriveDirectory = "Configuration Backups";
     
     public ConfigurationBackupSettings() { }
 
