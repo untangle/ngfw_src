@@ -31,7 +31,7 @@ import com.untangle.uvm.servlet.DownloadHandler;
  */
 public class BackupManagerImpl implements BackupManager
 {
-    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm";
 
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
@@ -113,11 +113,11 @@ public class BackupManagerImpl implements BackupManager
 
     private static String createBackupFileName()
     {
-        String oemName = UvmContextFactory.context().oemManager().getOemName();
         String version = UvmContextFactory.context().version().replace(".","_");
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".","_");
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName().replace(".","_");
         String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
-        String filename = oemName + "-" + version + "-" + "backup" + "-" + hostName + "-" + dateStr + ".backup";
+        String filename = hostName + "_" + domainName + "-" + "configuration_backup" + "_v" + version + "-" + dateStr + ".backup";
 
         return filename;
     }

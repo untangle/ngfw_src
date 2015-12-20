@@ -19,7 +19,7 @@ done
 if [ -z "$FILENAME" ] ; then
     HOSTNAME="`cat /etc/hostname | sed -e 's/\s+/_/g' | sed -e 's/\./_/g'`"
     YESTERDAY="`date --date='1 days ago' '+%Y_%m_%d'`"
-    FILENAME="${HOSTNAME}_reports_${YESTERDAY}.sql.gz"
+    FILENAME="${HOSTNAME}-reports-${YESTERDAY}.sql.gz"
 fi
 
 echo "Creating backup: /tmp/$FILENAME" 
