@@ -472,7 +472,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 width: 120,
                 items: [{
                     tooltip: i18n._("Click to download client"),
-                    iconCls: 'icon-download-row',
+                    iconCls: 'icon-row icon-export',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         if(record.data.internalId<0) {
                             Ext.MessageBox.alert(i18n._("Failed"), i18n._("New clients must be saved before downloading the client."));

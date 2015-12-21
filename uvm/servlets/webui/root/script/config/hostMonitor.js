@@ -449,7 +449,7 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 120,
                 items: [{
                     tooltip: i18n._("Release host"),
-                    iconCls: 'icon-play-row',
+                    iconCls: 'icon-row icon-play',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         Ext.MessageBox.wait(i18n._("Releasing host..."), i18n._("Please wait"));
                         rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
@@ -520,7 +520,7 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 110,
                 items: [{
                     tooltip: i18n._("Refill Quota"),
-                    iconCls: 'icon-refresh-row',
+                    iconCls: 'icon-row icon-refresh',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         Ext.MessageBox.wait(i18n._("Refilling..."), i18n._("Please wait"));
                         rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
@@ -536,7 +536,7 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 110,
                 items: [{
                     tooltip: i18n._("Drop Quota"),
-                    iconCls: 'icon-drop-row',
+                    iconCls: 'icon-row icon-drop',
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         Ext.MessageBox.wait(i18n._("Removing Quota..."), i18n._("Please wait"));
                         rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {

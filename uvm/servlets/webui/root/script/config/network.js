@@ -724,7 +724,7 @@ Ext.define('Webui.config.network', {
                 if( record.get("configType") === "DISABLED") {
                     return 'x-hide-display';
                 } else if( record.get("isWirelessInterface")) {
-                    return 'icon-wireless';
+                    return 'icon-row icon-wireless';
                 } else {
                     return 'icon-detail-row';
                 }
@@ -3774,7 +3774,7 @@ Ext.define('Webui.config.network', {
         var addStaticColumn = Ext.create('Ext.grid.column.Action',{
             header: i18n._("Add Static"),
             width: 100,
-            iconCls: 'icon-add-inline-row',
+            iconCls: 'icon-row icon-add-inline-row',
             init: function(grid) {
                 this.grid = grid;
             },
@@ -4880,59 +4880,6 @@ Ext.define('Webui.config.network', {
     },
     // Troubleshooting Panel
     buildTroubleshooting: function() {
-        var settingsCmp = this;
-        this.gridNetworkTests = Ext.create( 'Ung.grid.Panel', {
-            name: 'Network Cards',
-            settingsCmp: this,
-            header: false,
-            hasAdd: false,
-            hasDelete: false,
-            hasEdit: false,
-            storeData: [{
-                divClass : "ua-cell-test-connectivity",
-                action : "openConnectivityTest",
-                name : i18n._( "Connectivity Test" )
-            },{
-                divClass : "ua-cell-test-ping",
-                action : "openPingTest",
-                name : i18n._( "Ping Test" )
-            },{
-                divClass : "ua-cell-test-dns",
-                action : "openDnsTest",
-                name : i18n._( "DNS Test" )
-            },{
-                divClass : "ua-cell-test-tcp",
-                action : "openTcpTest",
-                name : i18n._( "Connection Test" )
-            },{
-                divClass : "ua-cell-test-traceroute",
-                action : "openTracerouteTest",
-                name : i18n._( "Traceroute Test" )
-            },{
-                divClass : "ua-cell-test-download",
-                action : "openDownloadTest",
-                name : i18n._( "Download Test" )
-            },{
-                divClass : "ua-cell-test-packet",
-                action : "openPacketTest",
-                name : i18n._( "Packet Test" )
-            }],
-            fields: [{
-                name: 'name'
-            }, {
-                name: 'divClass'
-            }, {
-                name: 'action'
-            }],
-            columns: [{
-                header: i18n._("Network Tests"),
-                flex: 1,
-                dataIndex: 'name',
-                renderer: Ext.bind(function( value, metadata, record ) {
-                    return "<a href='/' onClick='Ung.NetworkSettingsCmp." + record.get("action") + "();return false;'><div class=' ua-cell-test " + record.get("divClass") + "'>" + value + "</div></a>";
-                }, this )
-            }]
-        });
         this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
             name: 'Troubleshooting',
             helpSource: 'network_troubleshooting',
@@ -4941,8 +4888,59 @@ Ext.define('Webui.config.network', {
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                title: i18n._('Network Tests')
-            }, this.gridNetworkTests]
+                title: i18n._('Network Tests'),
+                layout: 'vbox',
+                defaults: {
+                    xtype: 'button',
+                    width: 200,
+                    margin: '10 0 0 0',
+                    textAlign: 'left',
+                    scope: this
+                },
+                items: [{
+                    text: i18n._( "Connectivity Test" ),
+                    iconCls: 'icon-test-connectivity',
+                    handler: function() {
+                        this.openConnectivityTest();
+                    }
+                }, {
+                    text: i18n._( "Ping Test" ),
+                    iconCls: "icon-test-ping",
+                    handler: function() {
+                        this.openPingTest();
+                    }
+                },{
+                    text: i18n._( "DNS Test" ),
+                    iconCls: "icon-test-dns",
+                    handler: function() {
+                        this.openDnsTest();
+                    }
+                },{
+                    text: i18n._( "Connection Test" ),
+                    iconCls: "icon-test-tcp",
+                    handler: function() {
+                        this.openTcpTest();
+                    }
+                },{
+                    text: i18n._( "Traceroute Test" ),
+                    iconCls: "icon-test-traceroute",
+                    handler: function() {
+                        this.openTracerouteTest();
+                    }
+                },{
+                    text: i18n._( "Download Test" ),
+                    iconCls: "icon-test-download",
+                    handler: function() {
+                        this.openDownloadTest();
+                    }
+                },{
+                    text: i18n._( "Packet Test" ),
+                    iconCls: "icon-test-packet",
+                    handler: function() {
+                        this.openPacketTest();
+                    }
+                }]
+            }]
         });
     },
     openConnectivityTest: function() {

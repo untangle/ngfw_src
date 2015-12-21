@@ -759,7 +759,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: 'actioncolumn',
                     width: 70,
                     items: [{
-                        iconCls: 'icon-play-row',
+                        iconCls: 'icon-row icon-play',
                         tooltip: i18n._('View Report'),
                         handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                             this.viewReport(Ext.clone(record.getData()));

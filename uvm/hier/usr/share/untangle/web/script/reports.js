@@ -662,7 +662,7 @@ Ext.define('Ung.panel.Reports', {
                 menuDisabled: true,
                 width: 20,
                 items: [{
-                    iconCls: 'icon-filter-row',
+                    iconCls: 'icon-row icon-filter',
                     tooltip: i18n._('Add Condition'),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         this.buildWindowAddCondition();
