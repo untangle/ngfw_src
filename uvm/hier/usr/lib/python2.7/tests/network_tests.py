@@ -826,8 +826,9 @@ class NetworkTests(unittest2.TestCase):
     # Test static DNS entry
     def test_090_DNS(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
+        global wan_IP
         nukeDNSRules()
-        result = remote_control.runCommand("host -R3 -4 test.untangle.com", stdout=True)
+        result = remote_control.runCommand("host -R3 -4 test.untangle.com " + wan_IP, stdout=True)
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = (match.group()).replace('address ','')
