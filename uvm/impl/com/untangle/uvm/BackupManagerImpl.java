@@ -31,7 +31,7 @@ import com.untangle.uvm.servlet.DownloadHandler;
  */
 public class BackupManagerImpl implements BackupManager
 {
-    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm";
+    private static final String DATE_FORMAT_NOW = "yyyy_MM_dd_HH_mm";
 
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
