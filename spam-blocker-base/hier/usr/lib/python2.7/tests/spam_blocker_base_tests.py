@@ -247,9 +247,6 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
         if (externalClientResult != 0):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
-        # Get latest TLS test command file
-        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
-        assert(testCopyResult == 0)
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
         tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
@@ -268,9 +265,6 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
         if (externalClientResult != 0):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
-        # Get latest TLS test command file
-        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
-        assert(testCopyResult == 0)
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['allowTls'] = False
         node.setSettings(nodeData)
