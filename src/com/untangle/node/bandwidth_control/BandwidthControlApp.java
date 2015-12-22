@@ -17,13 +17,12 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.BandwidthControl;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeBase;
 
-public class BandwidthControlApp extends NodeBase implements BandwidthControl
+public class BandwidthControlApp extends NodeBase
 {
     public static final String STAT_PRIORITIZE = "prioritize";
     public static final String STAT_QUOTA_EXCEEDED = "quota-exceeded";
@@ -312,7 +311,8 @@ public class BandwidthControlApp extends NodeBase implements BandwidthControl
     {
         public void enteringPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address); }
         public void exitingPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address); }
-        public void quotaGiven( InetAddress address ) { }
+        public void quotaGiven( InetAddress address ) { reprioritizeHostSessions(address); }
+        public void quotaExceeded( InetAddress address ) { reprioritizeHostSessions(address); }
         public void quotaRemoved( InetAddress address ) { reprioritizeHostSessions(address); }
     }
 
