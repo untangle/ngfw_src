@@ -1,7 +1,7 @@
 {
     "category": "Configuration Backup",
     "conditions": [],
-    "defaultColumns": ["time_stamp","success","description"],
+    "defaultColumns": ["time_stamp","success","destination","description"],
     "description": "All Configuration Backup events.",
     "displayOrder": 10,
     "javaClass": "com.untangle.node.reports.EventEntry",
