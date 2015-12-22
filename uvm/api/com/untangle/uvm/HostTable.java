@@ -141,6 +141,7 @@ public interface HostTable
     {
         public void enteringPenaltyBox( InetAddress addr );
         public void exitingPenaltyBox( InetAddress addr );
+        public void quotaExceeded( InetAddress addr );
         public void quotaGiven( InetAddress addr );
         public void quotaRemoved( InetAddress addr );
     }

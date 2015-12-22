@@ -23,7 +23,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
-import com.untangle.uvm.node.BandwidthControl;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -255,8 +254,6 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( 0 );
         entry.setQuotaExpirationTime( 0 );
 
-        reprioritizeHostSessions( address );
-        
         /**
          * Call listeners
          */
@@ -339,7 +336,14 @@ public class HostTableImpl implements HostTable
             return;
 
         entry.setQuotaRemaining( entry.getQuotaSize() );
-        reprioritizeHostSessions( address );
+
+        for ( HostTableListener listener : this.listeners ) {
+            try {
+                listener.quotaGiven( address );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
     }
 
     public synchronized boolean decrementQuota( InetAddress address, long bytes )
@@ -364,7 +368,15 @@ public class HostTableImpl implements HostTable
 
         if ( remaining > 0 && newRemaning <= 0 ) {
             logger.info("Host " + address.getHostAddress() + " exceeded quota.");
-            reprioritizeHostSessions( address );
+
+            for ( HostTableListener listener : this.listeners ) {
+                try {
+                    listener.quotaExceeded( address );
+                } catch ( Exception e ) {
+                    logger.error( "Exception calling listener", e );
+                }
+            }
+            
             UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
             return true;
         }
@@ -567,20 +579,6 @@ public class HostTableImpl implements HostTable
         t.setDaemon(true);
         t.start();
         return;
-    }
-
-    private void reprioritizeHostSessions(InetAddress addr)
-    {
-        List<Node> bandwidthControls = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-bandwidth-control");
-
-        for ( Node app : bandwidthControls ) {
-            try {
-                BandwidthControl bc = ( (BandwidthControl)app );
-                bc.reprioritizeHostSessions( addr );
-            } catch (Exception e) {
-                logger.warn("Failed to call reprioritizeHostSessions.",e);
-            }
-        }
     }
 
     /**
