@@ -6,6 +6,8 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     gridEventLog: null,
 
     initComponent: function(container, position) {
+        this.buildRefreshTask();
+        
         this.buildUserNotificationApi();
         this.buildActiveDirectoryConnector();
         this.buildRadius();
@@ -13,8 +15,52 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
         this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelGoogle, this.panelRadius]);
         this.callParent(arguments);
+
     },
 
+    buildRefreshTask: function() {
+        this.refreshGoogleTask = {
+            // update interval in millisecond
+            updateFrequency: 2000,
+            count:0,
+            maxTries: 60,
+            started: false,
+            intervalId: null,
+            start: function(dirConnector) {
+                this.stop();
+                this.count=0;
+                this.intervalId = window.setInterval(dirConnector.refreshGoogleTask.run, this.updateFrequency);
+                this.started = true;
+            },
+            stop:function() {
+                if (this.intervalId !== null) {
+                    window.clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+                this.started = false;
+            },
+            run: Ext.bind(function () {
+                this.refreshGoogleTask.count++;
+
+                if ( this.refreshGoogleTask.count > this.refreshGoogleTask.maxTries ) {
+                    this.refreshGoogleTask.stop();
+                    return;
+                }
+
+                this.googleDriveConnected = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
+                var googleConnectorStatus = this.panelGoogle.down('component[name=googleConnectorStatus]');
+                googleConnectorStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
+                googleConnectorStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
+
+                if ( this.googleDriveConnected ) {
+                    this.refreshGoogleTask.stop();
+                    return;
+                }
+
+            },this)
+        };
+    },
+    
     getActiveDirectorySettings: function() {
         return this.getSettings().activeDirectorySettings;
     },
@@ -694,7 +740,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
     buildGoogle: function() {
         this.authorizationUrl = this.getRpcNode().getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host);
-        this.configuredState = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
+        this.googleDriveConnected = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
             name: 'Google Connector',
             helpSource: 'directory_connector_google_connector',
@@ -712,16 +758,18 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     html: i18n._('This allows your server to connect to various Google APIs such as Google Drive.')
                 }, {
                     xtype: 'component',
-                    html: (this.configuredState ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
-                    style: (this.configuredState ? {color:'green'} : {color:'red'}),
-                    cls: (this.configuredState ? null : 'warning')
+                    name: 'googleConnectorStatus',
+                    html: (this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
+                    style: (this.googleDriveConnected ? {color:'green'} : {color:'red'}),
+                    cls: (this.googleDriveConnected ? null : 'warning')
                 }, {
                     xtype: "button",
                     margin: '15 0 0 0',
                     name: 'configure_google_connector',
-                    text: (this.configuredState ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
+                    text: (this.googleDriveConnected ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
                     iconCls: "action-icon",
                     handler: Ext.bind(function() {
+                        this.refreshGoogleTask.start(this);
                         window.open(this.authorizationUrl);
                     }, this)
                 }]

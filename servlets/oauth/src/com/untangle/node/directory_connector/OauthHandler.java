@@ -50,6 +50,13 @@ public class OauthHandler extends HttpServlet
         writer.println("<html>");
         writer.println("<head>");
         writer.println("<title>Oauth Configuration</title>");
+
+        if ( error == null ) {
+            writer.println("<script type=\"text/javascript\">");
+            writer.println("window.onload = function(){ close() };");
+            writer.println("</script>");
+        }
+        
         writer.println("</head>");
         writer.println("<body bgcolor=white>");
 
