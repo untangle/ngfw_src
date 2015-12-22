@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.util.List;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +19,11 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
+import com.untangle.uvm.node.BandwidthControl;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -252,6 +255,8 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( 0 );
         entry.setQuotaExpirationTime( 0 );
 
+        reprioritizeHostSessions( address );
+        
         /**
          * Call listeners
          */
@@ -334,6 +339,7 @@ public class HostTableImpl implements HostTable
             return;
 
         entry.setQuotaRemaining( entry.getQuotaSize() );
+        reprioritizeHostSessions( address );
     }
 
     public synchronized boolean decrementQuota( InetAddress address, long bytes )
@@ -358,6 +364,7 @@ public class HostTableImpl implements HostTable
 
         if ( remaining > 0 && newRemaning <= 0 ) {
             logger.info("Host " + address.getHostAddress() + " exceeded quota.");
+            reprioritizeHostSessions( address );
             UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
             return true;
         }
@@ -560,6 +567,20 @@ public class HostTableImpl implements HostTable
         t.setDaemon(true);
         t.start();
         return;
+    }
+
+    private void reprioritizeHostSessions(InetAddress addr)
+    {
+        List<Node> bandwidthControls = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-bandwidth-control");
+
+        for ( Node app : bandwidthControls ) {
+            try {
+                BandwidthControl bc = ( (BandwidthControl)app );
+                bc.reprioritizeHostSessions( addr );
+            } catch (Exception e) {
+                logger.warn("Failed to call reprioritizeHostSessions.",e);
+            }
+        }
     }
 
     /**

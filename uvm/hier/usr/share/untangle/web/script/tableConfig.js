@@ -2966,7 +2966,7 @@ Ext.define('Ung.TableConfig', {
                     renderer: function(value) {
                         if ( value == 1 ) 
                             return "1 (" + i18n._("Given") + ")";
-                        if ( vauel == 2 )
+                        if ( value == 2 )
                             return "2 (" + i18n._("Exceeded") + ")";
                         return value;
                     }
