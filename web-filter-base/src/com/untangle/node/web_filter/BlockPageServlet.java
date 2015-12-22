@@ -72,12 +72,6 @@ public class BlockPageServlet extends HttpServlet
             this.unblockMode = unblockMode;
         }
 
-        /* This is the name of the node to use when retrieving the I18N bundle */
-        public String getI18n()
-        {
-            return "untangle-base-web-filter";
-        }
-
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
