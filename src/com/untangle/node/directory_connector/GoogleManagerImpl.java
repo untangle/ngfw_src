@@ -27,6 +27,9 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class GoogleManagerImpl
 {
+    private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
+    private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
@@ -62,7 +65,7 @@ public class GoogleManagerImpl
             credentialsJson += "\"}";
 
             try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(new File("/var/lib/google-drive/.gd/credentials.json")));            
+                BufferedWriter bw = new BufferedWriter(new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json")));            
                 bw.write(credentialsJson);
                 bw.close();
             } catch (Exception ex) {
@@ -96,7 +99,7 @@ public class GoogleManagerImpl
      */
     public String getAuthorizationUrl( String windowProtocol, String windowLocation )
     {
-        startAuthorizationProcess();
+        startAuthorizationProcess(GOOGLE_DRIVE_TMP_PATH);
         
         if (driveProcIn == null || driveProcOut == null || driveProc == null) {
             throw new RuntimeException("Authorization process not running.");
@@ -141,7 +144,7 @@ public class GoogleManagerImpl
     public String provideDriveCode( String code )
     {
         logger.info("Providing code [" + code + "] to drive");
-        startAuthorizationProcess();
+        startAuthorizationProcess(GOOGLE_DRIVE_PATH);
         
         try {
             driveProcOut.write(code);
@@ -159,7 +162,7 @@ public class GoogleManagerImpl
             try { Thread.sleep(1000); } catch (Exception e) {}
 
             logger.info("Checking for refresh token...");
-            refreshToken = UvmContextFactory.context().execManager().execOutput("python -m simplejson.tool /var/lib/google-drive/.gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'");
+            refreshToken = UvmContextFactory.context().execManager().execOutput("python -m simplejson.tool " + GOOGLE_DRIVE_PATH + ".gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'");
             if ( refreshToken == null )
                 continue;
             refreshToken = refreshToken.replaceAll("\\s+","");
@@ -187,7 +190,7 @@ public class GoogleManagerImpl
         return null;
     }
 
-    private void startAuthorizationProcess()
+    private void startAuthorizationProcess( String dir )
     {
         if (driveProcIn != null || driveProcOut != null || driveProc != null) {
             logger.warn("Shutting down previously running drive.");
@@ -196,7 +199,7 @@ public class GoogleManagerImpl
 
         try {
             logger.info("Launching drive...");
-            ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c","cd /var/lib/google-drive ; /usr/bin/drive init");
+            ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c","mkdir -p " + dir + " ; cd " + dir + " ; /usr/bin/drive init");
             builder.redirectErrorStream(true);
             driveProc = builder.start();
 
