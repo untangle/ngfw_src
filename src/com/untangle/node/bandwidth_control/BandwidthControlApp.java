@@ -17,12 +17,13 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.BandwidthControl;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeBase;
 
-public class BandwidthControlApp extends NodeBase
+public class BandwidthControlApp extends NodeBase implements BandwidthControl
 {
     public static final String STAT_PRIORITIZE = "prioritize";
     public static final String STAT_QUOTA_EXCEEDED = "quota-exceeded";
@@ -128,7 +129,6 @@ public class BandwidthControlApp extends NodeBase
     {
         this._setSettings(newSettings, true);
     }
-
 
     public List<BandwidthControlRule> getRules()
     {
@@ -236,21 +236,21 @@ public class BandwidthControlApp extends NodeBase
         return false;
     }
 
-    @Override
-    protected PipelineConnector[] getConnectors()
-    {
-        return this.connectors;
-    }
-
     /**
-     * This forces the node to reevaluate all sessions
+     * This forces the app to reevaluate all sessions
      * of the specified addr.
      * This is useful when hosts have been added to the penalty box
      * or when quotas have expired
      */
-    protected void reprioritizeHostSessions(InetAddress addr)
+    public void reprioritizeHostSessions(InetAddress addr)
     {
         this.handler.reprioritizeHostSessions(addr);
+    }
+
+    @Override
+    protected PipelineConnector[] getConnectors()
+    {
+        return this.connectors;
     }
 
     /**

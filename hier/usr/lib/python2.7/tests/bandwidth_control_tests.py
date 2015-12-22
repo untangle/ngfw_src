@@ -24,8 +24,10 @@ nodeWF = None
 limitedAcceptanceRatio = .3 # 30% - limited severly is 10% by default, anything under 30% will be accepted as successfull
 origNetworkSettings = None
 origNetworkSettingsWithQoS = None
+origNetworkSettingsWithoutQoS = None
 wanLimitKbit = None
 wanLimitMbit = None
+preDownSpeedKbsec = None
 
 def createBandwidthSingleConditionRule( conditionType, value, actionType="SET_PRIORITY", priorityValue=3 ):
     conditionTypeStr = str(conditionType)
@@ -170,7 +172,7 @@ def nukeRules():
     rules = node.getRules()
     rules["list"] = []
     node.setRules(rules)
-    
+
 def printResults( wget_speed_pre, wget_speed_post, expected_speed, allowed_speed ):
         print "Pre Results   : %s KB/s" % str(wget_speed_pre)
         print "Post Results  : %s KB/s" % str(wget_speed_post)
@@ -198,49 +200,36 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWF, origNetworkSettings
+        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        settings = node.getSettings()
+        settings["configured"] = True
+        node.setSettings(settings)        
+        node.start()
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameWF())):
             raise Exception('node %s already instantiated' % self.nodeNameWF())
         nodeWF = uvmContext.nodeManager().instantiate(self.nodeNameWF(), defaultRackId)
         if origNetworkSettings == None:
             origNetworkSettings = uvmContext.networkManager().getNetworkSettings()
 
-    def setUp(self):
-        pass
-
-    # verify client is online
-    def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
-        assert (result == 0)
-
-    def test_011_enableQoS(self):
-        global origNetworkSettingsWithQoS, node, wanLimitKbit, wanLimitMbit
-
+        # disable QoS
         netsettings = copy.deepcopy( origNetworkSettings )
+        netsettings['qosSettings']['qosEnabled'] = False
+        uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        # disable QoS for speed test if enabled
-        if netsettings['qosSettings']['qosEnabled']:
-            print "Disabling QoS for speed test"
-            netsettings['qosSettings']['qosEnabled'] = False
-            uvmContext.networkManager().setNetworkSettings( netsettings )
-
+        # measure speed
         preDownSpeedKbsec = global_functions.getDownloadSpeed()
 
+        # calculate QoS limits
         wanLimitKbit = int((preDownSpeedKbsec*8) * .9)
         # set max to 100Mbit, so that other limiting factors dont interfere
         if wanLimitKbit > 100000: wanLimitKbit = 100000 
-
         wanLimitMbit = round(wanLimitKbit/1024,2)
-
-        print "Setting WAN limit: %i Kbps" % (wanLimitKbit)
-
-        # turn on QoS and set bandwidth
+        # turn on QoS and set wan speed limits
+        netsettings = copy.deepcopy( origNetworkSettings )
         netsettings['qosSettings']['qosEnabled'] = True
-        
-        # Set wan limits & bypass and qos rules
         i = 0
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
@@ -250,20 +239,28 @@ class BandwidthControlTests(unittest2.TestCase):
         netsettings['bypassRules']['list'] = []
         netsettings['qosSettings']['qosRules']['list'] = []
 
-        # save settings
-        print "Enableding QoS"
+        # These store the "new" defaults with and without QoS
         origNetworkSettingsWithQoS = copy.deepcopy( netsettings )
+        origNetworkSettingsWithQoS['qosSettings']['qosEnabled'] = True
+        origNetworkSettingsWithoutQoS = copy.deepcopy( netsettings )
+        origNetworkSettingsWithoutQoS['qosSettings']['qosEnabled'] = False
+        
+        uvmContext.networkManager().setNetworkSettings(origNetworkSettingsWithQoS)
+        
+    def setUp(self):
+        pass
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+    # verify client is online
+    def test_010_clientIsOnline(self):
+        result = remote_control.isOnline()
+        assert (result == 0)
+
+    def test_011_qosLimit(self):
+        global preDownSpeedKbsec, wanLimitKbit
+
+        print "\nSetting WAN limit: %i Kbps" % (wanLimitKbit)
+
         postDownSpeedKbsec = global_functions.getDownloadSpeed()
-
-        # now that QoS is enabled - start the node
-        # must be called since bandwidth doesn't auto-start
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
-        nukeRules()
-        node.start() 
 
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (preDownSpeedKbsec >  postDownSpeedKbsec)
@@ -357,10 +354,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
         # Create SRC_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("SRC_ADDR",remote_control.clientIP,"SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
+
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()
 
@@ -369,7 +363,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
@@ -389,10 +383,6 @@ class BandwidthControlTests(unittest2.TestCase):
         
         # Create DST_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("DST_ADDR",test_untangle_IP,"SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()
@@ -402,7 +392,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
@@ -419,10 +409,6 @@ class BandwidthControlTests(unittest2.TestCase):
         
         # Create DST_PORT based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("DST_PORT","80","SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()
@@ -432,7 +418,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
@@ -454,9 +440,6 @@ class BandwidthControlTests(unittest2.TestCase):
             raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Enabled QoS
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        if not netsettings['qosSettings']['qosEnabled']:
-            netsettings['qosSettings']['qosEnabled'] = True
-            uvmContext.networkManager().setNetworkSettings( netsettings )
         nukeRules()
 
         appendRule(createBandwidthSingleConditionRule("DST_PORT","5000","SET_PRIORITY",1))
@@ -482,10 +465,6 @@ class BandwidthControlTests(unittest2.TestCase):
         
         # Create HTTP_HOST based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("HTTP_HOST","test.untangle.com","SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()
@@ -495,7 +474,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
@@ -512,10 +491,6 @@ class BandwidthControlTests(unittest2.TestCase):
         
         # Create DST_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("HTTP_CONTENT_LENGTH",">3000000","SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()
@@ -525,7 +500,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
@@ -542,10 +517,6 @@ class BandwidthControlTests(unittest2.TestCase):
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)        
 
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
         settingsWF = nodeWF.getSettings()
@@ -565,67 +536,89 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,1)
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "bandwidth_control_priority", priority_level,
                                             "c_client_addr", remote_control.clientIP)
         assert( found )
 
-    def test_060_quotaPenaltyRule(self):
+    def test_060_quota(self):
         global node
         nukeRules()
-        given_quota = 100
-        penalty_time = 2000000
-        penalty_time_margin_error = penalty_time * 1.05  # we seem to add a few milliseconds in the code
+        priority_level = 7 # Severely Limited 
+        given_quota = 10000 # 10k 
 
-        # Enabled QoS
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        if not netsettings['qosSettings']['qosEnabled']:
-            netsettings['qosSettings']['qosEnabled'] = True
-            uvmContext.networkManager().setNetworkSettings( netsettings )
+        # Remove any existing quota
+        uvmContext.hostTable().removeQuota(remote_control.clientIP)
+        
+        # Record average speed without bandwidth control configured
+        wget_speed_pre = global_functions.getDownloadSpeed()
+        
         # Create rule to give quota
         appendRule(createBandwidthQuotaRule("CLIENT_HAS_NO_QUOTA","true","GIVE_CLIENT_HOST_QUOTA",given_quota))
         # Create penalty for exceeding quota
-        appendRule(createBandwidthPenaltyRule("CLIENT_QUOTA_EXCEEDED","true","PENALTY_BOX_CLIENT_HOST",penalty_time))
+        appendRule(createBandwidthSingleConditionRule("CLIENT_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+
+        # Download file and record the average speed in which the file was download
+        wget_speed_post = global_functions.getDownloadSpeed()
         
-        # Set the configured flag otherwise bandwidth fails to power on.
-        settings = node.getSettings()
-        settings["configured"] = True
-        node.setSettings(settings)
-        node.start()  # in case bandwidth was not started in previous tsst.
+        printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
+
+        # Remove quota
+        uvmContext.hostTable().removeQuota(remote_control.clientIP)
+
+        assert ((wget_speed_post) and (wget_speed_post))
+        assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
+
+        events = global_functions.get_events('Host Viewer','Quota Events',None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "action", 1, #quota given
+                                               "size", given_quota,
+                                               "address", remote_control.clientIP)
+        assert(found)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "action", 2, #quota exceeded
+                                               "address", remote_control.clientIP)
+        assert(found)
+
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "bandwidth_control_priority", priority_level,
+                                               "c_client_addr", remote_control.clientIP)
+        assert( found )
+
+    def test_070_penaltyRule(self):
+        global node
+        nukeRules()
+        penalty_time = 2000000
+        penalty_time_margin_error = penalty_time * 1.05  # we seem to add a few milliseconds in the code
+
+        # Create penalty rule
+        appendRule(createBandwidthPenaltyRule("SRC_ADDR",remote_control.clientIP,"PENALTY_BOX_CLIENT_HOST",penalty_time))
+        
         #  in case the client is already in the penalty box
         uvmContext.hostTable().releaseHostFromPenaltyBox(remote_control.clientIP)
-        uvmContext.hostTable().refillQuota(remote_control.clientIP)
 
-        # Get test.untangle.com to exceed given quota
+        # go to test.untangle.com 
         result = remote_control.isOnline()
 
         status_of_host = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         # remove from penalty box before testing status
         uvmContext.hostTable().releaseHostFromPenaltyBox(remote_control.clientIP)
-        uvmContext.hostTable().removeQuota(remote_control.clientIP)
         # print "status_of_host : %s" % str(status_of_host)
         penalty_assigned_time = (status_of_host['penaltyBoxExitTime'] - status_of_host['penaltyBoxEntryTime']) / 1000
         # print " : %s" % exit_time_string
         # print "penalty_assigned_time : %s" % penalty_assigned_time
         assert(status_of_host['penaltyBoxed'])       
-        assert(status_of_host['quotaSize'] == given_quota)
         assert(penalty_assigned_time < penalty_time_margin_error)
         
-        # check quota event
-        events = global_functions.get_events('Host Viewer','Quota Events',None,1)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "size", given_quota,
-                                            "address", remote_control.clientIP)
-        assert(found)
-
         # check penalty box
-        events = global_functions.get_events('Host Viewer','Penalty Box Events',None,1)
+        events = global_functions.get_events('Host Viewer','Penalty Box Events',None,5)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "address", remote_control.clientIP)
+        found = global_functions.check_events( events.get('list'), 5, "address", remote_control.clientIP)
         assert(found)
 
     @staticmethod
