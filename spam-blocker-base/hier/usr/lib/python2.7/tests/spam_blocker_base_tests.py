@@ -262,6 +262,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
+        
     
     def test_090_checkTLSwSSLInspector(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -272,14 +273,25 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['allowTls'] = False
+        nodeData['smtpConfig']['strength'] = 30
         node.setSettings(nodeData)
         # Turn on SSL Inspector
         nodeSSL.start()
-        # print "TLS 1 : " + str(tlsSMTPResult)
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
+        # print "TLS 090 : " + str(tlsSMTPResult)
         nodeSSL.stop()
-        # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
+        events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
+        assert( events != None )
+        assert( events.get('list') != None )
+
+        print events['list'][0]
+        found = global_functions.check_events( events.get('list'), 5,
+                                               's_server_addr', tlsSmtpServerHost,
+                                               's_server_port', 25,
+                                               'addr', 'qa@example.com',
+                                               'c_client_addr', remote_control.clientIP)
+        assert( found ) 
             
     @staticmethod
     def finalTearDown(self):
