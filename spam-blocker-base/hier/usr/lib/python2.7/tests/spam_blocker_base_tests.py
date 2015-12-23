@@ -53,8 +53,13 @@ def getLatestMailSender():
     results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
-def sendSpamMail(host=smtpServerHost):
-    remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
+def sendSpamMail(host=smtpServerHost, useTLS=False):
+    mailResult = None
+    if useTLS:
+        mailResult = remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
+    else:
+        mailResult = remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
+    return mailResult
 
 class SpamBlockerBaseTests(unittest2.TestCase):
 
@@ -249,12 +254,12 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
-        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         # print "TLS 1 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult != 0)
         nodeData['smtpConfig']['allowTls'] = True
         node.setSettings(nodeData)
-        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
     
@@ -271,7 +276,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         # Turn on SSL Inspector
         nodeSSL.start()
         # print "TLS 1 : " + str(tlsSMTPResult)
-        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         nodeSSL.stop()
         # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
