@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 import socket
+import smtplib
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -17,9 +18,33 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
+nodeSSL = None
+nodeSSLData = None
+canRelay = True
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
+tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
+def sendTestmessage(smtpServerHost=testsiteIP):
+    sender = 'test@example.com'
+    receivers = ['qa@example.com']
+
+    message = """From: Test <test@example.com>
+    To: Test Group <qa@example.com>
+    Subject: SMTP e-mail test
+
+    This is a test e-mail message.
+    """
+
+    try:
+       smtpObj = smtplib.SMTP(smtpServerHost)
+       smtpObj.sendmail(sender, receivers, message)
+       print "Successfully sent email"
+       return 1
+    except smtplib.SMTPException, e:
+       print "Error: unable to send email" + str(e)
+       return 0
+       
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
     rules = node.getPassSites()
@@ -46,8 +71,12 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         return "Virus Blocker Lite"
 
     @staticmethod
+    def nodeNameSSLInspector():
+        return "untangle-casing-ssl-inspector"
+
+    @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum
+        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay
         # download eicar and trojan files before installing virus blocker
         remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -57,9 +86,19 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         # print "md5StdNum <%s>" % md5StdNum
         assert (result == 0)
+        try:
+            canRelay = sendTestmessage()
+        except Exception,e:
+            canRelay = False
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
+            raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
+        nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
+        # nodeSSL.start() # leave node off. node doesn't auto-start
+        nodeSSLData = nodeSSL.getSettings()
+        
 
     def setUp(self):
         pass
@@ -214,9 +253,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             self.shortName() + '_clean', True )
         assert( found )
 
-    port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_104_eventlog_smtpVirus(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -237,9 +276,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             min_date=startTime )
         assert( found )
 
-    port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_105_eventlog_smtpNonVirus(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         print "fname: %s" % fname
@@ -263,9 +302,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             min_date=startTime )
         assert( found )
 
-    port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_106_eventlog_smtpVirusPassList(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
         startTime = datetime.now()
@@ -291,10 +330,40 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
         nukePassSites()
 
+    port25Test = subprocess.call(["netcat","-z","-w","1",tlsSmtpServerHost,"25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
+    def test_110_eventlog_smtpSSLVirus(self):
+        startTime = datetime.now()
+        fname = sys._getframe().f_code.co_name
+        # download the email script
+        result = remote_control.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
+        assert (result == 0)
+        result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
+        assert (result == 0)
+        # Turn on SSL Inspector
+        nodeSSL.start()
+        # email the file
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (tlsSmtpServerHost, fname),nowait=False)
+        nodeSSL.stop()
+        assert (result == 0)
+
+        events = global_functions.get_events(self.displayName(),'Infected Email Events',None,1)
+        # print events['list'][0]
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "addr", "junk@test.untangle.com", 
+                                            "subject", str(fname), 
+                                            's_server_addr', tlsSmtpServerHost,
+                                            self.shortName() + '_clean', False,
+                                            min_date=startTime)
+        assert( found )
+
     @staticmethod
     def finalTearDown(self):
-        global node
+        global node, nodeSSL
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
-        
+        if nodeSSL != None:
+            uvmContext.nodeManager().destroy( nodeSSL.getNodeSettings()["id"] )
+            nodeSSL = None
