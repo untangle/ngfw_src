@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
     gridRules: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Policy Manager enables administrators to fine tune network privileges. Policy Manager’s intuitive GUI and “virtual rack” metaphor makes it easy for administrators to create network-access policies by username, time or day of the week.");
+        return i18n._("Policy Manager enables administrators to fine tune network privileges. Policy Manager's intuitive GUI and “virtual rack” metaphor makes it easy for administrators to create network-access policies by username, time or day of the week.");
     },
     initComponent: function() {
         this.buildPolicies();
