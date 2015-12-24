@@ -3,7 +3,9 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
     emailPanel: null,
     gridEventLog: null,
     gridDnsblEventLog: null,
-
+    getAppSummary: function() {
+        return i18n._("Spam Blocker uses multiple technologies to effectively protect against spam; even real-time spam outbreaks that are mass distributed over the Internet.");
+    },
     initComponent: function() {
         try {
             this.lastUpdate = this.getRpcNode().getLastUpdate();
