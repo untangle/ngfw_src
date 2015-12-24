@@ -6,7 +6,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     gridEventLog: null,
     getAppSummary: function() {
         return i18n._("Directory Connector is designed to leverage your Microsoft Active Directory server to simplify policy management and enrich reporting. Directory Connector integrates with Policy Manager to set up policies by username or group.")+"<br/><br/>"+
-        i18n._("Enables Reports to produce individual reports by user name. Also works with RADIUS and Untangle’s Local Directory feature.");
+        i18n._("Enables Reports to produce individual reports by user name. Also works with RADIUS and Untangle's Local Directory feature.");
     },
 
     initComponent: function(container, position) {
