@@ -2,13 +2,15 @@ Ext.define('Webui.untangle-node-web-cache.settings', {
     extend: 'Ung.NodeWin',
     gridProtocolList: null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Web Cache stores frequently requested items locally and serves content from local cache for increased speed and reduced bandwidth usage.");
+    },
     initComponent: function() {
         this.statistics = this.getRpcNode().getStatistics();
-        this.buildStatus();
         this.buildGridRules();
 
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.gridRules]);
+        this.buildTabPanel([this.gridRules]);
         this.callParent(arguments);
     },
     statFormat: function(input) {
@@ -24,22 +26,10 @@ Ext.define('Webui.untangle-node-web-cache.settings', {
     },
     // Status Panel
     buildStatus: function() {
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status',{
+            settingsCmp: this,
             helpSource: 'web_cache_status',
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            isDirty: function() {
-                return false;
-            },
-            items: [{
-                title: i18n._('Note'),
-                html: i18n._("Web Cache provides HTTP content caching.  This status page allows you to monitor overall cache usage and effectiveness.")
-            }, {
+            itemsAfterLicense: [{
                 title: i18n._('Statistics'),
                 defaults: {
                     xtype: "displayfield",
