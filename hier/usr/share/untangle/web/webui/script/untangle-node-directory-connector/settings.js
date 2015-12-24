@@ -4,6 +4,10 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     panelActiveDirectoryConnector: null,
     panelRadius: null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Directory Connector is designed to leverage your Microsoft Active Directory server to simplify policy management and enrich reporting. Directory Connector integrates with Policy Manager to set up policies by username or group.")+"<br/><br/>"+
+        i18n._("Enables Reports to produce individual reports by user name. Also works with RADIUS and Untangle’s Local Directory feature.");
+    },
 
     initComponent: function(container, position) {
         this.buildRefreshTask();
@@ -754,7 +758,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 labelWidth: 250,
                 items: [{
                     xtype: 'container',
-                    margin: '5 0 15 20',
+                    margin: '5 0 15 0',
                     html: i18n._('This allows your server to connect to various Google APIs such as Google Drive.')
                 }, {
                     xtype: 'component',
@@ -764,7 +768,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     cls: (this.googleDriveConnected ? null : 'warning')
                 }, {
                     xtype: "button",
-                    margin: '15 0 0 0',
+                    margin: '10 0 0 0',
                     name: 'configure_google_connector',
                     text: (this.googleDriveConnected ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
                     iconCls: "action-icon",
