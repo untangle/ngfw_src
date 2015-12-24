@@ -3,7 +3,9 @@ Ext.define('Webui.untangle-node-spam-blocker-lite.settings', {
     emailPanel: null,
     gridEventLog: null,
     gridDnsblEventLog: null,
-
+    getAppSummary: function() {
+        return i18n._("Spam Blocker Lite enables administrators to block spam at the gateway before it ever reaches the users.");
+    },
     initComponent: function() {
         try {
             this.lastUpdate = this.getRpcNode().getLastUpdate();

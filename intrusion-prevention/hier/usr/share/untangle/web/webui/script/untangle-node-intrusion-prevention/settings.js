@@ -21,19 +21,18 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
             });
         }
     },
-    panelStatus: null,
-    hasDefaultAppStatus: false,
+    getAppSummary: function() {
+        return i18n._("Intrusion Prevention blocks hacking attempts before they reach internal servers and desktops.");
+    },
     gridRules: null,
     gridVariables: null,
     gridEventLog: null,
     statistics: null,
-    
     regexRuleSid: /\s+sid:\s*([^;]+);/,
     regexRuleGid: /\s+gid:\s*([^;]+);/,
     regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
     regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
     regexRuleReference: /\s+reference:\s*([^\;]+)\;/g,
-    
     getRuleId: function( rule ){
         var gid = "1";
         var sid = "1";
@@ -371,25 +370,18 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         this.lastUpdate = this.getRpcNode().getLastUpdate();
         this.lastUpdateCheck = this.getRpcNode().getLastUpdateCheck();
 
-        this.buildStatus();
         this.buildRules();
         this.buildVariables();
-        this.buildTabPanel([this.panelStatus, this.gridRules, this.gridVariables]);
+        this.buildTabPanel([this.gridRules, this.gridVariables]);
         this.callParent(arguments);
 
     },
     // Status Panel
     buildStatus: function() {
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'intrusion_prevention_status', 
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            items: [this.buildAppStatus(), {
+            itemsAfterLicense: [{
                 title: i18n._("Setup Wizard"),
                 items: [{
                     xtype: 'component',

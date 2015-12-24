@@ -1,11 +1,13 @@
 Ext.define('Webui.untangle-node-openvpn.settings', {
     extend:'Ung.NodeWin',
     groupsStore: null,
-    panelStatus: null,
     panelClient: null,
     gridRemoteServers: null,
     panelServer: null,
     gridConnectionEventLog: null,
+    getAppSummary: function() {
+        return i18n._("OpenVPN enables administrators to provide secure remote access to the internal network to remote users and sites.");
+    },
     initComponent: function(container, position) {
         // Register the VTypes, need i18n to be initialized for the text
         Ext.applyIf(Ext.form.VTypes, {
@@ -17,11 +19,10 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             openvpnNameText: i18n._( "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." )
         });
 
-        this.buildStatus();
         this.buildServer();
         this.buildClient();
 
-        this.buildTabPanel( [ this.panelStatus, this.panelServer, this.panelClient] );
+        this.buildTabPanel( [ this.panelServer, this.panelClient] );
         this.callParent(arguments);
     },
     getGroupsStore: function(force) {
@@ -49,8 +50,9 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     // active connections/sessions grip
     buildClientStatusGrid: function() {
         this.gridClientStatus = Ext.create('Ung.grid.Panel', {
-            flex: 1,
             name: "gridClientStatus",
+            margin: '0 10 20 10',
+            height: 220,
             settingsCmp: this,
             hasAdd: false,
             hasEdit: false,
@@ -112,9 +114,9 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     // active connections/sessions grip
     buildServerStatusGrid: function() {
         this.gridServerStatus = Ext.create('Ung.grid.Panel', {
-            flex: 1,
-            margin: '5 0 0 0',
             name: "gridServerStatus",
+            margin: '0 10 20 10',
+            height: 220,
             settingsCmp: this,
             hasAdd: false,
             hasEdit: false,
@@ -160,16 +162,10 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
         this.buildClientStatusGrid();
         this.buildServerStatusGrid();
 
-        this.panelStatus = Ext.create('Ext.panel.Panel', {
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'openvpn_status',
-            title: i18n._("Status"),
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            isDirty: function() {
-                return false;
-            },
-            items: [this.gridClientStatus, this.gridServerStatus]
+            itemsAfterLicense: [this.gridClientStatus, this.gridServerStatus]
         });
     },
     getGroupsColumn: function() {

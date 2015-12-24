@@ -291,8 +291,10 @@ Ext.define("Ung.SettingsWin", {
 Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
     hasReports: true,
-    hasDefaultAppStatus: true,
     node: null,
+    getAppSummary: function() {
+        return "";
+    },
     constructor: function(config) {
         this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
         this.callParent(arguments);
@@ -422,20 +424,17 @@ Ext.define("Ung.NodeWin", {
         }
     },
     buildTabPanel: function(itemsArray) {
-        if(this.hasDefaultAppStatus) {
-            itemsArray.unshift(this.buildAppStatus(true));
+        if(!this.panelStatus) {
+            this.buildStatus();
         }
+        itemsArray.unshift(this.panelStatus);
         this.callParent(arguments);
     },
-    buildAppStatus: function(standalone) {
-        this.panelAppStatus = Ext.create('Ung.panel.AppStatus',{
-            cls: standalone ? 'ung-panel': undefined,
-            header: standalone? true: false,
-            scrollable: standalone? true: false,
-            nodeId: this.nodeId,
-            displayName: this.nodeProperties.displayName
+    buildStatus: function() {
+        this.panelStatus = Ext.create('Ung.panel.Status',{
+            settingsCmp: this
         });
-        return this.panelAppStatus;
+        return this.panelStatus;
     }
 });
 

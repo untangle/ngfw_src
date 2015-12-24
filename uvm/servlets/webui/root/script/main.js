@@ -82,11 +82,11 @@ Ext.define("Ung.Main", {
         // initialize viewport object
         var contentRightArr=[
             '<div id="content-right">',
-                '<div id="racks" style="">',
+                '<div id="racks">',
                     '<div id="rack-list"><div id="install-apps-container"></div><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div></div>',
                     '<div id="rack-nodes">',
                         '<div id="filter_nodes"></div>',
-                        '<div id="nodes-separator" style="display:none;"><div id="nodes-separator-text"></div></div>',
+                        '<div id="nodes-separator" style="display:none;">'+i18n._("Services")+'</div>',
                         '<div id="service_nodes"></div>',
                     '</div>',
                 '</div>',
@@ -791,7 +791,7 @@ Ext.define("Ung.Main", {
             }, this);
 
             Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
-        }, this));
+        }, true, this));
     },
 
     installNode: function(nodeProperties, appItem, completeFn) {
@@ -1087,7 +1087,6 @@ Ext.define("Ung.Main", {
                 break;
             }
         }
-        document.getElementById("nodes-separator-text").innerHTML=hasService ? i18n._("Services") : "";
         document.getElementById("nodes-separator").style.display= hasService ? "" : "none";
         document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
     },

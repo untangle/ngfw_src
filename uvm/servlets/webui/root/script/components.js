@@ -463,15 +463,15 @@ Ext.define("Ung.Node", {
             delete rpc.reportsAppInstalledAndEnabled;
         }
         if(!force) {
-            var panelAppStatus = this.getSettingsAppPanel();
-            if(panelAppStatus) {
-                panelAppStatus.updatePower(this.isRunning());
+            var panelStatus = this.getSettingsAppPanel();
+            if(panelStatus) {
+                panelStatus.updatePower(this.isRunning());
             }
         }
     },
     getSettingsAppPanel: function() {
-        if(this.settingsWin && this.settingsWin.isVisible() && this.settingsWin.panelAppStatus) {
-            return this.settingsWin.panelAppStatus;
+        if(this.settingsWin && this.settingsWin.isVisible() && this.settingsWin.panelStatus) {
+            return this.settingsWin.panelStatus;
         }
         return null;
     },
@@ -480,9 +480,9 @@ Ext.define("Ung.Node", {
             if(this.faceplateMetrics!=null) {
                 this.faceplateMetrics.update(this.metrics);
             }
-            var panelAppStatus = this.getSettingsAppPanel();
-            if(panelAppStatus) {
-                panelAppStatus.updateMetrics(this.metrics);
+            var panelStatus = this.getSettingsAppPanel();
+            if(panelStatus) {
+                panelStatus.updateMetrics(this.metrics);
             }
         } else {
             this.resetMetrics();
@@ -721,9 +721,9 @@ Ext.define("Ung.Node", {
                 nodeBuyButton.hide();
             }
         }
-        var panelAppStatus = this.getSettingsAppPanel();
-        if(panelAppStatus) {
-            panelAppStatus.updateLicense(this.license);
+        var panelStatus = this.getSettingsAppPanel();
+        if(panelStatus) {
+            panelStatus.updateLicense(this.license);
         }
     }
 });
@@ -1410,27 +1410,40 @@ Ext.define('Ung.Breadcrumbs', {
         }
     }
 });
-Ext.define('Ung.panel.AppStatus', {
+Ext.define('Ung.panel.Status', {
     extend:'Ext.panel.Panel',
-    name: 'panelAppStatus',
-    header: false,
-    border: false,
+    name: 'panelStatus',
+    cls: 'ung-panel',
     hasPowerSection: false,
     hasLicenseSection: false,
     hasMetrics: false,
     hasChart: false,
+    scrollable: true,
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+    defaults: {
+        xtype: 'fieldset'
+    },
     initComponent: function() {
         var me = this;
         if(!this.title) {
-            this.title = i18n._('App');
+            this.title = i18n._('Status');
         }
-        this.items = [];
+        this.nodeId = this.settingsCmp.nodeId;
+        this.displayName = this.settingsCmp.displayName;
         var node = Ung.Node.getCmp(this.nodeId);
+        this.items = [{
+            xtype: 'fieldset',
+            title: i18n._('Summary'),
+            html: this.settingsCmp.getAppSummary()
+        }];
+
         if(node.hasPowerButton) {
             this.hasPowerSection = true;
             var isRunning = node.isRunning();
             this.items.push({
-                xtype: 'fieldset',
                 title: i18n._('Power'),
                 items: [{
                     xtype: 'component',
@@ -1468,7 +1481,6 @@ Ext.define('Ung.panel.AppStatus', {
         if(node.license && (node.license.trial || !node.license.valid)) {
             this.hasLicenseSection = true;
             this.items.push({
-                xtype: 'fieldset',
                 title: i18n._('License'),
                 name: 'licenseSection',
                 items: [{
@@ -1491,6 +1503,10 @@ Ext.define('Ung.panel.AppStatus', {
                 }]
             });
         }
+        if(this.itemsAfterLicense) {
+            this.items.push.apply(this.items, this.itemsAfterLicense);
+        }
+        
         if(node.metrics && node.metrics.list.length>0) {
             this.hasMetrics = true;
             var viewportWidth = Ung.Main.viewport.getWidth();
@@ -1499,9 +1515,9 @@ Ext.define('Ung.panel.AppStatus', {
                 metric = node.metrics.list[i];
                 if(metric.name=="live-sessions") {
                     this.hasChart = true;
-                    if( this.name === "untangle-node-firewall" ||
-                        this.name === "untangle-node-openvpn" ||
-                        this.name === "untangle-node-wan-balancer" ){
+                    if( node.name === "untangle-node-firewall" ||
+                        node.name === "untangle-node-openvpn" ||
+                        node.name === "untangle-node-wan-balancer" ){
                         this.hasChart = false;
                     }
                 }
@@ -1511,7 +1527,7 @@ Ext.define('Ung.panel.AppStatus', {
                 });
             }
             if(this.hasChart) {
-                var chartDataLength = Math.ceil(viewportWidth / 20);
+                var chartDataLength = 30;
                 var chartData = [];
                 for(i=0; i<chartDataLength; i++) {
                     chartData.push({time: i, sessions: 0});
@@ -1525,8 +1541,8 @@ Ext.define('Ung.panel.AppStatus', {
                     chartData: chartData,
                     currentSessions: 0,
                     insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
-                    width: '100%',
-                    height: viewportWidth<600 ? 100 : viewportWidth<1200 ? 150 : 200,
+                    width: 300,
+                    height: 130,
                     animation: false,
                     theme: 'green-gradients',
                     store: Ext.create('Ext.data.JsonStore', {
@@ -1573,33 +1589,27 @@ Ext.define('Ung.panel.AppStatus', {
                     }
                 });
                 this.items.push({
-                    xtype: 'fieldset',
                     title: i18n._('Sessions'),
                     items: chart
-                    
                 });
             }
             this.items.push({
-                xtype: 'fieldset',
                 name: 'metrics',
-                layout: 'auto',
+                layout: 'vbox',
                 title: i18n._('Metrics'),
                 defaults: {
                     margin: '0 10 0 0',
                     xtype: 'displayfield',
                     labelWidth: 190,
-                    width: 300,
-                    style: {
-                        'float': 'left'
-                    }
+                    width: 300
                 },
                 items: metricsItems
             });
         }
-        if(this.items.length == 0) {
-            this.hidden = true;
+        if(this.itemsToAppend) {
+            this.items.push.apply(this.items, this.itemsToAppend);
         }
-        
+
         this.callParent(arguments);
     },
     afterRender: function() {
@@ -1677,4 +1687,3 @@ Ext.define('Ung.panel.AppStatus', {
         }
     }
 });
-

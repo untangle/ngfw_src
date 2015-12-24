@@ -8,7 +8,9 @@ Ext.define('Webui.untangle-node-phish-blocker.settings', {
     emailPanel: null,
     webPanel: null,
     gridEmailEventLog: null,
-
+    getAppSummary: function() {
+        return i18n._("Phish Blocker protects users from email phishing attacks and fraudulent pharming websites.");
+    },
     initComponent: function() {
         this.lastUpdate = this.getRpcNode().getLastUpdate();
         this.lastCheck = this.getRpcNode().getLastUpdateCheck();

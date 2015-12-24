@@ -3,6 +3,9 @@ Ext.define('Webui.untangle-node-firewall.settings', {
     panelRules: null,
     gridRules: null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Firewall is a simple application designed to block and flag network traffic based on a set of rules.");
+    },
     initComponent: function() {
         this.buildRules();
         this.buildTabPanel([this.panelRules]);
@@ -49,7 +52,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                 xtype: 'fieldset',
                 title: i18n._('Note'),
                 flex: 0,
-                html: Ext.String.format(i18n._(" <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."), rpc.companyName)
+                html: i18n._("Routing and Port Forwarding functionality can be found elsewhere in Config->Networking.")
             },  this.gridRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Rules',

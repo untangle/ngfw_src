@@ -5,15 +5,18 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
     totalCookiesAvailable: null,
     totalCookiesEnabled:  null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Based on the open source project AdBlock Plus, Ad Blocker lets you easily block ads at the gateway without installing browser plugins.");
+    },
     initComponent: function() {
         this.lastUpdate = this.getRpcNode().getListLastUpdate();
         this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-        this.buildStatus();
+        this.buildOptions();
         this.buildAdFilters();
         this.buildCookieFilters();
         this.buildPassLists();
 
-        this.buildTabPanel([this.panelStatus, this.panelFilters, this.panelCookies, this.panelPassLists]);
+        this.buildTabPanel([this.panelOptions, this.panelFilters, this.panelCookies, this.panelPassLists]);
         this.callParent(arguments);
     },
     buildFiltersLength: function() {
@@ -48,20 +51,13 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
             }
         }
     },
-    // Status Panel
     buildStatus: function() {
         this.buildFiltersLength();
         this.buildCookiesLength();
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'ad_blocker_status',
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            items: [{
+            itemsToAppend: [{
                 title: i18n._('Statistics'),
                 labelWidth: 230,
                 defaults: {
@@ -85,8 +81,23 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
                     name: "total_cookies_enabled",
                     value: this.totalCookiesEnabled
                 }]
-            }, {
-                title: i18n._('Status'),
+            }]
+        });
+    },
+
+    // Block Panel
+    buildOptions: function() {
+        this.panelOptions = Ext.create('Ext.panel.Panel',{
+            name: 'Options',
+            helpSource: 'ad_blocker_blocker',
+            title: i18n._('Options'),
+            cls: 'ung-panel',
+            autoScroll: true,
+            defaults: {
+                xtype: 'fieldset'
+            },
+            items: [{
+                title: i18n._('Block'),
                 items: [{
                     xtype: 'checkbox',
                     boxLabel: i18n._('Block Ads'),

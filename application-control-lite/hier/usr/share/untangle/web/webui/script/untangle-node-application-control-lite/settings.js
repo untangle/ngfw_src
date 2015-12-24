@@ -1,31 +1,23 @@
 Ext.define('Webui.untangle-node-application-control-lite.settings', {
     extend: 'Ung.NodeWin',
-    panelStatus: null,
     gridProtocolList: null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content.");
+    },
     initComponent: function() {
-        this.buildStatus();
         this.buildProtocolList();
-        this.buildTabPanel([this.panelStatus, this.gridProtocolList]);
+        this.buildTabPanel([this.gridProtocolList]);
         this.callParent(arguments);
     },
     // Status Panel
     buildStatus: function() {
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status',{
+            settingsCmp: this,
             helpSource: 'application_control_lite_status',
-            isDirty: function() {
-                return false;
-            },
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            items: [{
+            itemsToAppend: [{
                 xtype: 'fieldset',
-                title: i18n._('Status'),
-                html: Ext.String.format(i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
-            }, {
-                xtype: 'fieldset',
+                title: i18n._("Signatures"),
                 defaults: {
                     xtype: "displayfield",
                     labelWidth: 200
@@ -44,9 +36,8 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
                     value: this.getRpcNode().getPatternsBlocked()
                 }]
             }, {
-                xtype: 'fieldset',
                 title: i18n._('Note'),
-                html: Ext.String.format(i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
+                html: Ext.String.format(i18n._("Caution and discretion is advised in configuring Application Control Lite at the risk of harmful false positives."))
             }]
         });
     },

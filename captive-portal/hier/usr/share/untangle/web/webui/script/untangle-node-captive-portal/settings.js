@@ -1,6 +1,5 @@
 Ext.define('Webui.untangle-node-captive-portal.settings', {
     extend:'Ung.NodeWin',
-    panelCaptiveStatus: null,
     gridCaptiveStatus: null,
 
     panelCaptureRules: null,
@@ -12,16 +11,18 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
 
     gridUserEventLog: null,
     gridRuleEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.");
+    },
     initComponent: function() {
         Ung.Main.getNetworkSettings(true);
 
-        this.buildCaptiveStatus();
         this.buildCaptureRules();
         this.buildPassedHosts();
         this.buildCaptivePage();
         this.buildUserAuthentication();
 
-        this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
+        this.buildTabPanel([ this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
                              this.panelUserAuthentication]);
         this.callParent(arguments);
     },
@@ -56,26 +57,19 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: true}
         ];
     },
-    buildCaptiveStatus: function() {
+    buildStatus: function() {
         this.buildGridCaptiveStatus();
-        this.panelCaptiveStatus = Ext.create('Ext.panel.Panel', {
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'captive_portal_status',
-            title: i18n._('Status'),
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            items: [{
-                xtype: 'fieldset',
-                title: i18n._('Status'),
-                flex: 0,
-                html: i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
-             }, this.gridCaptiveStatus]
+            itemsAfterLicense: [this.gridCaptiveStatus]
         });
     },
 
     buildGridCaptiveStatus: function() {
         this.gridCaptiveStatus = Ext.create('Ung.grid.Panel',{
-            flex: 1,
+            margin: '0 10 20 10',
+            height: 220,
             name: "gridCaptiveStatus",
             settingsCmp: this,
             hasAdd: false,

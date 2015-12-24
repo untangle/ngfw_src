@@ -1,8 +1,6 @@
 
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
-    hasDefaultAppStatus: false,
-    panelStatus: null,
     panelEmail: null,
     panelSyslog: null,
     panelData: null,
@@ -10,9 +8,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridHostnameMap: null,
     gridReportEntries: null,
     gridAlertEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Reports provide administrators the visibility and data necessary to investigate security incidents and enforce acceptable network usage policies.");
+    },
     initComponent: function(container, position) {
         this.buildPasswordValidator();
-        this.buildStatus();
         this.buildEmail();
         this.buildSyslog();
         this.buildHostnameMap();
@@ -20,7 +20,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildAlertRules();
         this.buildData();
 
-        var panels = [this.panelStatus, this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
         
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -69,15 +69,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     // Status Panel
     buildStatus: function() {
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            title: i18n._('Status'),
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'reports_status',
-            autoScroll: true,
-            cls: 'ung-panel',
-            items: [this.buildAppStatus(), {
-                title: i18n._('Status'),
-                xtype: 'fieldset',
+            itemsToAppend: [{
+                title: i18n._('View Reports'),
                 items: [{
                     xtype: 'component',
                     html: i18n._('Click to open the reports in a new window.')
@@ -455,7 +451,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 labelWidth: 150,
                 items: [{
                     xtype: 'container',
-                    margin: '5 0 15 20',
+                    margin: '5 0 15 0',
                     html: i18n._('If enabled, Configuration Backup uploads reports data backup files to Google Drive.')
                 }, {
                     xtype: 'component',
@@ -464,7 +460,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     cls: (this.googleDriveConfigured ? null : 'warning')
                 }, {
                     xtype: "button",
-                    style: {marginBottom: '15px'},
+                    margin: '10 0 15 0',
                     disabled: this.googleDriveConfigured,
                     name: "configureGoogleDrive",
                     text: i18n._("Configure Google Drive"),
@@ -473,25 +469,29 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: "checkbox",
                     disabled: !this.googleDriveConfigured,
                     boxLabel: i18n._("Upload Data to Google Drive"),
-                    tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
                     hideLabel: true,
                     checked: this.getSettings().googleDriveUploadData,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.getSettings().googleDriveUploadData = checked;
-                        }, this)
+                        }, this),
+                        "render": function(obj) {
+                            obj.getEl().set({'data-qtip': i18n._("If enabled and configured Configuration Backup will upload backups to google drive.")});
+                        }
                     }
                 },{
                     xtype: "checkbox",
                     disabled: !this.googleDriveConfigured,
                     boxLabel: i18n._("Upload CSVs to Google Drive"),
-                    tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
                     hideLabel: true,
                     checked: this.getSettings().googleDriveUploadCsv,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.getSettings().googleDriveUploadCsv = checked;
-                        }, this)
+                        }, this),
+                        "render": function(obj) {
+                            obj.getEl().set({'data-qtip': i18n._("If enabled and configured Configuration Backup will upload backups to google drive.")});
+                        }
                     }
                 },{
                     xtype: "textfield",
@@ -500,12 +500,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     regexText: i18n._("The field can have only alphanumerics, spaces, or periods."),
                     fieldLabel: i18n._("Google Drive Directory"),
                     labelWidth: 150,
-                    tooltip: i18n._("The destination directory in google drive."),
                     value: this.getSettings().googleDriveDirectory,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.getSettings().googleDriveDirectory = checked;
-                        }, this)
+                        }, this),
+                        "render": function(obj) {
+                            obj.getEl().set({'data-qtip': i18n._("The destination directory in google drive.")});
+                        }
                     }
                 }]
             },{
