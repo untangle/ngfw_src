@@ -1,5 +1,8 @@
 Ext.define('Webui.untangle-node-bandwidth-control.settings', {
     extend:'Ung.NodeWin',
+    getAppSummary: function() {
+        return i18n._("Bandwidth Control allows you to better manage the bandwidth consumption on your network, including controlling and visualizing the use of your network at a fine-grained level.");
+    },
     initComponent: function() {
         this.quotaTimeStore = [
              [-3, i18n._("End of Week")], //END_OF_WEEK from QuotaBoxEntry
@@ -23,12 +26,10 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             [1000000000000, i18n._("Terrabytes")]
         ];
 
-        this.buildPanelStatus();
-        
         this.buildPanelRules();
 
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.panelRules ]);
+        this.buildTabPanel([this.panelRules ]);
         this.callParent(arguments);
     },
     getConditions: function () {
@@ -170,7 +171,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         setupWizard.loadPage(0);
     },
 
-    buildStatus: function() {
+    buildStatusMessage: function() {
         if (!this.getSettings().configured) {
             return {
                 xtype: 'component',
@@ -178,34 +179,26 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                 cls: 'warning'
             };
         }
-
-        var nodeState = this.getRpcNode().getRunState();
-        if (nodeState != "RUNNING") {
-            return {
-                xtype: 'component',
-                html: i18n._("Bandwidth Control is currently disabled."),
-                cls: 'warning'
-            };
-        }
-
-        var qosEnabled = Ung.Main.getNetworkSettings().qosSettings.qosEnabled;
-        if (!qosEnabled) {
-            return {
-                xtype: 'component',
-                html: i18n._("Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."),
-                cls: 'warning'
-            };
+        var node = Ung.Node.getCmp(this.nodeId);
+        if (node.isRunning()) {
+            var qosEnabled = Ung.Main.getNetworkSettings().qosSettings.qosEnabled;
+            if(!qosEnabled) {
+                return {
+                    xtype: 'component',
+                    html: i18n._("Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled."),
+                    cls: 'warning'
+                };
+            }
         }
 
         return {
             xtype: 'component',
-            html: i18n._("Bandwidth Control is currently enabled and running."),
-            style: {color:'green'}
+            html: i18n._("Bandwidth Control is configured")
         };
     },
 
     // Status Panel
-    buildPanelStatus: function() {
+    buildStatus: function() {
         // remove OpenVPN interface (does not work with bandwidth monitor)
         var intfList = Ung.Util.getInterfaceList(false, false);
         for(var i = intfList.length - 1; i >= 0; i--) {
@@ -225,26 +218,13 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         // set "External" as the default value
         this.intfCombo.setValue(intfList[0][0]);
 
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status',{
+            settingsCmp: this,
             helpSource: 'bandwidth_control_status',
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            isDirty: function () {
-                return false;
-            },
-            items: [{
-                xtype: 'component',
-                margin: '5 0 15 20',
-                html: "<b>Bandwidth Control</b>" + i18n._(" controls, monitors, and prioritizes bandwidth usage on the network.")
-            }, {
+            itemsAfterLicense: [{
                 title: i18n._("Status"),
                 items: [
-                    this.buildStatus(),
+                    this.buildStatusMessage(),
                     {
                         xtype: "button",
                         margin: '10 0 0 0',
@@ -351,7 +331,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     }, this)
                     
                 }]
-            }]
+            }] 
         });
     },
 
