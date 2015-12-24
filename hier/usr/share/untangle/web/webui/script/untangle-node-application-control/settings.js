@@ -4,17 +4,18 @@ Ext.define('Webui.untangle-node-application-control.settings', {
     nodeStats: null,
     gridProtoRules: null,
     gridLogicRules: null,
-    panelStatus: null,
     gridEventLog: null,
     gridRuleEventLog: null,
+    getAppSummary: function() {
+        return i18n._("Application Control detects many different types of network traffic, allowing each to be flagged and/or blocked.");
+    },
     initComponent: function() {
         this.nodeStats = this.getRpcNode().getStatistics();
 
-        this.buildStatus();
         this.buildGridProtoRules();
         this.buildGridLogicRules();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.gridProtoRules, this.gridLogicRules]);
+        this.buildTabPanel([this.gridProtoRules, this.gridLogicRules]);
         this.callParent(arguments);
     },
     getConditions: function () {
@@ -79,24 +80,14 @@ Ext.define('Webui.untangle-node-application-control.settings', {
 
     // Status Panel
     buildStatus: function() {
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status',{
+            settingsCmp: this,
             helpSource: 'application_control_status',
-            title: i18n._('Status'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            items: [{
-                title: i18n._('Note'),
-                html: i18n._("Application Control detects many different types of network traffic, allowing each to be flagged and/or blocked.")
-            },{
-                title:'<b>'+ i18n._('Traffic Statistics') + '</b>',
-                labelWidth: 230,
+            itemsToAppend: [{
+                title: i18n._('Traffic Statistics'),
                 defaults: {
                     xtype: "displayfield",
-                    labelWidth:200
+                    labelWidth: 200
                 },
                 items: [{
                     fieldLabel: i18n._('Sessions Scanned'),
@@ -116,10 +107,10 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                     value: this.statFormat(this.nodeStats.blockedCount)
                 }]
             },{
-                title: '<b>' + i18n._('Application Statistics') +'</b>',
+                title: i18n._('Application Statistics'),
                 defaults: {
                     xtype: "displayfield",
-                    labelWidth:200
+                    labelWidth: 200
                 },
                 items: [{
                     fieldLabel: i18n._('Known Applications'),
@@ -135,10 +126,10 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                     value: this.statFormat(this.nodeStats.protoBlockCount)
                 }]
             },{
-                title: '<b>' + i18n._('Rule Statistics') + '</b>',
+                title: i18n._('Rule Statistics'),
                 defaults: {
                     xtype: "displayfield",
-                    labelWidth:200
+                    labelWidth: 200
                 },
                 items: [{
                     fieldLabel: i18n._('Total Rules'),
