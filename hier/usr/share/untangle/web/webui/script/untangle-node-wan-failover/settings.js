@@ -1,17 +1,19 @@
 Ext.define('Webui.untangle-node-wan-failover.settings', {
     extend:'Ung.NodeWin',
-    panelStatus: null,
     panelTests: null,
     gridWanStatus: null,
     gridTests: null,
     gridTestEventLog: null,
     gridEventLog: null,
+    getAppSummary: function() {
+        return i18n._("WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.") + "<br/>" +
+               i18n._("Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.");
+    },
     initComponent: function() {
         this.buildWanStatus();
-        this.buildStatus();
         this.buildTests();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.panelTests]);
+        this.buildTabPanel([this.panelTests]);
         this.callParent(arguments);
     },
     getMissingTestsWarning: function() {
@@ -37,7 +39,8 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         this.gridWanStatus = Ext.create('Ung.grid.Panel',{
             name: "gridWanStatus",
             settingsCmp: this,
-            flex: 1,
+            height: 220,
+            margin: '0 10 20 10',
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
@@ -103,21 +106,12 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
     },
     buildStatus: function() {
         var missingTestsWarning = this.getMissingTestsWarning();
-        this.panelStatus = Ext.create('Ext.panel.Panel', {
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'wan_failover_status',
-            title: i18n._("Status"),
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            items: [{
-                xtype: 'fieldset',
+            itemsAfterLicense: [{
                 title: i18n._('WAN Failover'),
-                flex: 0,
                 items: [{
-                    xtype: "component",
-                    html: i18n._("WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.") + "<br/>" +
-                        i18n._("Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.")
-                }, {
                     xtype: "component",
                     name: "noTestsWarning",
                     html: i18n._("WARNING") + ": " + i18n._("There are currently no tests configured. A test must be configured for each WAN."),
