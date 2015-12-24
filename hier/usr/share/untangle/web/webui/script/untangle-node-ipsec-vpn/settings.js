@@ -6,6 +6,9 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     pagePolicyInfo: null,
     pageLogFile: null,
     warningDisplayed: false,
+    getAppSummary: function() {
+        return i18n._("IPsec allows to securely connect your network to others.");
+    },
     initComponent: function() {
         try {
             this.rpc.netSettings = Ung.Main.getNetworkManager().getNetworkSettings();
@@ -15,7 +18,6 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             Ung.Util.rpcExHandler(e);
         }
 
-        this.buildStatus();
         this.buildOptions();
         this.buildTunnels();
         this.buildVPNConfig();
@@ -23,7 +25,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.buildPanelPolicy();
         this.buildPanelLogFile();
         this.buildPanelVirtualLogFile();
-        this.buildTabPanel([this.pageStatus, this.pageOptions, this.gridTunnels, this.pageVirtualConfig, this.pageStateInfo, this.pagePolicyInfo, this.pageLogFile, this.pageVirtualLogFile]);
+        this.buildTabPanel([this.pageOptions, this.gridTunnels, this.pageVirtualConfig, this.pageStateInfo, this.pagePolicyInfo, this.pageLogFile, this.pageVirtualLogFile]);
         this.callParent(arguments);
     },
 
@@ -31,24 +33,22 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.buildActiveTunnelsGrid();
         this.buildVirtualUsersGrid();
 
-        this.pageStatus = Ext.create('Ext.panel.Panel',{
-            name: 'pageStatus',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'ipsec_vpn_ipsec_status',
-            title: i18n._("Status"),
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            items: [this.gridActiveTunnels,this.gridVirtualUsers]
+            itemsAfterLicense: [this.gridActiveTunnels,this.gridVirtualUsers]
         });
     },
 
     buildActiveTunnelsGrid: function() {
         this.gridActiveTunnels = Ext.create('Ung.grid.Panel',{
             name: "gridActiveTunnels",
+            margin: '0 10 20 10',
+            height: 220,
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            flex: 1,
             title: i18n._("Enabled IPsec Tunnels"),
             dataFn: this.getRpcNode().getTunnelStatus,
             recordJavaClass: "com.untangle.node.ipsec_vpn.ConnectionStatusRecord",
@@ -120,12 +120,12 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         };
         this.gridVirtualUsers = Ext.create('Ung.grid.Panel',{
             name: "gridVirtualUsers",
+            margin: '0 10 20 10',
+            height: 220,
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
             hasRefresh: true,
-            flex: 1,
-            margin: '5 0 0 0',
             title: i18n._("Active VPN Sessions"),
             dataFn: this.getRpcNode().getVirtualUsers,
             recordJavaClass: "com.untangle.node.ipsec_vpn.VirtualUserEntry",
