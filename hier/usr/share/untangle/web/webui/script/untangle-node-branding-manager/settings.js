@@ -1,9 +1,10 @@
 Ext.define('Webui.untangle-node-branding-manager.settings', {
     extend:'Ung.NodeWin',
     hasReports: false,
-    hasDefaultAppStatus: false,
     panelBranding: null,
-    saveSemaphore: 0,
+    getAppSummary: function() {
+        return i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).");
+    },
     initComponent: function(container, position) {
         this.buildBranding();
         this.buildTabPanel([this.panelBranding]);
@@ -37,10 +38,7 @@ Ext.define('Webui.untangle-node-branding-manager.settings', {
                     this.down('button[name="upload_logo_file_button"]').disable();
                 }
             },
-            items: [this.buildAppStatus(), {
-                title: i18n._("Note"),
-                html: i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
-            },{
+            items: [{
                 title: i18n._('Logo'),
                 items: [{
                     xtype: 'radio',
