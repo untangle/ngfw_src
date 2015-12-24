@@ -1,12 +1,14 @@
 Ext.define('Webui.untangle-node-wan-balancer.settings', {
     extend:'Ung.NodeWin',
+    getAppSummary: function() {
+        return i18n._("WAN Balancer improves network performance by spreading your traffic across multiple internet connections. Each WAN interface requires a dedicated network card in the Server.");
+    },
     initComponent: function() {
         this.generateSettings();
-        this.buildStatus();
         this.buildTrafficAllocation();
         this.buildRoutingRules();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.panelTrafficAllocation, this.panelRouteRules]);
+        this.buildTabPanel([this.panelTrafficAllocation, this.panelRouteRules]);
         this.callParent(arguments);
     },
     getRouteRuleConditions: function () {
@@ -31,33 +33,30 @@ Ext.define('Webui.untangle-node-wan-balancer.settings', {
             });
         }
 
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            name: "status",
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: "wan_balancer_status",
-            title: i18n._("Status"),
-            cls: "ung-panel",
-            autoScroll: true,
-            defaults: {
-                xtype: "fieldset"
-            },
-            items: [{
-                html: i18n._( 'Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.' )
-            }, {
+            itemsAfterLicense: [{
                 title: i18n._("Current Traffic Allocation"),
                 defaults: {
                     xtype: "displayfield",
                     labelWidth: 180
                 },
-                items: interfaceItems
-            }, {
-                xtype: "button",
-                margin: '0 0 0 20',
-                text: i18n._("Configure additional WAN interfaces"),
-                handler: Ext.bind(function() {
-                    this.cancelAction(function() {
-                        Ung.Main.openConfig(Ung.Main.configMap["network"]);
-                    });
-                }, this)
+                items: [{
+                    xtype: 'component',
+                    html: i18n._( 'Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.' ),
+                    margin: '0 0 15 0'
+                }]
+                .concat(interfaceItems)
+                .concat([{
+                    xtype: "button",
+                    text: i18n._("Configure additional WAN interfaces"),
+                    handler: Ext.bind(function() {
+                        this.cancelAction(function() {
+                            Ung.Main.openConfig(Ung.Main.configMap["network"]);
+                        });
+                    }, this)
+                }])
             }]
         });
     },
