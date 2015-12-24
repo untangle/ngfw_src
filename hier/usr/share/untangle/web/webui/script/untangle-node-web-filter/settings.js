@@ -1,6 +1,9 @@
 Ext.define('Webui.untangle-node-web-filter.settings',{
     extend:'Webui.untangle-base-web-filter.settings',
     helpSourceName: 'web_filter',
+    getAppSummary: function() {
+        return i18n._("Web Filter enables administrators to block inappropriate web content in realtime. The dynamic URL categorization engine makes it easy to block 450M+ (that’s million!) classified websites in over 140 categories and almost 200 languages. Great for ‘traditional’ categories like porn, gambling, social networking & more.");
+    },
     buildPanelAdvanced: function() {
         this.callParent(arguments);
         var fieldSet = this.panelAdvanced.down('fieldset[name="fieldset_miscellaneous"]');
