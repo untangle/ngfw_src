@@ -1,14 +1,14 @@
 Ext.define('Webui.untangle-node-configuration-backup.settings', {
     extend:'Ung.NodeWin',
-    panelStatus: null,
     gridEventLog: null,
-    hasDefaultAppStatus: false,
+    getAppSummary: function() {
+        return i18n._('Configuration Backup automatically saves your configuration settings and uploads them to <i>My Account</i>');
+    },
     initComponent: function(container, position) {
         // builds the 2 tabs
-        this.buildStatus();
         this.buildGoogle();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.panelGoogle]);
+        this.buildTabPanel([this.panelGoogle]);
         this.callParent(arguments);
     },
     // get branding settings
@@ -22,7 +22,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
         }
         return this.rpc.latestEvent;
     },
-    getStatus: function () {
+    getStatusMessage: function () {
         var event = this.getLatestEvent();
         if (event == null)
             return i18n._("Backup pending.");
@@ -39,30 +39,22 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        this.panelStatus = Ext.create('Ext.panel.Panel',{
-            title: i18n._('Status'),
-            name: 'Status',
+        this.panelStatus = Ext.create('Ung.panel.Status', {
+            settingsCmp: this,
             helpSource: 'configuration_backup_status',
-            autoScroll: true,
-            cls: 'ung-panel',
-            items: [this.buildAppStatus(), {
+            itemsToAppend: [{
                 xtype: 'fieldset',
                 title: i18n._('Status'),
-                html: this.getStatus()
-            },{
-                xtype: 'fieldset',
-                title: i18n._('Note'),
-                html: i18n._('Configuration Backup automatically saves your configuration settings and uploads them to <i>My Account</i>')
+                html: this.getStatusMessage()
             }, {
                 xtype: 'fieldset',
                 title: i18n._('Backup Now'),
-                layout: {type: 'hbox', align: 'middle'},
                 items: [{
                     xtype: 'container',
-                    margin: '0 50 0 0',
                     html: i18n._('Force an immediate backup now.')
                 }, {
                     xtype: 'button',
+                    margin: '10 0 0 0',
                     text: i18n._("Backup now"),
                     name: 'Backup now',
                     iconCls: 'action-icon',
@@ -110,7 +102,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                 labelWidth: 250,
                 items: [{
                     xtype: 'container',
-                    margin: '5 0 15 20',
+                    margin: '5 0 15 0',
                     html: i18n._('If enabled, Configuration Backup uploads backup files to Google Drive.')
                 }, {
                     xtype: 'component',
@@ -119,22 +111,25 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                     cls: (this.googleDriveConfigured ? null : 'warning')
                 }, {
                     xtype: "button",
+                    margin: '5 0 0 0',
                     disabled: this.googleDriveConfigured,
                     name: "configureGoogleDrive",
                     text: i18n._("Configure Google Drive"),
                     handler: Ext.bind(this.configureGoogleDrive, this )
                 },{
                     xtype: "checkbox",
-                    style: {marginTop: '15px'},
+                    margin: '15 0 0 0',
                     disabled: !this.googleDriveConfigured,
                     boxLabel: i18n._("Upload to Google Drive"),
-                    tooltip: i18n._("If enabled and configured Configuration Backup will upload backups to google drive."),
                     hideLabel: true,
                     checked: this.settings.googleDriveEnabled,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.settings.googleDriveEnabled = checked;
-                        }, this)
+                        }, this),
+                        "render": function(obj) {
+                            obj.getEl().set({'data-qtip': i18n._("If enabled and configured Configuration Backup will upload backups to google drive.")});
+                        }
                     }
                 },{
                     xtype: "textfield",
@@ -143,12 +138,14 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                     regexText: i18n._("The field can have only alphanumerics, spaces, or periods."),
                     fieldLabel: i18n._("Google Drive Directory"),
                     labelWidth: 150,
-                    tooltip: i18n._("The destination directory in google drive."),
                     value: this.settings.googleDriveDirectory,
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.settings.googleDriveDirectory = checked;
-                        }, this)
+                        }, this),
+                        "render": function(obj) {
+                            obj.getEl().set({'data-qtip': i18n._("The destination directory in google drive.")});
+                        }
                     }
                 }]
             }]
