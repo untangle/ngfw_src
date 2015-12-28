@@ -432,8 +432,8 @@ public class ReportsManagerImpl implements ReportsManager
         Date startDate = start;
         
         if ( startDate == null ) {
-            //logger.info("startDate not specified, using 1 day ago");
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
+            logger.info("startDate not specified, using 1 day ago: " + startDate);
         }
 
         int extraConditionsLen = 0;

@@ -26,7 +26,7 @@ import com.untangle.uvm.UvmContextFactory;
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
-    private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
@@ -201,11 +201,13 @@ public class ReportEntry implements Serializable, JSONString
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
     {
-        if ( endDate == null )
+        if ( endDate == null ) {
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
+            logger.info("endDate not specified, using now plus 1 min: " + dateFormatter.format(endDate));
+        }
         if ( startDate == null ) {
-            //logger.warn("startDate not specified, using 1 day ago");
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
+            logger.info("startDate not specified, using 1 day ago: " + dateFormatter.format(startDate));
         }
 
         LinkedList<SqlCondition> allConditions = new LinkedList<SqlCondition>();

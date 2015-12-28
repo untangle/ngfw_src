@@ -33,7 +33,7 @@ public class EventReaderImpl
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     
     private ReportsApp node;
 
