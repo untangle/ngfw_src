@@ -102,6 +102,7 @@ Ext.define("Ung.Main", {
                 xtype: 'panel',
                 name: 'panelMenu',
                 header: false,
+                border: false,
                 title: ' ',
                 bodyCls: "content-left",
                 plugins: 'responsive',
@@ -119,12 +120,12 @@ Ext.define("Ung.Main", {
                     xtype: 'image',
                     itemId: 'logoImage',
                     alt: rpc.companyName,
-                    margin: '2 0 3 2',
+                    margin: '3 5 3 5',
                     src: '/images/BrandingLogo.png?'+(new Date()).getTime(),
                     plugins: 'responsive',
                     responsiveConfig: {
                         'phone || small': {
-                            height: 50
+                            height: 55
                         },
                         '!(phone || small)': {
                             height: 82
@@ -201,9 +202,7 @@ Ext.define("Ung.Main", {
             }, {
                 region: 'center',
                 itemId: 'panelCenter',
-                xtype: 'panel',
-                header: false,
-                title: ' ',
+                xtype: 'container',
                 layout: 'card',
                 activeItem: 1,
                 items: [{
