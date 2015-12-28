@@ -11,13 +11,6 @@ Ext.define('Webui.untangle-node-live-support.settings', {
     },
     // Support Panel
     buildStatus: function() {
-        var serverUID, fullVersionAndRevision;
-        try {
-            serverUID = rpc.jsonrpc.UvmContext.getServerUID();
-            fullVersionAndRevision = rpc.adminManager.getFullVersionAndRevision();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
         this.panelStatus = Ext.create('Ung.panel.Status', {
             settingsCmp: this,
             helpSource: 'live_support_support',
@@ -44,10 +37,10 @@ Ext.define('Webui.untangle-node-live-support.settings', {
                 },
                 items: [{
                     fieldLabel: i18n._("UID"),
-                    value: serverUID
+                    value: rpc.serverUID
                 }, {
                     fieldLabel: i18n._("Build"),
-                    value: fullVersionAndRevision
+                    value: rpc.fullVersionAndRevision
                 }]
             }]
         });
