@@ -462,11 +462,9 @@ Ext.define("Ung.Node", {
         if(this.name=="untangle-node-reports") {
             delete rpc.reportsAppInstalledAndEnabled;
         }
-        if(!force) {
-            var panelStatus = this.getSettingsAppPanel();
-            if(panelStatus) {
-                panelStatus.updatePower(this.isRunning());
-            }
+        var panelStatus = this.getSettingsAppPanel();
+        if(panelStatus) {
+            panelStatus.updatePower(this.isRunning());
         }
     },
     getSettingsAppPanel: function() {
@@ -511,6 +509,7 @@ Ext.define("Ung.Node", {
                 if(Ung.Util.handleException(exception, Ext.bind(function(message, details) {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ung.Util.showWarningMessage(title, details);
+                    this.updateRunState(this.runState, true);
                 }, this),"noAlert")) return;
                 this.rpcNode.getRunState(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
@@ -1445,33 +1444,22 @@ Ext.define('Ung.panel.Status', {
             var isRunning = node.isRunning();
             this.items.push({
                 title: i18n._('Power'),
+                name: 'powerSection',
+                cls: isRunning? 'app-on': 'app-off',
                 items: [{
                     xtype: 'component',
                     name: 'powerStatus',
-                    cls: isRunning ? 'app-status-enabled': 'app-status-disabled',
+                    cls: 'app-status',
                     html: this.getPowerMessage(isRunning)
                 }, {
                     xtype: 'button',
                     margin: '10 0 0 0',
-                    name: 'enableButton',
+                    name: 'powerButton',
                     disabled: (node.license && !node.license.valid),
-                    hidden:  isRunning,
-                    iconCls: 'icon-power-on',
-                    text: i18n._("Enable"),
+                    iconCls: 'app-power-button',
+                    text: isRunning ? i18n._("Disable") : i18n._("Enable"),
                     handler: function(button) {
-                        button.disable();
-                        Ung.Node.getCmp(this.nodeId).onPowerClick();
-                    },
-                    scope: this
-                }, {
-                    xtype: 'button',
-                    margin: '10 0 0 0',
-                    name: 'disableButton',
-                    hidden: !isRunning,
-                    iconCls: 'icon-power-off',
-                    text: i18n._("Disable"),
-                    handler: function(button) {
-                        button.disable();
+                        this.updateToAttention();
                         Ung.Node.getCmp(this.nodeId).onPowerClick();
                     },
                     scope: this
@@ -1630,17 +1618,19 @@ Ext.define('Ung.panel.Status', {
     },
     updatePower: function(isRunning) {
         if(this.hasPowerSection) {
-            var powerStatus = this.down("[name=powerStatus]");
-            powerStatus.update({
-                'html': this.getPowerMessage(isRunning),
-                'cls': isRunning ? 'app-status-enabled': 'app-status-disabled'
-            });
-            var enableButton = this.down("button[name=enableButton]");
-            var disableButton = this.down("button[name=disableButton]");
-            enableButton.setVisible(!isRunning);
-            disableButton.setVisible(isRunning);
-            enableButton.enable();
-            disableButton.enable();
+            var powerSection = this.down("[name=powerSection]");
+            powerSection.removeCls(["app-on","app-off","app-attention"]);
+            powerSection.addCls(isRunning ? 'app-on': 'app-off');
+            this.down("[name=powerStatus]").update(this.getPowerMessage(isRunning));
+            var powerButton = this.down("button[name=powerButton]");
+            powerButton.setText(isRunning ? i18n._("Disable") : i18n._("Enable"));
+        }
+    },
+    updateToAttention: function() {
+        if(this.hasPowerSection) {
+            var powerSection = this.down("[name=powerSection]");
+            powerSection.removeCls(["app-on","app-off","app-attention"]);
+            powerSection.addCls("app-attention");
         }
     },
     updateLicense: function(license) {
