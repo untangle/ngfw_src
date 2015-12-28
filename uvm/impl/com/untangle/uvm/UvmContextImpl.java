@@ -657,8 +657,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("skinSettings", this.skinManager().getSettings());
             json.put("hostname", this.networkManager().getNetworkSettings().getHostName());
             json.put("companyName", this.brandingManager().getCompanyName());
+            
+            json.put("serverUID", this.getServerUID());
+            json.put("fullVersion", this.getFullVersion());
             json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
             json.put("storeUrl", this.getStoreUrl());
+            json.put("helpUrl", this.getHelpUrl());
             json.put("isRegistered", this.isRegistered());
             json.put("isExpertMode", this.isExpertMode());
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());

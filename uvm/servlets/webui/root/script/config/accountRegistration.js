@@ -14,10 +14,6 @@ Ext.define('Webui.config.accountRegistration', {
         this.breadcrumbs = [{
             title: i18n._('Account Registration')
         }];
-        rpc.jsonrpc.UvmContext.getServerUID(Ext.bind(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.serverUID = result;
-        }, this));
         this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
 
         this.expirationMonths = Ext.create('Ext.data.ArrayStore', {
@@ -319,10 +315,7 @@ Ext.define('Webui.config.accountRegistration', {
                                 text: i18n._('Open My Account'),
                                 padding: '7 10 7 10',
                                 width: 150,
-                                handler: function() {
-                                    Ung.Main.openMyAccountScreen();
-                                },
-                                scope: this
+                                href: this.getMyAccountLink()
                             }, {
                                 xtype: 'button',
                                 text: i18n._('Skip'),

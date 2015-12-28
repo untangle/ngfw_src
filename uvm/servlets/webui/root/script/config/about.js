@@ -23,10 +23,8 @@ Ext.define('Webui.config.about', {
     },
     buildServer: function() {
         var me = this;
-        var serverUID, fullVersionAndRevision, kernelVersion, modificationState, rebootCount, licensedSized, maxLicensedSize;
+        var kernelVersion, modificationState, rebootCount, licensedSized, maxLicensedSize;
         try {
-            serverUID = rpc.jsonrpc.UvmContext.getServerUID();
-            fullVersionAndRevision = rpc.adminManager.getFullVersionAndRevision();
             kernelVersion = rpc.adminManager.getKernelVersion();
             modificationState = rpc.adminManager.getModificationState();
             rebootCount = rpc.adminManager.getRebootCount();
@@ -54,7 +52,7 @@ Ext.define('Webui.config.about', {
                     width: 600,
                     height: 60,
                     value: i18n._('Do not publicly post or share the UID or account information.') + "\n" +
-                        i18n._('UID')+": " + serverUID
+                        i18n._('UID')+": " + rpc.serverUID
                 }, {
                     xtype: 'textarea',
                     name: 'About',
@@ -63,7 +61,7 @@ Ext.define('Webui.config.about', {
                     style: 'font-weight: bold;',
                     width: 600,
                     height: 300,
-                    value: i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
+                    value: i18n._('Build') + ": " + rpc.fullVersionAndRevision + "\n" + 
                         i18n._('Kernel') + ": " + kernelVersion + "\n" +
                         i18n._('History') + ": " + modificationState + "\n" +
                         i18n._('Reboots') + ": " + rebootCount + "\n" +

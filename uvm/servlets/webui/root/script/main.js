@@ -93,18 +93,37 @@ Ext.define("Ung.Main", {
             '</div>'];
  
         this.viewport = Ext.create('Ext.container.Viewport',{
-            layout:'border',
+            layout: 'border',
             responsiveFormulas: {
                 small: 'width < 600'
             },
             items:[{
+                xtype: 'container',
+                region: 'north',
+                cls: 'top-container',
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'phone || small': {
+                        height: 61
+                    },
+                    '!(phone || small)': {
+                        height: 88
+                    }
+                },
+                weight : -10,
+                items: [{
+                    xtype: 'component',
+                    cls: 'links-menu',
+                    html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
+                        '<a class="menu-link" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
+                        '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
+                }]
+            }, {
                 region: 'west',
-                xtype: 'panel',
-                name: 'panelMenu',
-                header: false,
-                border: false,
-                title: ' ',
-                bodyCls: "content-left",
+                weight : 10,
+                xtype: 'container',
+                name: 'mainMenu',
+                cls: "main-menu",
                 plugins: 'responsive',
                 responsiveConfig: {
                     'small': {
@@ -138,9 +157,7 @@ Ext.define("Ung.Main", {
                     defaults: {
                         scale: 'large',
                         textAlign: 'left',
-                        tooltipType: 'title',
                         cls: 'menu-button'
-                            
                     },
                     width: '100%',
                     items: [{
@@ -166,38 +183,6 @@ Ext.define("Ung.Main", {
                         },
                         scope: this
                     }]
-                }],
-                dockedItems: [{
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    vertical: true,
-                    defaults: {
-                        textAlign: 'left',
-                        tooltipType: 'title'
-                    },
-                    items: [{
-                        name: 'Help',
-                        iconCls: 'icon-help',
-                        text: i18n._('Help'),
-                        handler: function() {
-                            Ung.Main.openHelp(null);
-                        }
-                    }, {
-                        name: 'MyAccount',
-                        iconCls: 'icon-myaccount',
-                        text: i18n._('My Account'),
-                        tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
-                        handler: function() {
-                            Ung.Main.openMyAccountScreen();
-                        }
-                    }, {
-                        name: 'Logout',
-                        iconCls: 'icon-logout',
-                        text: i18n._('Logout'),
-                        handler: function() {
-                            window.location.href = '/auth/logout?url=/webui&realm=Administrator';
-                        }
-                    }]
                 }]
             }, {
                 region: 'center',
@@ -208,6 +193,7 @@ Ext.define("Ung.Main", {
                 items: [{
                     xtype: 'panel',
                     header: false,
+                    border: false,
                     title: ' ',
                     itemId: 'dashboard',
                     layout: {
@@ -267,8 +253,8 @@ Ext.define("Ung.Main", {
             }
         ]});
         Ext.QuickTips.init();
-        this.panelMenu = this.viewport.down("panel[name=panelMenu]");
-        this.menuWidth = this.panelMenu.getWidth();
+        this.mainMenu = this.viewport.down("[name=mainMenu]");
+        this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.systemStats = Ext.create('Ung.SystemStats', {});
         this.loadDashboard();
@@ -311,20 +297,12 @@ Ext.define("Ung.Main", {
         dashboardPanel.add(widgets);
     },
     about: function (forceReload) {
-        if(forceReload || rpc.about === undefined) {
-            var serverUID, fullVersion, language;
-            try {
-                serverUID = rpc.jsonrpc.UvmContext.getServerUID();
-                fullVersion = rpc.jsonrpc.UvmContext.getFullVersion();
-                language = rpc.languageManager.getLanguageSettings()['language'];
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
+        if(rpc.about === undefined) {
             var query = "";
-            query = query + "uid=" + serverUID;
-            query = query + "&" + "version=" + fullVersion;
+            query = query + "uid=" + rpc.serverUID;
+            query = query + "&" + "version=" + rpc.fullVersion;
             query = query + "&" + "webui=true";
-            query = query + "&" + "lang=" + language;
+            query = query + "&" + "lang=" + rpc.languageSettings.language;
 
             rpc.about = query;
         }
@@ -342,17 +320,11 @@ Ext.define("Ung.Main", {
         console.log("Open Url   :", url);
         window.open(url); // open a new window
     },
+    getHelpLink: function( topic ) {
+        return rpc.helpUrl + "?" + "source=" + topic + "&" + this.about();
+    },
     openHelp: function( topic ) {
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getHelpUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "source=" + topic + "&" + this.about();
-
-        console.log("Open Url   :", url);
-        window.open(url); // open a new window
+        window.open(Ung.Main.getHelpLink(target)); // open a new window
     },
     openSupportScreen: function() {
         var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
@@ -364,9 +336,8 @@ Ext.define("Ung.Main", {
             Webui.config.accountRegistrationWin.show();
         }, this);
     },
-    openMyAccountScreen: function() {
-        var url = rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
-        window.open(url); // open a new window
+    getMyAccountLink: function() {
+        return rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
     },
     openLibItemStore: function (libItemName, title) {
         var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.about() ;
