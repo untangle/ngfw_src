@@ -122,6 +122,13 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         return false;
     }
 
+    @Override
+    public boolean isPremium()
+    {
+        return true;
+    }
+
+    @Override
     public String getVendor()
     {
         return "spam_blocker";
