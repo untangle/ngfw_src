@@ -95,24 +95,24 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        assert(matchText == newCompanyName)
+        assert(newCompanyName in matchText)
 
         # Verify email address is in the contact link
         myRegex = re.compile('mailto:(.*?)\?', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        assert(matchText == newContactEmail)
+        assert(newContactEmail in matchText)
 
         # Verify contact name is in the mailto
         myRegex = re.compile('mailto:.*?>(.*?)<\/a>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        assert(matchText == newContactName)
+        assert(newContactName in matchText)
 
         # Verify URL is in the Logo box
         myRegex = re.compile('<a href\=\"(.*?)\"><img alt\=\"\" src\=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
-        assert(matchText == newURL)
+        assert(newURL in matchText)
        
         # Check login page for branding
         internalAdmin = None
@@ -137,7 +137,7 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
         # print "MatchText <%s>" % matchText
-        assert(matchText == newCompanyName)
+        assert(newCompanyName in matchText)
 
     def test_021_changeBranding_bannerMessage_added(self):
         global node, nodeWeb, nodeData
