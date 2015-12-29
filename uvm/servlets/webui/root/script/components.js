@@ -546,7 +546,7 @@ Ext.define("Ung.Node", {
     },
     //on Buy Now Action
     onBuyNowAction: function() {
-        Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
+        Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"));
     },
     getRpcNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
@@ -767,7 +767,6 @@ Ung.MetricManager = {
     started: false,
     intervalId: null,
     cycleCompleted: true,
-    historyMaxSize:100,
     firstToleratedError: null,
     errorToleranceInterval: 300000, //5 minutes
 
@@ -840,6 +839,38 @@ Ung.MetricManager = {
                 }
             }
         }, this));
+    }
+};
+
+//Metric Manager object
+Ung.LicenseLoader = {
+    // update interval in millisecond
+    updateFrequency: 60000,
+    //how many times to check (50 times x 1 minute = 50 minutes)
+    count: 50,
+    started: false,
+    intervalId: null,
+    check: function() {
+        this.count = 50;
+        if(!this.started) {
+            this.intervalId = window.setInterval(function() {Ung.LicenseLoader.run();}, this.updateFrequency);
+            this.started = true;
+        }
+        return true;
+    },
+    stop: function() {
+        if (this.intervalId !== null) {
+            window.clearInterval(this.intervalId);
+        }
+        this.started = false;
+    },
+    run: function () {
+        this.count--;
+        if(this.count>0) {
+            Ung.Main.reloadLicenses();
+        } else {
+            this.stop();
+        }
     }
 };
 

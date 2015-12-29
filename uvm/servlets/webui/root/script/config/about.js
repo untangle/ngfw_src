@@ -72,7 +72,7 @@ Ext.define('Webui.config.about', {
             }]
         });
         Ext.data.JsonP.request({
-            url: rpc.storeUrl + "?" + "action=find_account&uid="+serverUID,
+            url: rpc.storeUrl + "?" + "action=find_account&uid="+rpc.serverUID,
             type: 'GET',
             success: function(response, opts) {
                 if( response!=null && response.account) {
@@ -84,7 +84,7 @@ Ext.define('Webui.config.about', {
                 }
             },
             failure: function(response, opts) {
-                console.log("Failed to get account info fro UID:", serverUID);
+                console.log("Failed to get account info fro UID:", rpc.serverUID);
             }
         });
     },

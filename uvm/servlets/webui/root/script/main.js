@@ -57,6 +57,12 @@ Ext.define("Ung.Main", {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
+        if(rpc.isRegistered) {
+            Ung.Main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
+              //just make sure the licenses are reloaded on page start
+            }, true, this));
+        }
+
         this.startApplication();
     },
     startApplication: function() {
@@ -114,7 +120,7 @@ Ext.define("Ung.Main", {
                     xtype: 'component',
                     cls: 'links-menu',
                     html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
-                        '<a class="menu-link" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
+                        '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
                         '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
                 }]
             }, {
@@ -307,7 +313,7 @@ Ext.define("Ung.Main", {
         }
         return rpc.about;
     },
-    openLegal: function( topic ) {
+    openLegal: function() {
         var baseUrl;
         try {
             baseUrl = rpc.jsonrpc.UvmContext.getLegalUrl();
@@ -325,11 +331,18 @@ Ext.define("Ung.Main", {
     openHelp: function( topic ) {
         var url = Ung.Main.getHelpLink(topic);
         window.open(Ung.Main.getHelpLink(topic)); // open a new window
-        console.log("Help link:",url);
+        console.log("Help link:", url);
     },
     openSupportScreen: function() {
         var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
         window.open(url); // open a new window
+        Ung.LicenseLoader.check();
+    },
+    openFailureScreen: function () {
+        Ext.require(['Webui.config.offline'], function() {
+            Webui.config.offlineWin = Ext.create('Webui.config.offline', {});
+            Webui.config.offlineWin.show();
+        }, this);
     },
     openRegistrationScreen: function () {
         Ext.require(['Webui.config.accountRegistration'], function() {
@@ -340,11 +353,12 @@ Ext.define("Ung.Main", {
     getMyAccountLink: function() {
         return rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
     },
-    openLibItemStore: function (libItemName, title) {
+    openLibItemStore: function (libItemName) {
         var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.about() ;
-
+        window.open(url);
         console.log("Open Url   :", url);
-        window.open(url); // open a new window
+        Ung.LicenseLoader.check();
+
     },
     openSetupWizardScreen: function() {
         var url = "/setup";
@@ -1179,12 +1193,6 @@ Ext.define("Ung.Main", {
             }
         }
         return null;
-    },
-    openFailureScreen: function () {
-        Ext.require(['Webui.config.offline'], function() {
-            Webui.config.offlineWin = Ext.create('Webui.config.offline', {});
-            Webui.config.offlineWin.show();
-        }, this);
     },
     // Prepares the uvm to display the welcome screen
     showWelcomeScreen: function () {
