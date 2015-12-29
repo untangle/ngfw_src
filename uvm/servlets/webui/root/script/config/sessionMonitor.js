@@ -287,7 +287,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Protocol") + i18n._(" (Application Control Lite)"),
+            header: i18n._("Protocol") + " " + "(Application Control Lite)",
             dataIndex: "application-control-lite-protocol",
             width: 100,
             filter: {
@@ -295,7 +295,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category") + i18n._(" (Application Control Lite)"),
+            header: i18n._("Category") + " " + "(Application Control Lite)",
             dataIndex: "application-control-lite-category",
             width: 100,
             filter: {
@@ -303,7 +303,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Description") + i18n._(" (Application Control Lite)"),
+            header: i18n._("Description") + " " + "(Application Control Lite)",
             dataIndex: "application-control-lite-description",
             width: 100,
             filter: {
@@ -311,7 +311,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Matched?") + i18n._(" (Application Control Lite)"),
+            header: i18n._("Matched?") + " " + "(Application Control Lite)",
             dataIndex: "application-control-lite-matched",
             width: 100,
             filter: {
@@ -321,7 +321,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Hostname") +  i18n._(" (HTTP)"),
+            header: i18n._("Hostname") + " " + "(HTTP)",
             dataIndex: "http-hostname",
             width: 120,
             filter: {
@@ -329,7 +329,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("URI") +  i18n._(" (HTTP)"),
+            header: i18n._("URI") + " " + "(HTTP)",
             dataIndex: "http-uri",
             width: 120,
             filter: {
@@ -337,7 +337,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category Name") +  i18n._(" (Web Filter)"),
+            header: i18n._("Category Name") + " " + "(Web Filter)",
             dataIndex: "web_filter-best-category-name",
             width: 100,
             filter: {
@@ -345,7 +345,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category Description") +  i18n._(" (Web Filter)"),
+            header: i18n._("Category Description") + " " + "(Web Filter)",
             dataIndex: "web_filter-best-category-description",
             width: 100,
             filter: {
@@ -353,7 +353,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category Flagged") +  i18n._(" (Web Filter)"),
+            header: i18n._("Category Flagged") + " " + "(Web Filter)",
             dataIndex: "web_filter-best-category-flagged",
             width: 50,
             filter: {
@@ -363,7 +363,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category Blocked") +  i18n._(" (Web Filter)"),
+            header: i18n._("Category Blocked") + " " + "(Web Filter)",
             dataIndex: "web_filter-best-category-blocked",
             width: 50,
             filter: {
@@ -373,7 +373,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Content Type") +  i18n._(" (Web Filter)"),
+            header: i18n._("Content Type") + " " + "(Web Filter)",
             dataIndex: "web_filter-content-type",
             width: 50,
             filter: {
@@ -381,7 +381,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Flagged") +  i18n._(" (Web Filter)"),
+            header: i18n._("Flagged") + " " + "(Web Filter)",
             dataIndex: "web_filter-flagged",
             width: 50,
             filter: {
@@ -390,14 +390,14 @@ Ext.define('Webui.config.sessionMonitor', {
                 noText: 'false'
             }
         },{
-            header: i18n._("Protochain") +  i18n._(" (Application Control)"),
+            header: i18n._("Protochain") + " " + "(Application Control)",
             dataIndex: "application-control-protochain",
             width: 140,
             filter: {
                 type: 'string'
             }
         },{
-            header: i18n._("Application") +  i18n._(" (Application Control)"),
+            header: i18n._("Application") + " " + "(Application Control)",
             dataIndex: "application-control-application",
             width: 100,
             filter: {
@@ -405,7 +405,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Category") +  i18n._(" (Application Control)"),
+            header: i18n._("Category") + " " + "(Application Control)",
             dataIndex: "application-control-category",
             width: 100,
             filter: {
@@ -413,7 +413,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Detail") +  i18n._(" (Application Control)"),
+            header: i18n._("Detail") + " " + "(Application Control)",
             dataIndex: "application-control-detail",
             width: 120,
             filter: {
@@ -421,7 +421,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Confidence") +  i18n._(" (Application Control)"),
+            header: i18n._("Confidence") + " " + "(Application Control)",
             dataIndex: "application-control-confidence",
             width: 50,
             filter: {
@@ -429,7 +429,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Productivity") +  i18n._(" (Application Control)"),
+            header: i18n._("Productivity") + " " + "(Application Control)",
             dataIndex: "application-control-productivity",
             width: 50,
             filter: {
@@ -437,7 +437,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             hidden: true,
-            header: i18n._("Risk") +  i18n._(" (Application Control)"),
+            header: i18n._("Risk") + " " + "(Application Control)",
             dataIndex: "application-control-risk",
             width: 50,
             filter: {
@@ -447,7 +447,7 @@ Ext.define('Webui.config.sessionMonitor', {
 
         if(this.bandwidthColumns) {
             columns.push({
-                header: i18n._("Client KB/s") + i18n._(" (Bandwidth Control)"),
+                header: i18n._("Client KB/s") + " " + "(Bandwidth Control)",
                 dataIndex: "clientKBps",
                 width: 80,
                 gridColumnSummaryType: "sum",
@@ -455,7 +455,7 @@ Ext.define('Webui.config.sessionMonitor', {
                     type: 'numeric'
                 }
             },{
-                header: i18n._("Server KB/s") + i18n._(" (Bandwidth Control)"),
+                header: i18n._("Server KB/s") + " " + "(Bandwidth Control)",
                 dataIndex: "serverKBps",
                 width: 80,
                 gridColumnSummaryType: "sum",
@@ -463,7 +463,7 @@ Ext.define('Webui.config.sessionMonitor', {
                     type: 'numeric'
                 }
             },{
-                header: i18n._("Total KB/s") + i18n._(" (Bandwidth Control)"),
+                header: i18n._("Total KB/s") + " " + "(Bandwidth Control)",
                 dataIndex: "totalKBps",
                 width: 80,
                 gridColumnSummaryType: "sum",
@@ -475,7 +475,7 @@ Ext.define('Webui.config.sessionMonitor', {
 
         columns.push({
             hidden: !this.bandwidthColumns,
-            header: i18n._("Priority") + i18n._(" (Bandwidth Control)"),
+            header: i18n._("Priority") + " " + "(Bandwidth Control)",
             dataIndex: "priority",
             width: 80,
             renderer: function(value) {
