@@ -48,6 +48,7 @@ CREATE TABLE reports.sessions (
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         bypassed boolean,
+        entitled boolean,
         protocol int2,
         icmp_type int2,
         hostname text,
@@ -115,6 +116,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','filter_prefix','text') #11.2
 
         sql_helper.add_column('sessions','application_control_category','text') #12.0
+        sql_helper.add_column('sessions','entitled','boolean') #12.0
 
         sql_helper.rename_column('sessions','capture_blocked','captive_portal_blocked') # 11.2
         sql_helper.rename_column('sessions','capture_rule_index','captive_portal_rule_index') # 11.2

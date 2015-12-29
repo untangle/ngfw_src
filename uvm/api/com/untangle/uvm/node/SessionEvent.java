@@ -19,6 +19,7 @@ public class SessionEvent extends LogEvent
 {
     private Long sessionId = -1L;
     private boolean bypassed = false;
+    private boolean entitled = true;
     private Short protocol;
     private Short icmpType = null;
     private Integer clientIntf;
@@ -52,6 +53,12 @@ public class SessionEvent extends LogEvent
      */
     public boolean getBypassed() { return bypassed; }
     public void setBypassed(boolean newValue) { this.bypassed = newValue; }
+
+    /**
+     * If the session is entitled to paid apps
+     */
+    public boolean getEntitled() { return entitled; }
+    public void setEntitled(boolean newValue) { this.entitled = newValue; }
     
     /**
      * Protocol.  Currently always either 6 (TCP) or 17 (UDP).
@@ -162,15 +169,16 @@ public class SessionEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
         int i=0;
         pstmt.setLong(++i,getSessionId());
         pstmt.setBoolean(++i,getBypassed());
+        pstmt.setBoolean(++i,getEntitled());
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setInt(++i,getProtocol());
         pstmt.setObject(++i,getIcmpType(), java.sql.Types.OTHER);

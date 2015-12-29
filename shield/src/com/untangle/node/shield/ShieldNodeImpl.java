@@ -24,7 +24,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class ShieldNodeImpl extends NodeBase  implements ShieldNode
+public class ShieldNodeImpl extends NodeBase
 {
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
@@ -40,7 +40,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
         this.handler = new EventHandler( this );
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

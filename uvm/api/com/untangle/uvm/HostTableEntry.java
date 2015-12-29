@@ -27,7 +27,7 @@ public class HostTableEntry implements Serializable, JSONString
     private long        lastAccessTime = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
     private long        lastCompletedTcpSessionTime = 0; /* time of the last completed TCP session */
-    private boolean     licensed = true;
+    private boolean     entitled = true;
 
     private String hostname = null;
 
@@ -111,10 +111,10 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
     
-    public boolean getLicensed() { return this.licensed; }
-    public void setLicensed( boolean newValue )
+    public boolean getEntitled() { return this.entitled; }
+    public void setEntitled( boolean newValue )
     {
-        this.licensed = newValue;
+        this.entitled = newValue;
         updateAccessTime();
     }
     

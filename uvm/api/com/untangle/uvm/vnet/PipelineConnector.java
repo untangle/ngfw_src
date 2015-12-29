@@ -28,6 +28,8 @@ public interface PipelineConnector
 
     long[] liveSessionIds();
 
+    boolean isPremium();
+    
     List<NodeSession> liveSessions();
     
     Node node();

@@ -29,13 +29,13 @@ public class FtpNodeImpl extends NodeBase
     private SessionEventHandler clientSideDataHandler = new ForkedEventHandler( new FtpClientParserEventHandler(), new FtpUnparserEventHandler(true) );
     private SessionEventHandler serverSideDataHandler = new ForkedEventHandler( new FtpUnparserEventHandler(false), new FtpServerParserEventHandler() );
     
-    private final PipelineConnector controlClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-client-side", this, null, clientSideCtlHandler, Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS, Affinity.CLIENT, -1000, null );
-    private final PipelineConnector controlServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-server-side", this, null, serverSideCtlHandler, Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_STREAM, Affinity.SERVER, 1000, "ftp-control-client-side" );
-    private final PipelineConnector dataClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-client-side", this, null, clientSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS, Affinity.CLIENT, -1000, null );
-    private final PipelineConnector dataServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-server-side", this, null, serverSideDataHandler, Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_STREAM, Affinity.SERVER, 1000, "ftp-data-client-side" );
+    private final PipelineConnector controlClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-client-side", this, null, clientSideCtlHandler, Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS, Affinity.CLIENT, -1000, false, null );
+    private final PipelineConnector controlServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-server-side", this, null, serverSideCtlHandler, Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_STREAM, Affinity.SERVER, 1000, false, "ftp-control-client-side" );
+    private final PipelineConnector dataClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-client-side", this, null, clientSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS, Affinity.CLIENT, -1000, false, null );
+    private final PipelineConnector dataServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-server-side", this, null, serverSideDataHandler, Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_STREAM, Affinity.SERVER, 1000, false, "ftp-data-client-side" );
 
-    private final PipelineConnector natFtpConnectorCtl = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-ctl", this, null, new FtpNatHandler(), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
-    private final PipelineConnector natFtpConnectorData = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-data", this, null, new FtpNatHandler(), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
+    private final PipelineConnector natFtpConnectorCtl = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-ctl", this, null, new FtpNatHandler(), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0, false);
+    private final PipelineConnector natFtpConnectorData = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-data", this, null, new FtpNatHandler(), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0, false);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { controlClientSideConnector, controlServerSideConnector, dataClientSideConnector, dataServerSideConnector, natFtpConnectorCtl, natFtpConnectorData };
 

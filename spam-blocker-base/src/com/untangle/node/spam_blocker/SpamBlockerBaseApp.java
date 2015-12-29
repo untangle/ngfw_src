@@ -23,7 +23,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.NodeMetric;
 
-public class SpamBlockerBaseApp extends NodeBase
+public abstract class SpamBlockerBaseApp extends NodeBase
 {
     private static final Logger logger = Logger.getLogger( SpamBlockerBaseApp.class );
 
@@ -90,8 +90,8 @@ public class SpamBlockerBaseApp extends NodeBase
 
         // We want to make sure that spam is before virus in the pipeline (towards the client for smtp)
         // Would want the tarpit event handler before the casing, this way if it blocks a session the casing doesn't have to be initialized.
-        this.smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10);
-        this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-tarpit-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
+        this.smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10, isPremium());
+        this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-tarpit-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11, isPremium());
         this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
         
         loadGreyList();
@@ -237,11 +237,8 @@ public class SpamBlockerBaseApp extends NodeBase
         setSettings(tmpSpamSettings);
     }
 
-    // NodeBase methods ----------------------------------------------
-    public String getVendor()
-    {
-        return "sa";
-    }
+    public abstract String getVendor();
+    public abstract boolean isPremium();
 
     @Override
     protected PipelineConnector[] getConnectors()

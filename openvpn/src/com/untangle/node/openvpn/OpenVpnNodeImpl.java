@@ -30,7 +30,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
+public class OpenVpnNodeImpl extends NodeBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -66,7 +66,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

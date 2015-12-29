@@ -38,7 +38,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "macAddress": "11:22:33:44:55:6"+(ii%10),
                         "macVendor": "MAC vendor"+i,
                         "hostname": i%3?("p.twitter.com"+i):null,
-                        "licensed": true,
+                        "entitled": true,
                         "active": true,
                         "lastAccessTime": 0,//d.getTime()+(i*86400000),
                         "lastSessionTime": 0,//d.getTime()+(i*86400000),
@@ -137,7 +137,7 @@ Ext.define('Webui.config.hostMonitor', {
                 mapping: "lastCompletedTcpSessionTime",
                 convert: dateConvertFn
             }, {
-                name: "licensed",
+                name: "entitled",
                 type: 'boolean',
                 convert: Ung.Util.preventEmptyValueConverter
             }, {
@@ -267,8 +267,8 @@ Ext.define('Webui.config.hostMonitor', {
                 }
             }, {
                 hidden: true,
-                header: i18n._("License Status"),
-                dataIndex: "licensed",
+                header: i18n._("Entitled Status"),
+                dataIndex: "entitled",
                 width: 80,
                 filter: {
                     type: 'boolean'

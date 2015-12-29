@@ -16,6 +16,7 @@ i18n = I18N()
 dict = {
     'event_id' : i18n._('Event ID'),
     'time_stamp' : i18n._('Timestamp'),
+    'entitled' : i18n._('Entitled'),
     'session_id' : i18n._('Session ID'),
     'client_intf' : i18n._('Client Interface'),
     'server_intf' : i18n._('Server Interface'),

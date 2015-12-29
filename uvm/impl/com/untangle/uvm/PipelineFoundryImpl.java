@@ -66,6 +66,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
      */
     private static final Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnectorImpl>>>();
+    private static final Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> pipelineNonPremiumFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnectorImpl>>>();
     
     /**
      * Private constructor to ensure singleton
@@ -84,7 +85,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * "weld" is builds a list of all the interested pipelineAgents for a given session
      * It does so based on the given policyId and all the nodes/apps given subscriptions.
      */
-    public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Long policyId )
+    public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Long policyId, boolean includePremium )
     {
         Long t0 = System.nanoTime();
         List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
@@ -129,7 +130,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         long ct0 = System.nanoTime();
         for ( Fitting fitting : fittings ) {
-            List<PipelineConnectorImpl> acList = weldPipeline( sessionTuple, policyId, fitting );
+            List<PipelineConnectorImpl> acList = weldPipeline( sessionTuple, policyId, fitting, includePremium );
             pipelineConnectorList.addAll( acList );
         }
         long ct1 = System.nanoTime();
@@ -172,14 +173,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return pipelineConnectorList;
     }
 
-    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
+    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
-        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, null );
+        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
-    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String buddy )
+    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
-        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, buddy );
+        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, buddy );
     }
     
     /**
@@ -224,20 +225,26 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         logger.debug("Clearing Pipeline Foundry cache...");
         pipelineFoundryCache.clear();
+        pipelineNonPremiumFoundryCache.clear();
     }
 
     /**
      * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
      */
-    private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting )
+    private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting, boolean includePremium )
     {
         List<PipelineConnectorImpl> pipelineConnectorList = null;
+        Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> cache;
 
+        if (includePremium)
+            cache = pipelineFoundryCache;
+        else
+            cache = pipelineNonPremiumFoundryCache;
         /**
          * Check if there is a cache for this policy. First time is without the lock
          */
-        Map<Fitting, List<PipelineConnectorImpl>> fittingCache = pipelineFoundryCache.get(policyId);
+        Map<Fitting, List<PipelineConnectorImpl>> fittingCache = cache.get(policyId);
 
         /**
          * If there is a cache, check if the acList exists for this fitting
@@ -249,12 +256,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if ( pipelineConnectorList == null ) {
             synchronized (this) {
                 /* Check if there is a cache again, after grabbing the lock */
-                fittingCache = pipelineFoundryCache.get( policyId );
+                fittingCache = cache.get( policyId );
 
                 if ( fittingCache == null ) {
                     /* Cache doesn't exist, create a new empty cache for this policy */
                     fittingCache = new HashMap<Fitting, List<PipelineConnectorImpl>>();
-                    pipelineFoundryCache.put( policyId, fittingCache );
+                    cache.put( policyId, fittingCache );
                 } else {
                     /* Cache exists, get the acList for this fitting */
                     pipelineConnectorList = fittingCache.get( fitting );
@@ -270,7 +277,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
                     List<PipelineConnectorImpl> availablePipelineConnectorsNodes = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
 
-                    removeDuplicates( policyId, availablePipelineConnectorsNodes );
+                    removeUnnecessaryPipelineConnectors( policyId, availablePipelineConnectorsNodes, includePremium );
                     printPipelineConnectorList( "available connectors: ", availablePipelineConnectorsNodes );
 
                     addPipelineConnectors( pipelineConnectorList,
@@ -373,7 +380,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Remove "duplicate" nodes from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
      */
-    private void removeDuplicates( Long policyId, List<PipelineConnectorImpl> acList )
+    private void removeUnnecessaryPipelineConnectors( Long policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
@@ -384,7 +391,21 @@ public class PipelineFoundryImpl implements PipelineFoundry
             if (node.getRunState() == NodeSettings.NodeState.RUNNING)
                 enabledNodesInPolicy.add(node.getNodeProperties().getName());
         }
-        
+
+        /**
+         * Remove premium pipelineConnectors if includePremium is false
+         */
+        if (!includePremium) {
+            for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
+                PipelineConnectorImpl pipelineConnector = i.next();
+                if (pipelineConnector.isPremium())
+                    i.remove();
+            }
+        }
+
+        /**
+         * Remove inherited apps if a app in the child overrides it
+         */
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 

@@ -77,6 +77,12 @@ public class WebFilterLiteApp extends WebFilterBase
     }
     
     @Override
+    public boolean isPremium()
+    {
+        return false;
+    }
+
+    @Override
     public void initializeSettings(WebFilterSettings settings)
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();

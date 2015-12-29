@@ -190,6 +190,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'bypassed',
                     type: 'boolean'
                 }, {
+                    name: 'entitled',
+                    type: 'boolean'
+                }, {
                     name: 'protocol'
                 }, {
                     name: 'icmp_type'

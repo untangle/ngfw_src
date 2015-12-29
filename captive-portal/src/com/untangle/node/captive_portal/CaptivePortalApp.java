@@ -94,9 +94,9 @@ public class CaptivePortalApp extends NodeBase
         addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
         addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
 
-        this.trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptivePortalTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
-        this.httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32);
-        this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptivePortalHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
+        this.trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptivePortalTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 0, false);
+        this.httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32, false);
+        this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptivePortalHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30, false);
         this.connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
     }
 

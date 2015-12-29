@@ -12,8 +12,9 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.node.HostnameLookup;
 
-public class RouterImpl extends NodeBase implements Router
+public class RouterImpl extends NodeBase implements HostnameLookup
 {
     private final RouterEventHandler handler;
     private final DhcpMonitor dhcpMonitor;
@@ -34,7 +35,7 @@ public class RouterImpl extends NodeBase implements Router
         /**
          * Have to figure out pipeline ordering, this should always towards the server
          */
-        routerConnector = UvmContextFactory.context().pipelineFoundry().create("router", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32 - 1);
+        routerConnector = UvmContextFactory.context().pipelineFoundry().create("router", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32 - 1, false );
 
         connectors = new PipelineConnector[] { routerConnector };
     }

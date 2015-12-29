@@ -28,9 +28,9 @@ public class EventHandler extends AbstractEventHandler
     private boolean blockSilently = true;
 
     /* Firewall Node */
-    private final FirewallImpl node;
+    private final FirewallApp node;
 
-    public EventHandler( FirewallImpl node )
+    public EventHandler( FirewallApp node )
     {
         super(node);
 

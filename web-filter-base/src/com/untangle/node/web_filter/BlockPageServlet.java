@@ -75,7 +75,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} | {1} Warning", new String[] { bm.getCompanyName(), this.blockDetails.getNodeTitle() }, i18n_map);
+            return bm.getCompanyName() + " | " + this.blockDetails.getNodeTitle() + " " + I18nUtil.tr("Warning", i18n_map);
         }
 
         /* Retrieve the title (top of the pae) of the page */

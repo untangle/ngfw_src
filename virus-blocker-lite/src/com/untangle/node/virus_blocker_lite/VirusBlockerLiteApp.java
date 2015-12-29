@@ -14,6 +14,7 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         super( nodeSettings, nodeProperties, new ClamScanner() );
     }
 
+    @Override
     protected int getHttpStrength()
     {
         // virus blocker is 18
@@ -22,6 +23,7 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         return 15;
     }
 
+    @Override
     protected int getFtpStrength()
     {
         // virus blocker is 18
@@ -30,6 +32,7 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         return 15;
     }
 
+    @Override
     protected int getSmtpStrength()
     {
         // virus blocker is 15
@@ -38,14 +41,22 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         return 18; 
     }
 
+    @Override
     public String getName()
     {
         return "virus_blocker_lite";
     }
 
+    @Override
     public String getAppName()
     {
         return "virus-blocker-lite";
+    }
+
+    @Override
+    public boolean isPremium()
+    {
+        return false;
     }
     
     @Override

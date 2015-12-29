@@ -48,7 +48,7 @@ public class ApplicationControlLiteApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("application-control-lite", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("application-control-lite", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

@@ -505,9 +505,9 @@ public class HostTableImpl implements HostTable
         int currentSize = getCurrentActiveSize();
         
         // if there is a seat limit, and the size of the table is currently greater than that seatLimit
-        // this host is out of compliance and not licensed
+        // this host is out of compliance and not entitled
         if ( seatLimit > 0 && currentSize > seatLimit ) {
-            entry.setLicensed( false );
+            entry.setEntitled( false );
         }
         
         return entry;
@@ -668,12 +668,12 @@ public class HostTableImpl implements HostTable
                     }
 
                     /**
-                     * if certain hosts are "unlicensed" and show now be licensed, set them back
+                     * if certain hosts are "unlicensed" and show now be entitled, set them back
                      */
                     int numUnlicensed = 0;
                     entries = new LinkedList<HostTableEntry>(hostTable.values());
                     for (HostTableEntry entry : entries) {
-                        if (!entry.getLicensed())
+                        if (!entry.getEntitled())
                             numUnlicensed++;
                     }
                     if ( UvmContextFactory.context().licenseManager() != null ) {
@@ -683,8 +683,8 @@ public class HostTableImpl implements HostTable
                         if ( numUnlicensed > excess ) {
                             int reduction = numUnlicensed - excess;
                             for (HostTableEntry entry : entries) {
-                                if (!entry.getLicensed()) {
-                                    entry.setLicensed( true );
+                                if (!entry.getEntitled()) {
+                                    entry.setEntitled( true );
                                     reduction--;
                                     if ( reduction < 1 )
                                         break;

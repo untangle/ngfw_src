@@ -300,6 +300,7 @@ dict['sessions'].update({
     'icmp_type' : 'The ICMP type of session if ICMP',
     'end_time' : 'The time the session ended',
     'bypassed' : 'True if the session was bypassed, false otherwise',
+    'entitled' : 'True if the session is entitled to premium functionality',
     'c2p_bytes' : 'The number of bytes the client sent to Untangle (client-to-pipeline)',
     'p2c_bytes' : 'The number of bytes Untangle sent to client (pipeline-to-client)',
     's2p_bytes' : 'The number of bytes the server sent to Untangle (client-to-pipeline)',

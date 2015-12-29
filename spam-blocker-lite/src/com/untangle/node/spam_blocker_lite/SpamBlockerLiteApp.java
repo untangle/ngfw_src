@@ -94,6 +94,13 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
         super.postStop();
     }
 
+    @Override
+    public boolean isPremium()
+    {
+        return false;
+    }
+
+    @Override
     public String getVendor()
     {
         return "spam_blocker_lite";

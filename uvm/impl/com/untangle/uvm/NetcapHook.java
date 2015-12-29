@@ -104,6 +104,8 @@ public abstract class NetcapHook implements Runnable
             int serverIntf = netcapSession.serverSide().interfaceId();
             InetAddress clientAddr = netcapSession.clientSide().client().host();
             long sessionId = sessionGlobalState.id();
+            boolean entitled = true;
+            
             if ( logger.isDebugEnabled()) {
                 logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
             }
@@ -157,6 +159,9 @@ public abstract class NetcapHook implements Runnable
             if ( entry != null ) {
                 entry.setLastSessionTime( System.currentTimeMillis() );
 
+                if ( ! entry.getEntitled() )
+                    entitled = false;
+                
                 username = entry.getUsername();
                 if (username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
@@ -199,12 +204,14 @@ public abstract class NetcapHook implements Runnable
                 this.policyId = 1L; /* Default Policy */
             }
 
-            pipelineConnectors = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId );
+            pipelineConnectors = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId, entitled );
             sessionGlobalState.setPipelineConnectorImpls(pipelineConnectors);
             
             /* Create the sessionEvent early so they can be available at request time. */
             sessionEvent =  new SessionEvent( );
             sessionEvent.setSessionId( sessionGlobalState.id() );
+            sessionEvent.setBypassed( false );
+            sessionEvent.setEntitled( entitled );
             sessionEvent.setProtocol( sessionGlobalState.getProtocol() );
             sessionEvent.setClientIntf( clientSide.getClientIntf() );
             sessionEvent.setServerIntf( clientSide.getServerIntf() );

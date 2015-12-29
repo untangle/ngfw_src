@@ -45,6 +45,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     private final Fitting outputFitting;
     private final Affinity affinity;
     private final Integer affinityStrength;
+    private final boolean premium;
 
     /**
      * A buddy is another pipelineConnector that this connector must not be adjacent to.
@@ -62,12 +63,12 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
     
-    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
+    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
-        this( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, null );
+        this( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
-    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, String buddy )
+    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
         this.name = name;
         this.node = node;
@@ -77,6 +78,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         this.outputFitting = outputFitting;
         this.affinity = affinity;
         this.affinityStrength = affinityStrength;
+        this.premium = premium;
         this.buddy = buddy;
         
         dispatcher = new Dispatcher(this);
@@ -101,7 +103,8 @@ public class PipelineConnectorImpl implements PipelineConnector
     public Affinity getAffinity() { return this.affinity; }
     public Integer getAffinityStrength() { return this.affinityStrength; }
     public Dispatcher getDispatcher() { return dispatcher; }
-
+    public boolean isPremium() { return premium; }
+    
     public Fitting getInputFitting()
     {
         return inputFitting;

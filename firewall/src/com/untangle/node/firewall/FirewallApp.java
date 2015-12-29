@@ -25,7 +25,7 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class FirewallImpl extends NodeBase implements Firewall
+public class FirewallApp extends NodeBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -79,7 +79,7 @@ public class FirewallImpl extends NodeBase implements Firewall
             }
         };
     
-    public FirewallImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    public FirewallApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
@@ -89,7 +89,7 @@ public class FirewallImpl extends NodeBase implements Firewall
         this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 
