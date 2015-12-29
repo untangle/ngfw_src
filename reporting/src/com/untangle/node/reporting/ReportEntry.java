@@ -26,7 +26,7 @@ import com.untangle.uvm.UvmContextFactory;
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
-    private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
