@@ -4,7 +4,6 @@ import subprocess
 import sys
 import os
 import socket
-import smtplib
 import re
 import system_properties
 import global_functions
@@ -22,29 +21,10 @@ nodeData = None
 nodeSSL = None
 nodeSSLData = None
 canRelay = True
+canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
 listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.84','16')]
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
-
-def sendTestmessage():
-    sender = 'test@example.com'
-    receivers = ['qa@example.com']
-
-    message = """From: Test <test@example.com>
-    To: Test Group <qa@example.com>
-    Subject: SMTP e-mail test
-
-    This is a test e-mail message.
-    """
-
-    try:
-       smtpObj = smtplib.SMTP(smtpServerHost)
-       smtpObj.sendmail(sender, receivers, message)
-       print "Successfully sent email"
-       return 1
-    except smtplib.SMTPException, e:
-       print "Error: unable to send email" + str(e)
-       return 0
 
 def getLatestMailSender():
     remote_control.runCommand("rm -f mailpkg.tar") # remove all previous mail packages
@@ -77,7 +57,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay, canRelayTLS
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -90,9 +70,13 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
         try:
-            canRelay = sendTestmessage()
+            canRelay = global_functions.sendTestmessage(mailhost=smtpServerHost)
         except Exception,e:
             canRelay = False
+        try:
+            canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
+        except Exception,e:
+            canRelayTLS = False
         getLatestMailSender()
         # flush quarantine.
         curQuarantine = nodeSP.getQuarantineMaintenenceView()
@@ -249,9 +233,8 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
-        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
+        if (not canRelayTLS):
+            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
@@ -268,9 +251,8 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
-        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
+        if (not canRelayTLS):
+            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['allowTls'] = False
         nodeData['smtpConfig']['strength'] = 30

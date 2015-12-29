@@ -6,7 +6,6 @@ import sys
 import os
 import subprocess
 import socket
-import smtplib
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -21,30 +20,12 @@ node = None
 nodeSSL = None
 nodeSSLData = None
 canRelay = True
+canRelayTLS = True
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
-def sendTestmessage(smtpServerHost=testsiteIP):
-    sender = 'test@example.com'
-    receivers = ['qa@example.com']
-
-    message = """From: Test <test@example.com>
-    To: Test Group <qa@example.com>
-    Subject: SMTP e-mail test
-
-    This is a test e-mail message.
-    """
-
-    try:
-       smtpObj = smtplib.SMTP(smtpServerHost)
-       smtpObj.sendmail(sender, receivers, message)
-       print "Successfully sent email"
-       return 1
-    except smtplib.SMTPException, e:
-       print "Error: unable to send email" + str(e)
-       return 0
-       
+      
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
     rules = node.getPassSites()
@@ -76,7 +57,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay
+        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS
         # download eicar and trojan files before installing virus blocker
         remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -87,9 +68,13 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         # print "md5StdNum <%s>" % md5StdNum
         assert (result == 0)
         try:
-            canRelay = sendTestmessage()
+            canRelay = global_functions.sendTestmessage(mailhost=testsiteIP)
         except Exception,e:
             canRelay = False
+        try:
+            canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
+        except Exception,e:
+            canRelayTLS = False
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -330,9 +315,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
         nukePassSites()
 
-    port25Test = subprocess.call(["netcat","-z","-w","1",tlsSmtpServerHost,"25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_110_eventlog_smtpSSLVirus(self):
+        if (not canRelayTLS):
+            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script

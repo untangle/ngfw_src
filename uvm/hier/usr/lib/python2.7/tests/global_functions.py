@@ -8,6 +8,7 @@ import re
 import remote_control
 import system_properties
 import ipaddr
+import smtplib
 
 from uvm import Uvm
 
@@ -15,6 +16,7 @@ officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
+smtpServerHost = 'test.untangle.com'
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -175,3 +177,22 @@ def isInOfficeNetwork(wanIP):
             break
     return False
 
+def sendTestmessage(mailhost=smtpServerHost):
+    sender = 'test@example.com'
+    receivers = ['qa@example.com']
+
+    message = """From: Test <test@example.com>
+    To: Test Group <qa@example.com>
+    Subject: SMTP e-mail test
+
+    This is a test e-mail message.
+    """
+
+    try:
+       smtpObj = smtplib.SMTP(mailhost)
+       smtpObj.sendmail(sender, receivers, message)
+       print "Successfully sent email through " + mailhost
+       return 1
+    except smtplib.SMTPException, e:
+       print "Error: unable to send email through " + mailhost + " " + str(e)
+       return 0
