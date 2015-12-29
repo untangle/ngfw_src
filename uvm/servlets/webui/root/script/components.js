@@ -443,7 +443,7 @@ Ext.define("Ung.Node", {
         this.powerOn = powerOn;
     },
     updateRunState: function(runState, force) {
-        if(runState!=this.runState || force) {
+        if(runState!=this.runState || force || this.state=="attention") {
             this.runState = runState;
             switch ( runState ) {
               case "RUNNING":
@@ -462,9 +462,11 @@ Ext.define("Ung.Node", {
         if(this.name=="untangle-node-reports") {
             delete rpc.reportsAppInstalledAndEnabled;
         }
-        var panelStatus = this.getSettingsAppPanel();
-        if(panelStatus) {
-            panelStatus.updatePower(this.isRunning());
+        if(!force) {
+            var panelStatus = this.getSettingsAppPanel();
+            if(panelStatus) {
+                panelStatus.updatePower(this.isRunning());
+            }
         }
     },
     getSettingsAppPanel: function() {
@@ -509,7 +511,7 @@ Ext.define("Ung.Node", {
                 if(Ung.Util.handleException(exception, Ext.bind(function(message, details) {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ung.Util.showWarningMessage(title, details);
-                    this.updateRunState(this.runState, true);
+                    this.updateRunState(this.runState);
                 }, this),"noAlert")) return;
                 this.rpcNode.getRunState(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;

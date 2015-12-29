@@ -25,7 +25,6 @@ Ext.define("Ung.Main", {
     // the Ext.Viewport object for the application
     viewport: null,
     menuWidth: null,
-    iframeWin: null,
     initialScreenAlreadyShown: false,
 
     init: function(config) {
@@ -1180,53 +1179,6 @@ Ext.define("Ung.Main", {
             }
         }
         return null;
-    },
-    // Opens a link in a iframe pop-up window in the middle of the rack
-    openIFrame: function( url, title ) {
-        console.log("Open IFrame:", url);
-        if ( url == null ) {
-            alert("can not open window to null URL");
-        }
-        if(!this.iframeWin) {
-            this.iframeWin = Ext.create("Ung.Window",{
-                id: 'iframeWin',
-                layout: 'fit',
-                defaults: {},
-                items: {
-                    html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
-                },
-                closeWindow: function() {
-                    this.setTitle('');
-                    this.hide();
-                    window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
-                    Ung.Main.reloadLicenses();
-                },
-                doSize: function() {
-                    var objSize = Ung.Main.viewport.getSize();
-                    objSize.width = objSize.width - Ung.Main.menuWidth;
-                    
-                    if(objSize.width < 850 || objSize.height < 470) {
-                        this.setPosition(Ung.Main.menuWidth, 0);
-                    } else {
-                        var scale = 0.9;
-                        this.setPosition(Ung.Main.menuWidth + Math.round(objSize.width*(1-scale)/2), Math.round(objSize.height*(1-scale)/2));
-                        objSize.width = Math.round(objSize.width * scale);
-                        objSize.height = Math.round(objSize.height * scale);
-                        
-                    }
-                    this.setSize(objSize);
-                }
-            });
-        }
-        this.iframeWin.setTitle(title);
-        this.iframeWin.show();
-        window.frames["iframeWin_iframe"].location.href = url;
-    },
-    closeIframe: function() {
-        if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
-            this.iframeWin.closeWindow();
-        }
-        this.reloadLicenses();
     },
     openFailureScreen: function () {
         Ext.require(['Webui.config.offline'], function() {
