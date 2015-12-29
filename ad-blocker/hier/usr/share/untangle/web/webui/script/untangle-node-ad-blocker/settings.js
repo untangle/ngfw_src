@@ -89,7 +89,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
     buildOptions: function() {
         this.panelOptions = Ext.create('Ext.panel.Panel',{
             name: 'Options',
-            helpSource: 'ad_blocker_blocker',
+            helpSource: 'ad_blocker_options',
             title: i18n._('Options'),
             cls: 'ung-panel',
             autoScroll: true,
