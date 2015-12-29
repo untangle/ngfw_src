@@ -46,9 +46,9 @@ public class WebFilterApp extends WebFilterBase
     private final Subscription httpsSub = new Subscription(Protocol.TCP,IPMaskedAddress.anyAddr,PortRange.ANY,IPMaskedAddress.anyAddr,new PortRange(443,443));
     private final Subscription quicSub = new Subscription(Protocol.UDP,IPMaskedAddress.anyAddr,PortRange.ANY,IPMaskedAddress.anyAddr,new PortRange(443,443));
     
-    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new WebFilterHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 2 );
-    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, sniHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2 );
-    private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2 );
+    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new WebFilterHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 2, true );
+    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, sniHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true );
+    private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true );
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, quicConnector };
 
     public WebFilterApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
@@ -197,6 +197,12 @@ public class WebFilterApp extends WebFilterBase
     public String getAppName()
     {
         return "web-filter";
+    }
+
+    @Override
+    public boolean isPremium()
+    {
+        return true;
     }
     
     @Override
