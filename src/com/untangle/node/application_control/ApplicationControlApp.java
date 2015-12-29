@@ -82,8 +82,8 @@ public class ApplicationControlApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
-        this.rawConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-raw", this, null, rawHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 5);
-        this.webConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-web", this, null, webHandler, Fitting.HTTP_STREAM, Fitting.HTTP_STREAM, Affinity.SERVER, 5);
+        this.rawConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-raw", this, null, rawHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 5, true);
+        this.webConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-web", this, null, webHandler, Fitting.HTTP_STREAM, Fitting.HTTP_STREAM, Affinity.SERVER, 5, true);
         this.connectors = new PipelineConnector[] { rawConnector, webConnector };
 
         synchronized (getClass()) {
