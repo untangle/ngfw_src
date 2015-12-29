@@ -794,7 +794,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      */
     private int _getEstimatedNumDevices()
     {
-        return UvmContextFactory.context().hostTable().getCurrentLicensedSize();
+        return UvmContextFactory.context().hostTable().getCurrentActiveSize();
     }
 
     /**
