@@ -16,6 +16,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         super(nodeSettings, nodeProperties, new VirusBlockerScanner());
     }
 
+    @Override
     protected int getHttpStrength()
     {
         // virus blocker is 18
@@ -24,6 +25,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         return 18;
     }
 
+    @Override
     protected int getFtpStrength()
     {
         // virus blocker is 18
@@ -32,6 +34,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         return 18;
     }
 
+    @Override
     protected int getSmtpStrength()
     {
         // virus blocker is 15
@@ -40,14 +43,22 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         return 15; 
     }
 
+    @Override
     public String getName()
     {
         return "virus_blocker";
     }
 
+    @Override
     public String getAppName()
     {
         return "virus-blocker";
+    }
+
+    @Override
+    public boolean isPremium()
+    {
+        return true;
     }
     
     @Override
