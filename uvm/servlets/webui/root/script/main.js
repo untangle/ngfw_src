@@ -324,7 +324,9 @@ Ext.define("Ung.Main", {
         return rpc.helpUrl + "?" + "source=" + topic + "&" + this.about();
     },
     openHelp: function( topic ) {
-        window.open(Ung.Main.getHelpLink(target)); // open a new window
+        var url = Ung.Main.getHelpLink(topic);
+        window.open(Ung.Main.getHelpLink(topic)); // open a new window
+        console.log("Help link:",url);
     },
     openSupportScreen: function() {
         var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
@@ -1227,8 +1229,10 @@ Ext.define("Ung.Main", {
         this.reloadLicenses();
     },
     openFailureScreen: function () {
-        var url = "/webui/offline.jsp";
-        this.openIFrame( url, i18n._("Warning") );
+        Ext.require(['Webui.config.offline'], function() {
+            Webui.config.offlineWin = Ext.create('Webui.config.offline', {});
+            Webui.config.offlineWin.show();
+        }, this);
     },
     // Prepares the uvm to display the welcome screen
     showWelcomeScreen: function () {

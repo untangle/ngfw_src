@@ -315,7 +315,7 @@ Ext.define('Webui.config.accountRegistration', {
                                 text: i18n._('Open My Account'),
                                 padding: '7 10 7 10',
                                 width: 150,
-                                href: this.getMyAccountLink()
+                                href: Ung.Main.getMyAccountLink()
                             }, {
                                 xtype: 'button',
                                 text: i18n._('Skip'),
