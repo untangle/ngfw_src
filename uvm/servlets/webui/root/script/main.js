@@ -85,10 +85,10 @@ Ext.define("Ung.Main", {
         Ext.tip.QuickTipManager.init();
         Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
-        var contentRightArr=[
+        var rackViewArr=[
             '<div id="content-right">',
                 '<div id="racks">',
-                    '<div id="rack-list"><div id="install-apps-container"></div><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div></div>',
+                    '<div id="rack-list"><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div></div>',
                     '<div id="rack-nodes">',
                         '<div id="filter_nodes"></div>',
                         '<div id="nodes-separator" style="display:none;">'+i18n._("Services")+'</div>',
@@ -103,29 +103,7 @@ Ext.define("Ung.Main", {
                 small: 'width < 600'
             },
             items:[{
-                xtype: 'container',
-                region: 'north',
-                cls: 'top-container',
-                plugins: 'responsive',
-                responsiveConfig: {
-                    'phone || small': {
-                        height: 61
-                    },
-                    '!(phone || small)': {
-                        height: 88
-                    }
-                },
-                weight : -10,
-                items: [{
-                    xtype: 'component',
-                    cls: 'links-menu',
-                    html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
-                        '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
-                        '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
-                }]
-            }, {
                 region: 'west',
-                weight : 10,
                 xtype: 'container',
                 name: 'mainMenu',
                 cls: "main-menu",
@@ -196,63 +174,143 @@ Ext.define("Ung.Main", {
                 layout: 'card',
                 activeItem: 1,
                 items: [{
-                    xtype: 'panel',
-                    header: false,
-                    border: false,
-                    title: ' ',
+                    xtype: 'container',
                     itemId: 'dashboard',
-                    layout: {
-                        type: 'table',
-                        columns: 2
-                    },
+                    layout: {type: 'vbox', align: 'stretch'},
                     scrollable: true,
-                    bbar: [{
-                        xtype: "button",
-                        text : i18n._( "Add Widget" ),
-                        iconCls : "icon-add-row",
-                        handler: function() {
-                            
-                        },
-                        scope : this
+                    items: [{
+                        xtype: 'container',
+                        cls: 'top-container',
+                        layout: {type: 'hbox', align: 'middle'},
+                        height: 88,
+                        items: [{
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
+                        },this.buildLinksMenu(),{
+                            xtype: 'button',
+                            margin: '0 20 0 0',
+                            minWidth: 120,
+                            scale: 'large',
+                            cls: 'action-button',
+                            text : i18n._( "Add Widget" ),
+                            handler: function() {
+                            },
+                            scope: this
+                        }]
+                    }, {
+                        xtype: 'container',
+                        itemId: 'dashboardItems',
+                        layout: {
+                            type: 'table',
+                            columns: 2
+                        }
                     }]
                 }, {
-                    xtype: 'component',
+                    xtype: 'container',
                     itemId: 'apps',
                     cls: 'center-region',
-                    html: contentRightArr.join(""),
-                    scrollable: true
+                    scrollable: true,
+                    items: [{
+                        xtype: 'container',
+                        cls: 'top-container',
+                        layout: {type: 'hbox', align: 'middle'},
+                        height: 88,
+                        items: [{
+                            xtype: 'button',
+                            margin: '0 0 0 20',
+                            scale: 'large',
+                            cls: 'policy-selector',
+                            minWidth: 180,
+                            maxWidth: 250,
+                            text: '',
+                            name: 'policySelector',
+                            menu: Ext.create('Ext.menu.Menu', {
+                                hideDelay: 0,
+                                plain: true,
+                                items: []
+                            })
+                        }, {
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
+                        },this.buildLinksMenu(),{
+                            xtype: 'button',
+                            margin: '0 20 0 0',
+                            minWidth: 120,
+                            scale: 'large',
+                            cls: 'action-button',
+                            text: i18n._('Install Apps'),
+                            handler: function() {
+                                Ung.Main.openInstallApps();
+                            }
+                        }]
+                    }, {
+                        xtype: 'component',
+                        html: rackViewArr.join("")
+                    }]
                 }, {
-                    xtype : "panel",
+                    xtype: 'container',
                     itemId: 'installApps',
-                    title : i18n._('Install Apps'),
-                    bodyPadding: '15px 0 0 0',
-                    scrollable: 'y',
-                    html:'<div id="appsItems"></div>',
-                    bbar: ["->", {
-                        xtype: "button",
-                        text : i18n._( "Done" ),
-                        iconCls: 'save-icon',
-                        handler: function() {
-                            this.panelCenter.setActiveItem("apps");
-                        },
-                        scope : this
-                    }] 
-                },{
+                    layout: {type: 'vbox', align: 'stretch'},
+                    scrollable: true,
+                    items: [{
+                        xtype: 'container',
+                        cls: 'top-container',
+                        layout: {type: 'hbox', align: 'middle'},
+                        height: 88,
+                        items: [{
+                            xtype: 'component',
+                            cls: 'top-title',
+                            margin: '0 0 0 20',
+                            html: i18n._('Install Apps'),
+                            flex: 1
+                        },this.buildLinksMenu(),{
+                            xtype: 'button',
+                            margin: '0 20 0 0',
+                            minWidth: 120,
+                            scale: 'large',
+                            cls: 'action-button',
+                            text : i18n._( "Done" ),
+                            handler: function() {
+                                this.panelCenter.setActiveItem("apps");
+                            },
+                            scope: this
+                        }]
+                    }, {
+                        xtype: 'component',
+                        html:'<div id="appsItems"></div>'
+                    }]
+                }, {
                     xtype: 'container',
                     itemId: 'config',
-                    scrollable: 'y',
+                    layout: {type: 'vbox', align: 'stretch'},
+                    scrollable: true,
                     items: [{
-                        xtype: 'panel',
-                        border: false,
-                        title: i18n._('Config'),
-                        bodyPadding: '15px 0 0 0',
-                        html:'<div id="configItems"></div>'
+                        xtype: 'container',
+                        cls: 'top-container',
+                        layout: {type: 'hbox', align: 'middle'},
+                        height: 88,
+                        items: [{
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
+                        },this.buildLinksMenu()]
                     }, {
-                        xtype: 'panel',
-                        border: false,
-                        title: i18n._('Tools'),
-                        bodyPadding: '15px 0 0 0',
-                        html:'<div id="toolItems"></div>'
+                        xtype: 'container',
+                        items: [{
+                            xtype: 'panel',
+                            border: false,
+                            title: i18n._('Config'),
+                            bodyPadding: '15px 0 0 0',
+                            html:'<div id="configItems"></div>'
+                        }, {
+                            xtype: 'panel',
+                            border: false,
+                            title: i18n._('Tools'),
+                            bodyPadding: '15px 0 0 0',
+                            html:'<div id="toolItems"></div>'
+                        }]
                     }]
                 }]
             }
@@ -262,18 +320,19 @@ Ext.define("Ung.Main", {
         this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.systemStats = Ext.create('Ung.SystemStats', {});
+        this.policySelector =  this.viewport.down("button[name=policySelector]");
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
-        Ext.create({
-            xtype: 'button',
-            iconCls: 'icon-arrow-install',
-            renderTo: 'install-apps-container',
-            text: i18n._('Install Apps'),
-            handler: function() {
-                Ung.Main.openInstallApps();
-            }
-        });
+    },
+    buildLinksMenu: function() {
+        return {
+            xtype: 'component',
+            margin: '0 10 0 0',
+            html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
+                '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
+                '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
+        }; 
     },
     loadDashboard: function() {
         var dashboardSettings = {
@@ -298,7 +357,7 @@ Ext.define("Ung.Main", {
             widget = dashboardSettings.widgets[i];
             widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
         }
-        var dashboardPanel = this.viewport.down("#dashboard");
+        var dashboardPanel = this.viewport.down("#dashboardItems");
         dashboardPanel.add(widgets);
     },
     about: function (forceReload) {
@@ -654,6 +713,7 @@ Ext.define("Ung.Main", {
             node=this.nodes[i];
             this.addNode(node, nodePreviews[node.name]);
         }
+        this.panelCenter.getComponent("apps").updateLayout();
         if(!Ung.Main.disableThreads) {
             Ung.MetricManager.start(true);
         }
@@ -1075,12 +1135,7 @@ Ext.define("Ung.Main", {
         document.getElementById("nodes-separator").style.display= hasService ? "" : "none";
         document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
     },
-    // build policies select box
-    buildPolicies: function () {
-        if(Ung.Main.rackSelect!=null) {
-            Ext.destroy(Ung.Main.rackSelect);
-            Ext.get('rack-select-container').dom.innerHTML = '';
-        }
+    updatePolicySelector: function() {
         var items=[];
         var selVirtualRackIndex = 0;
         rpc.policyNamesMap = {};
@@ -1106,18 +1161,16 @@ Ext.define("Ung.Main", {
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
         items.push({text: i18n._('Show Reports'), value: 'SHOW_REPORTS', handler: Ung.Main.showReports, id:'reportsMenuItem', disabled: true, hideDelay: 0});
-        Ung.Main.rackSelect = Ext.create({
-            xtype: 'button',
-            maxWidth: 180,
-            renderTo: 'rack-select-container', // the container id
-            text: items[selVirtualRackIndex].text,
-            id:'rack-select',
-            menu: Ext.create('Ext.menu.Menu', {
-                hideDelay: 0,
-                plain: true,
-                items: items
-            })
-        });
+        
+        this.policySelector.setText(items[selVirtualRackIndex].text);
+        var menu = this.policySelector.down("menu");
+        menu.removeAll();
+        menu.add(items);
+        
+    },
+    // build policies select box
+    buildPolicies: function () {
+        this.updatePolicySelector();
         this.checkForAlerts();
         this.checkForIE();
 
@@ -1179,7 +1232,7 @@ Ext.define("Ung.Main", {
     },
     // change current policy
     changeRack: function () {
-        Ung.Main.rackSelect.setText(this.text);
+        Ung.Main.policySelector.setText(this.text);
         rpc.currentPolicy = rpc.policies[this.index];
         Ung.Main.loadRackView();
     },
