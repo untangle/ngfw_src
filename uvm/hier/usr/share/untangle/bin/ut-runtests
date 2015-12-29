@@ -152,13 +152,20 @@ def runTestSuite(suite):
     if (parser.timedTests):
         suiteStartTime = time.time()
 
+    orig_stdout = sys.stdout
+    orig_stderr = sys.stderr
+
+    sys.stdout = logfile
+    sys.stderr = logfile
     if "initialSetUp" in dir(suite):
         try:
             suite.initialSetUp(suite)
         except Exception, e:
-            # print "initialSetUp EXCEPTION: "
+            print "initialSetUp EXCEPTION: "
             unittest2.skip("initialSetUp EXCEPTION: ")(suite)
             traceback.print_exc( e )
+    sys.stdout = orig_stdout
+    sys.stderr = orig_stderr
 
     for test in tests:
         test_name = test._testMethodName
@@ -170,8 +177,6 @@ def runTestSuite(suite):
 
         total += 1
 
-        orig_stdout = sys.stdout
-        orig_stderr = sys.stderr
         sys.stdout = logfile
         sys.stderr = logfile
 
