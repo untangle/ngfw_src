@@ -173,6 +173,13 @@ public class SqlCondition implements Serializable, JSONString
                     else 
                         statement.setObject(i, value, java.sql.Types.OTHER);
                     break;
+
+                case "timestamp":
+                    if ("null".equalsIgnoreCase(value))
+                        statement.setNull(i, java.sql.Types.TIMESTAMP);
+                    else 
+                        statement.setObject(i, value, java.sql.Types.OTHER);
+                    break;
                     
                 case "bool":
                     if ("null".equalsIgnoreCase(value))

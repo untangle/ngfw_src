@@ -290,6 +290,12 @@ public abstract class NetcapHook implements Runnable
 
             /* Only start vectoring if the session is alive */
             if ( alive() ) {
+
+                /* if entry is not null and this is a TCP session updated host entry */
+                if ( entry != null && sessionGlobalState.getProtocol() == 6 ) {
+                    entry.setLastCompletedTcpSessionTime( System.currentTimeMillis() );
+                }
+
                 try {
                     /* Build the pipeline */
                     buildPipeline();

@@ -42,6 +42,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "active": true,
                         "lastAccessTime": 0,//d.getTime()+(i*86400000),
                         "lastSessionTime": 0,//d.getTime()+(i*86400000),
+                        "lastCompletedTcpSessionTime": 0,//d.getTime()+(i*86400000),
                         "username": "testuser"+i,
                         "usernameAdConnector": "uad"+ii,
                         "captivePortalAuthenticated":(ii%2)==1,
@@ -127,6 +128,13 @@ Ext.define('Webui.config.hostMonitor', {
             }, {
                 name: "lastSessionTimeDate",
                 mapping: "lastSessionTime",
+                convert: dateConvertFn
+            }, {
+                name: "lastCompletedTcpSessionTime",
+                convert: Ung.Util.preventEmptyValueConverter
+            }, {
+                name: "lastCompletedTcpSessionTimeDate",
+                mapping: "lastCompletedTcpSessionTime",
                 convert: dateConvertFn
             }, {
                 name: "licensed",
@@ -240,6 +248,18 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 150,
                 renderer: function(value, metaData, record) {
                     var val=record.get("lastSessionTime");
+                    return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                },
+                filter: {
+                    type: 'date'
+                }
+            }, {
+                hidden: true,
+                header: i18n._("Last Completed TCP Session Time"),
+                dataIndex: "lastCompletedTcpSessionTimeDate",
+                width: 150,
+                renderer: function(value, metaData, record) {
+                    var val=record.get("lastCompletedTcpSessionTime");
                     return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
                 },
                 filter: {

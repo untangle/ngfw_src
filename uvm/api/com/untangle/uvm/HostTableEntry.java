@@ -26,6 +26,7 @@ public class HostTableEntry implements Serializable, JSONString
     private long        creationTime = 0;
     private long        lastAccessTime = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
+    private long        lastCompletedTcpSessionTime = 0; /* time of the last completed TCP session */
     private boolean     licensed = true;
 
     private String hostname = null;
@@ -103,6 +104,13 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public long getLastCompletedTcpSessionTime() { return this.lastCompletedTcpSessionTime; }
+    public void setLastCompletedTcpSessionTime( long newValue )
+    {
+        this.lastCompletedTcpSessionTime = newValue;
+        updateAccessTime();
+    }
+    
     public boolean getLicensed() { return this.licensed; }
     public void setLicensed( boolean newValue )
     {
@@ -276,7 +284,7 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getActive()
     {
         long cutoffTime = System.currentTimeMillis() - LICENSE_TRAFFIC_AGE_MAX_TIME;
-        if ( getLastSessionTime() > cutoffTime )
+        if ( getLastCompletedTcpSessionTime() > cutoffTime )
             return true;
 
         return false;
