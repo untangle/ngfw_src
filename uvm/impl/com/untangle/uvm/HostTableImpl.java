@@ -51,7 +51,7 @@ public class HostTableImpl implements HostTable
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
     private HashMap<String,String> macVendorTable = new HashMap<String,String>();
     
-    private int maxLicensedSize = 0;
+    private int maxActiveSize = 0;
     
     protected HostTableImpl()
     {
@@ -451,7 +451,7 @@ public class HostTableImpl implements HostTable
         return this.hostTable.size();
     }
 
-    public int getCurrentLicensedSize()
+    public int getCurrentActiveSize()
     {
         int licenseSize = 0;
 
@@ -473,9 +473,9 @@ public class HostTableImpl implements HostTable
         return licenseSize;
     }
     
-    public int getMaxLicensedSize()
+    public int getMaxActiveSize()
     {
-        return this.maxLicensedSize;
+        return this.maxActiveSize;
     }
 
     public void clearTable()
@@ -502,7 +502,7 @@ public class HostTableImpl implements HostTable
         }
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
-        int currentSize = getCurrentLicensedSize();
+        int currentSize = getCurrentActiveSize();
         
         // if there is a seat limit, and the size of the table is currently greater than that seatLimit
         // this host is out of compliance and not licensed
@@ -524,8 +524,8 @@ public class HostTableImpl implements HostTable
                 realSize++;
         }
         
-        if (realSize > this.maxLicensedSize)
-            this.maxLicensedSize = realSize;
+        if (realSize > this.maxActiveSize)
+            this.maxActiveSize = realSize;
     }
 
     private String lookupMacVendor( String macAddress )

@@ -23,13 +23,13 @@ Ext.define('Webui.config.about', {
     },
     buildServer: function() {
         var me = this;
-        var kernelVersion, modificationState, rebootCount, licensedSized, maxLicensedSize;
+        var kernelVersion, modificationState, rebootCount, activeSize, maxActiveSize;
         try {
             kernelVersion = rpc.adminManager.getKernelVersion();
             modificationState = rpc.adminManager.getModificationState();
             rebootCount = rpc.adminManager.getRebootCount();
-            licensedSized = rpc.hostTable.getCurrentLicensedSize();
-            maxLicensedSize = rpc.hostTable.getMaxLicensedSize();
+            activeSize = rpc.hostTable.getCurrentActiveSize();
+            maxActiveSize = rpc.hostTable.getMaxActiveSize();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -65,8 +65,8 @@ Ext.define('Webui.config.about', {
                         i18n._('Kernel') + ": " + kernelVersion + "\n" +
                         i18n._('History') + ": " + modificationState + "\n" +
                         i18n._('Reboots') + ": " + rebootCount + "\n" +
-                        i18n._('Current active device count') + ": " + licensedSized + "\n" +
-                        i18n._('Highest active device count since reboot') + ": " + maxLicensedSize
+                        i18n._('Current active device count') + ": " + activeSize + "\n" +
+                        i18n._('Highest active device count since reboot') + ": " + maxActiveSize
 
                 }]
             }]

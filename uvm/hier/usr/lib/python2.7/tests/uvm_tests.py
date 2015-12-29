@@ -118,11 +118,11 @@ class UvmTests(unittest2.TestCase):
         match = re.search(r'\d{1,2}', reboot_count)
         assert(match)
 
-        num_hosts = str(uvmContext.hostTable().getCurrentLicensedSize())
+        num_hosts = str(uvmContext.hostTable().getCurrentActiveSize())
         match = re.search(r'\d{1,2}', num_hosts)
         assert(match)
 
-        max_num_hosts = str(uvmContext.hostTable().getMaxLicensedSize())
+        max_num_hosts = str(uvmContext.hostTable().getMaxActiveSize())
         match = re.search(r'\d{1,2}', max_num_hosts)
         assert(match)
 

@@ -32,12 +32,12 @@ public interface HostTable
     /**
      * return the "license size" (the number of hosts applicable to licensing)
      */
-    int getCurrentLicensedSize();
+    int getCurrentActiveSize();
 
     /**
      * return the largest license size the table has ever been
      */
-    int getMaxLicensedSize();
+    int getMaxActiveSize();
     
     /**
      * Save the specified entry for the specified addr

@@ -838,7 +838,7 @@ public class AlertManagerImpl implements AlertManager
 
     private void testLicenseCompliance( List<String> alertList )
     {
-        int currentSize = UvmContextFactory.context().hostTable().getCurrentLicensedSize();
+        int currentSize = UvmContextFactory.context().hostTable().getCurrentActiveSize();
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( true );
         int actualSeatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( false );
 
