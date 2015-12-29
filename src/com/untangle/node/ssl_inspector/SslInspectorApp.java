@@ -73,13 +73,13 @@ public class SslInspectorApp extends NodeBase
 
         SessionEventHandler clientWebHandler = new ForkedEventHandler(clientParser, clientUnparser);
         SessionEventHandler serverWebHandler = new ForkedEventHandler(serverUnparser, serverParser);
-        this.clientWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-client", this, null, clientWebHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, null);
-        this.serverWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-server", this, null, serverWebHandler, Fitting.HTTP_STREAM, Fitting.HTTPS_STREAM, Affinity.SERVER, 1100, "ssl-web-client");
+        this.clientWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-client", this, null, clientWebHandler, Fitting.HTTPS_STREAM, Fitting.HTTP_STREAM, Affinity.CLIENT, -1100, true, null);
+        this.serverWebConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-web-server", this, null, serverWebHandler, Fitting.HTTP_STREAM, Fitting.HTTPS_STREAM, Affinity.SERVER, 1100, true, "ssl-web-client");
 
         SessionEventHandler clientMailHandler = new ForkedEventHandler(clientParser, clientUnparser);
         SessionEventHandler serverMailHandler = new ForkedEventHandler(serverUnparser, serverParser);
-        this.clientMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-client", this, null, clientMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, -1100, null);
-        this.serverMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-server", this, null, serverMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.SERVER, 1100, "ssl-mail-client");
+        this.clientMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-client", this, null, clientMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, -1100, true, null);
+        this.serverMailConnector = UvmContextFactory.context().pipelineFoundry().create("ssl-mail-server", this, null, serverMailHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.SERVER, 1100, true, "ssl-mail-client");
 
         this.connectors = new PipelineConnector[] { clientWebConnector, serverWebConnector, clientMailConnector, serverMailConnector };
 
