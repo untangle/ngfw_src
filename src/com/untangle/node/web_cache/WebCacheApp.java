@@ -71,7 +71,7 @@ public class WebCacheApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_USER_BYPASS, I18nUtil.marktr("User Bypass")));
         this.addMetric(new NodeMetric(STAT_SYSTEM_BYPASS, I18nUtil.marktr("System Bypass")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-cache", this, webSub, s_handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 16 );
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-cache", this, webSub, s_handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 16, true );
         this.connectors = new PipelineConnector[] { connector };
 
         statistics = new WebCacheStatistics();
