@@ -19,6 +19,8 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 @SuppressWarnings("serial")
 public class ReportsSettings implements Serializable, JSONString
 {
+    private Integer version = null;
+    
     private Integer dbRetention = 7; // days
     private Integer generationHour = 2;
     private Integer generationMinute = 0;
@@ -48,6 +50,9 @@ public class ReportsSettings implements Serializable, JSONString
 
     public LinkedList<ReportsHostnameMapEntry> getHostnameMap() { return hostnameMap; }
     public void setHostnameMap( LinkedList<ReportsHostnameMapEntry> hostnameMap ) { this.hostnameMap = hostnameMap; }
+
+    public Integer getVersion() { return version; }
+    public void setVersion( Integer newValue ) { this.version = newValue; }
 
     public int getDbRetention() { return dbRetention; }
     public void setDbRetention( int dbRetention ) { this.dbRetention = dbRetention; }

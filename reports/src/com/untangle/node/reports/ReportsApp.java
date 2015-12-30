@@ -298,12 +298,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /**
-         * 11.1 conversion
+         * 12.0 conversion
          */
-        if ( settings.getAlertRules() == null ) {
-            settings.setAlertRules( defaultAlertRules() );
+        if ( settings.getVersion() == null ) {
+            logger.warn("Running v12.0 conversion...");
+            conversion_12_0();
         }
-
+        
         /**
          * Report updates
          */
@@ -404,6 +405,14 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher2 );
         alertRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "License exceeded. Session not entitled.", true, 30 );
+        rules.add( alertRule );
         
         matchers = new LinkedList<AlertRuleCondition>();
         matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
@@ -451,6 +460,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
+        settings.setVersion( 1 );
         settings.setAlertRules( defaultAlertRules() );
         return settings;
     }
@@ -537,7 +547,29 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
-    public class PerformanceTest implements Runnable
+    private void conversion_12_0()
+    {
+        settings.setVersion( 1 );
+
+        LinkedList<AlertRuleCondition> matchers;
+        AlertRuleCondition matcher1;
+        AlertRuleCondition matcher2;
+        AlertRule alertRule;
+        
+        LinkedList<AlertRule> rules = settings.getAlertRules();
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "License exceeded. Session not entitled.", true, 30 );
+        rules.add( alertRule );
+
+        setSettings( settings );
+    }
+    
+    private class PerformanceTest implements Runnable
     {
         public void run()
         {

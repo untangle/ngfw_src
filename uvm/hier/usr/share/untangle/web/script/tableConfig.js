@@ -318,8 +318,18 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'bypassed',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Entitled'),
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'entitled',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Protocol"),
@@ -422,8 +432,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'shield_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Rule Id') + ' (Application Control)',
@@ -484,8 +494,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'application_control_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Flagged') + ' (Application Control)',
@@ -494,8 +504,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'application_control_flagged',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Confidence') + ' (Application Control)',
@@ -522,8 +532,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'application_control_lite_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Rule Id') + ' (HTTPS Inspector)',
@@ -550,8 +560,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'firewall_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Flagged') + ' (Firewall)',
@@ -560,8 +570,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'firewall_flagged',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Rule Id') + ' (Firewall)',
@@ -579,8 +589,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: "captive_portal_blocked",
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._('Rule Id') + ' (Captive Portal)',
@@ -892,8 +902,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'web_filter_lite_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Flagged") + " (Web Filter Lite)",
@@ -901,8 +911,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'web_filter_lite_flagged',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Reason For Action") + " (Web Filter Lite)",
@@ -921,8 +931,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'web_filter_blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Flagged") + " (Web Filter)",
@@ -931,8 +941,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'web_filter_flagged',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Reason For Action") +  " (Web Filter)",
@@ -1933,8 +1943,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: "success",
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 },{
                     header: i18n._("Test Description"),
@@ -2521,8 +2531,8 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'blocked',
                     filter: {
                         type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
                     }
                 }, {
                     header: i18n._("Category"),
