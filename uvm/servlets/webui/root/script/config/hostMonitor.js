@@ -274,7 +274,6 @@ Ext.define('Webui.config.hostMonitor', {
                     type: 'boolean'
                 }
             }, {
-                hidden: true,
                 header: i18n._("Active"),
                 dataIndex: "active",
                 width: 80,

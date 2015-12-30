@@ -13,10 +13,10 @@
          "max(active_hosts) as active_hosts"
     ],
     "colors": [
-        "#b2b2b2"
+        "#396c2b"
     ],
-    "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeDataInterval": "MINUTE",
+    "timeStyle": "AREA",
     "title": "Active Hosts",
     "type": "TIME_GRAPH"
 }
