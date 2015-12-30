@@ -811,11 +811,11 @@ class NetworkTests(unittest2.TestCase):
     def test_080_routes(self):
         setFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
         for i in range(0, 10):
-            wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+            wwwResult = remote_control.runCommand("wget -t 1 --timeout=3 http://www.untangle.com")
             if (wwwResult == 0):
                 break
             time.sleep(1)
-        testResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
+        testResult = remote_control.runCommand("wget -t 1 --timeout=3 http://test.untangle.com")
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # verify other sites are still available.
