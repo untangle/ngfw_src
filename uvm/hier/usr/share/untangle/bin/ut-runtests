@@ -205,10 +205,10 @@ def runTestSuite(suite):
         totalCount += 1
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s %s" % (test_name, timeString)
+            failCount += 1
             if (parser.fastfail):
-                sys.exit(1)
-            else:
-                failCount += 1
+                exit_flag = True
+                break
         elif (len(results.skipped) > 0):
             print "Test skipped  : %s %s" % (test_name, timeString)
             skipCount += 1
