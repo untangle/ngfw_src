@@ -208,7 +208,9 @@ def runTestSuite(suite):
             failCount += 1
             if (parser.fastfail):
                 exit_flag = True
-                break
+                # we return here, don't break because we dont
+                # want to run finalTearDown
+                return failCount, skipCount, totalCount
         elif (len(results.skipped) > 0):
             print "Test skipped  : %s %s" % (test_name, timeString)
             skipCount += 1
