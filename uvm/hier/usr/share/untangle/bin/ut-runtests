@@ -250,10 +250,6 @@ def runTestEnvironmentTests():
             print "Test success : %s " % test._testMethodName
     print "== Testing Test Environment =="
 
-def checkExit():
-    if exit_flag:
-        sys.exit(0)
-
 signal.signal(signal.SIGINT, signal_handler)
 
 parser = ArgumentParser()
@@ -281,7 +277,8 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
 
-checkExit()
+if exit_flag:
+    sys.exit(0)
 
 if "all" in parser.suitesToRun:
     parser.suitesToRun = test_registry.allNodes()
@@ -298,7 +295,8 @@ while True:
     skipCount = 0
 
     for node in parser.suitesToRun:
-        checkExit()
+        if exit_flag == True:
+            break
         if node == "environment":
             continue
         testClz = test_registry.getTest(node)
@@ -310,6 +308,8 @@ while True:
         totalCount += subTotalCount
         skipCount  += subSkipCount
 
+    if exit_flag == True:
+        break
     if not parser.repeat:
         break
 
