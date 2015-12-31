@@ -17,6 +17,10 @@ import uvm
 import tests
 from   tests import *
 
+orig_stdout = sys.stdout
+orig_stderr = sys.stderr
+exit_flag = False
+
 class ArgumentParser(object):
     def __init__(self):
         self.clientIP = None
@@ -131,7 +135,10 @@ def printUsage():
 """ % sys.argv[0] )
 
 def signal_handler(signal, frame):
-        sys.exit(0)
+    global orig_stdout, exit_flag
+    orig_stdout.write("Interrupt...\n")
+    orig_stdout.flush()
+    exit_flag = True;
 
 def exit(code):
     global parser
@@ -143,17 +150,19 @@ def exit(code):
 def runTestSuite(suite):
     global parser
     global logfile
+    global exit_flag
+    
+    if exit_flag:
+        return
+    
     print "== Testing %s ==" % suite.nodeName()
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
-    rc = 0
-    skipc = 0  # number of skipped tests.
-    total = 0
+    failCount = 0
+    skipCount = 0  # number of skipped tests.
+    totalCount = 0
     timeString = ""
     if (parser.timedTests):
         suiteStartTime = time.time()
-
-    orig_stdout = sys.stdout
-    orig_stderr = sys.stderr
 
     sys.stdout = logfile
     sys.stderr = logfile
@@ -175,8 +184,6 @@ def runTestSuite(suite):
         if test_name in parser.testsToExclude:
             continue
 
-        total += 1
-
         sys.stdout = logfile
         sys.stderr = logfile
 
@@ -192,15 +199,19 @@ def runTestSuite(suite):
         sys.stdout = orig_stdout
         sys.stderr = orig_stderr
 
+        if exit_flag:
+            break
+        
+        totalCount += 1
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s %s" % (test_name, timeString)
             if (parser.fastfail):
-                exit(1)
+                sys.exit(1)
             else:
-                rc += 1
+                failCount += 1
         elif (len(results.skipped) > 0):
             print "Test skipped  : %s %s" % (test_name, timeString)
-            skipc += 1
+            skipCount += 1
         else:
             print "Test success : %s %s " % (test_name, timeString)
 
@@ -216,7 +227,7 @@ def runTestSuite(suite):
         print "== Testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
     else:
         print "== Testing %s ==" % suite.nodeName()
-    return rc, skipc, total
+    return failCount, skipCount, totalCount
 
 # Verify the test enviroment is setup correctly
 def runTestEnvironmentTests():
@@ -227,6 +238,8 @@ def runTestEnvironmentTests():
     print "== Testing Test Environment =="
     for test in suite:
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        if exit_flag:
+            break
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s " % test._testMethodName
             print "The test enviroment is not configured correctly. Aborting..."
@@ -234,6 +247,10 @@ def runTestEnvironmentTests():
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing Test Environment =="
+
+def checkExit():
+    if exit_flag:
+        sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -262,6 +279,8 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
 
+checkExit()
+
 if "all" in parser.suitesToRun:
     parser.suitesToRun = test_registry.allNodes()
 
@@ -272,21 +291,22 @@ for testName in parser.suitesToExclude:
 
 startTime = time.time()
 while True:
-    total = 0
-    failedCount = 0
+    totalCount = 0
+    failCount = 0
     skipCount = 0
 
     for node in parser.suitesToRun:
+        checkExit()
         if node == "environment":
             continue
         testClz = test_registry.getTest(node)
         if testClz == None:
            print "Unable to find tests for \"%s\"" % node
            exit(1)
-        errors, skipc, subTotal = runTestSuite(testClz)
-        failedCount += errors
-        total += subTotal
-        skipCount += skipc
+        subFailCount, subSkipCount, subTotalCount = runTestSuite(testClz)
+        failCount  += subFailCount
+        totalCount += subTotalCount
+        skipCount  += subSkipCount
 
     if not parser.repeat:
         break
@@ -300,15 +320,15 @@ if reportsNode != None:
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime
-print "%s passed, %s skipped, %s failed" % (total-failedCount-skipCount, skipCount, failedCount)
+print "%s passed, %s skipped, %s failed" % (totalCount-failCount-skipCount, skipCount, failCount)
 print ""
-if total > 0:
-    print "Total          : %4i" % total
-    print "Passed         : %4i" % (total-failedCount-skipCount)
+if totalCount > 0:
+    print "Total          : %4i" % totalCount
+    print "Passed         : %4i" % (totalCount-failCount-skipCount)
     print "Skipped        : %4i" % (skipCount)
-    print "Passed/Skipped : %4i [%6.2f%%]" % (total-failedCount, (100*(total-failedCount)/total))
-    print "Failed         : %4i [%6.2f%%]" % (failedCount, 100*failedCount/total)
+    print "Passed/Skipped : %4i [%6.2f%%]" % (totalCount-failCount, (100*(totalCount-failCount)/totalCount))
+    print "Failed         : %4i [%6.2f%%]" % (failCount, 100*failCount/totalCount)
     print ""
 print "More details found in %s" % parser.logfile
 
-exit(failedCount)
+exit(failCount)
