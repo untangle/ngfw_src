@@ -289,11 +289,11 @@ for testName in parser.suitesToExclude:
         parser.suitesToRun.remove(testName)
 
 startTime = time.time()
-while True:
-    totalCount = 0
-    failCount = 0
-    skipCount = 0
+totalCount = 0
+failCount = 0
+skipCount = 0
 
+while True:
     for node in parser.suitesToRun:
         if exit_flag == True:
             break
