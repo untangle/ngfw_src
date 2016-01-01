@@ -219,6 +219,13 @@ public interface UvmContext
      * @return the global host table.
      */
     HostTable hostTable();
+
+    /**
+     * The device table
+     *
+     * @return the global device table.
+     */
+    DeviceTable deviceTable();
     
     /**
      * Shut down the untangle-vm

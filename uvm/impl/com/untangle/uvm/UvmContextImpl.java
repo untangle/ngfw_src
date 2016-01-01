@@ -98,6 +98,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private JSONSerializer serializer;
     private Reporting reportsNode = null;
     private HostTableImpl hostTableImpl = null;
+    private DeviceTableImpl deviceTableImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
@@ -288,6 +289,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.hostTableImpl;
     }
 
+    public DeviceTable deviceTable()
+    {
+        return this.deviceTableImpl;
+    }
+    
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
@@ -643,6 +649,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
+            json.put("deviceTable", this.deviceTable());
             json.put("sessionMonitor", this.sessionMonitor());
             json.put("networkManager", this.networkManager());
             json.put("metricManager", this.metricManager());
@@ -768,6 +775,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.sessionMonitor = new SessionMonitorImpl();
 
+        this.deviceTableImpl = new DeviceTableImpl();
+
         this.hostTableImpl = new HostTableImpl();
         
         this.servletFileManager = new ServletFileManagerImpl();
@@ -859,6 +868,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // the will be removed again by the wrapper
         // this is just so traffic will pass while the untangle-vm shutsdown
         networkManager.removeRules();
+        deviceTableImpl.saveDevices();
 
         state = UvmState.DESTROYED;
 
