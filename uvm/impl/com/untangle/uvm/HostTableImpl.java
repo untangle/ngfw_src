@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.Date;
 import java.util.Iterator;
@@ -49,7 +48,6 @@ public class HostTableImpl implements HostTable
 
     private volatile Thread reverseLookupThread;
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
-    private HashMap<String,String> macVendorTable = new HashMap<String,String>();
     
     private int maxActiveSize = 0;
     
@@ -57,8 +55,6 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
 
-        initializeMacVendorTable();
-        
         UvmContextFactory.context().newThread(this.cleaner).start();
         UvmContextFactory.context().newThread(this.reverseLookup).start();
     }
@@ -496,9 +492,16 @@ public class HostTableImpl implements HostTable
         if ( macAddress != null && !("".equals(macAddress)) ) {
             entry.setMacAddress( macAddress );
 
-            String macVendor = lookupMacVendor( macAddress );
+            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( macAddress );
             if ( macVendor != null && !("".equals(macVendor)) )
                 entry.setMacVendor( macVendor );
+            
+            /**
+             * If this device has never been seen before, add it
+             */
+            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
+            if ( deviceEntry == null )
+                UvmContextFactory.context().deviceTable().addDevice( macAddress );
         }
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
@@ -526,59 +529,6 @@ public class HostTableImpl implements HostTable
         
         if (realSize > this.maxActiveSize)
             this.maxActiveSize = realSize;
-    }
-
-    private String lookupMacVendor( String macAddress )
-    {
-        if ( macAddress == null )
-            return null;
-
-        String macPrefix = macAddress.substring( 0, 8 );
-        return macVendorTable.get( macPrefix );
-    }
-    
-    private void initializeMacVendorTable()
-    {
-        this.macVendorTable = new HashMap<String,String>();
-
-        Runnable task = new Runnable()
-        {
-            public void run()
-            {
-                String filename = System.getProperty("uvm.lib.dir") + "/untangle-vm/oui-formatted.txt";
-
-                long t0 = System.currentTimeMillis();
-
-                java.io.BufferedReader br = null;
-                try {
-                    br = new java.io.BufferedReader(new java.io.FileReader(filename));
-                    for (String line = br.readLine(); line != null ; line = br.readLine()) {
-                        String[] parts = line.split("\\s+",2);
-                        if ( parts.length < 2 )
-                            continue;
-
-                        String macPrefix = parts[0];
-                        String vendor = parts[1];
-                        //logger.debug( macPrefix + " ---> " + vendor );
-
-                        macVendorTable.put( macPrefix, vendor );
-                    }
-                } catch (Exception e) {
-                    logger.warn("Failed to load MAC OUI data.", e);
-                } finally {
-                    if ( br != null ) {
-                        try {br.close();} catch(Exception e) {}
-                    }
-                }
-
-                long t1 = System.currentTimeMillis();
-                logger.info("Loaded MAC OUI table: " + (t1 - t0) + " millis");
-            }
-        };
-        Thread t = new Thread(task, "MAC-oui-loader");
-        t.setDaemon(true);
-        t.start();
-        return;
     }
 
     /**

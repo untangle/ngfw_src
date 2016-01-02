@@ -23,10 +23,11 @@ public class DeviceTableEntry implements Serializable, JSONString
      * MAC address is all lower case
      * 11:00:aa:bb:cc:99
      */
-    private final String macAddress;
+    private String macAddress;
     
     private long        lastSeenTime = 0;
 
+    public DeviceTableEntry() {}
     public DeviceTableEntry( String macAddress )
     {
         String tmp = sanitizeMacAddress(macAddress);
@@ -36,6 +37,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     }
 
     public String getMacAddress() { return this.macAddress; }
+    public void setMacAddress( String newValue ) { this.macAddress = newValue; }
 
     public long getLastSeenTime() { return this.lastSeenTime; }
     public void setLastSeenTime( long newValue ) { this.lastSeenTime = newValue; }
@@ -51,7 +53,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         if ( macAddr == null )
             return null;
         String tmp = macAddr.toLowerCase().replaceAll("[^0-9a-f:]","");
-        if ( tmp.length() != 18 ) {
+        if ( tmp.length() != 17 ) {
             logger.warn("Invalid MAC Address: " + macAddr, new Exception());
             return null;
         }

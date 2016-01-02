@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,14 +30,19 @@ public class DeviceTableImpl implements DeviceTable
     private static final Logger logger = Logger.getLogger(DeviceTableImpl.class);
 
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
+    private HashMap<String,String> macVendorTable = new HashMap<String,String>();
 
     private volatile long lastSaveTime = 0;
     
     protected DeviceTableImpl()
     {
         this.deviceTable = new ConcurrentHashMap<String,DeviceTableEntry>();
+
+        initializeMacVendorTable();
+        
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
+
     }
 
     public Map<String, DeviceTableEntry> getDeviceTable()
@@ -48,7 +54,37 @@ public class DeviceTableImpl implements DeviceTable
     {
         return deviceTable.get( macAddress );
     }
+
+    public void addDevice( String macAddress )
+    {
+        DeviceTableEntry newEntry = getDevice( macAddress );
+        if ( newEntry != null ) {
+            return; //already exists
+        }
+
+        try {
+            logger.info("Discovered new device: " + macAddress);
+            newEntry = new DeviceTableEntry( macAddress );
+            deviceTable.put( macAddress, newEntry );
+            
+            /* FIXME - add new device event */
+
+            saveDevices();
+        }
+        catch (Exception e) {
+            logger.warn("Failed to add new device: " + macAddress, e);
+        }
+    }
     
+    public String lookupMacVendor( String macAddress )
+    {
+        if ( macAddress == null )
+            return null;
+
+        String macPrefix = macAddress.substring( 0, 8 );
+        return macVendorTable.get( macPrefix );
+    }
+
     @SuppressWarnings("unchecked")
     public void saveDevices()
     {
@@ -95,5 +131,49 @@ public class DeviceTableImpl implements DeviceTable
         } catch (Exception e) {
             logger.warn("Failed to load devices",e);
         }
+    }
+
+    private void initializeMacVendorTable()
+    {
+        this.macVendorTable = new HashMap<String,String>();
+
+        Runnable task = new Runnable()
+        {
+            public void run()
+            {
+                String filename = System.getProperty("uvm.lib.dir") + "/untangle-vm/oui-formatted.txt";
+
+                long t0 = System.currentTimeMillis();
+
+                java.io.BufferedReader br = null;
+                try {
+                    br = new java.io.BufferedReader(new java.io.FileReader(filename));
+                    for (String line = br.readLine(); line != null ; line = br.readLine()) {
+                        String[] parts = line.split("\\s+",2);
+                        if ( parts.length < 2 )
+                            continue;
+
+                        String macPrefix = parts[0];
+                        String vendor = parts[1];
+                        //logger.debug( macPrefix + " ---> " + vendor );
+
+                        macVendorTable.put( macPrefix, vendor );
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to load MAC OUI data.", e);
+                } finally {
+                    if ( br != null ) {
+                        try {br.close();} catch(Exception e) {}
+                    }
+                }
+
+                long t1 = System.currentTimeMillis();
+                logger.info("Loaded MAC OUI table: " + (t1 - t0) + " millis");
+            }
+        };
+        Thread t = new Thread(task, "MAC-oui-loader");
+        t.setDaemon(true);
+        t.start();
+        return;
     }
 }
