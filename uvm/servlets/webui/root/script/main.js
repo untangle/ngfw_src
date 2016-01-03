@@ -952,6 +952,14 @@ Ext.define("Ung.Main", {
             handler: Ung.Main.showHosts
         });
         Ext.create('Ung.ConfigItem', {
+            item: {
+                displayName: i18n._('Device Viewer'),
+                iconClass: 'icon-tools'
+            },
+            renderTo: 'toolItems',
+            handler: Ung.Main.showDevices
+        });
+        Ext.create('Ung.ConfigItem', {
             id: 'reportsToolItem',
             item: {
                 displayName: i18n._('Reports Viewer'),
@@ -1160,6 +1168,7 @@ Ext.define("Ung.Main", {
         items.push('-');
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
+        items.push({text: i18n._('Show Devices'), value: 'SHOW_DEVICES', handler: Ung.Main.showDevices, hideDelay: 0});
         items.push({text: i18n._('Show Reports'), value: 'SHOW_REPORTS', handler: Ung.Main.showReports, id:'reportsMenuItem', disabled: true, hideDelay: 0});
         
         this.policySelector.setText(items[selVirtualRackIndex].text);
@@ -1195,6 +1204,19 @@ Ext.define("Ung.Main", {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             Ext.Function.defer(function() {
                 Ung.Main.hostMonitorWin.gridCurrentHosts.reload();
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
+    },
+    showDevices: function() {
+        Ext.require(['Webui.config.deviceMonitor'], function() {
+            if ( Ung.Main.deviceMonitorWin == null) {
+                Ung.Main.deviceMonitorWin=Ext.create('Webui.config.deviceMonitor', {"name":"deviceMonitor", "helpSource":"device_viewer"});
+            }
+            Ung.Main.deviceMonitorWin.show();
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function() {
+                Ung.Main.deviceMonitorWin.gridCurrentDevices.reload();
                 Ext.MessageBox.hide();
             }, 10, this);
         }, this);

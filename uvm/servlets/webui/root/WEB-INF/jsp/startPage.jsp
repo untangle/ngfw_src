@@ -49,6 +49,7 @@
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/hostMonitor.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/deviceMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/localDirectory.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/network.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/sessionMonitor.js?s=${buildStamp}"></script>

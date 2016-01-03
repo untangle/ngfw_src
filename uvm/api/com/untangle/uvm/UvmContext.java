@@ -147,6 +147,13 @@ public interface UvmContext
     CertCacheManager certCacheManager();
 
     /**
+     * Get the DashboardManager
+     *
+     * @return the DashboardManager
+     */
+    DashboardManager dashboardManager();
+
+    /**
      * The session monitor
      * This can be used for getting information about current sessions
      *

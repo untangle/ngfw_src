@@ -4,18 +4,21 @@
 package com.untangle.uvm;
 
 import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * The Device Table is responsible for storing known information about devices
  */
 public interface DeviceTable
 {
+    public void addDevice( String macAddress );
+
     public Map<String, DeviceTableEntry> getDeviceTable();
+
+    public LinkedList<DeviceTableEntry> getDevices();
 
     public DeviceTableEntry getDevice( String macAddress );
 
-    public void addDevice( String macAddress );
-    
     public String lookupMacVendor( String macAddress );
 
     public void saveDevices();
