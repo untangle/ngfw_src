@@ -755,7 +755,9 @@ Ext.define("Ung.NodePreview", {
         this.getEl().fadeIn({ opacity: 0.6, duration: 12000});
     },
     beforeDestroy: function() {
-        this.getEl().stopAnimation();
+        if(this.getEl()) {
+            this.getEl().stopAnimation();
+        }
         this.callParent(arguments);
     }
 });
@@ -876,10 +878,9 @@ Ung.LicenseLoader = {
 
 Ext.define("Ung.SystemStats", {
     extend: "Ext.Component",
-    renderTo: "rack-list",
+    cls: 'system-stats',
     afterRender: function() {
         this.callParent(arguments);
-        this.getEl().addCls("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
             '<div class="label" style="width:70px;left:91px;" onclick="Ung.Main.showSessions()">'+i18n._("Sessions")+'</div>',
@@ -909,7 +910,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 400,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: networkArr.join('')
         });
 
@@ -929,7 +929,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 1000,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: sessionsArr.join('')
         });
 
@@ -945,7 +944,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 1000,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: hostsArr.join('')
         });
         // cpu tooltip
@@ -966,7 +964,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 400,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: cpuArr.join('')
         });
 
@@ -987,7 +984,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 400,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: memoryArr.join('')
         });
 
@@ -1008,7 +1004,6 @@ Ext.define("Ung.SystemStats", {
             hideDelay: 400,
             width: 330,
             cls: 'extended-stats',
-            renderTo: Ext.getBody(),
             html: diskArr.join('')
         });
 

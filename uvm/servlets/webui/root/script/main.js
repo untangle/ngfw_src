@@ -60,7 +60,7 @@ Ext.define("Ung.Main", {
         if(rpc.isRegistered) {
             Ung.Main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
               //just make sure the licenses are reloaded on page start
-            }, true, this));
+            }, this), true);
         }
 
         this.startApplication();
@@ -85,17 +85,6 @@ Ext.define("Ung.Main", {
         Ext.tip.QuickTipManager.init();
         Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
-        var rackViewArr=[
-            '<div id="content-right">',
-                '<div id="racks">',
-                    '<div id="rack-list"><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div></div>',
-                    '<div id="rack-nodes">',
-                        '<div id="filter_nodes"></div>',
-                        '<div id="nodes-separator" style="display:none;">'+i18n._("Services")+'</div>',
-                        '<div id="service_nodes"></div>',
-                    '</div>',
-                '</div>',
-            '</div>'];
  
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout: 'border',
@@ -209,7 +198,7 @@ Ext.define("Ung.Main", {
                 }, {
                     xtype: 'container',
                     itemId: 'apps',
-                    cls: 'center-region',
+                    cls: 'rack-region',
                     scrollable: true,
                     items: [{
                         xtype: 'container',
@@ -246,8 +235,30 @@ Ext.define("Ung.Main", {
                             }
                         }]
                     }, {
-                        xtype: 'component',
-                        html: rackViewArr.join("")
+                        xtype: 'container',
+                        cls: 'rack',
+                        style: 'width: 785px; margin: 0 auto;',
+                        items: [{
+                            xtype: 'container',
+                            cls: 'rack-top',
+                            items: [{
+                                xtype: 'component',
+                                margin: '0 0 0 50',
+                                html: '<div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div>'
+                            }, this.systemStats = Ext.create('Ung.SystemStats', {})]
+                        }, {
+                            xtype: 'container',
+                            itemId: 'filterNodes'
+                            
+                        }, {
+                            xtype: 'component',
+                            cls: 'nodes-separator',
+                            itemId: 'servicesSeparator',
+                            html: i18n._("Services")
+                        }, {
+                            xtype: 'container',
+                            itemId: 'serviceNodes'
+                        }]
                     }]
                 }, {
                     xtype: 'container',
@@ -319,8 +330,10 @@ Ext.define("Ung.Main", {
         this.mainMenu = this.viewport.down("[name=mainMenu]");
         this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
-        this.systemStats = Ext.create('Ung.SystemStats', {});
         this.policySelector =  this.viewport.down("button[name=policySelector]");
+        this.filterNodes = this.viewport.down("#filterNodes");
+        this.serviceNodes = this.viewport.down("#serviceNodes");
+        this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
@@ -694,6 +707,7 @@ Ext.define("Ung.Main", {
         delete rpc.reportsAppInstalledAndEnabled;
         this.nodes=[];
         var i, node;
+        var hasService = false;
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
@@ -704,16 +718,23 @@ Ext.define("Ung.Main", {
                      rpc.rackView.licenseMap.map[nodeProperties.name],
                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
+            if(!hasService && node.type != "FILTER") {
+                hasService = true;
+            }
         }
         if(!rpc.isRegistered) {
             this.showWelcomeScreen();
         }
-        this.updateSeparator();
+        this.servicesSeparator.setVisible(hasService);
+        //TODO: use css class for this
+        //document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
+        this.nodes.sort(function(a,b) {
+            return b.viewPosition < a.viewPosition;
+        });
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
             this.addNode(node, nodePreviews[node.name]);
         }
-        this.panelCenter.getComponent("apps").updateLayout();
         if(!Ung.Main.disableThreads) {
             Ung.MetricManager.start(true);
         }
@@ -836,7 +857,7 @@ Ext.define("Ung.Main", {
             }, this);
 
             Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
-        }, true, this));
+        }, this), true);
     },
 
     installNode: function(nodeProperties, appItem, completeFn) {
@@ -1062,25 +1083,23 @@ Ext.define("Ung.Main", {
         }
     },
     getNodePosition: function(place, viewPosition) {
-        var placeEl=document.getElementById(place);
         var position=0;
-        if(placeEl.hasChildNodes()) {
-            for(var i=0;i<placeEl.childNodes.length;i++) {
-                if(placeEl.childNodes[i].getAttribute('viewPosition')-viewPosition<0) {
-                    position=i+1;
+        if(place.items) {
+            place.items.each(function(item, index) {
+                if(item.viewPosition<viewPosition) {
+                    position = index+1;
                 } else {
-                    break;
+                    return false;
                 }
-            }
+            });
         }
         return position;
     },
     addNode: function (node, fadeIn) {
         var nodeCmp = Ext.create('Ung.Node', node);
         nodeCmp.fadeIn=fadeIn;
-        var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
-        var position=this.getNodePosition(place, node.viewPosition);
-        nodeCmp.render(place, position);
+        var place=(node.type=="FILTER")? this.filterNodes : this.serviceNodes;
+        place.add(nodeCmp);
         Ung.AppItem.setLoading(node.name, false);
         if ( node.name == 'untangle-node-policy-manager') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
@@ -1098,9 +1117,9 @@ Ext.define("Ung.Main", {
     },
     addNodePreview: function ( nodeProperties ) {
         var nodeCmp = Ext.create('Ung.NodePreview', nodeProperties );
-        var place = ( nodeProperties.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
+        var place = ( nodeProperties.type=="FILTER") ? this.filterNodes : this.serviceNodes;
         var position = this.getNodePosition( place, nodeProperties.viewPosition );
-        nodeCmp.render(place, position);
+        place.insert(position, nodeCmp);
         Ung.Main.nodePreviews[nodeProperties.name] = true;
     },
     removeNodePreview: function(nodeName) {
@@ -1108,16 +1127,6 @@ Ext.define("Ung.Main", {
             delete Ung.Main.nodePreviews[nodeName];
         }
         Ext.destroy(Ext.getCmp("node_preview_"+nodeName));
-    },
-    removeNode: function(index) {
-        var nodeId = Ung.Main.nodes[index].nodeId;
-        var nodeCmp = (nodeId != null) ? Ext.getCmp('node_'+nodeId): null;
-        Ung.Main.nodes.splice(index, 1);
-        if(nodeCmp) {
-            Ext.destroy(nodeCmp);
-            return true;
-        }
-        return false;
     },
     getNode: function(nodeName) {
         if(Ung.Main.nodes) {
@@ -1130,18 +1139,6 @@ Ext.define("Ung.Main", {
             }
         }
         return null;
-    },
-    // Show - hide Services header in the rack
-    updateSeparator: function() {
-        var hasService=false;
-        for(var i=0;i<this.nodes.length;i++) {
-            if(this.nodes[i].type != "FILTER") {
-                hasService=true;
-                break;
-            }
-        }
-        document.getElementById("nodes-separator").style.display= hasService ? "" : "none";
-        document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
     },
     updatePolicySelector: function() {
         var items=[];

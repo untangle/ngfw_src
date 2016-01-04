@@ -159,7 +159,6 @@ Ext.define("Ung.SettingsWin", {
         this.callParent(arguments);
     },
     buildTabPanel: function(itemsArray) {
-        Ext.get("racks").hide();
         if(this.hasReports) {
             var reportCategory = this.reportCategory;
             if ( reportCategory == null ) reportCategory = this.displayName; 
@@ -175,7 +174,6 @@ Ext.define("Ung.SettingsWin", {
         });
         this.items=this.tabs;
         this.tabs.on('afterrender', function() {
-            Ext.get("racks").show();
             Ext.defer(this.openTarget,1, this);
         }, this);
     },
@@ -226,7 +224,6 @@ Ext.define("Ung.SettingsWin", {
         Ung.Main.openHelp(helpSource);
     },
     closeWindow: function(handler) {
-        Ext.get("racks").show();
         this.hide();
         Ext.destroy(this);
         if(handler) {
