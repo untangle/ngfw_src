@@ -198,7 +198,7 @@ Ext.define("Ung.Main", {
                 }, {
                     xtype: 'container',
                     itemId: 'apps',
-                    cls: 'rack-region',
+                    cls: 'apps',
                     scrollable: true,
                     items: [{
                         xtype: 'container',
@@ -221,6 +221,24 @@ Ext.define("Ung.Main", {
                             })
                         }, {
                             xtype: 'component',
+                            itemId: 'parentPolicy',
+                            margin: '0 0 0 10',
+                            hidden: true,
+                            html: ""
+                        }, {
+                            xtype: "component",
+                            cls: "alert-container",
+                            margin: '0 0 0 10',
+                            itemId: "alertContainer",
+                            hidden: true
+                        }, {
+                            xtype: "component",
+                            cls: "no-ie-container",
+                            margin: '0 0 0 10',
+                            itemId: "noIeContainer",
+                            hidden: true
+                        }, {
+                            xtype: 'component',
                             html: '',
                             flex: 1
                         },this.buildLinksMenu(),{
@@ -236,23 +254,18 @@ Ext.define("Ung.Main", {
                         }]
                     }, {
                         xtype: 'container',
-                        cls: 'rack',
-                        style: 'width: 785px; margin: 0 auto;',
+                        cls: 'apps-content',
                         items: [{
                             xtype: 'container',
-                            cls: 'rack-top',
-                            items: [{
-                                xtype: 'component',
-                                margin: '0 0 0 50',
-                                html: '<div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div><div id="no-ie-container" style="display:none;"></div>'
-                            }, this.systemStats = Ext.create('Ung.SystemStats', {})]
+                            cls: 'apps-top',
+                            items: [this.systemStats = Ext.create('Ung.SystemStats', {})]
                         }, {
                             xtype: 'container',
                             itemId: 'filterNodes'
                             
                         }, {
                             xtype: 'component',
-                            cls: 'nodes-separator',
+                            cls: 'apps-separator',
                             itemId: 'servicesSeparator',
                             html: i18n._("Services")
                         }, {
@@ -333,7 +346,9 @@ Ext.define("Ung.Main", {
         this.policySelector =  this.viewport.down("button[name=policySelector]");
         this.filterNodes = this.viewport.down("#filterNodes");
         this.serviceNodes = this.viewport.down("#serviceNodes");
+        this.parentPolicy = this.viewport.down("#parentPolicy");
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
+        this.appsPanel = this.viewport.down("#apps");
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
@@ -726,6 +741,13 @@ Ext.define("Ung.Main", {
             this.showWelcomeScreen();
         }
         this.servicesSeparator.setVisible(hasService);
+        if(hasService && !this.appsPanel.hasCls("apps-have-services")) {
+            this.appsPanel.addCls("apps-have-services");
+        }
+        if(!hasService && this.appsPanel.hasCls("apps-have-services")) {
+            this.appsPanel.removeCls("apps-have-services");
+        }
+        
         //TODO: use css class for this
         //document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
         this.nodes.sort(function(a,b) {
@@ -789,15 +811,8 @@ Ext.define("Ung.Main", {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             var parentRackName = this.getParentName( rpc.currentPolicy.parentId );
-            var parentRackDisplay = Ext.get('parent-rack-container');
-
-            if (parentRackName == null) {
-                parentRackDisplay.dom.innerHTML = "";
-                parentRackDisplay.hide();
-            } else {
-                parentRackDisplay.show();
-                parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+":<br/>" + parentRackName;
-            }
+            this.parentPolicy.update((parentRackName == null)? "": i18n._("Parent Rack")+"<br/>"+parentRackName);
+            this.parentPolicy.setVisible(parentRackName != null);
 
             Ung.Main.buildApps();
             Ung.Main.buildNodes();
@@ -992,20 +1007,18 @@ Ext.define("Ung.Main", {
         });
     },
     checkForIE: function (handler) {
-        if (Ext.isIE || 
-            (Ext.browser.userAgent.indexOf("Edge/") != -1)) {
-            var noIEDisplay = Ext.get('no-ie-container');
-            noIEDisplay.show();
+        if (Ext.isIE) {
+            var noIeContainer = this.viewport.down("#noIeContainer");
+            noIeContainer.show();
 
             this.noIEToolTip= Ext.create('Ext.tip.ToolTip', {
-                target: document.getElementById("no-ie-container"),
+                target: noIeContainer.getEl(),
                 dismissDelay: 0,
                 hideDelay: 1500,
                 width: 500,
                 cls: 'extended-stats',
                 html: i18n._("For an optimal experience use Google Chrome or Mozilla Firefox.")
             });
-            this.noIEToolTip.render(Ext.getBody());
         }
         if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8 ) {
             Ext.MessageBox.alert( i18n._("Warning"),
@@ -1016,20 +1029,20 @@ Ext.define("Ung.Main", {
     checkForAlerts: function (handler) {
         //check for upgrades
         rpc.alertManager.getAlerts(Ext.bind(function( result, exception, opt, handler ) {
-            var alertDisplay = Ext.get('alert-container');
+            var alertContainer = this.viewport.down("#alertContainer");
             var alertArr=[];
             if (result != null && result.list.length > 0) {
-                alertDisplay.show();
+                alertContainer.show();
                 alertArr.push('<div class="title">'+i18n._("Alerts:")+'</div>');
                 for (var i = 0; i < result.list.length; i++) {
                     alertArr.push('<div class="values">&middot;&nbsp;'+i18n._(result.list[i])+'</div>');
                 }
             } else {
-                alertDisplay.hide();
+                alertContainer.hide();
             }
 
             this.alertToolTip= Ext.create('Ext.tip.ToolTip', {
-                target: document.getElementById("alert-container"),
+                target: alertContainer.getEl(),
                 dismissDelay: 0,
                 hideDelay: 1500,
                 width: 500,
@@ -1051,7 +1064,6 @@ Ext.define("Ung.Main", {
                     }
                 }]
             });
-            this.alertToolTip.render(Ext.getBody());
         }, this,[handler],true));
     },
     openConfig: function(configItem) {
