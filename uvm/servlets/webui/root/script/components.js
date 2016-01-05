@@ -318,7 +318,10 @@ Ext.define("Ung.Node", {
         }
         Ext.destroy(this.subCmps);
         if(this.hasPowerButton) {
-            Ext.get('node-power_' + this.getId()).clearListeners();
+            var powerButton = Ext.get('node-power_' + this.getId());
+            if(powerButton) {
+                powerButton.clearListeners();
+            }
         }
         this.callParent(arguments);
     },
@@ -743,11 +746,11 @@ Ext.define("Ung.NodePreview", {
         }
     },
     constructor: function(config) {
+        Ung.Main.nodePreviews[config.name] = Ext.clone(config);
         this.id = "node_preview_" + config.name;
         this.callParent(arguments);
     },
     afterRender: function() {
-        Ung.Main.nodePreviews[this.name] = true;
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
             'image': '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+this.name+'_42x42.png',

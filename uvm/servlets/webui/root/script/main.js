@@ -717,7 +717,7 @@ Ext.define("Ung.Main", {
         Ext.getCmp('reportsMenuItem').disable();
         Ext.getCmp('reportsToolItem').hide();
         
-        var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
+        var nodePreviews = Ext.clone(this.nodePreviews);
         this.filterNodes.removeAll();
         this.serviceNodes.removeAll();
 
@@ -756,10 +756,23 @@ Ext.define("Ung.Main", {
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
             this.addNode(node, nodePreviews[node.name]);
+            if(nodePreviews[node.name]) {
+                delete nodePreviews[node.name];
+            }
         }
-        if(!Ung.Main.disableThreads) {
+        for(var nodeName in nodePreviews) {
+            this.addNodePreview(nodePreviews[nodeName]);
+        }
+        if(!this.disableThreads) {
             Ung.MetricManager.start(true);
         }
+        this.openTarget();
+        if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
+            Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
+        }
+    },
+    //TODO: implement routing mechanism available in new extjs, and remove this mechanism
+    openTarget: function() {
         if(this.target) {
             //Open target if specified
             //target usage in the query string:
@@ -801,9 +814,6 @@ Ext.define("Ung.Main", {
                 Ung.Main.target = null;
             }, 10000, this);
         }
-        if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
-            Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
-        }
     },
     // load the rack view for current policy
     loadRackView: function() {
@@ -813,7 +823,7 @@ Ext.define("Ung.Main", {
             var parentRackName = this.getParentName( rpc.currentPolicy.parentId );
             this.parentPolicy.update((parentRackName == null)? "": i18n._("Parent Rack")+"<br/>"+parentRackName);
             this.parentPolicy.setVisible(parentRackName != null);
-
+            this.nodePreviews = {};
             Ung.Main.buildApps();
             Ung.Main.buildNodes();
         }, this);
@@ -1280,6 +1290,24 @@ Ext.define("Ung.Main", {
             }
         }, this));
     },
+/*    testInstallRandom: function(probability) {
+        if(!probability) {
+            probability = Math.random()*100;
+        }
+        for(var i=0;i<Ung.Main.apps.length;i++) {
+            var app = Ung.AppItem.getApp(Ung.Main.apps[i].nodeProperties.name);
+            if ( app ) {
+                if(Math.random()*100 < probability)
+                app.installNode();
+            }
+        }
+    },
+    testUninstallAll: function() {
+        for(var i=0;i<Ung.Main.nodes.length;i++) {
+            var node = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
+            node.removeAction();
+        }
+    },*/
     showPostRegistrationPopup: function() {
         if (this.nodes.length != 0) {
             // do not show anything if apps already installed
