@@ -302,8 +302,8 @@ Ext.define("Ung.Main", {
                             scope: this
                         }]
                     }, {
-                        xtype: 'component',
-                        html:'<div id="appsItems"></div>'
+                        xtype: 'container',
+                        itemId: "appsContainer"
                     }]
                 }, {
                     xtype: 'container',
@@ -327,13 +327,13 @@ Ext.define("Ung.Main", {
                             border: false,
                             title: i18n._('Config'),
                             bodyPadding: '15px 0 0 0',
-                            html:'<div id="configItems"></div>'
+                            itemId: 'configContainer'
                         }, {
                             xtype: 'panel',
                             border: false,
                             title: i18n._('Tools'),
-                            bodyPadding: '15px 0 0 0',
-                            html:'<div id="toolItems"></div>'
+                            itemId: "toolsContainer",
+                            bodyPadding: '15px 0 0 0'
                         }]
                     }]
                 }]
@@ -349,6 +349,7 @@ Ext.define("Ung.Main", {
         this.parentPolicy = this.viewport.down("#parentPolicy");
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
+        this.appsContainer = this.viewport.down("#appsContainer");
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
@@ -699,14 +700,10 @@ Ext.define("Ung.Main", {
     },
     buildApps: function () {
         //destroy Apps
-        var i;
-        for(i=0; i<Ung.Main.apps.length; i++) {
-            Ext.destroy(Ung.Main.apps[i]);
-        }
+        Ung.Main.appsContainer.removeAll();
         //build Apps
-        Ung.Main.apps=[];
-        for(i=0;i<rpc.rackView.installable.list.length;i++) {
-            Ung.Main.apps.push(Ext.create("Ung.AppItem", {nodeProperties: rpc.rackView.installable.list[i]}));
+        for(var i=0;i<rpc.rackView.installable.list.length;i++) {
+            Ung.Main.appsContainer.add(Ext.create("Ung.AppItem", {nodeProperties: rpc.rackView.installable.list[i]}));
         }
     },
     buildNodes: function() {
@@ -833,33 +830,7 @@ Ext.define("Ung.Main", {
         var callback = Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
-            var i=0, j=0; installableNodes=rpc.rackView.installable.list;
-            var updatedApps = [];
-            while(i<installableNodes.length || j<Ung.Main.apps.length) {
-                var appCmp;
-                if(i==installableNodes.length) {
-                    Ext.destroy(Ung.Main.apps[j]);
-                    Ung.Main.apps[j]=null;
-                    j++;
-                } else if(j == Ung.Main.apps.length) {
-                    appCmp = Ext.create("Ung.AppItem", {nodeProperties: installableNodes[i], renderPosition: updatedApps.length});
-                    updatedApps.push(appCmp);
-                    i++;
-                } else if(installableNodes[i].name == Ung.Main.apps[j].nodeProperties.name) {
-                    updatedApps.push(Ung.Main.apps[j]);
-                    i++;
-                    j++;
-                } else if(installableNodes[i].viewPosition < Ung.Main.apps[j].nodeProperties.viewPosition) {
-                    appCmp = Ext.create("Ung.AppItem", {nodeProperties: installableNodes[i], renderPosition: updatedApps.length});
-                    updatedApps.push(appCmp);
-                    i++;
-                } else if(installableNodes[i].viewPosition >= Ung.Main.apps[j].nodeProperties.viewPosition){
-                    Ext.destroy(Ung.Main.apps[j]);
-                    Ung.Main.apps[j]=null;
-                    j++;
-                }
-            }
-            Ung.Main.apps=updatedApps;
+            Ung.Main.buildApps();
             Ung.Main.buildNodes();
         }, this);
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
@@ -963,56 +934,53 @@ Ext.define("Ung.Main", {
             className: 'Webui.config.about'
         }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
-        for(var i=0; i<this.config.length; i++) {
-            Ext.create('Ung.ConfigItem', {
+        var i;
+        var configContainer = this.viewport.down("#configContainer");
+        for(i=0; i<this.config.length; i++) {
+            configContainer.add(Ext.create('Ung.ConfigItem', {
                 item: this.config[i]
-            });
+            }));
         }
-        
-        Ext.create('Ung.ConfigItem', {
+        var tools = [{
             id: 'policyManagerToolItem',
             item: {
                 displayName: i18n._('Policy Manager'),
                 iconClass: 'icon-policy-manager'
                 
             },
-            renderTo: 'toolItems',
             handler: Ung.Main.showPolicyManager
-        });
-        Ext.create('Ung.ConfigItem', {
+        }, {
             item: {
                 displayName: i18n._('Session Viewer'),
                 iconClass: 'icon-tools'
             },
-            renderTo: 'toolItems',
             handler: Ung.Main.showSessions
-        });
-        Ext.create('Ung.ConfigItem', {
+        }, {
             item: {
                 displayName: i18n._('Host Viewer'),
                 iconClass: 'icon-tools'
             },
-            renderTo: 'toolItems',
             handler: Ung.Main.showHosts
-        });
-        Ext.create('Ung.ConfigItem', {
+        }, {
             item: {
                 displayName: i18n._('Device Viewer'),
                 iconClass: 'icon-tools'
             },
-            renderTo: 'toolItems',
             handler: Ung.Main.showDevices
-        });
-        Ext.create('Ung.ConfigItem', {
+        }, {
             id: 'reportsToolItem',
             item: {
                 displayName: i18n._('Reports Viewer'),
                 iconClass: 'icon-tools'
             },
             hidden: true,
-            renderTo: 'toolItems',
             handler: Ung.Main.showReports
-        });
+        }];
+        var toolsContainer = this.viewport.down("#toolsContainer");
+        for(i=0; i<tools.length; i++) {
+            toolsContainer.add(Ext.create('Ung.ConfigItem', tools[i]));
+        }
+
     },
     checkForIE: function (handler) {
         if (Ext.isIE) {
@@ -1121,8 +1089,14 @@ Ext.define("Ung.Main", {
             }, this),"untangle-node-policy-manager");
         }
         if ( node.name == 'untangle-node-reports') {
-            Ext.getCmp('reportsMenuItem').enable();
-            Ext.getCmp('reportsToolItem').show();
+            rpc.nodeManager.node(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.getCmp('reportsMenuItem').enable();
+                Ext.getCmp('reportsToolItem').show();
+                rpc.nodeReports = result;
+                delete rpc.reportsManager;
+            }, this),"untangle-node-reports");
+
         }
     },
     addNodePreview: function ( nodeProperties ) {
@@ -1290,12 +1264,14 @@ Ext.define("Ung.Main", {
             }
         }, this));
     },
-/*    testInstallRandom: function(probability) {
+/*
+    testInstallRandom: function(probability) {
         if(!probability) {
             probability = Math.random()*100;
         }
-        for(var i=0;i<Ung.Main.apps.length;i++) {
-            var app = Ung.AppItem.getApp(Ung.Main.apps[i].nodeProperties.name);
+        var currentApps = Ung.Main.appsContainer.items.getRange();
+        for(var i=0;i<currentApps.length;i++) {
+            var app = Ung.AppItem.getApp(currentApps[i].nodeProperties.name);
             if ( app ) {
                 if(Math.random()*100 < probability)
                 app.installNode();
@@ -1307,7 +1283,8 @@ Ext.define("Ung.Main", {
             var node = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
             node.removeAction();
         }
-    },*/
+    },
+*/
     showPostRegistrationPopup: function() {
         if (this.nodes.length != 0) {
             // do not show anything if apps already installed

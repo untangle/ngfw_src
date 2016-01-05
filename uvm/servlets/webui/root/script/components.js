@@ -153,7 +153,6 @@ Ext.define("Ung.AppItem", {
     initComponent: function() {
         this.id = "app-item_" + this.nodeProperties.name;
         this.callParent(arguments);
-        this.render('appsItems', this.renderPosition);
     },
     afterRender: function() {
         this.callParent(arguments);
@@ -224,8 +223,6 @@ Ext.define("Ung.AppItem", {
 
 Ext.define("Ung.ConfigItem", {
     extend: "Ext.Component",
-    item: null,
-    renderTo: 'configItems',
     cls: 'app-item',
     statics: {
         template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div>', '<div class="app-name">{text}</div>')
@@ -427,6 +424,7 @@ Ext.define("Ung.Node", {
                 }));
             }
         }
+        this.nodeStateContainer = document.getElementById('node-state_' + this.getId());
         this.updateRunState(this.runState, true);
         this.initMetrics();
     },
@@ -436,8 +434,8 @@ Ext.define("Ung.Node", {
     },
     setState: function(state) {
         this.state = state;
-        if(this.hasPowerButton) {
-            document.getElementById('node-state_' + this.getId()).className = "node-state icon-state-" + this.state;
+        if(this.hasPowerButton && this.nodeStateContainer) {
+            this.nodeStateContainer.className = "node-state icon-state-" + this.state;
         }
     },
     setPowerOn: function(powerOn) {
@@ -646,12 +644,16 @@ Ext.define("Ung.Node", {
     // remove node
     removeAction: function() {
         this.setState("attention");
-        this.getEl().mask();
-        this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
+        if(this.getEl()) {
+            this.getEl().mask();
+            this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
+        }
         rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception, Ext.bind(function() {
-                this.getEl().unmask();
-                this.getEl().stopAnimation();
+                if(this.getEl()) {
+                    this.getEl().unmask();
+                    this.getEl().stopAnimation();
+                }
             }, this),"alert")) return;
             var nodeName = "";
             if (this) {
@@ -719,14 +721,16 @@ Ext.define("Ung.Node", {
             this.license.trial = Math.random() > 0.5;
             this.license.valid = Math.random() > 0.5;
         }
-        this.getEl().down("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
-        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power-expired":"node-power":"";
-        var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
-        if(nodeBuyButton) {
-            if(this.license && this.license.trial) {
-                nodeBuyButton.show();
-            } else {
-                nodeBuyButton.hide();
+        if(this.getEl()) {
+            this.getEl().down("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
+            document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power-expired":"node-power":"";
+            var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
+            if(nodeBuyButton) {
+                if(this.license && this.license.trial) {
+                    nodeBuyButton.show();
+                } else {
+                    nodeBuyButton.hide();
+                }
             }
         }
         var panelStatus = this.getSettingsAppPanel();
