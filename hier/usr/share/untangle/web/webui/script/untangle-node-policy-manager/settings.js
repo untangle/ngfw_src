@@ -298,7 +298,9 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
         this.rebuildTab("gridRules", this.buildRules, 1);
     },
     beforeClose: function() {
-        Ext.defer(Ung.Main.loadPolicies, 1, Ung.Main);
+        if(!this.toRemove) {
+            Ext.defer(Ung.Main.loadPolicies, 1, Ung.Main);
+        }
     }
 });
 //# sourceURL=policy-manager-settings.js
