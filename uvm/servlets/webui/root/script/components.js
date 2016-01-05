@@ -310,7 +310,9 @@ Ext.define("Ung.Node", {
     },
     // before Destroy
     beforeDestroy: function() {
-        this.getEl().stopAnimation();
+        if(this.getEl()) {
+            this.getEl().stopAnimation();
+        }
         if(this.settingsWin && this.settingsWin.isVisible()) {
             this.settingsWin.closeWindow();
         }
@@ -322,17 +324,13 @@ Ext.define("Ung.Node", {
     },
     afterRender: function() {
         this.callParent(arguments);
-        Ung.Main.removeNodePreview(this.name);
-
-        this.getEl().set({
-            'viewPosition': this.viewPosition
-        });
+        Ung.NodePreview.removeNode(this.name);
         this.getEl().set({
             'name': this.name
         });
         if(this.fadeIn) {
             var el=this.getEl();
-            el.scrollIntoView(Ung.Main.panelCenter.body);
+            el.scrollIntoView(Ung.Main.appsPanel.getEl());
             el.setOpacity(0.5);
             el.fadeIn({opacity: 1, duration: 2500, callback: function() {
                 el.setOpacity(1);
@@ -652,11 +650,12 @@ Ext.define("Ung.Node", {
                 this.getEl().unmask();
                 this.getEl().stopAnimation();
             }, this),"alert")) return;
+            var nodeName = "";
             if (this) {
                 if(this.getEl()) {
                     this.getEl().stopAnimation();
                 }
-                var nodeName = this.name;
+                nodeName = this.name;
                 var cmp = this;
                 Ext.destroy(cmp);
                 cmp = null;
@@ -667,7 +666,12 @@ Ext.define("Ung.Node", {
                     }
                 }
             }
-            Ung.Main.updateRackView();
+            if(nodeName == "untangle-node-policy-manager") {
+                Ung.Main.loadPolicies();
+            } else {
+                Ung.Main.updateRackView();
+            }
+            
         }, this), this.nodeId);
     },
     // initialize faceplate metrics
@@ -733,30 +737,33 @@ Ext.define("Ung.NodePreview", {
     extend: "Ext.Component",
     cls: 'node',
     statics: {
-        template: new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>')
+        template: new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>'),
+        removeNode: function(nodeName) {
+            Ext.destroy(Ext.getCmp("node_preview_"+nodeName));
+        }
     },
     constructor: function(config) {
         this.id = "node_preview_" + config.name;
         this.callParent(arguments);
     },
     afterRender: function() {
-        this.getEl().addCls("node");
-        this.getEl().set({
-            'viewPosition': this.viewPosition
-            });
+        Ung.Main.nodePreviews[this.name] = true;
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
             'image': '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+this.name+'_42x42.png',
             'displayName': this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
-        this.getEl().scrollIntoView(Ung.Main.panelCenter.body);
+        this.getEl().scrollIntoView(Ung.Main.appsPanel.getEl());
         this.getEl().setOpacity(0.1);
         this.getEl().fadeIn({ opacity: 0.6, duration: 12000});
     },
     beforeDestroy: function() {
         if(this.getEl()) {
             this.getEl().stopAnimation();
+        }
+        if(Ung.Main.nodePreviews[this.name] !== undefined) {
+            delete Ung.Main.nodePreviews[this.name];
         }
         this.callParent(arguments);
     }

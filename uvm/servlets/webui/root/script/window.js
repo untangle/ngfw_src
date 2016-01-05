@@ -364,6 +364,7 @@ Ext.define("Ung.NodeWin", {
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
                 var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                this.toRemove = true;
                 this.closeWindow();
                 if(nodeCmp) {
                     nodeCmp.removeAction();

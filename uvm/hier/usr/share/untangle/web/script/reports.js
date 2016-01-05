@@ -77,7 +77,6 @@ Ext.define('Ung.panel.Reports', {
                         xtype: 'component',
                         name: 'pleaseSelectEntry',
                         padding: '25 10 0 20',
-                        hidden: true,
                         style: 'font-size: 16px;',
                         html: i18n._('Please select an entry to view.')
                     }]
@@ -1349,13 +1348,6 @@ Ext.define('Ung.panel.Reports', {
         }
     },
     listeners: {
-        "activate": {
-            fn: function() {
-                if(this.category && !this.entry) {
-                    this.down("component[name=pleaseSelectEntry]").show();
-                }
-            }
-        },
         "deactivate": {
             fn: function() {
                 if(this.autoRefreshEnabled) {

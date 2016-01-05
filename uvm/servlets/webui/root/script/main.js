@@ -718,7 +718,9 @@ Ext.define("Ung.Main", {
         Ext.getCmp('reportsToolItem').hide();
         
         var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
-        this.destoyNodes();
+        this.filterNodes.removeAll();
+        this.serviceNodes.removeAll();
+
         delete rpc.reportsAppInstalledAndEnabled;
         this.nodes=[];
         var i, node;
@@ -748,10 +750,8 @@ Ext.define("Ung.Main", {
             this.appsPanel.removeCls("apps-have-services");
         }
         
-        //TODO: use css class for this
-        //document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
         this.nodes.sort(function(a,b) {
-            return b.viewPosition < a.viewPosition;
+            return a.viewPosition - b.viewPosition;
         });
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
@@ -889,14 +889,12 @@ Ext.define("Ung.Main", {
             appItem.hide();
             return;
         }
-
         Ung.AppItem.setLoading(nodeProperties.name, true);
         Ung.Main.addNodePreview( nodeProperties );
 
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
                 Ung.AppItem.setLoading(nodeProperties.name, false);
-                Ung.Main.removeNodePreview( nodeProperties.name );
                 Ung.Main.updateRackView();
                 Ung.Util.handleException(exception);
                 return;
@@ -1084,16 +1082,6 @@ Ext.define("Ung.Main", {
             }, this);
         }, 10, configItem);
     },
-    destoyNodes: function () {
-        if(this.nodes!==null) {
-            for(var i=0;i<this.nodes.length;i++) {
-                Ext.destroy(Ung.Node.getCmp(this.nodes[i].nodeId));
-            }
-        }
-        for(var nodeName in this.nodePreviews) {
-            Ung.Main.removeNodePreview(nodeName);
-        }
-    },
     getNodePosition: function(place, viewPosition) {
         var position=0;
         if(place.items) {
@@ -1132,13 +1120,6 @@ Ext.define("Ung.Main", {
         var place = ( nodeProperties.type=="FILTER") ? this.filterNodes : this.serviceNodes;
         var position = this.getNodePosition( place, nodeProperties.viewPosition );
         place.insert(position, nodeCmp);
-        Ung.Main.nodePreviews[nodeProperties.name] = true;
-    },
-    removeNodePreview: function(nodeName) {
-        if(Ung.Main.nodePreviews[nodeName] !== undefined) {
-            delete Ung.Main.nodePreviews[nodeName];
-        }
-        Ext.destroy(Ext.getCmp("node_preview_"+nodeName));
     },
     getNode: function(nodeName) {
         if(Ung.Main.nodes) {
