@@ -33,7 +33,7 @@ public class ClamScanner implements VirusScanner
         return "virus_blocker_lite";
     }
 
-    public VirusScannerResult scanFile(File scanfile)
+    public VirusScannerResult scanFile(File scanfile, String filehash)
     {
         ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
         return scan.doScan(timeout);

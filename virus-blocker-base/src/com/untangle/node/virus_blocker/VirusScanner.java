@@ -18,7 +18,7 @@ public interface VirusScanner extends Scanner
      * @param msgFile a <code>File</code> value
      * @return a <code>VirusScannerResult</code> value
      */
-    VirusScannerResult scanFile(File msgFile);
+    VirusScannerResult scanFile(File msgFile, String msgHash);
 
     Date getLastSignatureUpdate();
 }

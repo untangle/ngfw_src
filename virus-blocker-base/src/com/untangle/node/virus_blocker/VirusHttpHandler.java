@@ -81,7 +81,8 @@ class VirusHttpHandler extends HttpEventHandler
         private String filenameContentDisposition = null; /* The content disposition filename extension */
         private String host = null;
         private String uri = null;
-        private File scanfile = null;
+        private File diskFile = null;
+        private String fileHash = null;
         private FileInputStream inStream = null;
         private FileOutputStream outStream = null;
         private FileChannel inChannel = null;
@@ -227,7 +228,7 @@ class VirusHttpHandler extends HttpEventHandler
         if (state.scan) {
             try {
                 BigInteger val = new BigInteger(1, state.msgDigest.digest());
-                logger.info("HttpHandler MD5 = " + String.format("%1$032x", val));
+                state.fileHash = String.format("%1$032x", val);
                 state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close channel", exn);
@@ -251,10 +252,10 @@ class VirusHttpHandler extends HttpEventHandler
         VirusScannerResult result;
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Scanning the file: " + state.scanfile);
+                logger.debug("Scanning the file: " + state.diskFile);
             }
             node.incrementScanCount();
-            result = node.getScanner().scanFile(state.scanfile);
+            result = node.getScanner().scanFile(state.diskFile, state.fileHash);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
@@ -275,9 +276,9 @@ class VirusHttpHandler extends HttpEventHandler
 
             if ( getResponseMode( session ) == Mode.QUEUEING ) {
                 releaseResponse( session );
-                try { state.scanfile.delete(); } catch (Exception ignore) {}
+                try { state.diskFile.delete(); } catch (Exception ignore) {}
             } else {
-                streamClient( session, new FileChunkStreamer(state.scanfile, state.inChannel, null, null, false) );
+                streamClient( session, new FileChunkStreamer(state.diskFile, state.inChannel, null, null, false) );
             }
 
         } else {
@@ -374,10 +375,10 @@ class VirusHttpHandler extends HttpEventHandler
             fileBuf = File.createTempFile("VirusHttpHandler-", null);
             if (fileBuf != null)
                 session.attachTempFile(fileBuf.getAbsolutePath());
-            state.scanfile = fileBuf;
+            state.diskFile = fileBuf;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("VIRUS: Using temporary file: " + state.scanfile);
+                logger.debug("VIRUS: Using temporary file: " + state.diskFile);
             }
 
             state.inStream = new FileInputStream(fileBuf);
@@ -389,7 +390,7 @@ class VirusHttpHandler extends HttpEventHandler
             state.msgStream = new DigestOutputStream(state.outStream, state.msgDigest);
             state.msgChannel = Channels.newChannel(state.msgStream);
             
-            state.scanfile = fileBuf;
+            state.diskFile = fileBuf;
             state.scan = true;
             
         } catch (IOException ioe) {
@@ -453,7 +454,7 @@ class VirusHttpHandler extends HttpEventHandler
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
                 state.scan = false;
 
-                streamClient( session, new FileChunkStreamer(state.scanfile, state.inChannel, null, null, false) );
+                streamClient( session, new FileChunkStreamer(state.diskFile, state.inChannel, null, null, false) );
 
                 return ChunkToken.EMPTY;
             } else {

@@ -4,6 +4,7 @@
 package com.untangle.node.virus_blocker;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.security.MessageDigest;
 import java.security.DigestOutputStream;
 import java.security.NoSuchAlgorithmException;
@@ -55,6 +58,12 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     private final long timeout;
 
     private final WrappedMessageGenerator generator;
+
+    protected class VirusSmtpStatus
+    {
+        private File diskFile = null;
+        private String fileHash = null;
+    }
 
     public VirusSmtpHandler(VirusBlockerBaseApp node)
     {
@@ -311,40 +320,40 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     private VirusScannerResult scanPart(NodeTCPSession session, Part part)
     {
         // Get the part as a file
-        File f = null;
+        VirusSmtpStatus status = null;
         try {
-            f = partToFile(session, part);
+            status = partToFile(session, part);
         } catch (Exception ex) {
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
         }
         // Call VirusScanner
         try {
-            VirusScannerResult result = this.node.getScanner().scanFile(f);
+            VirusScannerResult result = this.node.getScanner().scanFile(status.diskFile, status.fileHash);
             if (result == null || result == VirusScannerResult.ERROR) {
                 this.logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
                 return null;
             }
-            f.delete();
+            status.diskFile.delete();
             return result;
         } catch (Exception ex) {
             try {
-                this.logger.error("Exception scanning MIME part in file \"" + f.getAbsolutePath() + "\"", ex);
-                f.delete();
+                this.logger.error("Exception scanning MIME part in file \"" + status.diskFile.getAbsolutePath() + "\"", ex);
+                status.diskFile.delete();
             } catch (Exception e) {
             }
             return null;
         }
     }
 
-    private File partToFile(NodeTCPSession session, Part part)
+    private VirusSmtpStatus partToFile(NodeTCPSession session, Part part)
     {
-        File ret = null;
+        VirusSmtpStatus status = new VirusSmtpStatus();
         FileOutputStream fOut = null;
         try {
-            ret = File.createTempFile("MimePart-", null);
-            if (ret != null) session.attachTempFile(ret.getAbsolutePath());
-            fOut = new FileOutputStream(ret);
+            status.diskFile = File.createTempFile("MimePart-", null);
+            if (status.diskFile != null) session.attachTempFile(status.diskFile.getAbsolutePath());
+            fOut = new FileOutputStream(status.diskFile);
             MessageDigest msgDigest = MessageDigest.getInstance("MD5");
             DigestOutputStream dOut = new DigestOutputStream(fOut, msgDigest);
             MIMEOutputStream mimeOut = new MIMEOutputStream(dOut);
@@ -355,18 +364,18 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             fOut.flush();
             
             BigInteger val = new BigInteger(1, msgDigest.digest());
-            logger.info("SmtpHandler MD5 = " + String.format("%1$032x", val));
+            status.fileHash = String.format("%1$032x", val);
             
             fOut.close();
 
-            return ret;
+            return status;
         } catch (Exception ex) {
             try {
                 fOut.close();
             } catch (Exception ignore) {
             }
             try {
-                ret.delete();
+                status.diskFile.delete();
             } catch (Exception ignore) {
             }
             logger.error("Exception writing MIME Message to file", ex);

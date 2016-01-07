@@ -52,7 +52,8 @@ class VirusFtpHandler extends FtpEventHandler
 
     private class VirusFtpState
     {
-        private File file = null;
+        private File diskFile = null;
+        private String fileHash = null;
         private FileInputStream inStream = null;
         private FileOutputStream outStream = null;
         private FileChannel inChannel = null;
@@ -91,7 +92,7 @@ class VirusFtpHandler extends FtpEventHandler
         if ( node.getSettings().getScanFtp() ) {
             logger.debug("doServerData()");
 
-            if ( state.file == null ) {
+            if ( state.diskFile == null ) {
                 logger.debug("creating file for client");
                 createFile( session );
                 state.c2s = true;
@@ -114,7 +115,7 @@ class VirusFtpHandler extends FtpEventHandler
         if ( node.getSettings().getScanFtp() ) {
             logger.debug("doServerData()");
 
-            if ( state.file == null ) {
+            if ( state.diskFile == null ) {
                 logger.debug("creating file for server");
                 createFile( session );
                 state.c2s = false;
@@ -136,23 +137,23 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doClientDataEnd()");
 
-        if ( node.getSettings().getScanFtp() && state.c2s && state.file != null ) {
+        if ( node.getSettings().getScanFtp() && state.c2s && state.diskFile != null ) {
             try {
                 BigInteger val = new BigInteger(1, state.msgDigest.digest());
-                logger.info("FtpHandler MD5 = " + String.format("%1$032x", val));
+                state.fileHash = String.format("%1$032x", val);
                 state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close out channel");
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("c2s file: " + state.file);
+                logger.debug("c2s file: " + state.diskFile);
             }
             TCPStreamer ts = scan( session );
             if (null != ts) {
                 session.sendStreamerToServer(ts);
             }
-            state.file = null;
+            state.diskFile = null;
         } else {
             session.shutdownServer();
         }
@@ -164,23 +165,23 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doServerDataEnd()");
 
-        if ( node.getSettings().getScanFtp() && !state.c2s && state.file != null ) {
+        if ( node.getSettings().getScanFtp() && !state.c2s && state.diskFile != null ) {
             try {
                 BigInteger val = new BigInteger(1, state.msgDigest.digest());
-                logger.info("FtpHandler MD5 = " + String.format("%1$032x", val));
+                state.fileHash = String.format("%1$032x", val);
                 state.outChannel.close();
             } catch (IOException exn) {
                 logger.warn("could not close out channel", exn);
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("!c2s file: " + state.file);
+                logger.debug("!c2s file: " + state.diskFile);
             }
             TCPStreamer ts = scan( session );
             if (null != ts) {
                 session.sendStreamerToClient(ts);
             }
-            state.file = null;
+            state.diskFile = null;
         } else {
             session.shutdownClient();
         }
@@ -254,7 +255,7 @@ class VirusFtpHandler extends FtpEventHandler
             if( ignoredHost( session.sessionEvent().getSServerAddr() ) ){
                 result = VirusScannerResult.CLEAN;
             } else {
-                result = node.getScanner().scanFile( state.file );                
+                result = node.getScanner().scanFile( state.diskFile, state.fileHash );                
             }
         } catch (Exception exn) {
             // Should never happen
@@ -266,7 +267,7 @@ class VirusFtpHandler extends FtpEventHandler
 
         if ( result.isClean() ) {
             node.incrementPassCount();
-            TokenStreamer tokSt = new FileChunkStreamer( state.file, state.inChannel, null, EndMarkerToken.MARKER, true );
+            TokenStreamer tokSt = new FileChunkStreamer( state.diskFile, state.inChannel, null, EndMarkerToken.MARKER, true );
             return new TokenStreamerAdaptor( tokSt, session );
         } else {
             node.incrementBlockCount();
@@ -287,14 +288,14 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
 
         try {
-            state.file = File.createTempFile("VirusFtpHandler-", null);
-            if (state.file != null)
-                session.attachTempFile(state.file.getAbsolutePath());
+            state.diskFile = File.createTempFile("VirusFtpHandler-", null);
+            if (state.diskFile != null)
+                session.attachTempFile(state.diskFile.getAbsolutePath());
             
-            state.inStream = new FileInputStream( state.file );
+            state.inStream = new FileInputStream( state.diskFile );
             state.inChannel = state.inStream.getChannel();
 
-            state.outStream = new FileOutputStream( state.file );
+            state.outStream = new FileOutputStream( state.diskFile );
             state.outChannel = state.outStream.getChannel();
             state.msgDigest = MessageDigest.getInstance("MD5");
             state.msgStream = new DigestOutputStream(state.outStream, state.msgDigest);
