@@ -76,6 +76,7 @@ Ext.define("Ung.Main", {
         });
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/common.css");
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
+        Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/apps.css");
 
         document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
         if(rpc.languageSettings.language) {

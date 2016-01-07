@@ -346,7 +346,7 @@ Ext.define("Ung.Node", {
             'image': this.image,
             'isNodeEditable': this.isNodeEditable ? "none": "",
             'displayName': this.displayName,
-            'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power-expired":"node-power"):"",
+            'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power node-power-expired":"node-power"):"",
             'licenseMessage': this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
@@ -723,7 +723,7 @@ Ext.define("Ung.Node", {
         }
         if(this.getEl()) {
             this.getEl().down("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
-            document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power-expired":"node-power":"";
+            document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power node-power-expired":"node-power":"";
             var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
             if(nodeBuyButton) {
                 if(this.license && this.license.trial) {
