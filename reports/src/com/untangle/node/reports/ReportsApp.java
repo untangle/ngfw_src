@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
     private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
+    private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
 
@@ -59,6 +61,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     protected static EventReaderImpl eventReader = null;
 
     private ReportsSettings settings;
+    private FixedReports fixedreports;
     
     public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
@@ -110,6 +113,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
          */
         writeCronFile();
         SyslogManagerImpl.reconfigure(this.settings);
+        
     }
 
     public ReportsSettings getSettings()
@@ -142,7 +146,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
-    public void runDailyReport() throws Exception
+    public void runFixedReport() throws Exception
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date()); // now
@@ -151,27 +155,26 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         String ts = df.format(cal.getTime());
 
         int exitCode = -1;
-        logger.info("Running daily report...");
+        logger.info("Running fixed report...");
         boolean tryAgain = false;
         int tries = 0;
 
         flushEvents();
         
         synchronized (this) {
-            do {
-                tries++;
-                tryAgain = false;
-            
-                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_GENERATE_REPORTS_SCRIPT + " -r 1 -m -d " + ts);
-
-                /* exitCode == 1 means another reports process is running, just wait and try again. */
-                if (exitCode == 1)  {
-                    logger.warn("Report process already running. Waiting and then trying again...");
-                    tryAgain = true;
-                    Thread.sleep(10000); // sleep 10 seconds
+            exitCode = 0;
+            ArrayList<String> fixedReportAddresses = new ArrayList<String>();
+            if ( settings.getReportsUsers() != null) {
+                for ( ReportsUser user : settings.getReportsUsers() ) {
+                    if(user.getEmailSummaries()){
+                        fixedReportAddresses.add(user.getEmailAddress());
+                    }
                 }
             }
-            while (tryAgain && tries < 20); // try max 20 times (20 * 10 seconds = 200 seconds)
+            if(fixedReportAddresses.size() > 0){
+                FixedReports reports = new FixedReports();
+                reports.send(fixedReportAddresses);
+            }
         }        
         if (exitCode != 0) {
             if (exitCode == 1) 
@@ -471,7 +474,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         String cronStr = "#!/bin/sh" + "\n" +
             "/usr/share/untangle/bin/reports-generate-tables.py >> /var/log/uvm/reports.log 2>&1" + "\n" +
             "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            "/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh >> /var/log/uvm/reports.log 2>&1" + "\n";
+            "/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh >> /var/log/uvm/reports.log 2>&1" + "\n" + 
+            REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + "\n";
 
         if ( settings.getGoogleDriveUploadData() ) {
             String dir = settings.getGoogleDriveDirectory();

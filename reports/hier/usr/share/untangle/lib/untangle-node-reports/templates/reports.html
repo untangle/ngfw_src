@@ -1,0 +1,93 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=us-ascii">
+<style type="text/css">
+#outlook a{ padding:0; }
+
+body {
+	color: #000;
+    font-size: 12px;
+    font-weight: normal;
+    font-family: tahoma, arial, verdana, sans-serif;
+}
+
+td {
+    border: none;
+    padding: 0;
+}
+
+table {
+    border: none;
+    border-collapse: collapse;
+    border-spacing: 0;
+    padding: 0;
+    callspacing: 0;
+    width: 100%;
+}
+
+</style>
+</head>
+<body>
+
+<table>
+<tr style="background-color:#000000; color:#B2B6C0">
+<td style="width:82px;">
+<img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}"/>
+</td>
+<td style="font-size:22px; font-weight:bold; vertical-align:top;">
+{{ networkManager.getNetworkSettings.getHostName }}
+<br/>
+{{ title }}
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+{% with reportsNode=nodeManager.node,untangle-node-reports %}
+{% for node in nodeManager.nodeInstances %}
+	{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|getType==TEXT %}
+	{% if reports.size != 0 %}
+<table>
+	<tr style="background-color:#d0d0d0;">
+		<td style="width:48px;">
+		<img src="{{ attachment,/var/www/skins/default/images/admin/apps/{{ node.getNodeProperties.getName }}_42x42.png|id={{ node.getNodeProperties.getName }}@untangle.com }}" />
+		</td>
+		<td style="font-size:20px; color:#444444; font-weight:bold;">
+		{{ node.getNodeProperties.getDisplayName }}
+		</td>
+	</tr>
+		{% for report in reports %}
+	<tr>
+		<td></td>
+		<td style="font-size:14px; font-weight:normal;">{{ report.getTitle }}</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td style="font-size:12px; font-weight:normal;">{{ report.getDescription }}</td>
+		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+		{% with reportRow=reportRows|first %}
+	</tr>
+	<tr>
+		<td></td>
+		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow }}</td>
+		{% endwith %}
+		{% endwith %}
+	</tr>
+		{% endfor %}
+</table>
+	{% endif %}
+	{% endwith %}
+{% endfor %}
+{% endwith %}
+
+</td>
+</tr>
+</table>
+
+<!---
+Link here
+-->
+
+</body>
+</html>
