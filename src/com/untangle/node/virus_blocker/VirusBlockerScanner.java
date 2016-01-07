@@ -84,7 +84,7 @@ public class VirusBlockerScanner implements VirusScanner
         return (new Date(timeSeconds * 1000l));
     }
 
-    public VirusScannerResult scanFile(File scanfile)
+    public VirusScannerResult scanFile(File scanfile, String filehash)
     {
         if (!isLicenseValid()) {
             logger.warn("VirusBlocker scan circumvented: license expired.");

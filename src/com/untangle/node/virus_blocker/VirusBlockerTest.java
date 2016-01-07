@@ -20,7 +20,8 @@ public class VirusBlockerTest
         VirusBlockerScanner scanner = new VirusBlockerScanner();
         VirusScannerResult result = null;
 
-        result = scanner.scanFile(new File(args[0]));
+        // TODO - calc the MD5 sum of the file and pass instead of null
+        result = scanner.scanFile(new File(args[0]), null);
 
         System.out.println(result);
         System.exit(0);
