@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -319,6 +321,15 @@ public class MailSenderImpl implements MailSender
             logger.warn("Unable to send Message", ex);
             return false;
         }
+    }
+
+    /*
+     * See doc on interface
+     */
+    public void sendMessage(String[] recipients, String subject, List<Map<MessagePartsField,String>> parts)
+    {
+        sendMultiPart(mailSession, recipients, subject, parts);
+
     }
 
     /**
@@ -811,6 +822,77 @@ public class MailSenderImpl implements MailSender
             return false;
         }
     }
+
+    protected boolean sendMultiPart(Session session, String[] to, String subject, List<Map<MessagePartsField,String>> parts)
+    {
+        if (SessionDebug)
+            session.setDebug(true);
+
+        // construct the message
+        Message msg = prepMessage(session, to, subject);
+        if (msg == null)
+            // Nevermind after all.
+            return true;
+
+        try {
+            // Maybe mixed
+            Multipart mimeMultipartRelated = new MimeMultipart("related");
+            Multipart mimeMultipartAlternative = new MimeMultipart("alternative");
+
+            MimeBodyPart mimeBodyPart = null;
+            mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(mimeMultipartAlternative);
+            mimeMultipartRelated.addBodyPart(mimeBodyPart);
+
+            // Add text and html body
+            for(int i = 0; i < parts.size(); i++){
+                Map<MessagePartsField,String> part = parts.get(i);
+                if(part.get(MessagePartsField.TEXT) != null){
+                    mimeBodyPart = new MimeBodyPart();
+                    mimeBodyPart.setText(part.get(MessagePartsField.TEXT));
+                    mimeBodyPart.setHeader("Content-Type", "text/plain; charset=utf-8");
+                    mimeMultipartAlternative.addBodyPart(mimeBodyPart);
+                }else if(part.get(MessagePartsField.HTML) != null){
+                    mimeBodyPart = new MimeBodyPart();
+                    mimeBodyPart.setText(part.get(MessagePartsField.HTML));
+                    mimeBodyPart.setHeader("Content-Type", "text/html; charset=utf-8");
+                    mimeMultipartAlternative.addBodyPart(mimeBodyPart);
+                }else{
+                    String filename = part.get(MessagePartsField.FILENAME);
+                    if(filename != null){
+                        File attachmentFile = new File(filename);
+                        String mimetype = new MimetypesFileTypeMap().getContentType(attachmentFile);
+                        DataSource ds = new FileDataSource(attachmentFile);
+                        ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
+                        DataHandler dh = new DataHandler(ds);
+                        mimeBodyPart = new MimeBodyPart();
+                        mimeBodyPart.setDataHandler(dh);
+                        String contentType = null;
+                        try{
+                            contentType = Files.probeContentType(Paths.get(filename));
+                        }catch(Exception e){
+                            logger.warn("paths exception " + e);
+                            contentType = dh.getContentType();
+                        }
+                        mimeBodyPart.setHeader("Content-Type", contentType + "; name=\"" + attachmentFile.getName()+"\"");
+                        if(part.get(MessagePartsField.CID) != null){
+                            mimeBodyPart.setHeader("Content-ID", "<"+part.get(MessagePartsField.CID)+">");
+                        }
+                        mimeMultipartRelated.addBodyPart(mimeBodyPart);
+                    }
+                }
+            }
+
+            msg.setContent(mimeMultipartRelated);
+            dosend(session, msg);
+            logIt(msg);
+            return true;
+        } catch (MessagingException x) {
+            logger.error("Unable to parse extras", x);
+            return false;
+        }
+    }
+
 
     protected boolean sendMixedErrorLog(Session session, String[] to, String subject, String bodyText, List<MimeBodyPart> extras)
     {

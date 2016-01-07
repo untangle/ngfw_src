@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.internet.MimeBodyPart;
 
@@ -80,6 +81,33 @@ public interface MailSender
      * @return true if sent, false if an error.
      */
     boolean sendMessage(InputStream msgStream, String...rcptStrs);
+
+    /**
+     * Sends a multi-part MIME email message to the given recipients.
+     *
+     * @param recipients recipient email addresses.
+     * @param subject subject of the message.
+     * @param parts. Text, HTML, and attachments for the message assembled as:
+     * + mixed
+     *      + alternative
+     *           - text
+     *           - html
+     *       - attachment 1
+     *       - attachment ...
+     *
+     * When HTML is constructed with images referencing attachments as content-ids (CID),
+     * images appear correctly in message for common email clients (Gmail, Outlook)
+     *
+     * @return true if sent, false if an error.
+     */
+    public enum MessagePartsField {
+        TEXT,
+        HTML,
+        FILENAME,
+        CID
+    }
+
+    void sendMessage(String[] recipients, String subject, List<Map<MessagePartsField,String>> parts);
 
     /**
      * Sends a email (with attachments) to the given recipients.
