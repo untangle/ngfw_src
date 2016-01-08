@@ -124,8 +124,11 @@ class PhishBlockerTests(unittest2.TestCase):
         except:
             pass
                 
+        time.sleep(3)
         sendPhishMail(mailfrom="test020")
+        time.sleep(3)
         sendPhishMail(mailfrom="test021")
+        time.sleep(3)
         sendPhishMail(mailfrom="test022")
 
         events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
