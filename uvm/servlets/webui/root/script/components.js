@@ -273,7 +273,7 @@ Ext.define("Ung.Node", {
     // --------------------------------
     hasPowerButton: null,
     // node state
-    state: null, // on, off, attention, stopped
+    state: null, // on, off, attention
     // is powered on,
     powerOn: null,
     // running state
