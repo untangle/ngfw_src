@@ -1,0 +1,346 @@
+.apps {
+    background: #A4A4A4 url(../images/admin/background_empty_rack.png) center 138px repeat-y local;
+}
+
+.apps-content {
+    width: 785px;
+    margin: 0 auto;
+}
+
+.apps-have-services {
+    background-position: center 188px;
+}
+
+.apps-top {
+    background: transparent url(../images/admin/background_rack_list.png) no-repeat;
+    width: 785px;
+    height: 50px;
+}
+
+.apps-separator {
+    background: transparent url(../images/admin/background_separator.png) no-repeat;
+    width: 785px;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 90px;
+    font-family: Verdana, Helvetica, sans-serif;
+    font-size: 19px;
+    color: #7C7B7B;
+}
+
+/* node background */
+div.node {
+    margin: 0 auto;
+    position: relative;
+    background: transparent url(../images/admin/background_node.png) no-repeat;
+    width: 785px;
+    height: 93px;
+}
+
+div.node-cap {
+    background-color: #666666;
+    height: 98%;
+    left: 38px;
+    opacity: 0.7;
+    position: absolute;
+    width: 708px;
+    z-index: 1000;
+}
+/* Node image container */
+.node-image {
+    position: absolute;
+    top: 12px;
+    left: 50px;
+    height: 42px;
+    width: 42px;
+    -moz-box-shadow: 1px 1px 1px 1px #333;
+    -webkit-box-shadow: 1px 1px 1px 1px #333;
+    box-shadow: 1px 1px 1px 1px #333;
+}
+/* node display name text*/
+div.node div.node-label {
+    position: absolute;
+    top: 8px;
+    left: 100px;
+    height: 55px;
+    width: 230px;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    color: #F8F8F8;
+    text-shadow: 1px 1px 2px #000;
+}
+/* node trial info text */
+div.node div.node-faceplate-info {
+    position: absolute;
+    top: 35px;
+    left: 100px;
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #DE2020;
+}
+/* Node buy button text */
+.buy-button .x-btn-inner-default-small {
+    color: green;
+}
+/* node state container */
+div.node div.node-state {
+    z-index: 200;
+    position: absolute;
+    top: 50px;
+    right: 54px;
+    height: 33px;
+    width: 33px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+/* node power button icon */
+div.node .node-power {
+    z-index: 300;
+    position: absolute;
+    top: 15px;
+    right: 54px;
+    height: 33px;
+    width: 33px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url(../images/admin/button_power.png);
+}
+/* node power expired button icon */
+div.node .node-power.node-power-expired {
+    background-image: url(../images/admin/button_power_expired.png);
+}
+
+/* node buttons panel container */
+div.node div.node-buttons {
+    position: absolute;
+    top: 55px;
+    left: 40px;
+    width: 1px;
+}
+/* node metrics */
+div.node div.node-metrics {
+    position: absolute;
+    bottom: 6px;
+    right: 100px;
+    width: 355px;
+    height: 87px;
+}
+/* chart container */
+div.node-metrics div.chart {
+    position: absolute;
+    top: 7px;
+    left: 5px;
+    width: 125px;
+    height: 75px;
+}
+/* system metrics container */
+div.node-metrics div.system {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 219px;
+    height: 87px;
+    background: transparent url(../images/admin/background_system_blinger_border.png) no-repeat scroll 0px 7px;
+}
+/* system metrics box container */
+div.node-metrics div.system-box {
+    position: relative;
+    top: 15px;
+    left: 5px;
+    width: 209px;
+    height: 60px;
+}
+
+div.node-metrics div.system-box div {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9px;
+}
+/* system metrics label */
+div.node-metrics div.system-label {
+    position: absolute;
+    left: 0px;
+    text-align: left;
+    color: #3F3F3F;
+    width: 125px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* system metrics value */
+div.node-metrics div.system-value {
+    position: absolute;
+    right: 0px;
+    text-align: right;
+    color: #FFFFFF;
+    font-size: 10px;
+    padding-right: 4px;
+    width: 100px;
+    height: 14px;
+    background: transparent url(../images/admin/background_system_blinger_value.png) no-repeat center right;
+}
+/* rack top system stats container */
+div.system-stats {
+    position: absolute;
+    width: 393px;
+    height: 50px;
+    top: 0px;
+    right: 40px;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+/* system stats label */
+div.system-stats div.label {
+    position: absolute;
+    bottom: 4px;
+    text-align: center;
+    color: #000000;
+}
+/* system stats network*/
+div.system-stats div.network {
+    position: absolute;
+    top: 4px;
+    left: 0px;
+    background: transparent url(../images/admin/background_network.png) no-repeat;
+    width: 99px;
+    height: 30px;
+    font-weight: normal;
+}
+/* system stats network tx container*/
+div.system-stats div.network div.tx {
+    position: absolute;
+    top: 2px;
+    left: 0px;
+    width: 95px;
+    height: 15px;
+    padding-left: 20px;
+    color: #55BA47;
+    background: transparent url(../images/admin/icons/icon_network_tx.png) no-repeat scroll 5px 1px;
+}
+
+div.system-stats div.network div.tx-idle {
+    background: transparent url(../images/admin/icons/icon_network_tx-idle.png) no-repeat scroll 5px 1px;
+}
+/* system stats network rx container*/
+div.system-stats div.network div.rx {
+    position: absolute;
+    bottom: 0px;
+    width: 95px;
+    height: 15px;
+    padding-left: 20px;
+    color: orange;
+    background: transparent url(../images/admin/icons/icon_network_rx.png) no-repeat scroll 5px 1px;
+}
+
+div.system-stats div.network div.rx-idle {
+    background: transparent url(../images/admin/icons/icon_network_rx-idle.png) no-repeat scroll 5px 1px;
+}
+/* system stats network rx value */
+div.system-stats div.network div.rx div.rx-value,div.system-stats div.network div.tx div.tx-value {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+/* system stats cpu */
+div.system-stats div.sessions {
+    position: absolute;
+    top: 4px;
+    left: 102px;
+    background: transparent url(../images/admin/background_sessions.png) no-repeat;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    padding-top: 7px;
+    font-weight: bold;
+}
+/* system stats cpu */
+div.system-stats div.hosts {
+    position: absolute;
+    top: 4px;
+    left: 155px;
+    background: transparent url(../images/admin/background_sessions.png) no-repeat;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    padding-top: 7px;
+    font-weight: bold;
+}
+/* system stats cpu */
+div.system-stats div.cpu {
+    position: absolute;
+    top: 4px;
+    left: 208px;
+    background: transparent url(../images/admin/background_cpu.png) no-repeat;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    padding-top: 7px;
+    font-weight: bold;
+}
+/* system stats memory */
+div.system-stats div.memory {
+    position: absolute;
+    top: 4px;
+    left: 261px;
+    background: transparent url(../images/admin/background_network.png) no-repeat; /*../images/admin/background_memory.png) no-repeat;*/
+    width: 99px;
+    height: 30px;
+    font-weight: bold;
+}
+/* system stats free memory */
+div.system-stats div.memory div.free {
+    position: absolute;
+    top: 2px;
+    left: 0px;
+    width: 90px;
+    height: 15px;
+    padding-left: 4px;
+    color: #55BA47;
+}
+/* system stats used memory */
+div.system-stats div.memory div.used {
+    position: absolute;
+    bottom: 0px;
+    width: 90px;
+    height: 15px;
+    padding-left: 4px;
+    color: orange;
+}
+/* system stats free/used memory value */
+div.system-stats div.memory div.free div.free-value,div.system-stats div.memory div.used div.used-value {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+/* system stats disk */
+div.system-stats div.disk {
+    position: absolute;
+    top: 4px;
+    right: 0px;
+    background: transparent url(../images/admin/background_disk.png) no-repeat;
+    width: 30px;
+    height: 30px;
+}
+
+div.system-stats div.disk div {
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+/* system stats tooltip text */
+div.extended-stats {
+    font-size: 11px;
+}
+/* system stats tooltip title */
+div.extended-stats div.title {
+    padding-left: 5px;
+    font-weight: bold;
+}
+/* system stats tooltip value */
+div.extended-stats div.values {
+    padding-left: 30px;
+}

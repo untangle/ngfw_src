@@ -214,7 +214,7 @@ public class Main
         System.setProperty("uvm.conf.dir", uvmConf);
         String uvmSettings = uvmHome + "/settings";
         System.setProperty("uvm.settings.dir", uvmSettings);
-        String uvmSkins = "/var/www/skins";
+        String uvmSkins = uvmHome + "/web/skins";
         System.setProperty("uvm.skins.dir", uvmSkins);
         String uvmLang = uvmHome + "/lang";
         System.setProperty("uvm.lang.dir", uvmLang);

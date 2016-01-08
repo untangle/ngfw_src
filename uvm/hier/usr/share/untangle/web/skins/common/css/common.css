@@ -1,0 +1,361 @@
+.icon-dashboard {
+    background-image: url(../images/admin/icons/icon_dashboard.png);
+}
+
+.icon-apps {
+    background-image: url(../images/admin/icons/icon_apps.png);
+}
+
+.icon-config {
+    background-image: url(../images/admin/icons/icon_config.png);
+}
+
+.x-btn-pressed .icon-dashboard,.x-btn-over .icon-dashboard {
+    background-image: url(../images/admin/icons/icon_dashboard_active.png);
+}
+
+.x-btn-pressed .icon-apps,.x-btn-over .icon-apps {
+    background-image: url(../images/admin/icons/icon_apps_active.png);
+}
+
+.x-btn-pressed .icon-config,.x-btn-over .icon-config {
+    background-image: url(../images/admin/icons/icon_config_active.png);
+}
+
+.icon-tools {
+    background-image: url(../images/admin/icons/icon_tools.png);
+}
+
+.icon-policy-manager {
+    background-image: url(../images/admin/apps/untangle-node-policy-manager_42x42.png);
+}
+/* app item install icon */
+.icon-arrow-install {
+    background-image: url(../images/admin/icons/icon_install.png);
+}
+/* settings window breadcrumbs separator */
+.icon-breadcrumbs-separator {
+    background: transparent url(../images/admin/icons/icon_breadcrumbs_separator.gif) no-repeat center center;
+    width: 13px;
+    height: 12px;
+}
+/* drag icon */
+img.icon-drag {
+    background: transparent url(../images/admin/icons/icon_drag.gif) no-repeat center center;
+    width: 100%;
+    cursor: move;
+    height: 16px;
+}
+
+.x-btn .icon-drag {
+    background-image: url(../images/admin/icons/icon_drag.gif);
+}
+/* refresh button icon */
+.icon-refresh {
+    background-image: url(../images/admin/icons/icon_refresh.png);
+}
+/* autorefresh button icon */
+.x-btn .icon-autorefresh {
+    background-image: url(../images/admin/icons/icon_autorefresh.png);
+}
+/* clear filter button icon */
+.x-btn .icon-clear-filter {
+    background-image: url(../images/admin/icons/icon_clear_filter.png);
+}
+/* Trial node buy button icon */
+.x-btn .icon-buy {
+    background-image: url(../images/admin/icons/icon_buy.png);
+}
+/* help button icon */
+.x-btn .icon-help {
+    background-image: url(../images/admin/icons/icon_help.png);
+}
+/* logout button icon */
+.x-btn .icon-logout {
+    background-image: url(../images/admin/icons/icon_logout_row.gif);
+}
+/* my account button icon */
+.x-btn .icon-myaccount {
+    background-image: url(../images/admin/icons/icon_myaccount.png);
+}
+/* node settings button icon */
+.x-btn .node-settings-icon {
+    background-image: url(../images/admin/icons/icon_settings.png);
+}
+/* node remove button icon */
+.x-btn .node-remove-icon {
+    background-image: url(../images/admin/icons/icon_remove.png);
+}
+/* cancel button icon */
+.x-btn .cancel-icon {
+    background-image: url(../images/admin/icons/icon_cancel.png);
+}
+/* save button icon */
+.x-btn .save-icon {
+    background-image: url(../images/admin/icons/icon_save.png);
+}
+/* apply button icon */
+.x-btn .apply-icon {
+    background-image: url(../images/admin/icons/icon_floppy.png);
+}
+/* test button icon */
+.x-btn .test-icon {
+    background-image: url(../images/admin/icons/icon_test.png);
+}
+/* action button icon */
+.x-btn .action-icon {
+    background-image: url(../images/admin/icons/icon_action.gif);
+}
+/* purge button icon */
+.x-btn .purge-icon {
+    background-image: url(../images/admin/icons/icon_purge.png);
+}
+/* release button icon */
+.x-btn .release-icon {
+    background-image: url(../images/admin/icons/icon_release.png);
+}
+/* detail button icon */
+.x-btn .detail-icon {
+    background-image: url(../images/admin/icons/icon_detail.png);
+}
+/* reboot button icon */
+.x-btn .reboot-icon {
+    background-image: url(../images/admin/icons/icon_reboot.png);
+}
+/* upgrade button icon */
+.x-btn .icon-upgrade {
+    background-image: url(../images/admin/icons/icon_upgrade.png);
+}
+/* time chart style switch buttons */
+.x-btn .icon-line-chart {
+    background-image: url(../images/admin/icons/icon_line_chart.png);
+}
+
+.x-btn .icon-area-chart {
+    background-image: url(../images/admin/icons/icon_area_chart.png);
+}
+
+.x-btn .icon-bar-chart {
+    background-image: url(../images/admin/icons/icon_bar_chart.png);
+}
+
+.x-btn .icon-bar-overlapped-chart {
+    background-image: url(../images/admin/icons/icon_bar_overlapped_chart.png);
+}
+
+.x-btn .icon-bar3d-chart {
+    background-image: url(../images/admin/icons/icon_bar3d_chart.png);
+}
+
+.x-btn .icon-bar3d-overlapped-chart {
+    background-image: url(../images/admin/icons/icon_bar3d_overlapped_chart.png);
+}
+/* add row button icon */
+.x-btn .icon-add-row {
+    background-image: url(../images/admin/icons/icon_add_row.gif);
+}
+/* edit button icon */
+.x-btn .icon-edit {
+    background-image: url(../images/admin/icons/icon_edit_row.gif);
+}
+
+/* import row button icon */
+.x-btn .icon-import {
+    background-image: url(../images/admin/icons/icon_import.gif);
+}
+/* export row button icon */
+.icon-export {
+    background-image: url(../images/admin/icons/icon_export.gif);
+}
+
+.icon-row {
+    width: 100%;
+    cursor: pointer;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+/* row add icon */
+.icon-add-inline-row {
+    background-image: url(../images/admin/icons/icon_row_add.png);
+}
+/* edit row icon */
+.icon-edit-row {
+    background: transparent url(../images/admin/icons/icon_edit_row.gif) no-repeat center center;
+    width: 100%;
+    cursor: pointer;
+    height: 16px;
+}
+/* delete row icon */
+.icon-delete-row {
+    background: transparent url(../images/admin/icons/icon_delete_row.gif) no-repeat center center;
+    width: 100%;
+    cursor: pointer;
+    height: 16px;
+}
+/* wireless row icon */
+.icon-wireless {
+    background-image: url(../images/admin/icons/icon_wireless.png);
+}
+
+/* detail row icon */
+.icon-detail-row {
+    background: transparent url(../images/admin/icons/icon_detail_row.gif) no-repeat center center;
+    width: 100%;
+    cursor: pointer;
+    height: 16px;
+}
+/* add filter row icon */
+.icon-filter {
+    background-image: url(../images/admin/icons/icon_filter.png);
+}
+
+.icon-play {
+    background-image: url(../images/admin/icons/icon_play.png);
+}
+/* drop row icon */
+.icon-drop {
+    background-image: url(../images/admin/icons/icon_arrow_down.png);
+}
+/* config icons */
+.icon-config-network {
+    background-image: url(../images/admin/config/icon_config_network.png);
+}
+
+.icon-config-admin {
+    background-image: url(../images/admin/config/icon_config_admin.png);
+}
+
+.icon-config-email {
+    background-image: url(../images/admin/config/icon_config_email.png);
+}
+
+.icon-config-directory {
+    background-image: url(../images/admin/config/icon_config_directory.png);
+}
+
+.icon-config-upgrade {
+    background-image: url(../images/admin/config/icon_config_upgrade.png);
+}
+
+.icon-config-system {
+    background-image: url(../images/admin/config/icon_config_system.png);
+}
+
+.icon-config-about {
+    background-image: url(../images/admin/config/icon_config_about.png);
+}
+
+.x-btn .icon-test-run {
+    background-image: url(../images/admin/icons/icon_test_run.png);
+}
+
+.x-btn .icon-test-running {
+    background-image: url(../images/admin/icons/icon_test_running.gif);
+}
+
+.x-btn .icon-clear-output {
+    background-image: url(../images/admin/icons/icon_clear_output.png);
+}
+
+.ua-cell-test {
+    padding-left: 20px;
+    line-height: 18px;
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+
+.ua-cell-enabled {
+    background: transparent url(../images/admin/icons/icon_interface_enabled.png) no-repeat center right;
+    width: 100%;
+    height: 16px;
+    padding: 0;
+}
+
+.ua-cell-disabled {
+    background: transparent url(../images/admin/icons/icon_interface_disabled.png) no-repeat center right;
+    width: 100%;
+    height: 16px;
+    padding: 0;
+}
+
+.ua-draggable {
+    cursor: move;
+}
+
+.ua-pointer {
+    cursor: pointer;
+}
+
+.icon-test-connectivity {
+    background-image: url(../images/admin/icons/icon_test_connectivity.png);
+}
+
+.icon-test-ping {
+    background-image: url(../images/admin/icons/icon_test_ping.png);
+}
+
+.icon-test-dns {
+    background-image: url(../images/admin/icons/icon_test_dns.png);
+}
+
+.icon-test-tcp {
+    background-image: url(../images/admin/icons/icon_test_tcp.png);
+}
+
+.icon-test-traceroute {
+    background-image: url(../images/admin/icons/icon_test_traceroute.png);
+}
+
+.icon-test-download {
+    background-image: url(../images/admin/icons/icon_test_download.png);
+}
+
+.icon-test-packet {
+    background-image: url(../images/admin/icons/icon_test_packet.png);
+}
+/* app power section in status panel*/
+.app-status {
+    padding: 0 0 0 28px;
+    line-height: 20px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.app-on .app-status {
+    background-image: url(../images/admin/icons/icon_power_on.png);
+    color: #67bd4a;
+}
+
+.app-off .app-status {
+    background-image: url(../images/admin/icons/icon_power_off.png);
+    color: #d80909;
+}
+
+.app-attention .app-status {
+    background-image: url(../images/admin/icons/icon_power_attention.png);
+}
+
+.app-on .app-power-button {
+    background-image: url(../images/admin/icons/icon_cancel.png);
+}
+
+.app-off .app-power-button {
+    background-image: url(../images/admin/icons/icon_save.png);
+}
+
+.app-attention .app-power-button {
+    background-image: url(../images/admin/icons/icon_wait.gif);
+}
+
+.icon-state-on {
+    background-image: url(../images/admin/state_on.png);
+}
+
+.icon-state-off {
+    background-image: url(../images/admin/state_off.png);
+}
+
+.icon-state-attention {
+    background-image: url(../images/admin/state_attention.png);
+}

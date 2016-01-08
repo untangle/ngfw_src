@@ -1,0 +1,90 @@
+.top-container {
+    border-bottom: 1px solid #D8DBE0;
+}
+.apps {
+    background: #EEF1F5;
+}
+.apps-top {
+    display: none;
+}
+
+.apps-separator {
+    background-color: white;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 20px;
+    font-size: 18px;
+    color: #AAACAE;
+    border-bottom: 1px solid #D8DBE0;
+}
+
+/* node background */
+div.node {
+    cursor: pointer;
+    position: relative;
+    float: left;
+    height: 110px;
+    width: 110px;
+    margin: 15px;
+    background-color: white;
+    overflow: visible;
+}
+
+div.node-cap {
+    background-color: #666666;
+    height: 100%;
+    width: 100%;
+    opacity: 0.7;
+    position: absolute;
+    z-index: 1000;
+}
+/* Node image container */
+.node-image {
+    display: block;
+    position: relative;
+    margin: 20px auto 8px auto;
+    width: 42px;
+    height: 42px;
+}
+/* node display name text*/
+div.node div.node-label {
+    display: block;
+    height: 32px;
+    width: 100%;
+    padding: 0 3px;
+    text-align: center;
+    color: #4E4C4C;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
+}
+/* node trial info text */
+div.node div.node-faceplate-info {
+    display: none;
+}
+/* node state container */
+div.node div.node-state {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+}
+/* node power button icon */
+div.node .node-power {
+    display: none;
+}
+/* node buttons panel container */
+div.node div.node-buttons {
+    display: none;
+}
+/* node metrics */
+div.node div.node-metrics {
+    display: none;
+}
+
+/* rack top system stats container */
+div.system-stats {
+    display: none;
+}
