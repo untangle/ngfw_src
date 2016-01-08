@@ -4940,7 +4940,10 @@ Ext.define('Webui.config.network', {
                         this.openPacketTest();
                     }
                 }]
-            }]
+            }],
+            isDirty: function() {
+                return false;
+            }
         });
     },
     openConnectivityTest: function() {

@@ -11,7 +11,9 @@ Ext.define('Ung.Util', {
             return false;
         }
         if(Ext.isFunction(item.isDirty)) {
-            return item.isDirty();
+            var isDirty = item.isDirty();
+            //if(isDirty) { console.log(item); } //for debugging
+            return isDirty;
         }
         if(item.items!=null && item.items.length>0) {
             var hasGet=Ext.isFunction(item.items.get);
