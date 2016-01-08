@@ -187,20 +187,24 @@ Ext.define("Ung.AppItem", {
     //Sync progress bar status
     syncProgress: function() {
         if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
-            this.getEl().mask();
-            if(!this.getProgressBar().isVisible()) {
-                this.progressBar.show();
+            if(this.rendered) {
+                this.getEl().mask();
+                if(!this.getProgressBar().isVisible()) {
+                    this.progressBar.show();
+                }
+                this.progressBar.reset();
+                this.progressBar.wait({
+                    text: '<p class="app-progress-text">' +this.nodeProperties.displayName + '</p>',
+                    interval: 100,
+                    increment: 15
+                });
             }
-            this.progressBar.reset();
-            this.progressBar.wait({
-                text: '<p class="app-progress-text">' +this.nodeProperties.displayName + '</p>',
-                interval: 100,
-                increment: 15
-            });
         } else {
-            this.getEl().unmask();
-            if(this.progressBar) {
-                this.progressBar.reset(true);
+            if(this.rendered) {
+                this.getEl().unmask();
+                if(this.progressBar) {
+                    this.progressBar.reset(true);
+                }
             }
         }
     },
@@ -352,7 +356,9 @@ Ext.define("Ung.Node", {
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         if(rpc.skinInfo.appsViewType == "list") {
-            this.getEl().on('click', this.loadSettings, this);
+            if(this.isNodeEditable) {
+                this.getEl().on('click', this.loadSettings, this);
+            }
         } else {
             this.buttonsPanel = Ext.create('Ext.container.Container',{
                 renderTo: 'node-buttons_' + this.getId(),
