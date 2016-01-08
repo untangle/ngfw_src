@@ -14,13 +14,15 @@ abstract public class VirusScannerLauncher implements Runnable
     protected final Logger logger = Logger.getLogger(getClass());
 
     protected String scanfilePath = null;
+    protected String scanfileHash = null;
 
     // This must be volatile since they are written and read by different threads.  bug948
     protected volatile VirusScannerResult result = null;
 
-    protected VirusScannerLauncher(File scanfile)
+    protected VirusScannerLauncher(File scanfile, String filehash)
     {
         scanfilePath = scanfile.getAbsolutePath();
+        scanfileHash = filehash;
     }
 
     /**
