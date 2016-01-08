@@ -24,9 +24,9 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     /**
      * Create a Launcher for the give file
      */
-    public VirusBlockerScannerLauncher(File scanfile)
+    public VirusBlockerScannerLauncher(File scanfile, String filehash)
     {
-        super(scanfile);
+        super(scanfile,filehash);
     }
 
     /**
@@ -38,7 +38,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         File scanFile = new File(scanfilePath);
         String virusName = null;
 
-        logger.debug("Scanning file: " + scanfilePath);
+        logger.debug("Scanning file: " + scanfilePath + " MD5: " + scanfileHash);
 
         try {
             // Bug #9796 - to avoid large memory usage don't scan large files // XXX

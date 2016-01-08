@@ -91,7 +91,7 @@ public class VirusBlockerScanner implements VirusScanner
             return VirusScannerResult.ERROR;
         }
 
-        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile);
+        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, filehash);
         return scan.doScan(VirusBlockerScanner.timeout);
     }
 
