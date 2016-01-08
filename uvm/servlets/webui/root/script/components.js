@@ -309,6 +309,7 @@ Ext.define("Ung.Node", {
     beforeDestroy: function() {
         if(this.getEl()) {
             this.getEl().stopAnimation();
+            this.getEl().clearListeners();
         }
         if(this.settingsWin && this.settingsWin.isVisible()) {
             this.settingsWin.closeWindow();
@@ -350,83 +351,86 @@ Ext.define("Ung.Node", {
             'licenseMessage': this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
-
-        this.buttonsPanel = Ext.create('Ext.container.Container',{
-            renderTo: 'node-buttons_' + this.getId(),
-            width: 290,
-            layout: 'hbox',
-            style: {marginTop: '5px'},
-            defaults: {
-                style: {marginLeft: '6px'}
-            },
-            items: [{
-                xtype: "button",
-                name: "Show Settings",
-                iconCls: 'node-settings-icon',
-                text: i18n._('Settings'),
-                handler: Ext.bind(function() {
-                    this.loadSettings();
-                }, this)
-            },{
-                xtype: "button",
-                name: "Help",
-                iconCls: 'icon-help',
-                minWidth: 25,
-                tooltip: i18n._('Help'),
-                handler: Ext.bind(function() {
-                    this.onHelpAction();
-                }, this)
-            },{
-                xtype: "button",
-                name: "Buy",
-                id: 'node-buy-button_'+this.getId(),
-                iconCls: 'icon-buy',
-                hidden: !(this.license != null && this.license.trial), //show only if trial license
-                cls: 'buy-button',
-                text: i18n._('Buy Now'),
-                handler: Ext.bind(this.onBuyNowAction, this)
-            }]
-        });
-        this.subCmps.push(this.buttonsPanel);
-        if(this.hasPowerButton) {
-            Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
-            this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
-                html: [
-                   '<div style="text-align: left;">',
-                   i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
-                   '<br/><font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
-                       i18n._('indicates that the application is ON and operating normally.'),
-                   '<br/><font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
-                       i18n._('indicates that the application is ON, but that an abnormal condition has occurred.'),
-                   '<br/><font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
-                       i18n._('indicates that the application is saving or refreshing settings.'),
-                   '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is OFF, and may be turned ON by the user.'),
-                   '</div>'].join(''),
-                target: 'node-state_' + this.getId(),
-                showDelay: 20,
-                dismissDelay: 0,
-                hideDelay: 0
-            }));
-            this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
-                html: i18n._('The <B>Power Button</B> allows you to turn a application ON and OFF.'),
-                target: 'node-power_' + this.getId(),
-                showDelay: 20,
-                dismissDelay: 0,
-                hideDelay: 0
-            }));
-            if(!this.isNodeEditable) {
+        if(rpc.skinInfo.appsViewType == "list") {
+            this.getEl().on('click', this.loadSettings, this);
+        } else {
+            this.buttonsPanel = Ext.create('Ext.container.Container',{
+                renderTo: 'node-buttons_' + this.getId(),
+                width: 290,
+                layout: 'hbox',
+                style: {marginTop: '5px'},
+                defaults: {
+                    style: {marginLeft: '6px'}
+                },
+                items: [{
+                    xtype: "button",
+                    name: "Show Settings",
+                    iconCls: 'node-settings-icon',
+                    text: i18n._('Settings'),
+                    handler: Ext.bind(function() {
+                        this.loadSettings();
+                    }, this)
+                },{
+                    xtype: "button",
+                    name: "Help",
+                    iconCls: 'icon-help',
+                    minWidth: 25,
+                    tooltip: i18n._('Help'),
+                    handler: Ext.bind(function() {
+                        this.onHelpAction();
+                    }, this)
+                },{
+                    xtype: "button",
+                    name: "Buy",
+                    id: 'node-buy-button_'+this.getId(),
+                    iconCls: 'icon-buy',
+                    hidden: !(this.license != null && this.license.trial), //show only if trial license
+                    cls: 'buy-button',
+                    text: i18n._('Buy Now'),
+                    handler: Ext.bind(this.onBuyNowAction, this)
+                }]
+            });
+            this.subCmps.push(this.buttonsPanel);
+            if(this.hasPowerButton) {
+                Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
                 this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
-                    html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
-                    target: 'node_' + this.nodeId,
+                    html: [
+                       '<div style="text-align: left;">',
+                       i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
+                       '<br/><font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
+                           i18n._('indicates that the application is ON and operating normally.'),
+                       '<br/><font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
+                           i18n._('indicates that the application is ON, but that an abnormal condition has occurred.'),
+                       '<br/><font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
+                           i18n._('indicates that the application is saving or refreshing settings.'),
+                       '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is OFF, and may be turned ON by the user.'),
+                       '</div>'].join(''),
+                    target: 'node-state_' + this.getId(),
                     showDelay: 20,
                     dismissDelay: 0,
                     hideDelay: 0
                 }));
+                this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
+                    html: i18n._('The <B>Power Button</B> allows you to turn a application ON and OFF.'),
+                    target: 'node-power_' + this.getId(),
+                    showDelay: 20,
+                    dismissDelay: 0,
+                    hideDelay: 0
+                }));
+                if(!this.isNodeEditable) {
+                    this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
+                        html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
+                        target: 'node_' + this.nodeId,
+                        showDelay: 20,
+                        dismissDelay: 0,
+                        hideDelay: 0
+                    }));
+                }
             }
+            this.initMetrics();
         }
         this.nodeStateContainer = document.getElementById('node-state_' + this.getId());
         this.updateRunState(this.runState, true);
-        this.initMetrics();
     },
     // is runState "RUNNING"
     isRunning: function() {
