@@ -1,5 +1,0 @@
-#! /bin/bash
-
-set -e
-
-cd $1/Ajax && ../apache-ant-1.6.5/bin/ant

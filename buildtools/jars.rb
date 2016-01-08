@@ -85,7 +85,7 @@ class Jars
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
               
     const_set(:Jstl, [ Jars.downloadTarget('Ajax/jars/jstl.jar'),
-                   Jars.downloadTarget('Ajax/jars/standard.jar') ])
+                       Jars.downloadTarget('Ajax/jars/standard.jar') ])
 
     ## Groups used for compiling
     # This is available to everything?

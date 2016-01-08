@@ -15,4 +15,3 @@ postgres-jdbc: used to connect to postgres
 javamail: used to send mail
 jabsorb: used by the UI/uvm
 gettext-commons: unsed by the untangle-vm for I18n/localization
-AjaxTK: jsp utilities

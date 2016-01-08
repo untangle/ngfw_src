@@ -24,7 +24,6 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	commons-httpclient-3.0.tar.gz \
 	commons-codec-1.3.tar.gz \
 	httpcomponents-client-4.5.1-bin.tar.gz \
-	AjaxTK-3.1.1_GA_394-src.tar.gz \
 	slf4j-1.4.3.tar.gz \
 	python-jsonrpc-r19.tar.gz
 
@@ -43,7 +42,6 @@ packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
 $(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
-$(OUTPUT_DIRECTORY)/AjaxTK-3.1.1_GA_394-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
 
 all: $(packages) ;
 # remove files and directories with spaces in names
