@@ -747,19 +747,20 @@ public class FixedReports
         int maximumTemplateArguments = 0;
         int argumentIndex = 0;
         while(true){
-            if(((String)template).indexOf("{" + Integer.toString(argumentIndex) + "}") == -1){
+            if(((String)template).indexOf("{" + Integer.toString(maximumTemplateArguments) + "}") == -1){
                 break;
             }
-            argumentIndex++;
             maximumTemplateArguments++;
         }
 
         Map<String,String> replacements = new HashMap<String,String>();
-        for( argumentIndex = 0; argumentIndex < arguments.names().length(); argumentIndex++){
-            try{
-                replacements.put("{" + Integer.toString(argumentIndex) + "}", arguments.get(arguments.names().getString(argumentIndex)).toString() );
-            }catch(Exception e){
-                logger.warn("Unable to process argument entry " + Integer.toString(argumentIndex) + " :" + e);
+        if(arguments.names() != null){
+            for( argumentIndex = 0; argumentIndex < arguments.names().length(); argumentIndex++){
+                try{
+                    replacements.put("{" + Integer.toString(argumentIndex) + "}", arguments.get(arguments.names().getString(argumentIndex)).toString() );
+                }catch(Exception e){
+                    logger.warn("Unable to process argument entry " + Integer.toString(argumentIndex) + " :" + e);
+                }
             }
         }
 
