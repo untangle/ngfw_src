@@ -29,9 +29,11 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 
 tarballs_bz2=
 
-zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip jradius-client-1.1.4-release.zip
+zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
+	jradius-client-1.1.4-release.zip jakarta-taglibs-standard-1.1.2.zip
 
-jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar dnsjava-2.1.6.jar\
+jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \
+	dnsjava-2.1.6.jar
 
 ###############################################################################
 ###############################################################################

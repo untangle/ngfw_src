@@ -84,8 +84,8 @@ class Jars
                              Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
               
-    const_set(:Jstl, [ Jars.downloadTarget('Ajax/jars/jstl.jar'),
-                       Jars.downloadTarget('Ajax/jars/standard.jar') ])
+    const_set(:Jstl, [ Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/jstl.jar'),
+                       Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/standard.jar') ])
 
     ## Groups used for compiling
     # This is available to everything?
