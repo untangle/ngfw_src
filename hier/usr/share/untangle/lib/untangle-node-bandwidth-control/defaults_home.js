@@ -260,11 +260,33 @@
                 "action": {
                     "actionType": "SET_PRIORITY",
                     "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "priority": 4
+                },
+                "description": "Deprioritize Bittorrent",
+                "enabled": true,
+                "id": 12,
+                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "conditions": {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [
+                        {
+                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "matcherType": "APPLICATION_CONTROL_APPLICATION",
+                            "value": "BITTORRE"
+                        }
+                    ]
+                },
+                "ruleId": 12345
+            },
+            {
+                "action": {
+                    "actionType": "SET_PRIORITY",
+                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "description": "Prioritize pandora streaming audio",
                 "enabled": true,
-                "id": 12,
+                "id": 13,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -286,7 +308,7 @@
                 },
                 "description": "Prioritize last.fm streaming audio",
                 "enabled": true,
-                "id": 13,
+                "id": 14,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -308,7 +330,7 @@
                 },
                 "description": "Prioritize HTTP to Games sites",
                 "enabled": true,
-                "id": 14,
+                "id": 15,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -330,7 +352,7 @@
                 },
                 "description": "Prioritize Hulu streaming video",
                 "enabled": true,
-                "id": 15,
+                "id": 16,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -352,7 +374,7 @@
                 },
                 "description": "Prioritize Netflix streaming video",
                 "enabled": true,
-                "id": 16,
+                "id": 17,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -374,7 +396,7 @@
                 },
                 "description": "Limit dropbox.com sync",
                 "enabled": true,
-                "id": 17,
+                "id": 18,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -396,7 +418,7 @@
                 },
                 "description": "Do not Prioritize large HTTP downloads (>10meg)",
                 "enabled": true,
-                "id": 18,
+                "id": 19,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -419,7 +441,7 @@
                 },
                 "description": "Prioritize HTTP",
                 "enabled": true,
-                "id": 19,
+                "id": 20,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
@@ -441,7 +463,7 @@
                 },
                 "description": "Prioritize HTTPS",
                 "enabled": true,
-                "id": 20,
+                "id": 21,
                 "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
