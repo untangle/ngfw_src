@@ -24,6 +24,7 @@ INSTALL_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-brok
 UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge -o Debug::Pkgproblemresolver=1 -o Debug::Pkgpolicy=1 "
 UPDATE_OPTS = " --yes --force-yes "
 AUTOREMOVE_OPTS = " --yes --force-yes --purge "
+QUIET=False
 
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
 # This isn't enough because this doesn't modify sigprocmask so children of this process still get it
@@ -32,7 +33,28 @@ signal.signal( signal.SIGHUP, signal.SIG_IGN )
 # This should shield us and children from SIGHUPs
 os.setpgrp()
 
+def printUsage():
+    sys.stderr.write( """\
+%s Usage:
+  optional args:
+    -q   : quiet
+""" % (sys.argv[0]) )
+    sys.exit(1)
+
+
 apt_log = open("/var/log/uvm/apt.log", "a")
+
+try:
+     opts, args = getopt.getopt(sys.argv[1:], "q", ['quiet'])
+except getopt.GetoptError, err:
+     print str(err)
+     printUsage()
+     sys.exit(2)
+
+for opt in opts:
+     k, v = opt
+     if k == '-q' or k == '--quiet':
+         QUIET = True
 
 def log(str):
     # wrap all attempts in try/except
@@ -44,7 +66,8 @@ def log(str):
     except:
         pass
     try:
-        print str
+        if not QUIET:
+            print str
     except: 
         pass
 
