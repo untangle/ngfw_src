@@ -491,7 +491,7 @@ public class SystemManagerImpl implements SystemManager
     public void upgrade()
     {
         try {
-            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT );
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT + " -q");
             reader.waitFor();
         } catch (Exception e) {
             logger.warn("Upgrade exception:",e);
