@@ -4,11 +4,14 @@
 
 package com.untangle.node.virus_blocker;
 
+import java.lang.StringBuilder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScannerLauncher;
@@ -16,17 +19,144 @@ import com.untangle.node.virus_blocker.VirusScannerResult;
 
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
-    private static final String SCANNER_HOST = "localhost";
-    private static final String SCANNER_PORT = "8088";
+    // https://labs.totaldefense.com/v1/infection?hash=44d88612fea8a8f36de82e1278abb02f&det=Troj@n.Gen\23/woot&detProvider=BD&metaProvider=UNGFW
+    private static final String CLOUD_FEEDBACK_URL = "https://labs.totaldefense.com/v1/infection";
+    private static final String CLOUD_SCANNER_URL = "https://labs.totaldefense.com/ClassifierService/v1/md5s";
+    private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
+    private static final String EICAR_TEST_MD5 = "44d88612fea8a8f36de82e1278abb02f";
+    private static final String BDAM_SCANNER_HOST = "127.0.0.1";
+    private static final int BDAM_SCANNER_PORT = 1344;
+    private static final long CLOUD_SCAN_MAX_MILLISECONDS = 2000;
     private static final long SCANNER_MAXSIZE = 10485760;
     private static final long SCANNER_MINSIZE = 1;
+
+    protected class CloudResult
+    {
+        String itemCategory = null;
+        String itemClass = null;
+        String itemConfidence = null;
+        String itemHash = null;
+    }
+
+    protected class CloudChecker extends Thread
+    {
+        CloudResult cloudResult = null;
+        String fileHash = null;
+
+        public CloudChecker(String fileHash)
+        {
+            this.fileHash = fileHash;
+        }
+
+        protected synchronized CloudResult getCloudResult()
+        {
+            return cloudResult;
+        }
+
+        protected synchronized void setCloudResult(CloudResult argResult)
+        {
+            this.cloudResult = argResult;
+        }
+
+        public void run()
+        {
+            String body = "[\n\"" + fileHash + "\"\n]\n";
+            StringBuilder builder = new StringBuilder(256);
+            CloudResult cloudResult = new CloudResult();
+
+            logger.debug("CloudChecker thread has started for: " + body);
+
+            // uncomment this string to force cloud detection for testing
+            // String body = "[\n\"" + EICAR_TEST_MD5 + "\"\n]\n";
+
+            try {
+                URL myurl = new URL(CLOUD_SCANNER_URL);
+                HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
+                mycon.setRequestMethod("POST");
+
+                mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
+                mycon.setRequestProperty("Content-Type", "application/json");
+                mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
+                mycon.setRequestProperty("UUID", UvmContextFactory.context().getServerUID());
+                mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
+                mycon.setDoOutput(true);
+                mycon.setDoInput(true);
+
+                DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
+                output.writeBytes(body);
+                output.close();
+
+                DataInputStream input = new DataInputStream(mycon.getInputStream());
+
+                // build a string from the cloud response skipping brackets and parenthesis
+                for (int c = input.read(); c != -1; c = input.read()) {
+                    if ((char) c == '[') continue;
+                    if ((char) c == ']') continue;
+                    if ((char) c == '{') continue;
+                    if ((char) c == '}') continue;
+                    builder.append((char) c);
+                }
+
+                input.close();
+
+                mycon.disconnect();
+
+                logger.debug("CloudChecker CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA:" + builder.toString());
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
+                /*
+                 * This is an example of the message we get back from the cloud server. The insane
+                 * code below is my solution for parsing the response into a result we can use.
+                 * This WILL break if there are : " , characters within any item or value field.
+                 *   
+                 * [{"Category":"The EICAR Test String!16","Class":"m","Confidence":100,"Item":"44d88612fea8a8f36de82e1278abb02f"}]
+                 * 
+                 * Also worth noting... for a negative result the cloud server seems to return this:
+                 * []
+                 * 
+                 */
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+                // split the string on commas to find all of the item and value pairs
+                String[] tokens = builder.toString().split(",");
+
+                for (int x = 0; x < tokens.length; x++) {
+                    // split the pair on the colon to get the item and value
+                    String[] list = tokens[x].split(":");
+                    if (list.length != 2) continue;
+
+                    // seems like a good time to remove quotation marks
+                    String item = list[0].replace("\"", "");
+                    String value = list[1].replace("\"", "");
+
+                    // look for the stuff we know about and store in result object when found
+                    if (item.compareTo("Category") == 0) cloudResult.itemCategory = value;
+                    if (item.compareTo("Class") == 0) cloudResult.itemClass = value;
+                    if (item.compareTo("Confidence") == 0) cloudResult.itemConfidence = value;
+                    if (item.compareTo("Item") == 0) cloudResult.itemHash = value;
+                }
+            }
+
+            catch (Exception exn) {
+                logger.debug("CloudChecker thread exception: " + exn.toString());
+            }
+
+            setCloudResult(cloudResult);
+
+            synchronized (this) {
+                this.notify();
+            }
+        }
+    }
 
     /**
      * Create a Launcher for the give file
      */
     public VirusBlockerScannerLauncher(File scanfile, String filehash)
     {
-        super(scanfile,filehash);
+        super(scanfile, filehash);
     }
 
     /**
@@ -36,6 +166,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     public void run()
     {
         File scanFile = new File(scanfilePath);
+        CloudChecker cloudChecker = null;
+        CloudResult cloudResult = null;
         String virusName = null;
 
         logger.debug("Scanning file: " + scanfilePath + " MD5: " + scanfileHash);
@@ -61,6 +193,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             return;
         }
 
+        // if we have a good MD5 hash then spin up the cloud checker
+        if (scanfileHash != null) {
+            cloudChecker = new CloudChecker(scanfileHash);
+            cloudChecker.start();
+        }
+
         DataOutputStream txstream = null;
         DataInputStream rxstream = null;
         Socket socket = null;
@@ -79,7 +217,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         // 32 = return in-progress information
         // 64 = BDAM_SCANOPT_SPAMCHECK
         try {
-            InetSocketAddress address = new InetSocketAddress("127.0.0.1", 1344);
+            InetSocketAddress address = new InetSocketAddress(BDAM_SCANNER_HOST, BDAM_SCANNER_PORT);
             socket = new Socket();
             socket.connect(address, 10000);
             socket.setSoTimeout(10000);
@@ -119,6 +257,23 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             retcode = Integer.valueOf(tokens[0]);
         } catch (Exception exn) {
             logger.warn("Exception parsing result code: " + tokens[0], exn);
+        }
+
+        if (cloudChecker != null) {
+            try {
+                synchronized (cloudChecker) {
+                    cloudChecker.wait(CLOUD_SCAN_MAX_MILLISECONDS);
+                }
+            } catch (Exception exn) {
+                logger.debug("Exception waiting for CloudChecker: ", exn);
+            }
+            cloudResult = cloudChecker.getCloudResult();
+        }
+
+        // if the cloud says it is infected we set the result and return now
+        if ((cloudResult != null) && (cloudResult.itemCategory != null)) {
+            setResult(new VirusScannerResult(false, cloudResult.itemCategory));
+            return;
         }
 
         switch (retcode)
