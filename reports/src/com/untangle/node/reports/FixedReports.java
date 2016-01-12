@@ -58,11 +58,13 @@ public class FixedReports
     private StringBuilder messageHtml = null;
     private List<Map<MailSender.MessagePartsField,String>> messageParts;
 
+    I18nUtil i18nUtil = null;
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd");
 
     public enum Tag {
         _SYSTEM,
         VARIABLE,
+        TRANS,
         FOR,
         ENDFOR,
         IF,
@@ -84,6 +86,7 @@ public class FixedReports
        TagPatterns = new HashMap<Tag, Pattern>();
 
         TagPatterns.put(Tag.VARIABLE, Pattern.compile("\\{\\{\\s*(.+)\\s*\\}\\}"));
+        TagPatterns.put(Tag.TRANS, Pattern.compile("\\{\\%\\s*trans \"([^\"]+)\"\\s*\\%\\}"));
         TagPatterns.put(Tag.FOR, Pattern.compile("\\{\\%\\s*for (.+?) in (.+?)\\s*\\%\\}"));
         TagPatterns.put(Tag.ENDFOR, Pattern.compile("\\{\\%\\s*endfor\\s*\\%\\}"));
         TagPatterns.put(Tag.IF, Pattern.compile("\\{\\%\\s*if (.+?)\\s*\\%\\}"));
@@ -193,12 +196,14 @@ public class FixedReports
         List<String> fields = null;
         List<String> arguments = null;
         List<String> filters = null;
+        String selectorString = null;
 
         /*
          Selector is formatted like fields[,arguments][|filters]
          */
         public selector(String selectorString)
         {
+            this.selectorString = selectorString;
             /*
              * Parse variables
              */
@@ -217,14 +222,20 @@ public class FixedReports
             filters.remove(0);
             arguments.remove(0);
         }
+
+        public String toString(){
+            return selectorString;
+        }
+
     }
 
     /*
      */
     public void send(ArrayList<String> recipientsList)
     {
-
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+        i18nUtil = new I18nUtil(i18nMap);
 
         parseContextStack = new ArrayList<parseContext>();
         parseContext context = new parseContext();
@@ -316,6 +327,20 @@ public class FixedReports
                                         messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
                                     }catch(Exception e){
                                         logger.warn("Unable to insert variable :" + e );
+                                    }
+                                    parseContext.ignoreLine = true;
+                                }
+                                break;
+                            case TRANS:
+                                if(parseContext.allowOutput && 
+                                    parseContext.ignoreLine == false && 
+                                    parseContext.buildLoopBuffer == false){
+                                    try{
+                                        messageHtml.append(line.substring(0,line.indexOf(tag.group())));
+                                        messageHtml.append(i18nUtil.tr(tag.group(1).trim()));
+                                        messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
+                                    }catch(Exception e){
+                                        logger.warn("Unable to translate :" + e );
                                     }
                                     parseContext.ignoreLine = true;
                                 }
@@ -467,8 +492,7 @@ public class FixedReports
             try{
                 messageHtml.append(variable.toString());
             }catch(Exception e){
-                logger.warn(variableSelector);
-                logger.warn("Unable to insert variable:" + e );
+                logger.warn("Unable to insert variable:" + variableSelector );
             }
         }
     }
@@ -523,7 +547,7 @@ public class FixedReports
         /*
          * Look at the first selector field to determine of an object should be pulled from the VM
          * or context stack.
-         */
+         */ 
         object = (Object) UvmContextFactory.context();
         int fieldIndex = 0;
         try{
