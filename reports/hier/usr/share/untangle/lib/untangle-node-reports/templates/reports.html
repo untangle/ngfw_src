@@ -59,11 +59,13 @@ table {
 </td>
 </tr>
 
+{% cycle #fffffff #f0f0f0 as rowColors %}
+
 <tr>
 <td colspan="2">
 
 <table>
-<tr>
+<tr style="background-color:{{ rowColors }};">
 <td style="width:300px;">
 {% trans "Hostname" %}
 </td>
@@ -72,7 +74,8 @@ table {
 </td>
 </tr>
 
-<tr>
+{% cycle rowColors %}
+<tr style="background-color:{{ rowColors }};">
 <td>
 {% trans "Domain Name" %}
 </td>
@@ -81,7 +84,8 @@ table {
 </td>
 </tr>
 
-<tr>
+{% cycle rowColors %}
+<tr style="background-color:{{ rowColors }};">
 <td>
 {% trans "Version" %}
 </td>
@@ -93,7 +97,8 @@ table {
 </td>
 </tr>
 
-<tr>
+{% cycle rowColors %}
+<tr style="background-color:{{ rowColors }};">
 <td>
 {% trans "Highest active device count since reboot" %}
 </td>
@@ -101,12 +106,6 @@ table {
 {{ hostTable.getMaxActiveSize }}
 </td>
 </tr>
-
-</table>
-
-</td>
-</tr>
-
 
 <tr>
 <td colspan="2">
@@ -140,17 +139,18 @@ table {
 		</td>
 	</tr>
 		{% for report in reports %}
-	<tr>
+		{% cycle rowColors %}
+	<tr style="background-color:{{ rowColors }};">
 		<td></td>
 		<td style="font-size:14px; font-weight:normal;">{{ report.getTitle }}</td>
 	</tr>
-	<tr>
+	<tr style="background-color:{{ rowColors }};">
 		<td></td>
 		<td style="font-size:12px; font-weight:normal;">{{ report.getDescription }}</td>
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 		{% with reportRow=reportRows|first %}
 	</tr>
-	<tr>
+	<tr style="background-color:{{ rowColors }};">
 		<td></td>
 		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow }}</td>
 		{% endwith %}
@@ -165,6 +165,8 @@ table {
 
 </td>
 </tr>
+
+
 </table>
 
 

@@ -63,6 +63,7 @@ public class FixedReports
 
     public enum Tag {
         _SYSTEM,
+        _CYCLE,
         VARIABLE,
         TRANS,
         FOR,
@@ -71,7 +72,9 @@ public class FixedReports
         ELSE,
         ENDIF,
         WITH,
-        ENDWITH
+        ENDWITH,
+        CYCLE_INITIALIZE,
+        CYCLE_NEXT
     }
 
     public enum Filter{
@@ -94,6 +97,9 @@ public class FixedReports
         TagPatterns.put(Tag.ENDIF, Pattern.compile("\\{\\%\\s*endif\\s*\\%\\}"));
         TagPatterns.put(Tag.WITH, Pattern.compile("\\{\\%\\s*with (.+?)\\=(.+?)\\s*\\%\\}"));
         TagPatterns.put(Tag.ENDWITH, Pattern.compile("\\{\\%\\s*endwith\\s*\\%\\}"));
+
+        TagPatterns.put(Tag.CYCLE_INITIALIZE, Pattern.compile("\\{\\%\\s*cycle (.+?) as (.+?) \\s*\\%\\}"));
+        TagPatterns.put(Tag.CYCLE_NEXT, Pattern.compile("\\{\\%\\s*cycle ([^\\s]+?) \\s*\\%\\}"));
 
         FilterPatterns = new HashMap<Filter, Pattern>();
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=(.+)"));
@@ -146,6 +152,7 @@ public class FixedReports
         public void addVariable(Tag tag, String name, Object object){
             variables.add(new variableContext(tag, name, object));
         }
+
         public void removeVariable(Tag tag){
             for(variableContext vc : variables){
                 if(vc.tag == tag){
@@ -154,6 +161,7 @@ public class FixedReports
                 }
             }
         }
+
         public variableContext getVariableContext(Tag tag){
             for(variableContext vc: variables){
                 if(vc.tag.equals(tag)){
@@ -162,6 +170,17 @@ public class FixedReports
             }
             return null;
         }
+
+        public variableContext getVariableContext(Tag tag, String name){
+            for(variableContext vc: variables){
+                if(vc.tag.equals(tag) && vc.name.equals(name)){
+                    return vc;
+                }
+            }
+            return null;
+        }
+
+
         public Object getVariable(String name){
             for(variableContext vc: variables){
                 if(vc.name.equals(name)){
@@ -418,6 +437,20 @@ public class FixedReports
                                     parseContext.ignoreLine = true;
                                 }
                                 break;
+
+                            case CYCLE_INITIALIZE:
+                                if(parseContext.buildLoopBuffer == false){
+                                    parseContext.ignoreLine = true;
+                                    insertVariableCycle(tag);
+                                }
+                                break;
+
+                            case CYCLE_NEXT:
+                                if(parseContext.buildLoopBuffer == false){
+                                    parseContext.ignoreLine = true;
+                                    nextVariableCycle(tag);
+                                }
+                                break;
                         }
                     }
                 }catch(Exception e){
@@ -541,6 +574,43 @@ public class FixedReports
                 messageHtml.append("cid:" + id);
             }
             messageParts.add(attachment);
+        }
+    }
+
+    /*
+     * Add new cycle variable to current context
+     */
+    private void insertVariableCycle(Matcher argumentValues)
+    {
+        ArrayList<String> values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+        String variableName = argumentValues.group(2);
+
+        int contextIndex = parseContextStack.size() - 1;
+        parseContext parseContext = parseContextStack.get(contextIndex);
+        parseContext.addVariable(Tag._CYCLE, variableName, values);
+
+        variableContext vc = parseContext.getVariableContext(Tag._CYCLE, variableName);
+        vc.index = 0;
+    }
+
+    /*
+     * Look for cycle variable in context stack and if found, loop
+     */
+    private void nextVariableCycle(Matcher argumentValues)
+    {
+        for(int contextIndex = parseContextStack.size() - 1; contextIndex > -1; contextIndex--){
+            String variableName = argumentValues.group(1);
+            // int contextIndex = parseContextStack.size() - 1;
+            parseContext parseContext = parseContextStack.get(contextIndex);
+
+            variableContext vc = parseContext.getVariableContext(Tag._CYCLE, variableName);
+            if( vc != null ){
+                if(vc.index < (((List) vc.object).size() - 1 )){
+                    vc.index++;
+                }else{
+                    vc.index = 0;
+                }
+            }
         }
     }
 
