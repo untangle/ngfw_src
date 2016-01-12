@@ -30,6 +30,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.network.FilterRule;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.Reporting;
@@ -163,17 +164,25 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         synchronized (this) {
             exitCode = 0;
-            ArrayList<String> fixedReportAddresses = new ArrayList<String>();
+            ArrayList<String> fixedReportAddressesWithUrl = new ArrayList<String>();
+            ArrayList<String> fixedReportAddressesWithoutUrl = new ArrayList<String>();
             if ( settings.getReportsUsers() != null) {
                 for ( ReportsUser user : settings.getReportsUsers() ) {
                     if(user.getEmailSummaries()){
-                        fixedReportAddresses.add(user.getEmailAddress());
+                        if(user.getOnlineAccess()){
+                            fixedReportAddressesWithUrl.add(user.getEmailAddress());
+                        }else{
+                            fixedReportAddressesWithoutUrl.add(user.getEmailAddress());
+                        }
                     }
                 }
             }
-            if(fixedReportAddresses.size() > 0){
-                FixedReports reports = new FixedReports();
-                reports.send(fixedReportAddresses);
+            FixedReports reports = new FixedReports();
+            if(fixedReportAddressesWithoutUrl.size() > 0){
+                reports.send(fixedReportAddressesWithoutUrl, "");
+            }
+            if(fixedReportAddressesWithUrl.size() > 0){
+                reports.send(fixedReportAddressesWithUrl, "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/");
             }
         }        
         if (exitCode != 0) {

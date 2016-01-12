@@ -59,7 +59,7 @@ public class FixedReports
     private List<Map<MailSender.MessagePartsField,String>> messageParts;
 
     I18nUtil i18nUtil = null;
-    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy MM dd");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy M d");
 
     public enum Tag {
         _SYSTEM,
@@ -231,7 +231,7 @@ public class FixedReports
 
     /*
      */
-    public void send(ArrayList<String> recipientsList)
+    public void send(ArrayList<String> recipientsList, String reportsUrl)
     {
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
@@ -256,6 +256,7 @@ public class FixedReports
         context.addVariable(Tag._SYSTEM, "startDate", startDate);
         context.addVariable(Tag._SYSTEM, "endDate", endDate);
         context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report") + ": " + dateFormatter.format(startDate));
+        context.addVariable(Tag._SYSTEM, "url", reportsUrl);
 
         messageText = new StringBuilder();
         messageHtml = new StringBuilder();
@@ -312,7 +313,27 @@ public class FixedReports
         String replace = null;
         for(String line : buffer.split("\\n")){
             parseContext.ignoreLine = false;
-            for (Map.Entry<Tag, Pattern> syntax : TagPatterns.entrySet()) {
+
+            /*
+             * Perform translations
+             */
+            for(Map.Entry<Tag, Pattern> syntax : TagPatterns.entrySet()) {
+                if(syntax.getKey() == Tag.TRANS){
+                    tag = syntax.getValue().matcher(line);
+                    while(tag.find()){
+                        StringBuilder newLine = new StringBuilder();
+                        newLine.append(line.substring(0,line.indexOf(tag.group())));
+                        newLine.append(i18nUtil.tr(tag.group(1).trim()));
+                        newLine.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
+                        line = newLine.toString();
+                    }
+                }
+            }
+
+            /*
+             * Parse syntax
+             */
+            for(Map.Entry<Tag, Pattern> syntax : TagPatterns.entrySet()) {
                 try{
                     tag = syntax.getValue().matcher(line);
                     while( tag.find()){
@@ -327,20 +348,6 @@ public class FixedReports
                                         messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
                                     }catch(Exception e){
                                         logger.warn("Unable to insert variable :" + e );
-                                    }
-                                    parseContext.ignoreLine = true;
-                                }
-                                break;
-                            case TRANS:
-                                if(parseContext.allowOutput && 
-                                    parseContext.ignoreLine == false && 
-                                    parseContext.buildLoopBuffer == false){
-                                    try{
-                                        messageHtml.append(line.substring(0,line.indexOf(tag.group())));
-                                        messageHtml.append(i18nUtil.tr(tag.group(1).trim()));
-                                        messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
-                                    }catch(Exception e){
-                                        logger.warn("Unable to translate :" + e );
                                     }
                                     parseContext.ignoreLine = true;
                                 }
@@ -446,6 +453,10 @@ public class FixedReports
             left = tag.group(1);
             operation = tag.group(2);
             right = tag.group(3);
+
+            if(right.equals("\"\"")){
+                right = "";
+            }
 
             List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
             String object = fields.get(0);
