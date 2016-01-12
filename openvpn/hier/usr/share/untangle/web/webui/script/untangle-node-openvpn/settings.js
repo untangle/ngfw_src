@@ -11,11 +11,11 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     initComponent: function(container, position) {
         // Register the VTypes, need i18n to be initialized for the text
         Ext.applyIf(Ext.form.VTypes, {
-            openvpnNameRe: /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/,
+            openvpnNameRe: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
             openvpnName: function(v) {
                 return Ext.form.VTypes['openvpnNameRe'].test(v);
             },
-            openvpnNameMask: /[-_.0-9A-Za-z]/i,
+            openvpnNameMask: /[-.0-9A-Za-z]/i,
             openvpnNameText: i18n._( "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." )
         });
 
