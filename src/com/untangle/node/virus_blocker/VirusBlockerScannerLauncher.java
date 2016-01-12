@@ -77,7 +77,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
                 mycon.setRequestProperty("Content-Type", "application/json");
                 mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
-                mycon.setRequestProperty("UUID", UvmContextFactory.context().getServerUID());
+                mycon.setRequestProperty("UID", UvmContextFactory.context().getServerUID());
                 mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
                 mycon.setDoOutput(true);
                 mycon.setDoInput(true);
