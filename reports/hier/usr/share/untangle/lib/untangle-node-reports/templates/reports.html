@@ -35,9 +35,87 @@ table {
 <img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}"/>
 </td>
 <td style="font-size:22px; font-weight:bold; vertical-align:top;">
-{{ networkManager.getNetworkSettings.getHostName }}
 <br/>
 {{ title }}
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<table>
+<tr>
+<td style="width:48px; background-color: #333333; text-align:center;">
+	<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/icons/icon_config.png|id=icon-config@untangle.com }}"/>
+</td>
+<td style="font-size:15px; background-color: #333333;color:#ffffff">
+{% trans "Config" %}
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<table>
+<tr>
+<td style="width:300px;">
+{% trans "Hostname" %}
+</td>
+<td>
+{{ networkManager.getNetworkSettings.getHostName }}
+</td>
+</tr>
+
+<tr>
+<td>
+{% trans "Domain Name" %}
+</td>
+<td>
+{{ networkManager.getNetworkSettings.getDomainName }}
+</td>
+</tr>
+
+<tr>
+<td>
+{% trans "Version" %}
+</td>
+<td>
+{{ getFullVersion }} 
+{% if systemManager.upgradesAvailable == true %}
+{%trans "Upgrades available" %}
+{% endif%}
+</td>
+</tr>
+
+<tr>
+<td>
+{% trans "Highest active device count since reboot" %}
+</td>
+<td>
+{{ hostTable.getMaxActiveSize }}
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+
+
+<tr>
+<td colspan="2">
+<table>
+<tr>
+<td style="width:48px; background-color: #333333; text-align:center;">
+	<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/icons/icon_apps.png|id=icon-apps@untangle.com }}"/>
+</td>
+<td style="font-size:15px; background-color: #333333;color:#ffffff">
+{% trans "Apps" %}
+</td>
+</tr>
+</table>
 </td>
 </tr>
 
@@ -85,9 +163,6 @@ table {
 </tr>
 </table>
 
-<!---
-Link here
--->
 
 </body>
 </html>

@@ -288,7 +288,7 @@ public class FixedReports
         String[] recipients = new String[recipientsList.size()];
         recipients = recipientsList.toArray(recipients);
 
-        String subject = getVariable(new selector("title")).toString();
+        String subject = getVariable(new selector("title")).toString() + " - " + UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
 
         Map<MailSender.MessagePartsField,String> part = new HashMap<MailSender.MessagePartsField,String>();
         part.put(MailSender.MessagePartsField.TEXT, messageText.toString());
