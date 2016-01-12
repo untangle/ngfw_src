@@ -134,7 +134,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                 },{
                     xtype: "textfield",
                     disabled: !this.googleDriveConfigured,
-                    regex: /^[\w\. ]+$/,
+                    regex: /^[\w\. \/]+$/,
                     regexText: i18n._("The field can have only alphanumerics, spaces, or periods."),
                     fieldLabel: i18n._("Google Drive Directory"),
                     labelWidth: 150,
