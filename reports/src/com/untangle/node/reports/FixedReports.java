@@ -59,7 +59,7 @@ public class FixedReports
     private List<Map<MailSender.MessagePartsField,String>> messageParts;
 
     I18nUtil i18nUtil = null;
-    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy M d");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public enum Tag {
         _SYSTEM,
@@ -274,7 +274,7 @@ public class FixedReports
 
         context.addVariable(Tag._SYSTEM, "startDate", startDate);
         context.addVariable(Tag._SYSTEM, "endDate", endDate);
-        context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report") + ": " + dateFormatter.format(startDate));
+        context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report Summary") + ": " + dateFormatter.format(startDate));
         context.addVariable(Tag._SYSTEM, "url", reportsUrl);
 
         messageText = new StringBuilder();
