@@ -115,7 +115,6 @@ public class TomcatManagerImpl implements TomcatManager
 
         ctx = loadServlet("/setup", "setup", true );
         ctx.setAttribute("threadRequest", threadRequest);
-        writeWelcomeFile();
     }
 
     public ServletContext loadServlet(String urlBase, String rootDir)
@@ -168,7 +167,7 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
-    public void writeWelcomeFile()
+    protected void writeWelcomeFile()
     {
         FileWriter w = null;
         try {
@@ -193,9 +192,17 @@ public class TomcatManagerImpl implements TomcatManager
                 }
             }
         }
+
     }
 
-    synchronized void startTomcat()
+    protected void apacheReload()
+    {
+        writeIncludes();
+
+        UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
+    }
+    
+    protected void startTomcat()
     {
         logger.info("Tomcat starting...");
 
@@ -225,8 +232,6 @@ public class TomcatManagerImpl implements TomcatManager
             return;
         }
 
-        apacheReload();
-        
         logger.info("Tomcat started");
     }
 
@@ -349,13 +354,6 @@ public class TomcatManagerImpl implements TomcatManager
                 }
             }
         }
-    }
-
-    private void apacheReload()
-    {
-        writeIncludes();
-
-        UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
     }
 
     private String getSecret()

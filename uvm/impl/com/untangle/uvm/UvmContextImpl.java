@@ -851,11 +851,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         logger.debug("restarting nodes");
         nodeManager.init();
 
-        tomcatManager.writeWelcomeFile();
-
         tomcatManager.startTomcat();
-
+        tomcatManager.writeWelcomeFile();
+        tomcatManager.apacheReload();
+        
         logger.debug("postInit complete");
+
         synchronized (startupWaitLock) {
             state = UvmState.RUNNING;
             startupWaitLock.notifyAll();
@@ -863,6 +864,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         hideUpgradeSplash();
 
+        // start capturing traffic last
         networkManager.insertRules();
     }
 
