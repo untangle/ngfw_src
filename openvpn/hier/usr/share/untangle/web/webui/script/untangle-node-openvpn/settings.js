@@ -636,6 +636,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 "groupId": -1,
                 "name": "",
                 "pushDns": false,
+                "pushDnsSelf": false,
                 "fullTunnel": false
             },
             fields: [{
