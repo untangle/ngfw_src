@@ -193,8 +193,6 @@ public class TomcatManagerImpl implements TomcatManager
                 }
             }
         }
-
-        apacheReload();
     }
 
     synchronized void startTomcat()
@@ -226,6 +224,9 @@ public class TomcatManagerImpl implements TomcatManager
             UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", exn);
             return;
         }
+
+        apacheReload();
+        
         logger.info("Tomcat started");
     }
 
@@ -354,7 +355,7 @@ public class TomcatManagerImpl implements TomcatManager
     {
         writeIncludes();
 
-        UvmContextFactory.context().execManager().exec("/etc/init.d/apache2 reload");
+        UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
     }
 
     private String getSecret()
