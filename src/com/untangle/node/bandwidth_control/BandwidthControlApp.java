@@ -51,7 +51,7 @@ public class BandwidthControlApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_QUOTA_EXCEEDED, I18nUtil.marktr("Quota exceeded")));
         this.addMetric(new NodeMetric(STAT_PENALTY_BOXED, I18nUtil.marktr("Penalty boxed")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20, true);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20);
         this.connectors = new PipelineConnector[] { connector };
     }
 
@@ -62,7 +62,7 @@ public class BandwidthControlApp extends NodeBase
         String nodeID = this.getNodeSettings().getId().toString();
         BandwidthControlSettings readSettings = null;
         try {
-            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-bandwidth/" + "settings_" + nodeID + ".js" );
+            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-bandwidth-control/" + "settings_" + nodeID + ".js" );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -162,13 +162,13 @@ public class BandwidthControlApp extends NodeBase
         logger.info("Loading new Configuration: " + defaultConfiguration);
         
         try {
-            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.lib.dir") + "/untangle-node-bandwidth/defaults_" + defaultConfiguration + ".js" );
+            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.lib.dir") + "/untangle-node-bandwidth-control/defaults_" + defaultConfiguration + ".js" );
         } catch (SettingsManager.SettingsException e) {
             e.printStackTrace();
         }
 
         if (readSettings == null) {
-            logger.warn("Configuration not found: name:" + defaultConfiguration + " file: " + System.getProperty("uvm.lib.dir") + "/" + "untangle-node-bandwidth/" + "defaults_" + defaultConfiguration + ".js");
+            logger.warn("Configuration not found: name:" + defaultConfiguration + " file: " + System.getProperty("uvm.lib.dir") + "/" + "untangle-node-bandwidth-control/" + "defaults_" + defaultConfiguration + ".js");
         }
         else {
             logger.info("Loading new Defaults..." + defaultConfiguration);
@@ -267,7 +267,7 @@ public class BandwidthControlApp extends NodeBase
             SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
             String nodeID = this.getNodeSettings().getId().toString();
             try {
-                settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-bandwidth" + "/" + "settings_" + nodeID + ".js", newSettings );
+                settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-bandwidth-control" + "/" + "settings_" + nodeID + ".js", newSettings );
             } catch (SettingsManager.SettingsException e) {
                 logger.warn("Failed to save settings.",e);
                 return;
