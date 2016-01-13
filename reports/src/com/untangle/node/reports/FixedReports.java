@@ -84,9 +84,10 @@ public class FixedReports
     private static final Map<Tag, Pattern> TagPatterns;
     private static final Map<Filter, Pattern> FilterPatterns;
     private static final Pattern NonGreedyVariablePattern;
+    private static final Pattern NumericOnlyPattern;
 
     static {
-       TagPatterns = new HashMap<Tag, Pattern>();
+        TagPatterns = new HashMap<Tag, Pattern>();
 
         TagPatterns.put(Tag.VARIABLE, Pattern.compile("\\{\\{\\s*(.+)\\s*\\}\\}"));
         TagPatterns.put(Tag.TRANS, Pattern.compile("\\{\\%\\s*trans \"([^\"]+)\"\\s*\\%\\}"));
@@ -105,6 +106,8 @@ public class FixedReports
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
+
+        NumericOnlyPattern = Pattern.compile("-?\\d+(.\\d+)?");
     }
 
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s*(\\=\\=|\\!\\=)\\s*(.+)");
@@ -366,7 +369,7 @@ public class FixedReports
                                         insertVariable(line, new selector(tag.group(1).trim()));
                                         messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
                                     }catch(Exception e){
-                                        logger.warn("Unable to insert variable :" + e );
+                                        logger.warn("Unable to insert variable:" + tag.group(1).trim() );
                                     }
                                     parseContext.ignoreLine = true;
                                 }
@@ -557,8 +560,11 @@ public class FixedReports
                 }
             }
         }
-        // !!! error if file not specified
-        // !!! check if file exists
+        File f = new File(variableSelector.arguments.get(0));
+        if(f.exists() == false){
+            logger.warn("insertVariableAttachment: Could not find file " + variableSelector.arguments.get(0));
+            return;
+        }
 
         Boolean duplicate = false;            
         for(int i = 0; i < messageParts.size(); i++ ){
@@ -654,15 +660,30 @@ public class FixedReports
              */
             if((fieldIndex == variableSelector.fields.size() - 1) &&
                 variableSelector.arguments.size() > 0){
-
+                argumentTypes = null;
+                argumentValues = null;
                 /*
                  * Get the method's argument type list
-                 */                
+                 */
                 for(Method m: object.getClass().getMethods()){
                     if(variableSelector.fields.get(fieldIndex).equals(m.getName()) &&
                         (m.getParameterTypes().length == variableSelector.arguments.size())){
+
+                        /* Also check that argument types match as best we can. */
                         argumentTypes = m.getParameterTypes();
-                        break;
+                        Boolean methodMatch = true;
+                        for(int a = 0; a < variableSelector.arguments.size(); a++){
+                            Matcher matcher = NumericOnlyPattern.matcher(variableSelector.arguments.get(a));
+                            if((matcher.matches() == false) && 
+                                (argumentTypes[a].getName().equals("java.lang.Integer") ||
+                                 argumentTypes[a].getName().equals("java.lang.Long"))){
+                                methodMatch = false;
+                                break;
+                            }
+                        }
+                        if(methodMatch == true){
+                            break;
+                        }
                     }
                 }
 
@@ -712,7 +733,7 @@ public class FixedReports
              * Call into VM object path, otherwise back into context stack.
              */
             try{
-                if(variableSelector.arguments.size() == 0){
+                if(argumentTypes == null){
                     method = object.getClass().getMethod(variableSelector.fields.get(fieldIndex));
                     object = method.invoke(object);
                 }else{
@@ -731,8 +752,7 @@ public class FixedReports
                  * this is ok because you asked for a null....
                  */
             }catch(Exception e){
-                // !!! also provide selector
-                logger.warn("Unable to get variable", e );
+                logger.warn("Unable to get variable: " + variableSelector );
             }
         }
 
