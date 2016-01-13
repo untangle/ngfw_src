@@ -51,7 +51,7 @@ public class BandwidthControlApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_QUOTA_EXCEEDED, I18nUtil.marktr("Quota exceeded")));
         this.addMetric(new NodeMetric(STAT_PENALTY_BOXED, I18nUtil.marktr("Penalty boxed")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20, true);
         this.connectors = new PipelineConnector[] { connector };
     }
 
