@@ -10,6 +10,10 @@
     background-image: url(../images/admin/icons/icon_config.png);
 }
 
+.icon-reports {
+    background-image: url(../images/admin/icons/icon_reports.png);
+}
+
 .x-btn-pressed .icon-dashboard,.x-btn-over .icon-dashboard {
     background-image: url(../images/admin/icons/icon_dashboard_active.png);
 }
@@ -20,6 +24,10 @@
 
 .x-btn-pressed .icon-config,.x-btn-over .icon-config {
     background-image: url(../images/admin/icons/icon_config_active.png);
+}
+
+.x-btn-pressed .icon-reports,.x-btn-over .icon-reports {
+    background-image: url(../images/admin/icons/icon_reports_active.png);
 }
 
 .icon-tools {

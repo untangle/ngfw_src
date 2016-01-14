@@ -38,6 +38,7 @@
     <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/reportsViewer.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
@@ -55,7 +56,6 @@
     <script type="text/javascript" src="script/config/sessionMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgrade.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/reportsViewer.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/untangle-base-web-filter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus-blocker/settings.js?s=${buildStamp}"></script>

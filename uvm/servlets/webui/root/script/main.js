@@ -155,6 +155,15 @@ Ext.define("Ung.Main", {
                             this.panelCenter.setActiveItem("config");
                         },
                         scope: this
+                    }, {
+                        text: i18n._('Reports'),
+                        id: 'reportsMenuItem',
+                        hidden: true,
+                        iconCls: 'icon-reports',
+                        handler: function() {
+                            this.panelCenter.setActiveItem("reports");
+                        },
+                        scope: this
                     }]
                 }]
             }, {
@@ -342,6 +351,41 @@ Ext.define("Ung.Main", {
                             itemId: "toolsContainer"
                         }]
                     }]
+                }, {
+                    xtype: 'container',
+                    itemId: 'reports',
+                    layout: "border",
+                    items: [{
+                        xtype: 'container',
+                        region: "north",
+                        cls: 'top-container top-container-reports',
+                        layout: {type: 'hbox', align: 'middle'},
+                        height: 40,
+                        items: [{
+                            xtype: 'component',
+                            cls: 'top-title',
+                            margin: '0 0 0 20',
+                            html: i18n._('Reports Viewer'),
+                            flex: 1
+                        }, this.buildLinksMenu()]
+                    }, {
+                        xtype: 'container',
+                        region: "center",
+                        layout: "fit",
+                        itemId: 'reportsContainer',
+                        items: []
+                    }],
+                    listeners: {
+                        'activate': function(container) {
+                            this.viewport.down("#reportsContainer").removeAll();
+                            var reportsViewer = Ext.create("Ung.reportsViewer", {});
+                            this.viewport.down("#reportsContainer").add(reportsViewer);
+                        },
+                        "deactivate": function(container) {
+                            this.viewport.down("#reportsContainer").removeAll();
+                        },
+                        scope: this
+                    }
                 }]
             }
         ]});
@@ -717,8 +761,7 @@ Ext.define("Ung.Main", {
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
         Ext.getCmp('policyManagerToolItem').hide();
-        Ext.getCmp('reportsMenuItem').disable();
-        Ext.getCmp('reportsToolItem').hide();
+        Ext.getCmp('reportsMenuItem').hide();
         
         var nodePreviews = Ext.clone(this.nodePreviews);
         this.filterNodes.removeAll();
@@ -973,14 +1016,6 @@ Ext.define("Ung.Main", {
                 iconClass: 'icon-tools'
             },
             handler: Ung.Main.showDevices
-        }, {
-            id: 'reportsToolItem',
-            item: {
-                displayName: i18n._('Reports Viewer'),
-                iconClass: 'icon-tools'
-            },
-            hidden: true,
-            handler: Ung.Main.showReports
         }];
         var toolsContainer = this.viewport.down("#toolsContainer");
         for(i=0; i<tools.length; i++) {
@@ -1097,8 +1132,7 @@ Ext.define("Ung.Main", {
         if ( node.name == 'untangle-node-reports') {
             rpc.nodeManager.node(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                Ext.getCmp('reportsMenuItem').enable();
-                Ext.getCmp('reportsToolItem').show();
+                Ext.getCmp('reportsMenuItem').show();
                 rpc.nodeReports = result;
                 delete rpc.reportsManager;
             }, this),"untangle-node-reports");
@@ -1149,7 +1183,6 @@ Ext.define("Ung.Main", {
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
         items.push({text: i18n._('Show Devices'), value: 'SHOW_DEVICES', handler: Ung.Main.showDevices, hideDelay: 0});
-        items.push({text: i18n._('Show Reports'), value: 'SHOW_REPORTS', handler: Ung.Main.showReports, id:'reportsMenuItem', disabled: true, hideDelay: 0});
         
         this.policySelector.setText(items[selVirtualRackIndex].text);
         var menu = this.policySelector.down("menu");

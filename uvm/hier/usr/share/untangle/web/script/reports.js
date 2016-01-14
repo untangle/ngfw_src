@@ -4,6 +4,7 @@ Ext.define('Ung.panel.Reports', {
     name: 'panelReports',
     autoRefreshInterval: 10, //In Seconds
     layout: { type: 'border'},
+    border: false,
     extraConditions: null,
     reportsManager: null,
     hasEntriesSection: true,
@@ -62,6 +63,7 @@ Ext.define('Ung.panel.Reports', {
             }]
         }, {
             region: 'center',
+            xtype: "container",
             layout: {type: 'border'},
             items: [{
                 region: 'center',
