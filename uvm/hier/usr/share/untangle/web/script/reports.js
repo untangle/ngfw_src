@@ -1662,10 +1662,23 @@ Ext.define("Ung.panel.ExtraConditions", {
                 dataIndex: "column",
                 typeAhead: true,
                 valueField: "dataIndex",
-                displayField: "header",
                 queryMode: 'local',
                 store: this.columnsStore,
                 value: data.column,
+                listConfig: {
+                    minWidth: 520
+                },
+                tpl: Ext.create('Ext.XTemplate',
+                    '<ul class="x-list-plain"><tpl for=".">',
+                        '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
+                    '</tpl></ul>'
+                ),
+                // template for the content inside text field
+                displayTpl: Ext.create('Ext.XTemplate',
+                    '<tpl for=".">',
+                        '{header} [{dataIndex}]',
+                    '</tpl>'
+                ),
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {

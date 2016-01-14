@@ -150,7 +150,7 @@ Ext.define('Webui.untangle-node-spam-blocker-lite.settings', {
                         }]
                     },{
                         border: false,
-                        columnWidth:1,
+                        columnWidth: 1,
                         items: [{
                             xtype: 'numberfield',
                             fieldLabel: '&nbsp;&nbsp;&nbsp;' + i18n._('Strength Value'),
@@ -158,6 +158,8 @@ Ext.define('Webui.untangle-node-spam-blocker-lite.settings', {
                             value: this.settings.smtpConfig.strength / 10.0,
                             toValidate: true,
                             width: 200,
+                            labelWidth: 120,
+                            margin: '0 0 0 10',
                             allowDecimals: true,
                             allowBlank: false,
                             blankText: i18n._('Strength Value must be a number. Smaller value is higher strength.'),
