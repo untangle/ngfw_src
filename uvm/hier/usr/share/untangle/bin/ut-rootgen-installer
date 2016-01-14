@@ -2,9 +2,13 @@
 #
 # Generate Windows installer for root certificate.
 #
+BRANDING_INSTALLER_PATH=/usr/share/untangle/lib/untangle-node-branding-manager/root_certificate_installer/
 INSTALLER_PATH=/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
+if [ -d ${BRANDING_INSTALLER_PATH} ] ; then
+	INSTALLER_PATH=${BRANDING_INSTALLER_PATH}
+fi
 INSTALLER_CONFIGURATION=${INSTALLER_PATH}installer.nsi
-INSTALLER_FILE_NAME=UntangleRootCAInstaller.exe
+INSTALLER_FILE_NAME=RootCAInstaller.exe
 
 UT_ROOT_PATH=/usr/share/untangle/settings/untangle-certificates
 UT_ROOT_CERTIFICATE=${UT_ROOT_PATH}/untangle.crt

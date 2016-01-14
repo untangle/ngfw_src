@@ -43,7 +43,7 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
     private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/UntangleRootCAInstaller.exe";
+    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/RootCAInstaller.exe";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     File rootCertFile = new File(ROOT_CERT_FILE);
@@ -288,7 +288,7 @@ public class CertificateManagerImpl implements CertificateManager
 
                 // set the headers.
                 resp.setContentType("application/x-download");
-                resp.setHeader("Content-Disposition", "attachment; filename=UntangleRootCAInstaller.exe");
+                resp.setHeader("Content-Disposition", "attachment; filename=RootCAInstaller.exe");
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certInstallerData);

@@ -19,7 +19,7 @@ SetCompressor /FINAL lzma
 #!define MULTIUSER_EXECUTIONLEVEL Admin
 !define PACKAGE_NAME "Untangle Root CA Installer"
 !define VERSION "1.0.0.0"
-!define FILENAME "UntangleRootCAInstaller.exe"
+!define FILENAME "RootCAInstaller.exe"
 !define UNTANGLE_SETTINGS_DIR "./"
 !define PUBLISHER "Untangle"
 !define UNTANGLE_ROOTCA_DIR "/usr/share/untangle/settings/untangle-certificates"
@@ -61,7 +61,7 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 # MUI Macros
 # Install
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "${UNTANGLE_SETTINGS_DIR}\UntangleSoftwareLicense.txt"
+!insertmacro MUI_PAGE_LICENSE "${UNTANGLE_SETTINGS_DIR}\SoftwareLicense.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
