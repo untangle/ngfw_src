@@ -4,6 +4,6 @@
   "displayName": "Material",
   "adminSkin": true,
   "adminSkinVersion": 3,
-  "extjsTheme": "triton",
+  "extjsTheme": "gray",
   "appsViewType": "list"
 }

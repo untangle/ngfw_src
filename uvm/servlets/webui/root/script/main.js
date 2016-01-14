@@ -174,12 +174,8 @@ Ext.define("Ung.Main", {
                         layout: {type: 'hbox', align: 'middle'},
                         height: 88,
                         items: [{
-                            xtype: 'component',
-                            html: '',
-                            flex: 1
-                        },this.buildLinksMenu(),{
                             xtype: 'button',
-                            margin: '0 20 0 0',
+                            margin: '0 0 0 20',
                             minWidth: 120,
                             scale: 'large',
                             cls: 'action-button',
@@ -187,7 +183,11 @@ Ext.define("Ung.Main", {
                             handler: function() {
                             },
                             scope: this
-                        }]
+                        }, {
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
+                        },this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
                         itemId: 'dashboardItems',
@@ -221,6 +221,16 @@ Ext.define("Ung.Main", {
                                 items: []
                             })
                         }, {
+                            xtype: 'button',
+                            margin: '0 0 0 10',
+                            minWidth: 120,
+                            scale: 'large',
+                            cls: 'action-button',
+                            text: i18n._('Install Apps'),
+                            handler: function() {
+                                Ung.Main.openInstallApps();
+                            }
+                        }, {
                             xtype: 'component',
                             itemId: 'parentPolicy',
                             margin: '0 0 0 10',
@@ -242,17 +252,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
-                        },this.buildLinksMenu(),{
-                            xtype: 'button',
-                            margin: '0 20 0 0',
-                            minWidth: 120,
-                            scale: 'large',
-                            cls: 'action-button',
-                            text: i18n._('Install Apps'),
-                            handler: function() {
-                                Ung.Main.openInstallApps();
-                            }
-                        }]
+                        },this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
                         cls: 'apps-content',
@@ -289,10 +289,9 @@ Ext.define("Ung.Main", {
                             cls: 'top-title',
                             margin: '0 0 0 20',
                             html: i18n._('Install Apps'),
-                            flex: 1
-                        },this.buildLinksMenu(),{
+                        }, {
                             xtype: 'button',
-                            margin: '0 20 0 0',
+                            margin: '0 0 0 20',
                             minWidth: 120,
                             scale: 'large',
                             cls: 'action-button',
@@ -301,7 +300,11 @@ Ext.define("Ung.Main", {
                                 this.panelCenter.setActiveItem("apps");
                             },
                             scope: this
-                        }]
+                        }, {
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
+                        }, this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
                         itemId: "appsContainer"
@@ -320,7 +323,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
-                        },this.buildLinksMenu()]
+                        }, this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
                         items: [{
@@ -358,7 +361,7 @@ Ext.define("Ung.Main", {
     buildLinksMenu: function() {
         return {
             xtype: 'component',
-            margin: '0 10 0 0',
+            margin: '0 10 0 20',
             html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
                 '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
                 '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
