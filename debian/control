@@ -155,9 +155,9 @@ Description: Spam Blocker Base
 
 Package: untangle-base-web-filter
 Architecture: all
-Conflicts: untangle-base-web-filter
-Replaces: untangle-base-web-filter
-Provides: untangle-base-web-filter
+Conflicts: untangle-base-webfilter
+Replaces: untangle-base-webfilter
+Provides: untangle-base-webfilter
 Depends: untangle-vm, untangle-casing-http
 Description: WebFilter Base
  The WebFilter Base.
