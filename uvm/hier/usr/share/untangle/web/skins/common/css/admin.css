@@ -44,20 +44,19 @@ div.app-item {
     cursor: pointer;
     position: relative;
     float: left;
-    height: 79px;
+    height: 110px;
     width: 110px;
-    margin: 5px;
+    margin: 15px;
+    background-color: white;
+    overflow: visible;
 }
 
 div.app-item div.app-icon {
     display: block;
     position: relative;
-    margin: 2px auto 8px auto;
-    border: 2px solid #535355;
-    border-radius: 2px;
-    padding: 1px;
-    width: 48px;
-    height: 48px;
+    margin: 20px auto 8px auto;
+    width: 42px;
+    height: 42px;
 }
 
 div.app-item div.app-config-icon {
@@ -68,8 +67,8 @@ div.app-item div.app-config-icon {
 
 div.app-item div.app-icon-install {
     position: absolute;
-    right: -9px;
-    bottom: -9px;
+    right: -7px;
+    top: -7px;
     width: 15px;
     height: 15px;
 }
@@ -82,8 +81,9 @@ div.app-item p.app-progress-text {
 
 div.app-item div.app-name {
     display: block;
-    height: 32px;
+    height: 40px;
     width: 100%;
+    padding: 0 3px;
     text-align: center;
     color: #4E4C4C;
     font-weight: bold;
@@ -96,7 +96,7 @@ div.app-item div.app-progress {
     bottom: 1px;
     left: 1px;
     width: 108px;
-    height: 30px;
+    height: 38px;
 }
 
 /* breadcrumb text */
@@ -270,6 +270,11 @@ a.link,a.link:visited {
     font-family: Tahoma, Geneva, sans-serif;
 }
 
+
+.main-panel {
+    background: #EEF1F5;
+}
+
 .menu-button.x-btn {
     border-radius: 0;
     background-color: #1b1e26;
@@ -350,8 +355,16 @@ a.menu-link:hover,a.menu-link.logout:hover {
     background-color: white;
     width: 100%;
     height: 88px;
+    border-bottom: 1px solid #D8DBE0;
 }
-
+.config-separator {
+    background-color: white;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 20px;
+    border-bottom: 1px solid #D8DBE0;
+}
 .top-title {
     font-size: 18px;
     color: #AAACAE;

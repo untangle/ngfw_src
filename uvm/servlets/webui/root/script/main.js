@@ -161,6 +161,7 @@ Ext.define("Ung.Main", {
                 region: 'center',
                 itemId: 'panelCenter',
                 xtype: 'container',
+                cls: 'main-panel',
                 layout: 'card',
                 activeItem: 1,
                 items: [{
@@ -288,7 +289,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             cls: 'top-title',
                             margin: '0 0 0 20',
-                            html: i18n._('Install Apps'),
+                            html: i18n._('Install Apps')
                         }, {
                             xtype: 'button',
                             margin: '0 0 0 20',
@@ -321,23 +322,24 @@ Ext.define("Ung.Main", {
                         height: 88,
                         items: [{
                             xtype: 'component',
-                            html: '',
+                            cls: 'top-title',
+                            margin: '0 0 0 20',
+                            html: i18n._('Config'),
                             flex: 1
                         }, this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
                         items: [{
-                            xtype: 'panel',
-                            border: false,
-                            title: i18n._('Config'),
-                            bodyPadding: '15px 0 0 0',
+                            xtype: 'container',
                             itemId: 'configContainer'
                         }, {
-                            xtype: 'panel',
-                            border: false,
+                            xtype: 'component',
+                            cls: 'config-separator top-title',
+                            html: i18n._("Tools")
+                        }, {
+                            xtype: 'container',
                             title: i18n._('Tools'),
-                            itemId: "toolsContainer",
-                            bodyPadding: '15px 0 0 0'
+                            itemId: "toolsContainer"
                         }]
                     }]
                 }]

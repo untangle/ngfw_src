@@ -137,7 +137,7 @@ Ext.define("Ung.AppItem", {
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
-        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_42x42.png"/><div class="app-icon-install icon-arrow-install"></div></div>', '<div class="app-name">{text}</div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
+        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_42x42.png"/></div><div class="app-icon-install icon-arrow-install"></div>', '<div class="app-name">{text}</div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
         setLoading: function(name, loadingFlag) {
             Ung.AppItem.loadingFlags[name] = loadingFlag;
             var app = Ung.AppItem.getApp(name);
@@ -355,6 +355,7 @@ Ext.define("Ung.Node", {
             'licenseMessage': this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
+        
         if(rpc.skinInfo.appsViewType == "list") {
             if(this.isNodeEditable) {
                 this.getEl().on('click', this.loadSettings, this);
@@ -423,19 +424,22 @@ Ext.define("Ung.Node", {
                     dismissDelay: 0,
                     hideDelay: 0
                 }));
-                if(!this.isNodeEditable) {
-                    this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
-                        html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
-                        target: 'node_' + this.nodeId,
-                        showDelay: 20,
-                        dismissDelay: 0,
-                        hideDelay: 0
-                    }));
-                }
+            }
+            if(!this.isNodeEditable) {
+                this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
+                    html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
+                    target: 'node_' + this.nodeId,
+                    showDelay: 20,
+                    dismissDelay: 0,
+                    hideDelay: 0
+                }));
             }
             this.initMetrics();
         }
         this.nodeStateContainer = document.getElementById('node-state_' + this.getId());
+        if(!this.isNodeEditable) {
+            this.nodeStateContainer.style.cursor = "default";
+        }
         this.updateRunState(this.runState, true);
     },
     // is runState "RUNNING"
