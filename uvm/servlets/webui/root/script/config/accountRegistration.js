@@ -15,7 +15,8 @@ Ext.define('Webui.config.accountRegistration', {
             title: i18n._('Account Registration')
         }];
         this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
-
+        var forgotPasswordUrl = rpc.storeUrl + "?" + "action=forgot_password" + "&" + Ung.Main.about();
+        
         this.expirationMonths = Ext.create('Ext.data.ArrayStore', {
             fields: ['id', 'value'],
             data: [ 
@@ -155,7 +156,7 @@ Ext.define('Webui.config.accountRegistration', {
                             fieldLabel: i18n._("Email Address")+ " *",
                             listeners: {
                                 focus: this.defaultFocusButton("loginButton")
-                            }                            
+                            }
                         }, {
                             xtype:'textfield',
                             width: 300,
@@ -180,6 +181,15 @@ Ext.define('Webui.config.accountRegistration', {
                                     this.login();
                                 },
                                 scope: this
+                            }
+                        }, {
+                            xtype: 'container',
+                            layout: 'center',
+                            width: '100%',
+                            height: 30,
+                            items: {
+                                xtype: 'component',
+                                html: '<a class="forgot-password" href="'+forgotPasswordUrl+'" target="_blank">'+i18n._('Forgot your password?')+'</a>'
                             }
                         }]
                     }, {

@@ -270,7 +270,6 @@ a.link,a.link:visited {
     font-family: Tahoma, Geneva, sans-serif;
 }
 
-
 .main-panel {
     background: #EEF1F5;
 }
@@ -341,6 +340,16 @@ a.menu-link:hover,a.menu-link.logout:hover {
     color: #67bd4a;
 }
 
+a.forgot-password,a.forgot-password:visited {
+    color: #d80909;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+a.forgot-password:hover {
+    text-decoration: underline;
+}
+
 .links-menu {
     margin-right: 10px;
     top: 35px;
@@ -359,6 +368,7 @@ a.menu-link:hover,a.menu-link.logout:hover {
 .top-container-reports {
     border-bottom-width: 0px;
 }
+
 .config-separator {
     background-color: white;
     width: 100%;
@@ -367,6 +377,7 @@ a.menu-link:hover,a.menu-link.logout:hover {
     padding-left: 20px;
     border-bottom: 1px solid #D8DBE0;
 }
+
 .top-title {
     font-size: 18px;
     color: #AAACAE;
