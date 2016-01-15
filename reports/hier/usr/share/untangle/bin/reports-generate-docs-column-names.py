@@ -172,6 +172,15 @@ dict = {
     'web_filter_category' : '\'Web Filter \' + ' + i18n._('Category'),
     'web_filter_blocked' : '\'Web Filter \' + ' + i18n._('Blocked'),
     'web_filter_flagged' : '\'Web Filter \' + ' + i18n._('Flagged'),
+    'settings_file' : i18n._('Settings File'),
+    'tunnel_name' : i18n._('Tunnel Name'),
+    'in_bytes' : i18n._('In Bytes'),
+    'out_bytes' : i18n._('Out Bytes'),
+    'destination' : i18n._('Destination'),
+    'mem_total' : i18n._('Total Memory'),
+    'active_hosts' : i18n._('Active Hosts'),
+    'rx_rate' : i18n._('Rx Rate'),
+    'tx_rate' : i18n._('Tx Rate'),
 }
 
 
