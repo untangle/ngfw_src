@@ -3,19 +3,29 @@
  */
 package com.untangle.node.branding_manager;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
 
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.util.IOUtil;
 
 public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.BrandingManager
 {
@@ -23,8 +33,35 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");
     private static final String BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.png";
 
+    private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Untangle";
+    private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
+
+    public enum REGEX_TYPE {
+        COMPANY_NAME,
+        COMPANY_URL
+    }
+    private static final HashMap<REGEX_TYPE, Pattern> ROOT_CA_INSTALLER_IN_QUOTES_REGEXES;
+    private static final HashMap<REGEX_TYPE, Pattern> ROOT_CA_INSTALLER_NO_QUOTES_REGEXES;
+    private static final ArrayList<String> ROOT_CA_INSTALLER_PARSE_FILE_NAMES;
+    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-node-branding-manager/root_certificate_installer";
+
+    static {
+        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES = new HashMap<REGEX_TYPE, Pattern>();
+        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES = new HashMap<REGEX_TYPE, Pattern>();
+        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(\".*)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*\")"));
+        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(\".*)http://.*.untangle.com(.*\")"));
+        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(.*)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*)", Pattern.CASE_INSENSITIVE));
+        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(.*)http://.*.untangle.com(.*)", Pattern.CASE_INSENSITIVE));
+
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new ArrayList<String>();
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.add(ROOT_CA_INSTALLER_DIRECTORY_NAME + "/installer.nsi");
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.add(ROOT_CA_INSTALLER_DIRECTORY_NAME + "/SoftwareLicense.txt");
+    }
+
     private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
+
+    private static final String EOL = "\n";
 
     private BrandingManagerSettings settings = null;
 
@@ -130,6 +167,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         this.settings = newSettings;
 
         setFileLogo(settings.binary_getLogo());
+        createRootCaInstaller();
     }
 
     @Override
@@ -142,9 +180,9 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
          * If OEM, initialize settings differently
          */
         String oemName = UvmContextFactory.context().oemManager().getOemName();
-        if (oemName == null || oemName == "Untangle") {
-            settings.setCompanyName("Untangle");
-            settings.setCompanyUrl("http://untangle.com/");
+        if (oemName == null || oemName.equals("Untangle")) {
+            settings.setCompanyName(DEFAULT_UNTANGLE_COMPANY_NAME);
+            settings.setCompanyUrl(DEFAULT_UNTANGLE_URL);
         } else {
             settings.setCompanyName("MyCompany");
             settings.setCompanyUrl("http://mycompany.com/");
@@ -250,6 +288,89 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BRANDING_MANAGER_OLDNAME))
             return true;
         return false;
+    }
+
+    /*
+     * Using the non-branded version from uvm as a template base, modify
+     * images and text to reflect branding.
+     */
+    private void createRootCaInstaller()
+    {
+        /*
+         * Use the non-branded version as a template base.  Copy over.
+         */
+        UvmContextFactory.context().execManager().exec("rm -rf " + ROOT_CA_INSTALLER_DIRECTORY_NAME + "; cp -fa " + CertificateManager.ROOT_CA_INSTALLER_DIRECTORY_NAME + " " + ROOT_CA_INSTALLER_DIRECTORY_NAME);
+
+        /*
+         * Convert images to .bmp format
+         */
+        UvmContextFactory.context().execManager().exec("jpegtopnm " + BRANDING_LOGO + " | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-header.bmp");
+        UvmContextFactory.context().execManager().exec("jpegtopnm " + BRANDING_LOGO + " | pnmrotate 90 | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-wizard.bmp");
+
+        /*
+         * Parse files replacing Untangle defaults
+         */
+        for(String filename: ROOT_CA_INSTALLER_PARSE_FILE_NAMES){
+            File file = new File(filename);
+            String name = file.getName();
+            String extension = name.substring(name.lastIndexOf(".") + 1);
+            StringBuilder parsed = new StringBuilder();
+            Matcher match = null;
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(filename));
+                HashMap<REGEX_TYPE, Pattern> regexes = null;
+                if(extension.equals("nsi")){
+                    regexes = ROOT_CA_INSTALLER_IN_QUOTES_REGEXES;
+                }else{
+                    regexes = ROOT_CA_INSTALLER_NO_QUOTES_REGEXES;
+                }
+                for (String line = reader.readLine(); null != line; line = reader.readLine()) {
+                    /*
+                     * When parsing the nsi file we only want to replace strings within quotes and
+                     * for other files, everything.
+                     */
+                    for(Map.Entry<REGEX_TYPE, Pattern> regex : regexes.entrySet()) {
+                        match = regex.getValue().matcher(line);
+                        while(match.find()){
+                            switch(regex.getKey()){
+                                case COMPANY_NAME:
+                                    line = match.replaceAll("$1" + settings.getCompanyName() + "$2");
+                                    break;
+                                case COMPANY_URL:
+                                    line = match.replaceAll("$1" + settings.getCompanyUrl() + "$2");
+                                    break;
+                            }
+                            match = regex.getValue().matcher(line);
+                        }
+                    }
+                    parsed.append(line).append(EOL);
+                }
+            } catch (Exception x) {
+                logger.warn("Unable to open installer configuration file: " + filename );
+                return;
+            }
+
+            FileOutputStream fos = null;
+            File tmp = null;
+            try {
+                tmp = File.createTempFile( file.getName(), ".tmp");
+                fos = new FileOutputStream(tmp);
+                fos.write(parsed.toString().getBytes());
+                fos.flush();
+                fos.close();
+                IOUtil.copyFile(tmp, new File(filename));
+                tmp.delete();
+            }catch(Exception ex) {
+                IOUtil.close(fos);
+                tmp.delete();
+                logger.error("Unable to create installer file:" + filename + ":", ex);
+            }
+        }
+
+        /*
+         * Regenerate
+         */
+        UvmContextFactory.context().execManager().exec(CertificateManager.ROOT_CA_INSTALLER_SCRIPT);
     }
 
     private class LogoUploadHandler implements UploadHandler
