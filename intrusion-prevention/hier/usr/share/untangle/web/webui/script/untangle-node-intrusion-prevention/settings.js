@@ -685,10 +685,13 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 width:55,
                 menuDisabled: false,
                 listeners: {
-                    checkchange: Ext.bind(function ( elem, rowIndex, checked ){
-                        var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                    beforecheckchange: Ext.bind(function ( elem, rowIndex, checked ){
+                        var record = elem.getView().getRecord(rowIndex);
                         if( !checked){
+                            record.set('log', false);
                             record.set('block', false );
+                        }else{
+                            record.set('log', true);
                         }
                         this.gridRules.updateRule(record, null );
                     }, this)
@@ -722,10 +725,13 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 width:55,
                 menuDisabled: false,
                 listeners: {
-                    checkchange: Ext.bind(function ( elem, rowIndex, checked ){
-                        var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                    beforecheckchange: Ext.bind(function ( elem, rowIndex, checked ){
+                        var record = elem.getView().getRecord(rowIndex);
                         if(checked) {
                             record.set('log', true );
+                            record.set('block', true);
+                        }else{
+                            record.set('block', false);
                         }
                         this.gridRules.updateRule(record, null );
                     }, this)
