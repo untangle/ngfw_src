@@ -1,6 +1,28 @@
+Ext.define('Ung.Main.dashboard', {
+    constructor: function(config) {
+        var widget;
+        this.widgets = [];
+        for(var i=0; i < config.widgets.length; i++) {
+            widget = config.widgets[i];
+            this.widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
+        }
+    },
+    updateFromStats: function(stats) {
+        //console.log(stats);
+        for(var i=0; i < this.widgets.length; i++) {
+            var widget = this.widgets[i];
+            if (widget.hasStats) {
+                widget.updateFromStats(stats);
+            }
+        }
+    }
+});
+
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
-    closable: true,
+    cls: 'widget small-widget',
+    hidden: false,
+    //closable: true,
     tools: [{
         type:'refresh',
         callback: function() {
@@ -8,8 +30,8 @@ Ext.define('Ung.dashboard.Widget', {
         },
         scope: this
     }],
-    padding: '5 0 0 5',
-    bodyPadding: 5,
+    //padding: '5 0 0 5',
+    //bodyPadding: 5,
     initComponent: function() {
         this.callParent(arguments);
     },
@@ -32,24 +54,36 @@ Ext.define('Ung.dashboard.Widget', {
             },
             scope: this
         }
+    },
+    updateFromStats: function(stats) {
+        this.items.each(function(item) {
+            if(item.statsProperty) {
+                item.setValue(stats[item.statsProperty]);
+            }
+            // check if item has updateStatus function, used for parsing data
+            if(Ext.isFunction(item.updateStats)) {
+                item.updateStats(stats);
+            }
+        });
+
     }
 });
 
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Information"),
-    width: 300,
+    height: 160,
+    hasStats: true,
     defaults: {
         xtype: 'displayfield',
-        labelWidth: 150
-            
+        labelWidth: 100
     },
     items: [{
-        name: 'model',
-        fieldLabel: i18n._("Model")
+        fieldLabel: i18n._("Model"),
+        statsProperty: 'cpuModel'
     }, {
-        name: 'uptime',
-        fieldLabel: i18n._("Uptime")
+        fieldLabel: i18n._("Uptime"),
+        statsProperty: 'uptime'
     }, {
         name: 'version',
         fieldLabel: i18n._("Version")
@@ -57,42 +91,80 @@ Ext.define('Ung.dashboard.Information', {
         name: 'subscriptions',
         fieldLabel: i18n._("Subscriptions")
     }],
-    refresh: function () {
-        
+    afterRender: function() {
+        this.callParent(arguments);
+        this.down('displayfield[name=version]').setValue(rpc.fullVersion);
     }
 });
 
 Ext.define('Ung.dashboard.Server', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Server"),
-    width: 300,
+    hasStats: true,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
-            
     },
-    items: [{
-        name: 'cpuCount',
-        fieldLabel: i18n._("CPU count")
-    }, {
-        name: 'cpuType',
-        fieldLabel: i18n._("CPU type")
-    }, {
-        name: 'architecture',
-        fieldLabel: i18n._("Architecture")
-    }, {
-        name: 'memory',
-        fieldLabel: i18n._("Memory")
-    }, {
-        name: 'disk',
-        fieldLabel: i18n._("Disk")
-    }, {
-        name: 'ethernetNIC',
-        fieldLabel: i18n._("Ethernet NIC")
-    }, {
-        name: 'wirelessNIC',
-        fieldLabel: i18n._("Wireless NIC")
-    }],
+    layout: {
+       type: 'vbox'
+    },
+    items: [
+        {
+            xtype: 'panel',
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                { html: i18n._("Memory"), width: 80},
+                {
+                    xtype: 'progress',
+                    name: 'memory',
+                    width: 200
+                },
+                { xtype: 'displayfield', name: 'memory_val', flex: 1}
+            ],
+            updateStats: function(stats) {
+                this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree/stats.MemTotal).toFixed(3));
+                this.down('displayfield[name=memory_val]').setValue(parseFloat(stats.MemFree/(1024*1024)).toFixed(2) + 'Mb / ' + parseFloat(stats.MemTotal/(1024*1024)).toFixed(2) + 'Mb');
+            }
+        },
+        {
+            xtype: 'panel',
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                { html: i18n._("Disk"), width: 80},
+                {
+                    xtype: 'progress',
+                    name: 'disk',
+                    width: 200
+                },
+                { xtype: 'displayfield', name: 'disk_val', flex: 1}
+            ],
+            updateStats: function(stats) {
+                this.down('progress[name=disk]').setValue(1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace).toFixed(3));
+                this.down('displayfield[name=disk_val]').setValue(parseFloat(stats.freeDiskSpace/(1024*1024)).toFixed(2) + 'Mb / ' + parseFloat(stats.totalDiskSpace/(1024*1024)).toFixed(2) + 'Mb');
+            }
+        },
+        {
+            name: 'cpuCount',
+            fieldLabel: i18n._("CPU count")
+        }, {
+            name: 'cpuType',
+            fieldLabel: i18n._("CPU type")
+        }, {
+            name: 'architecture',
+            fieldLabel: i18n._("Architecture")
+        }, {
+            name: 'ethernetNIC',
+            fieldLabel: i18n._("Ethernet NIC")
+        }, {
+            name: 'wirelessNIC',
+            fieldLabel: i18n._("Wireless NIC")
+        }],
     refresh: function () {
         
     }
@@ -101,7 +173,6 @@ Ext.define('Ung.dashboard.Server', {
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Sessions"),
-    width: 300,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
@@ -132,7 +203,7 @@ Ext.define('Ung.dashboard.Sessions', {
 Ext.define('Ung.dashboard.Devices', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Devices"),
-    width: 300,
+    height: 160,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
@@ -176,4 +247,53 @@ Ext.define('Ung.dashboard.EventEntry', {
     refresh: function () {
         
     }
+});
+
+
+Ext.define('Ung.dashboard.GroupWidget', {
+    extend: 'Ung.dashboard.Widget',
+    header: false,
+    items: [
+        Ext.create('Ung.dashboard.Information', {
+            type: 'Information',
+            cls: 'widget small-widget'
+        }),
+        Ext.create('Ung.dashboard.Devices', {
+            type: 'Devices',
+            cls: 'widget small-widget'
+        }),
+        Ext.create('Ung.dashboard.Server', {
+            type: 'Devices',
+            cls: 'widget small-widget'
+        })
+    ],
+    initComponent: function() {
+        var me = this;
+        this.callParent(arguments);
+
+        this.items.each(function(item) {
+            if (item.hasStats) {
+                me.hasStats = true;
+                return false;
+            }
+        });
+    },
+    updateFromStats: function(stats) {
+        this.items.each(function(item) {
+            if (item.hasStats) {
+                item.updateFromStats(stats);
+            }
+        });
+    }
+});
+
+Ext.define('Ung.dashboard.SingleWidget', {
+    extend: 'Ung.dashboard.Widget',
+    header: false,
+    items: [
+        Ext.create('Ung.dashboard.Information', {
+            type: 'Information',
+            cls: 'widget small-widget'
+        })
+    ]
 });

@@ -201,10 +201,8 @@ Ext.define("Ung.Main", {
                     }, {
                         xtype: 'container',
                         itemId: 'dashboardItems',
-                        layout: {
-                            type: 'table',
-                            columns: 2
-                        }
+                        cls: 'dashboard',
+                        //layout: 'card'
                     }]
                 }, {
                     xtype: 'container',
@@ -414,30 +412,18 @@ Ext.define("Ung.Main", {
         }; 
     },
     loadDashboard: function() {
-        var dashboardSettings = {
+        this.dashboard = Ext.create('Ung.Main.dashboard', {
             widgets: [{
-                type: 'Information',
-                height: 300
-            }, {
-                type: 'Server',
-                height: 300
+                type: 'GroupWidget',
+                cls: 'group-widget',
+                hasStats: true
             }, {
                 type: 'Sessions',
-                height: 300
-            }, {
-                type: 'Devices',
-                height: 300
+                cls: 'widget big-widget'
             }]
-        }; 
-        var widgets = [];
-        var widget = null;
-        
-        for(var i=0; i < dashboardSettings.widgets.length; i++) {
-            widget = dashboardSettings.widgets[i];
-            widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
-        }
+        });
         var dashboardPanel = this.viewport.down("#dashboardItems");
-        dashboardPanel.add(widgets);
+        dashboardPanel.add(this.dashboard.widgets);
     },
     about: function (forceReload) {
         if(rpc.about === undefined) {

@@ -858,7 +858,8 @@ Ung.MetricManager = {
 
             // update system stats
             Ung.Main.systemStats.update(result.systemStats);
-            // update node metrics
+            Ung.Main.dashboard.updateFromStats(result.systemStats);
+
             var i;
             for (i = 0; i < Ung.Main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);

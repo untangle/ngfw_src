@@ -367,3 +367,124 @@ img.icon-drag {
 .icon-state-attention {
     background-image: url(../images/admin/state_attention.png);
 }
+
+
+
+.dashboard {
+}
+
+.dashboard .x-autocontainer-innerCt {
+    display: flex;
+    flex-wrap: wrap;
+}
+.dashboard .small-widget .x-autocontainer-innerCt {
+    display: inherit;
+}
+
+
+
+
+
+
+.big-widget .x-panel-body-default {
+    border: 0;
+    margin: 10px;
+    background: transparent;
+}
+
+.group-widget .x-panel-body-default {
+    background: transparent;
+    border: 0;
+    top: 0 !important;
+}
+
+.widget {
+    background-color: #FFF;
+    margin: 10px;
+    -webkit-box-flex: 0;
+    position: relative !important;
+    visibility: visible !important;
+    top: 0 !important;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+}
+.group-widget {
+    flex: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: transparent;
+    margin: 0;
+    justify-content: space-between;
+    padding: 0 !important;
+}
+
+.big-widget {
+    flex: 100%;
+    padding: 0 !important;
+    margin: 10px;
+}
+
+.small-widget {
+    height: 160px !important;
+    flex: 45%;
+    margin: 10px;
+    padding: 0 !important;
+}
+
+.widget .x-panel-header {
+    border: 0;
+    background: #67bd4a;
+    box-shadow: none;
+    height: 32px;
+    position: relative !important;
+}
+
+/*
+.group-widget .x-panel-body .x-autocontainer-innerCt {
+    flex: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 !important;
+}
+*/
+
+.small-widget .x-panel-body-default {
+    padding: 5px 10px;
+    overflow-y: auto;
+    height: auto !important;
+}
+
+.widget .x-panel-header-title-default > .x-title-text-default {
+    font-family: 'Source Sans Pro', sans-serif;
+    padding: 3px 2px 1px;
+    color: #FFF;
+    font-size: 16px;
+    font-weight: 100;
+}
+
+.big-widget .x-tool {
+    right: 0;
+    left: auto;
+}
+
+@media (min-width: 956px) {
+    .group-widget {
+        flex: 1;
+    }
+    .group-widget .x-panel-body-default {
+        background: transparent;
+        border: 0;
+    }
+    /*
+    .group-widget .x-panel-body .x-autocontainer-innerCt {
+        flex: 1;
+    }
+    */
+    .small-widget {
+        flex: 35%;
+        margin: 10px;
+        padding: 0 !important;
+    }
+    .big-widget {
+        flex: 1;
+    }
+}
