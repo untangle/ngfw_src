@@ -5,6 +5,7 @@
 BRANDING_INSTALLER_PATH=/usr/share/untangle/lib/untangle-node-branding-manager/root_certificate_installer/
 INSTALLER_PATH=/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
 if [ -d ${BRANDING_INSTALLER_PATH} ] ; then
+	# Use branding manager's installer configuration
 	INSTALLER_PATH=${BRANDING_INSTALLER_PATH}
 fi
 INSTALLER_CONFIGURATION=${INSTALLER_PATH}installer.nsi
