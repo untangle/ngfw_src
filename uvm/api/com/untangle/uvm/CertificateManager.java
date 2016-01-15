@@ -10,6 +10,9 @@ package com.untangle.uvm;
 
 public interface CertificateManager
 {
+    String ROOT_CA_INSTALLER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen-installer";
+    String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-vm/root_certificate_installer";;
+
     CertificateInformation getCertificateInformation();
 
     boolean generateCertificateAuthority(String certSubject, String dummy);

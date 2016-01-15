@@ -369,7 +369,7 @@ Section "Uninstall"
     RMDir "$INSTDIR\bin"
     RMDir "$INSTDIR"
 
-    DetailPrint "Remove Regvalues for Untagle Root Certificates"
+    DetailPrint "Remove Regvalues for Untangle Root Certificates"
     DeleteRegKey HKLM  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
 
 SectionEnd
