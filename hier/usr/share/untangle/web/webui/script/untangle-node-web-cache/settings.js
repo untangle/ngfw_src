@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-web-cache.settings', {
     gridProtocolList: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Web Cache stores frequently requested items locally and serves content from local cache for increased speed and reduced bandwidth usage.");
+        return i18n._("Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.");
     },
     initComponent: function() {
         this.statistics = this.getRpcNode().getStatistics();
