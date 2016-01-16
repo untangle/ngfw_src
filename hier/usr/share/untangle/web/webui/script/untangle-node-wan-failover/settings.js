@@ -6,8 +6,8 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
     gridTestEventLog: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("WAN Failover maximizes your network uptime. It monitors the status of your WAN interfaces and re-routes traffic any available WANs.") + "<br/>" +
-               i18n._("Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.");
+        return i18n._("WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.") + "<br/><br/>" + 
+               i18n._("<b>NOTE:</b> Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.");
     },
     initComponent: function() {
         this.buildWanStatus();
@@ -101,7 +101,7 @@ Ext.define('Webui.untangle-node-wan-failover.settings', {
         var missingTestsWarningContainer = this.panelStatus.down('component[name="missingTestsWarning"]');
         missingTestsWarningContainer.update(txt);
         missingTestsWarningContainer.setVisible(txt.length >0);
-        noTestsWarningContainer = this.panelStatus.down('component[name="noTestsWarning"]');
+        var noTestsWarningContainer = this.panelStatus.down('component[name="noTestsWarning"]');
         noTestsWarningContainer.setVisible(this.settings.tests.list.length == 0);
     },
     buildStatus: function() {
