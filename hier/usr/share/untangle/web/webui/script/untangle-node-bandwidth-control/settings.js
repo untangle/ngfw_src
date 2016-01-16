@@ -1,7 +1,7 @@
 Ext.define('Webui.untangle-node-bandwidth-control.settings', {
     extend:'Ung.NodeWin',
     getAppSummary: function() {
-        return i18n._("Bandwidth Control allows you to better manage the bandwidth consumption on your network, including controlling and visualizing the use of your network at a fine-grained level.");
+        return i18n._("Bandwidth Control monitors, manages, and shapes bandwidth usage on the network");
     },
     initComponent: function() {
         this.quotaTimeStore = [
