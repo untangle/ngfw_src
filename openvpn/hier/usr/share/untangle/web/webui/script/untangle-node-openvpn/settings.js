@@ -6,7 +6,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     panelServer: null,
     gridConnectionEventLog: null,
     getAppSummary: function() {
-        return i18n._("OpenVPN enables administrators to provide secure remote access to the internal network to remote users and sites.");
+        return i18n._("OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.");
     },
     initComponent: function(container, position) {
         // Register the VTypes, need i18n to be initialized for the text

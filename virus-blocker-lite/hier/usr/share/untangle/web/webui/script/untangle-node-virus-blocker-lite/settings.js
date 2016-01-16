@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-virus-blocker-lite.settings', {
     helpSourceName: 'virus_blocker_lite',
     aboutInfo: null,
     getAppSummary: function() {
-        return i18n._("Virus Blocker Lite stops virus outbreaks before they reach users' desktops.");
+        return i18n._("Virus Blocker Lite detects and blocks malware before it reaches users' desktops or mailboxes.");
     },
     initComponent: function() {
         this.callParent(arguments);

@@ -4,7 +4,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
     gridRules: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Firewall is a simple application designed to block and flag network traffic based on a set of rules.");
+        return i18n._("Firewall is a simple application that flags and blocks sessions based on rules.");
     },
     initComponent: function() {
         this.buildRules();

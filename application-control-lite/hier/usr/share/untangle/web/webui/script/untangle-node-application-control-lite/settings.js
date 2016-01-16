@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-application-control-lite.settings', {
     gridProtocolList: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content.");
+        return i18n._("Application Control Lite identifies, logs, and blocks sessions based on the session content using custom signatures.");
     },
     initComponent: function() {
         this.buildProtocolList();

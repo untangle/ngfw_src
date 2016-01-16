@@ -6,7 +6,7 @@ Ext.define('Webui.untangle-node-ad-blocker.settings', {
     totalCookiesEnabled:  null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Based on the open source project AdBlock Plus, Ad Blocker lets you easily block ads at the gateway without installing browser plugins.");
+        return i18n._("Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.");
     },
     initComponent: function() {
         this.lastUpdate = this.getRpcNode().getListLastUpdate();

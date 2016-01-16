@@ -9,7 +9,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridReportEntries: null,
     gridAlertEventLog: null,
     getAppSummary: function() {
-        return i18n._("Reports provide administrators the visibility and data necessary to investigate security incidents and enforce acceptable network usage policies.");
+        return i18n._("Reports records network events to provide administrators the visibility and data necessary to investigate network activity.");
     },
     initComponent: function(container, position) {
         this.buildPasswordValidator();

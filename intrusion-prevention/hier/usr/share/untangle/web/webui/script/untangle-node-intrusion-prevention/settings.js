@@ -22,7 +22,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         }
     },
     getAppSummary: function() {
-        return i18n._("Intrusion Prevention blocks hacking attempts before they reach internal servers and desktops.");
+        return i18n._("Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.");
     },
     gridRules: null,
     gridVariables: null,
