@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
     gridRules: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("Policy Manager enables administrators to fine tune network privileges. Policy Manager's intuitive GUI and virtual rack metaphor makes it easy for administrators to create network-access policies by username, time or day of the week.");
+        return i18n._("Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.");
     },
     initComponent: function() {
         this.buildPolicies();
@@ -77,9 +77,9 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
                 xtype: 'fieldset',
                 flex: 0,
                 title: i18n._('Note'),
-                html: i18n._("<b>Policy Manager</b> allows for the creation of multiple racks (also known as policies) and controls which sessions are processed by which racks.") + "<br/>" +
-                    i18n._("For each new session the <b>Rules</b> are evaluated in order and the <b>Target Rack</b> for the first matching rule is used to handle the session.") + "<br/>" +
-                    i18n._("If no rules match, the First Rack (Id:1) is used to handle the session.")
+                html: i18n._("<b>Policy Manager</b> allows for the creation of multiple policies (also known as virtual racks) and controls which sessions are processed by which policies.") + "<br/>" +
+                    i18n._("For each new session the <b>Rules</b> are evaluated in order and the <b>Target Policy</b> for the first matching rule is used to handle the session.") + "<br/>" +
+                    i18n._("If no rules match, the First Policy (Id:1) is used to handle the session.")
             }, this.gridPolicies = Ext.create('Ung.grid.Panel', {
                 flex: 1,
                 name: 'Policies',
@@ -234,7 +234,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
                 dataIndex: 'description',
                 flex:1
             }, {
-                header: i18n._("Target Rack"),
+                header: i18n._("Target Policy"),
                 dataIndex: 'targetPolicy',
                 renderer: this.policyRenderer,
                 resizable: false,
@@ -270,7 +270,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
                     name: "targetPolicy",
                     allowBlank: false,
                     dataIndex: "targetPolicy",
-                    fieldLabel: i18n._("Target Rack"),
+                    fieldLabel: i18n._("Target Policy"),
                     editable: false,
                     store: this.policyStore,
                     queryMode: 'local'
