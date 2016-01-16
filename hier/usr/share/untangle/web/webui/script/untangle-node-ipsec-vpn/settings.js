@@ -7,7 +7,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     pageLogFile: null,
     warningDisplayed: false,
     getAppSummary: function() {
-        return i18n._("IPsec allows to securely connect your network to others.");
+        return i18n._("IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, L2TP, and Xauth protocols.");
     },
     initComponent: function() {
         try {
