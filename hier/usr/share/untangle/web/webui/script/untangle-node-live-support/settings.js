@@ -3,7 +3,7 @@ Ext.define('Webui.untangle-node-live-support.settings', {
     hasReports: false,
     hasApply: false, // do not need save
     getAppSummary: function() {
-        return i18n._('Live Support for easy resolution of any technical issues.');
+        return i18n._('Live Support provides on-demand help for any technical issues.');
     },
     initComponent: function(container, position) {
         this.buildTabPanel([]);
