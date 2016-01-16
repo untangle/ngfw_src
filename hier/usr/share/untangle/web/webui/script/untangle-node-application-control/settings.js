@@ -7,7 +7,7 @@ Ext.define('Webui.untangle-node-application-control.settings', {
     gridEventLog: null,
     gridRuleEventLog: null,
     getAppSummary: function() {
-        return i18n._("Application Control detects many different types of network traffic, allowing each to be flagged and/or blocked.");
+        return i18n._("Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.");
     },
     initComponent: function() {
         this.nodeStats = this.getRpcNode().getStatistics();
