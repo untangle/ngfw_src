@@ -6,7 +6,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
     gridIgnoreRules: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("SSL Inspector allows for full decryption of HTTPS and SMTPS so that applications like Web Filter, Application Control and Virus Blocker can scan the traffic and apply their rules to it.");
+        return i18n._("SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.");
     },
     initComponent: function() {
         this.buildPanelConfiguration();
