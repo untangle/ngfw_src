@@ -1,7 +1,7 @@
 Ext.define('Webui.untangle-node-wan-balancer.settings', {
     extend:'Ung.NodeWin',
     getAppSummary: function() {
-        return i18n._("WAN Balancer improves network performance by spreading your traffic across multiple internet connections. Each WAN interface requires a dedicated network card in the Server.");
+        return i18n._("WAN Balancer spreads network traffic across multiple internet connections for better performance.");
     },
     initComponent: function() {
         this.generateSettings();
