@@ -49,7 +49,7 @@ Ext.define('Webui.untangle-node-application-control.settings', {
             {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: true},
             {name:"HTTP_CONTENT_LENGTH",displayName: i18n._("HTTP: Content Length"), type: "text", visible: true},
             {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false},
             {name:"APPLICATION_CONTROL_APPLICATION",displayName: i18n._("Application Control: Application"), type: "text", visible: true},
             {name:"APPLICATION_CONTROL_CATEGORY",displayName: i18n._("Application Control: Category"), type: "text", visible: true},
             {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: i18n._("Application Control: ProtoChain"), type: "text", visible: true},
