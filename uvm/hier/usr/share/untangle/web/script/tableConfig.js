@@ -4,6 +4,7 @@ Ext.define('Ung.TableConfig', {
     //Field width constants
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
+    macFieldWidth: 100,
     portFieldWidth: 70,
     hostnameFieldWidth: 120,
     uriFieldWidth: 200,
@@ -1830,6 +1831,46 @@ Ext.define('Ung.TableConfig', {
                     width: Ung.TableConfig.ipFieldWidth,
                     sortable: true,
                     dataIndex: 'address'
+                }, {
+                    header: i18n._("Key"),
+                    width: 150,
+                    sortable: true,
+                    dataIndex: 'key'
+                }, {
+                    header: i18n._("Value"),
+                    width: 150,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'value'
+                }]
+            },
+            device_table_updates: {
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'mac_address',
+                    type: 'string'
+                }, {
+                    name: 'key',
+                    type: 'string'
+                }, {
+                    name: 'value',
+                    type: 'string'
+                }],
+                columns: [{
+                    header: i18n._("Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: i18n._("MAC Address"),
+                    width: Ung.TableConfig.macFieldWidth,
+                    sortable: true,
+                    dataIndex: 'mac_address'
                 }, {
                     header: i18n._("Key"),
                     width: 150,

@@ -84,6 +84,7 @@ dict = {
     'uri' : i18n._('URI'),
     'msg_id' : i18n._('Message ID'),
     'subject' : i18n._('Subject'),
+    'mac_address' : i18n._('MAC Address'),
     'addr' : i18n._('Address'),
     'addr_name' : i18n._('Address Name'),
     'addr_kind' : i18n._('Address Kind'),

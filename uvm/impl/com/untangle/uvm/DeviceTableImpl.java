@@ -73,7 +73,8 @@ public class DeviceTableImpl implements DeviceTable
             newEntry = new DeviceTableEntry( macAddress );
             deviceTable.put( macAddress, newEntry );
             
-            /* FIXME - add new device event */
+            DeviceTableEvent event = new DeviceTableEvent( macAddress, "add", null );
+            UvmContextFactory.context().logEvent(event);
 
             saveDevices();
         }

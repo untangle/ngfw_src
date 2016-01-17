@@ -275,6 +275,14 @@ dict['host_table_updates'].update({
     'value' : 'The new value for the key',
 })
 
+dict['device_table_updates'] = copy.deepcopy(generic)
+dict['device_table_updates'].update({
+    'table_description' : 'This table stores Device Table metadata updates',
+    'mac_address' : 'The MAC address of the device',
+    'key' : 'The key being updated',
+    'value' : 'The new value for the key',
+})
+
 dict['quotas'] = copy.deepcopy(generic)
 dict['quotas'].update({
     'table_description' : 'This table stores Quota events',

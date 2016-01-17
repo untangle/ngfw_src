@@ -17,6 +17,7 @@ class UvmNode(Node):
         self.__build_penaltybox_table()
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
+        self.__build_device_table_updates_table()
         self.__build_alerts_events_table()
         self.__build_settings_changes_table()
 
@@ -27,6 +28,7 @@ class UvmNode(Node):
         sql_helper.clean_table("penaltybox", cutoff)
         sql_helper.clean_table("quotas", cutoff)
         sql_helper.clean_table("host_table_updates", cutoff)
+        sql_helper.clean_table("device_table_updates", cutoff)
         sql_helper.clean_table("alerts", cutoff)
 
     @sql_helper.print_timing
@@ -179,6 +181,14 @@ CREATE TABLE reports.host_table_updates (
         value text,
         time_stamp timestamp)""",[],["time_stamp"])
 
+    def __build_device_table_updates_table( self ):
+        sql_helper.create_table("""
+CREATE TABLE reports.device_table_updates (
+        mac_address text,
+        key text,
+        value text,
+        time_stamp timestamp)""",[],["time_stamp"])
+        
     def teardown(self):
         pass
 

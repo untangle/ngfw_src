@@ -24,6 +24,11 @@ Ext.define('Ung.reportsViewer', {
             leaf : true,
             icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png'
         }, {
+            text : i18n._('Device Viewer'),
+            category : 'Device Viewer',
+            leaf : true,
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png' //FIXME icon
+        }, {
             text : i18n._("Configuration"),
             leaf : false,
             expanded : true,
