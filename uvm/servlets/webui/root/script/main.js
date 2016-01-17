@@ -413,14 +413,21 @@ Ext.define("Ung.Main", {
     },
     loadDashboard: function() {
         this.dashboard = Ext.create('Ung.Main.dashboard', {
-            widgets: [{
-                type: 'GroupWidget',
-                cls: 'group-widget',
-                hasStats: true
-            }, {
-                type: 'Sessions',
-                cls: 'widget big-widget'
-            }]
+            widgets: [
+                // FIXME
+                // XXX
+                // commented out for alpha release
+                //
+                
+                // {
+                //     type: 'GroupWidget',
+                //     cls: 'group-widget',
+                //     hasStats: true
+                // }, {
+                //     type: 'Sessions',
+                //     cls: 'widget big-widget'
+                // }
+            ]
         });
         var dashboardPanel = this.viewport.down("#dashboardItems");
         dashboardPanel.add(this.dashboard.widgets);

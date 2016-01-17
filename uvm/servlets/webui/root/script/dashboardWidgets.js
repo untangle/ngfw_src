@@ -199,7 +199,6 @@ Ext.define('Ung.dashboard.Sessions', {
     }
 });
 
-
 Ext.define('Ung.dashboard.Devices', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Devices"),
@@ -227,7 +226,6 @@ Ext.define('Ung.dashboard.Devices', {
     }
 });
 
-
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
     width: 500,
@@ -248,7 +246,6 @@ Ext.define('Ung.dashboard.EventEntry', {
         
     }
 });
-
 
 Ext.define('Ung.dashboard.GroupWidget', {
     extend: 'Ung.dashboard.Widget',
