@@ -70,10 +70,11 @@ public class DeviceTableEntry implements Serializable, JSONString
     public String getHostname() { return this.hostname; }
     public void setHostname( String newValue )
     {
-
-        Matcher matcher = ipv4Pattern.matcher( newValue );
-        if (matcher.matches()) {
-            return; // if its an IP, ignore it
+        if ( newValue != null ) {
+            Matcher matcher = ipv4Pattern.matcher( newValue );
+            if (matcher.matches()) {
+                return; // if its an IP, ignore it
+            }
         }
 
         updateEvent("hostname",this.hostname,newValue);
