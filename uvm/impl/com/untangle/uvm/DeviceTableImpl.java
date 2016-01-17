@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Pulse;
 
 /**
  * DevicTable stores a known "devices" (MAC addresses) that have ever been seen.
@@ -25,6 +26,8 @@ public class DeviceTableImpl implements DeviceTable
 {
     private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
     private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
+
+    private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
     
     private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
     private static final Logger logger = Logger.getLogger(DeviceTableImpl.class);
@@ -32,6 +35,8 @@ public class DeviceTableImpl implements DeviceTable
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
     private HashMap<String,String> macVendorTable = new HashMap<String,String>();
 
+    private final Pulse saverPulse = new Pulse("device-table-saver", true, new DeviceTableSaver());
+    
     private volatile long lastSaveTime = 0;
     
     protected DeviceTableImpl()
@@ -43,6 +48,7 @@ public class DeviceTableImpl implements DeviceTable
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
 
+        saverPulse.start( PERIODIC_SAVE_DELAY );
     }
 
     public Map<String, DeviceTableEntry> getDeviceTable()
@@ -207,4 +213,13 @@ public class DeviceTableImpl implements DeviceTable
         t.start();
         return;
     }
+
+    private class DeviceTableSaver implements Runnable
+    {
+        public void run()
+        {
+            saveDevices();
+        }
+    }
+    
 }
