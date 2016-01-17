@@ -16,7 +16,7 @@
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
-    <script type="text/javascript" src="/ext6/ext-all-debug.js?s=?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext6/ext-all-debug.js?s=${buildStamp}"></script>
 </c:if>
 
     <script type="text/javascript" src="/ext6/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>

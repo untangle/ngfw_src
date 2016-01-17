@@ -120,6 +120,8 @@ public class HostTableEntry implements Serializable, JSONString
         updateEvent("hostname",this.hostname,newValue);
         this.hostname = newValue;
         updateAccessTime();
+
+        if (device != null) device.setHostname( newValue );
     }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
@@ -228,6 +230,8 @@ public class HostTableEntry implements Serializable, JSONString
         this.httpUserAgent = newValue;
         updateAccessTime();
         this.httpUserAgentSetDate = System.currentTimeMillis();
+
+        if (device != null) device.setHttpUserAgent( newValue );
     }
 
     public String getHttpUserAgentOs() { return this.httpUserAgentOs; }

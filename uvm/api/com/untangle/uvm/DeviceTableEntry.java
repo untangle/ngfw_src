@@ -5,6 +5,8 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -26,8 +28,13 @@ public class DeviceTableEntry implements Serializable, JSONString
     private String      macAddress;
     private String      macVendor = null;
     private String      deviceUsername = null;
+    private String      hostname = null;
+    private String      httpUserAgent = null;
     
     private long        lastSeenTime = 0;
+
+    private static final String IPV4_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+    private static Pattern ipv4Pattern = Pattern.compile( IPV4_PATTERN );
 
     /**
      * if logChanges is true, changes to this object will log events
@@ -60,6 +67,26 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.macVendor = newValue;
     }
 
+    public String getHostname() { return this.hostname; }
+    public void setHostname( String newValue )
+    {
+
+        Matcher matcher = ipv4Pattern.matcher( newValue );
+        if (matcher.matches()) {
+            return; // if its an IP, ignore it
+        }
+
+        updateEvent("hostname",this.hostname,newValue);
+        this.hostname = newValue;
+    }
+
+    public String getHttpUserAgent() { return this.httpUserAgent; }
+    public void setHttpUserAgent( String newValue )
+    {
+        updateEvent("httpUserAgent",String.valueOf(this.httpUserAgent),String.valueOf(newValue));
+        this.httpUserAgent = newValue;
+    }
+    
     public String getDeviceUsername() { return this.deviceUsername; }
     public void setDeviceUsername( String newValue )
     {

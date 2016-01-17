@@ -71,13 +71,21 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "macVendor",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostname",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "deviceUsername",
+                type: 'string'
+            },{
+                name: "httpUserAgent",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "lastSeenTimeDate",
                 mapping: "lastSeenTime",
                 convert: dateConvertFn
-            },{
-                name: "deviceUsername",
-                type: 'string'
             }],
             columns: [{
                 header: i18n._("MAC Address"),
@@ -94,6 +102,27 @@ Ext.define('Webui.config.deviceMonitor', {
                     type: 'string'
                 }
             }, {
+                header: i18n._("Hostname"),
+                dataIndex: "hostname",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Device Username"),
+                dataIndex: "deviceUsername",
+                width: 150,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: "HTTP" + " - " + i18n._("User Agent"),
+                dataIndex: "httpUserAgent",
+                width: 200,
+                filter: {
+                    type: 'string'
+                }
+            }, {
                 hidden: true,
                 header: i18n._("Last Seen Time"),
                 dataIndex: "lastSeenTimeDate",
@@ -104,13 +133,6 @@ Ext.define('Webui.config.deviceMonitor', {
                 },
                 filter: {
                     type: 'date'
-                }
-            }, {
-                header: i18n._("Device Username"),
-                dataIndex: "deviceUsername",
-                width: 150,
-                filter: {
-                    type: 'string'
                 }
             }]
         });

@@ -501,6 +501,14 @@ public class HostTableImpl implements HostTable
                 deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
 
             entry.setDevice( deviceEntry );
+
+            /**
+             * Restore known information from the device entry where able
+             */
+            if ( deviceEntry.getHostname() != null )
+                entry.setHostname( deviceEntry.getHostname() );
+            if ( deviceEntry.getHttpUserAgent() != null )
+                entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         }
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
