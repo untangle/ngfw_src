@@ -11,7 +11,7 @@ import java.util.LinkedList;
  */
 public interface DeviceTable
 {
-    public void addDevice( String macAddress );
+    public DeviceTableEntry addDevice( String macAddress );
 
     public Map<String, DeviceTableEntry> getDeviceTable();
 

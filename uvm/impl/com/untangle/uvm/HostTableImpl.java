@@ -492,16 +492,15 @@ public class HostTableImpl implements HostTable
         if ( macAddress != null && !("".equals(macAddress)) ) {
             entry.setMacAddress( macAddress );
 
-            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( macAddress );
-            if ( macVendor != null && !("".equals(macVendor)) )
-                entry.setMacVendor( macVendor );
-            
+            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
+
             /**
              * If this device has never been seen before, add it
              */
-            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
             if ( deviceEntry == null )
-                UvmContextFactory.context().deviceTable().addDevice( macAddress );
+                deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
+
+            entry.setDevice( deviceEntry );
         }
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();

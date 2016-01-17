@@ -23,10 +23,19 @@ public class DeviceTableEntry implements Serializable, JSONString
      * MAC address is all lower case
      * 11:00:aa:bb:cc:99
      */
-    private String macAddress;
+    private String      macAddress;
+    private String      macVendor = null;
+    private String      deviceUsername = null;
     
     private long        lastSeenTime = 0;
 
+    /**
+     * if logChanges is true, changes to this object will log events
+     * This exists so that we don't log events when instantiation from JSON happens
+     * After instantiation is complete, this is set to true and future changes are logged
+     */
+    private boolean     logChanges = false;
+    
     public DeviceTableEntry() {}
     public DeviceTableEntry( String macAddress )
     {
@@ -34,6 +43,8 @@ public class DeviceTableEntry implements Serializable, JSONString
         if ( tmp == null )
             throw new RuntimeException("Invalid MAC: " + macAddress );
         this.macAddress = tmp;
+
+        enableLogging(); //since this was instantiated by hand, enabling logging
     }
 
     public String getMacAddress() { return this.macAddress; }
@@ -42,6 +53,20 @@ public class DeviceTableEntry implements Serializable, JSONString
     public long getLastSeenTime() { return this.lastSeenTime; }
     public void setLastSeenTime( long newValue ) { this.lastSeenTime = newValue; }
 
+    public String getMacVendor() { return this.macVendor; }
+    public void setMacVendor( String newValue )
+    {
+        updateEvent("macVendor",this.macVendor,newValue);
+        this.macVendor = newValue;
+    }
+
+    public String getDeviceUsername() { return this.deviceUsername; }
+    public void setDeviceUsername( String newValue )
+    {
+        updateEvent("deviceUsername",this.deviceUsername,newValue);
+        this.deviceUsername = newValue;
+    }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -60,14 +85,31 @@ public class DeviceTableEntry implements Serializable, JSONString
         return tmp;
     }
     
-    private void updateLastSeenTime()
+    public void enableLogging()
+    {
+        this.logChanges = true;
+    }
+
+    public void updateLastSeenTime()
     {
         this.lastSeenTime = System.currentTimeMillis();
     }
 
     private void updateEvent( String key, String oldValue, String newValue )
     {
-        /* FIXME */
+        if ( !logChanges )
+            return;
+        if ( this.macAddress == null )
+            return;
+        if ( oldValue == null && newValue == null ) //no change
+            return;
+        if ( newValue == null ) 
+            newValue = "null";
+        if ( newValue.equals(oldValue) ) // no change
+            return;
+
+        DeviceTableEvent event = new DeviceTableEvent( this.macAddress, key, newValue );
+        UvmContextFactory.context().logEvent(event);
     }
     
 }

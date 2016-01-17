@@ -61,26 +61,38 @@ public class DeviceTableImpl implements DeviceTable
         return deviceTable.get( macAddress );
     }
 
-    public void addDevice( String macAddress )
+    public DeviceTableEntry addDevice( String macAddress )
     {
         DeviceTableEntry newEntry = getDevice( macAddress );
         if ( newEntry != null ) {
-            return; //already exists
+            return newEntry;
         }
 
         try {
             logger.info("Discovered new device: " + macAddress);
             newEntry = new DeviceTableEntry( macAddress );
+            newEntry.enableLogging();
+
+            newEntry.updateLastSeenTime();
+            
             deviceTable.put( macAddress, newEntry );
+
+            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( macAddress );
+            if ( macVendor != null && !("".equals(macVendor)) )
+                newEntry.setMacVendor( macVendor );
             
             DeviceTableEvent event = new DeviceTableEvent( macAddress, "add", null );
             UvmContextFactory.context().logEvent(event);
 
             saveDevices();
+
+            return newEntry;
         }
         catch (Exception e) {
             logger.warn("Failed to add new device: " + macAddress, e);
         }
+        
+        return null;
     }
     
     public String lookupMacVendor( String macAddress )
@@ -131,6 +143,18 @@ public class DeviceTableImpl implements DeviceTable
                 logger.info("Loaded  devices from file.   (no devices saved)");
             } else {
                 for ( DeviceTableEntry entry : savedEntries ) {
+
+                    entry.enableLogging(); //enable logging now that the object has been built
+                    
+                    /**
+                     * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
+                     */
+                    if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
+                        String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( entry.getMacAddress() );
+                        if ( macVendor != null && !("".equals(macVendor)) )
+                            entry.setMacVendor( macVendor );
+                    }
+
                     deviceTable.put( entry.getMacAddress(), entry );
                 }
                 logger.info("Loaded  devices from file.   (" + savedEntries.size() + " entries)");

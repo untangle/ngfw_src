@@ -47,6 +47,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "usernameAdConnector": "uad"+ii,
                         "captivePortalAuthenticated":(ii%2)==1,
                         "usernameCapture": "ucap"+(ii%50),
+                        "usernameDevice": "udev"+(ii%50),
                         "penaltyBoxed":(ii%2)==1,
                         "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
                         "penaltyBoxExitTime": d.getTime()+(ii*86400000),
@@ -156,6 +157,10 @@ Ext.define('Webui.config.hostMonitor', {
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "usernameCapture",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "usernameDevice",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
@@ -418,6 +423,14 @@ Ext.define('Webui.config.hostMonitor', {
                 hidden: true,
                 header: "OpenVPN" + " - " + i18n._("Username"),
                 dataIndex: "usernameOpenvpn",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            },{
+                hidden: true,
+                header: i18n._("Device Username"),
+                dataIndex: "usernameDevice",
                 width: 100,
                 filter: {
                     type: 'string'

@@ -67,11 +67,48 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "macAddress",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "macVendor",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            }, {
+                name: "lastSeenTimeDate",
+                mapping: "lastSeenTime",
+                convert: dateConvertFn
+            },{
+                name: "deviceUsername",
+                type: 'string'
             }],
             columns: [{
                 header: i18n._("MAC Address"),
                 dataIndex: "macAddress",
                 width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("MAC Vendor"),
+                dataIndex: "macVendor",
+                width: 150,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                hidden: true,
+                header: i18n._("Last Seen Time"),
+                dataIndex: "lastSeenTimeDate",
+                width: 150,
+                renderer: function(value, metaData, record) {
+                    var val=record.get("lastSeenTime");
+                    return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                },
+                filter: {
+                    type: 'date'
+                }
+            }, {
+                header: i18n._("Device Username"),
+                dataIndex: "deviceUsername",
+                width: 150,
                 filter: {
                     type: 'string'
                 }
