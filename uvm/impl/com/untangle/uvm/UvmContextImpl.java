@@ -852,8 +852,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         tomcatManager.writeWelcomeFile();
         tomcatManager.apacheReload();
         
-        logger.debug("postInit complete");
-
         synchronized (startupWaitLock) {
             state = UvmState.RUNNING;
             startupWaitLock.notifyAll();
