@@ -123,12 +123,7 @@ public class AlertRule implements JSONString, Serializable
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
-        try {
-            return jO.toString(4);
-        } catch (org.json.JSONException e) {
-            logger.warn("Failed to pretty print.",e);
-            return jO.toString();
-        }
+        return jO.toString();
     }
 
     public boolean isMatch( JSONObject obj )

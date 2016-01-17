@@ -70,7 +70,15 @@ public class AlertHandler
         String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
         String serverName = companyName + " " + I18nUtil.marktr("Server");
+        String jsonEvent;
 
+        try {
+            jsonEvent = event.toJSONObject().toString(4);
+        } catch (org.json.JSONException e) {
+            logger.warn("Failed to pretty print.",e);
+            jsonEvent =  event.toJSONObject().toString();
+        }
+        
         String subject = serverName + " " +
             I18nUtil.marktr("Alert!") +
             " [" + hostName + "] ";
@@ -80,7 +88,7 @@ public class AlertHandler
             rule.getDescription() + ":" + "\r\n" +
             event.toSummaryString() +
             "\r\n\r\n" +
-            event.toJSONObject().toString() + 
+            jsonEvent + 
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
