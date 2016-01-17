@@ -17,11 +17,17 @@ public class DeviceTableEvent extends LogEvent
     private String macAddress;
     private String key;
     private String value;
+
+    /**
+     * this is stored only so it will appear in the JSON serialiazed string in this event
+     */    
+    private DeviceTableEntry device;
     
     public DeviceTableEvent() { }
 
-    public DeviceTableEvent( String macAddress, String key, String value )
+    public DeviceTableEvent( DeviceTableEntry device, String macAddress, String key, String value )
     {
+        this.device = device;
         this.macAddress = macAddress;
         this.key = key;
         this.value = value;
@@ -35,6 +41,9 @@ public class DeviceTableEvent extends LogEvent
 
     public String getValue() { return value; }
     public void setValue( String newValue ) { this.value = newValue; }
+
+    public DeviceTableEntry getDevice() { return device; }
+    public void setDevice( DeviceTableEntry newValue ) { this.device = newValue; }
     
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception

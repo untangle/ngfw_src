@@ -81,7 +81,7 @@ public class DeviceTableImpl implements DeviceTable
             if ( macVendor != null && !("".equals(macVendor)) )
                 newEntry.setMacVendor( macVendor );
             
-            DeviceTableEvent event = new DeviceTableEvent( macAddress, "add", null );
+            DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null );
             UvmContextFactory.context().logEvent(event);
 
             saveDevices();

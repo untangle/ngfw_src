@@ -108,7 +108,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         if ( newValue.equals(oldValue) ) // no change
             return;
 
-        DeviceTableEvent event = new DeviceTableEvent( this.macAddress, key, newValue );
+        DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue );
         UvmContextFactory.context().logEvent(event);
     }
     
