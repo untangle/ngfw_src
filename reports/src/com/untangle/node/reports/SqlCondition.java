@@ -54,9 +54,11 @@ public class SqlCondition implements Serializable, JSONString
         case "<=":
         case "between":
         case "like":
-        case "in":
+        case "not like":
         case "is":
         case "is not":
+        case "in":
+        case "not in":
             break;
         default:
             throw new RuntimeException("Unknown SQL condition operator: " + newValue);
@@ -81,6 +83,9 @@ public class SqlCondition implements Serializable, JSONString
             return false;
         }
         if ("in".equalsIgnoreCase( getOperator() )) {
+            return false;
+        }
+        if ("not in".equalsIgnoreCase( getOperator() )) {
             return false;
         }
 
