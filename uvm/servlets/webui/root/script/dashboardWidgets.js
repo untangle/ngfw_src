@@ -205,10 +205,10 @@ Ext.define('Ung.dashboard.Server', {
             updateStats: function(stats) {
                 this.down('progress[name=disk]').setValue(1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace).toFixed(3));
 
-                var usedDisk = parseInt((stats.totalDiskSpace-stats.freeDiskSpace)/8/1048576);
+                var usedDisk = parseInt((stats.totalDiskSpace-stats.freeDiskSpace)/8/1048576,10);
                 var usedPercent = parseFloat((1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace)) * 100).toFixed(1);
 
-                var freeDisk = parseInt(stats.freeDiskSpace/8/1048576);
+                var freeDisk = parseInt(stats.freeDiskSpace/8/1048576,10);
                 //console.log(parseFloat(stats.freeDiskSpace/stats.totalDiskSpace));
                 this.down('displayfield[name=usedDisk]').setValue('<strong>' + usedDisk + ' MB</strong> used <em>(' + usedPercent + '%)</em>');
                 this.down('displayfield[name=freeDisk]').setValue('<strong>' + freeDisk + ' MB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
@@ -361,10 +361,10 @@ Ext.define('Ung.dashboard.Memory', {
             updateStats: function(stats) {
                 this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree/stats.MemTotal).toFixed(3));
 
-                var usedMemory = parseInt((stats.MemTotal-stats.MemFree)/8/1048576);
+                var usedMemory = parseInt((stats.MemTotal-stats.MemFree)/8/1048576,10);
                 var usedMemoryPercent = parseFloat((1 - parseFloat(stats.MemFree/stats.MemTotal)) * 100).toFixed(1);
 
-                var freeMemory = parseInt(stats.MemFree/8/1048576);
+                var freeMemory = parseInt(stats.MemFree/8/1048576,10);
 
                 this.down('displayfield[name=usedMemory]').setValue('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
                 this.down('displayfield[name=freeMemory]').setValue('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
@@ -416,10 +416,10 @@ Ext.define('Ung.dashboard.Memory', {
             updateStats: function(stats) {
                 this.down('progress[name=swap]').setValue(1 - parseFloat(stats.SwapFree/stats.SwapTotal).toFixed(3));
 
-                var usedSwap = parseInt((stats.SwapTotal-stats.SwapFree)/8/1048576);
+                var usedSwap = parseInt((stats.SwapTotal-stats.SwapFree)/8/1048576,10);
                 var usedSwapPercent = parseFloat((1 - parseFloat(stats.SwapFree/stats.SwapTotal)) * 100).toFixed(1);
 
-                var freeSwap = parseInt(stats.SwapFree/8/1048576);
+                var freeSwap = parseInt(stats.SwapFree/8/1048576,10);
 
 
                 this.down('component[name=usedSwap]').update('<strong>' + usedSwap + ' MB</strong> used <em>(' + usedSwapPercent + '%)</em>');
