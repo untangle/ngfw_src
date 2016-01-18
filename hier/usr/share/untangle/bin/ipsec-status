@@ -4,7 +4,7 @@
 # commands and capture the output as an array of bytes.  We then parse
 # the output into a list of dictionaries that we dump in JSON format
 # that can be read by the Java stuff.  Since the state and policy output
-# is very similar, there is a single IPsecStatusRecord that has all
+# is very similar, there is a single ConnectionStatusRecord that has all
 # of the fields across both record types.  We add the type field to each
 # record and only dump the fields that are relevant to each type.
 # The state output is different for established vs. broken tunnels.
@@ -212,7 +212,7 @@ for entry in state_array:
     else:
         print ","
 
-    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.node.ipsec.IPsecStatusRecord\" }" % (
+    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.node.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],
@@ -238,7 +238,7 @@ for entry in policy_array:
 
     print ","
 
-    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.node.ipsec.IPsecStatusRecord\" }" % (
+    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.node.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],
