@@ -371,6 +371,8 @@ img.icon-drag {
 
 
 .dashboard {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    padding: 10px;
 }
 
 .dashboard .x-autocontainer-innerCt {
@@ -381,7 +383,15 @@ img.icon-drag {
     display: inherit;
 }
 
-
+.dashboard .x-autocontainer-form-item, .dashboard .x-form-display-field-default {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    min-height: 18px;
+    margin-bottom: 0;
+}
+.dashboard .x-form-item-label-default {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    font-weight: 600;
+}
 
 
 
@@ -424,7 +434,7 @@ img.icon-drag {
 }
 
 .small-widget {
-    height: 160px !important;
+    /*height: 180px !important;*/
     flex: 45%;
     margin: 10px;
     padding: 0 !important;
@@ -432,9 +442,9 @@ img.icon-drag {
 
 .widget .x-panel-header {
     border: 0;
-    background: #67bd4a;
+    background: transparent;
     box-shadow: none;
-    height: 32px;
+    height: 40px;
     position: relative !important;
 }
 
@@ -453,17 +463,33 @@ img.icon-drag {
     height: auto !important;
 }
 
+.nopadding .x-panel-body-default {
+    padding: 0;
+}
+
 .widget .x-panel-header-title-default > .x-title-text-default {
     font-family: 'Source Sans Pro', sans-serif;
-    padding: 3px 2px 1px;
-    color: #FFF;
-    font-size: 16px;
-    font-weight: 100;
+    padding: 7px 5px;
+    color: #3DA8EB;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px #EEF1F5 solid;
 }
 
 .big-widget .x-tool {
     right: 0;
     left: auto;
+}
+
+.dashboard .x-progress-default {
+    border: 0;
+    border-radius: 10px;
+    background-color: #EEF1F5;
+}
+.dashboard .x-progress-bar {
+    background: #E1B505;
+    border-radius: 0 10px 10px 0;
 }
 
 @media (min-width: 956px) {

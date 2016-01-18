@@ -8,7 +8,7 @@ Ext.define('Ung.Main.dashboard', {
         }
     },
     updateFromStats: function(stats) {
-        //console.log(stats);
+        console.log(stats);
         for(var i=0; i < this.widgets.length; i++) {
             var widget = this.widgets[i];
             if (widget.hasStats) {
@@ -72,18 +72,45 @@ Ext.define('Ung.dashboard.Widget', {
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Information"),
-    height: 160,
     hasStats: true,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 100
     },
     items: [{
+        name: 'hostname',
+        fieldLabel: i18n._("Hostname")
+    },{
+        fieldLabel: i18n._("Model"),
+        value: 'unknown'
+    },
+        /*{
         fieldLabel: i18n._("Model"),
         statsProperty: 'cpuModel'
-    }, {
+    },*/ {
+        name: 'uptime',
         fieldLabel: i18n._("Uptime"),
-        statsProperty: 'uptime'
+        updateStats: function(stats) {
+            // display humab readable uptime
+            var numdays = Math.floor((stats.uptime % 31536000) / 86400);
+            var numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600);
+            var numminutes = Math.floor((((stats.uptime % 31536000) % 86400) % 3600) / 60);
+
+            var output = '';
+
+            if (numdays > 0) {
+                output += numdays + 'd ';
+            }
+
+            if (numhours > 0) {
+                output += numhours + 'h ';
+            }
+
+            if (numminutes > 0) {
+                output += numminutes + 'm';
+            }
+            this.setValue(output);
+        }
     }, {
         name: 'version',
         fieldLabel: i18n._("Version")
@@ -93,6 +120,7 @@ Ext.define('Ung.dashboard.Information', {
     }],
     afterRender: function() {
         this.callParent(arguments);
+        this.down('displayfield[name=hostname]').setValue(rpc.hostname);
         this.down('displayfield[name=version]').setValue(rpc.fullVersion);
     }
 });
@@ -101,72 +129,94 @@ Ext.define('Ung.dashboard.Server', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Server"),
     hasStats: true,
-    defaults: {
-        xtype: 'displayfield',
-        labelWidth: 150
-    },
     layout: {
-       type: 'vbox'
+        type: 'vbox',
     },
     items: [
         {
             xtype: 'panel',
-            layout: {
-                type: 'hbox',
-                align: 'stretch'
-            },
+            layout: 'hbox',
+            cls: 'nopadding',
             items: [
-                { html: i18n._("Memory"), width: 80},
                 {
-                    xtype: 'progress',
-                    name: 'memory',
-                    width: 200
+                    xtype: 'displayfield',
+                    fieldLabel: i18n._("CPU"),
+                    width: 60
                 },
-                { xtype: 'displayfield', name: 'memory_val', flex: 1}
+                {
+                    xtype: 'panel',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'displayfield',
+                            name: 'cpu',
+                            value: 'LOW'
+                        },
+                        {
+                            xtype: 'displayfield',
+                            name: 'cpuload'
+                        }
+                    ]
+                }
             ],
             updateStats: function(stats) {
-                this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree/stats.MemTotal).toFixed(3));
-                this.down('displayfield[name=memory_val]').setValue(parseFloat(stats.MemFree/(1024*1024)).toFixed(2) + 'Mb / ' + parseFloat(stats.MemTotal/(1024*1024)).toFixed(2) + 'Mb');
+                this.down('displayfield[name=cpuload]').setValue('<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load');
             }
         },
         {
             xtype: 'panel',
-            layout: {
-                type: 'hbox',
-                align: 'stretch'
-            },
+            layout: 'hbox',
+            cls: 'nopadding',
             items: [
-                { html: i18n._("Disk"), width: 80},
                 {
-                    xtype: 'progress',
-                    name: 'disk',
-                    width: 200
+                    xtype: 'displayfield',
+                    fieldLabel: i18n._("Disk"),
+                    width: 60
                 },
-                { xtype: 'displayfield', name: 'disk_val', flex: 1}
+                {
+                    xtype: 'panel',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'progress',
+                            name: 'disk',
+                            width: 200,
+                            style: {
+                                marginBottom: '7px'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield',
+                            name: 'usedDisk',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield',
+                            name: 'freeDisk',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        }
+                    ]
+                }
             ],
             updateStats: function(stats) {
                 this.down('progress[name=disk]').setValue(1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace).toFixed(3));
-                this.down('displayfield[name=disk_val]').setValue(parseFloat(stats.freeDiskSpace/(1024*1024)).toFixed(2) + 'Mb / ' + parseFloat(stats.totalDiskSpace/(1024*1024)).toFixed(2) + 'Mb');
+
+                var usedDisk = parseInt((stats.totalDiskSpace-stats.freeDiskSpace)/8/1048576);
+                var usedPercent = parseFloat((1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace)) * 100).toFixed(1);
+
+                var freeDisk = parseInt(stats.freeDiskSpace/8/1048576);
+                //console.log(parseFloat(stats.freeDiskSpace/stats.totalDiskSpace));
+                this.down('displayfield[name=usedDisk]').setValue('<strong>' + usedDisk + ' MB</strong> used <em>(' + usedPercent + '%)</em>');
+                this.down('displayfield[name=freeDisk]').setValue('<strong>' + freeDisk + ' MB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
             }
-        },
-        {
-            name: 'cpuCount',
-            fieldLabel: i18n._("CPU count")
-        }, {
-            name: 'cpuType',
-            fieldLabel: i18n._("CPU type")
-        }, {
-            name: 'architecture',
-            fieldLabel: i18n._("Architecture")
-        }, {
-            name: 'ethernetNIC',
-            fieldLabel: i18n._("Ethernet NIC")
-        }, {
-            name: 'wirelessNIC',
-            fieldLabel: i18n._("Wireless NIC")
-        }],
+        }
+    ],
     refresh: function () {
-        
+
     }
 });
 
@@ -226,6 +276,163 @@ Ext.define('Ung.dashboard.Devices', {
     }
 });
 
+Ext.define('Ung.dashboard.Hardware', {
+    extend: 'Ung.dashboard.Widget',
+    title: i18n._("Hardware"),
+    hasStats: true,
+    height: 160,
+    defaults: {
+        xtype: 'displayfield',
+        labelWidth: 100
+
+    },
+    items: [{
+        fieldLabel: i18n._("CPU Count"),
+        statsProperty: 'numCpus'
+    }, {
+        fieldLabel: i18n._("CPU Type"),
+        statsProperty: 'cpuModel'
+    },{
+        fieldLabel: i18n._("Architecture"),
+        statsProperty: 'architecture'
+    },{
+        fieldLabel: i18n._("Memory"),
+        updateStats: function(stats) {
+            this.setValue(Math.round(stats.MemTotal/8/1048576) + ' MB');
+        }
+    },{
+        fieldLabel: i18n._("Disk"),
+        updateStats: function(stats) {
+            this.setValue(Math.round(stats.totalDiskSpace/8/1048576) + ' MB');
+        }
+    }],
+    refresh: function () {
+
+    }
+});
+
+Ext.define('Ung.dashboard.Memory', {
+    extend: 'Ung.dashboard.Widget',
+    title: i18n._("Memory Resources"),
+    hasStats: true,
+    layout: {
+        type: 'vbox'
+    },
+    items: [
+        {
+            xtype: 'panel',
+            layout: 'hbox',
+            cls: 'nopadding',
+            items: [
+                {
+                    xtype: 'displayfield',
+                    fieldLabel: i18n._("Memory"),
+                    width: 60
+                },
+                {
+                    xtype: 'panel',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'progress',
+                            name: 'memory',
+                            width: 200,
+                            style: {
+                                marginBottom: '7px'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield',
+                            name: 'usedMemory',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        },
+                        {
+                            xtype: 'displayfield',
+                            name: 'freeMemory',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        }
+                    ]
+                }
+            ],
+            updateStats: function(stats) {
+                this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree/stats.MemTotal).toFixed(3));
+
+                var usedMemory = parseInt((stats.MemTotal-stats.MemFree)/8/1048576);
+                var usedMemoryPercent = parseFloat((1 - parseFloat(stats.MemFree/stats.MemTotal)) * 100).toFixed(1);
+
+                var freeMemory = parseInt(stats.MemFree/8/1048576);
+
+                this.down('displayfield[name=usedMemory]').setValue('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
+                this.down('displayfield[name=freeMemory]').setValue('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
+            }
+        },
+        {
+            xtype: 'container',
+            layout: 'hbox',
+            cls: 'nopadding',
+            items: [
+                {
+                    xtype: 'component',
+                    html: i18n._("Swap"),
+                    width: 60
+                },
+                {
+                    xtype: 'container',
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+
+                    items: [
+                        {
+                            xtype: 'progress',
+                            name: 'swap',
+                            width: 200,
+                            style: {
+                                marginBottom: '7px'
+                            }
+                        },
+                        {
+                            xtype: 'component',
+                            name: 'usedSwap',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        },
+                        {
+                            xtype: 'component',
+                            name: 'freeSwap',
+                            style: {
+                                minHeight: '18px'
+                            }
+                        }
+                    ]
+                }
+            ],
+            updateStats: function(stats) {
+                this.down('progress[name=swap]').setValue(1 - parseFloat(stats.SwapFree/stats.SwapTotal).toFixed(3));
+
+                var usedSwap = parseInt((stats.SwapTotal-stats.SwapFree)/8/1048576);
+                var usedSwapPercent = parseFloat((1 - parseFloat(stats.SwapFree/stats.SwapTotal)) * 100).toFixed(1);
+
+                var freeSwap = parseInt(stats.SwapFree/8/1048576);
+
+
+                this.down('component[name=usedSwap]').update('<strong>' + usedSwap + ' MB</strong> used <em>(' + usedSwapPercent + '%)</em>');
+                this.down('component[name=freeSwap]').update('<strong>' + freeSwap + ' MB</strong> free <em>(' + (100 - usedSwapPercent) + '%)</em>');
+            }
+        }
+    ],
+    refresh: function () {
+
+    }
+});
+
+
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
     width: 500,
@@ -253,15 +460,23 @@ Ext.define('Ung.dashboard.GroupWidget', {
     items: [
         Ext.create('Ung.dashboard.Information', {
             type: 'Information',
-            cls: 'widget small-widget'
-        }),
-        Ext.create('Ung.dashboard.Devices', {
-            type: 'Devices',
-            cls: 'widget small-widget'
+            cls: 'widget small-widget',
+            height: 180
         }),
         Ext.create('Ung.dashboard.Server', {
-            type: 'Devices',
-            cls: 'widget small-widget'
+            type: 'Server',
+            cls: 'widget small-widget',
+            height: 180
+        }),
+        Ext.create('Ung.dashboard.Hardware', {
+            type: 'Hardware',
+            cls: 'widget small-widget',
+            height: 212
+        }),
+        Ext.create('Ung.dashboard.Memory', {
+            type: 'Memory',
+            cls: 'widget small-widget',
+            height: 212
         })
     ],
     initComponent: function() {
@@ -282,15 +497,4 @@ Ext.define('Ung.dashboard.GroupWidget', {
             }
         });
     }
-});
-
-Ext.define('Ung.dashboard.SingleWidget', {
-    extend: 'Ung.dashboard.Widget',
-    header: false,
-    items: [
-        Ext.create('Ung.dashboard.Information', {
-            type: 'Information',
-            cls: 'widget small-widget'
-        })
-    ]
 });
