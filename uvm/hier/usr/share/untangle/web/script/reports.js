@@ -1257,7 +1257,7 @@ Ext.define('Ung.panel.Reports', {
                             displayField: "name",
                             queryMode: 'local',
                             value: "=",
-                            store: ["=", "!=", ">", "<", ">=", "<=", "like", "in", "is"]
+                            store: ["=", "!=", ">", "<", ">=", "<=", "like", "in", "is","is not"]
                         }, {
                             xtype: "textfield",
                             name: "value",
@@ -1713,7 +1713,7 @@ Ext.define("Ung.panel.ExtraConditions", {
                 queryMode: 'local',
                 value: data.operator,
                 disabled: Ext.isEmpty(data.column),
-                store: ["=", "!=", ">", "<", ">=", "<=", "like", "in", "is"],
+                store: ["=", "!=", ">", "<", ">=", "<=", "like", "in", "is","is not"],
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {
