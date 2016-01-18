@@ -36,26 +36,23 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Untangle";
     private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
 
+    public enum FILE_PARSE_TYPE {
+        QUOTED,
+        NON_QUOTED
+    }
+
+    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-node-branding-manager/root_certificate_installer";
+    private static final HashMap<FILE_PARSE_TYPE, String> ROOT_CA_INSTALLER_PARSE_FILE_NAMES;
+
     public enum REGEX_TYPE {
         COMPANY_NAME,
         COMPANY_URL
     }
-    private static final HashMap<REGEX_TYPE, Pattern> ROOT_CA_INSTALLER_IN_QUOTES_REGEXES;
-    private static final HashMap<REGEX_TYPE, Pattern> ROOT_CA_INSTALLER_NO_QUOTES_REGEXES;
-    private static final ArrayList<String> ROOT_CA_INSTALLER_PARSE_FILE_NAMES;
-    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-node-branding-manager/root_certificate_installer";
 
     static {
-        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES = new HashMap<REGEX_TYPE, Pattern>();
-        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES = new HashMap<REGEX_TYPE, Pattern>();
-        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(\".*)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*\")"));
-        ROOT_CA_INSTALLER_IN_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(\".*)http://.*.untangle.com(.*\")"));
-        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(.*)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*)", Pattern.CASE_INSENSITIVE));
-        ROOT_CA_INSTALLER_NO_QUOTES_REGEXES.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(.*)http://.*.untangle.com(.*)", Pattern.CASE_INSENSITIVE));
-
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new ArrayList<String>();
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.add(ROOT_CA_INSTALLER_DIRECTORY_NAME + "/installer.nsi");
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.add(ROOT_CA_INSTALLER_DIRECTORY_NAME + "/SoftwareLicense.txt");
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new HashMap<FILE_PARSE_TYPE,String>();
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/installer.nsi");
+        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.NON_QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/SoftwareLicense.txt");
     }
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -167,7 +164,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         this.settings = newSettings;
 
         setFileLogo(settings.binary_getLogo());
-        //createRootCaInstaller();
+        createRootCaInstaller();
     }
 
     @Override
@@ -310,20 +307,30 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         /*
          * Parse files replacing Untangle defaults
          */
-        for(String filename: ROOT_CA_INSTALLER_PARSE_FILE_NAMES){
+        String companyName = settings.getCompanyName();
+        String companyUrl = settings.getCompanyUrl();
+        for(Map.Entry<FILE_PARSE_TYPE, String> filenameSet : ROOT_CA_INSTALLER_PARSE_FILE_NAMES.entrySet()) {
+            String filename = filenameSet.getValue();
             File file = new File(filename);
             String name = file.getName();
-            String extension = name.substring(name.lastIndexOf(".") + 1);
+            HashMap<REGEX_TYPE, Pattern> regexes = new HashMap<REGEX_TYPE, Pattern>();
+            String quotedString = "";
+            if(filenameSet.getKey() == FILE_PARSE_TYPE.QUOTED){
+                quotedString = "\"";
+            }
+
+            /*
+             * Build up regexes to exclude our current names.  Otherwise, based on how we must process
+             * quoted strings, we'll loop when trying to forever replace instances of say, "Untangle" with
+             * "Untangle" or even superstrings like "Untangle A".
+             */
+            regexes.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(" + quotedString + ".*)(?!" + companyName + ")" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*" + quotedString + ")"));
+            regexes.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(" + quotedString + ".*)(?!" + companyUrl + ")" + "http://.*.untangle.com(.*" + quotedString + ")"));
+
             StringBuilder parsed = new StringBuilder();
             Matcher match = null;
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(filename));
-                HashMap<REGEX_TYPE, Pattern> regexes = null;
-                if(extension.equals("nsi")){
-                    regexes = ROOT_CA_INSTALLER_IN_QUOTES_REGEXES;
-                }else{
-                    regexes = ROOT_CA_INSTALLER_NO_QUOTES_REGEXES;
-                }
                 for (String line = reader.readLine(); null != line; line = reader.readLine()) {
                     /*
                      * When parsing the nsi file we only want to replace strings within quotes and
@@ -334,10 +341,10 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
                         while(match.find()){
                             switch(regex.getKey()){
                                 case COMPANY_NAME:
-                                    line = match.replaceAll("$1" + settings.getCompanyName() + "$2");
+                                    line = match.replaceAll("$1" + companyName + "$2");
                                     break;
                                 case COMPANY_URL:
-                                    line = match.replaceAll("$1" + settings.getCompanyUrl() + "$2");
+                                    line = match.replaceAll("$1" + companyUrl + "$2");
                                     break;
                             }
                             match = regex.getValue().matcher(line);
