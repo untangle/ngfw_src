@@ -54,12 +54,6 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             req.release();
             return;
         }
-
-        // if we see that the SSL inspector is working the session we release
-        if (req.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
-            req.release();
-            return;
-        }
     }
 
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
@@ -86,6 +80,16 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         ByteBuffer buff = data;
         LdapName ldapName = null;
         String domain = null;
+
+        // grab the SSL Inspector status attachment
+        Boolean sslInspectorStatus = (Boolean)sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+       
+        // if we find the attachment and it is true then we release the
+        // session now since we'll see the unencrypted traffic later
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true)) {
+            sess.release();
+            return;
+        }
 
         // grab any buffer that might have been attached last time thru here
         ByteBuffer hold = (ByteBuffer) sess.attachment();
