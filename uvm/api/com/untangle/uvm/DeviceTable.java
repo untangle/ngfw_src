@@ -17,8 +17,10 @@ public interface DeviceTable
 
     public LinkedList<DeviceTableEntry> getDevices();
 
-    public DeviceTableEntry getDevice( String macAddress );
+    public void setDevices( LinkedList<DeviceTableEntry> devices );
 
+    public DeviceTableEntry getDevice( String macAddress );
+    
     public String lookupMacVendor( String macAddress );
 
     public void saveDevices();

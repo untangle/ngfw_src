@@ -41,8 +41,6 @@ public class DeviceTableImpl implements DeviceTable
     
     protected DeviceTableImpl()
     {
-        this.deviceTable = new ConcurrentHashMap<String,DeviceTableEntry>();
-
         initializeMacVendorTable();
         
         this.lastSaveTime = System.currentTimeMillis();
@@ -60,6 +58,19 @@ public class DeviceTableImpl implements DeviceTable
     {
         LinkedList<DeviceTableEntry> list = new LinkedList<DeviceTableEntry>( deviceTable.values() );
         return list;
+    }
+
+    public void setDevices( LinkedList<DeviceTableEntry> devices )
+    {
+        logger.info("Saving new device list (" + devices.size() + " entries)");
+        this.deviceTable = new ConcurrentHashMap<String,DeviceTableEntry>();
+
+        if ( devices != null ) {
+            for ( DeviceTableEntry entry : devices ) {
+                deviceTable.put( entry.getMacAddress(), entry );
+            }
+        }
+        
     }
     
     public DeviceTableEntry getDevice( String macAddress )
@@ -143,6 +154,8 @@ public class DeviceTableImpl implements DeviceTable
     private void loadSavedDevices()
     {
         try {
+            this.deviceTable = new ConcurrentHashMap<String,DeviceTableEntry>();
+
             logger.info("Loading devices from file...");
             LinkedList<DeviceTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load( LinkedList.class, DEVICES_SAVE_FILENAME );
             if ( savedEntries == null ) {
