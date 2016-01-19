@@ -59,6 +59,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         else
             session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER, manager);
 
+        // attach something to let everyone else know we are working the session 
+        session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.TRUE);
+        
         // set the server read buffer size and limit really large to deal
         // with huge certs that contain lots of subject alt names
         // such as cert returned from google.co.nz
@@ -303,6 +306,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logger.debug("RULE MATCH EVENT = " + logevt.toString());
             node.incrementMetric(SslInspectorApp.STAT_IGNORED);
 
+            // let everyone else know that we are ignoring the session
+            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
+            
             // release the session on both sides and send the original
             // message received from the server to the client
             shutdownOtherSide(session, false);
@@ -527,6 +533,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 node.logEvent(logevt);
                 node.incrementMetric(SslInspectorApp.STAT_IGNORED);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
+
+                // let everyone else know that we are ignoring the session
+                session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
 
                 // release the session in the casing on the other side
                 shutdownOtherSide(session, false);
