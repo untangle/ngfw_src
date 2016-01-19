@@ -8,6 +8,7 @@ Ext.define('Ung.dashboard', {
         }
     },
     updateFromStats: function(stats) {
+        //console.log(stats);
         for(var i=0; i < this.widgets.length; i++) {
             var widget = this.widgets[i];
             if (widget.hasStats) {
@@ -21,7 +22,7 @@ Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
     hidden: false,
-    //closable: true,
+    /*
     tools: [{
         type:'refresh',
         callback: function() {
@@ -29,6 +30,7 @@ Ext.define('Ung.dashboard.Widget', {
         },
         scope: this
     }],
+    */
     //padding: '5 0 0 5',
     //bodyPadding: 5,
     initComponent: function() {
@@ -145,27 +147,42 @@ Ext.define('Ung.dashboard.Server', {
                 {
                     xtype: 'container',
                     layout: 'vbox',
-                    margin: '3px 0 5px 0',
                     items: [
                         {
                             xtype: 'component',
                             name: 'cpu',
-                            html: 'LOW'
+                            padding: '3px 0'
                         },
                         {
                             xtype: 'component',
-                            name: 'cpuload'
+                            name: 'cpuload',
+                            padding: '3px 0'
                         }
                     ]
                 }
             ],
             updateStats: function(stats) {
+                var oneMinuteLoadAvg = stats.oneMinuteLoadAvg;
+                var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus;
+                var loadText = '<font color="#55BA47">' + i18n._('LOW') + '</font>';
+                if (oneMinuteLoadAvgAdjusted > 1.0) {
+                    loadText = '<font color="orange">' + i18n._('MEDIUM') + '</font>';
+                }
+                if (oneMinuteLoadAvgAdjusted > 4.0) {
+                    loadText = '<font color="red">' + i18n._('HIGH') + '</font>';
+                }
+
+                this.down('component[name=cpu]').update(loadText);
                 this.down('component[name=cpuload]').update('<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load');
+
             }
         },
         {
             xtype: 'container',
-            layout: 'hbox',
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
             cls: 'nopadding',
             items: [
                 {
@@ -176,6 +193,7 @@ Ext.define('Ung.dashboard.Server', {
                 {
                     xtype: 'container',
                     layout: 'vbox',
+                    flex: 1,
                     items: [
                         {
                             xtype: 'progress',
@@ -199,18 +217,15 @@ Ext.define('Ung.dashboard.Server', {
             updateStats: function(stats) {
                 this.down('progress[name=disk]').setValue(1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace).toFixed(3));
 
-                var usedDisk = parseInt((stats.totalDiskSpace-stats.freeDiskSpace)/8/1048576,10);
+                var usedDisk = Math.round((stats.totalDiskSpace-stats.freeDiskSpace)/10000000)/100;
                 var usedPercent = parseFloat((1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace)) * 100).toFixed(1);
 
-                var freeDisk = parseInt(stats.freeDiskSpace/8/1048576,10);
-                this.down('component[name=usedDisk]').update('<strong>' + usedDisk + ' MB</strong> used <em>(' + usedPercent + '%)</em>');
-                this.down('component[name=freeDisk]').update('<strong>' + freeDisk + ' MB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
+                var freeDisk = Math.round(stats.freeDiskSpace/10000000)/100;
+                this.down('component[name=usedDisk]').update('<strong>' + usedDisk + ' GB</strong> used <em>(' + usedPercent + '%)</em>');
+                this.down('component[name=freeDisk]').update('<strong>' + freeDisk + ' GB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
             }
         }
-    ],
-    refresh: function () {
-
-    }
+    ]
 });
 
 Ext.define('Ung.dashboard.Sessions', {
@@ -221,25 +236,7 @@ Ext.define('Ung.dashboard.Sessions', {
         labelWidth: 150
             
     },
-    items: [{
-        name: 'totalSessions',
-        fieldLabel: i18n._("Total Sessions")
-    }, {
-        name: 'scannedSessions',
-        fieldLabel: i18n._("Scanned Sessions")
-    }, {
-        name: 'scannedTCPSessions',
-        fieldLabel: i18n._("Scanned TCP Sessions")
-    }, {
-        name: 'scannedUDPSessions',
-        fieldLabel: i18n._("Scanned UDP Sessions")
-    }, {
-        name: 'bypassedSessions',
-        fieldLabel: i18n._("Bypasswd Sessions")
-    }],
-    refresh: function () {
-        
-    }
+    items: []
 });
 
 Ext.define('Ung.dashboard.Devices', {
@@ -290,12 +287,12 @@ Ext.define('Ung.dashboard.Hardware', {
     },{
         fieldLabel: i18n._("Memory"),
         updateStats: function(stats) {
-            this.setValue(Math.round(stats.MemTotal/8/1048576) + ' MB');
+            this.setValue(Ung.Util.bytesToMBs(stats.MemTotal) + ' MB');
         }
     },{
         fieldLabel: i18n._("Disk"),
         updateStats: function(stats) {
-            this.setValue(Math.round(stats.totalDiskSpace/8/1048576) + ' MB');
+            this.setValue(Math.round(stats.totalDiskSpace/10000000)/100 + ' GB');
         }
     }],
     refresh: function () {
@@ -353,10 +350,10 @@ Ext.define('Ung.dashboard.Memory', {
             updateStats: function(stats) {
                 this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree/stats.MemTotal).toFixed(3));
 
-                var usedMemory = parseInt((stats.MemTotal-stats.MemFree)/8/1048576,10);
+                var usedMemory = Ung.Util.bytesToMBs(stats.MemTotal-stats.MemFree);
                 var usedMemoryPercent = parseFloat((1 - parseFloat(stats.MemFree/stats.MemTotal)) * 100).toFixed(1);
 
-                var freeMemory = parseInt(stats.MemFree/8/1048576,10);
+                var freeMemory = Ung.Util.bytesToMBs(stats.MemFree);
 
                 this.down('component[name=usedMemory]').update('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
                 this.down('component[name=freeMemory]').update('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
@@ -369,7 +366,7 @@ Ext.define('Ung.dashboard.Memory', {
             items: [
                 {
                     xtype: 'displayfield',
-                    html: i18n._("Swap"),
+                    fieldLabel: i18n._("Swap"),
                     width: 60
                 },
                 {
@@ -408,11 +405,10 @@ Ext.define('Ung.dashboard.Memory', {
             updateStats: function(stats) {
                 this.down('progress[name=swap]').setValue(1 - parseFloat(stats.SwapFree/stats.SwapTotal).toFixed(3));
 
-                var usedSwap = parseInt((stats.SwapTotal-stats.SwapFree)/8/1048576,10);
+                var usedSwap = Ung.Util.bytesToMBs(stats.SwapTotal-stats.SwapFree);
                 var usedSwapPercent = parseFloat((1 - parseFloat(stats.SwapFree/stats.SwapTotal)) * 100).toFixed(1);
 
-                var freeSwap = parseInt(stats.SwapFree/8/1048576,10);
-
+                var freeSwap = Ung.Util.bytesToMBs(stats.SwapFree);
 
                 this.down('component[name=usedSwap]').update('<strong>' + usedSwap + ' MB</strong> used <em>(' + usedSwapPercent + '%)</em>');
                 this.down('component[name=freeSwap]').update('<strong>' + freeSwap + ' MB</strong> free <em>(' + (100 - usedSwapPercent) + '%)</em>');
@@ -423,7 +419,6 @@ Ext.define('Ung.dashboard.Memory', {
 
     }
 });
-
 
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',

@@ -444,7 +444,6 @@ img.icon-drag {
     border: 0;
     background: transparent;
     box-shadow: none;
-    height: 40px;
     position: relative !important;
 }
 
@@ -469,12 +468,14 @@ img.icon-drag {
 
 .widget .x-panel-header-title-default > .x-title-text-default {
     font-family: 'Source Sans Pro', sans-serif;
-    padding: 7px 5px;
     color: #3DA8EB;
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 600;
     border-bottom: 1px #EEF1F5 solid;
+    margin: 5px;
+    display: block;
+    padding: 5px 0 10px 0;
 }
 
 .big-widget .x-tool {
@@ -512,5 +513,6 @@ img.icon-drag {
     }
     .big-widget {
         flex: 1;
+        height: initial !important;
     }
 }
