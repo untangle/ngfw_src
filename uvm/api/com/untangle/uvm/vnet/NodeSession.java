@@ -168,6 +168,7 @@ public interface NodeSession extends SessionTuple
     public final String KEY_SSL_INSPECTOR_ISSUER_DN = "ssl-issuer-dn"; /* String */
     public final String KEY_SSL_INSPECTOR_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
     public final String KEY_SSL_INSPECTOR_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
+    public final String KEY_SSL_INSPECTOR_SESSION_INSPECT = "ssl-session-inspect"; /* Boolean */
 
     public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
     public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */
