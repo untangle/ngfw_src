@@ -1,4 +1,4 @@
-Ext.define('Ung.Main.dashboard', {
+Ext.define('Ung.dashboard', {
     constructor: function(config) {
         var widget;
         this.widgets = [];
@@ -8,7 +8,6 @@ Ext.define('Ung.Main.dashboard', {
         }
     },
     updateFromStats: function(stats) {
-        console.log(stats);
         for(var i=0; i < this.widgets.length; i++) {
             var widget = this.widgets[i];
             if (widget.hasStats) {
@@ -134,7 +133,7 @@ Ext.define('Ung.dashboard.Server', {
     },
     items: [
         {
-            xtype: 'panel',
+            xtype: 'container',
             layout: 'hbox',
             cls: 'nopadding',
             items: [
@@ -144,27 +143,28 @@ Ext.define('Ung.dashboard.Server', {
                     width: 60
                 },
                 {
-                    xtype: 'panel',
+                    xtype: 'container',
                     layout: 'vbox',
+                    margin: '3px 0 5px 0',
                     items: [
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'cpu',
-                            value: 'LOW'
+                            html: 'LOW'
                         },
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'cpuload'
                         }
                     ]
                 }
             ],
             updateStats: function(stats) {
-                this.down('displayfield[name=cpuload]').setValue('<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load');
+                this.down('component[name=cpuload]').update('<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load');
             }
         },
         {
-            xtype: 'panel',
+            xtype: 'container',
             layout: 'hbox',
             cls: 'nopadding',
             items: [
@@ -174,30 +174,24 @@ Ext.define('Ung.dashboard.Server', {
                     width: 60
                 },
                 {
-                    xtype: 'panel',
+                    xtype: 'container',
                     layout: 'vbox',
                     items: [
                         {
                             xtype: 'progress',
                             name: 'disk',
                             width: 200,
-                            style: {
-                                marginBottom: '7px'
-                            }
+                            margin: '3px 0'
                         },
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'usedDisk',
-                            style: {
-                                minHeight: '18px'
-                            }
+                            padding: '3px 0'
                         },
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'freeDisk',
-                            style: {
-                                minHeight: '18px'
-                            }
+                            padding: '3px 0'
                         }
                     ]
                 }
@@ -209,9 +203,8 @@ Ext.define('Ung.dashboard.Server', {
                 var usedPercent = parseFloat((1 - parseFloat(stats.freeDiskSpace/stats.totalDiskSpace)) * 100).toFixed(1);
 
                 var freeDisk = parseInt(stats.freeDiskSpace/8/1048576,10);
-                //console.log(parseFloat(stats.freeDiskSpace/stats.totalDiskSpace));
-                this.down('displayfield[name=usedDisk]').setValue('<strong>' + usedDisk + ' MB</strong> used <em>(' + usedPercent + '%)</em>');
-                this.down('displayfield[name=freeDisk]').setValue('<strong>' + freeDisk + ' MB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
+                this.down('component[name=usedDisk]').update('<strong>' + usedDisk + ' MB</strong> used <em>(' + usedPercent + '%)</em>');
+                this.down('component[name=freeDisk]').update('<strong>' + freeDisk + ' MB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
             }
         }
     ],
@@ -284,7 +277,6 @@ Ext.define('Ung.dashboard.Hardware', {
     defaults: {
         xtype: 'displayfield',
         labelWidth: 100
-
     },
     items: [{
         fieldLabel: i18n._("CPU Count"),
@@ -320,7 +312,7 @@ Ext.define('Ung.dashboard.Memory', {
     },
     items: [
         {
-            xtype: 'panel',
+            xtype: 'container',
             layout: 'hbox',
             cls: 'nopadding',
             items: [
@@ -330,7 +322,7 @@ Ext.define('Ung.dashboard.Memory', {
                     width: 60
                 },
                 {
-                    xtype: 'panel',
+                    xtype: 'container',
                     layout: 'vbox',
                     items: [
                         {
@@ -342,14 +334,14 @@ Ext.define('Ung.dashboard.Memory', {
                             }
                         },
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'usedMemory',
                             style: {
                                 minHeight: '18px'
                             }
                         },
                         {
-                            xtype: 'displayfield',
+                            xtype: 'component',
                             name: 'freeMemory',
                             style: {
                                 minHeight: '18px'
@@ -366,8 +358,8 @@ Ext.define('Ung.dashboard.Memory', {
 
                 var freeMemory = parseInt(stats.MemFree/8/1048576,10);
 
-                this.down('displayfield[name=usedMemory]').setValue('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
-                this.down('displayfield[name=freeMemory]').setValue('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
+                this.down('component[name=usedMemory]').update('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
+                this.down('component[name=freeMemory]').update('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
             }
         },
         {
@@ -376,7 +368,7 @@ Ext.define('Ung.dashboard.Memory', {
             cls: 'nopadding',
             items: [
                 {
-                    xtype: 'component',
+                    xtype: 'displayfield',
                     html: i18n._("Swap"),
                     width: 60
                 },

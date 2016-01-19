@@ -189,6 +189,7 @@ Ext.define("Ung.Main", {
                             minWidth: 120,
                             scale: 'large',
                             cls: 'action-button',
+                            hidden: true,
                             text : i18n._( "Add Widget" ),
                             handler: function() {
                             },
@@ -412,22 +413,22 @@ Ext.define("Ung.Main", {
         }; 
     },
     loadDashboard: function() {
-        this.dashboard = Ext.create('Ung.Main.dashboard', {
-            widgets: [
-                // FIXME
-                // XXX
-                // commented out for alpha release
-                //
-                
-                // {
-                //     type: 'GroupWidget',
-                //     cls: 'group-widget',
-                //     hasStats: true
-                // }, {
-                //     type: 'Sessions',
-                //     cls: 'widget big-widget'
-                // }
-            ]
+        var widgets = [
+            {
+                type: 'GroupWidget',
+                cls: 'group-widget',
+                hasStats: true
+            }, {
+                type: 'Sessions',
+                cls: 'widget big-widget'
+            }
+        ];
+
+        // uncomment this for alpha release
+        widgets = [];
+
+        this.dashboard = Ext.create('Ung.dashboard', {
+            widgets: widgets
         });
         var dashboardPanel = this.viewport.down("#dashboardItems");
         dashboardPanel.add(this.dashboard.widgets);
