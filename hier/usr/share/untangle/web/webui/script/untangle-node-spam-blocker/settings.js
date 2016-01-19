@@ -4,7 +4,7 @@ Ext.define('Webui.untangle-node-spam-blocker.settings', {
     gridEventLog: null,
     gridDnsblEventLog: null,
     getAppSummary: function() {
-        return i18n._("Spam Blocker Lite detects, blocks, and quarantines spam before it reaches users' mailboxes.");
+        return i18n._("Spam Blocker detects, blocks, and quarantines spam before it reaches users' mailboxes.");
     },
     initComponent: function() {
         try {
