@@ -1030,7 +1030,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
                 this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
                 this.down('numberfield[dataIndex=thresholdTimeframeSec]').setDisabled(!thresholdEnabled);
-                this.down('textfield[dataIndex=thresholdGroupingField]').setDisabled(!thresholdEnabled);            }
+                this.down('textfield[dataIndex=thresholdGroupingField]').setDisabled(!thresholdEnabled);
+            }
         }));
     },
     beforeSave: function(isApply,handler) {

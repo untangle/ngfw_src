@@ -202,8 +202,7 @@ Ext.define("Ung.Main", {
                     }, {
                         xtype: 'container',
                         itemId: 'dashboardItems',
-                        cls: 'dashboard',
-                        //layout: 'card'
+                        cls: 'dashboard'
                     }]
                 }, {
                     xtype: 'container',
