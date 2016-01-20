@@ -460,6 +460,8 @@ img.icon-drag {
     padding: 5px 10px;
     overflow-y: auto;
     height: auto !important;
+    border: 0;
+    position: static;
 }
 
 .nopadding .x-panel-body-default {
@@ -514,5 +516,70 @@ img.icon-drag {
     .big-widget {
         flex: 1;
         height: initial !important;
+    }
+}
+
+.dashboard .ellipsis .x-form-display-field-default {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* new styles */
+
+.grid-cell {
+
+}
+
+.grid-cell.small-1, .grid-cell.small-2 {
+    float: left;
+    width: 16.66%;
+}
+
+.grid-cell.small-2 .x-autocontainer-innerCt {
+    flex-direction: column;
+}
+
+.grid-cell.small-3, .grid-cell.small-4, .grid-cell.big {
+    float: left;
+    width: 33.33%;
+}
+
+@media (min-width: 320px) {
+    .grid-cell.small-1, .grid-cell.small-2 {
+        width: 100%;
+    }
+    .grid-cell.small-3, .grid-cell.small-4, .grid-cell.big {
+        width: 100%;
+    }
+}
+
+
+@media (min-width: 780px) {
+    .grid-cell.small-1, .grid-cell.small-2 {
+        width: 100%;
+    }
+    .grid-cell.small-3, .grid-cell.small-4, .grid-cell.big {
+        width: 100%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .grid-cell.small-1, .grid-cell.small-2 {
+        width: 50%;
+    }
+    .grid-cell.small-3, .grid-cell.small-4, .grid-cell.big {
+        width: 50%;
+    }
+}
+
+@media (min-width: 1500px) {
+    .grid-cell.small-1, .grid-cell.small-2 {
+        width: 33.33%;
+    }
+    .grid-cell.small-3, .grid-cell.small-4, .grid-cell.big {
+        width: 33.33%;
     }
 }

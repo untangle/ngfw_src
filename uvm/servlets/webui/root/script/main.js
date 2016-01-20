@@ -413,14 +413,13 @@ Ext.define("Ung.Main", {
     },
     loadDashboard: function() {
         var widgets = [
-            {
-                type: 'GroupWidget',
-                cls: 'group-widget',
-                hasStats: true
-            }, {
-                type: 'Sessions',
-                cls: 'widget big-widget'
-            }
+            { type: 'Information' },
+            { type: 'Server' },
+            { type: 'Information' },
+            { type: 'Hardware' },
+            { type: 'Sessions' },
+            { type: 'Memory' },
+            { type: 'Hardware' }
         ];
 
         // uncomment this for alpha release

@@ -1,10 +1,44 @@
 Ext.define('Ung.dashboard', {
-    constructor: function(config) {
-        var widget;
+    constructor: function (config) {
         this.widgets = [];
-        for(var i=0; i < config.widgets.length; i++) {
-            widget = config.widgets[i];
-            this.widgets.push(Ext.create('Ung.dashboard.' + widget.type, widget));
+
+        var widgetsList = [];
+        for (var i=0; i < config.widgets.length; i++) {
+            widgetsList.push(Ext.create('Ung.dashboard.' + config.widgets[i].type));
+        }
+
+        var gridList = [];
+
+        for(var j=0; j < widgetsList.length; j++) {
+            if (gridList.length > 0) {
+                var grid = gridList[gridList.length-1];
+
+                if (grid.type === 'small' && widgetsList[j].displayMode === 'small') {
+                    if (grid.items.length < 4) {
+                        grid.items.push(widgetsList[j]);
+                    } else {
+                        gridList.push({type: 'small', items: [widgetsList[j]]});
+                    }
+                } else {
+                    gridList.push({type: widgetsList[j].displayMode, items: [widgetsList[j]]})
+                }
+
+            } else {
+                var grid = {type: widgetsList[j].displayMode, items: [widgetsList[j]]};
+                gridList.push(grid);
+            }
+        }
+
+        for (var k=0; k < gridList.length; k++) {
+            var gridEl = Ext.create('Ung.dashboard.GridWrapper');
+
+            if (gridList[k].type === 'small') {
+                gridEl.cls = 'grid-cell small-' + gridList[k].items.length;
+            } else {
+                gridEl.cls = 'grid-cell big';
+            }
+            gridEl.add(gridList[k].items);
+            this.widgets.push(gridEl);
         }
     },
     updateFromStats: function(stats) {
@@ -15,8 +49,10 @@ Ext.define('Ung.dashboard', {
                 widget.updateFromStats(stats);
             }
         }
-    }
+    },
+    items: []
 });
+
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
@@ -73,7 +109,9 @@ Ext.define('Ung.dashboard.Widget', {
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Information"),
+    displayMode: 'small',
     hasStats: true,
+    height: 190,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 100
@@ -129,6 +167,8 @@ Ext.define('Ung.dashboard.Information', {
 Ext.define('Ung.dashboard.Server', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Server"),
+    displayMode: 'small',
+    height: 190,
     hasStats: true,
     layout: {
         type: 'vbox',
@@ -198,7 +238,7 @@ Ext.define('Ung.dashboard.Server', {
                         {
                             xtype: 'progress',
                             name: 'disk',
-                            width: 200,
+                            width: 160,
                             margin: '3px 0'
                         },
                         {
@@ -231,6 +271,8 @@ Ext.define('Ung.dashboard.Server', {
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Sessions"),
+    displayMode: 'big',
+    height: 400,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
@@ -242,7 +284,7 @@ Ext.define('Ung.dashboard.Sessions', {
 Ext.define('Ung.dashboard.Devices', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Devices"),
-    height: 160,
+    height: 190,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
@@ -269,8 +311,9 @@ Ext.define('Ung.dashboard.Devices', {
 Ext.define('Ung.dashboard.Hardware', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Hardware"),
+    displayMode: 'small',
     hasStats: true,
-    height: 160,
+    height: 190,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 100
@@ -280,7 +323,8 @@ Ext.define('Ung.dashboard.Hardware', {
         statsProperty: 'numCpus'
     }, {
         fieldLabel: i18n._("CPU Type"),
-        statsProperty: 'cpuModel'
+        statsProperty: 'cpuModel',
+        cls: 'ellipsis'
     },{
         fieldLabel: i18n._("Architecture"),
         statsProperty: 'architecture'
@@ -303,6 +347,8 @@ Ext.define('Ung.dashboard.Hardware', {
 Ext.define('Ung.dashboard.Memory', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Memory Resources"),
+    displayMode: 'small',
+    height: 190,
     hasStats: true,
     layout: {
         type: 'vbox'
@@ -325,7 +371,7 @@ Ext.define('Ung.dashboard.Memory', {
                         {
                             xtype: 'progress',
                             name: 'memory',
-                            width: 200,
+                            width: 160,
                             style: {
                                 marginBottom: '7px'
                             }
@@ -380,7 +426,7 @@ Ext.define('Ung.dashboard.Memory', {
                         {
                             xtype: 'progress',
                             name: 'swap',
-                            width: 200,
+                            width: 160,
                             style: {
                                 marginBottom: '7px'
                             }
@@ -441,6 +487,20 @@ Ext.define('Ung.dashboard.EventEntry', {
     }
 });
 
+Ext.define('Ung.dashboard.GridWrapper', {
+    extend: 'Ext.container.Container',
+    hasStats: true,
+    updateFromStats: function(stats) {
+        this.items.each(function(item) {
+            if (item.hasStats) {
+                item.updateFromStats(stats);
+            }
+        });
+    }
+});
+
+
+
 Ext.define('Ung.dashboard.GroupWidget', {
     extend: 'Ung.dashboard.Widget',
     header: false,
@@ -485,3 +545,4 @@ Ext.define('Ung.dashboard.GroupWidget', {
         });
     }
 });
+
