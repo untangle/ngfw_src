@@ -115,9 +115,9 @@ public class IpsecVpnTimer extends TimerTask
                     long hval = (watcher.activeCounter / 60);
                     long mval = (watcher.activeCounter % 60);
                     logger.warn("Attempting restart for inactive tunnel " + watcher.tunnelName + " (UPTIME = " + Long.toString(hval) + " hours " + Long.toString(mval) + " minutes)");
-                    UvmContextFactory.context().execManager().exec("ipsec down " + watcher.tunnelName);
+                    IpsecVpnApp.execManager().exec("ipsec down " + watcher.tunnelName);
                     // run the up command in the background as it can block if the other side is unreachable
-                    UvmContextFactory.context().execManager().exec("nohup ipsec up " + watcher.tunnelName + " >/dev/null 2>&1 &");
+                    IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.tunnelName + " >/dev/null 2>&1 &");
                 } else {
                     logger.debug("Ignoring inactive tunnel " + watcher.tunnelName);
                 }
@@ -159,7 +159,7 @@ public class IpsecVpnTimer extends TimerTask
          * | TUNNNEL:tunnel_name IN:123 OUT:456 |
          */
 
-        result = UvmContextFactory.context().execManager().execOutput(TUNNEL_STATS_SCRIPT + " " + watcher.tunnelName);
+        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATS_SCRIPT + " " + watcher.tunnelName);
 
         /*
          * We use the IN: and OUT: tags to find the beginning of each value and

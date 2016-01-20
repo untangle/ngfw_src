@@ -15,6 +15,7 @@ import org.jabsorb.JSONSerializer;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
@@ -35,12 +36,14 @@ public class IpsecVpnApp extends NodeBase
     private static final String STAT_DISABLED = "disabled";
     private static final String STAT_VIRTUAL = "virtual";
 
+    private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
     private final Long policyId = getNodeSettings().getPolicyId();
-    private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[0];
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
+    protected static ExecManager execManager = null;
+    
     private enum MatchMode
     {
         STATE, IN, OUT, FWD
@@ -145,27 +148,36 @@ public class IpsecVpnApp extends NodeBase
     public String getLogFile()
     {
         logger.debug("getLogFile()");
-        return UvmContextFactory.context().execManager().execOutput(GRAB_LOGFILE_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_LOGFILE_SCRIPT);
     }
 
     public String getVirtualLogFile()
     {
         logger.debug("getVirtualLogFile()");
-        return UvmContextFactory.context().execManager().execOutput(GRAB_VIRTUALLOGFILE_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUALLOGFILE_SCRIPT);
     }
 
     public String getPolicyInfo()
     {
         logger.debug("getPolicyInfo()");
-        return UvmContextFactory.context().execManager().execOutput(GRAB_POLICY_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_POLICY_SCRIPT);
     }
 
     public String getStateInfo()
     {
         logger.debug("getStateInfo()");
-        return UvmContextFactory.context().execManager().execOutput(GRAB_STATE_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_STATE_SCRIPT);
     }
 
+    protected static ExecManager execManager()
+    {
+        if ( IpsecVpnApp.execManager != null )
+            return IpsecVpnApp.execManager;
+
+        logger.warn("IpsecVpn execManager not initialized, using global execManager.");
+        return UvmContextFactory.context().execManager();
+    }
+    
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -205,6 +217,11 @@ public class IpsecVpnApp extends NodeBase
 
         super.preStart();
 
+        if (IpsecVpnApp.execManager == null) {
+            IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
+            IpsecVpnApp.execManager.setLevel( org.apache.log4j.Level.INFO );
+        }
+
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
@@ -238,7 +255,7 @@ public class IpsecVpnApp extends NodeBase
 
         for (VirtualUserEntry entry : virtualUserTable.buildUserList()) {
             logger.info("Disconnecting L2TP client " + entry.getClientUsername() + " address " + entry.getClientAddress().getHostAddress());
-            UvmContextFactory.context().execManager().exec("kill -HUP " + entry.getNetProcess());
+            IpsecVpnApp.execManager().exec("kill -HUP " + entry.getNetProcess());
             counter++;
         }
 
@@ -256,6 +273,11 @@ public class IpsecVpnApp extends NodeBase
     protected void postStop()
     {
         logger.debug("postStop()");
+
+        if (IpsecVpnApp.execManager != null) {
+            IpsecVpnApp.execManager.close();
+            IpsecVpnApp.execManager = null;
+        }
 
         UvmContextFactory.context().daemonManager().decrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("ipsec");
@@ -388,12 +410,12 @@ public class IpsecVpnApp extends NodeBase
 
         // for L2TP clients we send a HUP signal to the pppd process
         if (entry.getClientProtocol().equals("L2TP")) {
-            UvmContextFactory.context().execManager().exec("kill -HUP " + entry.getNetProcess());
+            IpsecVpnApp.execManager().exec("kill -HUP " + entry.getNetProcess());
         }
 
         // for Xauth clients we call ipsec down using the connection and unique id
         if (entry.getClientProtocol().equals("XAUTH")) {
-            UvmContextFactory.context().execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
+            IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
         }
 
         return (0);
@@ -410,7 +432,7 @@ public class IpsecVpnApp extends NodeBase
         LinkedList<ConnectionStatusRecord> displayList = new LinkedList<ConnectionStatusRecord>();
         LinkedList<ConnectionStatusRecord> statusList;
 
-        String output = UvmContextFactory.context().execManager().execOutput(GRAB_STATUS_SCRIPT);
+        String output = IpsecVpnApp.execManager().execOutput(GRAB_STATUS_SCRIPT);
 
         // call the ipsec-status script to get the state and policy info
         try {
