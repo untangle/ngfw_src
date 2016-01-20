@@ -1041,7 +1041,7 @@ Ext.define("Ung.SystemStats", {
         var toolTipEl;
         var sessionsText = '<font color="#55BA47">' + stats.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
-        var hostsText = '<font color="#55BA47">' + stats.hosts + "</font>";
+        var hostsText = '<font color="#55BA47">' + stats.activeHosts + "</font>";
         this.getEl().down("div[class=hosts]").dom.innerHTML=hostsText;
         this.getEl().down("div[class=cpu]").dom.innerHTML=stats.oneMinuteLoadAvg;
         var oneMinuteLoadAvg = stats.oneMinuteLoadAvg;
