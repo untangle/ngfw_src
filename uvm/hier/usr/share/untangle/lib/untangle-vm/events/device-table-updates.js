@@ -1,6 +1,6 @@
 {
-    "uniqueId": "device-viewer-TnFmRkmyuv",
-    "category": "Device Viewer",
+    "uniqueId": "device-table-TnFmRkmyuv",
+    "category": "Device List",
     "conditions": [],
     "defaultColumns": ["time_stamp","mac_address","key","value"],
     "description": "All updates to devices in the device table.",

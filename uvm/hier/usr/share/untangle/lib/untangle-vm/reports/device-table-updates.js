@@ -1,6 +1,6 @@
 {
-    "uniqueId": "device-viewer-WGQUSYhIck",
-    "category": "Device Viewer",
+    "uniqueId": "device-table-WGQUSYhIck",
+    "category": "Device List",
     "description": "The number of updates to the device table over time.",
     "displayOrder": 102,
     "enabled": true,

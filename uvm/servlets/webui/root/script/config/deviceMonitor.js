@@ -1,12 +1,12 @@
 Ext.define('Webui.config.deviceMonitor', {
     extend: 'Ung.ConfigWin',
-    helpSource: 'device_viewer',
-    displayName: 'Device Viewer',
+    helpSource: 'device_list',
+    displayName: 'Device List',
     hasReports: true,
-    reportCategory: 'Device Viewer',
+    reportCategory: 'Device List',
     initComponent: function() {
         this.breadcrumbs = [{
-            title: i18n._('Device Viewer')
+            title: i18n._('Device List')
         }];
         this.buildGridCurrentDevices();
         this.buildTabPanel([this.gridCurrentDevices]);
@@ -18,7 +18,7 @@ Ext.define('Webui.config.deviceMonitor', {
     // Current Devices Grid
     buildGridCurrentDevices: function(columns, groupField) {
         this.gridCurrentDevices = Ext.create('Ung.grid.Panel',{
-            helpSource: 'device_viewer_current_devices',
+            helpSource: 'device_list_current_devices',
             settingsCmp: this,
             hasRefresh: true,
             title: i18n._("Current Devices"),

@@ -1,6 +1,6 @@
 {
-    "uniqueId": "device-viewer-UkYvElV11f",
-    "category": "Device Viewer",
+    "uniqueId": "device-table-UkYvElV11f",
+    "category": "Device List",
     "description": "The amount of devices add and removed from the device table over time.",
     "displayOrder": 101,
     "enabled": true,

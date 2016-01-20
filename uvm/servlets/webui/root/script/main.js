@@ -1009,7 +1009,7 @@ Ext.define("Ung.Main", {
             handler: Ung.Main.showHosts
         }, {
             item: {
-                displayName: i18n._('Device Viewer'),
+                displayName: i18n._('Device List'),
                 iconClass: 'icon-tools'
             },
             handler: Ung.Main.showDevices
@@ -1208,7 +1208,7 @@ Ext.define("Ung.Main", {
     showHosts: function() {
         Ext.require(['Webui.config.hostMonitor'], function() {
             if ( Ung.Main.hostMonitorWin == null) {
-                Ung.Main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
+                Ung.Main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {});
             }
             Ung.Main.hostMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
@@ -1221,7 +1221,7 @@ Ext.define("Ung.Main", {
     showDevices: function() {
         Ext.require(['Webui.config.deviceMonitor'], function() {
             if ( Ung.Main.deviceMonitorWin == null) {
-                Ung.Main.deviceMonitorWin=Ext.create('Webui.config.deviceMonitor', {"name":"deviceMonitor", "helpSource":"device_viewer"});
+                Ung.Main.deviceMonitorWin=Ext.create('Webui.config.deviceMonitor', {});
             }
             Ung.Main.deviceMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
@@ -1237,7 +1237,7 @@ Ext.define("Ung.Main", {
     showNodeSessions: function(nodeIdArg) {
         Ext.require(['Webui.config.sessionMonitor'], function() {
             if ( Ung.Main.sessionMonitorWin == null) {
-                Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+                Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {});
             }
             Ung.Main.sessionMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
