@@ -395,7 +395,6 @@ Ext.define("Ung.Main", {
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
-        console.log(this.viewport.down("#dashboardItems"));
         this.dashboard = Ext.create('Ung.dashboard', {
             dashboardPanel: this.viewport.down("#dashboardItems")
         });

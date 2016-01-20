@@ -9,23 +9,28 @@ Ext.define('Webui.config.dashboardManager', {
         this.widgetsConfig = [{
             name: 'Information',
             title: i18n._('Information'),
-            displayMode: 'small'
+            displayMode: 'small',
+            singleInstance: true
         },{
             name: 'Server',
             title: i18n._('Server'),
-            displayMode: 'small'
+            displayMode: 'small',
+            singleInstance: false
         },{
             name: 'Sessions',
             title: i18n._('Sessions'),
-            displayMode: 'big'
+            displayMode: 'big',
+            singleInstance: true
         },{
             name: 'Devices',
             title: i18n._('Devices'),
-            displayMode: 'small'
+            displayMode: 'small',
+            singleInstance: false
         },{
             name: 'Hardware',
             title: i18n._('Hardware'),
-            displayMode: 'small'
+            displayMode: 'small',
+            singleInstance: false
         }/*,{
             name: 'ReportEntry',
             title: i18n._('Report'),
@@ -35,11 +40,6 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Events'),
             displayMode: 'big'
         }*/];
-        this.wigetStore = [];
-        for(var i=0; i<this.widgetsConfig.length; i++) {
-            this.wigetStore.push([this.widgetsConfig[i].name, this.widgetsConfig[i].title]);
-        }
-        console.log(this.wigetStore);
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
         this.buildGridDashboardWidgets();
         this.buildTabPanel([this.gridDashboardWidgets]);
@@ -65,6 +65,7 @@ Ext.define('Webui.config.dashboardManager', {
     },
     // Dashboard Widgets Grid
     buildGridDashboardWidgets: function(columns, groupField) {
+        var me = this;
         this.gridDashboardWidgets = Ext.create('Ung.grid.Panel',{
             helpSource: 'dashboard_manager_dashboard_widgets',
             settingsCmp: this,
@@ -116,7 +117,7 @@ Ext.define('Webui.config.dashboardManager', {
                 allowBlank: false,
                 fieldLabel: i18n._("Widget Type"),
                 editable: false,
-                store: this.wigetStore,
+                store: [],
                 queryMode: 'local',
                 listeners: {
                     'select': { 
@@ -126,6 +127,22 @@ Ext.define('Webui.config.dashboardManager', {
                     }
                 }
             }],
+            populate: function(record, addMode) {
+                //do not show already existing widgets that allow single instances
+                var typeCombo = this.down("combo[dataIndex=type]");
+                var currentType = record.get("type");
+                var gridList = this.grid.getList();
+                var existingTypesMap = Ung.Util.createRecordsMap(gridList, "type");
+                var availableTypes = [], widget;
+                for(var i=0; i < me.widgetsConfig.length; i++) {
+                    widget = me.widgetsConfig[i];
+                    if(currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
+                        availableTypes.push([widget.name, widget.title]);
+                    }
+                }
+                typeCombo.setStore(availableTypes);
+                Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
+            },
             syncComponents: function () {
             }
         }));
