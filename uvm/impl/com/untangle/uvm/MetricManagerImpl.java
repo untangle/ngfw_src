@@ -416,7 +416,9 @@ public class MetricManagerImpl implements MetricManager
             m.put( "uvmSessions", nm.getSessionCount() );
             m.put( "uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP) );
             m.put( "uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP) );
-            m.put( "hosts", UvmContextImpl.getInstance().hostTable().getCurrentSize() );
+            m.put( "activeHosts", UvmContextFactory.context().hostTable().getCurrentActiveSize() );
+            m.put( "maxActiveHosts", UvmContextFactory.context().hostTable().getMaxActiveSize() );
+            m.put( "knownDevices", UvmContextFactory.context().deviceTable().size() );
             
             long currentTime = System.currentTimeMillis();
 

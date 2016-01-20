@@ -49,6 +49,11 @@ public class DeviceTableImpl implements DeviceTable
         saverPulse.start( PERIODIC_SAVE_DELAY );
     }
 
+    public int size()
+    {
+        return deviceTable.size();
+    }
+    
     public Map<String, DeviceTableEntry> getDeviceTable()
     {
         return deviceTable;
