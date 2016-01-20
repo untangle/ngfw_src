@@ -251,8 +251,6 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                             if (this.bandwidthMonitorWin === undefined) {
                                 this.bandwidthMonitorWin=Ext.create('Webui.untangle-node-bandwidth-control.Monitor',{
                                     parentCmp: this,
-                                    name: "bandwidthMonitor",
-                                    helpSource: "bandwidth_control_bandwidth_monitor",
                                     intf: this.intfCombo.getValue()
                                 });
                                 this.subCmps.push(this.bandwidthMonitorWin);
