@@ -190,7 +190,7 @@ Ext.define("Ung.Main", {
                             scale: 'large',
                             cls: 'action-button',
                             hidden: true,
-                            text : i18n._( "Add Widget" ),
+                            text : i18n._( "Manage Widgets" ),
                             handler: function() {
                             },
                             scope: this
@@ -356,7 +356,7 @@ Ext.define("Ung.Main", {
                     items: [{
                         xtype: 'container',
                         region: "north",
-                        cls: 'top-container top-container-reports',
+                        cls: 'top-container',
                         layout: {type: 'hbox', align: 'middle'},
                         height: 40,
                         items: [{

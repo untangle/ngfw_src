@@ -21,6 +21,7 @@ div.node {
     height: 110px;
     width: 110px;
     margin: 15px;
+    border: solid 1px #d8dbe0;
     background-color: white;
     overflow: visible;
 }

@@ -173,7 +173,7 @@ Ext.define('Ung.dashboard.Server', {
     height: 190,
     hasStats: true,
     layout: {
-        type: 'vbox',
+        type: 'vbox'
     },
     items: [
         {
