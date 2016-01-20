@@ -58,6 +58,17 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
+        // grab the SSL Inspector status attachment
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+       
+        // if we find the attachment and it is true then we release the
+        // session now since we'll see the unencrypted traffic later
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true)) {
+            session.sendDataToServer( data );
+            session.release();
+            return;
+        }
+
         // see if there is an SSL engine attached to the session
         WebFilterSSLEngine engine = (WebFilterSSLEngine) session.globalAttachment(NodeSession.KEY_WEB_FILTER_SSL_ENGINE);
 
@@ -80,16 +91,6 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         ByteBuffer buff = data;
         LdapName ldapName = null;
         String domain = null;
-
-        // grab the SSL Inspector status attachment
-        Boolean sslInspectorStatus = (Boolean)sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
-       
-        // if we find the attachment and it is true then we release the
-        // session now since we'll see the unencrypted traffic later
-        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true)) {
-            sess.release();
-            return;
-        }
 
         // grab any buffer that might have been attached last time thru here
         ByteBuffer hold = (ByteBuffer) sess.attachment();
