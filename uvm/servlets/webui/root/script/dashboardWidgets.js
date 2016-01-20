@@ -8,10 +8,12 @@ Ext.define('Ung.dashboard', {
         }
 
         var gridList = [];
+        var grid;
 
         for(var j=0; j < widgetsList.length; j++) {
+
             if (gridList.length > 0) {
-                var grid = gridList[gridList.length-1];
+                grid = gridList[gridList.length-1];
 
                 if (grid.type === 'small' && widgetsList[j].displayMode === 'small') {
                     if (grid.items.length < 4) {
@@ -20,11 +22,11 @@ Ext.define('Ung.dashboard', {
                         gridList.push({type: 'small', items: [widgetsList[j]]});
                     }
                 } else {
-                    gridList.push({type: widgetsList[j].displayMode, items: [widgetsList[j]]})
+                    gridList.push({type: widgetsList[j].displayMode, items: [widgetsList[j]]});
                 }
 
             } else {
-                var grid = {type: widgetsList[j].displayMode, items: [widgetsList[j]]};
+                grid = {type: widgetsList[j].displayMode, items: [widgetsList[j]]};
                 gridList.push(grid);
             }
         }
