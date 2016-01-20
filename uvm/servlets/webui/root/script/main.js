@@ -25,8 +25,6 @@ Ext.define("Ung.Main", {
     // the Ext.Viewport object for the application
     viewport: null,
     menuWidth: null,
-    initialScreenAlreadyShown: false,
-
     init: function(config) {
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ext.apply(this, config);
@@ -145,7 +143,7 @@ Ext.define("Ung.Main", {
                         pressed: true,
                         iconCls: 'icon-apps',
                         handler: function() {
-                            this.panelCenter.setActiveItem("apps");
+                            this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
                         },
                         scope: this
                     }, {
@@ -172,7 +170,7 @@ Ext.define("Ung.Main", {
                 xtype: 'container',
                 cls: 'main-panel',
                 layout: 'card',
-                activeItem: 1,
+                activeItem: 'apps',
                 items: [{
                     xtype: 'container',
                     itemId: 'dashboard',
@@ -777,9 +775,16 @@ Ext.define("Ung.Main", {
                 hasService = true;
             }
         }
-        if(!rpc.isRegistered) {
-            this.showWelcomeScreen();
+
+        if(!this.initialized) {
+            this.initialized = true;
+            if(!rpc.isRegistered) {
+                this.showWelcomeScreen();
+            }
+            //start with installApps if no app is installed
+            this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
         }
+
         this.servicesSeparator.setVisible(hasService);
         if(hasService && !this.appsPanel.hasCls("apps-have-services")) {
             this.appsPanel.addCls("apps-have-services");
@@ -1276,10 +1281,6 @@ Ext.define("Ung.Main", {
     },
     // Prepares the uvm to display the welcome screen
     showWelcomeScreen: function () {
-        if(this.welcomeScreenAlreadShown) {
-            return;
-        }
-        this.welcomeScreenAlreadShown = true;
         //Test if box is online (store is available)
         Ext.MessageBox.wait(i18n._("Determining Connectivity..."), i18n._("Please wait"));
 
@@ -1364,7 +1365,9 @@ Ext.define("Ung.Main", {
                     var fn = function( appsToInstall ) {
                         // if there are no more apps left to install we are done
                         if ( appsToInstall.length == 0 ) {
-                            Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
+                            Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"), function(){
+                                Ung.Main.panelCenter.setActiveItem("installApps");
+                            });
                             return;
                         }
                         var name = appsToInstall[0].name;
