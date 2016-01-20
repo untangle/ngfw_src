@@ -1200,10 +1200,11 @@ class NetworkTests(unittest2.TestCase):
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         # give the NetFilterLogger time to receive and write the event
-        time.sleep(2)
+        # This is necessary because we have no way to "flush" events
+        time.sleep(5)
 
         # grab all of the blocked events for checking later
-        events = global_functions.get_events('Network','Blocked Sessions',None,100)
+        events = global_functions.get_events('Network','Blocked Sessions',None,1000)
 
         # put the network settings back the way we found them
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1213,7 +1214,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
 
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 100,
+        found = global_functions.check_events( events.get('list'), 1000,
                                             "s_server_addr", test_untangle_com_ip,
                                             "c_client_addr", remote_control.clientIP,
                                             "s_server_port", 80)
