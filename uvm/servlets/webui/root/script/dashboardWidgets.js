@@ -1,10 +1,16 @@
 Ext.define('Ung.dashboard', {
-    constructor: function (config) {
+    widgets: [],
+    constructor: function(config) {
+        Ext.apply(this, config);
+    },
+    setWidgets: function (widgets) {
+        //widgets = [];
         this.widgets = [];
+        this.dashboardPanel.removeAll();
 
         var widgetsList = [];
-        for (var i=0; i < config.widgets.length; i++) {
-            widgetsList.push(Ext.create('Ung.dashboard.' + config.widgets[i].type));
+        for (var i=0; i < widgets.length; i++) {
+            widgetsList.push(Ext.create('Ung.dashboard.' + widgets[i].type));
         }
 
         var gridList = [];
@@ -42,6 +48,7 @@ Ext.define('Ung.dashboard', {
             gridEl.add(gridList[k].items);
             this.widgets.push(gridEl);
         }
+        this.dashboardPanel.add(this.widgets);
     },
     updateFromStats: function(stats) {
         //console.log(stats);
@@ -51,8 +58,7 @@ Ext.define('Ung.dashboard', {
                 widget.updateFromStats(stats);
             }
         }
-    },
-    items: []
+    }
 });
 
 
@@ -468,10 +474,32 @@ Ext.define('Ung.dashboard.Memory', {
     }
 });
 
+Ext.define('Ung.dashboard.ReportEntry', {
+    extend: 'Ung.dashboard.Widget',
+    width: 500,
+    initComponent: function(conf) {
+        this.title =  i18n._("Report");
+        this.items= {
+            xtype: 'grid',
+            header: false,
+            store:  Ext.create('Ext.data.Store', {
+                fields: [],
+                data: []
+            }),
+            columns: [{
+                flex: 1
+            }]
+        };
+    },
+    refresh: function () {
+        
+    }
+});
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
     width: 500,
     initComponent: function(conf) {
+        this.title =  i18n._("Events");
         this.items= {
             xtype: 'grid',
             header: false,

@@ -16,7 +16,7 @@ Ext.define('Webui.config.deviceMonitor', {
         this.hide();
     },
     // Current Devices Grid
-    buildGridCurrentDevices: function(columns, groupField) {
+    buildGridCurrentDevices: function() {
         this.gridCurrentDevices = Ext.create('Ung.grid.Panel',{
             helpSource: 'device_list_current_devices',
             settingsCmp: this,

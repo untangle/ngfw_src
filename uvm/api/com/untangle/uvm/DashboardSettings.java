@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class DashboardSettings implements Serializable, JSONString
 {
     private int version = 1;
     
-    private List<DashboardWidgetSettings> widgets = null;
+    private List<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
     
     public DashboardSettings() { }
 

@@ -187,11 +187,10 @@ Ext.define("Ung.Main", {
                             minWidth: 120,
                             scale: 'large',
                             cls: 'action-button',
-                            hidden: true,
                             text : i18n._( "Manage Widgets" ),
                             handler: function() {
-                            },
-                            scope: this
+                                Ung.Main.showDashboardManager();
+                            }
                         }, {
                             xtype: 'component',
                             html: '',
@@ -396,6 +395,11 @@ Ext.define("Ung.Main", {
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
+        console.log(this.viewport.down("#dashboardItems"));
+        this.dashboard = Ext.create('Ung.dashboard', {
+            dashboardPanel: this.viewport.down("#dashboardItems")
+        });
+
         this.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
@@ -410,24 +414,24 @@ Ext.define("Ung.Main", {
         }; 
     },
     loadDashboard: function() {
-        var widgets = [
-            { type: 'Information' },
-            { type: 'Server' },
-            { type: 'Information' },
-            { type: 'Hardware' },
-            { type: 'Sessions' },
-            { type: 'Memory' },
-            { type: 'Hardware' }
-        ];
+        rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                var widgets = result.widgets!= null ? result.widgets.list : [];
+                if(false) { //for testing
+                    widgets.push.apply(widgets, 
+                    [
+                         { type: 'Information' },
+                         { type: 'Server' },
+                         { type: 'Information' },
+                         { type: 'Hardware' },
+                         { type: 'Sessions' },
+                         { type: 'Memory' },
+                         { type: 'Hardware' }
+                     ]);
+                }
+                this.dashboard.setWidgets(widgets);
+            }, this));
 
-        // uncomment this for alpha release
-        widgets = [];
-
-        this.dashboard = Ext.create('Ung.dashboard', {
-            widgets: widgets
-        });
-        var dashboardPanel = this.viewport.down("#dashboardItems");
-        dashboardPanel.add(this.dashboard.widgets);
     },
     about: function (forceReload) {
         if(rpc.about === undefined) {
@@ -1256,10 +1260,10 @@ Ext.define("Ung.Main", {
             }
         }
     },
-    showReports: function() {
-        Ext.require(['Webui.config.reportsViewer'], function() {
-            Ung.Main.reportsViewerWin=Ext.create('Webui.config.reportsViewer', {"name": "reportsViewer"});
-            Ung.Main.reportsViewerWin.show();
+    showDashboardManager: function() {
+        Ext.require(['Webui.config.dashboardManager'], function() {
+            Ung.Main.dashboardManagerWin=Ext.create('Webui.config.dashboardManager', {});
+            Ung.Main.dashboardManagerWin.show();
         }, this);
     },
     // change current policy
