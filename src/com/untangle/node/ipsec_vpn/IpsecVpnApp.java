@@ -4,6 +4,10 @@
 
 package com.untangle.node.ipsec_vpn;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -25,11 +29,14 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class IpsecVpnApp extends NodeBase
 {
-    private final String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
-    private final String GRAB_VIRTUALLOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
-    private final String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
-    private final String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
-    private final String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
+    private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
+    private final static String GRAB_VIRTUALLOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
+    private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
+    private final static String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
+    private final static String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
+
+    private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
+    private final static String STRONGSWAN_STROKE_TIMEOUT = "15000";
 
     private static final String STAT_CONFIGURED = "configured";
     private static final String STAT_ENABLED = "enabled";
@@ -43,7 +50,7 @@ public class IpsecVpnApp extends NodeBase
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
     protected static ExecManager execManager = null;
-    
+
     private enum MatchMode
     {
         STATE, IN, OUT, FWD
@@ -62,6 +69,14 @@ public class IpsecVpnApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
         this.addMetric(new NodeMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
         this.addMetric(new NodeMetric(STAT_VIRTUAL, I18nUtil.marktr("L2TP Clients")));
+
+        try {
+            fixStrongswanConfig();
+        }
+
+        catch (Exception exn) {
+            logger.warn("Unable to update strongswan config files");
+        }
     }
 
     @Override
@@ -124,7 +139,7 @@ public class IpsecVpnApp extends NodeBase
     public void setSettings(IpsecVpnSettings newSettings)
     {
         int idx;
-        
+
         logger.debug("setSettings()");
 
         idx = 0;
@@ -132,9 +147,9 @@ public class IpsecVpnApp extends NodeBase
         for (IpsecVpnTunnel tunnel : newSettings.getTunnelList()) {
             tunnel.setId(++idx);
         }
-        
+
         idx = 0;
-        
+
         for (IpsecVpnNetwork network : newSettings.getNetworkList()) {
             network.setId(++idx);
         }
@@ -179,13 +194,12 @@ public class IpsecVpnApp extends NodeBase
 
     protected static ExecManager execManager()
     {
-        if ( IpsecVpnApp.execManager != null )
-            return IpsecVpnApp.execManager;
+        if (IpsecVpnApp.execManager != null) return IpsecVpnApp.execManager;
 
         logger.warn("IpsecVpn execManager not initialized, using global execManager.");
         return UvmContextFactory.context().execManager();
     }
-    
+
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -227,7 +241,7 @@ public class IpsecVpnApp extends NodeBase
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
-            IpsecVpnApp.execManager.setLevel( org.apache.log4j.Level.INFO );
+            IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.INFO);
         }
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
@@ -359,10 +373,8 @@ public class IpsecVpnApp extends NodeBase
     public boolean isLicenseValid()
     {
         logger.debug("isLicenseValid()");
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN_OLDNAME))
-            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN)) return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN_OLDNAME)) return true;
         return false;
     }
 
@@ -605,5 +617,31 @@ public class IpsecVpnApp extends NodeBase
             }
         }
         return null;
+    }
+
+    // https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+
+    private void fixStrongswanConfig() throws Exception
+    {
+        File cfgfile = new File(STRONGSWAN_STROKE_CONFIG);
+        StringBuffer buffer = new StringBuffer(1024);
+        String line;
+
+        FileReader fileReader = new FileReader(cfgfile);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.contains("timeout =") == true) {
+                line = ("    timeout = " + STRONGSWAN_STROKE_TIMEOUT);
+            }
+            buffer.append(line);
+            buffer.append("\n");
+        }
+
+        fileReader.close();
+
+        FileWriter fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
+        fileWriter.write(buffer.toString());
+        fileWriter.close();
     }
 }
