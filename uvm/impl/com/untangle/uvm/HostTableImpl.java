@@ -479,7 +479,7 @@ public class HostTableImpl implements HostTable
         this.hostTable.clear();
     }
     
-    private HostTableEntry createNewHostTableEntry( InetAddress address )
+    private synchronized HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
 

@@ -83,7 +83,7 @@ public class DeviceTableImpl implements DeviceTable
         return deviceTable.get( macAddress );
     }
 
-    public DeviceTableEntry addDevice( String macAddress )
+    public synchronized DeviceTableEntry addDevice( String macAddress )
     {
         DeviceTableEntry newEntry = getDevice( macAddress );
         if ( newEntry != null ) {
