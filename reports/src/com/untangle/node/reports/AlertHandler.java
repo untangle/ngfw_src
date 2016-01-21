@@ -69,6 +69,8 @@ public class AlertHandler
 
         String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
         String serverName = companyName + " " + I18nUtil.marktr("Server");
         String jsonEvent;
 
@@ -81,7 +83,7 @@ public class AlertHandler
         
         String subject = serverName + " " +
             I18nUtil.marktr("Alert!") +
-            " [" + hostName + "] ";
+            " [" + fullName + "] ";
 
         String messageBody = I18nUtil.marktr("The following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
             "\r\n\r\n" +

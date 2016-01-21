@@ -423,7 +423,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled.", true, 60*24 );
+        alertRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
@@ -431,7 +431,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "key", "=", "add" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "New device discovered.", false, 0 );
+        alertRule = new AlertRule( true, matchers, true, true, "New device discovered", false, 0 );
         rules.add( alertRule );
         
         matchers = new LinkedList<AlertRuleCondition>();
