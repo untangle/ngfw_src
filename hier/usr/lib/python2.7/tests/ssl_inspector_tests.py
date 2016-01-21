@@ -102,31 +102,6 @@ class SslInspectorTests(unittest2.TestCase):
                                             "web_filter_blocked", True)
         assert( found )
 
-    # check Youtube for school feature
-    def test_050_youtubeForSchools(self):
-        raise unittest2.SkipTest('Youtube For Schools API has changed, waiting on bug 12566 fix')
-        settings = nodeWeb.getSettings()
-        settings["youtubeForSchoolsIdentifier"] = "Wc1bnoBwWO8Di_TKQQ3IqA"
-        settings["enforceYoutubeForSchools"] = True
-        nodeWeb.setSettings(settings)
-        results = []
-
-        # try several videos.
-        # youtube doesn't always seem to enforce youtube-for-schools so try several to see if ngfw
-        # is properly modifying the url
-        results.append( remote_control.runCommand("curl -s -4 --insecure 'https://www.youtube.com/watch?v=-kkMrZYNrt0' | grep -q 'Education Filter'") )
-        if not 0 in results:
-            results.append( remote_control.runCommand("curl -s -4 --insecure 'https://www.youtube.com/watch?v=4r7wHMg5Yjg' | grep -q 'Education Filter'") )
-        if not 0 in results:
-            results.append( remote_control.runCommand("curl -s -4 --insecure 'https://www.youtube.com/watch?v=_OBlgSz8sSM' | grep -q 'Education Filter'") )
-        if not 0 in results:
-            results.append( remote_control.runCommand("curl -s -4 --insecure 'https://www.youtube.com/watch?v=kHmvkRoEowc' | grep -q 'Education Filter'") )
-
-        settings["youtubeForSchoolsIdentifier"] = None
-        settings["enforceYoutubeForSchools"] = False
-        nodeWeb.setSettings(settings)
-        assert ( 0 in results )
-
     # Query eventlog
     def test_060_queryEventLog(self):
         termTests = [{
