@@ -421,7 +421,7 @@ Ext.define("Ung.Main", {
                     [
                          { type: 'Information' },
                          { type: 'Server' },
-                         { type: 'Information' },
+                         { type: 'HostsDevices' },
                          { type: 'Hardware' },
                          { type: 'Sessions' },
                          { type: 'Memory' },

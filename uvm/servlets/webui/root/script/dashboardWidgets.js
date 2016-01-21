@@ -112,169 +112,249 @@ Ext.define('Ung.dashboard.Widget', {
                 item.updateStats(stats);
             }
         });
-
+        if (Ext.isFunction(this.updateStats)) {
+            this.updateStats(stats);
+        }
     }
 });
 
+/* Grid container for the 1 or more widgets */
+Ext.define('Ung.dashboard.GridWrapper', {
+    extend: 'Ext.container.Container',
+    hasStats: true,
+    updateFromStats: function (stats) {
+        this.items.each(function (item) {
+            if (item.hasStats) {
+                item.updateFromStats(stats);
+            }
+        });
+    }
+});
+
+/* Information Widget */
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
     title: i18n._("Information"),
     displayMode: 'small',
-    hasStats: true,
     height: 190,
-    defaults: {
-        xtype: 'displayfield',
-        labelWidth: 100
-    },
-    items: [{
-        name: 'hostname',
-        fieldLabel: i18n._("Hostname")
-    }, {
-        fieldLabel: i18n._("Model"),
-        value: 'unknown'
-    },
-        /*{
-        fieldLabel: i18n._("Model"),
-        statsProperty: 'cpuModel'
-    },*/ {
-            name: 'uptime',
-            fieldLabel: i18n._("Uptime"),
-            updateStats: function (stats) {
-                // display humab readable uptime
-                var numdays = Math.floor((stats.uptime % 31536000) / 86400),
-                    numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
-                    numminutes = Math.floor((((stats.uptime % 31536000) % 86400) % 3600) / 60),
-                    output = '';
-
-                if (numdays > 0) {
-                    output += numdays + 'd ';
-                }
-
-                if (numhours > 0) {
-                    output += numhours + 'h ';
-                }
-
-                if (numminutes > 0) {
-                    output += numminutes + 'm';
-                }
-                this.setValue(output);
-            }
-        }, {
-        name: 'version',
-        fieldLabel: i18n._("Version")
-    }, {
-        name: 'subscriptions',
-        fieldLabel: i18n._("Subscriptions")
-    }],
-    afterRender: function () {
-        this.callParent(arguments);
-        this.down('displayfield[name=hostname]').setValue(rpc.hostname);
-        this.down('displayfield[name=version]').setValue(rpc.fullVersion);
+    hasStats: true,
+    tpl: '<div class="wg-wrapper">' +
+        '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Hostname') + ':</label>' +
+            '<div class="cell">{hostname}</div>' +
+        '</div>' +
+        '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Model') + ':</label>' +
+            '<div class="cell">unknown</div>' +
+        '</div>' +
+        '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Uptime') + ':</label>' +
+            '<div class="cell">{uptime}</div>' +
+        '</div>' +
+        '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Version') + ':</label>' +
+            '<div class="cell">{version}</div>' +
+        '</div>' +
+        '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Subscriptions') + ':</label>' +
+            '<div class="cell">???</div>' +
+        '</div>' +
+        '</div>',
+    data: {},
+    updateStats: function (stats) {
+        var numdays = Math.floor((stats.uptime % 31536000) / 86400),
+            numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
+            numminutes = Math.floor((((stats.uptime % 31536000) % 86400) % 3600) / 60),
+            _uptime = '';
+        if (numdays > 0) {
+            _uptime += numdays + 'd ';
+        }
+        if (numhours > 0) {
+            _uptime += numhours + 'h ';
+        }
+        if (numminutes > 0) {
+            _uptime += numminutes + 'm';
+        }
+        this.update({
+            hostname: rpc.hostname,
+            uptime: _uptime,
+            version: rpc.fullVersion
+        });
     }
 });
 
-Ext.define('Ung.dashboard.Server', {
+/* Memory Widget */
+Ext.define('Ung.dashboard.Memory', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Server"),
+    title: i18n._("Memory Resources"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
-    layout: {
-        type: 'vbox'
-    },
-    items: [
-        {
-            xtype: 'container',
-            layout: 'hbox',
-            cls: 'nopadding',
-            items: [
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._("CPU"),
-                    width: 60
-                },
-                {
-                    xtype: 'container',
-                    layout: 'vbox',
-                    items: [
-                        {
-                            xtype: 'component',
-                            name: 'cpu',
-                            padding: '3px 0'
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'cpuload',
-                            padding: '3px 0'
-                        }
-                    ]
-                }
-            ],
-            updateStats: function (stats) {
-                var oneMinuteLoadAvg = stats.oneMinuteLoadAvg,
-                    oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus,
-                    loadText = '<font color="#55BA47">' + i18n._('LOW') + '</font>';
-                if (oneMinuteLoadAvgAdjusted > 1.0) {
-                    loadText = '<font color="orange">' + i18n._('MEDIUM') + '</font>';
-                }
-                if (oneMinuteLoadAvgAdjusted > 4.0) {
-                    loadText = '<font color="red">' + i18n._('HIGH') + '</font>';
-                }
-
-                this.down('component[name=cpu]').update(loadText);
-                this.down('component[name=cpuload]').update('<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load');
-
-            }
-        },
-        {
-            xtype: 'container',
-            layout: {
-                type: 'hbox',
-                align: 'stretch'
-            },
-            cls: 'nopadding',
-            items: [
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._("Disk"),
-                    width: 60
-                },
-                {
-                    xtype: 'container',
-                    layout: 'vbox',
-                    flex: 1,
-                    items: [
-                        {
-                            xtype: 'progress',
-                            name: 'disk',
-                            width: 160,
-                            margin: '3px 0'
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'usedDisk',
-                            padding: '3px 0'
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'freeDisk',
-                            padding: '3px 0'
-                        }
-                    ]
-                }
-            ],
-            updateStats: function (stats) {
-                var usedDisk = Math.round((stats.totalDiskSpace - stats.freeDiskSpace) / 10000000) / 100,
-                    usedPercent = parseFloat((1 - parseFloat(stats.freeDiskSpace / stats.totalDiskSpace)) * 100).toFixed(1),
-                    freeDisk = Math.round(stats.freeDiskSpace / 10000000) / 100;
-
-                this.down('progress[name=disk]').setValue(1 - parseFloat(stats.freeDiskSpace / stats.totalDiskSpace).toFixed(3));
-                this.down('component[name=usedDisk]').update('<strong>' + usedDisk + ' GB</strong> used <em>(' + usedPercent + '%)</em>');
-                this.down('component[name=freeDisk]').update('<strong>' + freeDisk + ' GB</strong> free <em>(' + (100 - usedPercent) + '%)</em>');
-            }
-        }
-    ]
+    tpl: '<div class="wg-wrapper">' +
+        '<div class="row">' +
+        '<label style="width: 60px;">' + i18n._('Memory') + ':</label>' +
+        '<div class="cell">' +
+        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFree}%;"></span></div><p>{totalMemory} MB</p></div>' +
+        '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedMemory} MB</span> used <em>({percentUsed}%)</em></div>' +
+        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> free <em>({percentFree}%)</em></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="row">' +
+        '<label style="width: 60px;">' + i18n._('Swap') + ':</label>' +
+        '<div class="cell">' +
+        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
+        '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedSwap} MB</span> used <em>({percentUsedSwap}%)</em></div>' +
+        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeSwap} MB</span> free <em>({percentFreeSwap}%)</em></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>',
+    data: {},
+    updateStats: function (stats) {
+        this.update({
+            totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
+            usedMemory: Ung.Util.bytesToMBs(stats.MemTotal - stats.MemFree),
+            percentUsed: parseFloat((1 - parseFloat(stats.MemFree / stats.MemTotal)) * 100).toFixed(1),
+            freeMemory: Ung.Util.bytesToMBs(stats.MemFree),
+            percentFree: parseFloat(stats.MemFree / stats.MemTotal * 100).toFixed(1),
+            totalSwap: Ung.Util.bytesToMBs(stats.SwapTotal),
+            usedSwap: Ung.Util.bytesToMBs(stats.SwapTotal - stats.SwapFree),
+            percentUsedSwap: parseFloat((1 - parseFloat(stats.SwapFree / stats.SwapTotal)) * 100).toFixed(1),
+            freeSwap: Ung.Util.bytesToMBs(stats.SwapFree),
+            percentFreeSwap: parseFloat(stats.SwapFree / stats.SwapTotal * 100).toFixed(1)
+        });
+    }
 });
+
+/* Server Widget */
+Ext.define('Ung.dashboard.Server', {
+    extend: 'Ung.dashboard.Widget',
+    title: i18n._("Server Resources"),
+    displayMode: 'small',
+    height: 190,
+    hasStats: true,
+    tpl: '<div class="wg-wrapper">' +
+        '<div class="row">' +
+            '<label style="width: 40px;">' + i18n._('CPU') + ':</label>' +
+            '<div class="cell">' +
+                '<div style="line-height: 20px;">{cpuLoadText}</div>' +
+                '<div style="line-height: 20px;">{avgCpuLoad}</div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="row">' +
+            '<label style="width: 40px;">' + i18n._('Disk') + ':</label>' +
+            '<div class="cell">' +
+                '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{freePercent}%;"></span></div><p>{totalDisk} GB</p></div>' +
+                '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedDisk} GB</span> used <em>({usedPercent}%)</em></div>' +
+                '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> free <em>({freePercent}%)</em></div>' +
+            '</div>' +
+        '</div>' +
+        '</div>',
+    data: {},
+    updateStats: function (stats) {
+        var oneMinuteLoadAvg = stats.oneMinuteLoadAvg,
+            oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus,
+            loadText = '<font color="#55BA47">' + i18n._('LOW') + '</font>';
+        if (oneMinuteLoadAvgAdjusted > 1.0) {
+            loadText = '<font color="orange">' + i18n._('MEDIUM') + '</font>';
+        }
+        if (oneMinuteLoadAvgAdjusted > 4.0) {
+            loadText = '<font color="red">' + i18n._('HIGH') + '</font>';
+        }
+
+
+        this.update({
+            cpuLoadText: loadText,
+            avgCpuLoad: '<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load',
+            totalDisk: Math.round(stats.totalDiskSpace / 10000000) / 100,
+            usedDisk: Math.round((stats.totalDiskSpace - stats.freeDiskSpace) / 10000000) / 100,
+            usedPercent: parseFloat((1 - parseFloat(stats.freeDiskSpace / stats.totalDiskSpace)) * 100).toFixed(1),
+            freeDisk: Math.round(stats.freeDiskSpace / 10000000) / 100,
+            freePercent: parseFloat(stats.freeDiskSpace / stats.totalDiskSpace * 100).toFixed(1)
+        });
+    }
+});
+
+/* Hardware Widget */
+Ext.define('Ung.dashboard.Hardware', {
+    extend: 'Ung.dashboard.Widget',
+    title: i18n._("Hardware"),
+    displayMode: 'small',
+    height: 190,
+    hasStats: true,
+    tpl: '<div class="wg-wrapper">' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
+            '<div class="cell">{cpuCount}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('CPU Type') + ':</label>' +
+            '<div class="cell">{cpuType}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Architecture') + ':</label>' +
+            '<div class="cell">{architecture}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Memory') + ':</label>' +
+            '<div class="cell">{totalMemory} MB</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Disk') + ':</label>' +
+            '<div class="cell">{totalDisk} GB</div>' +
+            '</div>' +
+        '</div>',
+    data: {},
+    dataSet: false,
+    updateStats: function (stats) {
+        // set values just once
+        if (!this.dataSet) {
+            this.update({
+                cpuCount: stats.numCpus,
+                cpuType: stats.cpuModel,
+                architecture: stats.architecture,
+                totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
+                totalDisk: Math.round(stats.totalDiskSpace / 10000000) / 100
+            });
+            this.dataSet = true;
+        }
+    }
+});
+
+/* Hosts&Devices Widget */
+Ext.define('Ung.dashboard.HostsDevices', {
+    extend: 'Ung.dashboard.Widget',
+    title: i18n._("Hosts & Devices"),
+    displayMode: 'small',
+    height: 190,
+    hasStats: true,
+    tpl: '<div class="wg-wrapper">' +
+            '<div class="row">' +
+            '<label style="width: 110px;">' + i18n._('Currently Active') + ':</label>' +
+            '<div class="cell">{activeHosts}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 110px;">' + i18n._('Maximum Active') + ':</label>' +
+            '<div class="cell">{maxActiveHosts}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 110px;">' + i18n._('Known Devices') + ':</label>' +
+            '<div class="cell">{knownDevices}</div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="text-align: center; margin-top: 20px;">' +
+            '<button class="wg-button">Show Hosts</button>' +
+            '<button class="wg-button">Show Devices</button>' +
+        '</div>',
+    data: {},
+    updateStats: function (stats) {
+        this.update({
+            activeHosts: stats.activeHosts,
+            maxActiveHosts: stats.maxActiveHosts,
+            knownDevices: stats.knownDevices
+        });
+    }
+});
+
 
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
@@ -286,177 +366,6 @@ Ext.define('Ung.dashboard.Sessions', {
         labelWidth: 150
     },
     items: []
-});
-
-Ext.define('Ung.dashboard.Devices', {
-    extend: 'Ung.dashboard.Widget',
-    title: i18n._("Devices"),
-    height: 190,
-    defaults: {
-        xtype: 'displayfield',
-        labelWidth: 150
-    },
-    items: [{
-        name: 'totalDevices',
-        fieldLabel: i18n._("Total Devices")
-    }, {
-        name: 'activeDevices',
-        fieldLabel: i18n._("Active Devices")
-    }, {
-        name: 'highesActiveDevices',
-        fieldLabel: i18n._("Highest Active Devices")
-    }, {
-        name: 'knownDevices',
-        fieldLabel: i18n._("Known Devices")
-    }]
-});
-
-Ext.define('Ung.dashboard.Hardware', {
-    extend: 'Ung.dashboard.Widget',
-    title: i18n._("Hardware"),
-    displayMode: 'small',
-    hasStats: true,
-    height: 190,
-    defaults: {
-        xtype: 'displayfield',
-        labelWidth: 100
-    },
-    items: [{
-        fieldLabel: i18n._("CPU Count"),
-        statsProperty: 'numCpus'
-    }, {
-        fieldLabel: i18n._("CPU Type"),
-        statsProperty: 'cpuModel',
-        cls: 'ellipsis'
-    }, {
-        fieldLabel: i18n._("Architecture"),
-        statsProperty: 'architecture'
-    }, {
-        fieldLabel: i18n._("Memory"),
-        updateStats: function (stats) {
-            this.setValue(Ung.Util.bytesToMBs(stats.MemTotal) + ' MB');
-        }
-    }, {
-        fieldLabel: i18n._("Disk"),
-        updateStats: function (stats) {
-            this.setValue(Math.round(stats.totalDiskSpace / 10000000) / 100 + ' GB');
-        }
-    }]
-});
-
-Ext.define('Ung.dashboard.Memory', {
-    extend: 'Ung.dashboard.Widget',
-    title: i18n._("Memory Resources"),
-    displayMode: 'small',
-    height: 190,
-    hasStats: true,
-    layout: {
-        type: 'vbox'
-    },
-    items: [
-        {
-            xtype: 'container',
-            layout: 'hbox',
-            cls: 'nopadding',
-            items: [
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._("Memory"),
-                    width: 60
-                },
-                {
-                    xtype: 'container',
-                    layout: 'vbox',
-                    items: [
-                        {
-                            xtype: 'progress',
-                            name: 'memory',
-                            width: 160,
-                            style: {
-                                marginBottom: '7px'
-                            }
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'usedMemory',
-                            style: {
-                                minHeight: '18px'
-                            }
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'freeMemory',
-                            style: {
-                                minHeight: '18px'
-                            }
-                        }
-                    ]
-                }
-            ],
-            updateStats: function (stats) {
-                var usedMemory = Ung.Util.bytesToMBs(stats.MemTotal - stats.MemFree),
-                    usedMemoryPercent = parseFloat((1 - parseFloat(stats.MemFree / stats.MemTotal)) * 100).toFixed(1),
-                    freeMemory = Ung.Util.bytesToMBs(stats.MemFree);
-
-                this.down('progress[name=memory]').setValue(1 - parseFloat(stats.MemFree / stats.MemTotal).toFixed(3));
-                this.down('component[name=usedMemory]').update('<strong>' + usedMemory + ' MB</strong> used <em>(' + usedMemoryPercent + '%)</em>');
-                this.down('component[name=freeMemory]').update('<strong>' + freeMemory + ' MB</strong> free <em>(' + (100 - usedMemoryPercent) + '%)</em>');
-            }
-        },
-        {
-            xtype: 'container',
-            layout: 'hbox',
-            cls: 'nopadding',
-            items: [
-                {
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._("Swap"),
-                    width: 60
-                },
-                {
-                    xtype: 'container',
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch'
-                    },
-
-                    items: [
-                        {
-                            xtype: 'progress',
-                            name: 'swap',
-                            width: 160,
-                            style: {
-                                marginBottom: '7px'
-                            }
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'usedSwap',
-                            style: {
-                                minHeight: '18px'
-                            }
-                        },
-                        {
-                            xtype: 'component',
-                            name: 'freeSwap',
-                            style: {
-                                minHeight: '18px'
-                            }
-                        }
-                    ]
-                }
-            ],
-            updateStats: function (stats) {
-                var usedSwap = Ung.Util.bytesToMBs(stats.SwapTotal - stats.SwapFree),
-                    usedSwapPercent = parseFloat((1 - parseFloat(stats.SwapFree / stats.SwapTotal)) * 100).toFixed(1),
-                    freeSwap = Ung.Util.bytesToMBs(stats.SwapFree);
-
-                this.down('progress[name=swap]').setValue(1 - parseFloat(stats.SwapFree / stats.SwapTotal).toFixed(3));
-                this.down('component[name=usedSwap]').update('<strong>' + usedSwap + ' MB</strong> used <em>(' + usedSwapPercent + '%)</em>');
-                this.down('component[name=freeSwap]').update('<strong>' + freeSwap + ' MB</strong> free <em>(' + (100 - usedSwapPercent) + '%)</em>');
-            }
-        }
-    ]
 });
 
 Ext.define('Ung.dashboard.ReportEntry', {
@@ -494,17 +403,5 @@ Ext.define('Ung.dashboard.EventEntry', {
                 flex: 1
             }]
         };
-    }
-});
-
-Ext.define('Ung.dashboard.GridWrapper', {
-    extend: 'Ext.container.Container',
-    hasStats: true,
-    updateFromStats: function (stats) {
-        this.items.each(function (item) {
-            if (item.hasStats) {
-                item.updateFromStats(stats);
-            }
-        });
     }
 });

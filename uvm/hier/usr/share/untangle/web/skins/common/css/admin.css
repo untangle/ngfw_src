@@ -399,6 +399,7 @@ a.forgot-password:hover {
 .dashboard .x-autocontainer-innerCt {
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .dashboard .small-widget .x-autocontainer-innerCt {
@@ -600,4 +601,91 @@ a.forgot-password:hover {
     .grid-cell.small-3,.grid-cell.small-4,.grid-cell.big {
         width: 33.33%;
     }
+}
+
+
+.wg-wrapper {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.wg-wrapper .row {
+    display: table-row;
+}
+
+.wg-wrapper label {
+    display: table-cell;
+    width: 40%;
+    line-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    vertical-align: top;
+}
+
+.wg-wrapper .cell {
+    display: table-cell;
+    vertical-align: top;
+    padding-bottom: 5px;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.wg-progress {
+    /*margin-right: 80px;*/
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.wg-progress-bar {
+    background-color: #EEF1F5;
+    height: 20px;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.wg-progress-bar span {
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    background-color: #E1B505;
+    height: 20px;
+    box-shadow: 1px 0 3px rgba(0,0,0,0.5);
+}
+.wg-progress p {
+    margin: 0;
+    position: absolute;
+    right: 5px;
+    top: 0;
+    font-weight: 600;
+    line-height: 20px;
+    font-size: 11px;
+    color: #555;
+}
+.wg-progress-vals {
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wg-button {
+    background-color: #3DA8EB;
+    height: 24px;
+    line-height: 24px;
+    color: #FFF;
+    margin: 0 1px;
+    border: 0;
+    padding: 0 10px;
+    border-radius: 3px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    font-size: 11px;
+    cursor: pointer;
 }
