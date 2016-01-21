@@ -180,14 +180,31 @@ public class SessionMonitorImpl implements SessionMonitor
                 } catch (Exception e) {
                     logger.warn("Exception while searching for session",e);
                 }
-            } else {
-                session.setBypassed(Boolean.TRUE);
+            }
+            // else netcapSession == null (no UVM session found)
+            else {
+                if ( session.getMark() != null ) {
+                    Integer mark = session.getMark();
+                    // if session was not explicitly bypassed hide it, but yet its not at layer 7, hide it.
+                    // This is so we don't show sessions that have been blocked or died at layer 7, but still exist in conntrack
+                    // Doing so is confusing because it would show up as "bypassed" when its actually already been blocked.
+                    if ((mark & 0x01000000) == 0) {
+                        logger.info("Removing session from view (mark): " + session);
+                        i.remove();
+                        continue;
+                    }
+                }
+
+                // if its not being scanned by the UVM it must be bypassed
+                // this is set from the mark, setting this manually should not be required
+                // session.setBypassed(Boolean.TRUE);
             }
 
             /**
              * Ignore sessions to 192.0.2.42
              */
             if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
+                logger.info("Removing session from view (address): " + session);
                 i.remove();
                 continue;
             }

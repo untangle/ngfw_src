@@ -4001,6 +4001,19 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
+                name: "logLocalSessions",
+                fieldLabel: i18n._("Log local sessions"),
+                labelWidth: 190,
+                checked: this.settings.logLocalSessions,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.logLocalSessions = newValue;
+                        }, this)
+                    }
+                }
+            },{
+                xtype: "checkbox",
                 name: "logBlockedSessions",
                 fieldLabel: i18n._("Log blocked sessions"),
                 labelWidth: 190,

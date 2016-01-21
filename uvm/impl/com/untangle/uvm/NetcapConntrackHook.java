@@ -50,11 +50,20 @@ public class NetcapConntrackHook implements NetcapCallback
                        int s2c_packets, int s2c_bytes,
                        long timestamp_start, long timestamp_stop )
     {
-        if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() )
-            return;
-        
         int sourceIntf = (int)mark & 0xff;
         int destIntf = (int)(mark & 0xff00)>>8;
+
+        // if destIntf == 0 means its to the local server
+        if ( destIntf == 0 ) {
+            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalSessions() )
+                return;
+        }
+        // otherwise its a regular session to another place
+        else {
+            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() )
+                return;
+        }
+        
         InetAddress cClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_client_addr );
         InetAddress cServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_server_addr );
         InetAddress sClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_client_addr );

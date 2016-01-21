@@ -107,7 +107,7 @@ for line in ip_conntrack_file.readlines():
     else:
         print ","
 
-    print "{ protocol:\"%s\", clientIntf:\"%s\", serverIntf:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
+    print "{ protocol:\"%s\", clientIntf:\"%s\", serverIntf:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"%i\", markHex:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
         dict['protocol'],
         dict['client_intf'],
         dict['server_intf'],
@@ -121,6 +121,7 @@ for line in ip_conntrack_file.readlines():
         dict['reply_src_port'],
         dict['qos_priority'],
         dict['bypassed'],
+        dict['mark'],
         dict['mark'])
 
 print "] }"

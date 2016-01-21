@@ -25,7 +25,8 @@ public class SessionMonitorEntry
     private Integer postNatServerPort;
 
     private Integer qosPriority;
-    private Boolean bypassed;
+    private Boolean bypassed = null;
+    private Integer mark;
 
     public String getProtocol() {return protocol;}
     public void   setProtocol( String protocol ) {this.protocol = protocol;}
@@ -59,6 +60,9 @@ public class SessionMonitorEntry
     public Boolean getBypassed() {return bypassed;}
     public void    setBypassed( Boolean bypassed ) {this.bypassed = bypassed;}
 
+    public Integer getMark() {return mark;}
+    public void    setMark( Integer mark ) {this.mark = mark;}
+    
     /**
      * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */
@@ -99,7 +103,7 @@ public class SessionMonitorEntry
 
     public String  getPipeline() {return pipeline;}
     public void    setPipeline( String newValue ) {this.pipeline = newValue;}
-    
+
     public Map<String,Object> getAttachments() {return attachments;}
 
     /**
@@ -136,6 +140,6 @@ public class SessionMonitorEntry
 
     public String toString()
     {
-        return getProtocol() + "| " + getPreNatClient() + ":" + getPreNatClientPort() + " -> " + getPostNatServer() + ":" + getPostNatServerPort();
+        return getProtocol() + "| " + getPreNatClient().getHostAddress() + ":" + getPreNatClientPort() + " -> " + getPostNatServer().getHostAddress() + ":" + getPostNatServerPort();
     }
 }
