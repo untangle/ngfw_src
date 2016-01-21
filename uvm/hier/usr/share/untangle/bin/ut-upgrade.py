@@ -128,13 +128,13 @@ if "2.6.32" in platform.platform():
 
 log("")
 
+remove_libitems()
+log("")
+
 r = check_upgrade();
 if r != 0:
     log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
     sys.exit(1)
-
-remove_libitems()
-log("")
 
 upgrade()
 log("")
