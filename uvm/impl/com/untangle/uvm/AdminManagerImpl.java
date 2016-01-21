@@ -292,11 +292,13 @@ public class AdminManagerImpl implements AdminManager
                                  "\"conditionType\":",
                                  "WanFailoverEvent",
                                  "ApplicationControlLogEvent"};
+        String expressions = "";
         for ( i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
-            UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f | xargs /bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i ");
+            expressions = expressions + " " + "-e 's/" + oldStr + "/" + newStr + "/g'";
         }
+        UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f -name '*.js' | xargs /bin/sed " + expressions + " -i ");
 
         // rename sitefilter to web-filter
         oldName = "untangle-node-sitefilter";
