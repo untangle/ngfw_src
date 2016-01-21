@@ -18,8 +18,43 @@ defaultRackId = 1
 node = None
 nodeWeb = None
 testedServerName="news.ycombinator.com"
+testedServerURLParts = testedServerName.split(".")
+testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
+print testedServerDomainWildcard
 dropboxIssuer="/C=US/ST=California/L=San Francisco/O=Dropbox"
 
+def createSSLInspectRule(url=testedServerDomainWildcard):
+    return {
+        "action": {
+            "actionType": "INSPECT",
+            "flag": False,
+            "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleAction"
+        },
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "conditionType": "SSL_INSPECTOR_SNI_HOSTNAME",
+                    "invert": False,
+                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "value": url
+                }
+            ]
+        },
+        "description": url,
+        "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRule",
+        "live": True,
+        "ruleId": 1
+    };
+
+def findRule(target_description):
+    found = False
+    for rule in nodeData['ignoreRules']['list']:
+        if rule['description'] == target_description:
+            found = True
+            break
+    return found
+    
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
     newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
     rules = nodeWeb.getBlockedUrls()
@@ -57,13 +92,10 @@ class SslInspectorTests(unittest2.TestCase):
     def setUp(self):
         pass
 
-    def test_005_setInspectAllTraffic(self):
-        # print nodeData['ignoreRules']['list']
-        if nodeData['ignoreRules']['list'][4]['description'] != 'Inspect All Traffic':
-            raise unittest2.SkipTest('Rule 4 of SSL Inspector is not Inspect All traffic')
-        else:
-            nodeData['ignoreRules']['list'][4]['live'] = True
-            node.setSettings(nodeData)
+    def test_005_setInspectSelectedSiteTraffic(self):
+        global node, nodeData
+        nodeData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
+        node.setSettings(nodeData)
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -75,11 +107,11 @@ class SslInspectorTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_checkIgnoreCertificate(self):
-        if nodeData['ignoreRules']['list'][3]['description'] != 'Ignore Dropbox':
-            raise unittest2.SkipTest('Rule 3 of SSL Inspector is not Ignore Dropbox')
-        else:
+        if findRule('Ignore Dropbox'):
             result = remote_control.runCommand('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
             assert (result == 0)
+        else:
+            raise unittest2.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
 
     def test_030_checkSslInspectorInspectorEventLog(self):
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
