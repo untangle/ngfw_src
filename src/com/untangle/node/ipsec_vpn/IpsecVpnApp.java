@@ -111,7 +111,7 @@ public class IpsecVpnApp extends NodeBase
         tmp.setRightSubnet("10.20.0.0/16");
         tunnelList.add(tmp);
 
-        settings.setTunnels(tunnelList);
+        settings.setTunnelList(tunnelList);
         setSettings(settings);
     }
 
@@ -123,12 +123,20 @@ public class IpsecVpnApp extends NodeBase
 
     public void setSettings(IpsecVpnSettings newSettings)
     {
+        int idx;
+        
         logger.debug("setSettings()");
 
-        int idx = 0;
+        idx = 0;
 
-        for (IpsecVpnTunnel tunnel : newSettings.getTunnels()) {
+        for (IpsecVpnTunnel tunnel : newSettings.getTunnelList()) {
             tunnel.setId(++idx);
+        }
+        
+        idx = 0;
+        
+        for (IpsecVpnNetwork network : newSettings.getNetworkList()) {
+            network.setId(++idx);
         }
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -313,12 +321,21 @@ public class IpsecVpnApp extends NodeBase
                 logger.info("/etc/untangle-netd/iptables-rules.d/711-xauth" + ": " + line);
         } catch (Exception e) {
         }
+
+        result = UvmContextFactory.context().execManager().exec("/etc/untangle-netd/iptables-rules.d/712-gre");
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + result.getResult());
+            for (String line : lines)
+                logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + line);
+        } catch (Exception e) {
+        }
     }
 
     public void updateBlingers()
     {
         logger.debug("updateBlingers()");
-        LinkedList<IpsecVpnTunnel> list = settings.getTunnels();
+        LinkedList<IpsecVpnTunnel> list = settings.getTunnelList();
         int dtot = 0;
         int etot = 0;
         int ttot = 0;
@@ -451,7 +468,7 @@ public class IpsecVpnApp extends NodeBase
         }
 
         // get the list of configured tunnels from the settings
-        LinkedList<IpsecVpnTunnel> configList = settings.getTunnels();
+        LinkedList<IpsecVpnTunnel> configList = settings.getTunnelList();
         if (configList == null) return (displayList);
 
         // create a status display record for all enabled tunnels

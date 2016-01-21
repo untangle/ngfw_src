@@ -125,7 +125,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     public String getRightNextHop() { return (rightNextHop); }
     public void setRightNextHop(String rightNextHop) { this.rightNextHop = rightNextHop; }
 
-    // THIS IS FOR ECLIPSE - @formatter:off
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toJSONString()
     {

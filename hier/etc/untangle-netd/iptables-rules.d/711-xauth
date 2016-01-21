@@ -2,7 +2,7 @@
 
 if [ -z "$IPTABLES" ] ; then IPTABLES=iptables ; fi
 
-POOL="0.0.0.0"
+POOL="-EMPTY-"
 if [ -x /usr/share/untangle/bin/ipsec-xauth-cidr-block ] ; then
    POOL="`/usr/share/untangle/bin/ipsec-xauth-cidr-block`"
 fi
@@ -19,20 +19,14 @@ ${IPTABLES} -t mangle -F ipsec-xauth-dst >/dev/null 2>&1
 ${IPTABLES} -t mangle -D mark-src-intf -j ipsec-xauth-src -m comment --comment "src interface jump for Xauth" >/dev/null 2>&1
 ${IPTABLES} -t mangle -D mark-dst-intf -j ipsec-xauth-dst -m comment --comment "dst interface jump for Xauth" >/dev/null 2>&1
 
-# delete old global NAT rule
+# delete old nat-rules rule
 ${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfc/0xff -j MASQUERADE -m comment --comment "NAT Xauth traffic" >/dev/null 2>&1
-
-# delete old WAN NAT rule
-${IPTABLES} -t nat -D nat-rules -m mark --mark 0x1fc/0xffff -j MASQUERADE -m comment --comment "NAT WAN-bound Xauth traffic" >/dev/null 2>&1
 
 # delete old nat-reverse-filter rule
 ${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfc/0xff -j RETURN -m comment --comment "Allow Xauth" >/dev/null 2>&1 
 
-# delete old filter-rules-input rule
-${IPTABLES} -t filter -D filter-rules-input -m mark --mark 0xfc/0xff -j RETURN -m comment --comment "Allow Xauth" >/dev/null 2>&1
-
 # if we don't have a valid Xauth pool then IPsec is likely not installed or configured
-if [ $POOL = "0.0.0.0" ]
+if [ $POOL = "-EMPTY-" ]
 then
     return
 fi
@@ -53,6 +47,6 @@ ${IPTABLES} -t mangle -I mark-dst-intf -j ipsec-xauth-dst -m comment --comment "
 # insert nat-reverse-filter rule to allow Xauth to penetrate NATd networks 
 ${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfc/0xff -j RETURN -m comment --comment "Allow Xauth" 
 
-# NAT traffic from xauth network
+# insert nat-rules rule for traffic from xauth network
 ${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfc/0xff -j MASQUERADE -m comment --comment "NAT Xauth traffic"
 

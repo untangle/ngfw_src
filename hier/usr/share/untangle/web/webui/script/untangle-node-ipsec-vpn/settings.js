@@ -2,6 +2,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     extend:'Ung.NodeWin',
     pageOptions: null,
     gridTunnels: null,
+    gridNetworks: null,
     pageStateInfo: null,
     pagePolicyInfo: null,
     pageLogFile: null,
@@ -21,11 +22,12 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.buildOptions();
         this.buildTunnels();
         this.buildVPNConfig();
+        this.buildNetworks();
         this.buildPanelState();
         this.buildPanelPolicy();
         this.buildPanelLogFile();
         this.buildPanelVirtualLogFile();
-        this.buildTabPanel([this.pageOptions, this.gridTunnels, this.pageVirtualConfig, this.pageStateInfo, this.pagePolicyInfo, this.pageLogFile, this.pageVirtualLogFile]);
+        this.buildTabPanel([this.pageOptions, this.gridTunnels, this.pageVirtualConfig, this.gridNetworks, this.pageStateInfo, this.pagePolicyInfo, this.pageLogFile, this.pageVirtualLogFile]);
         this.callParent(arguments);
     },
 
@@ -334,7 +336,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_tunnels',
             title: i18n._("IPsec Tunnels"),
             qtip: i18n._("The IPsec tunnels list contains all of the secure network tunnels that have been defined."),
-            dataProperty:'tunnels',
+            dataProperty:'tunnelList',
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
             emptyRow: {
                 'active': true,
@@ -412,7 +414,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 header: i18n._("Enabled"),
                 dataIndex: 'active',
                 resizable: false,
-                width: 55
+                width: 80
             }, {
                 header: i18n._("Local IP"),
                 width: 150,
@@ -1049,6 +1051,202 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         });
     },
 
+    buildNetworks: function() {
+        var localDefault = "0.0.0.0";
+        var x;
+        var networks = [];
+        networks.push(['', '- ' + i18n._("Custom") + ' -']);
+
+        // build the list of active WAN networks for the interface combo box
+        for( x = 0 ; x < this.rpc.intStatus.list.length ; x++) {
+            var status = this.rpc.intStatus.list[x];
+            if ( ! status.v4Address ) continue;
+            if ( ! status.interfaceId ) continue;
+            var intf = Ung.Util.getInterface( this.rpc.netSettings, status.interfaceId );
+            if ( ! intf ) continue;
+            if ( ! intf.isWan ) continue;
+            if ( intf.disabled ) continue;
+            networks.push([ status.v4Address, intf.name]);
+        }
+
+        for( x = 0 ; x < this.rpc.netSettings.interfaces.list.length ; x++) {
+            var intfSettings = this.rpc.netSettings.interfaces.list[x];
+            if (intfSettings.v4StaticAddress === null) { continue; }
+            if (intfSettings.v4StaticPrefix === null) { continue; }
+
+            // save the first WAN address to use as the default for new tunnels
+            if ( localDefault == "0.0.0.0" && intfSettings.v4ConfigType == "STATIC" && intfSettings.isWan ) {
+               localDefault = intfSettings.v4StaticAddress;
+            }
+        }
+
+        this.gridNetworks = Ext.create('Ung.grid.Panel', {
+            settingsCmp: this,
+            name: 'gridNetworks',
+            helpSource: 'ipsec_vpn_ipsec_networks',
+            title: i18n._("GRE Networks"),
+            qtip: i18n._("The GRE Networks list contains remote networks that connect to this server using the GRE protocol."),
+            dataProperty:'networkList',
+            recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnNetwork',
+            emptyRow: {
+                'active': true,
+                'localAddress': localDefault,
+                'remoteAddress': '',
+                'remoteNetwork': '',
+                'description': ''
+            },
+            sortField: 'description',
+            fields: [{
+                name: 'id'
+            },{
+                name: 'active'
+            },{
+                name: 'localAddress',
+                sortType: 'asIp'
+            },{
+                name: 'remoteAddress',
+                sortType: 'asIp'
+            },{
+                name: 'remoteNetwork',
+                sortType: 'asIp'
+            },{
+                name: 'description'
+            }],
+            columns: [{
+                xtype: 'checkcolumn',
+                header: i18n._("Enabled"),
+                dataIndex: 'active',
+                resizable: false,
+                width: 80
+            }, {
+                header: i18n._("Local IP"),
+                width: 150,
+                dataIndex: 'localAddress'
+            }, {
+                header: i18n._("Remote Host"),
+                width: 150,
+                dataIndex: 'remoteAddress'
+            }, {
+                header: i18n._("Remote Network"),
+                width: 200,
+                dataIndex: 'remoteNetwork'
+            }, {
+                header: i18n._("Description"),
+                width: 100,
+                dataIndex: 'description',
+                flex: 1
+            }]
+        });
+
+        this.gridNetworks.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            inputLines:[{
+                xtype:'checkbox',
+                name: 'active',
+                dataIndex: 'active',
+                fieldLabel: i18n._("Enable")
+            },{
+                xtype:'textfield',
+                name: 'Description',
+                dataIndex: 'description',
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[enter description]"),
+                allowBlank: false,
+                width: 400
+            }, {
+                xtype: "combo",
+                name: 'interfaceCombo',
+                fieldLabel: i18n._("Interface"),
+                editable: false,
+                queryMode: 'local',
+                store: networks,
+                listeners: {
+                    'change': Ext.bind(function(field, newValue, oldValue, eOpts) {
+                        var left = this.gridNetworks.rowEditor.down('textfield[dataIndex=localAddress]');
+                        left.setValue(newValue);
+                    }, this)
+                }
+            },
+            {
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype: "textfield",
+                    dataIndex: 'localAddress',
+                    fieldLabel: i18n._("External IP"),
+                    emptyText: i18n._("[enter external IP]"),
+                    width: 350,
+                    allowBlank: false,
+                    vtype: 'ipAddress',
+                    listeners: {
+                        "change": Ext.bind(function(field, newValue, oldValue, eOpts) {
+                            this.gridNetworks.rowEditor.syncComponents();
+                        }, this)
+                    }
+                }, {
+                    xtype: 'label',
+                    html: i18n._("(The external IP address of this server)"),
+                    cls: 'boxlabel'
+                }]
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textfield',
+                    name: 'right',
+                    dataIndex: 'remoteAddress',
+                    fieldLabel: i18n._("Remote Host"),
+                    emptyText: i18n._("[enter remote host]"),
+                    width: 350,
+                    allowBlank: false,
+                    vtype: 'ipAddress',
+                }, {
+                    xtype: 'label',
+                    html: i18n._("(The public IP address of the remote GRE gateway)"),
+                    cls: 'boxlabel'
+                }]
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textfield',
+                    name: 'remoteNetwork',
+                    dataIndex: 'remoteNetwork',
+                    fieldLabel: i18n._("Remote Network"),
+                    emptyText: i18n._("[enter remote network]"),
+                    width: 350,
+                    allowBlank: false,
+                    vtype: 'cidrBlock'
+                }, {
+                    xtype: 'label',
+                    html: i18n._("(The private network attached to the remote side of the tunnel)"),
+                    cls: 'boxlabel'
+                }]
+            }],
+            syncComponents: function() {
+                if(!this.cmps) {
+                    this.cmps = {
+                        interfaceCombo: this.down('combo[name=interfaceCombo]'),
+                        localAddress: this.down('textfield[dataIndex=localAddress]')
+                    };
+                }
+                var localValue = this.cmps.localAddress.getValue();
+                this.cmps.interfaceCombo.suspendEvent("change");
+                this.cmps.interfaceCombo.setValue('');
+
+                for(var x = 0; x < networks.length;x++) {
+                    if (networks[x][0] === localValue) {
+                        this.cmps.interfaceCombo.setValue(localValue);
+                        break;
+                    }
+                }
+                this.cmps.interfaceCombo.resumeEvent("change");
+            }
+        }));
+    },
+
     buildListenGrid: function() {
         this.gridListenList = Ext.create('Ung.grid.Panel',{
             name: 'gridListen',
@@ -1215,7 +1413,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         });
     },
     beforeSave: function(isApply, handler) {
-        this.getSettings().tunnels.list = this.gridTunnels.getList();
+        this.getSettings().tunnelList.list = this.gridTunnels.getList();
+        this.getSettings().networkList.list = this.gridNetworks.getList();
         this.getSettings().virtualListenList.list = this.gridListenList.getList();
         handler.call(this, isApply);
     },

@@ -17,41 +17,51 @@ import org.json.JSONString;
 import org.json.JSONObject;
 
 import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.UvmContextFactory;
 
 public class IpsecVpnManager
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final String TAB = "\t";
-    private final String RET = "\n";
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-    private final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
-    private final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
+    private static final String TAB = "\t";
+    private static final String RET = "\n";
 
-    private final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle IPsec service." + RET +
-                                            "# If you modify this file manually, your changes will be overwritten!" + RET + RET;
+    private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
+    private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
+    private static final String IPTABLES_GRE_SCRIPT = "/etc/untangle-netd/iptables-rules.d/712-gre";
+
+    private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";
+    private static final String IPSEC_SECRETS_FILE = "/etc/ipsec.secrets";
+    private static final String OPTIONS_XL2TPD_FILE = "/etc/ppp/options.xl2tpd";
+    private static final String XL2TPD_CONF_FILE = "/etc/xl2tpd/xl2tpd.conf";
+    private static final String STRONGSWAN_CONF_FILE = "/etc/strongswan.conf";
+
+    private static final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle IPsec service." + RET +
+                                                   "# If you modify this file manually, your changes will be overwritten!" + RET + RET;
 
     // these are the default values that will be used when phase 1/2 manual configuration is NOT enabled
-    // and were chosen for maximum compatibility with our previous releases that used openswan 
+    // and were chosen for maximum compatibility with our previous releases that used openswan
 
-    private final String ike_default = "3des-md5-modp2048,3des-md5-modp1536,3des-md5-modp1024," +
-                                       "3des-sha1-modp2048,3des-sha1-modp1536,3des-sha1-modp1024," +
-                                       "aes128-md5-modp2048,aes128-md5-modp1536,aes128-md5-modp1024," +
-                                       "aes128-sha1-modp2048,aes128-sha1-modp1536,aes128-sha1-modp1024," +
-                                       "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
-                                       "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
+    private static final String ike_default = "3des-md5-modp2048,3des-md5-modp1536,3des-md5-modp1024," +
+                                              "3des-sha1-modp2048,3des-sha1-modp1536,3des-sha1-modp1024," +
+                                              "aes128-md5-modp2048,aes128-md5-modp1536,aes128-md5-modp1024," +
+                                              "aes128-sha1-modp2048,aes128-sha1-modp1536,aes128-sha1-modp1024," +
+                                              "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
+                                              "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
 
-    private final String esp_default = "3des-md5-modp2048,3des-md5-modp1536,3des-md5-modp1024," +
-                                       "3des-sha1-modp2048,3des-sha1-modp1536,3des-sha1-modp1024," +
-                                       "aes128-md5-modp2048,aes128-md5-modp1536,aes128-md5-modp1024," +
-                                       "aes128-sha1-modp2048,aes128-sha1-modp1536,aes128-sha1-modp1024," +
-                                       "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
-                                       "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
-    
-    private final String ikelifetime_default = "1h";
-    private final String lifetime_default = "8h";
+    private static final String esp_default = "3des-md5-modp2048,3des-md5-modp1536,3des-md5-modp1024," +
+                                              "3des-sha1-modp2048,3des-sha1-modp1536,3des-sha1-modp1024," +
+                                              "aes128-md5-modp2048,aes128-md5-modp1536,aes128-md5-modp1024," +
+                                              "aes128-sha1-modp2048,aes128-sha1-modp1536,aes128-sha1-modp1024," +
+                                              "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
+                                              "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
+
+    private static final String ikelifetime_default = "1h";
+    private static final String lifetime_default = "8h";
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -61,6 +71,7 @@ public class IpsecVpnManager
 
         try {
             writeConfigFiles(settings);
+            writeIptablesScript(settings);
             UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
         }
 
@@ -73,25 +84,25 @@ public class IpsecVpnManager
     {
         logger.debug("writeConfigFiles()");
 
-        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
+        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnelList();
         LinkedList<VirtualListen> listenList = settings.getVirtualListenList();
         VirtualListen listen;
         IpsecVpnTunnel data;
         int x;
 
-        FileWriter ipsec_conf = new FileWriter("/etc/ipsec.conf", false);
-        FileWriter ipsec_secrets = new FileWriter("/etc/ipsec.secrets", false);
-        FileWriter options_xl2tpd = new FileWriter("/etc/ppp/options.xl2tpd", false);
-        FileWriter xl2tpd_conf = new FileWriter("/etc/xl2tpd/xl2tpd.conf", false);
-        FileWriter strongswan_conf = new FileWriter("/etc/strongswan.conf", false);
+        FileWriter ipsec_conf = new FileWriter(IPSEC_CONF_FILE, false);
+        FileWriter ipsec_secrets = new FileWriter(IPSEC_SECRETS_FILE, false);
+        FileWriter options_xl2tpd = new FileWriter(OPTIONS_XL2TPD_FILE, false);
+        FileWriter xl2tpd_conf = new FileWriter(XL2TPD_CONF_FILE, false);
+        FileWriter strongswan_conf = new FileWriter(STRONGSWAN_CONF_FILE, false);
 
         AddressCalculator calculator = new AddressCalculator(settings.getVirtualAddressPool());
 
-        ipsec_conf.write("# /etc/ipsec.conf" + RET + FILE_DISCLAIMER);
-        ipsec_secrets.write("# /etc/ipsec.secrets" + RET + FILE_DISCLAIMER);
-        options_xl2tpd.write("# /etc/ppp/options.xl2tpd" + RET + FILE_DISCLAIMER);
-        xl2tpd_conf.write("; /etc/xl2tpd/xl2tpd.conf" + RET + FILE_DISCLAIMER.replaceAll("#", ";"));
-        strongswan_conf.write("# /etc/strongswan.conf" + RET + FILE_DISCLAIMER);
+        ipsec_conf.write("# " + IPSEC_CONF_FILE + RET + FILE_DISCLAIMER);
+        ipsec_secrets.write("# " + IPSEC_SECRETS_FILE + RET + FILE_DISCLAIMER);
+        options_xl2tpd.write("# " + OPTIONS_XL2TPD_FILE + RET + FILE_DISCLAIMER);
+        xl2tpd_conf.write("; " + XL2TPD_CONF_FILE + RET + FILE_DISCLAIMER.replaceAll("#", ";"));
+        strongswan_conf.write("# " + STRONGSWAN_CONF_FILE + RET + FILE_DISCLAIMER);
 
         if (settings == null) {
             ipsec_conf.close();
@@ -349,6 +360,92 @@ public class IpsecVpnManager
         options_xl2tpd.close();
         xl2tpd_conf.close();
         strongswan_conf.close();
+    }
+
+    private void writeIptablesScript(IpsecVpnSettings settings) throws Exception
+    {
+        logger.debug("writeIptablesScript(" + IPTABLES_GRE_SCRIPT + ")");
+
+        LinkedList<IpsecVpnNetwork> networkList = settings.getNetworkList();
+        IpsecVpnNetwork network;
+        String iface;
+        String iaddr;
+        int x;
+
+        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+
+        FileWriter gre_script = new FileWriter(IPTABLES_GRE_SCRIPT, false);
+
+        gre_script.write("#!/bin/dash" + RET + "# " + IPTABLES_GRE_SCRIPT + RET + FILE_DISCLAIMER);
+
+        gre_script.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + RET + RET);
+
+        gre_script.write("# delete all existing gre interfaces except 0 which is hidden and protected" + RET);
+        gre_script.write("GRECOUNT=`cat /proc/net/dev | grep -v gre0 | grep gre | wc -l`" + RET);
+        gre_script.write("for i in `seq 1 $GRECOUNT` ; do" + RET);
+        gre_script.write(TAB + "${IPTABLES} -t mangle -D mark-src-intf -i gre$i -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\" >/dev/null 2>&1" + RET);
+        gre_script.write(TAB + "${IPTABLES} -t mangle -D mark-dst-intf -o gre$i -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\" >/dev/null 2>&1" + RET);
+        gre_script.write(TAB + "ip tunnel del gre$i" + RET);
+        gre_script.write("done" + RET);
+        gre_script.write(RET);
+
+        gre_script.write("# delete all of the old WAN NAT rules" + RET);
+        for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
+            if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
+                gre_script.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fd) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\" >/dev/null 2>&1" + RET);
+            }
+        }
+        gre_script.write(RET);
+
+        gre_script.write("# delete the old nat-reverse-filter rule" + RET);
+        gre_script.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\" >/dev/null 2>&1" + RET);
+        gre_script.write(RET);
+
+        gre_script.write("# delete the old admin forwards for GRE networks" + RET);
+        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
+        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
+        gre_script.write(RET);
+
+        for (x = 0; x < networkList.size(); x++) {
+            // For each active network we create a GRE interface
+            // and add a route for the configured remote network
+            network = networkList.get(x);
+            if (network.getActive() != true) continue;
+
+            iface = ("gre" + String.valueOf(x + 1));
+            iaddr = ("198.51.100." + String.valueOf(x + 1));
+
+            gre_script.write("# IpsecVpnNetwork - " + network.getDescription() + RET);
+            gre_script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
+            gre_script.write("ip link set " + iface + " up" + RET);
+            gre_script.write("ip addr add " + iaddr + " dev " + iface + RET);
+            gre_script.write("ip route add " + network.getRemoteNetwork() + " dev " + iface + RET);
+            gre_script.write("${IPTABLES} -t mangle -I mark-src-intf 3 -i " + iface + " -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\"" + RET);
+            gre_script.write("${IPTABLES} -t mangle -I mark-dst-intf 3 -o " + iface + " -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\"" + RET);
+            gre_script.write(RET);
+        }
+
+        gre_script.write("create WAN NAT rules for each GRE interface" + RET);
+        for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
+            if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
+                gre_script.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fd) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound GRE traffic\"" + RET);
+            }
+        }
+        gre_script.write(RET);
+
+        gre_script.write("# create nat-reverse-filter rule to allow GRE to penetrate NATd networks" + RET);
+        gre_script.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\"" + RET);
+        gre_script.write(RET);
+
+        gre_script.write("# create admin forwards for GRE networks" + RET);
+        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\"" + RET);
+        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\"" + RET);
+        gre_script.write(RET);
+
+        gre_script.close();
+
+        UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_GRE_SCRIPT);
     }
 
     private String StringHexify(String source)

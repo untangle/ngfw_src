@@ -17,6 +17,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     };
 
     private LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<IpsecVpnTunnel>();
+    private LinkedList<IpsecVpnNetwork> networkList = new LinkedList<IpsecVpnNetwork>();
     private boolean bypassflag = false;
     private boolean debugflag = false;
     private boolean vpnflag = false;
@@ -44,8 +45,11 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     public boolean getVpnflag() { return (vpnflag); }
     public void setVpnflag(boolean vpnflag) { this.vpnflag = vpnflag; }
 
-    public LinkedList<IpsecVpnTunnel> getTunnels() { return (tunnelList); }
-    public void setTunnels(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }
+    public LinkedList<IpsecVpnTunnel> getTunnelList() { return (tunnelList); }
+    public void setTunnelList(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }
+
+    public LinkedList<IpsecVpnNetwork> getNetworkList() { return (networkList); }
+    public void setNetworkList(LinkedList<IpsecVpnNetwork> networkList) { this.networkList = networkList; }
 
     public LinkedList<VirtualListen> getVirtualListenList() { return (virtualListenList); }
     public void setVirtualListenList(LinkedList<VirtualListen> virtualListenList) { this.virtualListenList = virtualListenList; }
@@ -71,7 +75,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     public String getCharonDebug() { return (charonDebug); }
     public void setCharonDebug(String charonDebug) { this.charonDebug = charonDebug; }
 
-// THIS IS FOR ECLIPSE - @formatter:off
+// THIS IS FOR ECLIPSE - @formatter:on
 
     public String toJSONString()
     {

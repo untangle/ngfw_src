@@ -9,12 +9,25 @@ from uvm.settings_reader import get_node_settings_item
 import os
 import sys
 
+# First we create the interface for GRE tunnels since it is static.
+# Each GRE interface gets an address from 198.51.100.0/24 starting with .1
+# which will always exist if there are any configured so we just use that.
+file = open("/var/lib/untangle-netd/interface-253-status.js", "w");
+file.write("{");
+file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
+file.write("\"v4Address\": \"198.51.100.1\", ");
+file.write("\"v4Netmask\": \"255.255.255.0\", ");
+file.write("\"v4PrefixLength\": \"24\", ");
+file.write("\"interfaceId\": 253");
+file.write("}");
+file.close()
+
 # Read the virtual address pool from the IPsec node settings file
 addressPool = get_node_settings_item("untangle-node-ipsec-vpn", "virtualAddressPool")
 
 # If we have good config data we use the first address for the server
 if addressPool == None:
-    # not found, delete any existing status file and exit
+    # not found so delete any existing status file and exit
     if os.path.exists("/var/lib/untangle-netd/interface-251-status.js"):
         os.remove("/var/lib/untangle-netd/interface-251-status.js")
     sys.exit(0)
