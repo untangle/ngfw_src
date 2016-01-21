@@ -13,19 +13,19 @@ import com.untangle.uvm.util.I18nUtil;
 public class InterfaceStatEvent extends LogEvent
 {
     private int interfaceId;
-    private float rxRate;
-    private float txRate;
+    private double rxRate;
+    private double txRate;
 
     public InterfaceStatEvent() { }
 
     public int getInterfaceId() { return interfaceId; }
     public void setInterfaceId(int newValue) { this.interfaceId = newValue; }
 
-    public float getRxRate() { return rxRate; }
-    public void setRxRate(float newValue) { this.rxRate = newValue; }
+    public double getRxRate() { return rxRate; }
+    public void setRxRate(double newValue) { this.rxRate = newValue; }
 
-    public float getTxRate() { return txRate; }
-    public void setTxRate(float newValue) { this.txRate = newValue; }
+    public double getTxRate() { return txRate; }
+    public void setTxRate(double newValue) { this.txRate = newValue; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
@@ -41,8 +41,8 @@ public class InterfaceStatEvent extends LogEvent
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setLong(++i, interfaceId);
-        pstmt.setFloat(++i, rxRate);
-        pstmt.setFloat(++i, txRate);
+        pstmt.setDouble(++i, rxRate);
+        pstmt.setDouble(++i, txRate);
 
         pstmt.addBatch();
         return;

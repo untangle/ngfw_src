@@ -44,7 +44,7 @@ CREATE TABLE reports.server_events (
 CREATE TABLE reports.interface_stat_events (
     time_stamp  TIMESTAMP,
     interface_id INT,
-    rx_rate 	FLOAT,
-    tx_rate 	FLOAT)""")
+    rx_rate 	float8,
+    tx_rate 	float8)""")
 
 reports.engine.register_node(ServerNode())

@@ -54,11 +54,11 @@ public class MetricManagerImpl implements MetricManager
 
     private final Map<String,Long> rxtxBytesStore = new HashMap<String,Long>();
 
-    private long lastNetDevUpdate = System.currentTimeMillis();
+    private long lastNetDevUpdate = 0;
 
     private final Map<String,Long> diskRW0 = new HashMap<String,Long>();
 
-    private long lastDiskUpdate = System.currentTimeMillis();
+    private long lastDiskUpdate = 0;
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
@@ -174,8 +174,8 @@ public class MetricManagerImpl implements MetricManager
                         Object txBps_o = m.get(key + "txBps");
                         if ( rxBps_o == null || txBps_o == null )
                             continue;
-                        float rxBps = Float.parseFloat( rxBps_o.toString() );
-                        float txBps = Float.parseFloat( txBps_o.toString() );
+                        double rxBps = Double.parseDouble( rxBps_o.toString() );
+                        double txBps = Double.parseDouble( txBps_o.toString() );
                         InterfaceStatEvent event = new InterfaceStatEvent();
                         event.setInterfaceId( intfSettings.getInterfaceId() );
                         event.setRxRate( rxBps );
@@ -476,8 +476,17 @@ public class MetricManagerImpl implements MetricManager
                                 m.put(key + "rxBps", 0.0);
                                 m.put(key + "txBps", 0.0);
                             } else {
-                                m.put(key + "rxBps", (rxBytesNew - rxBytesOld) / dt);
-                                m.put(key + "txBps", (txBytesNew - txBytesOld) / dt);
+                                double rd = (( rxBytesNew - rxBytesOld ) / dt );
+                                double td = (( txBytesNew - txBytesOld ) / dt );
+                                if ( rd > 100000000 ) {
+                                    logger.warn("Suspicious rxBytes value: " + rd);
+                                    logger.warn("New bytes          value: " + rxBytesNew);
+                                    logger.warn("Old bytes          value: " + rxBytesOld);
+                                    logger.warn("Diff bytes         value: " + (rxBytesNew - rxBytesOld));
+                                    logger.warn("Diff time          value: " + dt);
+                                }
+                                m.put(key + "rxBps", rd);
+                                m.put(key + "txBps", td);
                             }
                         } catch (NumberFormatException exn) {
                             logger.warn("could not add interface info for: " + iface, exn);
