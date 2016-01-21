@@ -487,7 +487,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * Special handling for OpenVPN
          */
-        if ( intfId == 250 ) {
+        if ( intfId == 250 ) { // 0xfa
             InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }
@@ -495,7 +495,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * Special handling for L2TP
          */
-        if ( intfId == 251 ) {
+        if ( intfId == 251 ) { // 0xfb
             InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }
@@ -504,8 +504,16 @@ public class NetworkManagerImpl implements NetworkManager
          * Xauth doesn't get an interface but there are port forwards in place
          * for L2TP clients so we'll just have Xauth clients use the same address
          */
-        if ( intfId == 252 ) {
+        if ( intfId == 252 ) { // 0xfc
             InetAddress address = getInterfaceStatus( 251 ).getV4Address();
+            return address;
+        }
+
+        /**
+         * Special handling for GRE
+         */
+        if ( intfId == 253 ) { // 0xfd
+            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }
         

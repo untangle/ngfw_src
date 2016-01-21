@@ -109,6 +109,16 @@ public class IntfMatcher
             intfSettings.setInterfaceId( 252 );
             intfSettings.setIsWan( false );
         }
+        /**
+         * GRE (253) interface special handling
+         * Create a fake "interface settings" object
+         * because GRE interface doesnt have settings
+         */
+        if ( interfaceId == 0xfd ) {
+            intfSettings = new InterfaceSettings();
+            intfSettings.setInterfaceId( 253 );
+            intfSettings.setIsWan( false );
+        }
 
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);

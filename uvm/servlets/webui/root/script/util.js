@@ -352,9 +352,10 @@ Ext.define('Ung.Util', {
         if (systemDev) {
             data.push( [ "tun0", "OpenVPN" ] );
         } else {
-            data.push( [ 250, "OpenVPN" ] );
-            data.push( [ 251, "L2TP" ] );
-            data.push( [ 252, "Xauth" ] );
+            data.push( [ 250, "OpenVPN" ] ); // 0xfa
+            data.push( [ 251, "L2TP" ] ); // 0xfb
+            data.push( [ 252, "Xauth" ] ); // 0xfc
+            data.push( [ 253, "GRE" ] ); // 0xfd
         }
         if (wanMatchers) {
             data.unshift( ["wan",i18n._("Any WAN")] );

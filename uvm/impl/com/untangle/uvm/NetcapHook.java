@@ -149,8 +149,8 @@ public abstract class NetcapHook implements Runnable
                 if ( intfSettings != null && ! intfSettings.getIsWan() ) {
                     entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                 }
-                /* include OpenVPN, L2TP, and Xauth clients in host table */
-                if ( netcapSession.clientSide().interfaceId() == 0xfa || netcapSession.clientSide().interfaceId() == 0xfb || netcapSession.clientSide().interfaceId() == 0xfc ) {
+                /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
+                if ( netcapSession.clientSide().interfaceId() == 0xfa || netcapSession.clientSide().interfaceId() == 0xfb || netcapSession.clientSide().interfaceId() == 0xfc || netcapSession.clientSide().interfaceId() == 0xfd ) {
                     entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                 }
             } 
