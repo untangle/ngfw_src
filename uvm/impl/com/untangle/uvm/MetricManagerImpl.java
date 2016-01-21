@@ -371,18 +371,14 @@ public class MetricManagerImpl implements MetricManager
                             long idle1 = Long.parseLong(matcher.group(4));
                             idle1 = incrementCount(idle0, idle1);
 
-                            long totalTime = (user1 - user0) + (nice1 - nice0)
-                                + (system1 - system0) + (idle1 - idle0);
+                            long totalTime = (user1 - user0) + (nice1 - nice0) + (system1 - system0) + (idle1 - idle0);
 
                             if (0 == totalTime) {
                                 m.put("userCpuUtilization", (double)0);
                                 m.put("systemCpuUtilization", (double)0);
                             } else {
-                                m.put("userCpuUtilization",
-                                      ((user1 - user0) + (nice1 - nice0))
-                                      / (double)totalTime);
-                                m.put("systemCpuUtilization",
-                                      (system1 - system0) / (double)totalTime);
+                                m.put("userCpuUtilization", ((user1 - user0) + (nice1 - nice0)) / (double)totalTime);
+                                m.put("systemCpuUtilization", (system1 - system0) / (double)totalTime);
                             }
 
                             user0 = user1;
@@ -445,7 +441,21 @@ public class MetricManagerImpl implements MetricManager
                         if (txBytesOld == null) txBytesOld = 0L;
 
                         try {
-                            // accumulate previous values
+                            // parse new incoming values w/64-bit correction for 32-bit rollover
+                            long rxBytesNew = Long.parseLong(matcher.group(2));
+                            long txBytesNew = Long.parseLong(matcher.group(3));
+                            if ( rxBytesNew < rxBytesOld ) {
+                                // either an overflow has happened or the interfaces have been reset
+                                // unfortunately we can't tell which
+                                rxBytesOld = 0L;
+                            }
+                            if ( txBytesNew < txBytesOld ) {
+                                // either an overflow has happened or the interfaces have been reset
+                                // unfortunately we can't tell which
+                                txBytesOld = 0L;
+                            }
+
+                            // accumulate old values
                             totalRxBytesOldValue += rxBytesOld;
                             totalTxBytesOldValue += txBytesOld;
                             if (intfSettings.getIsWan()) {
@@ -453,11 +463,7 @@ public class MetricManagerImpl implements MetricManager
                                 wansTxBytesOldValue += txBytesOld;
                             }
                             
-                            // parse new incoming values w/64-bit correction for 32-bit rollover
-                            long rxBytesNew = incrementCount(rxBytesOld.longValue(), Long.parseLong(matcher.group(2)));
-                            long txBytesNew = incrementCount(txBytesOld.longValue(), Long.parseLong(matcher.group(3)));
-
-                            // accumulate 64-bit corrected values
+                            // accumulate new values
                             totalRxBytesNewValue += rxBytesNew;
                             totalTxBytesNewValue += txBytesNew;
                             if (intfSettings.getIsWan()) {
@@ -465,7 +471,7 @@ public class MetricManagerImpl implements MetricManager
                                 wansTxBytesNewValue += txBytesNew;
                             }
 
-                            // update stored previous values w/new 64 corrected values
+                            // update stored old values
                             rxtxBytesStore.put("rx"+intfId, rxBytesNew);
                             rxtxBytesStore.put("tx"+intfId, txBytesNew);
 
@@ -578,6 +584,11 @@ public class MetricManagerImpl implements MetricManager
             lastDiskUpdate = currentTime;
         }
 
+        /**
+         * This takes the previous number and the current number
+         * If the current number is less than the previous number, then we can assume it has wrapped
+         * This function ORs the higher bit values with the new value so we dont lose the high value bit value
+         */
         private long incrementCount(long previousCount, long kernelCount)
         {
             /* If the kernel is counting in 64-bits, just return the
