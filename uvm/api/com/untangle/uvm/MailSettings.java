@@ -17,6 +17,7 @@ public class MailSettings implements Serializable, JSONString
     public enum SendMethod { RELAY, DIRECT, CUSTOM } 
         
     private String fromAddress;
+    private Boolean useMxRecords;
     private SendMethod sendMethod = SendMethod.RELAY;
     private String smtpHost;
     private int smtpPort = 25;
@@ -31,6 +32,13 @@ public class MailSettings implements Serializable, JSONString
         return jO.toString();
     }
 
+    /**
+     * This was used before 12.0 and was changed to a Boolean we use
+     * to convert to the new SendMethod when loading old settings
+     */
+    public Boolean getUseMxRecords() { return useMxRecords; }
+    public void setUseMxRecords(Boolean useMxRecords) { this.useMxRecords = useMxRecords; }
+    
     /**
      * Specifies if we should send email using our mail relay server, direct via
      * MX records, or using the custom configured mail server.
