@@ -20,6 +20,7 @@ nodeWeb = None
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
+print testedServerDomainWildcard
 dropboxIssuer="/C=US/ST=California/L=San Francisco/O=Dropbox"
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
@@ -103,6 +104,13 @@ class SslInspectorTests(unittest2.TestCase):
             
     def test_011_checkServerCertificate(self):
         result = remote_control.runCommand('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
+        assert (result == 0)
+
+    def test_015_checkWebFilterBlockInspected(self):
+        addBlockedUrl(testedServerName)
+        remote_control.runCommand('curl -s -4 --connect-timeout 2 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
+        nukeBlockedUrls()
+        result = remote_control.runCommand('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
 
     def test_020_checkIgnoreCertificate(self):
