@@ -68,7 +68,13 @@ public class DeviceTableEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        return I18nUtil.marktr("Device Table Update") + " " + "[" + macAddress + "] " + key + " -> " + value;
+        switch (key) {
+        case "add":
+            String maker = ( device == null ? "" : "(" + device.getMacVendor() + ")");
+            return I18nUtil.marktr("New Device Discovered: ") + " " + "[" + macAddress + "] " + maker;
+        default:
+            return I18nUtil.marktr("Device Table Update") + " " + "[" + macAddress + "] " + key + " -> " + value;
+        }
     }
     
 }
