@@ -50,30 +50,39 @@ public class NetcapConntrackHook implements NetcapCallback
                        int s2c_packets, int s2c_bytes,
                        long timestamp_start, long timestamp_stop )
     {
-        int sourceIntf = (int)mark & 0xff;
-        int destIntf = (int)(mark & 0xff00)>>8;
+        int srcIntf = (int)mark & 0xff;
+        int dstIntf = (int)(mark & 0xff00)>>8;
 
-        // if destIntf == 0 means its to the local server
-        if ( destIntf == 0 ) {
-            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalSessions() )
+        // srcIntf == 0 means its from the local server
+        // must check srcIntf first, because outbound traffic is 0->0
+        if ( srcIntf == 0 ) {
+            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalOutboundSessions() ) {
                 return;
+            }
         }
-        // otherwise its a regular session to another place
-        else {
-            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() )
+        // dstIntf == 0 means its to the local server
+        else if ( dstIntf == 0 ) {
+            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalInboundSessions() ) {
                 return;
+            }
+        }
+        // otherwise its a regular session bypassed session going through the server
+        else {
+            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() ) {
+                return;
+            }
         }
         
         InetAddress cClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_client_addr );
         InetAddress cServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_server_addr );
         InetAddress sClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_client_addr );
         InetAddress sServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_server_addr );
-        
+
         // if ( type == 1 ) {
         //     Date startDate = new Date(timestamp_start*1000l);
         //     logger.warn("New Session: " +
         //                 " [protocol " + l4_proto + "] " +
-        //                 "[" + sourceIntf + "->" + destIntf + "] " +
+        //                 "[" + srcIntf + "->" + dstIntf + "] " +
         //                 cClientAddr.getHostAddress() + ":" + c_client_port +
         //                 " -> " +
         //                 sServerAddr.getHostAddress() + ":" + s_server_port +
@@ -82,7 +91,7 @@ public class NetcapConntrackHook implements NetcapCallback
         // if ( type == 4 ) {
         //     Date endDate = new Date(timestamp_stop*1000l);
         //     logger.warn("End Session: " + "[protocol " + l4_proto + "] " +
-        //                 "[" + sourceIntf + "->" + destIntf + "] " +
+        //                 "[" + srcIntf + "->" + dstIntf + "] " +
         //                 cClientAddr.getHostAddress() + ":" + c_client_port +
         //                 " -> " +
         //                 sServerAddr.getHostAddress() + ":" + s_server_port +
@@ -115,8 +124,8 @@ public class NetcapConntrackHook implements NetcapCallback
             sessionEvent.setBypassed( true );
             sessionEvent.setProtocol( (short)l4_proto ); 
             if ( l4_proto == 1 ) sessionEvent.setIcmpType( (short)icmp_type );
-            sessionEvent.setClientIntf( sourceIntf ); 
-            sessionEvent.setServerIntf( destIntf ); 
+            sessionEvent.setClientIntf( srcIntf ); 
+            sessionEvent.setServerIntf( dstIntf ); 
             sessionEvent.setUsername( username ); 
             sessionEvent.setHostname( hostname ); 
             sessionEvent.setPolicyId( 0l ); 

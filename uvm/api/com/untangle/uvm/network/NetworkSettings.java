@@ -52,7 +52,8 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean dhcpAuthoritative = true;
     private boolean blockDuringRestarts = false;
     private boolean logBypassedSessions = true;
-    private boolean logLocalSessions = false;
+    private boolean logLocalOutboundSessions = true;
+    private boolean logLocalInboundSessions = false;
     private boolean logBlockedSessions = false;
 
     private int httpPort  = 80;
@@ -149,8 +150,11 @@ public class NetworkSettings implements Serializable, JSONString
     public boolean getLogBypassedSessions() { return this.logBypassedSessions; }
     public void setLogBypassedSessions( boolean newValue ) { this.logBypassedSessions = newValue; }
 
-    public boolean getLogLocalSessions() { return this.logLocalSessions; }
-    public void setLogLocalSessions( boolean newValue ) { this.logLocalSessions = newValue; }
+    public boolean getLogLocalOutboundSessions() { return this.logLocalOutboundSessions; }
+    public void setLogLocalOutboundSessions( boolean newValue ) { this.logLocalOutboundSessions = newValue; }
+
+    public boolean getLogLocalInboundSessions() { return this.logLocalInboundSessions; }
+    public void setLogLocalInboundSessions( boolean newValue ) { this.logLocalInboundSessions = newValue; }
     
     public boolean getLogBlockedSessions() { return this.logBlockedSessions; }
     public void setLogBlockedSessions( boolean newValue ) { this.logBlockedSessions = newValue; }

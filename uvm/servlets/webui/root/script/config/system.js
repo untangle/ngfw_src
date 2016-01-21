@@ -682,7 +682,7 @@ Ext.define('Webui.config.system', {
                 xtype: "button",
                 margin: '10 0 0 0',
                 text: i18n._("Synchronize Time"),
-                name: "Setup Wizard",
+                name: "Synchronize Time",
                 iconCls: "reboot-icon",
                 handler: Ext.bind(function() {
                     Ext.MessageBox.confirm(

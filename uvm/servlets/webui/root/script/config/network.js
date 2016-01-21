@@ -4001,14 +4001,27 @@ Ext.define('Webui.config.network', {
                 }
             },{
                 xtype: "checkbox",
-                name: "logLocalSessions",
-                fieldLabel: i18n._("Log local sessions"),
+                name: "logLocalOutboundSessions",
+                fieldLabel: i18n._("Log local outbound sessions"),
                 labelWidth: 190,
-                checked: this.settings.logLocalSessions,
+                checked: this.settings.logLocalOutboundSessions,
                 listeners: {
                     "change": {
                         fn: Ext.bind(function(elem, newValue) {
-                            this.settings.logLocalSessions = newValue;
+                            this.settings.logLocalOutboundSessions = newValue;
+                        }, this)
+                    }
+                }
+            },{
+                xtype: "checkbox",
+                name: "logLocalInboundSessions",
+                fieldLabel: i18n._("Log local inbound sessions"),
+                labelWidth: 190,
+                checked: this.settings.logLocalInboundSessions,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.logLocalInboundSessions = newValue;
                         }, this)
                     }
                 }
