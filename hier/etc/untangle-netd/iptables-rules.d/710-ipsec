@@ -6,9 +6,19 @@ fi
 
 # Get the server address for L2TP clients
 
-ADDR="0.0.0.0"
+ADDR="-EMPTY-"
 if [ -x /usr/share/untangle/bin/ipsec-l2tp-server-addr ] ; then
    ADDR="`/usr/share/untangle/bin/ipsec-l2tp-server-addr`"
+fi
+
+WEBPORT="80"
+if [ -x /usr/share/untangle/bin/ipsec-get-http-port ] ; then
+    WEBPORT=`/usr/share/untangle/bin/ipsec-get-http-port`
+fi
+
+SECPORT="443"
+if [ -x /usr/share/untangle/bin/ipsec-get-https-port ] ; then
+    SECPORT=`/usr/share/untangle/bin/ipsec-get-https-port`
 fi
 
 FLAG="True"
@@ -66,7 +76,7 @@ ${IPTABLES} -t nat -D port-forward-rules -j l2tp-forward-rules -m comment --comm
 ${IPTABLES} -t nat -I port-forward-rules -j l2tp-forward-rules -m comment --comment "Port forward jump for L2TP"
 
 # if we don't have a valid L2TP server address then IPsec is likely not installed or configured
-if [ $ADDR = "0.0.0.0" ]
+if [ $ADDR = "-EMPTY-" ]
 then
     return
 fi
@@ -77,8 +87,8 @@ fi
 # if no L2TP clients are connected.  Using the L2TP server side addresses for
 # Xauth clients ended up being cleaner than trying to use the WAN interface.
 #
-${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port 443 -j REDIRECT --to-ports 443 -m comment --comment "Send L2TP to apache"
-${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port 80 -j REDIRECT --to-ports 80 -m comment --comment "Send L2TP to apache"
+${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port $SECPORT -j REDIRECT --to-ports 443 -m comment --comment "Send L2TP to apache"
+${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port $WEBPORT -j REDIRECT --to-ports 80 -m comment --comment "Send L2TP to apache"
 ${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port 53 -j REDIRECT --to-ports 53 -m comment --comment "Send L2TP tcp to dnsmasq"
 ${IPTABLES} -t nat -I l2tp-forward-rules -p udp -d $ADDR --destination-port 53 -j REDIRECT --to-ports 53 -m comment --comment "Send L2TP udp to dnsmasq"
 
