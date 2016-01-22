@@ -419,7 +419,7 @@ a.forgot-password:hover {
 
 .big-widget .x-panel-body-default {
     border: 0;
-    margin: 10px;
+    top: 0 !important;
     background: transparent;
 }
 
@@ -550,7 +550,7 @@ a.forgot-password:hover {
 
 /* new styles */
 .grid-cell {
-    
+
 }
 
 .grid-cell.small-1,.grid-cell.small-2 {

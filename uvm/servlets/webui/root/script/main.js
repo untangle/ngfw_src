@@ -84,7 +84,7 @@ Ext.define("Ung.Main", {
         Ext.tip.QuickTipManager.init();
         Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
- 
+
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout: 'border',
             responsiveFormulas: {
@@ -268,7 +268,7 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: 'container',
                             itemId: 'filterNodes'
-                            
+
                         }, {
                             xtype: 'component',
                             cls: 'apps-separator',
@@ -410,22 +410,22 @@ Ext.define("Ung.Main", {
             html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
                 '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
                 '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
-        }; 
+        };
     },
     loadDashboard: function() {
         rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var widgets = result.widgets!= null ? result.widgets.list : [];
-                if(false) { //for testing
-                    widgets.push.apply(widgets, 
+                if(true) { //for testing
+                    widgets.push.apply(widgets,
                     [
                          { type: 'Information' },
                          { type: 'Server' },
                          { type: 'HostsDevices' },
                          { type: 'Hardware' },
+                         { type: 'Chart' },
                          { type: 'Sessions' },
-                         { type: 'Memory' },
-                         { type: 'Hardware' }
+                         { type: 'Memory' }
                      ]);
                 }
                 this.dashboard.setWidgets(widgets);
@@ -755,7 +755,7 @@ Ext.define("Ung.Main", {
         Ext.getCmp('policyManagerMenuItem').disable();
         Ext.getCmp('policyManagerToolItem').hide();
         Ext.getCmp('reportsMenuItem').hide();
-        
+
         var nodePreviews = Ext.clone(this.nodePreviews);
         this.filterNodes.removeAll();
         this.serviceNodes.removeAll();
@@ -795,7 +795,7 @@ Ext.define("Ung.Main", {
         if(!hasService && this.appsPanel.hasCls("apps-have-services")) {
             this.appsPanel.removeCls("apps-have-services");
         }
-        
+
         this.nodes.sort(function(a,b) {
             return a.viewPosition - b.viewPosition;
         });
@@ -995,7 +995,7 @@ Ext.define("Ung.Main", {
             item: {
                 displayName: i18n._('Policy Manager'),
                 iconClass: 'icon-policy-manager'
-                
+
             },
             handler: Ung.Main.showPolicyManager
         }, {
@@ -1183,12 +1183,12 @@ Ext.define("Ung.Main", {
         items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
         items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
         items.push({text: i18n._('Show Devices'), value: 'SHOW_DEVICES', handler: Ung.Main.showDevices, hideDelay: 0});
-        
+
         this.policySelector.setText(items[selVirtualRackIndex].text);
         var menu = this.policySelector.down("menu");
         menu.removeAll();
         menu.add(items);
-        
+
     },
     // build policies select box
     buildPolicies: function () {
