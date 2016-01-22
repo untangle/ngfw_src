@@ -72,13 +72,16 @@ public class AlertHandler
         String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
         String serverName = companyName + " " + I18nUtil.marktr("Server");
+        JSONObject jsonObject = event.toJSONObject();
         String jsonEvent;
 
+        cleanupJsonObject( jsonObject );
+        
         try {
-            jsonEvent = event.toJSONObject().toString(4);
+            jsonEvent = jsonObject.toString(4);
         } catch (org.json.JSONException e) {
             logger.warn("Failed to pretty print.",e);
-            jsonEvent =  event.toJSONObject().toString();
+            jsonEvent = jsonObject.toString();
         }
         
         String subject = serverName + " " +
@@ -90,11 +93,12 @@ public class AlertHandler
             rule.getDescription() + ":" + "\r\n" +
             event.toSummaryString() +
             "\r\n\r\n" +
+            I18nUtil.marktr("Event:") + 
+            "\r\n" +
             jsonEvent + 
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
-
         for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
             if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
                 continue;
@@ -110,5 +114,59 @@ public class AlertHandler
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static void cleanupJsonObject( JSONObject jsonObject )
+    {
+        if ( jsonObject == null )
+            return;
+
+        java.util.Iterator<String> keys = (java.util.Iterator<String>)jsonObject.keys();
+        while ( keys.hasNext() ) {
+            String key = keys.next();
+
+            if ("class".equals(key)) {
+                keys.remove();
+                continue;
+            }
+            if ("tag".equals(key)) {
+                keys.remove();
+                continue;
+            }
+            if ("partitionTablePostfix".equals(key)) {
+                keys.remove();
+                continue;
+            }
+
+            /**
+             * Recursively clean json objects
+             */
+            try {
+                JSONObject subObject = jsonObject.getJSONObject(key);
+                if (subObject != null) {
+                    cleanupJsonObject( subObject );
+                }
+            } catch (Exception e) {
+                /* ignore */
+            }
+
+            /**
+             * If the object implements JSONString, then its probably a jsonObject
+             * Convert to JSON Object, recursively clean that, then replace it
+             */
+            try {
+                if ( jsonObject.get(key) != null ) {
+                    Object o = jsonObject.get(key);
+                    if ( o instanceof org.json.JSONString ) {
+                        JSONObject newObj = new JSONObject( o );
+                        cleanupJsonObject( newObj );
+                        jsonObject.put( key, newObj );
+                    }
+                }
+            } catch (Exception e) {
+                /* ignore */
+            }
+            
+        }
+    }
 }
 

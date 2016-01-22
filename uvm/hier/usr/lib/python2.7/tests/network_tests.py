@@ -1186,7 +1186,7 @@ class NetworkTests(unittest2.TestCase):
         assert(foundTestSession)
 
     # Test logging of blocked sessions via untangle-nflogd
-    def test_150_loggerDaemon(self):
+    def test_150_blockedSessionEventLog(self):
         # verify port 80 is open
         result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
 

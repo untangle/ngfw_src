@@ -192,8 +192,7 @@ public class RequestLine implements Serializable
 
     public String toString()
     {
-        return "RequestLine " + " length: "
-            + requestUri.toString().length() + " (" + super.toString() + ")";
+        return "Request (" + getMethod() + ") URL:" + getUrl().toString();
     }
 
     // private methods --------------------------------------------------------
