@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.FileItem;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.network.FilterRule;
 import com.untangle.uvm.node.NodeProperties;
@@ -177,6 +178,12 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     }
                 }
             }
+            for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
+                if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
+                    continue;
+                fixedReportAddressesWithUrl.add(admin.getEmailAddress());
+            }
+            
             FixedReports reports = new FixedReports();
             if(fixedReportAddressesWithoutUrl.size() > 0){
                 reports.send(fixedReportAddressesWithoutUrl, "");
