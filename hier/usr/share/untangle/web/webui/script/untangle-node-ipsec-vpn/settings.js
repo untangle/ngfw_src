@@ -336,7 +336,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_tunnels',
             title: i18n._("IPsec Tunnels"),
             qtip: i18n._("The IPsec tunnels list contains all of the secure network tunnels that have been defined."),
-            dataProperty:'tunnelList',
+            dataProperty:'tunnels',
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
             emptyRow: {
                 'active': true,
@@ -1086,7 +1086,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_gre_networks',
             title: i18n._("GRE Networks"),
             qtip: i18n._("The GRE Networks list contains remote networks that connect to this server using the GRE protocol."),
-            dataProperty:'networkList',
+            dataProperty:'networks',
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnNetwork',
             emptyRow: {
                 'active': true,
@@ -1413,8 +1413,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         });
     },
     beforeSave: function(isApply, handler) {
-        this.getSettings().tunnelList.list = this.gridTunnels.getList();
-        this.getSettings().networkList.list = this.gridNetworks.getList();
+        this.getSettings().tunnels.list = this.gridTunnels.getList();
+        this.getSettings().networks.list = this.gridNetworks.getList();
         this.getSettings().virtualListenList.list = this.gridListenList.getList();
         handler.call(this, isApply);
     },

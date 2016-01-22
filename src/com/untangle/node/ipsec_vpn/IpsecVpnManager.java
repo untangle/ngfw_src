@@ -84,7 +84,7 @@ public class IpsecVpnManager
     {
         logger.debug("writeConfigFiles()");
 
-        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnelList();
+        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
         LinkedList<VirtualListen> listenList = settings.getVirtualListenList();
         VirtualListen listen;
         IpsecVpnTunnel data;
@@ -366,7 +366,7 @@ public class IpsecVpnManager
     {
         logger.debug("writeIptablesScript(" + IPTABLES_GRE_SCRIPT + ")");
 
-        LinkedList<IpsecVpnNetwork> networkList = settings.getNetworkList();
+        LinkedList<IpsecVpnNetwork> networkList = settings.getNetworks();
         IpsecVpnNetwork network;
         String iface;
         String iaddr;

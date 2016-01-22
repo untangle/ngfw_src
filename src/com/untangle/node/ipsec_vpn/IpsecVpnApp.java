@@ -126,7 +126,7 @@ public class IpsecVpnApp extends NodeBase
         tmp.setRightSubnet("10.20.0.0/16");
         tunnelList.add(tmp);
 
-        settings.setTunnelList(tunnelList);
+        settings.setTunnels(tunnelList);
         setSettings(settings);
     }
 
@@ -144,13 +144,13 @@ public class IpsecVpnApp extends NodeBase
 
         idx = 0;
 
-        for (IpsecVpnTunnel tunnel : newSettings.getTunnelList()) {
+        for (IpsecVpnTunnel tunnel : newSettings.getTunnels()) {
             tunnel.setId(++idx);
         }
 
         idx = 0;
 
-        for (IpsecVpnNetwork network : newSettings.getNetworkList()) {
+        for (IpsecVpnNetwork network : newSettings.getNetworks()) {
             network.setId(++idx);
         }
 
@@ -349,7 +349,7 @@ public class IpsecVpnApp extends NodeBase
     public void updateBlingers()
     {
         logger.debug("updateBlingers()");
-        LinkedList<IpsecVpnTunnel> list = settings.getTunnelList();
+        LinkedList<IpsecVpnTunnel> list = settings.getTunnels();
         int dtot = 0;
         int etot = 0;
         int ttot = 0;
@@ -480,7 +480,7 @@ public class IpsecVpnApp extends NodeBase
         }
 
         // get the list of configured tunnels from the settings
-        LinkedList<IpsecVpnTunnel> configList = settings.getTunnelList();
+        LinkedList<IpsecVpnTunnel> configList = settings.getTunnels();
         if (configList == null) return (displayList);
 
         // create a status display record for all enabled tunnels

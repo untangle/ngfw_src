@@ -45,11 +45,11 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     public boolean getVpnflag() { return (vpnflag); }
     public void setVpnflag(boolean vpnflag) { this.vpnflag = vpnflag; }
 
-    public LinkedList<IpsecVpnTunnel> getTunnelList() { return (tunnelList); }
-    public void setTunnelList(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }
+    public LinkedList<IpsecVpnTunnel> getTunnels() { return (tunnelList); }
+    public void setTunnels(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }
 
-    public LinkedList<IpsecVpnNetwork> getNetworkList() { return (networkList); }
-    public void setNetworkList(LinkedList<IpsecVpnNetwork> networkList) { this.networkList = networkList; }
+    public LinkedList<IpsecVpnNetwork> getNetworks() { return (networkList); }
+    public void setNetworks(LinkedList<IpsecVpnNetwork> networkList) { this.networkList = networkList; }
 
     public LinkedList<VirtualListen> getVirtualListenList() { return (virtualListenList); }
     public void setVirtualListenList(LinkedList<VirtualListen> virtualListenList) { this.virtualListenList = virtualListenList; }
