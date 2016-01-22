@@ -22,8 +22,8 @@ Ext.define('Webui.config.dashboardManager', {
             displayMode: 'big',
             singleInstance: true
         },{
-            name: 'Devices',
-            title: i18n._('Devices'),
+            name: 'HostsDevices',
+            title: i18n._('Hosts & Devices'),
             displayMode: 'small',
             singleInstance: false
         },{
@@ -31,7 +31,7 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Hardware'),
             displayMode: 'small',
             singleInstance: false
-        }/*,{
+        },{
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big'
@@ -39,7 +39,8 @@ Ext.define('Webui.config.dashboardManager', {
             name: 'EventEntry',
             title: i18n._('Events'),
             displayMode: 'big'
-        }*/];
+        }];
+        
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
         this.buildGridDashboardWidgets();
         this.buildTabPanel([this.gridDashboardWidgets]);

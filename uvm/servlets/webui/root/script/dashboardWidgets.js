@@ -134,10 +134,13 @@ Ext.define('Ung.dashboard.GridWrapper', {
 /* Information Widget */
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Information"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    initComponent: function () {
+        this.title = i18n._("Information"); 
+        this.callParent(arguments);
+    },
     tpl: '<div class="wg-wrapper">' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Hostname') + ':</label>' +
@@ -186,10 +189,13 @@ Ext.define('Ung.dashboard.Information', {
 /* Memory Widget */
 Ext.define('Ung.dashboard.Memory', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Memory Resources"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    initComponent: function () {
+        this.title = i18n._("Memory Resources"); 
+        this.callParent(arguments);
+    },
     tpl: '<div class="wg-wrapper">' +
         '<div class="row">' +
         '<label style="width: 60px;">' + i18n._('Memory') + ':</label>' +
@@ -228,10 +234,13 @@ Ext.define('Ung.dashboard.Memory', {
 /* Server Widget */
 Ext.define('Ung.dashboard.Server', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Server Resources"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    initComponent: function () {
+        this.title = i18n._("Server Resources"); 
+        this.callParent(arguments);
+    },
     tpl: '<div class="wg-wrapper">' +
         '<div class="row">' +
             '<label style="width: 40px;">' + i18n._('CPU') + ':</label>' +
@@ -281,6 +290,10 @@ Ext.define('Ung.dashboard.Hardware', {
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    initComponent: function () {
+        this.title = i18n._("Hardware"); 
+        this.callParent(arguments);
+    },    
     tpl: '<div class="wg-wrapper">' +
             '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
@@ -323,10 +336,13 @@ Ext.define('Ung.dashboard.Hardware', {
 /* Hosts&Devices Widget */
 Ext.define('Ung.dashboard.HostsDevices', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Hosts & Devices"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    initComponent: function () {
+        this.title = i18n._("Hosts & Devices"); 
+        this.callParent(arguments);
+    },    
     tpl: '<div class="wg-wrapper">' +
             '<div class="row">' +
             '<label style="width: 110px;">' + i18n._('Currently Active') + ':</label>' +
@@ -358,50 +374,37 @@ Ext.define('Ung.dashboard.HostsDevices', {
 
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Sessions"),
     displayMode: 'big',
     height: 400,
     defaults: {
         xtype: 'displayfield',
         labelWidth: 150
     },
+    initComponent: function () {
+        this.title = i18n._("Sessions"); 
+        this.callParent(arguments);
+    },    
     items: []
 });
 
 Ext.define('Ung.dashboard.ReportEntry', {
     extend: 'Ung.dashboard.Widget',
-    width: 500,
-    initComponent: function (conf) {
+    height: 400,
+    displayMode: 'big',
+    initComponent: function () {
         this.title =  i18n._("Report");
-        this.items = {
-            xtype: 'grid',
-            header: false,
-            store:  Ext.create('Ext.data.Store', {
-                fields: [],
-                data: []
-            }),
-            columns: [{
-                flex: 1
-            }]
-        };
+        this.items = [];
+        this.callParent(arguments);
     }
 });
 
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
-    width: 500,
-    initComponent: function (conf) {
+    displayMode: 'big',
+    height: 400,
+    initComponent: function () {
         this.title =  i18n._("Events");
-        this.items = {
-            xtype: 'grid',
-            header: false,
-            store:  Ext.create('Ext.data.Store', {
-                fields: [],
-                data: []
-            }),
-            columns: [{
-                flex: 1
-            }]
-        };
+        this.items = [];
+        this.callParent(arguments);
     }
 });
