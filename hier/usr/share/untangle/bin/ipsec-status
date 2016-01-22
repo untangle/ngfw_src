@@ -183,7 +183,7 @@ def search_gridlist(name,grid_list):
 state_array = []
 policy_array = []
 
-state_proc = subprocess.Popen("/sbin/ip xfrm state list mode tunnel", stdout=subprocess.PIPE, shell=True)
+state_proc = subprocess.Popen("/sbin/ip xfrm state list", stdout=subprocess.PIPE, shell=True)
 (state_out,state_err) = state_proc.communicate()
 state_array = parse_output(state_out, state_array, state_grid)
 
@@ -232,9 +232,6 @@ for entry in policy_array:
     # add any missing tags to prevent dictionary exceptions
     for tag in policy_tags:
         if (not tag in entry.keys()): entry[tag] = "unknown"
-
-    if entry['mode'] != "tunnel":
-        continue
 
     print ","
 

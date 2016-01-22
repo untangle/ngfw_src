@@ -562,6 +562,13 @@ public class IpsecVpnApp extends NodeBase
             finder = findMatchingRecord(MatchMode.IN, status.getReqid(), dstCalc.getBaseNetwork(), srcCalc.getBaseNetwork(), statusList);
             if (finder == null) continue;
 
+            // for transport mode there won't be a POLICY fwd record so we're done
+            // when we find the correct status record with matching in/out records
+            if (tunnel.getConntype().equals("transport") && status.getMode().equals("transport")) {
+                record.setMode("active");
+                break;
+            }
+
             // look for a POLICY fwd record with matching reqid - we don't care about
             // src or dst here since if we make it this far we know the reqid of the
             // status record has matching in and out records
