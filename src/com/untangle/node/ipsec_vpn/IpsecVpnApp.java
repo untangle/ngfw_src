@@ -530,6 +530,7 @@ public class IpsecVpnApp extends NodeBase
             // start with the STATE record where src matches the local IP
             // and dst matches the remote IP of the configured tunnel
             if (!status.getType().equals("STATE")) continue;
+            if (!status.getMode().equals(tunnel.getConntype())) continue;
             if (!status.getSrc().equals(tunnel.getLeft())) continue;
             if (!status.getDst().equals(remoteAddress)) continue;
 
@@ -564,7 +565,7 @@ public class IpsecVpnApp extends NodeBase
 
             // for transport mode there won't be a POLICY fwd record so we're done
             // when we find the correct status record with matching in/out records
-            if (tunnel.getConntype().equals("transport") && status.getMode().equals("transport")) {
+            if (tunnel.getConntype().equals("transport")) {
                 record.setMode("active");
                 break;
             }
