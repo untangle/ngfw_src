@@ -138,7 +138,7 @@ Ext.define('Ung.dashboard.Information', {
     height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Information"); 
+        this.title = i18n._("Information");
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper">' +
@@ -193,7 +193,7 @@ Ext.define('Ung.dashboard.Memory', {
     height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Memory Resources"); 
+        this.title = i18n._("Memory Resources");
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper">' +
@@ -238,7 +238,7 @@ Ext.define('Ung.dashboard.Server', {
     height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Server Resources"); 
+        this.title = i18n._("Server Resources");
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper">' +
@@ -286,14 +286,13 @@ Ext.define('Ung.dashboard.Server', {
 /* Hardware Widget */
 Ext.define('Ung.dashboard.Hardware', {
     extend: 'Ung.dashboard.Widget',
-    title: i18n._("Hardware"),
     displayMode: 'small',
     height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Hardware"); 
+        this.title = i18n._("Hardware");
         this.callParent(arguments);
-    },    
+    },
     tpl: '<div class="wg-wrapper">' +
             '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
@@ -340,9 +339,9 @@ Ext.define('Ung.dashboard.HostsDevices', {
     height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Hosts & Devices"); 
+        this.title = i18n._("Hosts & Devices");
         this.callParent(arguments);
-    },    
+    },
     tpl: '<div class="wg-wrapper">' +
             '<div class="row">' +
             '<label style="width: 110px;">' + i18n._('Currently Active') + ':</label>' +
@@ -374,17 +373,43 @@ Ext.define('Ung.dashboard.HostsDevices', {
 
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'big',
-    height: 400,
-    defaults: {
-        xtype: 'displayfield',
-        labelWidth: 150
-    },
+    displayMode: 'small',
+    height: 190,
+    hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Sessions"); 
+        this.title = i18n._("Sessions");
         this.callParent(arguments);
-    },    
-    items: []
+    },
+    tpl: '<div class="wg-wrapper">' +
+        '<div class="row">' +
+        '<label style="width: 150px;">' + i18n._('Total Sessions') + ':</label>' +
+        '<div class="cell">???</div>' +
+        '</div>' +
+        '<div class="row">' +
+        '<label style="width: 150px;">' + i18n._('Scanned Sessions') + ':</label>' +
+        '<div class="cell">{scannedSessions}</div>' +
+        '</div>' +
+        '<div class="row">' +
+        '<label style="width: 150px;">' + i18n._('Scanned TCP Sessions') + ':</label>' +
+        '<div class="cell">{scannedTCPSessions}</div>' +
+        '</div>' +
+        '<div class="row">' +
+        '<label style="width: 150px;">' + i18n._('Scanned UDP Sessions') + ':</label>' +
+        '<div class="cell">{scannedUDPSessions}</div>' +
+        '</div>' +
+        '<div class="row">' +
+        '<label style="width: 150px;">' + i18n._('Bypassed Sessions') + ':</label>' +
+        '<div class="cell">???</div>' +
+        '</div>' +
+        '</div>',
+    data: {},
+    updateStats: function (stats) {
+        this.update({
+            scannedSessions: stats.uvmSessions,
+            scannedTCPSessions: stats.uvmTCPSessions,
+            scannedUDPSessions: stats.uvmUDPSessions
+        });
+    }
 });
 
 Ext.define('Ung.dashboard.ReportEntry', {
