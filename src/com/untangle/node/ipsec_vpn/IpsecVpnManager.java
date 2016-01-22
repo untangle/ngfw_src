@@ -421,8 +421,8 @@ public class IpsecVpnManager
             gre_script.write("ip link set " + iface + " up" + RET);
             gre_script.write("ip addr add " + iaddr + " dev " + iface + RET);
             gre_script.write("ip route add " + network.getRemoteNetwork() + " dev " + iface + RET);
-            gre_script.write("${IPTABLES} -t mangle -I mark-src-intf 3 -i " + iface + " -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\"" + RET);
-            gre_script.write("${IPTABLES} -t mangle -I mark-dst-intf 3 -o " + iface + " -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\"" + RET);
+            gre_script.write("${IPTABLES} -t mangle -I mark-src-intf 4 -i " + iface + " -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\"" + RET);
+            gre_script.write("${IPTABLES} -t mangle -I mark-dst-intf 4 -o " + iface + " -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\"" + RET);
             gre_script.write(RET);
         }
 
