@@ -532,7 +532,6 @@ Ext.define('Webui.config.sessionMonitor', {
             sortField: this.sortField,
             sortOrder: this.sortOrder,
             groupField: this.groupField,
-            columnsDefaultSortable: true,
             columns: this.getColumns(),
             fields: [{
                 name: "creationTime",

@@ -9,6 +9,7 @@ Ext.define('Ung.MonitorGrid', {
     // the total number of records
     autoRefreshEnabled: false,
     stateful: true,
+    columnsDefaultSortable: true,
     features: [{
         ftype: 'grouping'
     }],
