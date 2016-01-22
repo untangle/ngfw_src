@@ -1,5 +1,6 @@
 Ext.define('Webui.config.sessionMonitor', {
     extend: 'Ung.StatusWin',
+    name: 'sessionViewer',
     helpSource: 'session_viewer',
     sortField:'bypassed',
     sortOrder: 'ASC',

@@ -1,5 +1,6 @@
 Ext.define('Webui.config.offline', {
     extend: 'Ung.StatusWin',
+    name: 'offline',
     helpSource: 'offline',
     doSize: function() {
         var objSize = Ung.Main.viewport.getSize();

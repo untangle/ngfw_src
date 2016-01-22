@@ -1,5 +1,6 @@
 Ext.define('Webui.config.accountRegistration', {
     extend: 'Ung.StatusWin',
+    name: 'accountRegistration',
     helpSource: 'account_registration',
     doSize: function() {
         var objSize = Ung.Main.viewport.getSize();

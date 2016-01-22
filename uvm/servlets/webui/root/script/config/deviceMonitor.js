@@ -1,5 +1,6 @@
 Ext.define('Webui.config.deviceMonitor', {
     extend: 'Ung.ConfigWin',
+    name: 'deviceList',
     helpSource: 'device_list',
     displayName: 'Device List',
     hasReports: true,
@@ -14,6 +15,7 @@ Ext.define('Webui.config.deviceMonitor', {
     },
     closeWindow: function() {
         this.hide();
+        Ext.destroy(this);
     },
     // Current Devices Grid
     buildGridCurrentDevices: function() {

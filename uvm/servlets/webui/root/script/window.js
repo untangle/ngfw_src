@@ -293,7 +293,8 @@ Ext.define("Ung.NodeWin", {
         return "";
     },
     constructor: function(config) {
-        this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
+        var name = config.name || this.name;
+        this.id = "nodeWin_" + name + "_" + rpc.currentPolicy.policyId;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -441,7 +442,8 @@ Ext.define("Ung.ConfigWin", {
     extend: "Ung.SettingsWin",
     // class constructor
     constructor: function(config) {
-        this.id = "configWin_" + config.name;
+        var name = config.name || this.name;
+        this.id = "configWin_" + name;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -495,7 +497,8 @@ Ext.define("Ung.StatusWin", {
     extend: "Ung.SettingsWin",
     // class constructor
     constructor: function(config) {
-        this.id = "statusWin_" + config.name;
+        var name = config.name || this.name;
+        this.id = "statusWin_" + name;
         this.callParent(arguments);
     },
     initComponent: function() {

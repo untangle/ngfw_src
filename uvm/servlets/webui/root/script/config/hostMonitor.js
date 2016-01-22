@@ -1,5 +1,6 @@
 Ext.define('Webui.config.hostMonitor', {
     extend: 'Ung.StatusWin',
+    name: 'hostsViewer',
     helpSource: 'host_viewer',
     sortField:'bypassed',
     sortOrder: 'ASC',

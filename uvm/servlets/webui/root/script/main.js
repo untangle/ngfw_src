@@ -1223,15 +1223,8 @@ Ext.define("Ung.Main", {
     },
     showDevices: function() {
         Ext.require(['Webui.config.deviceMonitor'], function() {
-            if ( Ung.Main.deviceMonitorWin == null) {
-                Ung.Main.deviceMonitorWin=Ext.create('Webui.config.deviceMonitor', {});
-            }
+            Ung.Main.deviceMonitorWin=Ext.create('Webui.config.deviceMonitor', {});
             Ung.Main.deviceMonitorWin.show();
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            Ext.Function.defer(function() {
-                Ung.Main.deviceMonitorWin.gridCurrentDevices.reload();
-                Ext.MessageBox.hide();
-            }, 10, this);
         }, this);
     },
     showSessions: function() {

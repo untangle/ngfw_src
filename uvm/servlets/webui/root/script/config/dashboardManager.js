@@ -1,5 +1,6 @@
 Ext.define('Webui.config.dashboardManager', {
     extend: 'Ung.ConfigWin',
+    name: 'dashboardManager',
     helpSource: 'dashboard_manager',
     displayName: 'Dashboard Manager',
     initComponent: function() {
