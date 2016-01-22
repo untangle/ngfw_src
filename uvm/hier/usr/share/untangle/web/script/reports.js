@@ -496,9 +496,6 @@ Ext.define('Ung.panel.Reports', {
     buildReportEntry: function(entry) {
         var me = this;
         this.entry = entry;
-        if(this.autoRefreshEnabled) {
-            this.stopAutoRefresh(true);
-        }
         this.cardsContainer.setActiveItem("chartContainer");
         this.reportDataGrid.show();
         this.limitSelector.hide();
@@ -918,6 +915,9 @@ Ext.define('Ung.panel.Reports', {
     },
     loadReportEntry: function(entry) {
         this.setLoading(i18n._('Loading report... '));
+        if(this.autoRefreshEnabled) {
+            this.stopAutoRefresh(true);
+        }
         this.buildReportEntry(entry);
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function(result, exception) {
             this.setLoading(false);
