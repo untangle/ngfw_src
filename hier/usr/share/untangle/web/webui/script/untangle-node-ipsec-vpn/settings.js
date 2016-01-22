@@ -1083,7 +1083,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.gridNetworks = Ext.create('Ung.grid.Panel', {
             settingsCmp: this,
             name: 'gridNetworks',
-            helpSource: 'ipsec_vpn_ipsec_networks',
+            helpSource: 'ipsec_vpn_ipsec_gre_networks',
             title: i18n._("GRE Networks"),
             qtip: i18n._("The GRE Networks list contains remote networks that connect to this server using the GRE protocol."),
             dataProperty:'networkList',
