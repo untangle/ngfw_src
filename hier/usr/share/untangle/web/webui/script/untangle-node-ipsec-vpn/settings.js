@@ -1200,7 +1200,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     emptyText: i18n._("[enter remote host]"),
                     width: 350,
                     allowBlank: false,
-                    vtype: 'ipAddress',
+                    vtype: 'ipAddress'
                 }, {
                     xtype: 'label',
                     html: i18n._("(The public IP address of the remote GRE gateway)"),
