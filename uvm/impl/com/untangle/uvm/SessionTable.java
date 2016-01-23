@@ -187,13 +187,15 @@ public class SessionTable
                                        sessionEvent.getCClientPort(), sessionEvent.getSServerPort(),
                                        session.getAttachments() );
 
-            logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
-                          sessionEvent.getProtocolName() + "| "  +
-                          sessionEvent.getCClientAddr().getHostAddress() + ":" + 
-                          sessionEvent.getCClientPort() + " -> " +
-                          sessionEvent.getSServerAddr().getHostAddress() + ":" +
-                          sessionEvent.getSServerPort() + 
-                          " matched: " + isMatch );
+            if ( logger.isDebugEnabled() ) {
+                logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
+                              sessionEvent.getProtocolName() + "| "  +
+                              sessionEvent.getCClientAddr().getHostAddress() + ":" + 
+                              sessionEvent.getCClientPort() + " -> " +
+                              sessionEvent.getSServerAddr().getHostAddress() + ":" +
+                              sessionEvent.getSServerPort() + 
+                              " matched: " + isMatch );
+            }
             if ( isMatch ) {
                 logger.info( "shutdownMatches(): Shutdown  session[" + session.id() + "]: " +
                              sessionEvent.getProtocolName() + "| "  +
