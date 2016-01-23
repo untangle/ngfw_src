@@ -156,7 +156,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String ts = df.format(cal.getTime());
 
-        int exitCode = -1;
         logger.info("Running fixed report...");
         boolean tryAgain = false;
         int tries = 0;
@@ -164,7 +163,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         flushEvents();
         
         synchronized (this) {
-            exitCode = 0;
             ArrayList<String> fixedReportAddressesWithUrl = new ArrayList<String>();
             ArrayList<String> fixedReportAddressesWithoutUrl = new ArrayList<String>();
             if ( settings.getReportsUsers() != null) {
@@ -184,20 +182,18 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 fixedReportAddressesWithUrl.add(admin.getEmailAddress());
             }
             
-            FixedReports reports = new FixedReports();
+            FixedReports fixedReports = new FixedReports();
             if(fixedReportAddressesWithoutUrl.size() > 0){
-                reports.send(fixedReportAddressesWithoutUrl, "");
+                for ( String address : fixedReportAddressesWithoutUrl )
+                    logger.info("Sending Summary Reports: (no link)" + address);
+                fixedReports.send(fixedReportAddressesWithoutUrl, "");
             }
             if(fixedReportAddressesWithUrl.size() > 0){
-                reports.send(fixedReportAddressesWithUrl, "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/");
+                for ( String address : fixedReportAddressesWithUrl )
+                    logger.info("Sending Summary Reports (with link): " + address);
+                fixedReports.send(fixedReportAddressesWithUrl, "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/");
             }
         }        
-        if (exitCode != 0) {
-            if (exitCode == 1) 
-                throw new Exception("A reports process is already running. Please try again later.");
-            else
-                throw new Exception("Unable to create daily reports. (Exit code: " + exitCode + ")");
-        }
     }
 
     public void flushEvents()

@@ -311,7 +311,11 @@ public class FixedReports
         String[] recipients = new String[recipientsList.size()];
         recipients = recipientsList.toArray(recipients);
 
-        String subject = getVariable(new selector("title")).toString() + " - " + UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
+
+        String subject = getVariable(new selector("title")).toString() + " [" + fullName + "]";
 
         Map<MailSender.MessagePartsField,String> part = new HashMap<MailSender.MessagePartsField,String>();
         part.put(MailSender.MessagePartsField.TEXT, messageText.toString());
@@ -325,7 +329,8 @@ public class FixedReports
 
     /*
      */
-    void parse(String buffer){
+    void parse(String buffer)
+    {
         int contextIndex = parseContextStack.size() - 1;
 
         parseContext parseContext = parseContextStack.get(contextIndex);
