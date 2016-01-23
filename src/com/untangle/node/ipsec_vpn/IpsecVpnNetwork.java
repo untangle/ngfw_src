@@ -17,7 +17,7 @@ public class IpsecVpnNetwork implements JSONString, Serializable
     private String description;
     private String localAddress;
     private String remoteAddress;
-    private String remoteNetwork;
+    private String remoteNetworks;
 
     public IpsecVpnNetwork()
     {
@@ -40,8 +40,8 @@ public class IpsecVpnNetwork implements JSONString, Serializable
     public String getRemoteAddress() { return (remoteAddress); }
     public void setRemoteAddress(String remoteAddress) { this.remoteAddress = remoteAddress; }
 
-    public String getRemoteNetwork() { return (remoteNetwork); }
-    public void setRemoteNetwork(String remoteNetwork) { this.remoteNetwork = remoteNetwork; }
+    public String getRemoteNetworks() { return (remoteNetworks); }
+    public void setRemoteNetworks(String remoteNetworks) { this.remoteNetworks = remoteNetworks; }
 
     // THIS IS FOR ECLIPSE - @formatter:on
 

@@ -370,7 +370,7 @@ public class IpsecVpnManager
         IpsecVpnNetwork network;
         String iface;
         String iaddr;
-        int x;
+        int x, y;
 
         int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
         int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -409,7 +409,7 @@ public class IpsecVpnManager
 
         for (x = 0; x < networkList.size(); x++) {
             // For each active network we create a GRE interface
-            // and add a route for the configured remote network
+            // and add routes for the configured remote networks
             network = networkList.get(x);
             if (network.getActive() != true) continue;
 
@@ -420,7 +420,13 @@ public class IpsecVpnManager
             gre_script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
             gre_script.write("ip link set " + iface + " up" + RET);
             gre_script.write("ip addr add " + iaddr + " dev " + iface + RET);
-            gre_script.write("ip route add " + network.getRemoteNetwork() + " dev " + iface + RET);
+
+            String netlist[] = network.getRemoteNetworks().split("\\n");
+
+            for (y = 0; y < netlist.length; y++) {
+                gre_script.write("ip route add " + netlist[y] + " dev " + iface + RET);
+            }
+
             gre_script.write("${IPTABLES} -t mangle -I mark-src-intf 4 -i " + iface + " -j MARK --set-mark 0xfd/0xff -m comment --comment \"Set src interface mark for GRE\"" + RET);
             gre_script.write("${IPTABLES} -t mangle -I mark-dst-intf 4 -o " + iface + " -j MARK --set-mark 0xfd00/0xff00 -m comment --comment \"Set dst interface mark for GRE\"" + RET);
             gre_script.write(RET);

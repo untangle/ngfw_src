@@ -1092,7 +1092,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 'active': true,
                 'localAddress': localDefault,
                 'remoteAddress': '',
-                'remoteNetwork': '',
+                'remoteNetworks': '',
                 'description': ''
             },
             sortField: 'description',
@@ -1107,8 +1107,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'remoteAddress',
                 sortType: 'asIp'
             },{
-                name: 'remoteNetwork',
-                sortType: 'asIp'
+                name: 'remoteNetworks',
             },{
                 name: 'description'
             }],
@@ -1127,9 +1126,9 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 width: 150,
                 dataIndex: 'remoteAddress'
             }, {
-                header: i18n._("Remote Network"),
+                header: i18n._("Remote Networks"),
                 width: 200,
-                dataIndex: 'remoteNetwork'
+                dataIndex: 'remoteNetworks'
             }, {
                 header: i18n._("Description"),
                 width: 100,
@@ -1185,7 +1184,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     }
                 }, {
                     xtype: 'label',
-                    html: i18n._("(The external IP address of this server)"),
+                    html: i18n._("The external IP address of this server"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -1203,7 +1202,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     vtype: 'ipAddress'
                 }, {
                     xtype: 'label',
-                    html: i18n._("(The public IP address of the remote GRE gateway)"),
+                    html: i18n._("The public IP address of the remote GRE gateway"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -1211,17 +1210,18 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 layout: 'column',
                 margin: '0 0 5 0',
                 items: [{
-                    xtype:'textfield',
-                    name: 'remoteNetwork',
-                    dataIndex: 'remoteNetwork',
-                    fieldLabel: i18n._("Remote Network"),
-                    emptyText: i18n._("[enter remote network]"),
-                    width: 350,
+                    xtype:'textarea',
+                    name: 'remoteNetworks',
+                    dataIndex: 'remoteNetworks',
+                    fieldLabel: i18n._("Remote Networks"),
+                    emptyText: i18n._("[enter remote networks]"),
+                    width: 300,
+                    height: 300,
                     allowBlank: false,
-                    vtype: 'cidrBlock'
+                    vtype: 'cidrBlockArea'
                 }, {
                     xtype: 'label',
-                    html: i18n._("(The private network attached to the remote side of the tunnel)"),
+                    html: i18n._("The private networks attached to the remote GRE gateway<br>One network per line in CIDR (192.168.123.0/24) format"),
                     cls: 'boxlabel'
                 }]
             }],
