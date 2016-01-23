@@ -5,6 +5,6 @@ step 2) Synchronize : Syncs that new template with po/*/untangle.po.
 ./synchronize.py
 
 step 3) Translate : translates strings
-./transalte
+./translate.py
 
 then commit new po files
