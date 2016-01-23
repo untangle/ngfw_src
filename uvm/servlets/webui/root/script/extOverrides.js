@@ -219,6 +219,17 @@ Ext.define('Ung.VTypes', {
             },
             cidrBlockListText: i18n._('Must be a comma seperated list of networks in CIDR format.') + ' ' + '(192.168.123.0/24,1.2.3.4/24)',
 
+            cidrBlockArea:  function(v) {
+                var blocks = v.split("\n");
+                for ( var i = 0 ; i < blocks.length ; i++ ) {
+                    if ( ! (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(blocks[i])) )
+                        return false;
+                }
+                return true;
+            },
+            cidrBlockAreaText: i18n._('Must be a one-per-line list of networks in CIDR format.') + ' ' + '(192.168.123.0/24)',
+
+
             portMatcher: function(val) {
                 switch(val) {
                   case 'any':
