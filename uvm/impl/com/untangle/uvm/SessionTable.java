@@ -148,10 +148,11 @@ public class SessionTable
             return;
         }
 
+        int shutdownCount = 0;
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
-        logger.info( "shutdownMatches() called. matcher: " + matcher.getClass().getSimpleName());
 
-        if ( activeSessions.isEmpty()) return;
+        if ( activeSessions.isEmpty()) 
+            return;
 
         /**
          * Iterate through all sessions and reset matching sessions
@@ -188,7 +189,7 @@ public class SessionTable
                                        session.getAttachments() );
 
             if ( logger.isDebugEnabled() ) {
-                logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
+                logger.debug( "shutdownMatches(" + matcher.getClass().getSimpleName() + ") Tested    session[" + session.id() + "]: " +
                               sessionEvent.getProtocolName() + "| "  +
                               sessionEvent.getCClientAddr().getHostAddress() + ":" + 
                               sessionEvent.getCClientPort() + " -> " +
@@ -197,7 +198,7 @@ public class SessionTable
                               " matched: " + isMatch );
             }
             if ( isMatch ) {
-                logger.info( "shutdownMatches(): Shutdown  session[" + session.id() + "]: " +
+                logger.info( "shutdownMatches(" + matcher.getClass().getSimpleName() + ") Shutdown  session[" + session.id() + "]: " +
                              sessionEvent.getProtocolName() + "| "  +
                              sessionEvent.getCClientAddr().getHostAddress() + ":" + 
                              sessionEvent.getCClientPort() + " -> " +
@@ -209,6 +210,7 @@ public class SessionTable
 
         for ( Vector vector : shutdownList ) {
             try {
+                shutdownCount++;
                 vector.shutdown();
             }
             catch (Exception e) {
@@ -216,7 +218,8 @@ public class SessionTable
             }
         }
 
-        logger.info( "shutdownMatches() done." );
+        if ( shutdownCount > 0 )
+            logger.info( "shutdownMatches(" + matcher.getClass().getSimpleName() + ") shutdown " + shutdownCount + " sessions.");
     }
     
     public static SessionTable getInstance()
