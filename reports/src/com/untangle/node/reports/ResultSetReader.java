@@ -200,6 +200,16 @@ public class ResultSetReader implements Runnable
                 lastPosition = this.resultSet.getRow();
             }
         }
+        catch ( org.postgresql.util.PSQLException e ) {
+            if ( e.getMessage() != null && e.getMessage().contains("is closed") ) {
+                //result set is closed, in this case, we're done
+            } else {
+                // some other exception
+                logger.warn("Exception in ResultSetReader", e);
+            }
+            closeConnection();
+            return;
+        } 
         catch ( Exception e ) {
             logger.warn("Exception in ResultSetReader", e);
             closeConnection();

@@ -3,4 +3,10 @@
 import sys
 
 reportsApp = uvm.nodeManager().node("untangle-node-reports");
-reportsApp.runFixedReport()
+try:
+    reportsApp.runFixedReport()
+except:
+    # times out after 60 seconds
+    # just continue
+    pass
+    
