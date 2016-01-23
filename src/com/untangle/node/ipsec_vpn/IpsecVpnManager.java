@@ -426,7 +426,7 @@ public class IpsecVpnManager
             gre_script.write(RET);
         }
 
-        gre_script.write("create WAN NAT rules for each GRE interface" + RET);
+        gre_script.write("# create WAN NAT rules for each GRE interface" + RET);
         for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
             if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
                 gre_script.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fd) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound GRE traffic\"" + RET);
