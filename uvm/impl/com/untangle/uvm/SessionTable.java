@@ -143,8 +143,13 @@ public class SessionTable
     @SuppressWarnings("unchecked")
     protected void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
+        if ( matcher == null ) {
+            logger.warn("Invalid arguments");
+            return;
+        }
+
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
-        logger.info( "shutdownMatches() called." );
+        logger.info( "shutdownMatches() called. matcher: " + matcher.getClass().getSimpleName());
 
         if ( activeSessions.isEmpty()) return;
 
