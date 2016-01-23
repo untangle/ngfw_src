@@ -241,7 +241,7 @@ public class IpsecVpnApp extends NodeBase
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
-            IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.INFO);
+            IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.DEBUG);
         }
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
