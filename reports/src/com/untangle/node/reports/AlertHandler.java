@@ -93,7 +93,7 @@ public class AlertHandler
             rule.getDescription() + ":" + "\r\n" +
             event.toSummaryString() +
             "\r\n\r\n" +
-            I18nUtil.marktr("Causal Event:") + " " + LogEvent.class.getSimpleName() + 
+            I18nUtil.marktr("Causal Event:") + " " + event.getClass().getSimpleName() + 
             "\r\n" +
             jsonEvent + 
             "\r\n\r\n" +
