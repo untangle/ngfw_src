@@ -315,6 +315,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             oldName = License.APPLICATION_CONTROL_OLDNAME; break;
         case License.SSL_INSPECTOR:
             oldName = License.SSL_INSPECTOR_OLDNAME; break;
+        case License.LIVE_SUPPORT:
+            oldName = License.LIVE_SUPPORT_OLDNAME; break;
         }
         if ( oldName != null ) {
             urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
@@ -896,6 +898,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             return License.APPLICATION_CONTROL_OLDNAME;
         case License.SSL_INSPECTOR:
             return License.SSL_INSPECTOR_OLDNAME;
+        case License.LIVE_SUPPORT:
+            return License.LIVE_SUPPORT_OLDNAME;
         }            
 
         return null;
