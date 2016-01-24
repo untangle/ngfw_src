@@ -230,7 +230,10 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         /**
          * Log this HTTPS hit to the http_events table
          */
-        this.node.logEvent(new HttpRequestEvent(requestLine, domain, 0));
+        HttpRequestEvent evt = new HttpRequestEvent(requestLine, domain, null, 0);
+        requestLine.setHttpRequestEvent(evt);
+
+        this.node.logEvent(evt);
 
         HeaderToken h = new HeaderToken();
         h.addField("host", domain);
