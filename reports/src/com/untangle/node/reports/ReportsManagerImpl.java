@@ -266,7 +266,7 @@ public class ReportsManagerImpl implements ReportsManager
         ArrayList<JSONObject> results = ReportsApp.eventReader.getEvents( conn, statement, entry.getTable(), limit );
         long t1 = System.currentTimeMillis();
 
-        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+        logger.info("Query Time       : " + String.format("%5d",(t1 - t0)) + " ms");
 
         return results;
     }
@@ -393,13 +393,13 @@ public class ReportsManagerImpl implements ReportsManager
             System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
-        logger.info("Statement        : " + entry.toSqlQuery( extraConditions ));
+        logger.info("Statement          : " + entry.toSqlQuery( extraConditions ));
 
         long t0 = System.currentTimeMillis();
         ArrayList<org.json.JSONObject> results =  ReportsApp.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
         long t1 = System.currentTimeMillis();
 
-        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+        logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
 
         return results;
     }
@@ -451,13 +451,13 @@ public class ReportsManagerImpl implements ReportsManager
 
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
-        logger.info("Statement        : " + entry.toSqlQuery( extraConditions ));
+        logger.info("Statement          : " + entry.toSqlQuery( extraConditions ));
 
         long t0 = System.currentTimeMillis();
         ResultSetReader result = ReportsApp.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
         long t1 = System.currentTimeMillis();
 
-        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+        logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
 
         return result;
     }
