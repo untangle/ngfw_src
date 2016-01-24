@@ -689,6 +689,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'uri',
                     type: 'string'
                 }, {
+                    name: 'referer',
+                    type: 'string'
+                }, {
                     name: 'c2s_content_length',
                     sortType: 'asInt'
                 }, {
@@ -876,6 +879,11 @@ Ext.define('Ung.TableConfig', {
                             default: return value;
                         }
                     }
+                }, {
+                    header: i18n._("Referer"),
+                    width: Ung.TableConfig.uriFieldWidth,
+                    sortable: true,
+                    dataIndex: 'referer'
                 }, {
                     header: i18n._("Download Content Length"),
                     width: Ung.TableConfig.portFieldWidth,

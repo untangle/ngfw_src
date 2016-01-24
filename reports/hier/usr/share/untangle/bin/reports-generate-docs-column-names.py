@@ -82,6 +82,7 @@ dict = {
     'request_id' : i18n._('Request ID'),
     'method' : i18n._('Method'),
     'uri' : i18n._('URI'),
+    'referer' : i18n._('Referer'),
     'msg_id' : i18n._('Message ID'),
     'subject' : i18n._('Subject'),
     'mac_address' : i18n._('MAC Address'),

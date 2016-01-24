@@ -193,6 +193,7 @@ dict['http_events'].update({
     'method' : 'The HTTP method',
     'uri' : 'The HTTP URI',
     'host' : 'The HTTP host',
+    'referer' : 'The Referer URL',
     'ad_blocker_cookie_ident' : 'This name of cookie blocked by Ad Blocker',
     'ad_blocker_action' : 'This action of Ad Blocker on this request',
     'web_filter_lite_reason' : 'This reason Web Filter Lite blocked/flagged this request',
