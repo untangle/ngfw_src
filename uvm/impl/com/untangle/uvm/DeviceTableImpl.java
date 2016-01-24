@@ -167,19 +167,28 @@ public class DeviceTableImpl implements DeviceTable
                 logger.info("Loaded  devices from file.   (no devices saved)");
             } else {
                 for ( DeviceTableEntry entry : savedEntries ) {
+                    try {
+                        // if its invalid just ignore it
+                        if ( entry.getMacAddress() == null ) {
+                            logger.warn("Invalid entry: " + entry.toJSONString());
+                            continue;
+                        }
 
-                    entry.enableLogging(); //enable logging now that the object has been built
-                    
-                    /**
-                     * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
-                     */
-                    if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
-                        String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( entry.getMacAddress() );
-                        if ( macVendor != null && !("".equals(macVendor)) )
-                            entry.setMacVendor( macVendor );
+                        entry.enableLogging(); //enable logging now that the object has been built
+
+                        /**
+                         * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
+                         */
+                        if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
+                            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( entry.getMacAddress() );
+                            if ( macVendor != null && !("".equals(macVendor)) )
+                                entry.setMacVendor( macVendor );
+                        }
+
+                        deviceTable.put( entry.getMacAddress(), entry );
+                    } catch ( Exception e ) {
+                        logger.warn( "Error loading device entry: " + entry, e);
                     }
-
-                    deviceTable.put( entry.getMacAddress(), entry );
                 }
                 logger.info("Loaded  devices from file.   (" + savedEntries.size() + " entries)");
             }
