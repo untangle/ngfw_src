@@ -39,6 +39,7 @@ CREATE TABLE reports.http_events (
     uri text,
     host text,
     domain text,
+    referer text,
     c2s_content_length bigint,
     s2c_content_length bigint,
     s2c_content_type text,
@@ -76,6 +77,8 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
+
+        sql_helper.add_column('http_events','referer','text') # 12.0
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("http_events", cutoff)

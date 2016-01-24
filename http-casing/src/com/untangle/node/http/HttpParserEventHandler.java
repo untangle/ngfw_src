@@ -415,8 +415,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
                         }
                     }
                 } else {
-                    /* This is saved internally and used later with getRequestEvent */
-                    HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue("host"), state.lengthCounter );
+                    /* the request event is saved internally and used later with getRequestEvent */
+                    String referer = ( node.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
+                    HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue("host"), referer, state.lengthCounter );
+                    state.requestLineToken.getRequestLine().setHttpRequestEvent(evt);
                 }
 
                 if ( state.transferEncoding == NO_BODY ) {

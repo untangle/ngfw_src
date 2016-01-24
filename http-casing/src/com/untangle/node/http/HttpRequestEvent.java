@@ -24,26 +24,14 @@ public class HttpRequestEvent extends LogEvent
     private SessionEvent sessionEvent;
     private String host;
     private String domain;
+    private String referer;
     private long contentLength;
 
     // constructors -----------------------------------------------------------
 
     public HttpRequestEvent() { }
 
-    public HttpRequestEvent(RequestLine requestLine, String host )
-    {
-        this.host = host;
-        this.domain = getDomainForHost( host );
-        this.requestId = requestLine.getRequestId();
-        this.timeStamp = requestLine.getTimeStamp();
-        this.method = requestLine.getMethod();
-        this.requestUri = requestLine.getRequestUri();
-        this.sessionEvent = requestLine.getSessionEvent();
-
-        requestLine.setHttpRequestEvent(this); /* XXX hack - this should live elsewhere */
-    }
-
-    public HttpRequestEvent(RequestLine requestLine, String host, long contentLength)
+    public HttpRequestEvent( RequestLine requestLine, String host, String referer, long contentLength )
     {
         this.host = host;
         this.domain = getDomainForHost( host );
@@ -53,8 +41,7 @@ public class HttpRequestEvent extends LogEvent
         this.method = requestLine.getMethod();
         this.requestUri = requestLine.getRequestUri();
         this.sessionEvent = requestLine.getSessionEvent();
-
-        requestLine.setHttpRequestEvent(this); /* XXX hack - this should live elsewhere */
+        this.referer = referer;
     }
 
     // accessors --------------------------------------------------------------
@@ -105,6 +92,12 @@ public class HttpRequestEvent extends LogEvent
     public URI getRequestUri() { return requestUri; }
     public void setRequestUri( URI requestUri ) { this.requestUri = requestUri; }
 
+    /**
+     * The referer, as specified in the header.
+     */
+    public String getReferer() { return referer; }
+    public void setReferer( String newValue ) { this.referer = newValue; }
+
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
     
@@ -118,10 +111,10 @@ public class HttpRequestEvent extends LogEvent
             "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
             "policy_id, username, " + 
             "request_id, method, uri, " + 
-            "host, domain, c2s_content_length, " + 
+            "host, domain, referer, c2s_content_length, " + 
             "hostname) " + 
             "values " +
-            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -145,6 +138,7 @@ public class HttpRequestEvent extends LogEvent
         pstmt.setString(++i, getRequestUri().toString());
         pstmt.setString(++i, getHost());
         pstmt.setString(++i, getDomain());
+        pstmt.setString(++i, getReferer());
         pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getSessionEvent().getHostname());
 
