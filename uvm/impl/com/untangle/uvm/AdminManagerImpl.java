@@ -259,10 +259,6 @@ public class AdminManagerImpl implements AdminManager
         if ( settings.getVersion() != null && settings.getVersion() >= 2 )
             return;
 
-        // set version at 2 so we don't re-run conversion
-        settings.setVersion( 2L );
-        this.setSettings( settings );
-
         // remove old IPS settings
         oldName = "untangle-node-ips";
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
@@ -833,6 +829,10 @@ public class AdminManagerImpl implements AdminManager
                 UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
             }
         }
+
+        // set version at 2 so we don't re-run conversion
+        settings.setVersion( 2L );
+        this.setSettings( settings );
     }
 
     private void updateNodesFile(String oldName, String newName)
