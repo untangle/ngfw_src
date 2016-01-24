@@ -20,7 +20,6 @@ nodeWeb = None
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
-print testedServerDomainWildcard
 dropboxIssuer="/C=US/ST=California/L=San Francisco/O=Dropbox"
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
