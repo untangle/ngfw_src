@@ -415,14 +415,12 @@ Ext.define('Ung.dashboard.Sessions', {
 
 Ext.define('Ung.dashboard.Chart', {
     extend: 'Ext.panel.Panel',
-    displayMode: 'big',
-    height: 400,
-    cls: 'widget big-widget',
-    //height: 190,
+    displayMode: 'small',
+    //height: 400,
     //cls: 'widget big-widget',
-
+    height: 190,
+    cls: 'widget small-widget nopadding',
     layout: 'fit',
-    region: 'center',
     hasStats: true,
     border: false,
     initComponent: function () {

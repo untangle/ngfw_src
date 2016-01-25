@@ -402,7 +402,7 @@ a.forgot-password:hover {
     width: 100%;
 }
 
-.dashboard .small-widget .x-autocontainer-innerCt {
+.dashboard .widget .x-autocontainer-innerCt {
     display: inherit;
 }
 
@@ -417,49 +417,26 @@ a.forgot-password:hover {
     font-weight: 600;
 }
 
-.big-widget .x-panel-body-default {
+.widget .x-panel-body-default {
     border: 0;
     top: 0 !important;
     background: transparent;
-}
-
-.group-widget .x-panel-body-default {
-    background: transparent;
-    border: 0;
-    top: 0 !important;
+    padding: 5px 10px;
 }
 
 .widget {
     background-color: #FFF;
-    margin: 10px;
-    -webkit-box-flex: 0;
-    position: relative !important;
-    visibility: visible !important;
-    top: 0 !important;
     border: solid 1px #d8dbe0;
-}
-
-.group-widget {
-    flex: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    background-color: transparent;
-    margin: 0;
-    justify-content: space-between;
+    margin: 10px;
     padding: 0 !important;
 }
 
 .big-widget {
     flex: 100%;
-    padding: 0 !important;
-    margin: 10px;
 }
 
 .small-widget {
-    /*height: 180px !important;*/
     flex: 45%;
-    margin: 10px;
-    padding: 0 !important;
 }
 
 .widget .x-panel-header {
@@ -467,22 +444,6 @@ a.forgot-password:hover {
     background: transparent;
     box-shadow: none;
     position: relative !important;
-}
-
-/*
-.group-widget .x-panel-body .x-autocontainer-innerCt {
-    flex: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 !important;
-}
-*/
-.small-widget .x-panel-body-default {
-    padding: 5px 10px;
-    overflow-y: auto;
-    height: auto !important;
-    border: 0;
-    position: static;
 }
 
 .nopadding .x-panel-body-default {
@@ -506,41 +467,14 @@ a.forgot-password:hover {
     left: auto;
 }
 
-.dashboard .x-progress-default {
-    border: 0;
-    border-radius: 10px;
-    background-color: #EEF1F5;
-}
-
-.dashboard .x-progress-bar {
-    background: #E1B505;
-    border-radius: 0 10px 10px 0;
-}
-
+/*
 @media ( min-width : 956px) {
-    .group-widget {
-        flex: 1;
-    }
-    .group-widget .x-panel-body-default {
-        background: transparent;
-        border: 0;
-    }
-    /*
-    .group-widget .x-panel-body .x-autocontainer-innerCt {
-        flex: 1;
-    }
-    */
-    .small-widget {
-        flex: 35%;
-        margin: 10px;
-        padding: 0 !important;
-    }
     .big-widget {
         flex: 1;
         height: initial !important;
     }
 }
-
+*/
 .dashboard .ellipsis .x-form-display-field-default {
     max-width: 120px;
     white-space: nowrap;
@@ -549,9 +483,6 @@ a.forgot-password:hover {
 }
 
 /* new styles */
-.grid-cell {
-
-}
 
 .grid-cell.small-1,.grid-cell.small-2 {
     float: left;
