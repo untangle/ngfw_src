@@ -151,7 +151,7 @@ public class DeviceTableImpl implements DeviceTable
                 }
             }
             
-            UvmContextFactory.context().settingsManager().save( DEVICES_SAVE_FILENAME, list, false, false );
+            UvmContextFactory.context().settingsManager().save( DEVICES_SAVE_FILENAME, list, false, true );
             logger.info("Saving devices to file... done");
         } catch (Exception e) {
             logger.warn("Exception",e);
