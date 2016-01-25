@@ -145,7 +145,10 @@ public class DeviceTableImpl implements DeviceTable
                     if ( o1.getLastSeenTime() == o2.getLastSeenTime() ) return 0;
                     return -1;
                 } });
-                while ( list.size() > LOW_WATER_SIZE ) list.removeLast();
+                while ( list.size() > LOW_WATER_SIZE ) {
+                    logger.info("Device list too large. Removing oldest entry: " + list.get(list.size()-1));
+                    list.removeLast();
+                }
             }
             
             UvmContextFactory.context().settingsManager().save( DEVICES_SAVE_FILENAME, list, false, false );
@@ -187,7 +190,7 @@ public class DeviceTableImpl implements DeviceTable
 
                         deviceTable.put( entry.getMacAddress(), entry );
                     } catch ( Exception e ) {
-                        logger.warn( "Error loading device entry: " + entry, e);
+                        logger.warn( "Error loading device entry: " + entry.toJSONString(), e);
                     }
                 }
                 logger.info("Loaded  devices from file.   (" + savedEntries.size() + " entries)");
