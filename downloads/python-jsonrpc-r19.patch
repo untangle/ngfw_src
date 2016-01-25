@@ -139,7 +139,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.modified
 diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonrpc/proxy.py
 --- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
 +++ python-jsonrpc-r19.modified//jsonrpc/proxy.py	2014-05-08 12:31:28.000000000 -0700
-@@ -19,31 +19,101 @@
+@@ -19,31 +19,95 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
  
@@ -153,8 +153,6 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
      def __init__(self, rpcError):
          Exception.__init__(self)
          self.error = rpcError
-+
-+jsonRpcNonce = None
 +
 +"""
 +Extend or redefine this class if you want to use a different mechanism
@@ -188,9 +186,6 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +        return ServiceProxy(self.__serviceURL, name, self.__handler)
 +
 +    def getNonce(self):
-+        global jsonRpcNonce
-+        if jsonRpcNonce != None:
-+            return
 +        ServiceProxy.__request_id += 1
 +        postdata = dumps({"method": "system.getNonce", 'params': [], 'id': ServiceProxy.__request_id })
 +        respdata = self.__handler.make_request( self.__serviceURL, postdata )
@@ -198,7 +193,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +        if resp.has_key( 'error' ) and resp['error'] != None:
 +            print "A little error: ", resp['error']
 +            raise JSONRPCException(resp['error'])
-+        jsonRpcNonce = resp['result']
++        self.__jsonRpcNonce = resp['result']
  
      def __call__(self, *args):
 -         postdata = dumps({"method": self.__serviceName, 'params': args, 'id':'jsonrpc'})
@@ -209,9 +204,8 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 -         else:
 -             return resp['result']
 -         
-+        global jsonRpcNonce
 +        ServiceProxy.__request_id += 1
-+        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': jsonRpcNonce, 'id': ServiceProxy.__request_id })
++        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': self.__jsonRpcNonce, 'id': ServiceProxy.__request_id })
 +        respdata = self.__handler.make_request( self.__serviceURL, postdata )
 +        resp = loads(respdata)
 +        if resp.has_key( 'error' ) and resp['error'] != None:
