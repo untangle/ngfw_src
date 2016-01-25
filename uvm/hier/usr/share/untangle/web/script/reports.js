@@ -40,6 +40,7 @@ Ext.define('Ung.panel.Reports', {
             region: 'east',
             title: i18n._("Current Data"),
             width: 330,
+            hidden: true,
             split: true,
             collapsible: true,
             collapsed: Ung.Main.viewport.getWidth()<1200,
@@ -71,17 +72,18 @@ Ext.define('Ung.panel.Reports', {
                 name: 'cardsContainer',
                 layout: 'card',
                 items: [{
+                    xtype: 'component',
+                    itemId: 'pleaseSelectEntryContrainer',
+                    name: 'pleaseSelectEntryContrainer',
+                    padding: '25 10 0 20',
+                    style: 'font-size: 16px;',
+                    html: i18n._('Please select an entry to view.')
+                }, {
                     xtype: 'container',
                     itemId: 'chartContainer',
                     name: 'chartContainer',
                     layout: 'fit',
-                    items: [{
-                        xtype: 'component',
-                        name: 'pleaseSelectEntry',
-                        padding: '25 10 0 20',
-                        style: 'font-size: 16px;',
-                        html: i18n._('Please select an entry to view.')
-                    }]
+                    items: []
                 }, {
                     region: 'center',
                     xtype: 'grid',
@@ -360,55 +362,37 @@ Ext.define('Ung.panel.Reports', {
     },
     setCategory: function(category) {
         this.category = category;
-        var selectInitialEntrySemaphore = 2;
-        var loadEntriesHandler = Ext.bind(function() {
-            selectInitialEntrySemaphore--;
-            if(selectInitialEntrySemaphore==0) {
-                this.selectInitialEntry();
-            }
-        }, this);
-        this.loadEntries(loadEntriesHandler);
+        this.cardsContainer.setActiveItem("pleaseSelectEntryContrainer");
+        this.reportDataGrid.hide();
+        this.loadEntries();
+    },
+    loadEntries: function() {
         
+        this.loadReportEntries(null);
+        this.loadEventEntries();
     },
-    loadEntries: function(handler) {
-        this.loadReportEntries(null, handler);
-        this.loadEventEntries(handler);
-    },
-    loadReportEntries: function(initialEntryId, handler) {
+    loadReportEntries: function(initialEntryId) {
         if(!this.reportEntriesGrid) {
             this.reportEntriesGrid = this.down("grid[name=reportEntriesGrid]");
         }
         rpc.reportsManager.getReportEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var reportEntries = [];
-            this.initialEntryIndex = null;
             var entry;
             for(var i=0; i<result.list.length; i++) {
                 entry = result.list[i];
                 if(entry.enabled) {
                     reportEntries.push(entry);
-                    if(initialEntryId && entry.uniqueId == initialEntryId) {
-                        this.initialEntryIndex = i;
-                    }
-                    if(this.initialEntryIndex==null && entry.type!="TEXT") {
-                        this.initialEntryIndex = i;
-                    }
                 }
-            }
-            if(this.initialEntryIndex == null && reportEntries.length>0) {
-                this.initialEntryIndex = 0;
             }
             this.reportEntriesGrid.getStore().loadData(reportEntries);
             this.reportEntriesGrid.setHidden(reportEntries.length == 0);
-            if(initialEntryId && this.initialEntryIndex) {
-                this.reportEntriesGrid.getSelectionModel().select(this.initialEntryIndex);
-            }
-            if(Ext.isFunction(handler)) {
-                handler();
+            if(initialEntryId) {
+                this.reportEntriesGrid.getSelectionModel().select(initialEntryId);
             }
         }, this), this.category);
     },
-    loadEventEntries: function(handler) {
+    loadEventEntries: function() {
         if(!this.eventEntriesGrid) {
             this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
         }
@@ -416,9 +400,6 @@ Ext.define('Ung.panel.Reports', {
             if(Ung.Util.handleException(exception)) return;
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
-            if(Ext.isFunction(handler)) {
-                handler();
-            }
         }, this), this.category);
     },
     
@@ -1341,13 +1322,6 @@ Ext.define('Ung.panel.Reports', {
     },
     isDirty: function() {
         return false;
-    },
-    selectInitialEntry: function() {
-        if(this.reportEntriesGrid && this.reportEntriesGrid.getStore().getCount() > 0) {
-            this.reportEntriesGrid.getSelectionModel().select(this.initialEntryIndex);
-        } else if (this.eventEntriesGrid && this.eventEntriesGrid.getStore().getCount() > 0) {
-            this.eventEntriesGrid.getSelectionModel().select(0);
-        }
     },
     listeners: {
         "deactivate": {
