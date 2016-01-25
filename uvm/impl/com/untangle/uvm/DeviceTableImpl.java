@@ -183,7 +183,7 @@ public class DeviceTableImpl implements DeviceTable
                          * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
                          */
                         if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
-                            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( entry.getMacAddress() );
+                            String macVendor = lookupMacVendor( entry.getMacAddress() );
                             if ( macVendor != null && !("".equals(macVendor)) )
                                 entry.setMacVendor( macVendor );
                         }
