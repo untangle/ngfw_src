@@ -413,6 +413,50 @@ Ext.define('Ung.dashboard.Sessions', {
 });
 
 
+var store = new Ext.data.JsonStore({
+    fields: ['minutes1', 'minutes5', 'minutes15', 'time'],
+    data: []
+});
+
+var chart = {
+    xtype: 'chart',
+    layout: 'fit',
+    style: 'background: #fff',
+    animation: false,
+    shadow: false,
+    store: store,
+    axes: [{
+        type: 'numeric',
+        position: 'left',
+        minimum: 0,
+        fields: ['minutes1']
+    }, {
+        type: 'category',
+        position: 'bottom',
+        fields: ['time'],
+        dateFormat: 'h:m:s',
+        grid: true,
+        minimum: 1,
+        maximum: 20,
+        hidden: true
+    }],
+    series: {
+        type: 'area',
+        axis: 'left',
+        style: {
+            stroke: '#30BDA7',
+            lineWidth: 2
+        },
+        subStyle: {
+            fill: ['rgba(0,0,0,0.2)']
+        },
+        xField: 'time',
+        yField: ['minutes1']
+    }
+};
+
+var data = [];
+
 Ext.define('Ung.dashboard.Chart', {
     extend: 'Ext.panel.Panel',
     displayMode: 'small',
@@ -427,66 +471,20 @@ Ext.define('Ung.dashboard.Chart', {
         this.title = i18n._("Chart");
         this.callParent(arguments);
     },
-    items: [{
-        xtype: 'chart',
-        layout: 'fit',
-        style: 'background: #fff',
-        animate: true,
-        shadow: false,
-        store: {
-            fields: ['name', 'data1', 'data2', 'data3'],
-            data: [{
-                'name': 1,
-                'data1': 10,
-                'data2': 12,
-                'data3': 14
-            }, {
-                'name': 2,
-                'data1': 7,
-                'data2': 8,
-                'data3': 16
-            }, {
-                'name': 3,
-                'data1': 5,
-                'data2': 2,
-                'data3': 14
-            }, {
-                'name': 4,
-                'data1': 2,
-                'data2': 14,
-                'data3': 6
-            }, {
-                'name': 5,
-                'data1': 10,
-                'data2': 15,
-                'data3': 9
-            }]
-        },
-        axes: {
-            type: 'numeric',
-            position: 'left',
-            minimum: 0,
-            fields: ['data1', 'data2', 'data3'],
-            grid: {
-                odd: {
-                    opacity: 1,
-                    fill: '#F2F2F2',
-                    stroke: '#DDD',
-                    'lineWidth': 1
-                }
-            }
-        },
-        series: {
-            type: 'area',
-            subStyle: {
-                fill: ['#0A3F50', '#30BDA7', '#96D4C6']
-            },
-            xField: 'name',
-            yField: ['data1', 'data2', 'data3']
-        }
-    }],
+    items: [chart],
     updateFromStats: function (stats) {
         //console.log(stats);
+        var d = new Date();
+        if (data.length > 20) {
+            data.shift();
+        }
+        data.push({
+            'time': d.getTime(),
+            'minutes1': stats.oneMinuteLoadAvg,
+            'minutes5': stats.fiveMinuteLoadAvg,
+            'minutes15': stats.fifteenMinuteLoadAvg
+        });
+        chart.store.loadData(data);
     }
 });
 
