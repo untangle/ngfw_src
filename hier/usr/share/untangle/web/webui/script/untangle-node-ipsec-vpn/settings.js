@@ -1107,7 +1107,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'remoteAddress',
                 sortType: 'asIp'
             },{
-                name: 'remoteNetworks',
+                name: 'remoteNetworks'
             },{
                 name: 'description'
             }],
