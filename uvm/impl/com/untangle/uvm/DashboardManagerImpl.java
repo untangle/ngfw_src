@@ -3,6 +3,9 @@
  */
 package com.untangle.uvm;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -73,6 +76,21 @@ public class DashboardManagerImpl implements DashboardManager
 
     private DashboardSettings defaultSettings()
     {
-        return new DashboardSettings();
+        DashboardWidgetSettings widgetSettings;
+        LinkedList<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
+
+        widgetSettings = new DashboardWidgetSettings();
+        widgetSettings.setType("Information");
+        widgetSettings.setRefreshIntervalSec(5);
+        widgets.add(widgetSettings);
+
+        widgetSettings = new DashboardWidgetSettings();
+        widgetSettings.setType("HostsDevices");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgets.add(widgetSettings);
+
+        DashboardSettings newSettings = new DashboardSettings();
+        newSettings.setWidgets(widgets);
+        return newSettings;
     }
 }
