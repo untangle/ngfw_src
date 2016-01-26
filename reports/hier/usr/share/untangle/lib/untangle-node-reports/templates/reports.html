@@ -146,12 +146,8 @@ table {
 	</tr>
 	<tr style="background-color:{{ rowColors }};">
 		<td></td>
-		<td style="font-size:12px; font-weight:normal;">{{ report.getDescription }}</td>
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 		{% with reportRow=reportRows|first %}
-	</tr>
-	<tr style="background-color:{{ rowColors }};">
-		<td></td>
 		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow }}</td>
 		{% endwith %}
 		{% endwith %}
