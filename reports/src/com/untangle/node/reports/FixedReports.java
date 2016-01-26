@@ -636,6 +636,11 @@ public class FixedReports
         Class<?>[] argumentTypes = null;
         Object[] argumentValues = null;
 
+        if(variableSelector.fields.get(0).charAt(0) == '[' &&
+            variableSelector.fields.get(0).charAt(variableSelector.fields.get(0).length() - 1) == ']' ){
+            return createVariableList(variableSelector.fields.get(0));
+        }
+
         /*
          * Look at the first selector field to determine of an object should be pulled from the VM
          * or context stack.
@@ -788,6 +793,30 @@ public class FixedReports
         }
 
         return object;
+    }
+
+    private Object createVariableList(String stringList){
+        List<String> variableList = new ArrayList<String>();
+
+        stringList = stringList.substring(1,stringList.length()-1).trim();
+        for(String element: stringList.split("\\s+")){
+            if(element.charAt(0) == '"' && element.charAt(element.length()-1) == '"'){
+                element = element.substring(1,element.length()-1);
+                variableList.add(element);
+            }else if(element.charAt(0) == '"' && element.charAt(element.length()-1) != '"'){
+                element = element.substring(1);
+                variableList.add(element);
+            }else if(element.charAt(0) != '"' && element.charAt(element.length()-1) == '"'){
+                element = element.substring(0,element.length() -1);
+                // Hackish.  Should preserve actual number of spaces
+                int lastIndex = variableList.size() - 1;
+                variableList.set(lastIndex, variableList.get(lastIndex) + " " +  element);
+            }else{
+                variableList.add(element);
+            }
+        }
+
+        return variableList;
     }
 
     /*

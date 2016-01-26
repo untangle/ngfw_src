@@ -107,6 +107,29 @@ table {
 </td>
 </tr>
 
+{% with reportsNode=nodeManager.node,untangle-node-reports %}
+{% for name in ["Network" "Administration" "Host Viewer" "Device List"] %}
+	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
+	{% if reports.size != 0 %}
+		{% for report in reports %}
+		{% cycle rowColors %}
+		<tr style="background-color:{{ rowColors }};">
+		<td>
+{{ report.getTitle }}
+		</td>
+		<td>
+		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+		{% with reportRow=reportRows|first %}
+{{ report.getTextString|format=reportRow }}
+		{% endwith %}
+		{% endwith %}
+		</td></tr>
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+{% endfor %}
+{% endwith %}
+
 <tr>
 <td colspan="2">
 <table>
@@ -164,7 +187,6 @@ table {
 
 
 </table>
-
 
 </body>
 </html>
