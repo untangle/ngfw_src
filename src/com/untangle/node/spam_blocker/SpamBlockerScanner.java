@@ -111,8 +111,6 @@ public class SpamBlockerScanner implements SpamScanner
             return true;
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER_OLDNAME))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.COMMTOUCHAS))
-            return true;
         return false;
     }
 }
