@@ -33,6 +33,11 @@ public interface LicenseManager
     public boolean hasPremiumLicense();
 
     /**
+     * Returns the number of valid premium licenses
+     */
+    public int validLicenseCount();
+    
+    /**
      * Returns the max number of seats of the smallest valid non-trial premium license
      * If there are no valid non-trial premium liecnses, it will return -1
      */

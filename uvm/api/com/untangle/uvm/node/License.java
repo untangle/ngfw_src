@@ -31,8 +31,6 @@ public class License implements Serializable
     public static final String VIRUS_BLOCKER_OLDNAME = "untangle-node-virusblocker";
     public static final String SPAM_BLOCKER = "untangle-node-spam-blocker";
     public static final String SPAM_BLOCKER_OLDNAME = "untangle-node-spamblocker";
-    public static final String COMMTOUCHAV = "untangle-node-commtouchav";
-    public static final String COMMTOUCHAS = "untangle-node-commtouchas";
     public static final String WAN_FAILOVER = "untangle-node-wan-failover";
     public static final String WAN_FAILOVER_OLDNAME = "untangle-node-faild";
     public static final String IPSEC_VPN = "untangle-node-ipsec-vpn";

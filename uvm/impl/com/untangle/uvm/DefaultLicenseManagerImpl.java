@@ -73,6 +73,11 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         return false;
     }
 
+    public int validLicenseCount()
+    {
+        return 0;
+    }
+    
     public int getSeatLimit()
     {
         return -1;
