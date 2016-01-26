@@ -638,6 +638,9 @@ public class FixedReports
 
         if(variableSelector.fields.get(0).charAt(0) == '[' &&
             variableSelector.fields.get(0).charAt(variableSelector.fields.get(0).length() - 1) == ']' ){
+            /* 
+             * Create arbitary list variable.
+             */
             return createVariableList(variableSelector.fields.get(0));
         }
 
@@ -795,6 +798,11 @@ public class FixedReports
         return object;
     }
 
+    /**
+     * Create arbitrary string-based list from stringList specifier which supports
+     * following string formats:
+     * "quote" unquoted "quoted with spaces"
+     */
     private Object createVariableList(String stringList){
         List<String> variableList = new ArrayList<String>();
 
