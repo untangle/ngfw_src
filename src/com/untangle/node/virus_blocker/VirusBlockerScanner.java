@@ -101,8 +101,6 @@ public class VirusBlockerScanner implements VirusScanner
             return true;
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER_OLDNAME))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.COMMTOUCHAV))
-            return true;
         return false;
     }
 }

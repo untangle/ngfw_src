@@ -87,8 +87,6 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
             return true;
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER_OLDNAME))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.COMMTOUCHAV))
-            return true;
         return false;
     }
 }
