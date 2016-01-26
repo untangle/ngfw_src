@@ -370,7 +370,7 @@ Ext.define('Ung.dashboard.HostsDevices', {
     }
 });
 
-
+/* Sessions Widget */
 Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
@@ -413,6 +413,7 @@ Ext.define('Ung.dashboard.Sessions', {
 });
 
 
+/* System Stats Chart */
 var store = new Ext.data.JsonStore({
     fields: ['minutes1', 'minutes5', 'minutes15', 'time'],
     data: []
@@ -473,7 +474,6 @@ Ext.define('Ung.dashboard.Chart', {
     },
     items: [chart],
     updateFromStats: function (stats) {
-        //console.log(stats);
         var d = new Date();
         if (data.length > 20) {
             data.shift();
@@ -490,18 +490,105 @@ Ext.define('Ung.dashboard.Chart', {
 
 
 
+var entry = {
+    "uniqueId": "network-8bTqxKxxUK",
+    "category": "Network",
+    "description": "The amount of total, scanned, and bypassed sessions over time.",
+    "displayOrder": 100,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "sessions",
+    "readOnly": true,
+    "table": "sessions",
+    "timeDataColumns": [
+        "count(*) as total",
+        "sum((not bypassed)::int) as scanned",
+        "sum(bypassed::int) as bypassed"
+    ],
+    "colors": [
+        "#b2b2b2",
+        "#396c2b",
+        "#3399ff"
+    ],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "BAR_3D_OVERLAPPED",
+    "title": "Sessions",
+    "type": "TIME_GRAPH"
+};
 
+var store2 = new Ext.data.JsonStore({
+    fields: ['total', 'scanned', 'bypassed', 'time'],
+    data: []
+});
 
+var chart2 = {
+    xtype: 'chart',
+    layout: 'fit',
+    style: 'background: #fff',
+    animation: false,
+    shadow: false,
+    store: store2,
+    axes: [{
+        type: 'numeric',
+        position: 'left',
+        minimum: 0,
+        fields: ['total', 'scanned', 'bypassed'],
+        grid: true
+    }, {
+        type: 'category',
+        position: 'bottom',
+        fields: 'time',
+        grid: true,
+        hidden: true
+    }],
+    series: {
+        type: 'area',
+        axis: 'left',
+        smooth: true,
+        style: {
+            stroke: '#30BDA7',
+            lineWidth: 0
+        },
+        subStyle: {
+            fill: ['#64C14F', '#1EBCE9', '#EF578A']
+        },
+        xField: 'time',
+        yField: ['total', 'scanned', 'bypassed']
+    }
+};
 
-
+/* ReportEntry Widgets */
 Ext.define('Ung.dashboard.ReportEntry', {
-    extend: 'Ung.dashboard.Widget',
+    extend: 'Ext.panel.Panel',
     height: 400,
-    displayMode: 'big',
+    cls: 'widget small-widget nopadding',
+    layout: 'fit',
+    border: false,
+    entry: null,
+    items: [chart2],
     initComponent: function () {
-        this.title =  i18n._("Report");
-        this.items = [];
+        var me = this;
+        this.title =  i18n._("Reports | Network | Sessions");
+        //this.items = [chart];
+
+        me.loadEntry(entry);
         this.callParent(arguments);
+    },
+    loadEntry: function (entry) {
+        var me = this;
+        rpc.reportsManager = Ung.Main.getReportsManager();
+        var entryData = rpc.reportsManager.getDataForReportEntry(entry, null, null, -1);
+
+        for (i=0; i<entryData.list.length; i++) {
+            entryData.list[i].time = entryData.list[i].time_trunc.time;
+        }
+//      console.log(entryData.list[0]);
+
+        chart2.store.loadData(entryData.list);
+        setTimeout(function () {
+            me.loadEntry(entry);
+        }, 10000);
     }
 });
 

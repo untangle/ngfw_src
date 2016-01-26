@@ -20,7 +20,7 @@ Ext.define('Webui.config.dashboardManager', {
         },{
             name: 'Sessions',
             title: i18n._('Sessions'),
-            displayMode: 'big',
+            displayMode: 'small',
             singleInstance: true
         },{
             name: 'HostsDevices',
@@ -33,6 +33,11 @@ Ext.define('Webui.config.dashboardManager', {
             displayMode: 'small',
             singleInstance: false
         },{
+            name: 'Memory',
+            title: i18n._('Memory'),
+            displayMode: 'small',
+            singleInstance: true
+        },{
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big'
@@ -41,7 +46,7 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Events'),
             displayMode: 'big'
         }];
-        
+
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
         this.buildGridDashboardWidgets();
         this.buildTabPanel([this.gridDashboardWidgets]);
@@ -122,7 +127,7 @@ Ext.define('Webui.config.dashboardManager', {
                 store: [],
                 queryMode: 'local',
                 listeners: {
-                    'select': { 
+                    'select': {
                         fn: Ext.bind(function(combo, ewVal, oldVal) {
                             this.gridDashboardWidgets.rowEditor.syncComponents();
                         }, this )
