@@ -7,6 +7,11 @@ if [ -x /usr/share/untangle/bin/ipsec-xauth-cidr-block ] ; then
    POOL="`/usr/share/untangle/bin/ipsec-xauth-cidr-block`"
 fi
 
+VPNFLAG="False"
+if [ -x /usr/share/untangle/bin/ipsec-get-vpn-flag ] ; then
+   VPNFLAG="`/usr/share/untangle/bin/ipsec-get-vpn-flag`"
+fi
+
 # we put the rules to mark the ipsec xauth interface in their own chains since
 # the cidr pool is used to identify the traffic and that could be changed
 # by the user so we start by creating and flushing the chains
@@ -27,6 +32,12 @@ ${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfc/0xff -j RETURN -
 
 # if we don't have a valid Xauth pool then IPsec is likely not installed or configured
 if [ $POOL = "-EMPTY-" ]
+then
+    return
+fi
+
+# we also don't want to add these rules if the VPN stuff is disabled
+if [ $VPNFLAG = "False" ]
 then
     return
 fi

@@ -21,9 +21,14 @@ if [ -x /usr/share/untangle/bin/ipsec-get-https-port ] ; then
     SECPORT=`/usr/share/untangle/bin/ipsec-get-https-port`
 fi
 
-FLAG="True"
+VPNFLAG="False"
+if [ -x /usr/share/untangle/bin/ipsec-get-vpn-flag ] ; then
+   VPNFLAG="`/usr/share/untangle/bin/ipsec-get-vpn-flag`"
+fi
+
+BYPASSFLAG="True"
 if [ -x /usr/share/untangle/bin/ipsec-get-bypass-flag ] ; then
-   FLAG="`/usr/share/untangle/bin/ipsec-get-bypass-flag`"
+   BYPASSFLAG="`/usr/share/untangle/bin/ipsec-get-bypass-flag`"
 fi
 
 # We put the L2TP port forward rules in their own chain that we can flush
@@ -53,7 +58,7 @@ ${IPTABLES} -t nat -I nat-rules -m policy --pol ipsec --dir out -j RETURN -m com
 ${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark >/dev/null 2>&1
 ${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in  --goto set-bypass-mark >/dev/null 2>&1
 
-if [ $FLAG = "True" ]
+if [ $BYPASSFLAG = "True" ]
 then
     ${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark
     ${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir in  --goto set-bypass-mark
@@ -81,11 +86,19 @@ then
     return
 fi
 
+# we also don't want to add these rules if the VPN stuff is disabled
+if [ $VPNFLAG = "False" ]
+then
+    return
+fi
+
 #
 # Add port forward rules for L2TP and Xauth clients.  We need the port 53 rules
 # for Xauth clients since the server side of the L2TP interface will not exist
 # if no L2TP clients are connected.  Using the L2TP server side addresses for
 # Xauth clients ended up being cleaner than trying to use the WAN interface.
+# We also don't need to do delete cleanup here since we're using dedicated
+# chains that were flushed above.
 #
 ${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port $SECPORT -j REDIRECT --to-ports 443 -m comment --comment "Send L2TP to apache"
 ${IPTABLES} -t nat -I l2tp-forward-rules -p tcp -d $ADDR --destination-port $WEBPORT -j REDIRECT --to-ports 80 -m comment --comment "Send L2TP to apache"
