@@ -217,9 +217,20 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     @Override
     public final boolean hasPremiumLicense()
     {
-        return this.settings.getLicenses().size() > 0;
+        return validLicenseCount() > 0;
     }
 
+    @Override
+    public int validLicenseCount()
+    {
+        int validCount = 0;
+        for ( License lic : this.settings.getLicenses() ) {
+            if (lic.getValid())
+                validCount++;
+        }
+        return validCount;
+    }
+    
     @Override
     public int getSeatLimit( )
     {
@@ -297,8 +308,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             oldName = License.VIRUS_BLOCKER_OLDNAME; break;
         case License.SPAM_BLOCKER:
             oldName = License.SPAM_BLOCKER_OLDNAME; break;
-        case License.COMMTOUCHAV:
-            oldName = License.COMMTOUCHAS; break;
         case License.WAN_FAILOVER:
             oldName = License.WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
@@ -416,12 +425,17 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         if (this.settings == null)
             _initializeSettings();
 
-        /**
-         * Re-compute metadata - we don't want to use value in file (could have been changed)
-         */
         if (this.settings.getLicenses() != null) {
-            for (License lic : this.settings.getLicenses()) {
-                _setValidAndStatus(lic);
+            Iterator<License> iterator = this.settings.getLicenses().iterator();
+            while ( iterator.hasNext() ) {
+                License license = iterator.next();
+
+                // remove obsolete names
+                if ( isObsoleteApp( license.getName() ) )
+                    iterator.remove();
+
+                // recompute metadata - we don't want to use value in file (could have been changed)
+                _setValidAndStatus(license);
             }
         }
 
@@ -533,7 +547,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         }
         
         for (License lic : licenses) {
-            changed |= _insertOrUpdate(lic);
+            if ( ! isObsoleteApp( lic.getName() ) ) {
+                changed |= _insertOrUpdate(lic);
+            }
         }
 
         if ( changed ) 
@@ -865,6 +881,15 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         return false;
     }
 
+    private boolean isObsoleteApp(String identifier)
+    {
+        if ("untangle-node-kav".equals(identifier)) return true;
+        if ("untangle-node-commtouch".equals(identifier)) return true;
+        if ("untangle-node-commtouchav".equals(identifier)) return true;
+        if ("untangle-node-commtouchas".equals(identifier)) return true;
+        return false;
+    }
+    
     private String getOldIdentifier(String identifier)
     {
         switch (identifier) {
@@ -880,8 +905,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             return License.VIRUS_BLOCKER_OLDNAME;
         case License.SPAM_BLOCKER:
             return License.SPAM_BLOCKER_OLDNAME;
-        case License.COMMTOUCHAV:
-            return License.COMMTOUCHAS;
         case License.WAN_FAILOVER:
             return License.WAN_FAILOVER_OLDNAME;
         case License.IPSEC_VPN:
