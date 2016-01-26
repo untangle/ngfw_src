@@ -49,5 +49,10 @@ public interface SessionMonitor
      * This takes 5 seconds to return
      */
     public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId);
-    
+
+    /**
+     * Retrieve the session stats (but not the sessions themselves)
+     * This is a JSON object with some keys to store values such as totalSessions, scannedSession, etc.
+     */
+    public org.json.JSONObject getSessionStats();
 }

@@ -246,7 +246,49 @@ public class SessionMonitorImpl implements SessionMonitor
 
         return sessions;
     }
-    
+
+    /**
+     * Retrieve the session stats (but not the sessions themselves)
+     */
+    public org.json.JSONObject getSessionStats()
+    {
+        List<SessionMonitorEntry> sessions = getMergedSessions();
+        org.json.JSONObject json = new org.json.JSONObject();
+        int totalSessions = 0;
+        int bypassedSessions = 0;
+        int scannedSessions = 0;
+        int scannedTCPSessions = 0;
+        int scannedUDPSessions = 0;
+
+        try {
+            if ( sessions != null ) {
+                for ( SessionMonitorEntry entry : sessions ) {
+                    totalSessions++;
+
+                    if ( ! entry.getBypassed() ) {
+                        scannedSessions++;
+                        if ( "TCP".equals(entry.getProtocol()) )
+                            scannedTCPSessions++;
+                        else if ( "UDP".equals(entry.getProtocol()) )
+                            scannedUDPSessions++;
+                    } else {
+                        bypassedSessions++;
+                    }
+                }
+            }
+
+            json.put("totalSessions", totalSessions);
+            json.put("bypassedSessions", bypassedSessions);
+            json.put("scannedSessions", scannedSessions);
+            json.put("scannedTCPSessions", scannedTCPSessions);
+            json.put("scannedUDPSessions", scannedUDPSessions);
+        } catch (Exception e) {
+            logger.error("Error generating session stats", e);
+        }
+
+        return json;
+    }
+
     /**
      * Returns a fully merged list for the given interface
      * systemIntfName is the system interface (example: "eth0")
