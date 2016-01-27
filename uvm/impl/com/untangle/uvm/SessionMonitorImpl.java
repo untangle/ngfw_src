@@ -189,7 +189,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     // This is so we don't show sessions that have been blocked or died at layer 7, but still exist in conntrack
                     // Doing so is confusing because it would show up as "bypassed" when its actually already been blocked.
                     if ((mark & 0x01000000) == 0) {
-                        logger.info("Removing session from view (mark): " + session);
+                        logger.info("Removing session from view (not scanned but no bypass mark): " + session);
                         i.remove();
                         continue;
                     }
@@ -204,7 +204,7 @@ public class SessionMonitorImpl implements SessionMonitor
              * Ignore sessions to 192.0.2.42
              */
             if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
-                logger.info("Removing session from view (address): " + session);
+                logger.info("Removing session from view (internal session to 192.0.2.42): " + session);
                 i.remove();
                 continue;
             }
