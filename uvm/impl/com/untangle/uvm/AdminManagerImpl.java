@@ -777,7 +777,11 @@ public class AdminManagerImpl implements AdminManager
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
-            UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
+            // copy only current settings (no backups)
+            UvmContextFactory.context().execManager().execResult("mkdir " + System.getProperty("uvm.settings.dir") + "/untangle-node-intrusion-prevention");
+            UvmContextFactory.context().execManager().execResult("find /usr/share/untangle/settings/untangle-node-idps -iregex '.*/settings_[0-9]*.js' -exec cp {} /usr/share/untangle/settings/untangle-node-intrusion-prevention/ \\;");
+            UvmContextFactory.context().execManager().execResult("rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-idps/*");
+            UvmContextFactory.context().execManager().execResult("rmdir " + System.getProperty("uvm.settings.dir") + "/untangle-node-idps");
 
             for ( i = 0 ; i < oldNames.length ; i++ ) {
                String oldStr = oldNames[i];
