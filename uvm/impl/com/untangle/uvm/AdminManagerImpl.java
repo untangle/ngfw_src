@@ -768,11 +768,15 @@ public class AdminManagerImpl implements AdminManager
         dir = new File(dirName);
         if ( dir.exists() && dir.isDirectory() ) {
             UvmContextFactory.context().execManager().execResult("/bin/mv " + dir + " " + System.getProperty("uvm.settings.dir") + "/" + newName);
-            for ( i = 0 ; i < oldNames.length ; i++ ) {
-                String oldStr = oldNames[i];
-                String newStr = newNames[i];
-                UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
-            }
+            // disabled
+            // the above strings are not in the settings and this operation takes too long because many servers have 6gigs+ of idps settings
+            // disabled
+
+            //for ( i = 0 ; i < oldNames.length ; i++ ) {
+            //    String oldStr = oldNames[i];
+            //    String newStr = newNames[i];
+            //    UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + newName + "/*");
+            //}
         }
 
         // rename boxbackup to configuration-backup
