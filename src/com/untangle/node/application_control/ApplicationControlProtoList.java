@@ -105,7 +105,7 @@ public class ApplicationControlProtoList
     /*
      * The vineyard protocol list is created by loading and parsing the metadata
      * file that is provided by Vineyard in CSV format. I'm using a very simple
-     * state machine thingy to parse the nine fields. It handles both quoted and
+     * state machine thingy to parse the ten fields. It handles both quoted and
      * unquoted fields, commas within a quoted field, and even escaped quotes
      * within a quoted field. Other than that, all bets are off.
      */
@@ -118,7 +118,7 @@ public class ApplicationControlProtoList
         try {
             File protofile = new File("/usr/share/untangle-classd/protolist.csv");
             BufferedReader reader = new BufferedReader(new FileReader(protofile));
-            StringBuilder[] field = new StringBuilder[9];
+            StringBuilder[] field = new StringBuilder[10];
             String grabstr;
             boolean eflag, qflag;
             int linetot = 0;
@@ -138,7 +138,7 @@ public class ApplicationControlProtoList
                 if (linetot == 1) continue;
 
                 // new string buffer for each of the fields
-                for (x = 0; x < 9; x++)
+                for (x = 0; x < 10; x++)
                     field[x] = new StringBuilder(1024);
 
                 // clear the quote and escape flags and zero the field index
@@ -177,11 +177,11 @@ public class ApplicationControlProtoList
                         false, // block
                         false, // tarpit
                         false, // flag
-                        field[1].toString(), // name
-                        field[2].toString(), // description
-                        field[3].toString(), // category
-                        Integer.parseInt(field[4].toString()), // productivity
-                        Integer.parseInt(field[5].toString())); // risk
+                        field[2].toString(), // name
+                        field[3].toString(), // description
+                        field[4].toString(), // category
+                        Integer.parseInt(field[5].toString()), // productivity
+                        Integer.parseInt(field[6].toString())); // risk
 
                 ruleList.add(protoRule);
             }
