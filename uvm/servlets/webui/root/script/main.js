@@ -416,11 +416,6 @@ Ext.define("Ung.Main", {
         rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var widgets = result.widgets!= null ? result.widgets.list : [];
-
-                if(true) { //for testing
-                    widgets.push.apply(widgets,[{type: 'Chart'}]);
-                }
-
                 this.dashboard.setWidgets(widgets);
             }, this));
 

@@ -1,5 +1,5 @@
 /*global
- Ext, Ung, i18n, rpc
+ Ext, Ung, i18n, rpc, setTimeout
 */
 
 Ext.define('Ung.dashboard', {
@@ -10,15 +10,15 @@ Ext.define('Ung.dashboard', {
     setWidgets: function (widgets) {
         this.widgets = [];
         this.dashboardPanel.removeAll();
-        var reporsEnabled = Ung.Main.isReportsAppInstalled();
-        var i, j, k,
+        var reporsEnabled = Ung.Main.isReportsAppInstalled(),
+            i, j, k,
             widgetsList = [],
             gridList = [],
             grid, gridEl, type;
 
         for (i = 0; i < widgets.length; i += 1) {
             type = widgets[i].type;
-            if(reporsEnabled || (type !="ReportEntry" && type !="EventEntry")) {
+            if (reporsEnabled || (type !== "ReportEntry" && type !== "EventEntry")) {
                 widgetsList.push(Ext.create('Ung.dashboard.' + widgets[i].type));
             }
         }
@@ -162,7 +162,7 @@ Ext.define('Ung.dashboard.Information', {
         '</div>' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Subscriptions') + ':</label>' +
-            '<div class="cell">???</div>' +
+            '<div class="cell">{subscriptions}</div>' +
         '</div>' +
         '</div>',
     data: {},
@@ -170,7 +170,9 @@ Ext.define('Ung.dashboard.Information', {
         var numdays = Math.floor((stats.uptime % 31536000) / 86400),
             numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
             numminutes = Math.floor((((stats.uptime % 31536000) % 86400) % 3600) / 60),
-            _uptime = '';
+            _uptime = '',
+            licenseManager = rpc.licenseManager;
+
         if (numdays > 0) {
             _uptime += numdays + 'd ';
         }
@@ -180,10 +182,12 @@ Ext.define('Ung.dashboard.Information', {
         if (numminutes > 0) {
             _uptime += numminutes + 'm';
         }
+
         this.update({
             hostname: rpc.hostname,
             uptime: _uptime,
-            version: rpc.fullVersion
+            version: rpc.fullVersion,
+            subscriptions: licenseManager.validLicenseCount()
         });
     }
 });
@@ -377,15 +381,16 @@ Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
-    hasStats: true,
+    refreshTime: 3, // seconds
     initComponent: function () {
         this.title = i18n._("Sessions");
         this.callParent(arguments);
+        this.loadData();
     },
     tpl: '<div class="wg-wrapper">' +
         '<div class="row">' +
         '<label style="width: 150px;">' + i18n._('Total Sessions') + ':</label>' +
-        '<div class="cell">???</div>' +
+        '<div class="cell">{totalSessions}</div>' +
         '</div>' +
         '<div class="row">' +
         '<label style="width: 150px;">' + i18n._('Scanned Sessions') + ':</label>' +
@@ -401,90 +406,133 @@ Ext.define('Ung.dashboard.Sessions', {
         '</div>' +
         '<div class="row">' +
         '<label style="width: 150px;">' + i18n._('Bypassed Sessions') + ':</label>' +
-        '<div class="cell">???</div>' +
+        '<div class="cell">{bypassedSessions}</div>' +
         '</div>' +
         '</div>',
+    loadData: function () {
+        var me = this;
+        rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.update(result);
+            setTimeout(function () {
+                me.loadData();
+            }, this.refreshTime * 1000);
+        }, this));
+    }
+});
+
+/* Network Widget */
+Ext.define('Ung.dashboard.Network', {
+    extend: 'Ung.dashboard.Widget',
+    displayMode: 'small',
+    height: 190,
+    refreshTime: 10, // refresh timer in seconds
+    initComponent: function () {
+        this.title = i18n._("Network");
+        this.callParent(arguments);
+        this.loadData();
+    },
+    tpl: '<div class="wg-wrapper">' +
+        '<tpl for=".">' +
+            '<div class="row">' +
+            '<label style="width: 80px;">' + i18n._('Interface') + ' {#}:</label>' +
+            '<div class="cell">{name} ({physicalDev})<tpl if="isWan"> - WAN</tpl></div>' +
+            '</div>' +
+        '</tpl>' +
+        '</div>',
     data: {},
-    updateStats: function (stats) {
-        this.update({
-            scannedSessions: stats.uvmSessions,
-            scannedTCPSessions: stats.uvmTCPSessions,
-            scannedUDPSessions: stats.uvmUDPSessions
-        });
+    loadData: function () {
+        var me = this;
+        this.update(rpc.networkSettings.interfaces.list);
+        setTimeout(function () {
+            me.loadData();
+        }, this.refreshTime * 1000);
     }
 });
 
-
-/* System Stats Chart */
-var store = new Ext.data.JsonStore({
-    fields: ['minutes1', 'minutes5', 'minutes15', 'time'],
-    data: []
-});
-
-var chart = {
-    xtype: 'chart',
-    layout: 'fit',
-    style: 'background: #fff',
-    animation: false,
-    shadow: false,
-    store: store,
-    axes: [{
-        type: 'numeric',
-        position: 'left',
-        minimum: 0,
-        fields: ['minutes1']
-    }, {
-        type: 'category',
-        position: 'bottom',
-        fields: ['time'],
-        dateFormat: 'h:m:s',
-        grid: true,
-        minimum: 1,
-        maximum: 20,
-        hidden: true
-    }],
-    series: {
-        type: 'area',
-        axis: 'left',
-        style: {
-            stroke: '#30BDA7',
-            lineWidth: 2
-        },
-        subStyle: {
-            fill: ['rgba(0,0,0,0.2)']
-        },
-        xField: 'time',
-        yField: ['minutes1']
-    }
-};
-
-var data = [];
-
-Ext.define('Ung.dashboard.Chart', {
+/* CPULoad Widget */
+Ext.define('Ung.dashboard.CPULoad', {
     extend: 'Ext.panel.Panel',
     displayMode: 'small',
-    //height: 400,
-    //cls: 'widget big-widget',
     height: 190,
     cls: 'widget small-widget nopadding',
     layout: 'fit',
     hasStats: true,
-    border: false,
+    items: [],
     initComponent: function () {
-        this.title = i18n._("Chart");
+        this.title = i18n._("CPU Load");
+        this.items.push({
+            xtype: 'cartesian',
+            name: 'chart',
+            layout: 'fit',
+            animation: false,
+            store: {
+                fields: ['minutes1', 'time'],
+                data: []
+            },
+            axes: [{
+                type: 'numeric',
+                position: 'left',
+                grid: {
+                    lineDash: [3, 3]
+                },
+                minimum: 0,
+                fields: ['minutes1'],
+                style : {
+                    strokeStyle: '#CCC'
+                },
+                label: {
+                    fontSize: 11,
+                    color: '#999'
+                },
+                limits: [{
+                    value: 2,
+                    line: {
+                        strokeStyle: '#999'
+                    }
+                }]
+            }, {
+                type: 'category',
+                position: 'bottom',
+                //maximum: 30,
+                hidden: true,
+                fields: ['time']
+            }],
+            series: [{
+                type: 'area',
+                xField: 'time',
+                yField: ['minutes1'],
+                style: {
+                    stroke: '#666666',
+                    lineWidth: 0,
+                    fillOpacity: 0.8
+                }
+            }]
+        });
         this.callParent(arguments);
     },
-    items: [chart],
     updateFromStats: function (stats) {
-        var d = new Date();
-        if (data.length > 20) {
+        var d = new Date(),
+            chart = this.down("[name=chart]"),
+            data = chart.store.proxy.reader.rawData;
+
+        // set the max value of the chart based on CPU count
+        if (stats.oneMinuteLoadAvg < stats.numCpus) {
+            chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
+        } else {
+            chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+        }
+
+        if (data.length > 30) {
             data.shift();
         }
         data.push({
-            'time': d.getTime(),
-            'minutes1': stats.oneMinuteLoadAvg,
-            'minutes5': stats.fiveMinuteLoadAvg,
-            'minutes15': stats.fifteenMinuteLoadAvg
+            time: d.getTime(),
+            minutes1: stats.oneMinuteLoadAvg,
+            minutes5: stats.fiveMinuteLoadAvg,
+            minutes15: stats.fifteenMinuteLoadAvg
         });
         chart.store.loadData(data);
     }
