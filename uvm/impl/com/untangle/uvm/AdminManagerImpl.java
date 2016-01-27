@@ -294,7 +294,7 @@ public class AdminManagerImpl implements AdminManager
             String newStr = newNames[i];
             expressions = expressions + " " + "-e 's/" + oldStr + "/" + newStr + "/g'";
         }
-        UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f -name '*.js' | xargs /bin/sed " + expressions + " -i ");
+        UvmContextFactory.context().execManager().execResult("find " + System.getProperty("uvm.settings.dir") + " -type f -name '*.js' -o -path './untangle-node-idps' -prune | xargs /bin/sed " + expressions + " -i ");
 
         // rename sitefilter to web-filter
         oldName = "untangle-node-sitefilter";
