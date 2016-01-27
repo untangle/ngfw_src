@@ -11,26 +11,6 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
         this.buildTabPanel([this.panelGoogle]);
         this.callParent(arguments);
     },
-    // get branding settings
-    getLatestEvent: function(forceReload) {
-        if (forceReload || this.rpc.latestEvent === undefined) {
-            try {
-                this.rpc.latestEvent = this.getRpcNode().getLatestEvent();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.rpc.latestEvent;
-    },
-    getStatusMessage: function () {
-        var event = this.getLatestEvent();
-        if (event == null)
-            return i18n._("Backup pending.");
-        else if (event.success == true)
-            return i18n._("Successfully backed up on") + " " + i18n.timestampFormat(event.timeStamp) + "</i>";
-        else
-            return i18n._("Last backup failed on") + " <i>" + i18n.timestampFormat(event.timeStamp) + "</i>";
-    },
     // Status Panel
     buildStatus: function() {
         var contactName;
@@ -43,10 +23,6 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
             settingsCmp: this,
             helpSource: 'configuration_backup_status',
             itemsToAppend: [{
-                xtype: 'fieldset',
-                title: i18n._('Status'),
-                html: this.getStatusMessage()
-            }, {
                 xtype: 'fieldset',
                 title: i18n._('Backup Now'),
                 items: [{

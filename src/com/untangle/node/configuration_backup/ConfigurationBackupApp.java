@@ -31,16 +31,10 @@ public class ConfigurationBackupApp extends NodeBase
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
     private ConfigurationBackupSettings settings = null;
-    private ConfigurationBackupEvent latestEvent = null;
 
     public ConfigurationBackupApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
-    }
-
-    public ConfigurationBackupEvent getLatestEvent()
-    {
-        return latestEvent;
     }
 
     public ConfigurationBackupSettings getSettings()
@@ -90,8 +84,7 @@ public class ConfigurationBackupApp extends NodeBase
     public void sendBackup()
     {
         if ( !isLicenseValid()) {
-            latestEvent = new ConfigurationBackupEvent(false, "No valid license.", "" );
-            this.logEvent(latestEvent);
+            this.logEvent(new ConfigurationBackupEvent(false, "No valid license.", "" ));
             return;
         }
 
@@ -220,14 +213,12 @@ public class ConfigurationBackupApp extends NodeBase
                 reason = "Unknown error";
             }
             logger.info("Backup failed: " + reason);
-            latestEvent = new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account"));
+            this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account")) );
         }
         else {
             logger.info("Backup successful.");
-            latestEvent = new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("My Account"));
+            this.logEvent( new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("My Account")) );
         }
-
-        this.logEvent(latestEvent);
     }
 
     /**
@@ -256,14 +247,12 @@ public class ConfigurationBackupApp extends NodeBase
                 reason = "Unknown error";
             }
             logger.info("Backup failed: " + reason);
-            latestEvent = new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive"));
+            this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
         }
         else {
             logger.info("Backup successful.");
-            latestEvent = new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive"));
+            this.logEvent( new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive")) );
         }
-
-        this.logEvent(latestEvent);
     }
     
     private void writeCronFile()
