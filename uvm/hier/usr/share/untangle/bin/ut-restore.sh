@@ -1,3 +1,6 @@
+
+
+
 #! /bin/bash
 
 #=============================================================
@@ -11,7 +14,7 @@ WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
 #ACCEPTED_PREVIOUS_VERSION="10.1|10.2"
-ACCEPTED_PREVIOUS_VERSION="11.0|11.1"
+ACCEPTED_PREVIOUS_VERSION="11.2"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
