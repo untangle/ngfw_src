@@ -18,10 +18,14 @@ import org.json.JSONString;
 public class DashboardWidgetSettings implements Serializable, JSONString
 {
     private String type = null;
-    private int refreshIntervalSec = 30;
-    /* TODO add other parameters here */
+    private int refreshIntervalSec = 0; //0= never auto refresh
+    private String entryId = null;
+    private String[] columns;
     
     public DashboardWidgetSettings() { }
+    public DashboardWidgetSettings(String type) {
+        this.type = type;
+    }
 
     public String toJSONString()
     {
@@ -34,5 +38,11 @@ public class DashboardWidgetSettings implements Serializable, JSONString
 
     public int getRefreshIntervalSec(){ return refreshIntervalSec; }
     public void setRefreshIntervalSec( int newValue) { this.refreshIntervalSec = newValue; }
+
+    public String getEntryId() { return entryId; }
+    public void setEntryId(String entryId) { this.entryId = entryId; }
+    
+    public String[] getColumns() { return columns; }
+    public void setColumns(String[] columns) { this.columns = columns; }
 
 }

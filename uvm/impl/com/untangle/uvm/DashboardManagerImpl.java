@@ -79,15 +79,18 @@ public class DashboardManagerImpl implements DashboardManager
         DashboardWidgetSettings widgetSettings;
         LinkedList<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
 
-        widgetSettings = new DashboardWidgetSettings();
-        widgetSettings.setType("Information");
-        widgetSettings.setRefreshIntervalSec(5);
-        widgets.add(widgetSettings);
+        widgets.add( new DashboardWidgetSettings("Information"));
+        widgets.add( new DashboardWidgetSettings("Server"));
+        widgets.add( new DashboardWidgetSettings("Sessions"));
+        widgets.add( new DashboardWidgetSettings("HostsDevices"));
+        widgets.add( new DashboardWidgetSettings("Hardware"));
+        widgets.add( new DashboardWidgetSettings("Memory"));
 
-        widgetSettings = new DashboardWidgetSettings();
-        widgetSettings.setType("HostsDevices");
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
-        widgets.add(widgetSettings);
+        widgetSettings.setEntryId("network-8bTqxKxxUK");
+        
+        widgets.add( widgetSettings);
 
         DashboardSettings newSettings = new DashboardSettings();
         newSettings.setWidgets(widgets);

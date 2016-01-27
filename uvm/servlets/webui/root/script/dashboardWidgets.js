@@ -10,18 +10,20 @@ Ext.define('Ung.dashboard', {
     setWidgets: function (widgets) {
         this.widgets = [];
         this.dashboardPanel.removeAll();
-
+        var reporsEnabled = Ung.Main.isReportsAppInstalled();
         var i, j, k,
             widgetsList = [],
             gridList = [],
-            grid, gridEl;
+            grid, gridEl, type;
 
         for (i = 0; i < widgets.length; i += 1) {
-            widgetsList.push(Ext.create('Ung.dashboard.' + widgets[i].type));
+            type = widgets[i].type;
+            if(reporsEnabled || (type !="ReportEntry" && type !="EventEntry")) {
+                widgetsList.push(Ext.create('Ung.dashboard.' + widgets[i].type));
+            }
         }
 
         for (j = 0; j < widgetsList.length; j += 1) {
-
             if (gridList.length > 0) {
                 grid = gridList[gridList.length - 1];
 

@@ -16,7 +16,7 @@ Ext.define('Webui.config.dashboardManager', {
             name: 'Server',
             title: i18n._('Server'),
             displayMode: 'small',
-            singleInstance: false
+            singleInstance: true
         },{
             name: 'Sessions',
             title: i18n._('Sessions'),
@@ -26,12 +26,12 @@ Ext.define('Webui.config.dashboardManager', {
             name: 'HostsDevices',
             title: i18n._('Hosts & Devices'),
             displayMode: 'small',
-            singleInstance: false
+            singleInstance: true
         },{
             name: 'Hardware',
             title: i18n._('Hardware'),
             displayMode: 'small',
-            singleInstance: false
+            singleInstance: true
         },{
             name: 'Memory',
             title: i18n._('Memory'),
