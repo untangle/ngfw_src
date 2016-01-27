@@ -4,8 +4,8 @@
         {
             "column": "web_filter_blocked",
             "javaClass": "com.untangle.node.reports.SqlCondition",
-            "operator": "is",
-            "value": "NOT NULL"
+            "operator": "is not",
+            "value": "NULL"
         },
         {
             "column": "s_server_port",
