@@ -38,6 +38,16 @@ Ext.define('Webui.config.dashboardManager', {
             displayMode: 'small',
             singleInstance: true
         },{
+            name: 'Network',
+            title: i18n._('Network'),
+            displayMode: 'small',
+            singleInstance: true
+        },{
+            name: 'CPULoad',
+            title: i18n._('CPU Load'),
+            displayMode: 'small',
+            singleInstance: true
+        },{
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big'
