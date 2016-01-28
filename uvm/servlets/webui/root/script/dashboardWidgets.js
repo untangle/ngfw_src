@@ -9,16 +9,16 @@ Ext.define('Ung.dashboard', {
     },
     loadDashboard: function() {
         this.reportsEnabled = Ung.Main.isReportsAppInstalled();
-        var loadSemaphore = this.reportsEnabled? 4: 1;
-        var callback = Ext.bind(function() {
+        var loadSemaphore = this.reportsEnabled ? 4 : 1;
+        var callback = Ext.bind(function () {
             loadSemaphore--;
-            if(loadSemaphore === 0) {
+            if (loadSemaphore === 0) {
                 this.setWidgets();
             }
         }, this);
         rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            this.allWidgets = result.widgets.list; 
+            if (Ung.Util.handleException(exception)) return;
+            this.allWidgets = result.widgets.list;
             callback();
         }, this));
         if(this.reportsEnabled) {
@@ -55,7 +55,8 @@ Ext.define('Ung.dashboard', {
                     }
                     if(entry && !this.unavailableApplicationsMap[entry.category]) {
                         widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type, {
-                            entry: entry
+                            entry: entry,
+                            refreshIntervalSec: this.allWidgets[i].refreshIntervalSec
                         }));
                     }
                 }
@@ -126,7 +127,6 @@ Ext.define('Ung.dashboard', {
         }
     },
     updateStats: function (stats) {
-        //console.log(stats);
         var i, widget;
         for (i = 0; i < this.widgets.length; i += 1) {
             widget = this.widgets[i];
@@ -141,15 +141,6 @@ Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
     hidden: false,
-    /*
-    tools: [{
-        type:'refresh',
-        callback: function() {
-            this.refresh();
-        },
-        scope: this
-    }],
-    */
     initComponent: function () {
         this.callParent(arguments);
     },
@@ -607,46 +598,287 @@ Ext.define('Ung.dashboard.CPULoad', {
     }
 });
 
-var store2 = new Ext.data.JsonStore({
-    fields: ['total', 'scanned', 'bypassed', 'time'],
-    data: []
+
+
+Ext.define('Ung.dashboard.Util', {
+    singleton: true,
+    createTimeChart: function (entry) {
+        if (!entry.timeDataColumns) {
+            entry.timeDataColumns = [];
+        }
+
+        var chart, axesFields = [], axesFieldsTitles = [], series = [],
+            legendHint = (entry.timeDataColumns.length > 1) ? this.cartesianLegendHint : '',
+            zeroFn = function (val) {
+                return (val === null) ? 0 : val;
+            },
+            timeFn = function (val) {
+                return (val === null || val.time === null) ? 0 : i18n.timestampFormat(val);
+            },
+            storeFields = [{name: 'time_trunc', convert: timeFn}],
+            reportDataColumns = [{
+                dataIndex: 'time_trunc',
+                header: i18n._("Timestamp"),
+                width: 130,
+                flex: entry.timeDataColumns.length > 2 ? 0 : 1
+            }],
+            seriesRenderer = null, title, column, i,
+
+            timeStyleButtons = [], timeStyle,
+            timeStyles = [
+                { name: 'LINE', iconCls: 'icon-line-chart', text: i18n._("Line"), tooltip: i18n._("Switch to Line Chart") },
+                { name: 'AREA', iconCls: 'icon-area-chart', text: i18n._("Area"), tooltip: i18n._("Switch to Area Chart") },
+                { name: 'BAR_3D', iconCls: 'icon-bar3d-chart', text: i18n._("Bar 3D"), tooltip: i18n._("Switch to Bar 3D Chart") },
+                { name: 'BAR_3D_OVERLAPPED', iconCls: 'icon-bar3d-overlapped-chart', text: i18n._("Bar 3D Overlapped"), tooltip: i18n._("Switch to Bar 3D Overlapped Chart") },
+                { name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart") },
+                { name: 'BAR_OVERLAPPED', iconCls: 'icon-bar-overlapped-chart', text: i18n._("Bar Overlapped"), tooltip: i18n._("Switch to Bar Overlapped Chart") }
+            ];
+
+        if (!Ext.isEmpty(entry.seriesRenderer)) {
+            seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
+        }
+
+        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
+            column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
+            title = seriesRenderer ? seriesRenderer(column) : column;
+            axesFields.push(column);
+            axesFieldsTitles.push(title);
+            storeFields.push({name: column, convert: zeroFn, type: 'integer'});
+            reportDataColumns.push({
+                dataIndex: column,
+                header: title,
+                width: entry.timeDataColumns.length > 2 ? 60 : 90
+            });
+        }
+        if (!entry.timeStyle) {
+            entry.timeStyle = "LINE";
+        }
+        if (entry.timeStyle.indexOf('OVERLAPPED') !== -1  && entry.timeDataColumns.length <= 1) {
+            entry.timeStyle = entry.timeStyle.replace("_OVERLAPPED", "");
+        }
+
+        for (i = 0; i < timeStyles.length; i += 1) {
+            timeStyle = timeStyles[i];
+            timeStyleButtons.push({
+                xtype: 'button',
+                pressed: entry.timeStyle === timeStyle.name,
+                hidden: (timeStyle.name.indexOf('OVERLAPPED') !== -1) && (entry.timeDataColumns.length <= 1),
+                name: timeStyle.name,
+                iconCls: timeStyle.iconCls,
+                text: timeStyle.text,
+                tooltip: timeStyle.tooltip,
+                handler: Ext.bind(function (button) {
+                    entry.timeStyle = button.name;
+                    this.loadReportEntry(entry);
+                }, this)
+            });
+        }
+        timeStyleButtons.push('-');
+
+        chart = {
+            xtype: 'cartesian',
+            name: 'chart',
+            store: Ext.create('Ext.data.JsonStore', {
+                fields: storeFields,
+                data: []
+            }),
+            theme: 'category2',
+            border: false,
+            animation: false,
+            width: '100%',
+            height: '100%',
+            legend: {
+                docked: 'bottom'
+            },
+            axes: [{
+                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'numeric3d' : 'numeric',
+                fields: axesFields,
+                position: 'left',
+                grid: {
+                    lineDash: [3, 3]
+                },
+                style : {
+                    strokeStyle: '#CCC'
+                },
+                minimum: 0,
+                label: {
+                    fontSize: 11,
+                    color: '#999'
+                }
+            }, {
+                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
+                fields: 'time_trunc',
+                position: 'bottom',
+                hidden: true,
+                style : {
+                    strokeStyle: '#CCC'
+                },
+                label: {
+                    fontSize: 11,
+                    color: '#999',
+                    x: 0,
+                    rotate: {
+                        degrees: -90
+                    }
+                }
+            }]
+        };
+
+        if (entry.timeStyle === 'LINE') {
+            for (i = 0; i < axesFields.length; i += 1) {
+                series.push({
+                    type: 'line',
+                    axis: 'left',
+                    title: axesFieldsTitles[i],
+                    xField: 'time_trunc',
+                    yField: axesFields[i],
+                    style: {
+                        opacity: 0.90,
+                        lineWidth: 1
+                    },
+                    highlight: {
+                        fillStyle: '#000',
+                        radius: 4,
+                        lineWidth: 1,
+                        strokeStyle: '#fff'
+                    },
+                    tooltip: {
+                        trackMouse: true,
+                        style: 'background: #fff',
+                        renderer: function (tooltip, storeItem, item) {
+                            var title = item.series.getTitle();
+                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
+                        }
+                    }
+                });
+            }
+            chart.series = series;
+        } else if (entry.timeStyle === 'AREA') {
+            for (i = 0; i < axesFields.length; i += 1) {
+                series.push({
+                    type: 'area',
+                    axis: 'left',
+                    title: axesFieldsTitles[i],
+                    xField: 'time_trunc',
+                    yField: axesFields[i],
+                    style: {
+                        opacity: 0.60,
+                        lineWidth: 1
+                    },
+                    highlight: {
+                        fillStyle: '#000',
+                        radius: 4,
+                        lineWidth: 1,
+                        strokeStyle: '#fff'
+                    },
+                    tooltip: {
+                        trackMouse: true,
+                        style: 'background: #fff',
+                        renderer: function (tooltip, storeItem, item) {
+                            var title = item.series.getTitle();
+                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
+                        }
+                    }
+                });
+            }
+            chart.series = series;
+        } else if (entry.timeStyle.indexOf('OVERLAPPED') !== -1) {
+            for (i = 0; i < axesFields.length; i += 1) {
+                series.push({
+                    type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
+                    axis: 'left',
+                    title: axesFieldsTitles[i],
+                    xField: 'time_trunc',
+                    yField: axesFields[i],
+                    style: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? { opacity: 0.70, lineWidth: 1 + 5 * i } : {  opacity: 0.60,  maxBarWidth: Math.max(40 - 2 * i, 2) },
+                    tooltip: {
+                        trackMouse: true,
+                        style: 'background: #fff',
+                        renderer: function (tooltip, storeItem, item) {
+                            var title = item.series.getTitle();
+                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
+                        }
+                    }
+                });
+            }
+            chart.series = series;
+        } else if (entry.timeStyle.indexOf('BAR') !== -1) {
+            chart.series = [{
+                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
+                axis: 'left',
+                title: axesFieldsTitles,
+                xField: 'time_trunc',
+                yField: axesFields,
+                stacked: false,
+                style: {
+                    opacity: 0.90,
+                    inGroupGapWidth: 1
+                },
+                highlight: true,
+                tooltip: {
+                    trackMouse: true,
+                    style: 'background: #fff',
+                    renderer: function (tooltip, storeItem, item) {
+                        var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                        tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " + i18n._(entry.units) + legendHint);
+                    }
+                }
+            }];
+        }
+        return chart;
+    },
+    createPieChart: function (entry) {
+        var descriptionFn = function (val, record) {
+            var title = (record.get(entry.pieGroupColumn) === null) ? i18n._("none") : record.get(entry.pieGroupColumn),
+                value = Ung.panel.Reports.renderValue(record.get("value"), entry);
+            return title + ": " + value;
+        },
+            chart = {
+                xtype: 'polar',
+                name: 'chart',
+                width: '100%',
+                height: '100%',
+                colors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+                store: Ext.create('Ext.data.JsonStore', {
+                    fields: [
+                        {name: 'description', convert: descriptionFn },
+                        {name: 'value'}
+                    ],
+                    data: []
+                }),
+                border: false,
+                insetPadding: {top: 40, left: 40, right: 10, bottom: 10},
+                innerPadding: 20,
+                legend: {
+                    docked: 'right'
+                },
+                interactions: ['rotate', 'itemhighlight'],
+                series: [{
+                    type: 'pie',
+                    angleField: 'value',
+                    rotation: 45,
+                    label: {
+                        field: 'description',
+                        calloutLine: {
+                            length: 10,
+                            width: 3
+                        }
+                    }
+                }]
+            };
+        return chart;
+    },
+    // creates the chart based on entry report type
+    createChart: function (entry) {
+        if (entry.type === 'PIE_GRAPH') {
+            return this.createPieChart(entry);
+        }
+        if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
+            return this.createTimeChart(entry);
+        }
+    }
 });
 
-var chart2 = {
-    xtype: 'chart',
-    layout: 'fit',
-    style: 'background: #fff',
-    animation: false,
-    shadow: false,
-    store: store2,
-    axes: [{
-        type: 'numeric',
-        position: 'left',
-        minimum: 0,
-        fields: ['total', 'scanned', 'bypassed'],
-        grid: true
-    }, {
-        type: 'category',
-        position: 'bottom',
-        fields: 'time',
-        grid: true,
-        hidden: true
-    }],
-    series: {
-        type: 'area',
-        axis: 'left',
-        smooth: true,
-        style: {
-            stroke: '#30BDA7',
-            lineWidth: 0
-        },
-        subStyle: {
-            fill: ['#64C14F', '#1EBCE9', '#EF578A']
-        },
-        xField: 'time',
-        yField: ['total', 'scanned', 'bypassed']
-    }
-};
 
 /* ReportEntry Widgets */
 Ext.define('Ung.dashboard.ReportEntry', {
@@ -656,28 +888,32 @@ Ext.define('Ung.dashboard.ReportEntry', {
     layout: 'fit',
     border: false,
     entry: null,
-    items: [chart2],
+    items: null,
     initComponent: function () {
-        var me = this;
-        this.title =  i18n._("Reports | Network | Sessions");
-        //this.items = [chart];
+        this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.items = [Ung.dashboard.Util.createChart(this.entry)];
 
-        me.loadEntry();
         this.callParent(arguments);
+
+        this.loadData();
     },
-    loadEntry: function () {
-        var me = this;
-        rpc.reportsManager = Ung.Main.getReportsManager();
-        var entryData = rpc.reportsManager.getDataForReportEntry(this.entry, null, null, -1);
+    loadData: function () {
+        var me = this,
+            chart = this.down("[name=chart]");
 
-        for (i=0; i<entryData.list.length; i++) {
-            entryData.list[i].time = entryData.list[i].time_trunc.time;
-        }
+        Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
 
-        chart2.store.loadData(entryData.list);
-        setTimeout(function () {
-            me.loadEntry();
-        }, 10000);
+            chart.store.loadData(result.list);
+
+            if (this.refreshIntervalSec > 0) {
+                setTimeout(function () {
+                    me.loadData();
+                }, this.refreshIntervalSec * 1000);
+            }
+        }, this), this.entry, null, null, -1);
     }
 });
 
