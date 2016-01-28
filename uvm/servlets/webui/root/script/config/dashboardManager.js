@@ -58,7 +58,6 @@ Ext.define('Webui.config.dashboardManager', {
             displayMode: 'big',
             hasRefreshInterval: true
         }];
-
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
         this.buildGridDashboardWidgets();
         this.buildTabPanel([this.gridDashboardWidgets]);
@@ -67,7 +66,7 @@ Ext.define('Webui.config.dashboardManager', {
     closeWindow: function() {
         this.hide();
         Ext.destroy(this);
-        Ung.Main.loadDashboard();
+        Ung.dashboard.loadDashboard();
     },
     getDashboardWidgets: function(handler) {
         if (!this.isVisible()) {
@@ -124,9 +123,9 @@ Ext.define('Webui.config.dashboardManager', {
                 width: 200,
                 flex: 1,
                 renderer: Ext.bind(function(value, metaData, record) {
-                    if((value == "ReportEntry" || value == "EventEntry") && Ung.Main.dashboard.reportsEnabled && Ung.Main.dashboard.reportsMap && Ung.Main.dashboard.eventsMap) {
+                    if((value == "ReportEntry" || value == "EventEntry") && Ung.dashboard.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
                         var entryId = record.get("entryId");
-                        var entry = (value == "ReportEntry") ? Ung.Main.dashboard.reportsMap[entryId] : Ung.Main.dashboard.eventsMap[entryId];
+                        var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
                         if(entry) {
                             return "<b>"+entry.category+"</b> "+entry.title;
                         }
@@ -135,7 +134,24 @@ Ext.define('Webui.config.dashboardManager', {
                 }, this)
             }]
         });
+        var entrySelector;
+        if(!Ung.dashboard.reportsEnabled) {
+            entrySelector = {
+                xtype:'displayfield',
+                dataIndex: "entryId",
+                width: 500,
+                fieldLabel: i18n._("Entry Id")
+            };
+        } else {
+            entrySelector = {
+                xtype:'textfield',
+                dataIndex: "entryId",
+                width: 500,
+                fieldLabel: i18n._("Entry Id")
+            };
+        }
         this.gridDashboardWidgets.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            sizeToParent: true,
             rowEditorLabelWidth: 150,
             inputLines: [{
                 xtype: "combo",
@@ -177,12 +193,7 @@ Ext.define('Webui.config.dashboardManager', {
                 setReadOnly: function(val) {
                     this.down('numberfield[name="refreshIntervalSec"]').setReadOnly(val);
                 }
-            }, {
-                xtype:'textfield',
-                dataIndex: "entryId",
-                width: 500,
-                fieldLabel: i18n._("Entry Id")
-            }],
+            }, entrySelector],
             populate: function(record, addMode) {
                 //do not show already existing widgets that allow single instances
                 var typeCombo = this.down("combo[dataIndex=type]");
@@ -192,6 +203,9 @@ Ext.define('Webui.config.dashboardManager', {
                 var availableTypes = [], widget;
                 for(var i=0; i < me.widgetsConfig.length; i++) {
                     widget = me.widgetsConfig[i];
+                    if(addMode && (widget.name == "ReportEntry" || widget.name == "EventEntry")) {
+                        continue;
+                    }
                     if(currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
                         availableTypes.push([widget.name, widget.title]);
                     }
@@ -234,4 +248,5 @@ Ext.define('Webui.config.dashboardManager', {
 
     }
 });
+
 //# sourceURL=dashboardManager.js

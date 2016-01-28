@@ -1,14 +1,12 @@
 /*global
  Ext, Ung, i18n, rpc, setTimeout
 */
-
 Ext.define('Ung.dashboard', {
+    singleton: true,
     widgets: [],
-    constructor: function (config) {
-        Ext.apply(this, config);
-    },
     loadDashboard: function() {
         this.reportsEnabled = Ung.Main.isReportsAppInstalled();
+        Ung.dashboard.Queue.reset();
         var loadSemaphore = this.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
             loadSemaphore--;
@@ -39,7 +37,7 @@ Ext.define('Ung.dashboard', {
             gridList = [],
             grid, gridEl, type, entry;
 
-        for (i = 0; i < this.allWidgets.length; i += 1) {
+        for (i = 0; i < this.allWidgets.length; i++) {
             type = this.allWidgets[i].type;
             if (type !== "ReportEntry" && type !== "EventEntry") {
                 widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type));
@@ -108,10 +106,10 @@ Ext.define('Ung.dashboard', {
                 if(Ung.Util.handleException(exception)) return;
                 this.reportEntries = result.list;
                 this.reportsMap = Ung.Util.createRecordsMap(this.reportEntries, "uniqueId");
-                handler();
+                handler.call(this);
             }, this));
         } else {
-            handler();
+            handler.call(this);
         }
     },
     loadEventEntries: function(handler) {
@@ -120,15 +118,15 @@ Ext.define('Ung.dashboard', {
                 if(Ung.Util.handleException(exception)) return;
                 this.eventEntries = result.list;
                 this.eventsMap = Ung.Util.createRecordsMap(this.eventEntries, "uniqueId");
-                handler();
+                handler.call(this);
             }, this));
         } else {
-            handler();
+            handler.call(this);
         }
     },
     updateStats: function (stats) {
         var i, widget;
-        for (i = 0; i < this.widgets.length; i += 1) {
+        for (i = 0; i < this.widgets.length; i++) {
             widget = this.widgets[i];
             if (widget.hasStats) {
                 widget.updateStats(stats);
@@ -136,47 +134,73 @@ Ext.define('Ung.dashboard', {
         }
     }
 });
+Ext.define('Ung.dashboard.Queue', {
+    singleton: true,
+    processing: false,
+    paused: true,
+    queue: [],
+    queueMap: {},
+    add: function(widget) {
+        if(!this.queueMap[widget.id]) {
+            this.queue.push(widget);
+            //console.log("Adding: "+widget.title);
+            this.process();
+        } else {
+            //console.log("Prevent Double queuing: " + widget.title);
+        }
+    },
+    next: function() {
+        //console.log("Finish last started widget.");
+        this.processing = false;
+        this.process();
+    },
+    process: function() {
+        if(!this.paused && !this.processing && this.queue.length>0) {
+            this.processing = true;
+            var widget = this.queue.shift();
+            delete this.queueMap[widget.id];
+            //console.log("Starting: "+widget.title);
+            widget.loadData(widget.afterLoad);
+        }
+    },
+    reset: function() {
+        this.queue = [];
+        this.queueMap = {};
+        this.processing = false;
+    },
+    pause: function() {
+        this.paused = true;
+    },
+    resume: function() {
+        this.paused = false;
+        this.process();
+    }
+});
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
-    hidden: false,
+    refreshIntervalSec: 0,
     initComponent: function () {
         this.callParent(arguments);
-    },
-    listeners: {
-        beforeclose: {
-            fn: function (panel, eOpts) {
-                if (panel.removeConfirmed) {
-                    return true;
-                }
-                Ext.MessageBox.confirm(i18n._("Remove widget"),
-                        i18n._("Do you want to remove this widget from dashboard?"),
-                        function (btn) {
-                        if (btn === 'yes') {
-                            //TODO: remove this widget from dashboard.
-                            panel.removeConfirmed = true;
-                            panel.close();
-                        }
-                    }, this);
-                return false;
-            },
-            scope: this
+        if(Ext.isFunction(this.loadData)) {
+            Ung.dashboard.Queue.add(this);
         }
     },
-    updateStats: function (stats) {
-        this.items.each(function (item) {
-            if (item.statsProperty) {
-                item.setValue(stats[item.statsProperty]);
-            }
-            // check if item has updateStatus function, used for parsing data
-            if (Ext.isFunction(item.updateStats)) {
-                item.updateStats(stats);
-            }
-        });
-        if (Ext.isFunction(this.updateStats)) {
-            this.updateStats(stats);
+    
+    afterLoad: function() {
+        Ung.dashboard.Queue.next();
+        if(this && this.refreshIntervalSec > 0) {
+            this.timeoutId = setTimeout(Ext.bind(function () {
+                Ung.dashboard.Queue.add(this);
+            }, this), this.refreshIntervalSec * 1000);
         }
+    },
+    beforeDestroy: function() {
+        if(this.timeoutId) {
+            clearTimeout(this.timeUpdateId);
+        }
+        this.callParent(arguments);
     }
 });
 
@@ -199,6 +223,7 @@ Ext.define('Ung.dashboard.Information', {
     displayMode: 'small',
     height: 190,
     hasStats: true,
+    refreshIntervalSec: 600,
     initComponent: function () {
         this.title = i18n._("Information");
         this.callParent(arguments);
@@ -247,8 +272,15 @@ Ext.define('Ung.dashboard.Information', {
             hostname: rpc.hostname,
             uptime: _uptime,
             version: rpc.fullVersion,
-            subscriptions: licenseManager.validLicenseCount()
+            subscriptions: this.subscriptions
         });
+    },
+    loadData: function(handler) {
+        rpc.licenseManager.validLicenseCount(Ext.bind(function(result, exception) {
+            handler.call(this);
+            if(Ung.Util.handleException(exception)) return;
+            this.subscriptions = result;
+        }, this));
     }
 });
 
@@ -423,8 +455,8 @@ Ext.define('Ung.dashboard.HostsDevices', {
             '</div>' +
         '</div>' +
         '<div style="text-align: center; margin-top: 20px;">' +
-            '<button class="wg-button">Show Hosts</button>' +
-            '<button class="wg-button">Show Devices</button>' +
+            '<button class="wg-button" onclick="Ung.Main.showHosts();">Show Hosts</button> ' +
+            '<button class="wg-button" onclick="Ung.Main.showDevices();">Show Devices</button>' +
         '</div>',
     data: {},
     updateStats: function (stats) {
@@ -441,11 +473,10 @@ Ext.define('Ung.dashboard.Sessions', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
-    refreshTime: 3, // seconds
+    refreshIntervalSec: 10, // seconds
     initComponent: function () {
         this.title = i18n._("Sessions");
         this.callParent(arguments);
-        this.loadData();
     },
     tpl: '<div class="wg-wrapper">' +
         '<div class="row">' +
@@ -469,16 +500,11 @@ Ext.define('Ung.dashboard.Sessions', {
         '<div class="cell">{bypassedSessions}</div>' +
         '</div>' +
         '</div>',
-    loadData: function () {
-        var me = this;
+    loadData: function (handler) {
         rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
+            handler.call(this);
+            if(Ung.Util.handleException(exception)) return;
             this.update(result);
-            setTimeout(function () {
-                me.loadData();
-            }, this.refreshTime * 1000);
         }, this));
     }
 });
@@ -488,11 +514,10 @@ Ext.define('Ung.dashboard.Network', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
-    refreshTime: 10, // refresh timer in seconds
+    refreshIntervalSec: 180, // refresh timer in seconds
     initComponent: function () {
         this.title = i18n._("Network");
         this.callParent(arguments);
-        this.loadData();
     },
     tpl: '<div class="wg-wrapper">' +
         '<tpl for=".">' +
@@ -503,12 +528,12 @@ Ext.define('Ung.dashboard.Network', {
         '</tpl>' +
         '</div>',
     data: {},
-    loadData: function () {
-        var me = this;
-        this.update(rpc.networkSettings.interfaces.list);
-        setTimeout(function () {
-            me.loadData();
-        }, this.refreshTime * 1000);
+    loadData: function (handler) {
+        rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
+            handler.call(this);
+            if(Ung.Util.handleException(exception)) return;
+            this.update(result.interfaces.list);
+        }, this));
     }
 });
 
@@ -576,7 +601,7 @@ Ext.define('Ung.dashboard.CPULoad', {
     updateStats: function (stats) {
         var d = new Date(),
             chart = this.down("[name=chart]"),
-            data = chart.store.proxy.reader.rawData;
+            data = chart.getStore().getProxy().reader.rawData;
 
         // set the max value of the chart based on CPU count
         if (stats.oneMinuteLoadAvg < stats.numCpus) {
@@ -638,7 +663,7 @@ Ext.define('Ung.dashboard.Util', {
             seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
         }
 
-        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
+        for (i = 0; i < entry.timeDataColumns.length; i++) {
             column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
             title = seriesRenderer ? seriesRenderer(column) : column;
             axesFields.push(column);
@@ -657,7 +682,7 @@ Ext.define('Ung.dashboard.Util', {
             entry.timeStyle = entry.timeStyle.replace("_OVERLAPPED", "");
         }
 
-        for (i = 0; i < timeStyles.length; i += 1) {
+        for (i = 0; i < timeStyles.length; i++) {
             timeStyle = timeStyles[i];
             timeStyleButtons.push({
                 xtype: 'button',
@@ -725,7 +750,7 @@ Ext.define('Ung.dashboard.Util', {
         };
 
         if (entry.timeStyle === 'LINE') {
-            for (i = 0; i < axesFields.length; i += 1) {
+            for (i = 0; i < axesFields.length; i++) {
                 series.push({
                     type: 'line',
                     axis: 'left',
@@ -754,7 +779,7 @@ Ext.define('Ung.dashboard.Util', {
             }
             chart.series = series;
         } else if (entry.timeStyle === 'AREA') {
-            for (i = 0; i < axesFields.length; i += 1) {
+            for (i = 0; i < axesFields.length; i++) {
                 series.push({
                     type: 'area',
                     axis: 'left',
@@ -783,7 +808,7 @@ Ext.define('Ung.dashboard.Util', {
             }
             chart.series = series;
         } else if (entry.timeStyle.indexOf('OVERLAPPED') !== -1) {
-            for (i = 0; i < axesFields.length; i += 1) {
+            for (i = 0; i < axesFields.length; i++) {
                 series.push({
                     type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
                     axis: 'left',
@@ -882,7 +907,7 @@ Ext.define('Ung.dashboard.Util', {
 
 /* ReportEntry Widgets */
 Ext.define('Ung.dashboard.ReportEntry', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ung.dashboard.Widget',
     height: 400,
     cls: 'widget small-widget nopadding',
     layout: 'fit',
@@ -892,27 +917,16 @@ Ext.define('Ung.dashboard.ReportEntry', {
     initComponent: function () {
         this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Util.createChart(this.entry)];
-
         this.callParent(arguments);
-
-        this.loadData();
     },
-    loadData: function () {
-        var me = this,
-            chart = this.down("[name=chart]");
-
+    loadData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
+            handler.call(this);
+            if(Ung.Util.handleException(exception)) return;
+            if(this==null || !this.rendered) {
                 return;
             }
-
-            chart.store.loadData(result.list);
-
-            if (this.refreshIntervalSec > 0) {
-                setTimeout(function () {
-                    me.loadData();
-                }, this.refreshIntervalSec * 1000);
-            }
+            this.down("[name=chart]").getStore().loadData(result.list);
         }, this), this.entry, null, null, -1);
     }
 });

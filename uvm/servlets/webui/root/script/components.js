@@ -858,7 +858,7 @@ Ung.MetricManager = {
 
             // update system stats
             Ung.Main.systemStats.update(result.systemStats);
-            Ung.Main.dashboard.updateStats(result.systemStats);
+            Ung.dashboard.updateStats(result.systemStats);
 
             var i;
             for (i = 0; i < Ung.Main.nodes.length; i++) {

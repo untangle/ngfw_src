@@ -200,7 +200,16 @@ Ext.define("Ung.Main", {
                         xtype: 'container',
                         itemId: 'dashboardItems',
                         cls: 'dashboard'
-                    }]
+                    }],
+                    listeners: {
+                        'activate': function(container) {
+                            Ung.dashboard.Queue.resume();
+                        },
+                        "deactivate": function(container) {
+                            Ung.dashboard.Queue.pause();
+                        },
+                        scope: this
+                    }
                 }, {
                     xtype: 'container',
                     itemId: 'apps',
@@ -395,11 +404,9 @@ Ext.define("Ung.Main", {
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
-        this.dashboard = Ext.create('Ung.dashboard', {
-            dashboardPanel: this.viewport.down("#dashboardItems")
-        });
+        Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
 
-        this.loadDashboard();
+        Ung.dashboard.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
     },
@@ -411,10 +418,6 @@ Ext.define("Ung.Main", {
                 '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
                 '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
         };
-    },
-    loadDashboard: function() {
-        this.dashboard.loadDashboard();
-        
     },
     about: function (forceReload) {
         if(rpc.about === undefined) {
