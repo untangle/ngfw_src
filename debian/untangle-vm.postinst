@@ -38,6 +38,8 @@ fi
 
 # 12.0 upgrade, change sources.list
 sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
+# remove old directory
+rm -rf /usr/share/untangle/work
 
 ourInit apache2 reload
 
