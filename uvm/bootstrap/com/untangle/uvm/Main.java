@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 public class Main
 {
     private static final String UVM_CONTEXT_CLASSNAME = "com.untangle.uvm.UvmContextImpl";
+    private static final String UVM_EXTENSION_CLASSNAME = "com.untangle.uvm.ExtensionImpl";
 
     private static Main MAIN;
 
@@ -146,9 +147,9 @@ public class Main
 
         System.out.println("UVM startup complete: \"Today vegetables...tomorrow the world!\"");
         
-        logger.info("Restarting nodes...");
-
         restartNodes();
+
+        loadExtensions();
 
         System.out.println("UVM postInit complete");
     }
@@ -239,6 +240,21 @@ public class Main
 
     private void restartNodes() throws Exception
     {
+        logger.info("Restarting nodes...");
         uvmContext.postInit();
     }
+
+    private void loadExtensions() throws Exception
+    {
+        try {
+            Runnable runnable = (Runnable)uvmCl.loadClass(UVM_EXTENSION_CLASSNAME).getMethod("instance").invoke(null);
+            Thread thread = new Thread(runnable);
+            thread.start();
+        } catch (java.lang.ClassNotFoundException e) {
+            //expected, no extensions present
+        } catch (Throwable t) {
+            logger.warn("Extension exception: ", t);
+        }
+    }
+
 }
