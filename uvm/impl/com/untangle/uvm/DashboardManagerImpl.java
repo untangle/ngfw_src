@@ -3,20 +3,14 @@
  */
 package com.untangle.uvm;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.reports.EventEntry;
-import com.untangle.node.reports.ReportEntry;
-import com.untangle.node.reports.ReportsApp;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.DashboardSettings;
-import com.untangle.uvm.node.NodeSettings.NodeState;
 
 
 /**
@@ -78,60 +72,6 @@ public class DashboardManagerImpl implements DashboardManager
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-    }
-
-    public List<DashboardWidgetInfo> getAvailableWidgets() {
-        List<DashboardWidgetInfo> activeWidgets = new LinkedList<DashboardWidgetInfo>();
-        List<DashboardWidgetSettings> allWidgets = getSettings().getWidgets();
-        
-        ReportsApp reportsApp =  (ReportsApp)UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-        boolean reportingEnabled = reportsApp != null && NodeState.RUNNING.equals(reportsApp.getRunState());
-        
-        Map<String, ReportEntry> reportsMap = null;
-        Map<String, EventEntry> eventsMap = null;
-        Map<String, String> unavailableApplicationsMap = null;
-        if(reportingEnabled) {
-            reportsMap = new HashMap<String, ReportEntry>();
-            List<ReportEntry> reportEntries = reportsApp.getSettings().getReportEntries();
-            for(ReportEntry entry : reportEntries) {
-                reportsMap.put(entry.getUniqueId(), entry);
-            }
-            
-            eventsMap = new HashMap<String, EventEntry>();
-            List<EventEntry> eventEntries = reportsApp.getSettings().getEventEntries();
-            for(EventEntry entry : eventEntries) {
-                eventsMap.put(entry.getUniqueId(), entry);
-            }
-            
-            unavailableApplicationsMap = reportsApp.getReportsManager().getUnavailableApplicationsMap();
-        }
-        for(DashboardWidgetSettings widgetSettings: allWidgets) {
-            if(!"ReportEntry".equals(widgetSettings.getType()) && !"EventEntry".equals(widgetSettings.getType())) {
-                activeWidgets.add(new DashboardWidgetInfo(widgetSettings));
-            } else {
-                if(reportingEnabled) {
-                    if("ReportEntry".equals(widgetSettings.getType())) {
-                        ReportEntry entry  = reportsMap.get(widgetSettings.getEntryId());
-                        if(entry != null && !unavailableApplicationsMap.containsKey(entry.getCategory())) {
-                            DashboardWidgetInfo widgetInfo = new DashboardWidgetInfo(widgetSettings);
-                            widgetInfo.setReportEntry(entry);
-                            activeWidgets.add(widgetInfo);
-                        }
-                    }
-                    
-                    if("EventEntry".equals(widgetSettings.getType())) {
-                        EventEntry entry  = eventsMap.get(widgetSettings.getEntryId());
-                        if(entry != null && !unavailableApplicationsMap.containsKey(entry.getCategory())) {
-                            DashboardWidgetInfo widgetInfo = new DashboardWidgetInfo(widgetSettings);
-                            widgetInfo.setEventEntry(entry);
-                            activeWidgets.add(widgetInfo);
-                        }
-                    }
-                    
-                }
-            }
-        }
-        return activeWidgets;
     }
 
     private DashboardSettings defaultSettings()
