@@ -12,7 +12,6 @@ Ext.define('Ung.dashboard', {
         var loadSemaphore = this.reportsEnabled? 4: 1;
         var callback = Ext.bind(function() {
             loadSemaphore--;
-            console.log(loadSemaphore);
             if(loadSemaphore === 0) {
                 this.setWidgets();
             }
@@ -23,8 +22,8 @@ Ext.define('Ung.dashboard', {
             callback();
         }, this));
         if(this.reportsEnabled) {
-            this.loadReportsMap(callback);
-            this.loadEventsMap(callback);
+            this.loadReportEntries(callback);
+            this.loadEventEntries(callback);
             Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.unavailableApplicationsMap = result.map;
@@ -97,25 +96,29 @@ Ext.define('Ung.dashboard', {
         this.dashboardPanel.add(this.widgets);
     },
     resetReports: function() {
+        this.reportEntries = null;
         this.reportsMap = null;
+        this.eventEntries = null;
         this.eventsMap = null;
     },
-    loadReportsMap: function(handler) {
-        if(!this.reportsMap) {
+    loadReportEntries: function(handler) {
+        if(!this.reportEntries) {
             Ung.Main.getReportsManager().getReportEntries(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.reportsMap = Ung.Util.createRecordsMap(result.list, "uniqueId");
+                this.reportEntries = result.list;
+                this.reportsMap = Ung.Util.createRecordsMap(this.reportEntries, "uniqueId");
                 handler();
             }, this));
         } else {
             handler();
         }
     },
-    loadEventsMap: function(handler) {
-        if(!this.eventsMap) {
+    loadEventEntries: function(handler) {
+        if(!this.eventEntries) {
             Ung.Main.getReportsManager().getEventEntries(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.eventsMap = Ung.Util.createRecordsMap(result.list, "uniqueId");
+                this.eventEntries = result.list;
+                this.eventsMap = Ung.Util.createRecordsMap(this.eventEntries, "uniqueId");
                 handler();
             }, this));
         } else {

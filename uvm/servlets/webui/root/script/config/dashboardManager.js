@@ -50,11 +50,13 @@ Ext.define('Webui.config.dashboardManager', {
         },{
             name: 'ReportEntry',
             title: i18n._('Report'),
-            displayMode: 'big'
+            displayMode: 'big',
+            hasRefreshInterval: true
         },{
             name: 'EventEntry',
             title: i18n._('Events'),
-            displayMode: 'big'
+            displayMode: 'big',
+            hasRefreshInterval: true
         }];
 
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
@@ -122,6 +124,13 @@ Ext.define('Webui.config.dashboardManager', {
                 width: 200,
                 flex: 1,
                 renderer: Ext.bind(function(value, metaData, record) {
+                    if((value == "ReportEntry" || value == "EventEntry") && Ung.Main.dashboard.reportsEnabled && Ung.Main.dashboard.reportsMap && Ung.Main.dashboard.eventsMap) {
+                        var entryId = record.get("entryId");
+                        var entry = (value == "ReportEntry") ? Ung.Main.dashboard.reportsMap[entryId] : Ung.Main.dashboard.eventsMap[entryId];
+                        if(entry) {
+                            return "<b>"+entry.category+"</b> "+entry.title;
+                        }
+                    }
                     return "";
                 }, this)
             }]
@@ -131,6 +140,7 @@ Ext.define('Webui.config.dashboardManager', {
             inputLines: [{
                 xtype: "combo",
                 dataIndex: "type",
+                margin: '0 0 10 0',
                 allowBlank: false,
                 fieldLabel: i18n._("Widget Type"),
                 editable: false,
@@ -143,6 +153,35 @@ Ext.define('Webui.config.dashboardManager', {
                         }, this )
                     }
                 }
+            }, {
+                xtype: "container",
+                dataIndex: "refreshIntervalSec",
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'numberfield',
+                    name: "refreshIntervalSec",
+                    labelWidth: 150,
+                    fieldLabel: i18n._( "Refresh Interval" )
+                }, {
+                    xtype: 'label',
+                    html: i18n._( "(seconds)")+" - "+i18n._( "Enter 0 for no Auto Refresh" ),
+                    cls: 'boxlabel'
+                }],
+                setValue: function(value) {
+                    this.down('numberfield[name="refreshIntervalSec"]').setValue(value);
+                },
+                getValue: function() {
+                    return this.down('numberfield[name="refreshIntervalSec"]').getValue();
+                },
+                setReadOnly: function(val) {
+                    this.down('numberfield[name="refreshIntervalSec"]').setReadOnly(val);
+                }
+            }, {
+                xtype:'textfield',
+                dataIndex: "entryId",
+                width: 500,
+                fieldLabel: i18n._("Entry Id")
             }],
             populate: function(record, addMode) {
                 //do not show already existing widgets that allow single instances
@@ -161,6 +200,21 @@ Ext.define('Webui.config.dashboardManager', {
                 Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
             },
             syncComponents: function () {
+                if(!this.cmps) {
+                    this.cmps = {
+                        typeCmp: this.down('combo[dataIndex=type]'),
+                        refreshIntervalSec: this.down('[dataIndex=refreshIntervalSec]'),
+                        entryId: this.down('[dataIndex=entryId]')
+                    };
+                }
+                var type = this.cmps.typeCmp.getValue();
+                var widgetConfig = me.widgetsMap[type] || {};
+
+                this.cmps.refreshIntervalSec.setVisible(widgetConfig.hasRefreshInterval);
+                this.cmps.refreshIntervalSec.setDisabled(!widgetConfig.hasRefreshInterval);
+
+                this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
+                this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
             }
         }));
     },
