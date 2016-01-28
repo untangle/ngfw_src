@@ -24,7 +24,9 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.LicenseManager;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.NodeSettings.NodeState;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
@@ -674,6 +676,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("isRegistered", this.isRegistered());
             json.put("isExpertMode", this.isExpertMode());
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
+
+            boolean reportsEnabled = false;
+            Node reportsNode = UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+            if(reportsNode != null && NodeState.RUNNING.equals(reportsNode.getRunState())) {
+                reportsEnabled = true;
+            }
+            json.put("reportsEnabled", reportsEnabled);
+
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);
         }
@@ -689,7 +699,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         LinkedList<String> hostnames = new LinkedList<String>();
         LinkedList<String> usernames = new LinkedList<String>();
         LinkedList<String> addresses = new LinkedList<String>();
-        LinkedList<String> policies = new LinkedList<String>();
 
         for ( HostTableEntry host : hosts ) {
             String username = host.getUsername();

@@ -21,7 +21,7 @@ Ext.define('Ung.panel.Reports', {
                 if(!this.title) {
                     this.title = i18n._('Reports');
                 }
-                if (!Ung.Main.isReportsAppInstalled()) {
+                if (!rpc.reportsEnabled) {
                     this.items = [{
                         region: 'center',
                         xtype: 'panel',

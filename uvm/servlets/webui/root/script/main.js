@@ -156,7 +156,7 @@ Ext.define("Ung.Main", {
                     }, {
                         text: i18n._('Reports'),
                         id: 'reportsMenuItem',
-                        hidden: true,
+                        hidden: !rpc.reportsEnabled,
                         iconCls: 'icon-reports',
                         handler: function() {
                             this.panelCenter.setActiveItem("reports");
@@ -662,24 +662,11 @@ Ext.define("Ung.Main", {
         }
         return rpc.nodeReports;
     },
-    // is reports node installed
-    isReportsAppInstalled: function(forceReload) {
-        if (forceReload || rpc.reportsAppInstalledAndEnabled === undefined) {
-            try {
-                if (!Ung.Main.getNodeReports(true)) {
-                    rpc.reportsAppInstalledAndEnabled = false;
-                } else {
-                    if (rpc.nodeReports.getRunState() == "RUNNING"){
-                        rpc.reportsAppInstalledAndEnabled = true;
-                    } else {
-                        rpc.reportsAppInstalledAndEnabled = false;
-                    }
-                }
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return rpc.reportsAppInstalledAndEnabled;
+    updateReportsDependencies: function() {
+        Ext.getCmp('reportsMenuItem').setVisible(rpc.reportsEnabled);
+        delete rpc.nodeReports;
+        delete rpc.reportsManager;
+        Ung.dashboard.loadDashboard();
     },
     // load policies list
     loadPolicies: function() {
@@ -741,13 +728,11 @@ Ext.define("Ung.Main", {
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
         Ext.getCmp('policyManagerToolItem').hide();
-        Ext.getCmp('reportsMenuItem').hide();
 
         var nodePreviews = Ext.clone(this.nodePreviews);
         this.filterNodes.removeAll();
         this.serviceNodes.removeAll();
 
-        delete rpc.reportsAppInstalledAndEnabled;
         this.nodes=[];
         var i, node;
         var hasService = false;
@@ -919,6 +904,12 @@ Ext.define("Ung.Main", {
             Ung.Main.updateRackView();
             if (completeFn)
                 completeFn();
+            if(nodeProperties.name == "untangle-node-reports") {
+                rpc.reportsEnabled = true;
+                Ung.Main.updateReportsDependencies();
+            } else {
+                Ung.dashboard.loadDashboard();
+            }
         }, this), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     openInstallApps: function() {
@@ -1115,15 +1106,6 @@ Ext.define("Ung.Main", {
                 Ext.getCmp('policyManagerToolItem').show();
                 rpc.policyManager = result;
             }, this),"untangle-node-policy-manager");
-        }
-        if ( node.name == 'untangle-node-reports') {
-            rpc.nodeManager.node(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                Ext.getCmp('reportsMenuItem').show();
-                rpc.nodeReports = result;
-                delete rpc.reportsManager;
-            }, this),"untangle-node-reports");
-
         }
     },
     addNodePreview: function ( nodeProperties ) {

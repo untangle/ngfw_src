@@ -123,7 +123,7 @@ Ext.define('Webui.config.dashboardManager', {
                 width: 200,
                 flex: 1,
                 renderer: Ext.bind(function(value, metaData, record) {
-                    if((value == "ReportEntry" || value == "EventEntry") && Ung.dashboard.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
+                    if((value == "ReportEntry" || value == "EventEntry") && rpc.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
                         var entryId = record.get("entryId");
                         var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
                         if(entry) {
@@ -135,7 +135,7 @@ Ext.define('Webui.config.dashboardManager', {
             }]
         });
         var entrySelector;
-        if(!Ung.dashboard.reportsEnabled) {
+        if(!rpc.reportsEnabled) {
             entrySelector = {
                 xtype:'displayfield',
                 dataIndex: "entryId",

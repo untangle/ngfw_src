@@ -473,7 +473,8 @@ Ext.define("Ung.Node", {
             }
         }
         if(this.name=="untangle-node-reports") {
-            delete rpc.reportsAppInstalledAndEnabled;
+            rpc.reportsEnabled = this.isRunning();
+            Ung.Main.updateReportsDependencies();
         }
         if(!force) {
             var panelStatus = this.getSettingsAppPanel();
@@ -684,6 +685,12 @@ Ext.define("Ung.Node", {
                         break;
                     }
                 }
+            }
+            if(nodeName == "untangle-node-reports") {
+                rpc.reportsEnabled = false;
+                Ung.Main.updateReportsDependencies();
+            } else {
+                Ung.dashboard.loadDashboard();
             }
             if(nodeName == "untangle-node-policy-manager") {
                 Ung.Main.loadPolicies();

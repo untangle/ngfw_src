@@ -2,7 +2,7 @@ Ext.define('Ung.reportsViewer', {
     extend : 'Ext.Container',
     layout: "border",
     initComponent : function() {
-        if (!Ung.Main.isReportsAppInstalled()) {
+        if (!rpc.reportsEnabled) {
             this.items = [{
                 region: 'center',
                 xtype: 'component',
@@ -92,7 +92,7 @@ Ext.define('Ung.reportsViewer', {
         
         var treepanel = this.down("treepanel"); 
         treepanel.getSelectionModel().select(0);
-        rpc.reportsManager.getCurrentApplications(Ext.bind(function( result, exception ) {
+        Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             var currentApplications = result.list;
             if (currentApplications) {

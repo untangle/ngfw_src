@@ -5,9 +5,8 @@ Ext.define('Ung.dashboard', {
     singleton: true,
     widgets: [],
     loadDashboard: function() {
-        this.reportsEnabled = Ung.Main.isReportsAppInstalled();
         Ung.dashboard.Queue.reset();
-        var loadSemaphore = this.reportsEnabled ? 4 : 1;
+        var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
             loadSemaphore--;
             if (loadSemaphore === 0) {
@@ -19,7 +18,7 @@ Ext.define('Ung.dashboard', {
             this.allWidgets = result.widgets.list;
             callback();
         }, this));
-        if(this.reportsEnabled) {
+        if(rpc.reportsEnabled) {
             this.loadReportEntries(callback);
             this.loadEventEntries(callback);
             Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function(result, exception) {
@@ -42,7 +41,7 @@ Ext.define('Ung.dashboard', {
             if (type !== "ReportEntry" && type !== "EventEntry") {
                 widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type));
             } else {
-                if(this.reportsEnabled) {
+                if(rpc.reportsEnabled) {
                     if(type == "ReportEntry") {
                         entry = this.reportsMap[this.allWidgets[i].entryId];
                         if(!entry && !entry.enabled) {

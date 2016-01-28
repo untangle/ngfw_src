@@ -46,8 +46,8 @@ Ext.define("Ung.Main", {
             rpc.reportsManager = result;
             rpc.reportsManager.isReportsEnabled(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
-                rpc.isReportsEnabled = result;
-                if(rpc.isReportsEnabled) {
+                rpc.reportsEnabled = result;
+                if(rpc.reportsEnabled) {
                     rpc.reportsManager.getCurrentApplications(Ext.bind(function( result, exception ) {
                         if(Ung.Util.handleException(exception)) return;
                         rpc.currentApplications = result.list;
@@ -269,11 +269,11 @@ Ext.define("Ung.Main", {
             }]
         });
         
-        var contentItems = rpc.isReportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
+        var contentItems = rpc.reportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
         this.viewport.down("panel[region=center]").add(contentItems);
         
         Ext.MessageBox.hide();
-        if(rpc.isReportsEnabled) {
+        if(rpc.reportsEnabled) {
             this.viewport.down("treepanel").getSelectionModel().select(0);
         }
     }
