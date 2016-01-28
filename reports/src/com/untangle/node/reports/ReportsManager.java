@@ -6,6 +6,7 @@ package com.untangle.node.reports;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -19,6 +20,8 @@ public interface ReportsManager
     List<ReportEntry> getReportEntries( String category );
     
     void setReportEntries( List<ReportEntry> newEntries );
+
+    List<EventEntry> getEventEntries();
 
     /**
      * Get the event entries for a category 
@@ -82,6 +85,11 @@ public interface ReportsManager
      * Get current application categories that should be displayed
      */
     List<JSONObject> getCurrentApplications();
+    
+    /**
+     * Get the map of unavailable Applications
+     */
+    public Map<String, String> getUnavailableApplicationsMap();
     
     /**
      * Get the metadata hints for the condition quick add function

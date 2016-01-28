@@ -413,12 +413,8 @@ Ext.define("Ung.Main", {
         };
     },
     loadDashboard: function() {
-        rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var widgets = result.widgets!= null ? result.widgets.list : [];
-                this.dashboard.setWidgets(widgets);
-            }, this));
-
+        this.dashboard.loadDashboard();
+        
     },
     about: function (forceReload) {
         if(rpc.about === undefined) {

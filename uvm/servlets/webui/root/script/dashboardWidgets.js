@@ -7,19 +7,59 @@ Ext.define('Ung.dashboard', {
     constructor: function (config) {
         Ext.apply(this, config);
     },
-    setWidgets: function (widgets) {
+    loadDashboard: function() {
+        this.reportsEnabled = Ung.Main.isReportsAppInstalled();
+        var loadSemaphore = this.reportsEnabled? 4: 1;
+        var callback = Ext.bind(function() {
+            loadSemaphore--;
+            console.log(loadSemaphore);
+            if(loadSemaphore === 0) {
+                this.setWidgets();
+            }
+        }, this);
+        rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.allWidgets = result.widgets.list; 
+            callback();
+        }, this));
+        if(this.reportsEnabled) {
+            this.loadReportsMap(callback);
+            this.loadEventsMap(callback);
+            Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.unavailableApplicationsMap = result.map;
+                callback();
+            }, this));
+        }
+    },
+    setWidgets: function () {
         this.widgets = [];
         this.dashboardPanel.removeAll();
-        var reporsEnabled = Ung.Main.isReportsAppInstalled(),
-            i, j, k,
+        var i, j, k,
             widgetsList = [],
             gridList = [],
-            grid, gridEl, type;
+            grid, gridEl, type, entry;
 
-        for (i = 0; i < widgets.length; i += 1) {
-            type = widgets[i].type;
-            if (reporsEnabled || (type !== "ReportEntry" && type !== "EventEntry")) {
-                widgetsList.push(Ext.create('Ung.dashboard.' + widgets[i].type));
+        for (i = 0; i < this.allWidgets.length; i += 1) {
+            type = this.allWidgets[i].type;
+            if (type !== "ReportEntry" && type !== "EventEntry") {
+                widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type));
+            } else {
+                if(this.reportsEnabled) {
+                    if(type == "ReportEntry") {
+                        entry = this.reportsMap[this.allWidgets[i].entryId];
+                        if(!entry && !entry.enabled) {
+                            entry = null;
+                        }
+                    } else {
+                        entry = this.eventsMap[this.allWidgets[i].entryId];
+                    }
+                    if(entry && !this.unavailableApplicationsMap[entry.category]) {
+                        widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type, {
+                            entry: entry
+                        }));
+                    }
+                }
             }
         }
 
@@ -56,13 +96,39 @@ Ext.define('Ung.dashboard', {
         }
         this.dashboardPanel.add(this.widgets);
     },
-    updateFromStats: function (stats) {
+    resetReports: function() {
+        this.reportsMap = null;
+        this.eventsMap = null;
+    },
+    loadReportsMap: function(handler) {
+        if(!this.reportsMap) {
+            Ung.Main.getReportsManager().getReportEntries(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.reportsMap = Ung.Util.createRecordsMap(result.list, "uniqueId");
+                handler();
+            }, this));
+        } else {
+            handler();
+        }
+    },
+    loadEventsMap: function(handler) {
+        if(!this.eventsMap) {
+            Ung.Main.getReportsManager().getEventEntries(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.eventsMap = Ung.Util.createRecordsMap(result.list, "uniqueId");
+                handler();
+            }, this));
+        } else {
+            handler();
+        }
+    },
+    updateStats: function (stats) {
         //console.log(stats);
         var i, widget;
         for (i = 0; i < this.widgets.length; i += 1) {
             widget = this.widgets[i];
             if (widget.hasStats) {
-                widget.updateFromStats(stats);
+                widget.updateStats(stats);
             }
         }
     }
@@ -104,7 +170,7 @@ Ext.define('Ung.dashboard.Widget', {
             scope: this
         }
     },
-    updateFromStats: function (stats) {
+    updateStats: function (stats) {
         this.items.each(function (item) {
             if (item.statsProperty) {
                 item.setValue(stats[item.statsProperty]);
@@ -124,10 +190,10 @@ Ext.define('Ung.dashboard.Widget', {
 Ext.define('Ung.dashboard.GridWrapper', {
     extend: 'Ext.container.Container',
     hasStats: true,
-    updateFromStats: function (stats) {
+    updateStats: function (stats) {
         this.items.each(function (item) {
             if (item.hasStats) {
-                item.updateFromStats(stats);
+                item.updateStats(stats);
             }
         });
     }
@@ -513,7 +579,7 @@ Ext.define('Ung.dashboard.CPULoad', {
         });
         this.callParent(arguments);
     },
-    updateFromStats: function (stats) {
+    updateStats: function (stats) {
         var d = new Date(),
             chart = this.down("[name=chart]"),
             data = chart.store.proxy.reader.rawData;
@@ -537,35 +603,6 @@ Ext.define('Ung.dashboard.CPULoad', {
         chart.store.loadData(data);
     }
 });
-
-
-
-var entry = {
-    "uniqueId": "network-8bTqxKxxUK",
-    "category": "Network",
-    "description": "The amount of total, scanned, and bypassed sessions over time.",
-    "displayOrder": 100,
-    "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
-    "orderDesc": false,
-    "units": "sessions",
-    "readOnly": true,
-    "table": "sessions",
-    "timeDataColumns": [
-        "count(*) as total",
-        "sum((not bypassed)::int) as scanned",
-        "sum(bypassed::int) as bypassed"
-    ],
-    "colors": [
-        "#b2b2b2",
-        "#396c2b",
-        "#3399ff"
-    ],
-    "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
-    "title": "Sessions",
-    "type": "TIME_GRAPH"
-};
 
 var store2 = new Ext.data.JsonStore({
     fields: ['total', 'scanned', 'bypassed', 'time'],
@@ -622,22 +659,21 @@ Ext.define('Ung.dashboard.ReportEntry', {
         this.title =  i18n._("Reports | Network | Sessions");
         //this.items = [chart];
 
-        me.loadEntry(entry);
+        me.loadEntry();
         this.callParent(arguments);
     },
-    loadEntry: function (entry) {
+    loadEntry: function () {
         var me = this;
         rpc.reportsManager = Ung.Main.getReportsManager();
-        var entryData = rpc.reportsManager.getDataForReportEntry(entry, null, null, -1);
+        var entryData = rpc.reportsManager.getDataForReportEntry(this.entry, null, null, -1);
 
         for (i=0; i<entryData.list.length; i++) {
             entryData.list[i].time = entryData.list[i].time_trunc.time;
         }
-//      console.log(entryData.list[0]);
 
         chart2.store.loadData(entryData.list);
         setTimeout(function () {
-            me.loadEntry(entry);
+            me.loadEntry();
         }, 10000);
     }
 });
