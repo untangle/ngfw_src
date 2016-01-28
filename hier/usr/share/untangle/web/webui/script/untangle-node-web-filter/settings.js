@@ -2,7 +2,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
     extend:'Webui.untangle-base-web-filter.settings',
     helpSourceName: 'web_filter',
     getAppSummary: function() {
-        return i18n._("Web Filter scans and categorizes to monitor and enforce network usage policies.");
+        return i18n._("Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.");
     },
     buildPanelAdvanced: function() {
         this.callParent(arguments);
