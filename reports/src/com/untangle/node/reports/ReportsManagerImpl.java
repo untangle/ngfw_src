@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -138,16 +141,16 @@ public class ReportsManagerImpl implements ReportsManager
 
     public List<JSONObject> getCurrentApplications()
     {
-    	ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
 
         for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+            if ( nodeProperties.getInvisible()) {
                 continue;
             }
             if ( UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ) {
                 continue;
             }
-            if ( nodeProperties.getInvisible() ) {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
                 continue;
             }
             org.json.JSONObject json = new org.json.JSONObject();
@@ -163,7 +166,22 @@ public class ReportsManagerImpl implements ReportsManager
 
         return currentApplications;
     }
-    
+
+    public Map<String, String> getUnavailableApplicationsMap()
+    {
+        Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
+
+        for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
+            if ( nodeProperties.getInvisible() || 
+                    UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ||
+                    !UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+                unavailableApplicationsMap.put(nodeProperties.getDisplayName(), nodeProperties.getName());
+            }
+        }
+
+        return unavailableApplicationsMap;
+    }
+
     public void setReportEntries( List<ReportEntry> newEntries )
     {
         if ( node == null ) {
@@ -176,6 +194,11 @@ public class ReportsManagerImpl implements ReportsManager
         ReportsSettings settings = node.getSettings();
         settings.setReportEntries( newReportEntries );
         node.setSettings( settings );
+    }
+
+    public List<EventEntry> getEventEntries()
+    {
+        return node.getSettings().getEventEntries();
     }
 
     public List<EventEntry> getEventEntries( String category )

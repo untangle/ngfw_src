@@ -4,8 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;

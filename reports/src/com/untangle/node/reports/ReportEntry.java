@@ -3,21 +3,19 @@
  */
 package com.untangle.node.reports;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
-
-import com.untangle.uvm.UvmContextFactory;
 
 /**
  * The settings for an individual report entry (graph)
