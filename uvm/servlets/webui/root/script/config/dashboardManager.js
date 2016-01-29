@@ -81,6 +81,77 @@ Ext.define('Webui.config.dashboardManager', {
             handler({javaClass:"java.util.LinkedList", list: widgets}, exception);
         }, this));
     },
+    buildEntrySelector: function() {
+        this.entrySelector = Ext.create("Ext.container",{
+            dataIndex: "entryId",
+            getValue: function() {
+                return "111";
+                
+            },
+            setValue: function(value) {
+                this.entryId = value;
+            },
+            layout: "border",
+            height: 500,
+            width: '100%',
+            items: [{
+                xtype : 'treepanel',
+                region : 'west',
+                autoScroll : true,
+                rootVisible : false,
+                title : i18n._('Reports'),
+                enableDrag : false,
+                width : 220,
+                minWidth : 65,
+                maxWidth : 350,
+                split : true,
+                store : Ext.create('Ext.data.TreeStore', {
+                    root : {
+                        expanded : true,
+                        children : []
+                    }
+                }),
+                selModel : {
+                    selType : 'rowmodel',
+                    listeners : {
+                        select : Ext.bind(function(rowModel, record, rowIndex, eOpts) {
+                            var category = record.get("category");
+                        }, this)
+                    }
+                }
+            }, {
+                name: 'entriesGrid',
+                xtype: 'grid',
+                header: false,
+                border: false,
+                margin: '0 0 10 0',
+                hideHeaders: true,
+                store:  Ext.create('Ext.data.Store', {
+                    fields: ["category", "title", "description"],
+                    data: []
+                }),
+                reserveScrollbar: true,
+                columns: [{
+                    dataIndex: 'title',
+                    flex: 1,
+                    renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
+                        var description = record.get("description");
+                        if(description) {
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._(description) ) + '"';
+                        }
+                        return i18n._(value);
+                    }
+                }],
+                selModel: {
+                    selType: 'rowmodel',
+                    listeners: {
+                        select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
+                        }, this)
+                    }
+                }
+            }]
+        });
+    },
     // Dashboard Widgets Grid
     buildGridDashboardWidgets: function(columns, groupField) {
         var me = this;
@@ -134,16 +205,17 @@ Ext.define('Webui.config.dashboardManager', {
                 }, this)
             }]
         });
-        var entrySelector;
+        this.entrySelector = null;
         if(!rpc.reportsEnabled) {
-            entrySelector = {
+            this.entrySelector = {
                 xtype:'displayfield',
                 dataIndex: "entryId",
                 width: 500,
                 fieldLabel: i18n._("Entry Id")
             };
         } else {
-            entrySelector = {
+            //this.buildEntrySelector();
+            this.entrySelector = {
                 xtype:'textfield',
                 dataIndex: "entryId",
                 width: 500,
@@ -193,7 +265,7 @@ Ext.define('Webui.config.dashboardManager', {
                 setReadOnly: function(val) {
                     this.down('numberfield[name="refreshIntervalSec"]').setReadOnly(val);
                 }
-            }, entrySelector],
+            }, this.entrySelector],
             populate: function(record, addMode) {
                 //do not show already existing widgets that allow single instances
                 var typeCombo = this.down("combo[dataIndex=type]");
@@ -203,7 +275,7 @@ Ext.define('Webui.config.dashboardManager', {
                 var availableTypes = [], widget;
                 for(var i=0; i < me.widgetsConfig.length; i++) {
                     widget = me.widgetsConfig[i];
-                    if(addMode && (widget.name == "ReportEntry" || widget.name == "EventEntry")) {
+                    if(!rpc.reportsEnabled && addMode && (widget.name == "ReportEntry" || widget.name == "EventEntry")) {
                         continue;
                     }
                     if(currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
