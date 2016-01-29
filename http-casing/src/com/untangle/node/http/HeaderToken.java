@@ -44,13 +44,12 @@ public class HeaderToken implements Token
      */
     public void replaceField(String key, String value)
     {
-        key = key.toUpperCase();
-        Field f = header.get(key);
+        Field f = header.get(key.toUpperCase());
 
         /* Item is not in the current header, add a new field */
         if (null == f) {
             f = new Field(key);
-            header.put(key, f);
+            header.put(key.toUpperCase(), f);
         } else {
             /* Remove all of the items */
             f.values.clear();
