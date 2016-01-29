@@ -1,28 +1,32 @@
 /*global
- Ext, Ung, i18n, rpc, setTimeout
+ Ext, Ung, i18n, rpc, setTimeout, console
 */
 Ext.define('Ung.dashboard', {
     singleton: true,
     widgets: [],
-    loadDashboard: function() {
+    loadDashboard: function () {
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
-            loadSemaphore--;
+            loadSemaphore -= 1;
             if (loadSemaphore === 0) {
                 this.setWidgets();
             }
         }, this);
-        rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
-            if (Ung.Util.handleException(exception)) return;
+        rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.allWidgets = result.widgets.list;
             callback();
         }, this));
-        if(rpc.reportsEnabled) {
+        if (rpc.reportsEnabled) {
             this.loadReportEntries(callback);
             this.loadEventEntries(callback);
-            Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
+            Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
                 this.unavailableApplicationsMap = result.map;
                 callback();
             }, this));
@@ -36,21 +40,21 @@ Ext.define('Ung.dashboard', {
             gridList = [],
             grid, gridEl, type, entry;
 
-        for (i = 0; i < this.allWidgets.length; i++) {
+        for (i = 0; i < this.allWidgets.length; i += 1) {
             type = this.allWidgets[i].type;
             if (type !== "ReportEntry" && type !== "EventEntry") {
                 widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type));
             } else {
-                if(rpc.reportsEnabled) {
-                    if(type == "ReportEntry") {
+                if (rpc.reportsEnabled) {
+                    if (type === "ReportEntry") {
                         entry = this.reportsMap[this.allWidgets[i].entryId];
-                        if(!entry && !entry.enabled) {
+                        if (!entry && !entry.enabled) {
                             entry = null;
                         }
                     } else {
                         entry = this.eventsMap[this.allWidgets[i].entryId];
                     }
-                    if(entry && !this.unavailableApplicationsMap[entry.category]) {
+                    if (entry && !this.unavailableApplicationsMap[entry.category]) {
                         widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type, {
                             entry: entry,
                             refreshIntervalSec: this.allWidgets[i].refreshIntervalSec
@@ -93,16 +97,18 @@ Ext.define('Ung.dashboard', {
         }
         this.dashboardPanel.add(this.widgets);
     },
-    resetReports: function() {
+    resetReports: function () {
         this.reportEntries = null;
         this.reportsMap = null;
         this.eventEntries = null;
         this.eventsMap = null;
     },
-    loadReportEntries: function(handler) {
-        if(!this.reportEntries) {
-            Ung.Main.getReportsManager().getReportEntries(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
+    loadReportEntries: function (handler) {
+        if (!this.reportEntries) {
+            Ung.Main.getReportsManager().getReportEntries(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
                 this.reportEntries = result.list;
                 this.reportsMap = Ung.Util.createRecordsMap(this.reportEntries, "uniqueId");
                 handler.call(this);
@@ -111,10 +117,12 @@ Ext.define('Ung.dashboard', {
             handler.call(this);
         }
     },
-    loadEventEntries: function(handler) {
-        if(!this.eventEntries) {
-            Ung.Main.getReportsManager().getEventEntries(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
+    loadEventEntries: function (handler) {
+        if (!this.eventEntries) {
+            Ung.Main.getReportsManager().getEventEntries(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
                 this.eventEntries = result.list;
                 this.eventsMap = Ung.Util.createRecordsMap(this.eventEntries, "uniqueId");
                 handler.call(this);
@@ -125,7 +133,7 @@ Ext.define('Ung.dashboard', {
     },
     updateStats: function (stats) {
         var i, widget;
-        for (i = 0; i < this.widgets.length; i++) {
+        for (i = 0; i < this.widgets.length; i += 1) {
             widget = this.widgets[i];
             if (widget.hasStats) {
                 widget.updateStats(stats);
@@ -139,8 +147,8 @@ Ext.define('Ung.dashboard.Queue', {
     paused: true,
     queue: [],
     queueMap: {},
-    add: function(widget) {
-        if(!this.queueMap[widget.id]) {
+    add: function (widget) {
+        if (!this.queueMap[widget.id]) {
             this.queue.push(widget);
             //console.log("Adding: "+widget.title);
             this.process();
@@ -148,13 +156,13 @@ Ext.define('Ung.dashboard.Queue', {
             //console.log("Prevent Double queuing: " + widget.title);
         }
     },
-    next: function() {
+    next: function () {
         //console.log("Finish last started widget.");
         this.processing = false;
         this.process();
     },
-    process: function() {
-        if(!this.paused && !this.processing && this.queue.length>0) {
+    process: function () {
+        if (!this.paused && !this.processing && this.queue.length > 0) {
             this.processing = true;
             var widget = this.queue.shift();
             delete this.queueMap[widget.id];
@@ -162,15 +170,15 @@ Ext.define('Ung.dashboard.Queue', {
             widget.loadData(widget.afterLoad);
         }
     },
-    reset: function() {
+    reset: function () {
         this.queue = [];
         this.queueMap = {};
         this.processing = false;
     },
-    pause: function() {
+    pause: function () {
         this.paused = true;
     },
-    resume: function() {
+    resume: function () {
         this.paused = false;
         this.process();
     }
@@ -182,21 +190,21 @@ Ext.define('Ung.dashboard.Widget', {
     refreshIntervalSec: 0,
     initComponent: function () {
         this.callParent(arguments);
-        if(Ext.isFunction(this.loadData)) {
+        if (Ext.isFunction(this.loadData)) {
             Ung.dashboard.Queue.add(this);
         }
     },
-    
-    afterLoad: function() {
+
+    afterLoad: function () {
         Ung.dashboard.Queue.next();
-        if(this && this.refreshIntervalSec > 0) {
+        if (this && this.refreshIntervalSec > 0) {
             this.timeoutId = setTimeout(Ext.bind(function () {
                 Ung.dashboard.Queue.add(this);
             }, this), this.refreshIntervalSec * 1000);
         }
     },
     beforeDestroy: function() {
-        if(this.timeoutId) {
+        if (this.timeoutId) {
             clearTimeout(this.timeUpdateId);
         }
         this.callParent(arguments);
@@ -254,8 +262,7 @@ Ext.define('Ung.dashboard.Information', {
         var numdays = Math.floor((stats.uptime % 31536000) / 86400),
             numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
             numminutes = Math.floor((((stats.uptime % 31536000) % 86400) % 3600) / 60),
-            _uptime = '',
-            licenseManager = rpc.licenseManager;
+            _uptime = '';
 
         if (numdays > 0) {
             _uptime += numdays + 'd ';
@@ -274,10 +281,12 @@ Ext.define('Ung.dashboard.Information', {
             subscriptions: this.subscriptions
         });
     },
-    loadData: function(handler) {
-        rpc.licenseManager.validLicenseCount(Ext.bind(function(result, exception) {
+    loadData: function (handler) {
+        rpc.licenseManager.validLicenseCount(Ext.bind(function (result, exception) {
             handler.call(this);
-            if(Ung.Util.handleException(exception)) return;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.subscriptions = result;
         }, this));
     }
@@ -502,7 +511,9 @@ Ext.define('Ung.dashboard.Sessions', {
     loadData: function (handler) {
         rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
             handler.call(this);
-            if(Ung.Util.handleException(exception)) return;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.update(result);
         }, this));
     }
@@ -530,7 +541,9 @@ Ext.define('Ung.dashboard.Network', {
     loadData: function (handler) {
         rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
             handler.call(this);
-            if(Ung.Util.handleException(exception)) return;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.update(result.interfaces.list);
         }, this));
     }
@@ -662,7 +675,7 @@ Ext.define('Ung.dashboard.Util', {
             seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
         }
 
-        for (i = 0; i < entry.timeDataColumns.length; i++) {
+        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
             column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
             title = seriesRenderer ? seriesRenderer(column) : column;
             axesFields.push(column);
@@ -681,7 +694,7 @@ Ext.define('Ung.dashboard.Util', {
             entry.timeStyle = entry.timeStyle.replace("_OVERLAPPED", "");
         }
 
-        for (i = 0; i < timeStyles.length; i++) {
+        for (i = 0; i < timeStyles.length; i += 1) {
             timeStyle = timeStyles[i];
             timeStyleButtons.push({
                 xtype: 'button',
@@ -749,7 +762,7 @@ Ext.define('Ung.dashboard.Util', {
         };
 
         if (entry.timeStyle === 'LINE') {
-            for (i = 0; i < axesFields.length; i++) {
+            for (i = 0; i < axesFields.length; i += 1) {
                 series.push({
                     type: 'line',
                     axis: 'left',
@@ -770,7 +783,7 @@ Ext.define('Ung.dashboard.Util', {
                         trackMouse: true,
                         style: 'background: #fff',
                         renderer: function (tooltip, storeItem, item) {
-                            var title = item.series.getTitle();
+                            title = item.series.getTitle();
                             tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
                         }
                     }
@@ -778,7 +791,7 @@ Ext.define('Ung.dashboard.Util', {
             }
             chart.series = series;
         } else if (entry.timeStyle === 'AREA') {
-            for (i = 0; i < axesFields.length; i++) {
+            for (i = 0; i < axesFields.length; i += 1) {
                 series.push({
                     type: 'area',
                     axis: 'left',
@@ -799,7 +812,7 @@ Ext.define('Ung.dashboard.Util', {
                         trackMouse: true,
                         style: 'background: #fff',
                         renderer: function (tooltip, storeItem, item) {
-                            var title = item.series.getTitle();
+                            title = item.series.getTitle();
                             tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
                         }
                     }
@@ -807,7 +820,7 @@ Ext.define('Ung.dashboard.Util', {
             }
             chart.series = series;
         } else if (entry.timeStyle.indexOf('OVERLAPPED') !== -1) {
-            for (i = 0; i < axesFields.length; i++) {
+            for (i = 0; i < axesFields.length; i += 1) {
                 series.push({
                     type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
                     axis: 'left',
@@ -819,7 +832,7 @@ Ext.define('Ung.dashboard.Util', {
                         trackMouse: true,
                         style: 'background: #fff',
                         renderer: function (tooltip, storeItem, item) {
-                            var title = item.series.getTitle();
+                            title = item.series.getTitle();
                             tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
                         }
                     }
@@ -843,7 +856,7 @@ Ext.define('Ung.dashboard.Util', {
                     trackMouse: true,
                     style: 'background: #fff',
                     renderer: function (tooltip, storeItem, item) {
-                        var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                        title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
                         tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " + i18n._(entry.units) + legendHint);
                     }
                 }
@@ -921,8 +934,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
     loadData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             handler.call(this);
-            if(Ung.Util.handleException(exception)) return;
-            if(this==null || !this.rendered) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (this === null || !this.rendered) {
                 return;
             }
             this.down("[name=chart]").getStore().loadData(result.list);
@@ -930,13 +945,94 @@ Ext.define('Ung.dashboard.ReportEntry', {
     }
 });
 
+Ext.define('Ung.dashboard.Event', {
+    singleton: true,
+    createGrid: function (entry) {
+        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table)), i;
+        if (!tableConfig) {
+            console.log('Warning: table "' + entry.table + '" is not defined');
+            tableConfig = {
+                fields: [],
+                columns: []
+            };
+        } else {
+            var columnsNames = {}, col;
+            for (i = 0; i < tableConfig.columns.length; i += 1) {
+                col = tableConfig.columns[i].dataIndex;
+                columnsNames[col] = true;
+                col = tableConfig.columns[i];
+                if (entry.defaultColumns.length > 0 && entry.defaultColumns.indexOf(col.dataIndex) < 0) {
+                    col.hidden = true;
+                }
+                if (col.stateId === undefined) {
+                    col.stateId = col.dataIndex;
+                }
+            }
+            for (i = 0; i < entry.defaultColumns.length; i += 1) {
+                col = entry.defaultColumns[i];
+                if (!columnsNames[col]) {
+                    console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
+                }
+            }
+            //this.gridEvents.defaultTableConfig = tableConfig;
+        }
+
+        return {
+            xtype: 'grid',
+            itemId: 'gridEvents',
+            name: 'gridEvents',
+            reserveScrollbar: true,
+            header: false,
+            title: ".",
+            stateful: true,
+            stateId: "eventGrid",
+            viewConfig: {
+                enableTextSelection: true
+            },
+            store:  Ext.create('Ext.data.Store', {
+                fields: tableConfig.fields,
+                data: [],
+                proxy: {
+                    type: 'memory',
+                    reader: {
+                        type: 'json'
+                    }
+                }
+            }),
+            columns: tableConfig.columns,
+            plugins: ['gridfilters']
+            //features: [this.filterFeature]
+        };
+    }
+});
+
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'big',
     height: 400,
+    cls: 'widget small-widget nopadding',
+    layout: 'fit',
+    entry: null,
+    items: null,
     initComponent: function () {
-        this.title =  i18n._("Events");
-        this.items = [];
+        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.items = [Ung.dashboard.Event.createGrid(this.entry)];
         this.callParent(arguments);
+    },
+    loadData: function (handler) {
+        var me = this;
+        var store = me.down("[name=gridEvents]").getStore();
+        rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
+            handler.call(this);
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            result.getNextChunk(function (result2, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
+                store.getProxy().setData(result2.list);
+                store.load();
+            }, 1000);
+        }, this), this.entry, null, 10, null, null);
     }
 });
