@@ -15,12 +15,13 @@ import remote_control
 import pdb
 import time
 import urllib2
+import global_functions
 
 node = None
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 
-class BoxBackupTests(unittest2.TestCase):
+class ConfigurationBackupTests(unittest2.TestCase):
     
     @staticmethod
     def nodeName():
@@ -47,19 +48,15 @@ class BoxBackupTests(unittest2.TestCase):
 
     def test_020_backupNow(self):
         global node
-        timeout = 3000  # countdown timer
         boxUID = uvmContext.getServerUID()
         node.sendBackup()
-        lastUpdate = node.getLatestEvent()
-        currentTime = (int(time.time()) - (5*60)) * 1000
-        print "Current time <%s> backup time <%s>" % (currentTime,lastUpdate['timeStamp']['time'])
-        while timeout and (currentTime > lastUpdate['timeStamp']['time']):
-            # wait for the backup to occur
-            timeout -= 1
-            lastUpdate = node.getLatestEvent()
-        # we have a successful backup if the loop did not timeout
-        assert(timeout)
-        
+
+        events = global_functions.get_events('Configuration Backup','Backup Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               'success', True ) 
+        assert( found )
+
     def test_030_verifyBackupCronjob(self):
         assert( os.path.isfile("/etc/cron.d/untangle-configuration-backup-nightly")  )
         
@@ -71,4 +68,4 @@ class BoxBackupTests(unittest2.TestCase):
             node = None
 
 
-test_registry.registerNode("configuration-backup", BoxBackupTests)
+test_registry.registerNode("configuration-backup", ConfigurationBackupTests)
