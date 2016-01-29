@@ -1020,14 +1020,20 @@ Ext.define('Ung.dashboard.EventEntry', {
     },
     loadData: function (handler) {
         var me = this;
-        var store = me.down("[name=gridEvents]").getStore();
         rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;
             }
+            if (this === null || !this.rendered) {
+                return;
+            }
             result.getNextChunk(function (result2, exception) {
                 if (Ung.Util.handleException(exception)) {
+                    return;
+                }
+                var store = me.down("[name=gridEvents]").getStore();
+                if (me === null || !me.rendered) {
                     return;
                 }
                 store.getProxy().setData(result2.list);
