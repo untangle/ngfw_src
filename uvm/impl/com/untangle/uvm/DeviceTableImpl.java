@@ -65,17 +65,23 @@ public class DeviceTableImpl implements DeviceTable
         return list;
     }
 
-    public void setDevices( LinkedList<DeviceTableEntry> devices )
+    public synchronized void setDevices( LinkedList<DeviceTableEntry> newDevices )
     {
-        logger.info("Saving new device list (" + devices.size() + " entries)");
-        this.deviceTable = new ConcurrentHashMap<String,DeviceTableEntry>();
+        /**
+         * For each entry, copy the value on top of the exitsing objects so references are maintained
+         * If there aren't in the table, create new entries
+         */
+        for ( DeviceTableEntry entry : newDevices ) {
+            String macAddress = entry.getMacAddress();
+            if (macAddress == null)
+                continue;
 
-        if ( devices != null ) {
-            for ( DeviceTableEntry entry : devices ) {
-                deviceTable.put( entry.getMacAddress(), entry );
-            }
+            DeviceTableEntry existingEntry = getDevice( macAddress );
+            if ( existingEntry != null )
+                existingEntry.copy( entry );
+            else 
+                addDevice( entry );
         }
-        
     }
     
     public DeviceTableEntry getDevice( String macAddress )
@@ -94,14 +100,9 @@ public class DeviceTableImpl implements DeviceTable
             logger.info("Discovered new device: " + macAddress);
             newEntry = new DeviceTableEntry( macAddress );
             newEntry.enableLogging();
-
             newEntry.updateLastSeenTime();
-            
-            deviceTable.put( macAddress, newEntry );
 
-            String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( macAddress );
-            if ( macVendor != null && !("".equals(macVendor)) )
-                newEntry.setMacVendor( macVendor );
+            addDevice( newEntry );
             
             DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null );
             UvmContextFactory.context().logEvent(event);
@@ -244,6 +245,22 @@ public class DeviceTableImpl implements DeviceTable
         return;
     }
 
+    private void addDevice( DeviceTableEntry newEntry )
+    {
+        if ( newEntry == null ) {
+            logger.warn("Invalid arguments");
+            return;
+        }
+
+        newEntry.enableLogging(); // no on by default, make sure its on when going in the table
+        
+        String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( newEntry.getMacAddress() );
+        if ( macVendor != null && !("".equals(macVendor)) )
+            newEntry.setMacVendor( macVendor );
+
+        deviceTable.put( newEntry.getMacAddress(), newEntry );
+    }
+    
     private class DeviceTableSaver implements Runnable
     {
         public void run()

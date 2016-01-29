@@ -54,6 +54,16 @@ public class DeviceTableEntry implements Serializable, JSONString
         enableLogging(); //since this was instantiated by hand, enabling logging
     }
 
+    public void copy( DeviceTableEntry other )
+    {
+        this.setMacAddress( other.getMacAddress() );
+        this.setMacVendor( other.getMacVendor() );
+        this.setDeviceUsername( other.getDeviceUsername() );
+        this.setHostname( other.getHostname() );
+        this.setHttpUserAgent( other.getHttpUserAgent() );
+        this.setLastSeenTime( other.getLastSeenTime() );
+    }
+    
     public String getMacAddress() { return this.macAddress; }
     public void setMacAddress( String newValue ) { this.macAddress = newValue; }
 
