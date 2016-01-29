@@ -336,6 +336,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
             ["os-solaris", i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
             ["os-windows", i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
             ["os-other", i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
+            ["preprocessor_portscan", i18n._("This category contains rules that are looking for vulnerabilities via portscans.") ],
             ["policy-multimedia", i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
             ["policy-social", i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
             ["policy-other", i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
