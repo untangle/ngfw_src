@@ -205,25 +205,102 @@ Ext.define('Webui.config.dashboardManager', {
                 }, this)
             }]
         });
-        this.entrySelector = null;
+        this.entrySelector = {
+                xtype: 'container',
+                dataIndex: 'entryId',
+                getValue: function() {
+                    if(this.currentType=="ReportEntry") {
+                        return this.down("[name=reportEntryId]").getValue();
+                    } else if(this.currentType=="EventEntry") {
+                        return this.down("[name=eventEntryId]").getValue();
+                    } else {
+                        return null;
+                    }
+                },
+                setValue: function(value) {
+                    if(this.currentType=="ReportEntry") {
+                        this.down("[name=reportEntryId]").setValue(value);
+                    } else if(this.currentType=="EventEntry") {
+                        this.down("[name=eventEntryId]").setValue(value);
+                    }
+                    
+                },
+                setType: function(type) {
+                    this.currentType = type;
+                    var reportEntryId = this.down("[name=reportEntryId]");
+                    var eventEntryId = this.down("[name=eventEntryId]");
+                    reportEntryId.setVisible(this.currentType=="ReportEntry");
+                    reportEntryId.setDisabled(this.currentType!="ReportEntry");
+                    if(this.currentType!="ReportEntry") {
+                        reportEntryId.setValue("");
+                    }
+                    
+                    eventEntryId.setVisible(this.currentType=="EventEntry");
+                    eventEntryId.setDisabled(this.currentType!="EventEntry");
+                    if(this.currentType!="EventEntry") {
+                        eventEntryId.setValue("");
+                    }
+                }
+        };
         if(!rpc.reportsEnabled) {
-            this.entrySelector = {
+            this.entrySelector.defaults = {
                 xtype:'displayfield',
-                dataIndex: "entryId",
-                width: 500,
-                fieldLabel: i18n._("Entry Id")
+                labelWidth: 150,
+                width: 500
             };
+            this.entrySelector.items = [{
+                name: 'reportEntryId',
+                fieldLabel: i18n._("Report Id")
+            }, {
+                name: 'eventEntryId',
+                fieldLabel: i18n._("Events Id")
+            }];
         } else {
             //this.buildEntrySelector();
-            this.entrySelector = {
-                xtype:'textfield',
-                dataIndex: "entryId",
+            this.entrySelector.defaults = {
+                xtype: 'combo',
+                allowBlank: false,
+                forceSelection: true,
+                anyMatch: true,
+                valueField: "uniqueId",
+                displayField: "category_title",
+                queryMode: 'local',
+                labelWidth: 150,
                 width: 500,
-                fieldLabel: i18n._("Entry Id")
+                listConfig: {
+                    minWidth: 500
+                },
+                tpl: Ext.create('Ext.XTemplate',
+                    '<ul class="x-list-plain"><tpl for=".">',
+                        '<li role="option" class="x-boundlist-item"><b>{category}</b> - {title}</li>',
+                    '</tpl></ul>'
+                )
             };
+            this.entrySelector.items = [{
+                name: 'reportEntryId',
+                fieldLabel: i18n._("Select Report"),
+                emptyText: i18n._("[enter report]"),
+                store: Ext.create('Ext.data.JsonStore', {
+                    fields: ["uniqueId", "category", "title", {name: 'category_title', calculate: function(data) {
+                        return data.category + " - " + data.title;
+                    }}],
+                    data: Ung.dashboard.reportEntries,
+                    sorters: ['category', 'title']
+                })
+            }, {
+                name: 'eventEntryId',
+                fieldLabel: i18n._("Select Events"),
+                emptyText: i18n._("[enter events]"),
+                store: Ext.create('Ext.data.JsonStore', {
+                    fields: ["uniqueId", "category", "title", {name: 'category_title', calculate: function(data) {
+                        return data.category + " - " + data.title;
+                    }}],
+                    data: Ung.dashboard.eventEntries,
+                    sorters: ['category', 'title']
+                })
+            }];
         }
         this.gridDashboardWidgets.setRowEditor( Ext.create('Ung.RowEditorWindow',{
-            sizeToParent: true,
             rowEditorLabelWidth: 150,
             inputLines: [{
                 xtype: "combo",
@@ -298,7 +375,7 @@ Ext.define('Webui.config.dashboardManager', {
 
                 this.cmps.refreshIntervalSec.setVisible(widgetConfig.hasRefreshInterval);
                 this.cmps.refreshIntervalSec.setDisabled(!widgetConfig.hasRefreshInterval);
-
+                this.cmps.entryId.setType(type);
                 this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
             }
