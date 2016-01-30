@@ -346,7 +346,9 @@ Ext.define('Webui.config.dashboardManager', {
             populate: function(record, addMode) {
                 //do not show already existing widgets that allow single instances
                 var typeCombo = this.down("combo[dataIndex=type]");
+                var entryId = this.down('[dataIndex=entryId]');
                 var currentType = record.get("type");
+                entryId.setType(currentType);
                 var gridList = this.grid.getList();
                 var existingTypesMap = Ung.Util.createRecordsMap(gridList, "type");
                 var availableTypes = [], widget;
