@@ -472,14 +472,14 @@ Ext.define("Ung.Node", {
                 alert("Unknown runState: " + runState);
             }
         }
-        if(this.name=="untangle-node-reports") {
-            rpc.reportsEnabled = this.isRunning();
-            Ung.Main.updateReportsDependencies();
-        }
         if(!force) {
             var panelStatus = this.getSettingsAppPanel();
             if(panelStatus) {
                 panelStatus.updatePower(this.isRunning());
+            }
+            if(this.name=="untangle-node-reports") {
+                rpc.reportsEnabled = this.isRunning();
+                Ung.Main.updateReportsDependencies();
             }
         }
     },
@@ -688,6 +688,8 @@ Ext.define("Ung.Node", {
             }
             if(nodeName == "untangle-node-reports") {
                 rpc.reportsEnabled = false;
+                delete rpc.nodeReports;
+                delete rpc.reportsManager;
                 Ung.Main.updateReportsDependencies();
             } else {
                 Ung.dashboard.loadDashboard();

@@ -664,8 +664,6 @@ Ext.define("Ung.Main", {
     },
     updateReportsDependencies: function() {
         Ext.getCmp('reportsMenuItem').setVisible(rpc.reportsEnabled);
-        delete rpc.nodeReports;
-        delete rpc.reportsManager;
         Ung.dashboard.loadDashboard();
     },
     // load policies list

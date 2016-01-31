@@ -205,7 +205,7 @@ Ext.define('Ung.dashboard.Widget', {
     },
     beforeDestroy: function() {
         if (this.timeoutId) {
-            clearTimeout(this.timeUpdateId);
+            clearTimeout(this.timeoutId);
         }
         this.callParent(arguments);
     }
@@ -593,7 +593,6 @@ Ext.define('Ung.dashboard.CPULoad', {
             }, {
                 type: 'category',
                 position: 'bottom',
-                //maximum: 30,
                 hidden: true,
                 fields: ['time']
             }],
@@ -1001,7 +1000,6 @@ Ext.define('Ung.dashboard.Event', {
             }),
             columns: tableConfig.columns,
             plugins: ['gridfilters']
-            //features: [this.filterFeature]
         };
     }
 });
@@ -1020,7 +1018,7 @@ Ext.define('Ung.dashboard.EventEntry', {
     },
     loadData: function (handler) {
         var me = this;
-        rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
+        Ung.Main.getReportsManager().getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;

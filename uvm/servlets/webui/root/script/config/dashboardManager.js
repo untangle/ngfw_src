@@ -63,10 +63,13 @@ Ext.define('Webui.config.dashboardManager', {
         this.buildTabPanel([this.gridDashboardWidgets]);
         this.callParent(arguments);
     },
+    needDashboardReload: false,
     closeWindow: function() {
         this.hide();
         Ext.destroy(this);
-        Ung.dashboard.loadDashboard();
+        if(this.needDashboardReload) {
+            Ung.dashboard.loadDashboard();
+        }
     },
     getDashboardWidgets: function(handler) {
         if (!this.isVisible()) {
@@ -385,6 +388,7 @@ Ext.define('Webui.config.dashboardManager', {
     },
     save: function(isApply) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+        this.needDashboardReload = true;
         var widgets = this.gridDashboardWidgets.getList();
         this.dashboardSettings.widgets= { javaClass:"java.util.LinkedList", list: widgets };
         rpc.dashboardManager.setSettings(Ext.bind(function(result, exception) {
