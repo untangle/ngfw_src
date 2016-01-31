@@ -59,17 +59,17 @@ Ext.define('Webui.config.dashboardManager', {
             hasRefreshInterval: true
         }];
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
-        this.buildGridDashboardWidgets();
-        this.buildTabPanel([this.gridDashboardWidgets]);
+        this.buildPanelDashboardWidgets();
+        this.buildTabPanel([this.panelDashboardWidgets]);
         this.callParent(arguments);
     },
     needDashboardReload: false,
     closeWindow: function() {
-        this.hide();
-        Ext.destroy(this);
         if(this.needDashboardReload) {
             Ung.dashboard.loadDashboard();
         }
+        this.hide();
+        Ext.destroy(this);
     },
     getDashboardWidgets: function(handler) {
         if (!this.isVisible()) {
@@ -155,15 +155,15 @@ Ext.define('Webui.config.dashboardManager', {
             }]
         });
     },
-    // Dashboard Widgets Grid
-    buildGridDashboardWidgets: function(columns, groupField) {
+    // Dashboard Widgets Panel
+    buildPanelDashboardWidgets: function() {
         var me = this;
         this.gridDashboardWidgets = Ext.create('Ung.grid.Panel',{
-            helpSource: 'dashboard_manager_dashboard_widgets',
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
-            title: i18n._("Dashboard Widgets"),
+            header: false,
+            flex: 1,
             dataFn: Ext.bind(this.getDashboardWidgets, this),
             recordJavaClass: "com.untangle.uvm.DashboardWidgetSettings",
             emptyRow: {
@@ -234,13 +234,13 @@ Ext.define('Webui.config.dashboardManager', {
                     var eventEntryId = this.down("[name=eventEntryId]");
                     reportEntryId.setVisible(this.currentType=="ReportEntry");
                     reportEntryId.setDisabled(this.currentType!="ReportEntry");
-                    if(this.currentType!="ReportEntry") {
+                    if(rpc.reportsEnabled && this.currentType!="ReportEntry") {
                         reportEntryId.setValue("");
                     }
                     
                     eventEntryId.setVisible(this.currentType=="EventEntry");
                     eventEntryId.setDisabled(this.currentType!="EventEntry");
-                    if(this.currentType!="EventEntry") {
+                    if(rpc.reportsEnabled && this.currentType!="EventEntry") {
                         eventEntryId.setValue("");
                     }
                 }
@@ -357,7 +357,7 @@ Ext.define('Webui.config.dashboardManager', {
                 var availableTypes = [], widget;
                 for(var i=0; i < me.widgetsConfig.length; i++) {
                     widget = me.widgetsConfig[i];
-                    if(!rpc.reportsEnabled && addMode && (widget.name == "ReportEntry" || widget.name == "EventEntry")) {
+                    if(!rpc.reportsEnabled && (widget.name == "ReportEntry" || widget.name == "EventEntry") && currentType!=widget.name) {
                         continue;
                     }
                     if(currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
@@ -385,6 +385,27 @@ Ext.define('Webui.config.dashboardManager', {
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
             }
         }));
+        
+        
+        this.panelDashboardWidgets = Ext.create('Ext.panel.Panel',{
+            name: 'panelDashboardWidgets',
+            title: i18n._('Dashboard Widgets'),
+            helpSource: 'dashboard_manager_dashboard_widgets',
+            cls: 'ung-panel',
+            autoScroll: true,
+            defaults: {
+                xtype: 'fieldset'
+            },
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [{
+                title: i18n . _("Note"),
+                html: i18n . _("Reports and Events wigets are displayed in the Dashboard only when Reports application is installed and enabled.")
+            }, this.gridDashboardWidgets ]
+        });
+        return this.panelDashboardWidgets;
     },
     save: function(isApply) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
