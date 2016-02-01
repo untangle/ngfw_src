@@ -137,7 +137,7 @@ Ext.define("Ung.AppItem", {
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
-        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_42x42.png"/></div><div class="app-icon-install icon-arrow-install"></div>', '<div class="app-name">{text}</div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
+        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_80x80.png"/></div><div class="app-icon-install icon-arrow-install"></div>', '<div class="app-name"><span>{text}</span></div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
         setLoading: function(name, loadingFlag) {
             Ung.AppItem.loadingFlags[name] = loadingFlag;
             var app = Ung.AppItem.getApp(name);
@@ -229,7 +229,7 @@ Ext.define("Ung.ConfigItem", {
     extend: "Ext.Component",
     cls: 'app-item',
     statics: {
-        template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div>', '<div class="app-name">{text}</div>')
+        template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div>', '<div class="app-name"><span>{text}</span></div>')
     },
     afterRender: function() {
         this.callParent(arguments);
@@ -780,7 +780,7 @@ Ext.define("Ung.NodePreview", {
     afterRender: function() {
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
-            'image': '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+this.name+'_42x42.png',
+            'image': '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+this.name+'_80x80.png',
             'displayName': this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);

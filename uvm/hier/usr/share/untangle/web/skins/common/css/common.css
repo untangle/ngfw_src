@@ -30,12 +30,18 @@
     background-image: url(../images/admin/icons/icon_reports_active.png);
 }
 
-.icon-tools {
-    background-image: url(../images/admin/icons/icon_tools.png);
+.icon-config-sessions {
+    background-image: url(../images/admin/config/icon_config_sessions.png);
+}
+.icon-config-hosts {
+    background-image: url(../images/admin/config/icon_config_hosts.png);
+}
+.icon-config-devices {
+    background-image: url(../images/admin/config/icon_config_devices.png);
 }
 
 .icon-policy-manager {
-    background-image: url(../images/admin/apps/untangle-node-policy-manager_42x42.png);
+    background-image: url(../images/admin/apps/untangle-node-policy-manager_80x80.png);
 }
 /* app item install icon */
 .icon-arrow-install {

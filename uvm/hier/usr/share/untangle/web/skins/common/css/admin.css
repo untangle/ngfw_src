@@ -44,8 +44,8 @@ div.app-item {
     cursor: pointer;
     position: relative;
     float: left;
-    height: 110px;
-    width: 110px;
+    height: 140px;
+    width: 140px;
     margin: 15px;
     border: solid 1px #d8dbe0;
     background-color: white;
@@ -55,9 +55,9 @@ div.app-item {
 div.app-item div.app-icon {
     display: block;
     position: relative;
-    margin: 20px auto 8px auto;
-    width: 42px;
-    height: 42px;
+    margin: 20px auto 0px auto;
+    width: 80px;
+    height: 80px;
 }
 
 div.app-item div.app-config-icon {
@@ -81,8 +81,8 @@ div.app-item p.app-progress-text {
 }
 
 div.app-item div.app-name {
-    display: block;
-    height: 40px;
+    display: table;
+    height: 38px;
     width: 100%;
     padding: 0 3px;
     text-align: center;
@@ -92,14 +92,22 @@ div.app-item div.app-name {
     font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
 }
 
-div.app-item div.app-progress {
-    position: absolute;
-    bottom: 1px;
-    left: 1px;
-    width: 108px;
-    height: 38px;
+div.app-item div.app-name span {
+    display: table-cell;
+    vertical-align: middle;
 }
 
+div.app-item div.app-progress {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 38px;
+}
+.node-image img {
+    width: 100%;
+    height: 100%;
+}
 /* breadcrumb text */
 .breadcrumb-text,.breadcrumb-link {
     font-size: 11px; /* On a base font of 13px works out to 11.05px*/

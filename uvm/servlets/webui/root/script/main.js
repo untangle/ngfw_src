@@ -706,7 +706,7 @@ Ext.define("Ung.Main", {
             name: nodeProperties.name,
             displayName: nodeProperties.displayName,
             license: license,
-            image: "/skins/"+rpc.skinSettings.skinName+"/images/admin/apps/"+nodeProperties.name+"_42x42.png",
+            image: "/skins/"+rpc.skinSettings.skinName+"/images/admin/apps/"+nodeProperties.name+"_80x80.png",
             metrics: nodeMetrics,
             runState: runState,
             viewPosition: nodeProperties.viewPosition
@@ -977,19 +977,19 @@ Ext.define("Ung.Main", {
         }, {
             item: {
                 displayName: i18n._('Session Viewer'),
-                iconClass: 'icon-tools'
+                iconClass: 'icon-config-sessions'
             },
             handler: Ung.Main.showSessions
         }, {
             item: {
                 displayName: i18n._('Host Viewer'),
-                iconClass: 'icon-tools'
+                iconClass: 'icon-config-hosts'
             },
             handler: Ung.Main.showHosts
         }, {
             item: {
                 displayName: i18n._('Device List'),
-                iconClass: 'icon-tools'
+                iconClass: 'icon-config-devices'
             },
             handler: Ung.Main.showDevices
         }];

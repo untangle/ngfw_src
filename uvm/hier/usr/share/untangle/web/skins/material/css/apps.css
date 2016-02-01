@@ -18,8 +18,8 @@ div.node {
     cursor: pointer;
     position: relative;
     float: left;
-    height: 110px;
-    width: 110px;
+    height: 140px;
+    width: 140px;
     margin: 15px;
     border: solid 1px #d8dbe0;
     background-color: white;
@@ -40,8 +40,8 @@ div.node-cap {
     display: block;
     position: relative;
     margin: 20px auto 8px auto;
-    width: 42px;
-    height: 42px;
+    width: 80px;
+    height: 80px;
 }
 /* node display name text*/
 div.node div.node-label {
