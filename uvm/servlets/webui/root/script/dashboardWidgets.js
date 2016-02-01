@@ -261,7 +261,7 @@ Ext.define('Ung.dashboard.Information', {
         '</div>' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Model') + ':</label>' +
-            '<div class="cell">unknown</div>' +
+            '<div class="cell">custom</div>' +
         '</div>' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Uptime') + ':</label>' +
