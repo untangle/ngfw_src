@@ -466,6 +466,13 @@ a.forgot-password:hover {
     top: 7px !important;
 }
 
+.widget .x-tool-img {
+    background-image: url(../images/admin/icons/icon_widget_refresh.png);
+    background-position: 0 0;
+    width: 21px;
+    height: 21px;
+}
+
 .widget .x-panel-header-title-default>.x-title-text-default {
     font-family: 'Source Sans Pro', sans-serif;
     color: #3DA8EB;
