@@ -156,6 +156,13 @@ Ext.define('Ung.dashboard.Queue', {
             //console.log("Prevent Double queuing: " + widget.title);
         }
     },
+    addFirst: function (widget) {
+        if (!this.queueMap[widget.id]) {
+            this.queue.unshift(widget);
+            //console.log("Adding first: " + widget.title);
+            this.process();
+        }
+    },
     next: function () {
         //console.log("Finish last started widget.");
         this.processing = false;
@@ -189,6 +196,18 @@ Ext.define('Ung.dashboard.Widget', {
     cls: 'widget small-widget',
     refreshIntervalSec: 0,
     initComponent: function () {
+        if (this.hasRefresh) {
+            this.tools = [{
+                itemId: 'refresh',
+                type: 'refresh',
+                callback: function (panel) {
+                    if (panel.timeoutId) {
+                        clearTimeout(panel.timeoutId);
+                    }
+                    Ung.dashboard.Queue.addFirst(panel);
+                }
+            }];
+        }
         this.callParent(arguments);
         if (Ext.isFunction(this.loadData)) {
             Ung.dashboard.Queue.add(this);
@@ -203,7 +222,7 @@ Ext.define('Ung.dashboard.Widget', {
             }, this), this.refreshIntervalSec * 1000);
         }
     },
-    beforeDestroy: function() {
+    beforeDestroy: function () {
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
         }
@@ -925,6 +944,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
     border: false,
     entry: null,
     items: null,
+    hasRefresh: true,
     initComponent: function () {
         this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Util.createChart(this.entry)];
@@ -1011,6 +1031,7 @@ Ext.define('Ung.dashboard.EventEntry', {
     layout: 'fit',
     entry: null,
     items: null,
+    hasRefresh: true,
     initComponent: function () {
         this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Event.createGrid(this.entry)];

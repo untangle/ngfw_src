@@ -450,6 +450,14 @@ a.forgot-password:hover {
     padding: 0;
 }
 
+.widget .x-panel-header-title-default {
+    width: 100% !important;
+}
+
+.widget .x-tool {
+    top: 7px !important;
+}
+
 .widget .x-panel-header-title-default>.x-title-text-default {
     font-family: 'Source Sans Pro', sans-serif;
     color: #3DA8EB;
