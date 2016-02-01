@@ -470,19 +470,85 @@ a.forgot-password:hover {
     padding: 5px 0 10px 0;
 }
 
+
+/* widget grid customization - temporary */
+.widget .x-grid-header-ct {
+    position: relative !important;
+    border: 0;
+    background-image: none;
+    background-color: #FFF;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.widget .x-grid-header-ct .x-box-inner {
+    border-bottom: 1px #EEE solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.widget .x-column-header {
+    background-image: none;
+    border: 0;
+    background-color: transparent;
+}
+
+.widget .x-column-header-inner {
+    padding: 14px 10px 14px 6px;
+}
+
+.widget .x-column-header-over {
+    background-image: none;
+    background-color: #EEE;
+}
+
+
+.widget .x-grid-cell-inner {
+    padding: 10px 6px;
+}
+.widget .x-grid-with-row-lines .x-grid-item {
+    border-width: 0;
+}
+
+
+
+.widget .x-grid-view::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.widget .x-grid-view::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+}
+.widget .x-grid-view::-webkit-scrollbar-thumb {
+    background: #777;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+}
+.widget .x-grid-view::-webkit-scrollbar-thumb:hover {
+    background: #67bd4a;
+}
+.widget .x-grid-view::-webkit-scrollbar-thumb:active {
+    background: #67bd4a;
+}
+.widget .x-grid-view::-webkit-scrollbar-track {
+    background: #CCC;
+    border: 0 none transparent;
+    border-radius: 0;
+}
+.widget .x-grid-view::-webkit-scrollbar-track:hover {
+    background: #CCC;
+}
+.widget .x-grid-view::-webkit-scrollbar-track:active {
+    background: #CCC;
+}
+.widget .x-grid-view::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+
+
 .big-widget .x-tool {
     right: 0;
     left: auto;
 }
 
-/*
-@media ( min-width : 956px) {
-    .big-widget {
-        flex: 1;
-        height: initial !important;
-    }
-}
-*/
 .dashboard .ellipsis .x-form-display-field-default {
     max-width: 120px;
     white-space: nowrap;

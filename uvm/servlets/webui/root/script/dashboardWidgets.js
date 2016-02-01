@@ -1058,6 +1058,6 @@ Ext.define('Ung.dashboard.EventEntry', {
                 store.getProxy().setData(result2.list);
                 store.load();
             }, 1000);
-        }, this), this.entry, null, 10, null, null);
+        }, this), this.entry, null, 15, null, null);
     }
 });
