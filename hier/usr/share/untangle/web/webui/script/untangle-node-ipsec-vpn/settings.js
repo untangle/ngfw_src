@@ -14,7 +14,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         try {
             this.rpc.netSettings = Ung.Main.getNetworkManager().getNetworkSettings();
             this.rpc.intStatus = Ung.Main.getNetworkManager().getInterfaceStatus();
-            this.rpc.dirConLicenseValid = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-adconnector") || Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
+            this.rpc.dirConLicenseValid = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -1332,12 +1332,12 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     configureLocalDirectory: function() {
         Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
     },
-
     configureRadius: function() {
-        var node = Ung.Main.getNode("untangle-node-adconnector");
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.RADIUS Connector";
                 nodeCmp.loadSettings();
             }
         }
