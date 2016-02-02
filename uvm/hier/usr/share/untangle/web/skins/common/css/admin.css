@@ -466,8 +466,15 @@ a.forgot-password:hover {
     top: 3px !important;
 }
 
-.widget .x-tool-img {
+.widget .x-tool-refresh {
     background-image: url(../images/admin/icons/icon_widget_refresh.png);
+    background-position: 0 0;
+    width: 21px;
+    height: 21px;
+}
+
+.widget .x-tool-plus {
+    background-image: url(../images/admin/icons/icon_widget_plus.png);
     background-position: 0 0;
     width: 21px;
     height: 21px;

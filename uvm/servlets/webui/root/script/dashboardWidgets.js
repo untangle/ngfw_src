@@ -14,14 +14,14 @@ Ext.define('Ung.dashboard', {
     },
     loadDashboard: function () {
         // load the actual Materiol Icon fonts
-        this.loadFont(function () {
+        /*this.loadFont(function () {
             WebFont.load({
                 google: {
                     families: ['Material+Icons']
                 }
             });
         });
-
+*/
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
@@ -229,20 +229,15 @@ Ext.define('Ung.dashboard.Widget', {
             });
 
             this.tools = [{
-                itemId: 'open',
-                type: 'openTool',
-                cls: 'btn-widget',
-                renderTpl: '<i class="material-icons">open_in_new</i>',
-                tooltip: 'GoTo',
-                callback: function () {
+                type: 'plus',
+                tooltip: i18n._('Open in Reports'),
+                callback: function (panel) {
                     //console.log('open');
                 }
             }, {
-                itemId: 'refresh',
-                type: 'refreshTool',
-                cls: 'btn-widget',
-                renderTpl: '<i class="material-icons">refresh</i>',
-                tooltip: 'Refresh',
+                type: 'refresh',
+                tooltip: i18n._('Refresh'),
+                margin: '0 5 0 5',
                 callback: function (panel) {
                     if (panel.timeoutId) {
                         clearTimeout(panel.timeoutId);
