@@ -111,7 +111,6 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         }
         return this.rpc.radiusManager;
     },
-
     
     openUserGroupMap: function() {
         if(!this.winUserGroupMap) {
