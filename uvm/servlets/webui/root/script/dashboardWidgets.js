@@ -72,7 +72,7 @@ Ext.define('Ung.dashboard', {
                             entry = null;
                         }
                     } else {
-                        entry = this.eventsMap[this.widget.entryId];
+                        entry = this.eventsMap[widget.entryId];
                     }
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
                         widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
