@@ -1,10 +1,27 @@
 /*global
- Ext, Ung, i18n, rpc, setTimeout, console
+ Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, document
 */
 Ext.define('Ung.dashboard', {
     singleton: true,
     widgets: [],
+    loadFont: function (cb) {
+        var wf = document.createElement('script'), s = document.scripts[0];
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+        wf.addEventListener('load', function (e) {
+            cb(null, e);
+        }, false);
+        s.parentNode.insertBefore(wf, s);
+    },
     loadDashboard: function () {
+        // load the actual Materiol Icon fonts
+        this.loadFont(function () {
+            WebFont.load({
+                google: {
+                    families: ['Material+Icons']
+                }
+            });
+        });
+
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
@@ -199,8 +216,20 @@ Ext.define('Ung.dashboard.Widget', {
     initComponent: function () {
         if (this.hasRefresh) {
             this.tools = [{
+                itemId: 'open',
+                type: 'openTool',
+                cls: 'btn-widget',
+                renderTpl: '<i class="material-icons">open_in_new</i>',
+                tooltip: 'GoTo',
+                callback: function () {
+                    //console.log('open');
+                }
+            }, {
                 itemId: 'refresh',
-                type: 'refresh',
+                type: 'refreshTool',
+                cls: 'btn-widget',
+                renderTpl: '<i class="material-icons">refresh</i>',
+                tooltip: 'Refresh',
                 callback: function (panel) {
                     if (panel.timeoutId) {
                         clearTimeout(panel.timeoutId);
@@ -208,6 +237,7 @@ Ext.define('Ung.dashboard.Widget', {
                     Ung.dashboard.Queue.addFirst(panel);
                 }
             }];
+
         }
         this.callParent(arguments);
         if (Ext.isFunction(this.loadData)) {

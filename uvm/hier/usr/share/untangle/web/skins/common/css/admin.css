@@ -463,7 +463,7 @@ a.forgot-password:hover {
 }
 
 .widget .x-tool {
-    top: 7px !important;
+    top: 3px !important;
 }
 
 .widget .x-tool-img {
@@ -814,3 +814,21 @@ a.forgot-password:hover {
     }
 }
 /* end custom widget loading */
+
+
+.btn-widget {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.btn-widget i {
+    color: #999;
+    margin: 0 3px;
+}
+
+.btn-widget.x-tool-over i {
+    color: #333;
+}
+.btn-widget.x-tool-pressed i {
+    color: #67bd4a;
+}
