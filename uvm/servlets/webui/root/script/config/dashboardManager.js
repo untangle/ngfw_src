@@ -205,7 +205,7 @@ Ext.define('Webui.config.dashboardManager', {
                         }
                     }
                     if(value == "ReportEntry" || value == "EventEntry") {
-                        return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> "+ record.get("entryId");
+                        return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
                     }
                     return "";
                 }, this)
