@@ -46,24 +46,7 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
         });
     },
     buildGoogle: function() {
-        var directoryConnectorLicense;
-        try {
-            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-adconnector") || Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var directoryConnectorNode;
-        try {
-            directoryConnectorNode = rpc.nodeManager.node("untangle-node-directory-connector");
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        this.googleDriveConfigured =
-            directoryConnectorLicense != null &&
-            directoryConnectorLicense &&
-            directoryConnectorNode != null &&
-            directoryConnectorNode.getGoogleManager() != null &&
-            directoryConnectorNode.getGoogleManager().isGoogleDriveConnected();
+        this.googleDriveConfigured = Ung.Main.isGoogleDriveConfigured();
 
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
             name: 'Google Drive',
@@ -89,9 +72,8 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                     xtype: "button",
                     margin: '5 0 0 0',
                     disabled: this.googleDriveConfigured,
-                    name: "configureGoogleDrive",
                     text: i18n._("Configure Google Drive"),
-                    handler: Ext.bind(this.configureGoogleDrive, this )
+                    handler: Ung.Main.configureGoogleDrive
                 },{
                     xtype: "checkbox",
                     margin: '15 0 0 0',
@@ -126,16 +108,6 @@ Ext.define('Webui.untangle-node-configuration-backup.settings', {
                 }]
             }]
         });
-    },
-    // There is no way to select the google tab because we don't get a callback once the settings are loaded.
-    configureGoogleDrive: function() {
-        var node = Ung.Main.getNode("untangle-node-directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                nodeCmp.loadSettings();
-            }
-        }
     }
 });
 //# sourceURL=configuration-backup-settings.js
