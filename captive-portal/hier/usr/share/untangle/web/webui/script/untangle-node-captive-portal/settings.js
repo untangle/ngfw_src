@@ -349,7 +349,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
         }, this);
         var directoryConnectorLicense;
         try {
-            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-adconnector") || Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -1037,12 +1037,12 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
     configureLocalDirectory: function() {
         Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
     },
-    // There is no way to select the radius tab because we don't get a callback once the settings are loaded.
     configureRadius: function() {
         var node = Ung.Main.getNode("untangle-node-directory-connector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.RADIUS Connector";
                 nodeCmp.loadSettings();
             }
         }
@@ -1052,6 +1052,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.Active Directory Connector";
                 nodeCmp.loadSettings();
             }
         }

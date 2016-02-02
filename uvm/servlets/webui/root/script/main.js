@@ -1257,6 +1257,35 @@ Ext.define("Ung.Main", {
             }
         }, this));
     },
+    isGoogleDriveConfigured: function() {
+        var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
+        try {
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
+            directoryConnectorNode = rpc.nodeManager.node("untangle-node-directory-connector");
+            if(directoryConnectorLicense && directoryConnectorNode) {
+                googleManager = directoryConnectorNode.getGoogleManager();
+                if(googleManager && googleManager.isGoogleDriveConnected()) {
+                    googleDriveConfigured = true;
+                }
+            }
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        return googleDriveConfigured;
+    },
+    configureGoogleDrive: function() {
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.Google Connector";
+                nodeCmp.loadSettings();
+            }
+        } else {
+            Ext.MessageBox.alert(i18n._("Error"), i18n._("Google Drive requires Directory Connector application."));
+        }
+    },
+
 /*
     testInstallRandom: function(probability) {
         if(!probability) {
