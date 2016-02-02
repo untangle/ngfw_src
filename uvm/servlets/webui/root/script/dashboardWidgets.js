@@ -76,7 +76,7 @@ Ext.define('Ung.dashboard', {
                         widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
                             entry: entry,
                             refreshIntervalSec: widget.refreshIntervalSec,
-                            timeframe: widget.timeframe,
+                            timeframe: widget.timeframe || 0,
                             displayColumns: widget.displayColumns
                         }));
                     }

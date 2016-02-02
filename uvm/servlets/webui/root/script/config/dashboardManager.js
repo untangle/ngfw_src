@@ -383,10 +383,12 @@ Ext.define('Webui.config.dashboardManager', {
                     cls: 'boxlabel'
                 }],
                 setValue: function(value) {
-                    this.down('numberfield[name="timeframe"]').setValue(value/3600);
+                    var timeframeValue = value? value/3600:"";
+                    this.down('numberfield[name="timeframe"]').setValue(timeframeValue);
                 },
                 getValue: function() {
-                    return this.down('numberfield[name="timeframe"]').getValue()*3600;
+                    var hours = this.down('numberfield[name="timeframe"]').getValue();
+                    return Ext.isEmpty(hours)?"":hours*3600;
                 },
                 setReadOnly: function(val) {
                     this.down('numberfield[name="timeframe"]').setReadOnly(val);

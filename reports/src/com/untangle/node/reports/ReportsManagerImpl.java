@@ -298,10 +298,10 @@ public class ReportsManagerImpl implements ReportsManager
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
     
-    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Integer timeframeSec, final int limit )
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final int timeframeSec, final int limit )
     {
         Date startDate = null; 
-        if(timeframeSec != null ) {
+        if(timeframeSec > 0) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, -timeframeSec);
             startDate = cal.getTime();
@@ -446,14 +446,14 @@ public class ReportsManagerImpl implements ReportsManager
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final Integer timeframeSec, final int limit)
+    public ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments"); 
             return null;
         }
         Date startDate = null; 
-        if(timeframeSec != null ) {
+        if(timeframeSec > 0) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, -timeframeSec);
             startDate = cal.getTime();
