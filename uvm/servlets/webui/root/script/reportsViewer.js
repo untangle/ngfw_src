@@ -22,12 +22,12 @@ Ext.define('Ung.reportsViewer', {
             text : i18n._('Host Viewer'),
             category : 'Host Viewer',
             leaf : true,
-            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png'
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_hosts_16x16.png'
         }, {
             text : i18n._('Device List'),
             category : 'Device List',
             leaf : true,
-            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_hosts.png' //FIXME icon
+            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_devices_16x16.png'
         }, {
             text : i18n._("Configuration"),
             leaf : false,
@@ -36,17 +36,17 @@ Ext.define('Ung.reportsViewer', {
                 text : i18n._('Network'),
                 category : 'Network',
                 leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_network_17x17.png'
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_network_16x16.png'
             }, {
                 text : i18n._('Administration'),
                 category : 'Administration',
                 leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_admin_17x17.png'
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_admin_16x16.png'
             }, {
                 text : i18n._('System'),
                 category : 'System',
                 leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_system_17x17.png'
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_system_16x16.png'
             }, {
                 text : i18n._("Shield"),
                 category : "Shield",
