@@ -88,6 +88,7 @@ public class DashboardManagerImpl implements DashboardManager
 
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("network-8bTqxKxxUK");
         
         widgets.add( widgetSettings);

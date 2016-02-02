@@ -167,8 +167,7 @@ Ext.define('Webui.config.dashboardManager', {
             dataFn: Ext.bind(this.getDashboardWidgets, this),
             recordJavaClass: "com.untangle.uvm.DashboardWidgetSettings",
             emptyRow: {
-                "type": "",
-                "refreshIntervalSec": 120
+                "type": ""
             },
             fields: [{
                 name: "type",
@@ -285,12 +284,14 @@ Ext.define('Webui.config.dashboardManager', {
                         fn: Ext.bind(function(combo, newVal, oldVal) {
                             var rowEditor = this.gridDashboardWidgets.rowEditor;
                             rowEditor.syncComponents();
-                            var type = rowEditor.cmps.typeCmp.getValue();
-                            if(type=="EventEntry" && rpc.reportsEnabled) {
-                                var entryId = rowEditor.cmps.entryId.getValue();
-                                var entry = Ung.dashboard.eventsMap[entryId];
-                                if(entry) {
-                                    rowEditor.cmps.columns.setValue(entry.defaultColumns);
+                            if(rpc.reportsEnabled) {
+                                var type = rowEditor.cmps.typeCmp.getValue();
+                                if(type=="EventEntry") {
+                                    var entryId = rowEditor.cmps.entryId.getValue();
+                                    var entry = Ung.dashboard.eventsMap[entryId];
+                                    if(entry) {
+                                        rowEditor.cmps.defaultColumns.setValue(entry.defaultColumns);
+                                    }
                                 }
                             }
                         }, this )
@@ -363,10 +364,36 @@ Ext.define('Webui.config.dashboardManager', {
                 setReadOnly: function(val) {
                     this.down('numberfield[name="refreshIntervalSec"]').setReadOnly(val);
                 }
+            }, {
+                xtype: "container",
+                dataIndex: "timeframe",
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'numberfield',
+                    name: "timeframe",
+                    minValue: 1,
+                    maxValue: 24,
+                    labelWidth: 150,
+                    fieldLabel: i18n._( "Timeframe" )
+                }, {
+                    xtype: 'label',
+                    html: i18n._( "(hours)")+" - "+i18n._( "The number of hours to query the latest data." ),
+                    cls: 'boxlabel'
+                }],
+                setValue: function(value) {
+                    this.down('numberfield[name="timeframe"]').setValue(value/3600);
+                },
+                getValue: function() {
+                    return this.down('numberfield[name="timeframe"]').getValue()*3600;
+                },
+                setReadOnly: function(val) {
+                    this.down('numberfield[name="timeframe"]').setReadOnly(val);
+                }
             }, this.entrySelector, {
                 xtype: 'container',
                 layout: {type: "vbox"},
-                dataIndex: 'columns',
+                dataIndex: 'defaultColumns',
                 items: [{
                     xtype: 'container',
                     margin: '10 0 10 0',
@@ -414,6 +441,10 @@ Ext.define('Webui.config.dashboardManager', {
                 var gridList = this.grid.getList();
                 var existingTypesMap = Ung.Util.createRecordsMap(gridList, "type");
                 var availableTypes = [], widget;
+                if(addMode) {
+                    record.set("refreshIntervalSec", "120");
+                    record.set("timeframe", "3600");
+                }
                 for(var i=0; i < me.widgetsConfig.length; i++) {
                     widget = me.widgetsConfig[i];
                     if(!rpc.reportsEnabled && (widget.name == "ReportEntry" || widget.name == "EventEntry") && currentType!=widget.name) {
@@ -431,8 +462,9 @@ Ext.define('Webui.config.dashboardManager', {
                     this.cmps = {
                         typeCmp: this.down('combo[dataIndex=type]'),
                         refreshIntervalSec: this.down('[dataIndex=refreshIntervalSec]'),
+                        timeframe: this.down('[dataIndex=timeframe]'),
                         entryId: this.down('[dataIndex=entryId]'),
-                        columns: this.down(('[dataIndex=columns]')),
+                        defaultColumns: this.down(('[dataIndex=defaultColumns]')),
                         columnsGroup: this.down(('checkboxgroup[name=columnsGroup]'))
                     };
                 }
@@ -441,19 +473,24 @@ Ext.define('Webui.config.dashboardManager', {
 
                 this.cmps.refreshIntervalSec.setVisible(widgetConfig.hasRefreshInterval);
                 this.cmps.refreshIntervalSec.setDisabled(!widgetConfig.hasRefreshInterval);
+                
+                this.cmps.timeframe.setVisible( type == "ReportEntry" || type == "EventEntry" );
+                this.cmps.timeframe.setDisabled( type != "ReportEntry" && type != "EventEntry" );
+
+                
                 this.cmps.entryId.setType(type);
                 this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
                 
-                this.cmps.columns.setVisible( type == "EventEntry" );
-                this.cmps.columns.setDisabled( type != "EventEntry" );
+                this.cmps.defaultColumns.setVisible( type == "EventEntry" );
+                this.cmps.defaultColumns.setDisabled( type != "EventEntry" );
                 this.cmps.columnsGroup.removeAll();
                 if(type=="EventEntry" && rpc.reportsEnabled) {
                     var entryId = this.cmps.entryId.getValue();
                     var entry = Ung.dashboard.eventsMap[entryId];
                     if(entry) {
                         var tableConfig = Ung.TableConfig.getConfig(entry.table) || { columns: [] };
-                        var values_arr = this.cmps.columns.columnsValue || [];
+                        var values_arr = this.cmps.defaultColumns.columnsValue || [];
                         var items = [];
                         for ( var i = 0; i < tableConfig.columns.length; i++) {
                             items.push({
