@@ -924,6 +924,47 @@ Ext.define('Ung.dashboard.Util', {
             };
         return chart;
     },
+    createTextReport: function (entry) {
+        return {
+            xtype: 'draw',
+            name: "chart",
+            border: false,
+            width: '100%',
+            height: '100%',
+            columns: [{
+                dataIndex: 'data',
+                header: i18n._("data"),
+                width: 100,
+                flex: 1
+            }, {
+                dataIndex: 'value',
+                header: i18n._("value"),
+                width: 100
+            }],
+            sprites: [{
+                type: 'text',
+                text: i18n._(entry.title),
+                fontSize: 18,
+                width: 100,
+                height: 30,
+                x: 10, // the sprite x position
+                y: 22  // the sprite y position
+            }, {
+                type: 'text',
+                text: i18n._(entry.description),
+                fontSize: 12,
+                x: 10,
+                y: 40
+            }, {
+                type: 'text',
+                id: 'infos',
+                text: "",
+                fontSize: 12,
+                x: 10,
+                y: 80
+            }]
+        };
+    },
     // creates the chart based on entry report type
     createChart: function (entry) {
         if (entry.type === 'PIE_GRAPH') {
@@ -931,6 +972,9 @@ Ext.define('Ung.dashboard.Util', {
         }
         if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
             return this.createTimeChart(entry);
+        }
+        if (entry.type === 'TEXT') {
+            return this.createTextReport(entry);
         }
     }
 });
@@ -971,7 +1015,26 @@ Ext.define('Ung.dashboard.ReportEntry', {
             if (this === null || !this.rendered) {
                 return;
             }
-            this.down("[name=chart]").getStore().loadData(result.list);
+            if (this.entry.type !== 'TEXT') {
+                // render charts
+                this.down("[name=chart]").getStore().loadData(result.list);
+            } else {
+                // render text reports
+                var infos = [], reportData = [], chart = this.down("[name=chart]");
+                if (result.list.length > 0 && this.entry.textColumns !== null) {
+                    var column, value, i;
+                    for (i = 0; i < this.entry.textColumns.length; i += 1) {
+                        column = this.entry.textColumns[i].split(" ").splice(-1)[0];
+                        value = Ext.isEmpty(result.list[0][column]) ? 0 : result.list[0][column];
+                        infos.push(value);
+                        reportData.push({data: column, value: value});
+                    }
+                }
+
+                var sprite = chart.getSurface().get("infos");
+                sprite.setAttributes({text: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos))}, true);
+                chart.renderFrame();
+            }
         }, this), this.entry, null, null, -1);
     }
 });
