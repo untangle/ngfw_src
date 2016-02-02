@@ -482,7 +482,7 @@ a.forgot-password:hover {
     border-bottom: 1px #EEF1F5 solid;
     margin: 5px;
     display: block;
-    padding: 5px 0 10px 0;
+    padding: 5px 20px 10px 0;
 }
 
 
@@ -709,3 +709,108 @@ a.forgot-password:hover {
     font-size: 11px;
     cursor: pointer;
 }
+
+
+/* custom widget loading */
+.widget-loader {
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.widget-loader .x-mask-msg-text {
+    background: none;
+    padding: 0;
+}
+
+.widget-loader .x-mask-msg, .widget-loader .x-mask-msg-inner {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.widget-loader .loader {
+    position: relative;
+    margin: 0px auto;
+    width: 50px;
+}
+.widget-loader .loader:before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+}
+
+.widget-loader .circular {
+    -webkit-animation: rotate 2s linear infinite;
+    animation: rotate 2s linear infinite;
+    height: 100%;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.widget-loader .path {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+    -webkit-animation: dash 1.5s ease-in-out infinite, color 3s ease-in-out infinite;
+    animation: dash 1.5s ease-in-out infinite, color 3s ease-in-out infinite;
+    stroke-linecap: round;
+}
+
+@-webkit-keyframes rotate {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotate {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes dash {
+    0% {
+        stroke-dasharray: 1,200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -35px;
+    }
+    100% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -124px;
+    }
+}
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1,200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -35px;
+    }
+    100% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -124px;
+    }
+}
+@-webkit-keyframes color {
+    100%, 0% {
+        stroke: #67bd4a;
+    }
+}
+@keyframes color {
+    100%, 0% {
+        stroke: #67bd4a;
+    }
+}
+/* end custom widget loading */

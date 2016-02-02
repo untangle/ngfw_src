@@ -191,6 +191,7 @@ Ext.define('Ung.dashboard.Queue', {
     }
 });
 
+
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
@@ -948,10 +949,21 @@ Ext.define('Ung.dashboard.ReportEntry', {
     initComponent: function () {
         this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Util.createChart(this.entry)];
+        this.loadingMask = new Ext.LoadMask({
+            cls: 'widget-loader',
+            msg: '<div class="loader">' +
+                    '<svg class="circular" viewBox="25 25 50 50">' +
+                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
+                    '</svg>' +
+                 '</div>',
+            target: this
+        });
         this.callParent(arguments);
     },
     loadData: function (handler) {
+        this.loadingMask.show();
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
+            this.loadingMask.hide();
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1035,11 +1047,22 @@ Ext.define('Ung.dashboard.EventEntry', {
     initComponent: function () {
         this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Event.createGrid(this.entry)];
+        this.loadingMask = new Ext.LoadMask({
+            cls: 'widget-loader',
+            msg: '<div class="loader">' +
+                    '<svg class="circular" viewBox="25 25 50 50">' +
+                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
+                    '</svg>' +
+                 '</div>',
+            target: this
+        });
         this.callParent(arguments);
     },
     loadData: function (handler) {
         var me = this;
+        this.loadingMask.show();
         Ung.Main.getReportsManager().getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
+            this.loadingMask.hide();
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;
