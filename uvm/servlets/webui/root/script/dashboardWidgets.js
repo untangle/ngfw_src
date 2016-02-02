@@ -58,22 +58,25 @@ Ext.define('Ung.dashboard', {
             grid, gridEl, type, entry, widget;
 
         for (i = 0; i < this.allWidgets.length; i += 1) {
-            type = this.allWidgets[i].type;
+            widget = this.allWidgets[i];
+            type = widget.type;
             if (type !== "ReportEntry" && type !== "EventEntry") {
-                widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type));
+                widgetsList.push(Ext.create('Ung.dashboard.' + type, {
+                    widgetType: type
+                }));
             } else {
                 if (rpc.reportsEnabled) {
                     if (type === "ReportEntry") {
-                        entry = this.reportsMap[this.allWidgets[i].entryId];
+                        entry = this.reportsMap[widget.entryId];
                         if (!entry && !entry.enabled) {
                             entry = null;
                         }
                     } else {
-                        entry = this.eventsMap[this.allWidgets[i].entryId];
+                        entry = this.eventsMap[this.widget.entryId];
                     }
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
-                        widget = this.allWidgets[i];
                         widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
+                            widgetType: widget.type,
                             entry: entry,
                             refreshIntervalSec: widget.refreshIntervalSec,
                             timeframe: widget.timeframe || 0,
@@ -227,14 +230,20 @@ Ext.define('Ung.dashboard.Widget', {
                      '</div>',
                 target: this
             });
-
-            this.tools = [{
-                type: 'plus',
-                tooltip: i18n._('Open in Reports'),
-                callback: function (panel) {
-                    //console.log('open');
-                }
-            }, {
+            this.tools = [];
+            if(this.widgetType=="EventEntry" || this.widgetType=="ReportEntry") {
+                this.tools.push({
+                    type: 'plus',
+                    tooltip: i18n._('Open in Reports'),
+                    callback: function (panel) {
+                        var entry = panel.entry;
+                        //Ung.Main.target = "reports."+entry.category + (panel.widgetType=="ReportEntry"?".report.":".event.")+panel.entry.uniqueId;
+                        var reportsMenuItem = Ext.getCmp('reportsMenuItem');
+                        reportsMenuItem.getEl().dom.click();
+                    }
+                });
+            }
+            this.tools.push({
                 type: 'refresh',
                 tooltip: i18n._('Refresh'),
                 margin: '0 5 0 5',
@@ -245,8 +254,7 @@ Ext.define('Ung.dashboard.Widget', {
                     panel.loadingMask.show();
                     Ung.dashboard.Queue.addFirst(panel);
                 }
-            }];
-
+            });
         }
         this.callParent(arguments);
         if (Ext.isFunction(this.loadData)) {
