@@ -20,19 +20,24 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.callParent(arguments);
 
     },
+    beforeDestroy: function() {
+        this.refreshGoogleTask.stop();
+        this.callParent(arguments);
+    },
 
     buildRefreshTask: function() {
+        var me = this;
         this.refreshGoogleTask = {
             // update interval in millisecond
-            updateFrequency: 2000,
+            updateFrequency: 3000,
             count:0,
-            maxTries: 60,
+            maxTries: 40,
             started: false,
             intervalId: null,
-            start: function(dirConnector) {
+            start: function() {
                 this.stop();
                 this.count=0;
-                this.intervalId = window.setInterval(dirConnector.refreshGoogleTask.run, this.updateFrequency);
+                this.intervalId = window.setInterval(this.run, this.updateFrequency);
                 this.started = true;
             },
             stop:function() {
@@ -43,6 +48,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 this.started = false;
             },
             run: Ext.bind(function () {
+                if(!this || !this.rendered) {
+                    return;
+                }
                 this.refreshGoogleTask.count++;
 
                 if ( this.refreshGoogleTask.count > this.refreshGoogleTask.maxTries ) {
@@ -50,15 +58,18 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     return;
                 }
 
-                this.googleDriveConnected = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
-                var googleConnectorStatus = this.panelGoogle.down('component[name=googleConnectorStatus]');
-                googleConnectorStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
-                googleConnectorStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
+                this.getGoogleManager().isGoogleDriveConnected(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.googleDriveConnected = result;
+                    var googleConnectorStatus = this.panelGoogle.down('component[name=googleConnectorStatus]');
+                    googleConnectorStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
+                    googleConnectorStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
 
-                if ( this.googleDriveConnected ) {
-                    this.refreshGoogleTask.stop();
-                    return;
-                }
+                    if ( this.googleDriveConnected ) {
+                        this.refreshGoogleTask.stop();
+                        return;
+                    }
+                }, this));
 
             },this)
         };
@@ -81,14 +92,24 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         return this.rpc.activeDirectoryManager;
     },
     getGoogleManager: function(forceReload) {
-        if (forceReload || this.rpc.activeDirectoryManager === undefined) {
+        if (forceReload || this.rpc.googleManager === undefined) {
             try {
                 this.rpc.googleManager = this.getRpcNode().getGoogleManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.activeDirectoryManager;
+        return this.rpc.googleManager;
+    },
+    getRadiusManager: function(forceReload) {
+        if (forceReload || this.rpc.radiusManager === undefined) {
+            try {
+                this.rpc.radiusManager = this.getRpcNode().getRadiusManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.radiusManager;
     },
 
     
@@ -732,7 +753,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 var userCmp = this.panelRadius.down('textfield[name=radius_test_username]').getValue();
                 var passwordCmp = this.panelRadius.down('textfield[name=radius_test_password]').getValue();
 
-                var message = this.getRpcNode().getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
+                var message = this.getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var message = i18n._(result);
                     Ext.MessageBox.alert(i18n._("RADIUS Test"), message);
@@ -742,8 +763,8 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     },
 
     buildGoogle: function() {
-        this.authorizationUrl = this.getRpcNode().getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host);
-        this.googleDriveConnected = this.getRpcNode().getGoogleManager().isGoogleDriveConnected();
+        this.authorizationUrl = this.getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host);
+        this.googleDriveConnected = this.getGoogleManager().isGoogleDriveConnected();
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
             name: 'Google Connector',
             helpSource: 'directory_connector_google_connector',
@@ -772,7 +793,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     text: (this.googleDriveConnected ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
                     iconCls: "action-icon",
                     handler: Ext.bind(function() {
-                        this.refreshGoogleTask.start(this);
+                        this.refreshGoogleTask.start();
                         window.open(this.authorizationUrl);
                     }, this)
                 }]
