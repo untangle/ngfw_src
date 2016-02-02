@@ -47,6 +47,10 @@ public interface ReportsManager
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 
     /**
+     * Get the data for a specific report entry with the specified parameters  in the last timeframeSec seconds
+     */
+    List<JSONObject> getDataForReportEntry( ReportEntry entry, final Integer timeframeSec, final int limit );
+    /**
      * Get the data for a specific report entry with the specified parameters
      */
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
@@ -60,6 +64,11 @@ public interface ReportsManager
      * Query events in the reports database
      */
     ResultSetReader getEventsResultSet( final EventEntry entry, final SqlCondition[] extraConditions, final int limit );
+    
+    /**
+     * Query events in the reports database in the last timeframeSec seconds
+     */
+    ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final Integer timeframeSec, final int limit);
     
     /**
      * Query events in the reports database, within a given date range

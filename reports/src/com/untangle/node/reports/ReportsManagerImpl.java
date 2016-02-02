@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,8 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -299,6 +298,17 @@ public class ReportsManagerImpl implements ReportsManager
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
     
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Integer timeframeSec, final int limit )
+    {
+        Date startDate = null; 
+        if(timeframeSec != null ) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, -timeframeSec);
+            startDate = cal.getTime();
+        }
+        return getDataForReportEntry( entry, startDate, null, null, limit );
+    }
+
     public String[] getColumnsForTable( String tableName )
     {
         ArrayList<String> columnNames = new ArrayList<String>();
@@ -434,6 +444,21 @@ public class ReportsManagerImpl implements ReportsManager
             return null;
         }
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
+    }
+
+    public ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final Integer timeframeSec, final int limit)
+    {
+        if (entry == null) {
+            logger.warn("Invalid arguments"); 
+            return null;
+        }
+        Date startDate = null; 
+        if(timeframeSec != null ) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, -timeframeSec);
+            startDate = cal.getTime();
+        }
+        return getEventsForDateRangeResultSet( entry, extraConditions, limit, startDate, null );
     }
 
     public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)

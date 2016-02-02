@@ -349,10 +349,11 @@ Ext.define('Webui.config.dashboardManager', {
                     xtype:'numberfield',
                     name: "refreshIntervalSec",
                     labelWidth: 150,
+                    minValue: 10,
                     fieldLabel: i18n._( "Refresh Interval" )
                 }, {
                     xtype: 'label',
-                    html: i18n._( "(seconds)")+" - "+i18n._( "Enter 0 for no Auto Refresh" ),
+                    html: i18n._( "(seconds)")+" - "+i18n._( "Leave blank for no Auto Refresh" ),
                     cls: 'boxlabel'
                 }],
                 setValue: function(value) {
@@ -378,7 +379,7 @@ Ext.define('Webui.config.dashboardManager', {
                     fieldLabel: i18n._( "Timeframe" )
                 }, {
                     xtype: 'label',
-                    html: i18n._( "(hours)")+" - "+i18n._( "The number of hours to query the latest data." ),
+                    html: i18n._( "(hours)")+" - "+i18n._( "The number of hours to query the latest data. Leave blank for last day." ),
                     cls: 'boxlabel'
                 }],
                 setValue: function(value) {

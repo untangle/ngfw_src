@@ -55,7 +55,7 @@ Ext.define('Ung.dashboard', {
         var i, j, k,
             widgetsList = [],
             gridList = [],
-            grid, gridEl, type, entry;
+            grid, gridEl, type, entry, widget;
 
         for (i = 0; i < this.allWidgets.length; i += 1) {
             type = this.allWidgets[i].type;
@@ -72,10 +72,12 @@ Ext.define('Ung.dashboard', {
                         entry = this.eventsMap[this.allWidgets[i].entryId];
                     }
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
-                        widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type, {
+                        widget = this.allWidgets[i];
+                        widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
                             entry: entry,
-                            refreshIntervalSec: this.allWidgets[i].refreshIntervalSec,
-                            displayColumns: this.allWidgets[i].displayColumns
+                            refreshIntervalSec: widget.refreshIntervalSec,
+                            timeframe: widget.timeframe,
+                            displayColumns: widget.displayColumns
                         }));
                     }
                 }
@@ -259,7 +261,7 @@ Ext.define('Ung.dashboard.Widget', {
 
     afterLoad: function () {
         Ung.dashboard.Queue.next();
-        if (this && this.refreshIntervalSec > 0) {
+        if (this && this.refreshIntervalSec && this.refreshIntervalSec > 0) {
             this.timeoutId = setTimeout(Ext.bind(function () {
                 Ung.dashboard.Queue.add(this);
             }, this), this.refreshIntervalSec * 1000);
@@ -1068,7 +1070,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 sprite.setAttributes({text: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos))}, true);
                 chart.renderFrame();
             }
-        }, this), this.entry, null, null, -1);
+        }, this), this.entry, this.timeframe, -1);
     }
 });
 
@@ -1133,7 +1135,7 @@ Ext.define('Ung.dashboard.EventEntry', {
     },
     loadData: function (handler) {
         var me = this;
-        Ung.Main.getReportsManager().getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
+        Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
             this.loadingMask.hide();
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
@@ -1153,6 +1155,6 @@ Ext.define('Ung.dashboard.EventEntry', {
                 store.getProxy().setData(result2.list);
                 store.load();
             }, 1000);
-        }, this), this.entry, null, 15, null, null);
+        }, this), this.entry, null, 15, this.timeframe);
     }
 });
