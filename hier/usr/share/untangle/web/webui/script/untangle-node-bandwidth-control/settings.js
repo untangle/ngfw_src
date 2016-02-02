@@ -489,7 +489,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     queryMode: 'local',
                     listeners: {
                         'select': { 
-                            fn: Ext.bind(function(combo, ewVal, oldVal) {
+                            fn: Ext.bind(function(combo, newVal, oldVal) {
                                 this.gridRules.rowEditor.syncComponents();
                             }, this )
                         }
