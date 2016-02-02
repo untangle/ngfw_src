@@ -74,7 +74,8 @@ Ext.define('Ung.dashboard', {
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
                         widgetsList.push(Ext.create('Ung.dashboard.' + this.allWidgets[i].type, {
                             entry: entry,
-                            refreshIntervalSec: this.allWidgets[i].refreshIntervalSec
+                            refreshIntervalSec: this.allWidgets[i].refreshIntervalSec,
+                            displayColumns: this.allWidgets[i].displayColumns
                         }));
                     }
                 }
@@ -215,6 +216,16 @@ Ext.define('Ung.dashboard.Widget', {
     refreshIntervalSec: 0,
     initComponent: function () {
         if (this.hasRefresh) {
+            this.loadingMask = new Ext.LoadMask({
+                cls: 'widget-loader',
+                msg: '<div class="loader">' +
+                        '<svg class="circular" viewBox="25 25 50 50">' +
+                        '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
+                        '</svg>' +
+                     '</div>',
+                target: this
+            });
+
             this.tools = [{
                 itemId: 'open',
                 type: 'openTool',
@@ -234,6 +245,7 @@ Ext.define('Ung.dashboard.Widget', {
                     if (panel.timeoutId) {
                         clearTimeout(panel.timeoutId);
                     }
+                    panel.loadingMask.show();
                     Ung.dashboard.Queue.addFirst(panel);
                 }
             }];
@@ -601,10 +613,9 @@ Ext.define('Ung.dashboard.Network', {
 
 /* CPULoad Widget */
 Ext.define('Ung.dashboard.CPULoad', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
-    cls: 'widget small-widget nopadding',
     layout: 'fit',
     hasStats: true,
     items: [],
@@ -613,8 +624,10 @@ Ext.define('Ung.dashboard.CPULoad', {
         this.items.push({
             xtype: 'cartesian',
             name: 'chart',
-            layout: 'fit',
+            border: false,
             animation: false,
+            width: '100%',
+            height: '100%',
             store: {
                 fields: ['minutes1', 'time'],
                 data: []
@@ -1023,19 +1036,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
     initComponent: function () {
         this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
         this.items = [Ung.dashboard.Util.createChart(this.entry)];
-        this.loadingMask = new Ext.LoadMask({
-            cls: 'widget-loader',
-            msg: '<div class="loader">' +
-                    '<svg class="circular" viewBox="25 25 50 50">' +
-                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
-                    '</svg>' +
-                 '</div>',
-            target: this
-        });
         this.callParent(arguments);
     },
     loadData: function (handler) {
-        this.loadingMask.show();
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             this.loadingMask.hide();
             handler.call(this);
@@ -1069,47 +1072,49 @@ Ext.define('Ung.dashboard.ReportEntry', {
     }
 });
 
-Ext.define('Ung.dashboard.Event', {
-    singleton: true,
-    createGrid: function (entry) {
-        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table)), i;
+Ext.define('Ung.dashboard.EventEntry', {
+    extend: 'Ung.dashboard.Widget',
+    height: 400,
+    cls: 'widget small-widget nopadding',
+    layout: 'fit',
+    entry: null,
+    displayColumns: null,
+    items: null,
+    hasRefresh: true,
+    initComponent: function () {
+        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.items = [this.buildGrid()];
+        this.callParent(arguments);
+        this.gridEvents = this.down("grid[name=gridEvents]");
+    },
+    buildGrid: function () {
+        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(this.entry.table)), i;
         if (!tableConfig) {
-            console.log('Warning: table "' + entry.table + '" is not defined');
+            console.log('Warning: table "' + this.entry.table + '" is not defined');
             tableConfig = {
                 fields: [],
                 columns: []
             };
         } else {
+            if(!this.displayColumns || this.displayColumns.length == 0) {
+                this.displayColumns = this.entry.defaultColumns || [];
+            }
             var columnsNames = {}, col;
             for (i = 0; i < tableConfig.columns.length; i += 1) {
                 col = tableConfig.columns[i].dataIndex;
                 columnsNames[col] = true;
                 col = tableConfig.columns[i];
-                if (entry.defaultColumns.length > 0 && entry.defaultColumns.indexOf(col.dataIndex) < 0) {
+                if (this.displayColumns.length > 0 && this.displayColumns.indexOf(col.dataIndex) < 0) {
                     col.hidden = true;
                 }
-                if (col.stateId === undefined) {
-                    col.stateId = col.dataIndex;
-                }
             }
-            for (i = 0; i < entry.defaultColumns.length; i += 1) {
-                col = entry.defaultColumns[i];
-                if (!columnsNames[col]) {
-                    console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
-                }
-            }
-            //this.gridEvents.defaultTableConfig = tableConfig;
         }
 
         return {
             xtype: 'grid',
-            itemId: 'gridEvents',
             name: 'gridEvents',
             reserveScrollbar: true,
             header: false,
-            title: ".",
-            stateful: true,
-            stateId: "eventGrid",
             viewConfig: {
                 enableTextSelection: true
             },
@@ -1123,37 +1128,11 @@ Ext.define('Ung.dashboard.Event', {
                     }
                 }
             }),
-            columns: tableConfig.columns,
-            plugins: ['gridfilters']
+            columns: tableConfig.columns
         };
-    }
-});
-
-Ext.define('Ung.dashboard.EventEntry', {
-    extend: 'Ung.dashboard.Widget',
-    height: 400,
-    cls: 'widget small-widget nopadding',
-    layout: 'fit',
-    entry: null,
-    items: null,
-    hasRefresh: true,
-    initComponent: function () {
-        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
-        this.items = [Ung.dashboard.Event.createGrid(this.entry)];
-        this.loadingMask = new Ext.LoadMask({
-            cls: 'widget-loader',
-            msg: '<div class="loader">' +
-                    '<svg class="circular" viewBox="25 25 50 50">' +
-                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
-                    '</svg>' +
-                 '</div>',
-            target: this
-        });
-        this.callParent(arguments);
     },
     loadData: function (handler) {
         var me = this;
-        this.loadingMask.show();
         Ung.Main.getReportsManager().getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
             this.loadingMask.hide();
             handler.call(this);
@@ -1167,7 +1146,7 @@ Ext.define('Ung.dashboard.EventEntry', {
                 if (Ung.Util.handleException(exception)) {
                     return;
                 }
-                var store = me.down("[name=gridEvents]").getStore();
+                var store = me.gridEvents.getStore();
                 if (me === null || !me.rendered) {
                     return;
                 }

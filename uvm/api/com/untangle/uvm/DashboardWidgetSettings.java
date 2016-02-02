@@ -4,8 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -18,9 +16,10 @@ import org.json.JSONString;
 public class DashboardWidgetSettings implements Serializable, JSONString
 {
     private String type = null;
-    private int refreshIntervalSec = 0; //0= never auto refresh
+    private Integer refreshIntervalSec; //0= never auto refresh
     private String entryId = null;
-    private String[] columns;
+    private String[] displayColumns;
+    private Integer timeframe; //number of seconds in the past for startDate when getting data for reports and events
     
     public DashboardWidgetSettings() { }
     public DashboardWidgetSettings(String type) {
@@ -36,13 +35,16 @@ public class DashboardWidgetSettings implements Serializable, JSONString
     public String getType(){ return type; }
     public void setType( String newValue) { this.type = newValue; }
 
-    public int getRefreshIntervalSec(){ return refreshIntervalSec; }
-    public void setRefreshIntervalSec( int newValue) { this.refreshIntervalSec = newValue; }
+    public Integer getRefreshIntervalSec(){ return refreshIntervalSec; }
+    public void setRefreshIntervalSec( Integer newValue) { this.refreshIntervalSec = newValue; }
 
     public String getEntryId() { return entryId; }
     public void setEntryId(String entryId) { this.entryId = entryId; }
     
-    public String[] getColumns() { return columns; }
-    public void setColumns(String[] columns) { this.columns = columns; }
+    public String[] getDisplayColumns() { return displayColumns; }
+    public void setDisplayColumns(String[] columns) { this.displayColumns = columns; }
+
+    public Integer getTimeframe(){ return timeframe; }
+    public void setTimeframe( Integer newValue) { this.timeframe = newValue; }
 
 }
