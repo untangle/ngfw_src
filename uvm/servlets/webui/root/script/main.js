@@ -134,13 +134,13 @@ Ext.define("Ung.Main", {
                     items: [{
                         text: i18n._('Dashboard'),
                         iconCls: 'icon-dashboard',
+                        pressed: true,
                         handler: function() {
                             this.panelCenter.setActiveItem("dashboard");
                         },
                         scope: this
                     }, {
                         text: i18n._('Apps'),
-                        pressed: true,
                         iconCls: 'icon-apps',
                         handler: function() {
                             this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
@@ -170,7 +170,7 @@ Ext.define("Ung.Main", {
                 xtype: 'container',
                 cls: 'main-panel',
                 layout: 'card',
-                activeItem: 'apps',
+                activeItem: 'dashboard',
                 items: [{
                     xtype: 'container',
                     itemId: 'dashboard',
@@ -668,7 +668,7 @@ Ext.define("Ung.Main", {
     },
     // load policies list
     loadPolicies: function() {
-        Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
         if (rpc.policyManager != null) {
             rpc.policyManager.getSettings(Ext.bind(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
@@ -754,8 +754,6 @@ Ext.define("Ung.Main", {
             if(!rpc.isRegistered) {
                 this.showWelcomeScreen();
             }
-            //start with installApps if no app is installed
-            this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
         }
 
         this.servicesSeparator.setVisible(hasService);

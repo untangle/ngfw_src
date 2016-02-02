@@ -168,7 +168,7 @@ Ext.define('Webui.config.dashboardManager', {
             recordJavaClass: "com.untangle.uvm.DashboardWidgetSettings",
             emptyRow: {
                 "type": "",
-                "refreshIntervalSec": 0
+                "refreshIntervalSec": 120
             },
             fields: [{
                 name: "type",
@@ -203,6 +203,9 @@ Ext.define('Webui.config.dashboardManager', {
                         if(entry) {
                             return "<b>"+entry.category+"</b> "+entry.title;
                         }
+                    }
+                    if(value == "ReportEntry" || value == "EventEntry") {
+                        return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> "+ record.get("entryId");
                     }
                     return "";
                 }, this)
@@ -259,7 +262,6 @@ Ext.define('Webui.config.dashboardManager', {
                 fieldLabel: i18n._("Events Id")
             }];
         } else {
-            //this.buildEntrySelector();
             this.entrySelector.defaults = {
                 xtype: 'combo',
                 allowBlank: false,
@@ -277,7 +279,23 @@ Ext.define('Webui.config.dashboardManager', {
                     '<ul class="x-list-plain"><tpl for=".">',
                         '<li role="option" class="x-boundlist-item"><b>{category}</b> - {title}</li>',
                     '</tpl></ul>'
-                )
+                ),
+                listeners: {
+                    'select': {
+                        fn: Ext.bind(function(combo, newVal, oldVal) {
+                            var rowEditor = this.gridDashboardWidgets.rowEditor;
+                            rowEditor.syncComponents();
+                            var type = rowEditor.cmps.typeCmp.getValue();
+                            if(type=="EventEntry" && rpc.reportsEnabled) {
+                                var entryId = rowEditor.cmps.entryId.getValue();
+                                var entry = Ung.dashboard.eventsMap[entryId];
+                                if(entry) {
+                                    rowEditor.cmps.columns.setValue(entry.defaultColumns);
+                                }
+                            }
+                        }, this )
+                    }
+                }
             };
             this.entrySelector.items = [{
                 name: 'reportEntryId',
@@ -316,7 +334,7 @@ Ext.define('Webui.config.dashboardManager', {
                 queryMode: 'local',
                 listeners: {
                     'select': {
-                        fn: Ext.bind(function(combo, ewVal, oldVal) {
+                        fn: Ext.bind(function(combo, newVal, oldVal) {
                             this.gridDashboardWidgets.rowEditor.syncComponents();
                         }, this )
                     }
@@ -345,7 +363,48 @@ Ext.define('Webui.config.dashboardManager', {
                 setReadOnly: function(val) {
                     this.down('numberfield[name="refreshIntervalSec"]').setReadOnly(val);
                 }
-            }, this.entrySelector],
+            }, this.entrySelector, {
+                xtype: 'container',
+                layout: {type: "vbox"},
+                dataIndex: 'columns',
+                items: [{
+                    xtype: 'container',
+                    margin: '10 0 10 0',
+                    html: i18n._('It is recomanded to select 4 or less Display Columns to prevent having to scroll horizontally.')
+                }, {
+                    xtype: 'checkboxgroup',
+                    name: 'columnsGroup',
+                    columns: 3,
+                    vertical: true, 
+                    defaults: {
+                        width: 250,
+                        name: 'cbGroup'
+                    },
+                    fieldLabel: i18n._("Display Columns")
+                }],
+                setValue: function(value) {
+                    this.columnsValue = value;
+                    if(rpc.reportsEnabled) {
+                        this.down('checkboxgroup').setValue({cbGroup: value});
+                    }
+                    
+                },
+                getValue: function() {
+                    if(rpc.reportsEnabled) {
+                        var value = this.down('checkboxgroup').getValue();
+                        if(!value.cbGroup) {
+                            return null;
+                        } else if(Ext.isArray(value.cbGroup)) {
+                            return value.cbGroup;
+                        } else {
+                            return [value.cbGroup];
+                        }
+                        
+                    } else {
+                        return this.columnsValue;
+                    }
+                }
+            }],
             populate: function(record, addMode) {
                 //do not show already existing widgets that allow single instances
                 var typeCombo = this.down("combo[dataIndex=type]");
@@ -372,7 +431,9 @@ Ext.define('Webui.config.dashboardManager', {
                     this.cmps = {
                         typeCmp: this.down('combo[dataIndex=type]'),
                         refreshIntervalSec: this.down('[dataIndex=refreshIntervalSec]'),
-                        entryId: this.down('[dataIndex=entryId]')
+                        entryId: this.down('[dataIndex=entryId]'),
+                        columns: this.down(('[dataIndex=columns]')),
+                        columnsGroup: this.down(('checkboxgroup[name=columnsGroup]'))
                     };
                 }
                 var type = this.cmps.typeCmp.getValue();
@@ -383,6 +444,30 @@ Ext.define('Webui.config.dashboardManager', {
                 this.cmps.entryId.setType(type);
                 this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
+                
+                this.cmps.columns.setVisible( type == "EventEntry" );
+                this.cmps.columns.setDisabled( type != "EventEntry" );
+                this.cmps.columnsGroup.removeAll();
+                if(type=="EventEntry" && rpc.reportsEnabled) {
+                    var entryId = this.cmps.entryId.getValue();
+                    var entry = Ung.dashboard.eventsMap[entryId];
+                    if(entry) {
+                        var tableConfig = Ung.TableConfig.getConfig(entry.table) || { columns: [] };
+                        var values_arr = this.cmps.columns.columnsValue || [];
+                        var items = [];
+                        for ( var i = 0; i < tableConfig.columns.length; i++) {
+                            items.push({
+                                xtype : 'checkbox',
+                                margin : '0 20 0 0',
+                                inputValue: tableConfig.columns[i].dataIndex,
+                                boxLabel: tableConfig.columns[i].header,
+                                checked: values_arr.indexOf(tableConfig.columns[i].dataIndex) != -1
+                            });
+                        }
+                        this.cmps.columnsGroup.add(items);
+                    }
+                }
+
             }
         }));
         
@@ -401,8 +486,8 @@ Ext.define('Webui.config.dashboardManager', {
                 align: 'stretch'
             },
             items: [{
-                title: i18n . _("Note"),
-                html: i18n . _("Reports and Events wigets are displayed in the Dashboard only when Reports application is installed and enabled.")
+                title: i18n._("Note"),
+                html: i18n._("Reports and Events wigets are displayed in the Dashboard if the Reports application is installed and enabled, and only if their associalted application is installed.")
             }, this.gridDashboardWidgets ]
         });
         return this.panelDashboardWidgets;

@@ -192,7 +192,6 @@ Ext.define('Ung.RuleBuilder', {
             break;
         case "checkgroup":
             var values_arr = (data.value != null && data.value.length > 0) ? data.value.split(",") : [];
-            var checkboxes = [];
             for ( var count = 0; count < rule.values.length; count++) {
                 items.push({
                     xtype : 'checkbox',

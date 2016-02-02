@@ -161,7 +161,7 @@ Ext.define('Ung.dashboard', {
 Ext.define('Ung.dashboard.Queue', {
     singleton: true,
     processing: false,
-    paused: true,
+    paused: false,
     queue: [],
     queueMap: {},
     add: function (widget) {

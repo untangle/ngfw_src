@@ -3309,7 +3309,7 @@ Ext.define('Webui.config.network', {
                     store: [[true, i18n._('Auto')], [false, i18n._('Custom')]],
                     queryMode: 'local',
                     listeners: {
-                        select: Ext.bind(function(combo, ewVal, oldVal) {
+                        select: Ext.bind(function(combo, newVal, oldVal) {
                             this.gridNatRules.rowEditor.syncComponents();
                         }, this )
                     }
