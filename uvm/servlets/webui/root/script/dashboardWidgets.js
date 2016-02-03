@@ -609,8 +609,10 @@ Ext.define('Ung.dashboard.Network', {
             }
             var allInterfaces = result.interfaces.list,
                 addressedInterfaces = [], i;
+
+            console.log(allInterfaces);
             for (i = 0; i < allInterfaces.length; i += 1) {
-                if (allInterfaces[i].addressed) {
+                if (!allInterfaces[i].disabled) {
                     addressedInterfaces.push(allInterfaces[i]);
                 }
             }
