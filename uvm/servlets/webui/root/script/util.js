@@ -440,7 +440,7 @@ Ext.define('Ung.Util', {
     },
     // use this field converter to prevent issues with grid grouping.
     preventEmptyValueConverter: function(value) {
-        return (value == null || value == "")?" ":value;
+        return (value == null || value === "")?" ":value;
     },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
