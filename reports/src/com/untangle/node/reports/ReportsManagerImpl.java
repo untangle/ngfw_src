@@ -171,6 +171,9 @@ public class ReportsManagerImpl implements ReportsManager
         Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
 
         for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
+            if("untangle-node-shield".equals(nodeProperties.getName())){
+                continue;
+            }
             if ( nodeProperties.getInvisible() || 
                     UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ||
                     !UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {

@@ -1092,6 +1092,7 @@ Ext.define('Ung.dashboard.EventEntry', {
     height: 400,
     cls: 'widget small-widget nopadding',
     layout: 'fit',
+    border: false,
     entry: null,
     displayColumns: null,
     items: null,
@@ -1168,6 +1169,6 @@ Ext.define('Ung.dashboard.EventEntry', {
                 store.getProxy().setData(result2.list);
                 store.load();
             }, 1000);
-        }, this), this.entry, null, 15, this.timeframe);
+        }, this), this.entry, null, this.timeframe, 13);
     }
 });
