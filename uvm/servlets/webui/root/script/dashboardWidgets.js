@@ -596,7 +596,7 @@ Ext.define('Ung.dashboard.Network', {
         '<tpl for=".">' +
             '<div class="row">' +
             '<label style="width: 80px;">' + i18n._('Interface') + ' {#}:</label>' +
-            '<div class="cell">{name} ({physicalDev})<tpl if="isWan"> - WAN</tpl></div>' +
+            '<div class="cell">{name} {physicalDev}<tpl if="isWan"> - WAN</tpl></div>' +
             '</div>' +
         '</tpl>' +
         '</div>',
@@ -607,7 +607,14 @@ Ext.define('Ung.dashboard.Network', {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            this.update(result.interfaces.list);
+            var allInterfaces = result.interfaces.list,
+                addressedInterfaces = [], i;
+            for (i = 0; i < allInterfaces.length; i += 1) {
+                if (allInterfaces[i].addressed) {
+                    addressedInterfaces.push(allInterfaces[i]);
+                }
+            }
+            this.update(addressedInterfaces);
         }, this));
     }
 });
