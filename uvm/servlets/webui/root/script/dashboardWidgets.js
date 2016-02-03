@@ -710,9 +710,8 @@ Ext.define('Ung.dashboard.Util', {
         if (!entry.timeDataColumns) {
             entry.timeDataColumns = [];
         }
-
         var chart, axesFields = [], axesFieldsTitles = [], series = [],
-            legendHint = (entry.timeDataColumns.length > 1) ? this.cartesianLegendHint : '',
+            legendHint = (entry.timeDataColumns.length > 1) ? "<br/>"+i18n._('Hint: Click this label on the legend to hide this series') : '',
             zeroFn = function (val) {
                 return (val === null) ? 0 : val;
             },
@@ -737,7 +736,6 @@ Ext.define('Ung.dashboard.Util', {
                 { name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart") },
                 { name: 'BAR_OVERLAPPED', iconCls: 'icon-bar-overlapped-chart', text: i18n._("Bar Overlapped"), tooltip: i18n._("Switch to Bar Overlapped Chart") }
             ];
-
         if (!Ext.isEmpty(entry.seriesRenderer)) {
             seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
         }
@@ -936,7 +934,15 @@ Ext.define('Ung.dashboard.Util', {
             var title = (record.get(entry.pieGroupColumn) === null) ? i18n._("none") : record.get(entry.pieGroupColumn),
                 value = Ung.panel.Reports.renderValue(record.get("value"), entry);
             return title + ": " + value;
-        },
+        }, noDataSprite =Ext.create("Ext.draw.sprite.Text", {
+            type: 'text',
+            hidden: true,
+            text: i18n._("Not enough data to generate the chart."),
+            fontSize: 12,
+            fillStyle: '#FF0000',
+            x: 10,
+            y: 20
+        }),
             chart = {
                 xtype: 'polar',
                 name: 'chart',
@@ -956,6 +962,8 @@ Ext.define('Ung.dashboard.Util', {
                 legend: {
                     docked: 'right'
                 },
+                sprites: [ noDataSprite],
+                noDataSprite: noDataSprite,
                 interactions: ['rotate', 'itemhighlight'],
                 series: [{
                     type: 'pie',
@@ -974,43 +982,10 @@ Ext.define('Ung.dashboard.Util', {
     },
     createTextReport: function (entry) {
         return {
-            xtype: 'draw',
+            xtype: 'component',
             name: "chart",
-            border: false,
-            width: '100%',
-            height: '100%',
-            columns: [{
-                dataIndex: 'data',
-                header: i18n._("data"),
-                width: 100,
-                flex: 1
-            }, {
-                dataIndex: 'value',
-                header: i18n._("value"),
-                width: 100
-            }],
-            sprites: [{
-                type: 'text',
-                text: i18n._(entry.title),
-                fontSize: 18,
-                width: 100,
-                height: 30,
-                x: 10, // the sprite x position
-                y: 22  // the sprite y position
-            }, {
-                type: 'text',
-                text: i18n._(entry.description),
-                fontSize: 12,
-                x: 10,
-                y: 40
-            }, {
-                type: 'text',
-                id: 'infos',
-                text: "",
-                fontSize: 12,
-                x: 10,
-                y: 80
-            }]
+            margin: 10,
+            html: ''
         };
     },
     // creates the chart based on entry report type
@@ -1053,25 +1028,60 @@ Ext.define('Ung.dashboard.ReportEntry', {
             if (this === null || !this.rendered) {
                 return;
             }
-            if (this.entry.type !== 'TEXT') {
-                // render charts
-                this.down("[name=chart]").getStore().loadData(result.list);
-            } else {
-                // render text reports
-                var infos = [], reportData = [], chart = this.down("[name=chart]");
-                if (result.list.length > 0 && this.entry.textColumns !== null) {
-                    var column, value, i;
+            var data = result.list, chart = this.down("[name=chart]"), column;
+            if(this.entry.type == 'PIE_GRAPH') {
+                var topData = data;
+                if(this.entry.pieNumSlices && data.length>this.entry.pieNumSlices) {
+                    topData = [];
+                    var others = {value:0};
+                    others[this.entry.pieGroupColumn] = i18n._("Others");
+                    for(i=0; i<data.length; i++) {
+                        if(i < this.entry.pieNumSlices) {
+                            topData.push(data[i]);
+                        } else {
+                            others.value+=data[i].value;
+                        }
+                    }
+                    others.value = Math.round(others.value*10)/10;
+                    topData.push(others);
+                }
+                if(topData.length == 0) {
+                    chart.noDataSprite.show();
+                } else {
+                    chart.noDataSprite.hide();
+                }
+
+                chart.getStore().loadData(topData);
+            } else if(this.entry.type == 'TIME_GRAPH_DYNAMIC') {
+                var columnsMap = {}, columns=[], values={};
+                for(i=0; i<data.length; i++) {
+                    for(column in data[i]) {
+                        columnsMap[column]=true;
+                    }
+                }
+                for(column in columnsMap) {
+                    if(column!='time_trunc') {
+                        columns.push(column);
+                    }
+                }
+                this.entry.timeDataColumns = columns;
+                this.removeAll();
+                this.add(Ung.dashboard.Util.createChart(this.entry));
+                this.down("[name=chart]").getStore().loadData(data);
+            } else if (this.entry.type == 'TIME_GRAPH') {
+                chart.getStore().loadData(data);
+            } else if (this.entry.type == 'TEXT') {
+                var infos = [], reportData = [];
+                if (data.length > 0 && this.entry.textColumns !== null) {
+                    var value, i;
                     for (i = 0; i < this.entry.textColumns.length; i += 1) {
                         column = this.entry.textColumns[i].split(" ").splice(-1)[0];
-                        value = Ext.isEmpty(result.list[0][column]) ? 0 : result.list[0][column];
+                        value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
                         infos.push(value);
                         reportData.push({data: column, value: value});
                     }
                 }
-
-                var sprite = chart.getSurface().get("infos");
-                sprite.setAttributes({text: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos))}, true);
-                chart.renderFrame();
+                chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
             }
         }, this), this.entry, this.timeframe, -1);
     }
