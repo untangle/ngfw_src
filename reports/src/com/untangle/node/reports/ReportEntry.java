@@ -400,7 +400,7 @@ public class ReportEntry implements Serializable, JSONString
             final_crosstab_query = final_crosstab_query + ", \"" + s + "\" numeric ";
         }
         final_crosstab_query = final_crosstab_query + ")";
-            
+
         return sqlToStatement( conn, final_crosstab_query, allConditions );
     }
     
