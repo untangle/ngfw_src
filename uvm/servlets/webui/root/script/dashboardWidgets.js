@@ -309,7 +309,7 @@ Ext.define('Ung.dashboard.Information', {
         '</div>' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Model') + ':</label>' +
-            '<div class="cell">custom</div>' +
+            '<div class="cell">{applianceModel}</div>' +
         '</div>' +
         '<div class="row">' +
             '<label style="width: 90px;">' + i18n._('Uptime') + ':</label>' +
@@ -343,6 +343,7 @@ Ext.define('Ung.dashboard.Information', {
 
         this.update({
             hostname: rpc.hostname,
+            applianceModel: ( rpc.applianceModel == undefined || rpc.applianceModel == null || rpc.applianceModel == "" ? i18n._("custom") : rpc.applianceModel ),
             uptime: _uptime,
             version: rpc.fullVersion,
             subscriptions: this.subscriptions
