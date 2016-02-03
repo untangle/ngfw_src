@@ -411,7 +411,9 @@ a.forgot-password:hover {
 
 .dashboard .x-autocontainer-innerCt {
     display: flex;
+    display: -webkit-flex;
     flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
     width: 100%;
 }
 
@@ -449,7 +451,7 @@ a.forgot-password:hover {
 }
 
 .small-widget {
-    flex: 45%;
+    flex: 46%;
 }
 
 .widget .x-panel-header {
@@ -467,26 +469,27 @@ a.forgot-password:hover {
     width: 100% !important;
 }
 
+
 .widget .x-tool {
-    top: 3px !important;
+    top: 6px !important;
 }
 
 .widget .x-tool-refresh {
     background-image: url(../images/admin/icons/icon_widget_refresh.png);
     background-position: 0 0;
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
 }
 
 .widget .x-tool-plus {
-    background-image: url(../images/admin/icons/icon_widget_plus.png);
+    background-image: url(../images/admin/icons/icon_widget_open.png);
     background-position: 0 0;
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
 }
 
 .widget .x-panel-header-title-default>.x-title-text-default {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'PT Sans', sans-serif;
     color: #3DA8EB;
     text-transform: uppercase;
     font-size: 14px;
@@ -517,59 +520,13 @@ a.forgot-password:hover {
 }
 
 .widget .x-column-header-inner {
-    padding: 14px 10px 14px 6px;
+    padding: 10px 10px 10px 6px;
 }
 
 .widget .x-column-header-over {
     background-image: none;
     background-color: #EEE;
 }
-
-/*
-.widget .x-grid-cell-inner {
-    padding: 10px 6px;
-}
-.widget .x-grid-with-row-lines .x-grid-item {
-    border-width: 0;
-}
-
-
-
-.widget .x-grid-view::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-.widget .x-grid-view::-webkit-scrollbar-button {
-    width: 0px;
-    height: 0px;
-}
-.widget .x-grid-view::-webkit-scrollbar-thumb {
-    background: #777;
-    border: 0px none #ffffff;
-    border-radius: 0px;
-}
-.widget .x-grid-view::-webkit-scrollbar-thumb:hover {
-    background: #67bd4a;
-}
-.widget .x-grid-view::-webkit-scrollbar-thumb:active {
-    background: #67bd4a;
-}
-.widget .x-grid-view::-webkit-scrollbar-track {
-    background: #CCC;
-    border: 0 none transparent;
-    border-radius: 0;
-}
-.widget .x-grid-view::-webkit-scrollbar-track:hover {
-    background: #CCC;
-}
-.widget .x-grid-view::-webkit-scrollbar-track:active {
-    background: #CCC;
-}
-.widget .x-grid-view::-webkit-scrollbar-corner {
-    background: transparent;
-}
-*/
-
 
 .big-widget .x-tool {
     right: 0;
@@ -590,8 +547,8 @@ a.forgot-password:hover {
     width: 16.66%;
 }
 
-.grid-cell.small-2 .x-autocontainer-innerCt {
-    flex-direction: column;
+.grid-cell.small-2 .small-widget {
+    flex: initial;
 }
 
 .grid-cell.small-3,.grid-cell.small-4,.grid-cell.big {
@@ -599,7 +556,7 @@ a.forgot-password:hover {
     width: 33.33%;
 }
 
-@media ( min-width : 320px) {
+@media ( min-width : 200px) {
     .grid-cell.small-1,.grid-cell.small-2 {
         width: 100%;
     }
@@ -608,16 +565,7 @@ a.forgot-password:hover {
     }
 }
 
-@media ( min-width : 780px) {
-    .grid-cell.small-1,.grid-cell.small-2 {
-        width: 100%;
-    }
-    .grid-cell.small-3,.grid-cell.small-4,.grid-cell.big {
-        width: 100%;
-    }
-}
-
-@media ( min-width : 1200px) {
+@media ( min-width : 1300px) {
     .grid-cell.small-1,.grid-cell.small-2 {
         width: 50%;
     }
@@ -626,7 +574,7 @@ a.forgot-password:hover {
     }
 }
 
-@media ( min-width : 1500px) {
+@media ( min-width : 1700px) {
     .grid-cell.small-1,.grid-cell.small-2 {
         width: 33.33%;
     }
@@ -637,7 +585,9 @@ a.forgot-password:hover {
 
 
 .wg-wrapper {
-    font-family: 'Source Sans Pro', sans-serif !important;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
     display: table;
     width: 100%;
     table-layout: fixed;
@@ -726,7 +676,7 @@ a.forgot-password:hover {
 /* custom widget loading */
 .widget-loader {
     z-index: 999;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .widget-loader .x-mask-msg-text {
@@ -825,6 +775,19 @@ a.forgot-password:hover {
         stroke: #67bd4a;
     }
 }
+
+.widget.loading {
+    box-shadow: 0 0 10px rgba(103,189,74,0.8);
+    border-color: rgba(103,189,74,1);
+}
+
+.widget.loading .x-tool-refresh {
+    -webkit-animation-name: rotate;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
 /* end custom widget loading */
 
 
@@ -843,4 +806,10 @@ a.forgot-password:hover {
 }
 .btn-widget.x-tool-pressed i {
     color: #67bd4a;
+}
+
+
+.x-form-item-label-default {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 13px;
 }

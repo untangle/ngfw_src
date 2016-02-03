@@ -4,24 +4,7 @@
 Ext.define('Ung.dashboard', {
     singleton: true,
     widgets: [],
-    loadFont: function (cb) {
-        var wf = document.createElement('script'), s = document.scripts[0];
-        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
-        wf.addEventListener('load', function (e) {
-            cb(null, e);
-        }, false);
-        s.parentNode.insertBefore(wf, s);
-    },
     loadDashboard: function () {
-        // load the actual Materiol Icon fonts
-        /*this.loadFont(function () {
-            WebFont.load({
-                google: {
-                    families: ['Material+Icons']
-                }
-            });
-        });
-*/
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
         var callback = Ext.bind(function () {
@@ -195,8 +178,13 @@ Ext.define('Ung.dashboard.Queue', {
         if (!this.paused && !this.processing && this.queue.length > 0) {
             this.processing = true;
             var widget = this.queue.shift();
+
             delete this.queueMap[widget.id];
-            //console.log("Starting: "+widget.title);
+
+            //console.log("Starting: " + widget.title);
+            if (widget.hasRefresh) {
+                widget.addCls('loading');
+            }
             widget.loadData(widget.afterLoad);
         }
     },
@@ -211,6 +199,12 @@ Ext.define('Ung.dashboard.Queue', {
     resume: function () {
         this.paused = false;
         this.process();
+    },
+    inView: function (widget) {
+        // checks if the widget is in viewport
+        if (!widget.el) { return; }
+        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
+        return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
     }
 });
 
@@ -219,6 +213,7 @@ Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
     refreshIntervalSec: 0,
+    initialLoadedData: false,
     initComponent: function () {
         if (this.hasRefresh) {
             this.loadingMask = new Ext.LoadMask({
@@ -231,12 +226,12 @@ Ext.define('Ung.dashboard.Widget', {
                 target: this
             });
             this.tools = [];
-            if(this.widgetType=="EventEntry" || this.widgetType=="ReportEntry") {
+            if (this.widgetType === 'EventEntry' || this.widgetType === 'ReportEntry') {
                 this.tools.push({
                     type: 'plus',
                     tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
-                        var entry = panel.entry;
+                        //var entry = panel.entry;
                         //Ung.Main.target = "reports."+entry.category + (panel.widgetType=="ReportEntry"?".report.":".event.")+panel.entry.uniqueId;
                         var reportsMenuItem = Ext.getCmp('reportsMenuItem');
                         reportsMenuItem.getEl().dom.click();
@@ -712,7 +707,7 @@ Ext.define('Ung.dashboard.Util', {
             entry.timeDataColumns = [];
         }
         var chart, axesFields = [], axesFieldsTitles = [], series = [],
-            legendHint = (entry.timeDataColumns.length > 1) ? "<br/>"+i18n._('Hint: Click this label on the legend to hide this series') : '',
+            legendHint = (entry.timeDataColumns.length > 1) ? "<br/>" + i18n._('Hint: Click this label on the legend to hide this series') : '',
             zeroFn = function (val) {
                 return (val === null) ? 0 : val;
             },
@@ -790,6 +785,7 @@ Ext.define('Ung.dashboard.Util', {
             animation: false,
             width: '100%',
             height: '100%',
+            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
             legend: {
                 docked: 'bottom'
             },
@@ -935,7 +931,7 @@ Ext.define('Ung.dashboard.Util', {
             var title = (record.get(entry.pieGroupColumn) === null) ? i18n._("none") : record.get(entry.pieGroupColumn),
                 value = Ung.panel.Reports.renderValue(record.get("value"), entry);
             return title + ": " + value;
-        }, noDataSprite =Ext.create("Ext.draw.sprite.Text", {
+        }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
             type: 'text',
             hidden: true,
             text: i18n._("Not enough data to generate the chart."),
@@ -949,7 +945,7 @@ Ext.define('Ung.dashboard.Util', {
                 name: 'chart',
                 width: '100%',
                 height: '100%',
-                colors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+                colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
                 store: Ext.create('Ext.data.JsonStore', {
                     fields: [
                         {name: 'description', convert: descriptionFn },
@@ -1022,6 +1018,8 @@ Ext.define('Ung.dashboard.ReportEntry', {
     loadData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             this.loadingMask.hide();
+            this.removeCls('loading');
+
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1030,38 +1028,38 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 return;
             }
             var data = result.list, chart = this.down("[name=chart]"), column;
-            if(this.entry.type == 'PIE_GRAPH') {
+            if (this.entry.type === 'PIE_GRAPH') {
                 var topData = data;
-                if(this.entry.pieNumSlices && data.length>this.entry.pieNumSlices) {
+                if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
                     topData = [];
-                    var others = {value:0};
+                    var others = {value: 0};
                     others[this.entry.pieGroupColumn] = i18n._("Others");
-                    for(i=0; i<data.length; i++) {
-                        if(i < this.entry.pieNumSlices) {
+                    for (i = 0; i < data.length; i += 1) {
+                        if (i < this.entry.pieNumSlices) {
                             topData.push(data[i]);
                         } else {
-                            others.value+=data[i].value;
+                            others.value += data[i].value;
                         }
                     }
-                    others.value = Math.round(others.value*10)/10;
+                    others.value = Math.round(others.value * 10) / 10;
                     topData.push(others);
                 }
-                if(topData.length == 0) {
+                if (topData.length === 0) {
                     chart.noDataSprite.show();
                 } else {
                     chart.noDataSprite.hide();
                 }
 
                 chart.getStore().loadData(topData);
-            } else if(this.entry.type == 'TIME_GRAPH_DYNAMIC') {
-                var columnsMap = {}, columns=[], values={};
-                for(i=0; i<data.length; i++) {
-                    for(column in data[i]) {
-                        columnsMap[column]=true;
+            } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                var columnsMap = {}, columns = [], values = {};
+                for (i = 0; i < data.length; i += 1) {
+                    for (column in data[i]) {
+                        columnsMap[column] = true;
                     }
                 }
-                for(column in columnsMap) {
-                    if(column!='time_trunc') {
+                for (column in columnsMap) {
+                    if (column !== 'time_trunc') {
                         columns.push(column);
                     }
                 }
@@ -1069,9 +1067,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 this.removeAll();
                 this.add(Ung.dashboard.Util.createChart(this.entry));
                 this.down("[name=chart]").getStore().loadData(data);
-            } else if (this.entry.type == 'TIME_GRAPH') {
+            } else if (this.entry.type === 'TIME_GRAPH') {
                 chart.getStore().loadData(data);
-            } else if (this.entry.type == 'TEXT') {
+            } else if (this.entry.type === 'TEXT') {
                 var infos = [], reportData = [];
                 if (data.length > 0 && this.entry.textColumns !== null) {
                     var value, i;
@@ -1113,7 +1111,7 @@ Ext.define('Ung.dashboard.EventEntry', {
                 columns: []
             };
         } else {
-            if(!this.displayColumns || this.displayColumns.length == 0) {
+            if (!this.displayColumns || this.displayColumns.length === 0) {
                 this.displayColumns = this.entry.defaultColumns || [];
             }
             var columnsNames = {}, col;
@@ -1152,6 +1150,7 @@ Ext.define('Ung.dashboard.EventEntry', {
         var me = this;
         Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
             this.loadingMask.hide();
+            this.removeCls('loading');
             handler.call(this);
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1170,6 +1169,6 @@ Ext.define('Ung.dashboard.EventEntry', {
                 store.getProxy().setData(result2.list);
                 store.load();
             }, 1000);
-        }, this), this.entry, null, this.timeframe, 13);
+        }, this), this.entry, null, this.timeframe, 14);
     }
 });
