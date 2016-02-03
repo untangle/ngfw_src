@@ -132,6 +132,7 @@ def devEnvSetup():
 def devEnvRestoreSystem():
     os.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then rm -f /usr/share/untangle/settings && mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi');
     os.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then rm -f /usr/share/untangle/bin && mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi');
+    os.system('if [ -f /etc/apache2/uvm.conf.back ] ; then cp /etc/apache2/uvm.conf.back /etc/apache2/uvm.conf ; fi');
 
 #
 # This prepares the system for a running untangle-vm

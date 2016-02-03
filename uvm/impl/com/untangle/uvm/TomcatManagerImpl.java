@@ -335,14 +335,32 @@ public class TomcatManagerImpl implements TomcatManager
 
     private void writeIncludes()
     {
-        String dir = System.getProperty("uvm.conf.dir");
-        if ( dir == null ) {
-            dir = "/usr/share/untangle/conf";
-        }
+        String confDir = System.getProperty("uvm.conf.dir");
         FileWriter fw = null;
+
+        // if is devel, write the backup file to /etc/apache2/uvm.conf.back
+        // this will be restored by /usr/bin/uvm when the uvm exits
+        // this is done so that apache will still start if the dev env gets cleaned
+        if (UvmContextImpl.context().isDevel()) {
+            try {
+                fw = new FileWriter("/etc/apache2/uvm.conf.back");
+                fw.write("Include /usr/share/untangle/conf/apache2/conf.d/*.conf\n");
+            } catch (IOException exn) {
+                logger.warn("could not write includes: conf.d");
+            } finally {
+                if ( fw != null ) {
+                    try {
+                        fw.close();
+                    } catch (IOException exn) {
+                        logger.warn("could not close file", exn);
+                    }
+                }
+            }
+        }
+
         try {
             fw = new FileWriter("/etc/apache2/uvm.conf");
-            fw.write("Include " + dir + "/apache2/conf.d/*.conf\n");
+            fw.write("Include " + confDir + "/apache2/conf.d/*.conf\n");
         } catch (IOException exn) {
             logger.warn("could not write includes: conf.d");
         } finally {
