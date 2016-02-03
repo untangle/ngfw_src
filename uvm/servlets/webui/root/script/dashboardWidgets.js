@@ -314,10 +314,10 @@ Ext.define('Ung.dashboard.Information', {
             '<label style="width: 90px;">' + i18n._('Version') + ':</label>' +
             '<div class="cell">{version}</div>' +
         '</div>' +
-        '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Subscriptions') + ':</label>' +
-            '<div class="cell">{subscriptions}</div>' +
-        '</div>' +
+        // '<div class="row">' +
+        //     '<label style="width: 90px;">' + i18n._('Subscriptions') + ':</label>' +
+        //     '<div class="cell">{subscriptions}</div>' +
+        // '</div>' +
         '</div>',
     data: {},
     updateStats: function (stats) {
