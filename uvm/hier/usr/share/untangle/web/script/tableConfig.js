@@ -1688,6 +1688,9 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'swap_free',
                     sortType: 'asInt'
+                }, {
+                    name: 'active_hosts',
+                    sortType: 'asInt'
                 }],
                 columns: [{
                     header: i18n._("Timestamp"),
@@ -1809,6 +1812,14 @@ Ext.define('Ung.TableConfig', {
                     renderer: function(value) {
                         var meg = value/1024/1024;
                         return (Math.round( meg*10 )/10).toString() + " MB";
+                    }
+                }, {
+                    header: i18n._("Active Hosts"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'active_hosts',
+                    filter: {
+                        type: 'numeric'
                     }
                 }]
             },
@@ -2209,6 +2220,49 @@ Ext.define('Ung.TableConfig', {
                     renderer: function(value) {
                         var kb = value/1024;
                         return (Math.round( kb*10 )/10).toString() + " KB";
+                    }
+                }]
+            },
+            interface_stat_events: {
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'interface_id',
+                    sortType: 'asInt'
+                }, {
+                    name: 'rx_rate'
+                }, {
+                    name: 'tx_rate'
+                }],
+                columns: [{
+                    header: i18n._("Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: Ext.bind(function(value) {
+                        return i18n.timestampFormat(value);
+                    }, this )
+                },{
+                    header: i18n._("Interface Id"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: "interface_id"
+                }, {
+                    header: i18n._("RX Rate"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'rx_rate',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._("TX Rate"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'tx_rate',
+                    filter: {
+                        type: 'numeric'
                     }
                 }]
             },
