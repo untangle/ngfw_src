@@ -107,18 +107,19 @@ Ext.define("Ung.Main", {
                 layout: { type: 'vbox'},
                 scrollable: 'y',
                 items: [{
-                    xtype: 'image',
-                    itemId: 'logoImage',
-                    alt: rpc.companyName,
+                    xtype: 'component',
                     margin: '3 5 3 5',
-                    src: '/images/BrandingLogo.png?'+(new Date()).getTime(),
+                    cls: 'logo',
+                    style: "background-image: url(/images/BrandingLogo.png?"+(new Date()).getTime()+");",
                     plugins: 'responsive',
                     responsiveConfig: {
                         'phone || small': {
-                            height: 55
+                            height: 55,
+                            width: 87
                         },
                         '!(phone || small)': {
-                            height: 82
+                            height: 82,
+                            width: 140
                         }
                     }
                 }, {

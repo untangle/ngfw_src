@@ -4,6 +4,11 @@
     font-weight: 400;
     src: local('PT Sans'), local('PTSans-Regular'), url(../fonts/PTSans.woff) format('woff');
 }
+.logo {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
 
 .alert-container {
     background: transparent url(../images/admin/icons/icon_alert.gif) no-repeat center center;

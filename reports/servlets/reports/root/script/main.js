@@ -232,20 +232,22 @@ Ext.define("Ung.Main", {
                 xtype:'panel',
                 region: 'north',
                 layout:'border',
-                padding: '7 5 7 7',
+                padding: '5 5 5 5',
                 height: 70,
                 border: false,
                 style: 'background-color: #F0F0F0;',
                 bodyStyle: 'background-color: #F0F0F0;',
                 items: [{
-                    xtype:'container',
-                    html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0" height="50"/>',
+                    xtype: 'component',
+                    cls: 'logo',
                     region: 'west',
-                    width: 100
+                    style: "background-image: url(/images/BrandingLogo.png?"+(new Date()).getTime()+");",
+                    height: 54,
+                    width: 120
                 }, {
                     xtype: 'label',
                     height: 60,
-                    style: 'font-family: sans-serif;font-weight:bold;font-size:37px;padding-left:15px;',
+                    style: 'font-family: sans-serif;font-weight:bold;font-size:37px;padding-left:15px; line-height: 56px;',
                     text: i18n._('Reports'),
                     region: 'center'
                 }, {
