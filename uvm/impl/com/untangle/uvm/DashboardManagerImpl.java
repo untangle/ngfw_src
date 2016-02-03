@@ -74,6 +74,11 @@ public class DashboardManagerImpl implements DashboardManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 
+    public void resetSettingsToDefault()
+    {
+        setSettings( defaultSettings() );
+    }
+    
     private DashboardSettings defaultSettings()
     {
         DashboardWidgetSettings widgetSettings;
