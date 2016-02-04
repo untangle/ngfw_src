@@ -231,10 +231,9 @@ Ext.define('Ung.dashboard.Widget', {
                     type: 'plus',
                     tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
-                        //var entry = panel.entry;
-                        //Ung.Main.target = "reports."+entry.category + (panel.widgetType=="ReportEntry"?".report.":".event.")+panel.entry.uniqueId;
-                        var reportsMenuItem = Ext.getCmp('reportsMenuItem');
-                        reportsMenuItem.getEl().dom.click();
+                        var entry = panel.entry;
+                        Ung.Main.target = "reports."+entry.category + (panel.widgetType=="ReportEntry"?".report.":".event.")+panel.entry.uniqueId;
+                        Ung.Main.openReports();
                     }
                 });
             }

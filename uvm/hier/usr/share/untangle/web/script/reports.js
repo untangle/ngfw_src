@@ -360,16 +360,16 @@ Ext.define('Ung.panel.Reports', {
         };
         return entriesSection;
     },
-    setCategory: function(category) {
+    //initialEntry obj: {type:["report"|"event"], entryId: uniqueId}
+    setCategory: function(category, initialEntry) {
         this.category = category;
         this.cardsContainer.setActiveItem("pleaseSelectEntryContrainer");
         this.reportDataGrid.hide();
-        this.loadEntries();
+        this.loadEntries(initialEntry);
     },
-    loadEntries: function() {
-        
-        this.loadReportEntries(null);
-        this.loadEventEntries();
+    loadEntries: function(initialEntry) {
+        this.loadReportEntries(initialEntry && initialEntry.type=="report"?initialEntry.entryId: null);
+        this.loadEventEntries(initialEntry && initialEntry.type=="event"?initialEntry.entryId: null);
     },
     loadReportEntries: function(initialEntryId) {
         if(!this.reportEntriesGrid) {
@@ -388,11 +388,14 @@ Ext.define('Ung.panel.Reports', {
             this.reportEntriesGrid.getStore().loadData(reportEntries);
             this.reportEntriesGrid.setHidden(reportEntries.length == 0);
             if(initialEntryId) {
-                this.reportEntriesGrid.getSelectionModel().select(initialEntryId);
+                var record = this.reportEntriesGrid.getStore().findRecord("uniqueId", initialEntryId);
+                if(record) {
+                    this.reportEntriesGrid.getSelectionModel().select(record);
+                }
             }
         }, this), this.category);
     },
-    loadEventEntries: function() {
+    loadEventEntries: function(initialEntryId) {
         if(!this.eventEntriesGrid) {
             this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
         }
@@ -400,6 +403,12 @@ Ext.define('Ung.panel.Reports', {
             if(Ung.Util.handleException(exception)) return;
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
+            if(initialEntryId) {
+                var record = this.eventEntriesGrid.getStore().findRecord("uniqueId", initialEntryId);
+                if(record) {
+                    this.eventEntriesGrid.getSelectionModel().select(record);
+                }
+            }
         }, this), this.category);
     },
     

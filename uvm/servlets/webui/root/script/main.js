@@ -483,6 +483,13 @@ Ext.define("Ung.Main", {
         var url = "/setup";
         window.open(url);
     },
+    openReports: function() {
+        if(rpc.reportsEnabled) {
+            var reportsMenuItem = Ext.getCmp('reportsMenuItem');
+            reportsMenuItem.setPressed(true);
+            Ung.Main.panelCenter.setActiveItem("reports");
+        }
+    },
     upgrade: function () {
         Ung.MetricManager.stop();
 
@@ -794,6 +801,7 @@ Ext.define("Ung.Main", {
             //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
             //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
             //monitor.[sessions|hosts](.<tabName>)
+            //reports.<category>.[report|event].<entryId>
             var targetTokens = this.target.split(".");
             if(targetTokens.length >= 2) {
                 var firstToken = targetTokens[0].toLowerCase();
@@ -820,6 +828,11 @@ Ext.define("Ung.Main", {
                     } else if(secondToken == 'hosts') {
                         Ung.Main.showHosts();
                     }
+                    
+                } else if(firstToken == "reports") {
+                    Ung.Main.openReports();
+                } else {
+                    this.target = null;
                 }
             } else {
                 this.target = null;

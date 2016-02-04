@@ -80,7 +80,7 @@ Ext.define('Ung.reportsViewer', {
                     select : Ext.bind(function(rowModel, record, rowIndex, eOpts) {
                         this.panelReports.setConfig("icon", record.get("icon"));
                         this.panelReports.down('#panelEntries').setTitle(record.get("category"));
-                        this.panelReports.setCategory(record.get("category"));
+                        this.panelReports.setCategory(record.get("category"), this.initialEntry);
                     }, this)
                 }
             }
@@ -90,8 +90,7 @@ Ext.define('Ung.reportsViewer', {
         }) ];
         this.callParent(arguments);
         
-        var treepanel = this.down("treepanel"); 
-        treepanel.getSelectionModel().select(0);
+        this.treepanel = this.down("treepanel"); 
         Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
             var currentApplications = result.list;
@@ -109,7 +108,7 @@ Ext.define('Ung.reportsViewer', {
                     }
                 }
                 if(apps.length > 0) {
-                    treepanel.getStore().getRoot().appendChild({
+                    this.treepanel.getStore().getRoot().appendChild({
                         text : i18n._("Applications"),
                         leaf : false,
                         expanded : true,
@@ -117,6 +116,28 @@ Ext.define('Ung.reportsViewer', {
                     });
                 }
             }
+            this.openTarget();
         },this));
+    },
+    openTarget: function() {
+        if(Ung.Main.target) {
+            var targetTokens = Ung.Main.target.split(".");
+            if(targetTokens.length >= 2 && targetTokens[1] !=null ) {
+                var rootNode = this.treepanel.getStore().getRoot();
+                rootNode.cascade(function(node) {
+                    if(node.get("category") == targetTokens[1]){
+                        if(targetTokens.length >= 4 && targetTokens[2] !=null && targetTokens[3] !=null ) {
+                            this.initialEntry={type: targetTokens[2], entryId: targetTokens[3]};
+                        }
+                        this.treepanel.getSelectionModel().select(node);
+                        delete this.initialEntry;
+                        return false;
+                    }
+                }, this);
+            }
+            delete Ung.Main.target;
+        } else {
+            this.treepanel.getSelectionModel().select(0);
+        }
     }
 });
