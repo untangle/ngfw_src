@@ -19,7 +19,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "SERVER_IN_PENALTY_BOX",
+                            "conditionType": "SERVER_IN_PENALTY_BOX",
                             "value": "true"
                         }
                     ]
@@ -41,7 +41,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "CLIENT_IN_PENALTY_BOX",
+                            "conditionType": "CLIENT_IN_PENALTY_BOX",
                             "value": "true"
                         }
                     ]
@@ -63,7 +63,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "53"
                         }
                     ]
@@ -85,12 +85,12 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "PROTOCOL",
+                            "conditionType": "PROTOCOL",
                             "value": "TCP"
                         },
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "22"
                         }
                     ]
@@ -112,12 +112,12 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "PROTOCOL",
+                            "conditionType": "PROTOCOL",
                             "value": "TCP"
                         },
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "3389,5300"
                         }
                     ]
@@ -139,7 +139,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "110,995,143,993"
                         }
                     ]
@@ -161,7 +161,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "APPLICATION_CONTROL_CATEGORY",
+                            "conditionType": "APPLICATION_CONTROL_CATEGORY",
                             "value": "Remote Access"
                         }
                     ]
@@ -187,7 +187,7 @@
                         {
                             "invert": false,
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "APPLICATION_CONTROL_PRODUCTIVITY",
+                            "conditionType": "APPLICATION_CONTROL_PRODUCTIVITY",
                             "value": "<2"
                         }
                     ]
@@ -209,7 +209,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "WEB_FILTER_FLAGGED",
+                            "conditionType": "WEB_FILTER_FLAGGED",
                             "value": ""
                         }
                     ]
@@ -231,7 +231,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "HTTP_HOST",
+                            "conditionType": "HTTP_HOST",
                             "value": "*windowsupdates.com"
                         }
                     ]
@@ -253,7 +253,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "HTTP_HOST",
+                            "conditionType": "HTTP_HOST",
                             "value": "*update.microsoft.com"
                         }
                     ]
@@ -275,7 +275,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "HTTP_HOST",
+                            "conditionType": "HTTP_HOST",
                             "value": "*dropbox.com"
                         }
                     ]
@@ -297,7 +297,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "PROTOCOL_CONTROL_SIGNATURE",
+                            "conditionType": "PROTOCOL_CONTROL_SIGNATURE",
                             "value": "Bittorrent"
                         }
                     ]
@@ -319,7 +319,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "APPLICATION_CONTROL_APPLICATION",
+                            "conditionType": "APPLICATION_CONTROL_APPLICATION",
                             "value": "BITTORRE"
                         }
                     ]
@@ -341,7 +341,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "PROTOCOL_CONTROL_CATEGORY",
+                            "conditionType": "PROTOCOL_CONTROL_CATEGORY",
                             "value": "Peer to Peer"
                         }
                     ]
@@ -363,7 +363,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "APPLICATION_CONTROL_CATEGORY",
+                            "conditionType": "APPLICATION_CONTROL_CATEGORY",
                             "value": "File Transfer"
                         }
                     ]
@@ -385,7 +385,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "WEB_FILTER_CATEGORY",
+                            "conditionType": "WEB_FILTER_CATEGORY",
                             "value": "Download Sites"
                         }
                     ]
@@ -407,7 +407,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "HTTP_HOST",
+                            "conditionType": "HTTP_HOST",
                             "value": "*dropbox.com"
                         }
                     ]
@@ -430,7 +430,7 @@
                         {
                             "invert": false,
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "HTTP_CONTENT_LENGTH",
+                            "conditionType": "HTTP_CONTENT_LENGTH",
                             "value": ">10000000"
                         }
                     ]
@@ -452,7 +452,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "80"
                         }
                     ]
@@ -474,7 +474,7 @@
                     "list": [
                         {
                             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                            "matcherType": "DST_PORT",
+                            "conditionType": "DST_PORT",
                             "value": "443"
                         }
                     ]
