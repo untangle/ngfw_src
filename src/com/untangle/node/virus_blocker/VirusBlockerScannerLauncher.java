@@ -175,7 +175,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             logger.debug("CloudFeedback thread has started for: " + fileHash);
 
             try {
-                String target = (CLOUD_FEEDBACK_URL + "?hash=" + fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=Timur");
+                String target = (CLOUD_FEEDBACK_URL + "?hash=" + fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW" );
                 URL myurl = new URL(target);
                 HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
                 mycon.setRequestMethod("POST");
