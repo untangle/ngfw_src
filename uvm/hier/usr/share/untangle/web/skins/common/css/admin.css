@@ -472,6 +472,7 @@ a.forgot-password:hover {
 
 .widget .x-tool {
     top: 6px !important;
+    margin-left: 3px;
 }
 
 .widget .x-tool-refresh {
@@ -548,7 +549,7 @@ a.forgot-password:hover {
 }
 
 .grid-cell.small-2 .small-widget {
-    flex: initial;
+    flex: auto;
 }
 
 .grid-cell.small-3,.grid-cell.small-4,.grid-cell.big {
@@ -789,25 +790,6 @@ a.forgot-password:hover {
 }
 
 /* end custom widget loading */
-
-
-.btn-widget {
-    padding: 0;
-    border: 0;
-    background: transparent;
-}
-.btn-widget i {
-    color: #999;
-    margin: 0 3px;
-}
-
-.btn-widget.x-tool-over i {
-    color: #333;
-}
-.btn-widget.x-tool-pressed i {
-    color: #67bd4a;
-}
-
 
 .x-form-item-label-default {
     font-family: 'PT Sans', sans-serif;
