@@ -157,6 +157,7 @@ def prepareSystem():
 
     # Optional proc settings
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
+    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
