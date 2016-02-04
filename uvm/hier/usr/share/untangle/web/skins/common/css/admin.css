@@ -437,6 +437,7 @@ a.forgot-password:hover {
     top: 0 !important;
     background: transparent;
     padding: 5px 10px;
+    overflow-y: auto;
 }
 
 .widget {
