@@ -1187,6 +1187,8 @@ class NetworkTests(unittest2.TestCase):
 
     # Test logging of blocked sessions via untangle-nflogd
     def test_150_filterRulesBlockedEventLog(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         # verify port 80 is open
         result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
 
@@ -1196,15 +1198,23 @@ class NetworkTests(unittest2.TestCase):
         netsettings['logBlockedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        for i in range(0, 5):
+        for i in range(0, 10):
             # make the request again which should now be blocked and logged
             result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+            # grab all of the blocked events for checking later
+            events = global_functions.get_events('Network','Blocked Sessions',None,100)
+            found = global_functions.check_events( events.get('list'), 100,
+                                                   "s_server_addr", test_untangle_com_ip,
+                                                   "c_client_addr", remote_control.clientIP,
+                                                   "s_server_port", 80)
+            if found:
+                break
+
             # give the NetFilterLogger time to receive and write the event
             # This is necessary because we have no way to "flush" events
-            time.sleep(1)
-
-        # grab all of the blocked events for checking later
-        events = global_functions.get_events('Network','Blocked Sessions',None,100)
+            # Sleep 10 before trying again
+            time.sleep(10)
 
         # put the network settings back the way we found them
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1214,10 +1224,6 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
 
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 100,
-                                            "s_server_addr", test_untangle_com_ip,
-                                            "c_client_addr", remote_control.clientIP,
-                                            "s_server_port", 80)
         assert(found)
 
     # Test UDP traceroute bug 12663 
