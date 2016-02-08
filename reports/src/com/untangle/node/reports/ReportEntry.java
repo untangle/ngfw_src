@@ -337,6 +337,10 @@ public class ReportEntry implements Serializable, JSONString
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
             
+        if ( allConditions.size() > 0 ) {
+            throw new RuntimeException("This graph type does not currently support extra conditions");
+        }
+
         String generate_series;
         if ( dataInterval.equals("tenminute") )
             generate_series = " SELECT generate_series( " +
