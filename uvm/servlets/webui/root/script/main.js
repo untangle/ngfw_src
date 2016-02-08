@@ -406,6 +406,7 @@ Ext.define("Ung.Main", {
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
         Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
+        Ung.dashboard.dashboardContainer = this.viewport.down("#dashboard");
 
         Ung.dashboard.loadDashboard();
         this.buildConfig();
@@ -828,7 +829,7 @@ Ext.define("Ung.Main", {
                     } else if(secondToken == 'hosts') {
                         Ung.Main.showHosts();
                     }
-                    
+
                 } else if(firstToken == "reports") {
                     Ung.Main.openReports();
                 } else {

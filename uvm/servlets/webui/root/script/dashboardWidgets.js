@@ -3,7 +3,8 @@
 */
 Ext.define('Ung.dashboard', {
     singleton: true,
-    widgets: [],
+    widgetsList: [],
+    widgetsGrid: [],
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
@@ -32,11 +33,41 @@ Ext.define('Ung.dashboard', {
             }, this));
         }
     },
+    onScrollChange: function () {
+        var i, widget;
+        for (i = 0; i < this.widgetsList.length; i += 1) {
+            widget = this.widgetsList[i];
+            if (Ext.isFunction(widget.loadData)) {
+                if (widget.toQueue && this.inView(widget)) {
+                    //console.log('FOUND PENDING QUEUE', widget.title);
+                    widget.toQueue = false;
+                    Ung.dashboard.Queue.add(widget);
+                }
+            }
+        }
+    },
+    inView: function (widget) {
+        // checks if the widget is in viewport
+        if (!widget.getEl()) { return false; }
+        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
+        return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
+    },
+    debounce: function (fn, delay) {
+        var timer = null;
+        var me = this;
+        return function () {
+            var context = me, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                fn.apply(context, args);
+            }, delay);
+        };
+    },
     setWidgets: function () {
-        this.widgets = [];
+        this.widgetsGrid = [];
+        this.widgetsList = [];
         this.dashboardPanel.removeAll();
         var i, j, k,
-            widgetsList = [],
             gridList = [],
             grid, gridEl, type, entry, widget;
 
@@ -44,7 +75,7 @@ Ext.define('Ung.dashboard', {
             widget = this.allWidgets[i];
             type = widget.type;
             if (type !== "ReportEntry" && type !== "EventEntry") {
-                widgetsList.push(Ext.create('Ung.dashboard.' + type, {
+                this.widgetsList.push(Ext.create('Ung.dashboard.' + type, {
                     widgetType: type
                 }));
             } else {
@@ -58,7 +89,7 @@ Ext.define('Ung.dashboard', {
                         entry = this.eventsMap[widget.entryId];
                     }
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
-                        widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
+                        this.widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
                             widgetType: widget.type,
                             entry: entry,
                             refreshIntervalSec: widget.refreshIntervalSec,
@@ -70,38 +101,48 @@ Ext.define('Ung.dashboard', {
             }
         }
 
-        for (j = 0; j < widgetsList.length; j += 1) {
+        for (j = 0; j < this.widgetsList.length; j += 1) {
             if (gridList.length > 0) {
                 grid = gridList[gridList.length - 1];
 
-                if (grid.type === 'small' && widgetsList[j].displayMode === 'small') {
+                if (grid.type === 'small' && this.widgetsList[j].displayMode === 'small') {
                     if (grid.items.length < 4) {
-                        grid.items.push(widgetsList[j]);
+                        grid.items.push(this.widgetsList[j]);
                     } else {
-                        gridList.push({type: 'small', items: [widgetsList[j]]});
+                        gridList.push({type: 'small', items: [this.widgetsList[j]]});
                     }
                 } else {
-                    gridList.push({type: widgetsList[j].displayMode, items: [widgetsList[j]]});
+                    gridList.push({type: this.widgetsList[j].displayMode, items: [this.widgetsList[j]]});
                 }
 
             } else {
-                grid = {type: widgetsList[j].displayMode, items: [widgetsList[j]]};
+                grid = {type: this.widgetsList[j].displayMode, items: [this.widgetsList[j]]};
                 gridList.push(grid);
             }
         }
 
         for (k = 0; k < gridList.length; k += 1) {
-            gridEl = Ext.create('Ung.dashboard.GridWrapper');
+            gridEl = {
+                'xtype': 'container',
+                'items':  gridList[k].items,
+            };
 
             if (gridList[k].type === 'small') {
                 gridEl.cls = 'grid-cell small-' + gridList[k].items.length;
             } else {
                 gridEl.cls = 'grid-cell big';
             }
-            gridEl.add(gridList[k].items);
-            this.widgets.push(gridEl);
+            this.widgetsGrid.push(gridEl);
         }
-        this.dashboardPanel.add(this.widgets);
+
+        this.dashboardPanel.add(this.widgetsGrid);
+
+        if (!this.scrollInitialized) {
+            this.scrollInitialized = true;
+            this.dashboardContainer.getEl().on('scroll', this.debounce(this.onScrollChange, 500));
+            Ext.on('resize', this.debounce(this.onScrollChange, 500));
+        }
+
     },
     resetReports: function () {
         this.reportEntries = null;
@@ -139,8 +180,8 @@ Ext.define('Ung.dashboard', {
     },
     updateStats: function (stats) {
         var i, widget;
-        for (i = 0; i < this.widgets.length; i += 1) {
-            widget = this.widgets[i];
+        for (i = 0; i < this.widgetsList.length; i += 1) {
+            widget = this.widgetsList[i];
             if (widget.hasStats) {
                 widget.updateStats(stats);
             }
@@ -181,11 +222,17 @@ Ext.define('Ung.dashboard.Queue', {
 
             delete this.queueMap[widget.id];
 
-            //console.log("Starting: " + widget.title);
-            if (widget.hasRefresh) {
+            if (!widget.dataFirstLoaded || Ung.dashboard.inView(widget)) {
+                widget.dataFirstLoaded = true;
                 widget.addCls('loading');
+
+                //console.log('PROCESS...', widget.title);
+                widget.loadData(widget.afterLoad);
+            } else {
+                //console.log('DELAYED', widget.title);
+                widget.toQueue = true;
+                Ung.dashboard.Queue.next();
             }
-            widget.loadData(widget.afterLoad);
         }
     },
     reset: function () {
@@ -199,12 +246,6 @@ Ext.define('Ung.dashboard.Queue', {
     resume: function () {
         this.paused = false;
         this.process();
-    },
-    inView: function (widget) {
-        // checks if the widget is in viewport
-        if (!widget.el) { return; }
-        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
-        return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
     }
 });
 
@@ -213,7 +254,6 @@ Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
     cls: 'widget small-widget',
     refreshIntervalSec: 0,
-    initialLoadedData: false,
     initComponent: function () {
         if (this.hasRefresh) {
             this.loadingMask = new Ext.LoadMask({
@@ -245,18 +285,27 @@ Ext.define('Ung.dashboard.Widget', {
                     if (panel.timeoutId) {
                         clearTimeout(panel.timeoutId);
                     }
+                    panel.dataFirstLoaded = false; // to force loading data when manual refresh
                     panel.loadingMask.show();
                     Ung.dashboard.Queue.addFirst(panel);
                 }
             });
         }
         this.callParent(arguments);
+    },
+    afterRender: function () {
         if (Ext.isFunction(this.loadData)) {
             Ung.dashboard.Queue.add(this);
         }
+        this.callParent(arguments);
     },
 
     afterLoad: function () {
+        if (this.hasRefresh) {
+            this.loadingMask.hide();
+        }
+        this.removeCls('loading');
+
         Ung.dashboard.Queue.next();
         if (this && this.refreshIntervalSec && this.refreshIntervalSec > 0) {
             this.timeoutId = setTimeout(Ext.bind(function () {
@@ -272,18 +321,6 @@ Ext.define('Ung.dashboard.Widget', {
     }
 });
 
-/* Grid container for the 1 or more widgets */
-Ext.define('Ung.dashboard.GridWrapper', {
-    extend: 'Ext.container.Container',
-    hasStats: true,
-    updateStats: function (stats) {
-        this.items.each(function (item) {
-            if (item.hasStats) {
-                item.updateStats(stats);
-            }
-        });
-    }
-});
 
 /* Information Widget */
 Ext.define('Ung.dashboard.Information', {
@@ -339,10 +376,11 @@ Ext.define('Ung.dashboard.Information', {
             hostname: rpc.hostname,
             applianceModel: ( rpc.applianceModel == undefined || rpc.applianceModel == null || rpc.applianceModel == "" ? i18n._("custom") : rpc.applianceModel ),
             uptime: _uptime,
-            version: rpc.fullVersion,
-            subscriptions: this.subscriptions
+            version: rpc.fullVersion
+            //subscriptions: this.subscriptions
         });
-    },
+    }
+    /*
     loadData: function (handler) {
         rpc.licenseManager.validLicenseCount(Ext.bind(function (result, exception) {
             handler.call(this);
@@ -352,6 +390,7 @@ Ext.define('Ung.dashboard.Information', {
             this.subscriptions = result;
         }, this));
     }
+    */
 });
 
 /* Memory Widget */
@@ -603,6 +642,7 @@ Ext.define('Ung.dashboard.Network', {
     loadData: function (handler) {
         rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
             handler.call(this);
+
             if (Ung.Util.handleException(exception)) {
                 return;
             }
@@ -1024,10 +1064,8 @@ Ext.define('Ung.dashboard.ReportEntry', {
     },
     loadData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
-            this.loadingMask.hide();
-            this.removeCls('loading');
-
             handler.call(this);
+
             if (Ung.Util.handleException(exception)) {
                 return;
             }
@@ -1156,9 +1194,8 @@ Ext.define('Ung.dashboard.EventEntry', {
     loadData: function (handler) {
         var me = this;
         Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
-            this.loadingMask.hide();
-            this.removeCls('loading');
             handler.call(this);
+
             if (Ung.Util.handleException(exception)) {
                 return;
             }
