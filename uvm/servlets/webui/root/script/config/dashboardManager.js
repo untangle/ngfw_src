@@ -48,6 +48,10 @@ Ext.define('Webui.config.dashboardManager', {
             displayMode: 'small',
             singleInstance: true
         },{
+            name: 'InterfaceLoad',
+            title: i18n._('Interface Load'),
+            displayMode: 'small'
+        },{
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big',

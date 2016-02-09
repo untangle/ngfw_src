@@ -124,7 +124,7 @@ Ext.define('Ung.dashboard', {
         for (k = 0; k < gridList.length; k += 1) {
             gridEl = {
                 'xtype': 'container',
-                'items':  gridList[k].items,
+                'items':  gridList[k].items
             };
 
             if (gridList[k].type === 'small') {
@@ -188,6 +188,7 @@ Ext.define('Ung.dashboard', {
         }
     }
 });
+
 Ext.define('Ung.dashboard.Queue', {
     singleton: true,
     processing: false,
@@ -248,7 +249,6 @@ Ext.define('Ung.dashboard.Queue', {
         this.process();
     }
 });
-
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
@@ -320,7 +320,6 @@ Ext.define('Ung.dashboard.Widget', {
         this.callParent(arguments);
     }
 });
-
 
 /* Information Widget */
 Ext.define('Ung.dashboard.Information', {
@@ -745,7 +744,287 @@ Ext.define('Ung.dashboard.CPULoad', {
     }
 });
 
+/* InterfaceLoad Widget */
+Ext.define('Ung.dashboard.InterfaceLoad', {
+    extend: 'Ung.dashboard.Widget',
+    displayMode: 'small',
+    height: 190,
+    layout: 'fit',
+    hasStats: true,
+    items: [],
+    initComponent: function () {
+        this.title = i18n._("Interface Load");
+        this.items.push({
+            xtype: 'cartesian',
+            name: 'chart',
+            border: false,
+            animation: false,
+            width: '100%',
+            height: '100%',
+            legend: {
+                docked: 'right'
+            },
+            store: {
+                fields: ['rx', 'time'],
+                data: []
+            },
+            axes: [{
+                type: 'numeric',
+                position: 'left',
+                grid: {
+                    lineDash: [3, 3]
+                },
+                minimum: 0,
+                fields: ['rx','tx'],
+                style : {
+                    strokeStyle: '#CCC'
+                },
+                label: {
+                    fontSize: 11,
+                    color: '#999'
+                }
+            }, {
+                type: 'category',
+                position: 'bottom',
+                hidden: true,
+                fields: ['time']
+            }],
+            series: [{
+                type: 'line',
+                title: 'RX KB/s',
+                smooth: 100,
+                xField: 'time',
+                yField: ['rx'],
+                tooltip: {
+                    trackMouse: true,
+                    style: 'background: #fff',
+                    renderer: function (tooltip, storeItem, item) {
+                        tooltip.setHtml('RX KB/s');
+                    }
+                },
+                style: {
+                    stroke: '#396c2b',
+                    lineWidth: 4,
+                    fillOpacity: 0.8
+                }
+            },{
+                type: 'line',
+                title: 'TX KB/s',
+                smooth: 100,
+                xField: 'time',
+                yField: ['tx'],
+                tooltip: {
+                    trackMouse: true,
+                    style: 'background: #fff',
+                    renderer: function (tooltip, storeItem, item) {
+                        tooltip.setHtml('TX KB/s');
+                    }
+                },
+                style: {
+                    stroke: '#3399ff',
+                    lineWidth: 4,
+                    fillOpacity: 0.8
+                }
+            }]
+        });
+        this.callParent(arguments);
+    },
+    updateStats: function (stats) {
+        var d = new Date(),
+            chart = this.down("[name=chart]"),
+            data = chart.getStore().getProxy().reader.rawData;
 
+        // if (stats.oneMinuteLoadAvg < stats.numCpus) {
+        //     chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
+        // } else {
+        //     chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+        // }
+
+        if (data.length > 30) {
+            data.shift();
+        }
+        var interfaceNum = 1;
+        try {
+            data.push({
+                time: d.getTime(),
+                rx: Math.round(stats['interface_'+interfaceNum+'_rxBps']/1024),
+                tx: Math.round(stats['interface_'+interfaceNum+'_txBps']/1024)
+            });
+            chart.store.loadData(data);
+        } catch (err) {}
+    }
+});
+
+/* ReportEntry Widget */
+Ext.define('Ung.dashboard.ReportEntry', {
+    extend: 'Ung.dashboard.Widget',
+    height: 400,
+    cls: 'widget small-widget nopadding',
+    layout: 'fit',
+    border: false,
+    entry: null,
+    items: null,
+    hasRefresh: true,
+    initComponent: function () {
+        this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.items = [Ung.dashboard.Util.createChart(this.entry)];
+        this.callParent(arguments);
+    },
+    loadData: function (handler) {
+        Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
+            handler.call(this);
+
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (this === null || !this.rendered) {
+                return;
+            }
+            var data = result.list, chart = this.down("[name=chart]"), column;
+            if (this.entry.type === 'PIE_GRAPH') {
+                var topData = data;
+                if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
+                    topData = [];
+                    var others = {value: 0};
+                    others[this.entry.pieGroupColumn] = i18n._("Others");
+                    for (i = 0; i < data.length; i += 1) {
+                        if (i < this.entry.pieNumSlices) {
+                            topData.push(data[i]);
+                        } else {
+                            others.value += data[i].value;
+                        }
+                    }
+                    others.value = Math.round(others.value * 10) / 10;
+                    topData.push(others);
+                }
+                if (topData.length === 0) {
+                    chart.noDataSprite.show();
+                } else {
+                    chart.noDataSprite.hide();
+                }
+
+                chart.getStore().loadData(topData);
+            } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                var columnsMap = {}, columns = [], values = {};
+                for (i = 0; i < data.length; i += 1) {
+                    for (column in data[i]) {
+                        columnsMap[column] = true;
+                    }
+                }
+                for (column in columnsMap) {
+                    if (column !== 'time_trunc') {
+                        columns.push(column);
+                    }
+                }
+                this.entry.timeDataColumns = columns;
+                this.removeAll();
+                this.add(Ung.dashboard.Util.createChart(this.entry));
+                this.down("[name=chart]").getStore().loadData(data);
+            } else if (this.entry.type === 'TIME_GRAPH') {
+                chart.getStore().loadData(data);
+            } else if (this.entry.type === 'TEXT') {
+                var infos = [], reportData = [];
+                if (data.length > 0 && this.entry.textColumns !== null) {
+                    var value, i;
+                    for (i = 0; i < this.entry.textColumns.length; i += 1) {
+                        column = this.entry.textColumns[i].split(" ").splice(-1)[0];
+                        value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
+                        infos.push(value);
+                        reportData.push({data: column, value: value});
+                    }
+                }
+                chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
+            }
+        }, this), this.entry, this.timeframe, -1);
+    }
+});
+
+/* EventEntry Widget */
+Ext.define('Ung.dashboard.EventEntry', {
+    extend: 'Ung.dashboard.Widget',
+    height: 400,
+    cls: 'widget small-widget nopadding',
+    layout: 'fit',
+    border: false,
+    entry: null,
+    displayColumns: null,
+    items: null,
+    hasRefresh: true,
+    initComponent: function () {
+        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.items = [this.buildGrid()];
+        this.callParent(arguments);
+        this.gridEvents = this.down("grid[name=gridEvents]");
+    },
+    buildGrid: function () {
+        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(this.entry.table)), i;
+        if (!tableConfig) {
+            console.log('Warning: table "' + this.entry.table + '" is not defined');
+            tableConfig = {
+                fields: [],
+                columns: []
+            };
+        } else {
+            if (!this.displayColumns || this.displayColumns.length === 0) {
+                this.displayColumns = this.entry.defaultColumns || [];
+            }
+            var columnsNames = {}, col;
+            for (i = 0; i < tableConfig.columns.length; i += 1) {
+                col = tableConfig.columns[i].dataIndex;
+                columnsNames[col] = true;
+                col = tableConfig.columns[i];
+                if (this.displayColumns.length > 0 && this.displayColumns.indexOf(col.dataIndex) < 0) {
+                    col.hidden = true;
+                }
+            }
+        }
+
+        return {
+            xtype: 'grid',
+            name: 'gridEvents',
+            reserveScrollbar: true,
+            header: false,
+            viewConfig: {
+                enableTextSelection: true
+            },
+            store:  Ext.create('Ext.data.Store', {
+                fields: tableConfig.fields,
+                data: [],
+                proxy: {
+                    type: 'memory',
+                    reader: {
+                        type: 'json'
+                    }
+                }
+            }),
+            columns: tableConfig.columns
+        };
+    },
+    loadData: function (handler) {
+        var me = this;
+        Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
+            handler.call(this);
+
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (this === null || !this.rendered) {
+                return;
+            }
+            result.getNextChunk(function (result2, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
+                var store = me.gridEvents.getStore();
+                if (me === null || !me.rendered) {
+                    return;
+                }
+                store.getProxy().setData(result2.list);
+                store.load();
+            }, 1000);
+        }, this), this.entry, null, this.timeframe, 14);
+    }
+});
 
 Ext.define('Ung.dashboard.Util', {
     singleton: true,
@@ -1047,172 +1326,3 @@ Ext.define('Ung.dashboard.Util', {
 });
 
 
-/* ReportEntry Widgets */
-Ext.define('Ung.dashboard.ReportEntry', {
-    extend: 'Ung.dashboard.Widget',
-    height: 400,
-    cls: 'widget small-widget nopadding',
-    layout: 'fit',
-    border: false,
-    entry: null,
-    items: null,
-    hasRefresh: true,
-    initComponent: function () {
-        this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
-        this.items = [Ung.dashboard.Util.createChart(this.entry)];
-        this.callParent(arguments);
-    },
-    loadData: function (handler) {
-        Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
-            handler.call(this);
-
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            if (this === null || !this.rendered) {
-                return;
-            }
-            var data = result.list, chart = this.down("[name=chart]"), column;
-            if (this.entry.type === 'PIE_GRAPH') {
-                var topData = data;
-                if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
-                    topData = [];
-                    var others = {value: 0};
-                    others[this.entry.pieGroupColumn] = i18n._("Others");
-                    for (i = 0; i < data.length; i += 1) {
-                        if (i < this.entry.pieNumSlices) {
-                            topData.push(data[i]);
-                        } else {
-                            others.value += data[i].value;
-                        }
-                    }
-                    others.value = Math.round(others.value * 10) / 10;
-                    topData.push(others);
-                }
-                if (topData.length === 0) {
-                    chart.noDataSprite.show();
-                } else {
-                    chart.noDataSprite.hide();
-                }
-
-                chart.getStore().loadData(topData);
-            } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                var columnsMap = {}, columns = [], values = {};
-                for (i = 0; i < data.length; i += 1) {
-                    for (column in data[i]) {
-                        columnsMap[column] = true;
-                    }
-                }
-                for (column in columnsMap) {
-                    if (column !== 'time_trunc') {
-                        columns.push(column);
-                    }
-                }
-                this.entry.timeDataColumns = columns;
-                this.removeAll();
-                this.add(Ung.dashboard.Util.createChart(this.entry));
-                this.down("[name=chart]").getStore().loadData(data);
-            } else if (this.entry.type === 'TIME_GRAPH') {
-                chart.getStore().loadData(data);
-            } else if (this.entry.type === 'TEXT') {
-                var infos = [], reportData = [];
-                if (data.length > 0 && this.entry.textColumns !== null) {
-                    var value, i;
-                    for (i = 0; i < this.entry.textColumns.length; i += 1) {
-                        column = this.entry.textColumns[i].split(" ").splice(-1)[0];
-                        value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
-                        infos.push(value);
-                        reportData.push({data: column, value: value});
-                    }
-                }
-                chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
-            }
-        }, this), this.entry, this.timeframe, -1);
-    }
-});
-
-Ext.define('Ung.dashboard.EventEntry', {
-    extend: 'Ung.dashboard.Widget',
-    height: 400,
-    cls: 'widget small-widget nopadding',
-    layout: 'fit',
-    border: false,
-    entry: null,
-    displayColumns: null,
-    items: null,
-    hasRefresh: true,
-    initComponent: function () {
-        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
-        this.items = [this.buildGrid()];
-        this.callParent(arguments);
-        this.gridEvents = this.down("grid[name=gridEvents]");
-    },
-    buildGrid: function () {
-        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(this.entry.table)), i;
-        if (!tableConfig) {
-            console.log('Warning: table "' + this.entry.table + '" is not defined');
-            tableConfig = {
-                fields: [],
-                columns: []
-            };
-        } else {
-            if (!this.displayColumns || this.displayColumns.length === 0) {
-                this.displayColumns = this.entry.defaultColumns || [];
-            }
-            var columnsNames = {}, col;
-            for (i = 0; i < tableConfig.columns.length; i += 1) {
-                col = tableConfig.columns[i].dataIndex;
-                columnsNames[col] = true;
-                col = tableConfig.columns[i];
-                if (this.displayColumns.length > 0 && this.displayColumns.indexOf(col.dataIndex) < 0) {
-                    col.hidden = true;
-                }
-            }
-        }
-
-        return {
-            xtype: 'grid',
-            name: 'gridEvents',
-            reserveScrollbar: true,
-            header: false,
-            viewConfig: {
-                enableTextSelection: true
-            },
-            store:  Ext.create('Ext.data.Store', {
-                fields: tableConfig.fields,
-                data: [],
-                proxy: {
-                    type: 'memory',
-                    reader: {
-                        type: 'json'
-                    }
-                }
-            }),
-            columns: tableConfig.columns
-        };
-    },
-    loadData: function (handler) {
-        var me = this;
-        Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
-            handler.call(this);
-
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            if (this === null || !this.rendered) {
-                return;
-            }
-            result.getNextChunk(function (result2, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    return;
-                }
-                var store = me.gridEvents.getStore();
-                if (me === null || !me.rendered) {
-                    return;
-                }
-                store.getProxy().setData(result2.list);
-                store.load();
-            }, 1000);
-        }, this), this.entry, null, this.timeframe, 14);
-    }
-});
