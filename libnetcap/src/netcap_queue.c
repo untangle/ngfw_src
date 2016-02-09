@@ -625,24 +625,26 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
     ct = nfct_new();
     if ( !ct ) {
         errlog( ERR_WARNING, "nfq_get_conntrack could not alloc conntrack info\n" );
+        nfct_destroy( ct );
         return -1;
     }
 
     ct_len = nfq_get_ct_info(nfad, &ct_data);
     if ( ct_len <= 0 ) {
         errlog( ERR_WARNING, "nfq_get_conntrack could not get conntrack data\n" );
+        nfct_destroy( ct );
         return -1;
     }
 
 
     if (nfct_payload_parse((void *)ct_data, ct_len, l3num, ct ) < 0) {
         errlog( ERR_WARNING, "nfq_get_conntrack could not parse conntrack data\n" );
+        nfct_destroy( ct );
         return -1;
     }
 
     /* using the union from the nfqueue structure, doesn't matter if
      * this is TCP, UDP, whatever, but it is kind of filthy. */
-
     pkt->nat_info.original.src_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_SRC);
     pkt->nat_info.original.src_protocol_id = nfct_get_attr_u16(ct,ATTR_ORIG_PORT_SRC);
     pkt->nat_info.original.dst_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_DST); 
@@ -655,6 +657,7 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
     pkt->nat_info.reply.dst_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_DST);
     pkt->nat_info.reply.dst_protocol_id = nfct_get_attr_u32(ct,ATTR_REPL_PORT_DST);
 
+    nfct_destroy( ct );
     return 0;
 }
 
