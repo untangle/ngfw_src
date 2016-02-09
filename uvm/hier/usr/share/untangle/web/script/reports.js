@@ -794,6 +794,12 @@ Ext.define('Ung.panel.Reports', {
                     series.push({
                         type: 'line',
                         axis: 'left',
+                        // FIXME line graphs look a ton better with a tiny bit of smoothing
+                        // according to the docs the higher this number the less the smoothing
+                        // so a large number should apply just a tiny bit of smoothing.
+                        // However this doesn't seem to work and it seems to treat any number as true
+                        // but that provides too much smoothing and the data looks bad
+                        //smooth: 100, 
                         title: axesFieldsTitles[i],
                         xField: 'time_trunc',
                         yField: axesFields[i],
@@ -1547,8 +1553,6 @@ Ext.define('Ung.panel.Reports', {
         }
     }
 });
-
-
 
 Ext.define("Ung.panel.ExtraConditions", {
     extend: "Ext.panel.Panel",
