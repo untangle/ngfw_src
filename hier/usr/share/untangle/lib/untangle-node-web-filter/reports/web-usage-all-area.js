@@ -1,8 +1,8 @@
 {
-    "uniqueId": "web-filter-Z1MJRq6VfX",
+    "uniqueId": "web-filter-h0jelsttGp",
     "category": "Web Filter",
-    "description": "The amount of flagged, and blocked web requests over time.",
-    "displayOrder": 103,
+    "description": "The amount of total, flagged, and blocked web requests over time.",
+    "displayOrder": 101,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
@@ -10,15 +10,17 @@
     "readOnly": true,
     "table": "http_events",
     "timeDataColumns": [
+        "count(*) as scanned",
         "sum(web_filter_flagged::int) as flagged",
         "sum(web_filter_blocked::int) as blocked"
     ],
     "colors": [
+        "#396c2b",
         "#e5e500",
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
-    "title": "Web Usage (flagged)",
+    "timeStyle": "AREA",
+    "title": "Web Usage [area]",
     "type": "TIME_GRAPH"
 }
