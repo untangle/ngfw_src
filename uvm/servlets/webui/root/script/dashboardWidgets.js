@@ -792,6 +792,9 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
             series: [{
                 type: 'line',
                 title: 'RX KB/s',
+                //FIXME smoothing doesnt seem to work
+                // smooth: 1000 should apply minimal smoothing but looks the same
+                // as smooth: true for some reason
                 smooth: 100,
                 xField: 'time',
                 yField: ['rx'],
@@ -810,6 +813,9 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
             },{
                 type: 'line',
                 title: 'TX KB/s',
+                //FIXME smoothing doesnt seem to work
+                // smooth: 1000 should apply minimal smoothing but looks the same
+                // as smooth: true for some reason
                 smooth: 100,
                 xField: 'time',
                 yField: ['tx'],
@@ -843,7 +849,7 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
         if (data.length > 30) {
             data.shift();
         }
-        var interfaceNum = 1;
+        var interfaceNum = 1; /* FIXME should be pulled from widget settings */
         try {
             data.push({
                 time: d.getTime(),
