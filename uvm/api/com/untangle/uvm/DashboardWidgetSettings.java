@@ -15,6 +15,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DashboardWidgetSettings implements Serializable, JSONString
 {
+    private boolean enabled = true;
     private String type = null;
     private Integer refreshIntervalSec; //0= never auto refresh
     private String entryId = null;
@@ -31,6 +32,9 @@ public class DashboardWidgetSettings implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     public String getType(){ return type; }
     public void setType( String newValue) { this.type = newValue; }

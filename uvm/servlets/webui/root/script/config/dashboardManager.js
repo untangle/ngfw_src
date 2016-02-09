@@ -123,7 +123,8 @@ Ext.define('Webui.config.dashboardManager', {
             dataFn: Ext.bind(this.getDashboardWidgets, this),
             recordJavaClass: "com.untangle.uvm.DashboardWidgetSettings",
             emptyRow: {
-                "type": ""
+                enabled: true,
+                type: ""
             },
             fields: [{
                 name: "type",
@@ -132,6 +133,12 @@ Ext.define('Webui.config.dashboardManager', {
                 name: "refreshIntervalSec"
             }],
             columns: [{
+                xtype:'checkcolumn',
+                header: i18n._("Enabled"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width: 70
+            }, {
                 header: i18n._("Widget Type"),
                 dataIndex: "type",
                 width: 120,
@@ -177,7 +184,7 @@ Ext.define('Webui.config.dashboardManager', {
                         return this.down("[name=reportEntryId]").getValue();
                     } else if(this.currentType=="EventEntry") {
                         return this.down("[name=eventEntryId]").getValue();
-                    } else if(value == "InterfaceLoad") {
+                    } else if(this.currentType == "InterfaceLoad") {
                         return this.down("[name=interfaceLoadInterfaceId]").getValue();
                     } else {
                         return null;
@@ -188,7 +195,7 @@ Ext.define('Webui.config.dashboardManager', {
                         this.down("[name=reportEntryId]").setValue(value);
                     } else if(this.currentType=="EventEntry") {
                         this.down("[name=eventEntryId]").setValue(value);
-                    } else if(value == "InterfaceLoad") {
+                    } else if(this.currentType == "InterfaceLoad") {
                         this.down("[name=interfaceLoadInterfaceId]").setValue(value);
                     }
                 },
@@ -302,6 +309,12 @@ Ext.define('Webui.config.dashboardManager', {
         this.gridDashboardWidgets.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             rowEditorLabelWidth: 150,
             inputLines: [{
+                xtype: "checkbox",
+                name: "Enabled",
+                dataIndex: "enabled",
+                fieldLabel: i18n._( "Enabled" ),
+                width: 360
+            }, {
                 xtype: "combo",
                 dataIndex: "type",
                 margin: '0 0 10 0',

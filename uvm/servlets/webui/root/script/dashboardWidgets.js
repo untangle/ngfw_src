@@ -18,7 +18,12 @@ Ext.define('Ung.dashboard', {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            this.allWidgets = result.widgets.list;
+            this.allWidgets = [];
+            for (i = 0; i < result.widgets.list.length; i += 1) {
+                if(result.widgets.list[i].enabled) {
+                    this.allWidgets.push(result.widgets.list[i]);
+                }
+            }
             callback();
         }, this));
         if (rpc.reportsEnabled) {
