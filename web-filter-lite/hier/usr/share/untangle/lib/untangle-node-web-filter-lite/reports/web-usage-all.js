@@ -21,6 +21,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",
-    "title": "Web Usage (all)",
+    "title": "Web Usage [bar]",
     "type": "TIME_GRAPH"
 }

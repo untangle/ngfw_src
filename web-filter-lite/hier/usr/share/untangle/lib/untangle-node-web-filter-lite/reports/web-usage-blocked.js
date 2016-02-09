@@ -2,7 +2,7 @@
     "uniqueId": "web-filter-lite-R0Bc7vikgu",
     "category": "Web Filter Lite",
     "description": "The amount of flagged, and blocked web requests over time.",
-    "displayOrder": 103,
+    "displayOrder": 104,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,

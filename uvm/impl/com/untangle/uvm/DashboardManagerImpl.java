@@ -96,8 +96,26 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
-        widgetSettings.setEntryId("network-8bTqxKxxUK");
-        
+        widgetSettings.setEntryId("network-2nx8FA4VCB"); // Network - Interface Usage
+        widgets.add( widgetSettings);
+
+        widgetSettings = new DashboardWidgetSettings("EventEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
+        widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
+        widgets.add( widgetSettings);
+
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("web-filter-h0jelsttGp"); // Web Filter - Web Usage [area]
+        widgets.add( widgetSettings);
+
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("bandwidth-control-CRntw4hkHn"); // Bandwidth Control - Top Hostnames (by total bytes)
         widgets.add( widgetSettings);
 
         DashboardSettings newSettings = new DashboardSettings();
