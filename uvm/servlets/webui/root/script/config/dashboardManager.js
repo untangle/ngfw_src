@@ -210,6 +210,9 @@ Ext.define('Webui.config.dashboardManager', {
                     if(value == "ReportEntry" || value == "EventEntry") {
                         return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
                     }
+                    if(value == "InterfaceLoad") {
+                        //FIXME
+                    }
                     return "";
                 }, this)
             }]
@@ -222,6 +225,8 @@ Ext.define('Webui.config.dashboardManager', {
                         return this.down("[name=reportEntryId]").getValue();
                     } else if(this.currentType=="EventEntry") {
                         return this.down("[name=eventEntryId]").getValue();
+                    } else if(value == "InterfaceLoad") {
+                        return this.down("[name=interfaceLoadInterfaceId]").getValue();
                     } else {
                         return null;
                     }
@@ -231,12 +236,15 @@ Ext.define('Webui.config.dashboardManager', {
                         this.down("[name=reportEntryId]").setValue(value);
                     } else if(this.currentType=="EventEntry") {
                         this.down("[name=eventEntryId]").setValue(value);
+                    } else if(value == "InterfaceLoad") {
+                        this.down("[name=interfaceLoadInterfaceId]").setValue(value);
                     }
                 },
                 setType: function(type) {
                     this.currentType = type;
                     var reportEntryId = this.down("[name=reportEntryId]");
                     var eventEntryId = this.down("[name=eventEntryId]");
+                    var interfaceLoadInterfaceId = this.down("[name=interfaceLoadInterfaceId]");
                     reportEntryId.setVisible(this.currentType=="ReportEntry");
                     reportEntryId.setDisabled(this.currentType!="ReportEntry");
                     if(rpc.reportsEnabled && this.currentType!="ReportEntry") {
@@ -247,6 +255,12 @@ Ext.define('Webui.config.dashboardManager', {
                     eventEntryId.setDisabled(this.currentType!="EventEntry");
                     if(rpc.reportsEnabled && this.currentType!="EventEntry") {
                         eventEntryId.setValue("");
+                    }
+
+                    interfaceLoadInterfaceId.setVisible(this.currentType=="InterfaceLoad");
+                    interfaceLoadInterfaceId.setDisabled(this.currentType!="InterfaceLoad");
+                    if(rpc.reportsEnabled && this.currentType!="InterfaceLoad") {
+                        interfaceLoadInterfaceId.setValue("");
                     }
                 }
         };
