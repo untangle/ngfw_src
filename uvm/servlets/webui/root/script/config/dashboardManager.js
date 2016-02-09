@@ -93,7 +93,7 @@ Ext.define('Webui.config.dashboardManager', {
             dataIndex: "entryId",
             getValue: function() {
                 return "111";
-                
+
             },
             setValue: function(value) {
                 this.entryId = value;
@@ -210,9 +210,6 @@ Ext.define('Webui.config.dashboardManager', {
                     if(value == "ReportEntry" || value == "EventEntry") {
                         return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
                     }
-                    if(value == "InterfaceLoad") {
-                        //FIXME
-                    }
                     return "";
                 }, this)
             }]
@@ -225,8 +222,6 @@ Ext.define('Webui.config.dashboardManager', {
                         return this.down("[name=reportEntryId]").getValue();
                     } else if(this.currentType=="EventEntry") {
                         return this.down("[name=eventEntryId]").getValue();
-                    } else if(value == "InterfaceLoad") {
-                        return this.down("[name=interfaceLoadInterfaceId]").getValue();
                     } else {
                         return null;
                     }
@@ -236,31 +231,22 @@ Ext.define('Webui.config.dashboardManager', {
                         this.down("[name=reportEntryId]").setValue(value);
                     } else if(this.currentType=="EventEntry") {
                         this.down("[name=eventEntryId]").setValue(value);
-                    } else if(value == "InterfaceLoad") {
-                        this.down("[name=interfaceLoadInterfaceId]").setValue(value);
                     }
                 },
                 setType: function(type) {
                     this.currentType = type;
                     var reportEntryId = this.down("[name=reportEntryId]");
                     var eventEntryId = this.down("[name=eventEntryId]");
-                    var interfaceLoadInterfaceId = this.down("[name=interfaceLoadInterfaceId]");
                     reportEntryId.setVisible(this.currentType=="ReportEntry");
                     reportEntryId.setDisabled(this.currentType!="ReportEntry");
                     if(rpc.reportsEnabled && this.currentType!="ReportEntry") {
                         reportEntryId.setValue("");
                     }
-                    
+
                     eventEntryId.setVisible(this.currentType=="EventEntry");
                     eventEntryId.setDisabled(this.currentType!="EventEntry");
                     if(rpc.reportsEnabled && this.currentType!="EventEntry") {
                         eventEntryId.setValue("");
-                    }
-
-                    interfaceLoadInterfaceId.setVisible(this.currentType=="InterfaceLoad");
-                    interfaceLoadInterfaceId.setDisabled(this.currentType!="InterfaceLoad");
-                    if(rpc.reportsEnabled && this.currentType!="InterfaceLoad") {
-                        interfaceLoadInterfaceId.setValue("");
                     }
                 }
         };
@@ -430,7 +416,7 @@ Ext.define('Webui.config.dashboardManager', {
                     xtype: 'checkboxgroup',
                     name: 'columnsGroup',
                     columns: 3,
-                    vertical: true, 
+                    vertical: true,
                     defaults: {
                         width: 250,
                         name: 'cbGroup'
@@ -442,7 +428,7 @@ Ext.define('Webui.config.dashboardManager', {
                     if(rpc.reportsEnabled) {
                         this.down('checkboxgroup').setValue({cbGroup: value});
                     }
-                    
+
                 },
                 getValue: function() {
                     if(rpc.reportsEnabled) {
@@ -454,7 +440,7 @@ Ext.define('Webui.config.dashboardManager', {
                         } else {
                             return [value.cbGroup];
                         }
-                        
+
                     } else {
                         return this.columnsValue;
                     }
@@ -501,15 +487,15 @@ Ext.define('Webui.config.dashboardManager', {
 
                 this.cmps.refreshIntervalSec.setVisible(widgetConfig.hasRefreshInterval);
                 this.cmps.refreshIntervalSec.setDisabled(!widgetConfig.hasRefreshInterval);
-                
+
                 this.cmps.timeframe.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.timeframe.setDisabled( type != "ReportEntry" && type != "EventEntry" );
 
-                
+
                 this.cmps.entryId.setType(type);
                 this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
-                
+
                 this.cmps.defaultColumns.setVisible( type == "EventEntry" );
                 this.cmps.defaultColumns.setDisabled( type != "EventEntry" );
                 this.cmps.columnsGroup.removeAll();
@@ -535,8 +521,8 @@ Ext.define('Webui.config.dashboardManager', {
 
             }
         }));
-        
-        
+
+
         this.panelDashboardWidgets = Ext.create('Ext.panel.Panel',{
             name: 'panelDashboardWidgets',
             title: i18n._('Dashboard Widgets'),
