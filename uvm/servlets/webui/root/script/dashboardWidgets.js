@@ -596,17 +596,12 @@ Ext.define('Ung.dashboard.Sessions', {
         '<div class="cell">{scannedSessions}</div>' +
         '</div>' +
         '<div class="row">' +
-        '<label style="width: 150px;">' + i18n._('Scanned TCP Sessions') + ':</label>' +
-        '<div class="cell">{scannedTCPSessions}</div>' +
-        '</div>' +
-        '<div class="row">' +
-        '<label style="width: 150px;">' + i18n._('Scanned UDP Sessions') + ':</label>' +
-        '<div class="cell">{scannedUDPSessions}</div>' +
-        '</div>' +
-        '<div class="row">' +
         '<label style="width: 150px;">' + i18n._('Bypassed Sessions') + ':</label>' +
         '<div class="cell">{bypassedSessions}</div>' +
         '</div>' +
+        '</div>' +
+        '<div style="text-align: center; margin-top: 20px;">' +
+            '<button class="wg-button" onclick="Ung.Main.showSessions();">Show Sessions</button> ' +
         '</div>',
     loadData: function (handler) {
         rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
