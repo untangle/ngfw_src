@@ -1041,10 +1041,10 @@ Ext.define('Ung.dashboard.Util', {
         var chart, axesFields = [], axesFieldsTitles = [], series = [],
             legendHint = (entry.timeDataColumns.length > 1) ? "<br/>" + i18n._('Hint: Click this label on the legend to hide this series') : '',
             zeroFn = function (val) {
-                return (val === null) ? 0 : val;
+                return (val == null) ? 0 : val;
             },
             timeFn = function (val) {
-                return (val === null || val.time === null) ? 0 : i18n.timestampFormat(val);
+                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
             },
             storeFields = [{name: 'time_trunc', convert: timeFn}],
             reportDataColumns = [{
