@@ -668,6 +668,7 @@ Ext.define('Ung.dashboard.CPULoad', {
     items: [],
     initComponent: function () {
         this.title = i18n._("CPU Load");
+        this.addCls('nopadding');
         this.items.push({
             xtype: 'cartesian',
             name: 'chart',
@@ -683,7 +684,11 @@ Ext.define('Ung.dashboard.CPULoad', {
                 type: 'numeric',
                 position: 'left',
                 grid: {
-                    lineDash: [3, 3]
+                    lineDash: [3, 3],
+                    odd: {
+                        opacity: 0.5,
+                        fill: '#EEE'
+                    }
                 },
                 minimum: 0,
                 fields: ['minutes1'],
@@ -694,12 +699,7 @@ Ext.define('Ung.dashboard.CPULoad', {
                     fontSize: 11,
                     color: '#999'
                 },
-                limits: [{
-                    value: 2,
-                    line: {
-                        strokeStyle: '#999'
-                    }
-                }]
+                limits: []
             }, {
                 type: 'category',
                 position: 'bottom',
@@ -724,11 +724,19 @@ Ext.define('Ung.dashboard.CPULoad', {
             chart = this.down("[name=chart]"),
             data = chart.getStore().getProxy().reader.rawData;
 
-        // set the max value of the chart based on CPU count
-        if (stats.oneMinuteLoadAvg < stats.numCpus) {
-            chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
-        } else {
-            chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+        // set the limits just once after data is loaded
+        if (chart.getAxes()[0].getLimits().length === 0) {
+            chart.getAxes()[0].setLimits([{
+                value: stats.numCpus,
+                line: {
+                    strokeStyle: '#CCC'
+                }
+            }]);
+            if (stats.oneMinuteLoadAvg < stats.numCpus) {
+                chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
+            } else {
+                chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+            }
         }
 
         if (data.length > 30) {
