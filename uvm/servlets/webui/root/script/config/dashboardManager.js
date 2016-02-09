@@ -262,7 +262,7 @@ Ext.define('Webui.config.dashboardManager', {
                                     var entryId = rowEditor.cmps.entryId.getValue();
                                     var entry = Ung.dashboard.eventsMap[entryId];
                                     if(entry) {
-                                        rowEditor.cmps.defaultColumns.setValue(entry.defaultColumns);
+                                        rowEditor.cmps.displayColumns.setValue(entry.defaultColumns);
                                     }
                                 }
                             }
@@ -373,7 +373,7 @@ Ext.define('Webui.config.dashboardManager', {
             }, this.entrySelector, {
                 xtype: 'container',
                 layout: {type: "vbox"},
-                dataIndex: 'defaultColumns',
+                dataIndex: 'displayColumns',
                 items: [{
                     xtype: 'container',
                     margin: '10 0 10 0',
@@ -444,7 +444,7 @@ Ext.define('Webui.config.dashboardManager', {
                         refreshIntervalSec: this.down('[dataIndex=refreshIntervalSec]'),
                         timeframe: this.down('[dataIndex=timeframe]'),
                         entryId: this.down('[dataIndex=entryId]'),
-                        defaultColumns: this.down(('[dataIndex=defaultColumns]')),
+                        displayColumns: this.down(('[dataIndex=displayColumns]')),
                         columnsGroup: this.down(('checkboxgroup[name=columnsGroup]'))
                     };
                 }
@@ -462,15 +462,15 @@ Ext.define('Webui.config.dashboardManager', {
                 this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
                 this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
 
-                this.cmps.defaultColumns.setVisible( type == "EventEntry" );
-                this.cmps.defaultColumns.setDisabled( type != "EventEntry" );
+                this.cmps.displayColumns.setVisible( type == "EventEntry" );
+                this.cmps.displayColumns.setDisabled( type != "EventEntry" );
                 this.cmps.columnsGroup.removeAll();
                 if(type=="EventEntry" && rpc.reportsEnabled) {
                     var entryId = this.cmps.entryId.getValue();
                     var entry = Ung.dashboard.eventsMap[entryId];
                     if(entry) {
                         var tableConfig = Ung.TableConfig.getConfig(entry.table) || { columns: [] };
-                        var values_arr = this.cmps.defaultColumns.columnsValue || [];
+                        var values_arr = this.cmps.displayColumns.columnsValue || [];
                         var items = [];
                         for ( var i = 0; i < tableConfig.columns.length; i++) {
                             items.push({
