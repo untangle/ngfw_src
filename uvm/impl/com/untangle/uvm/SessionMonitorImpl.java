@@ -36,10 +36,13 @@ public class SessionMonitorImpl implements SessionMonitor
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static ExecManager execManager = null;
+    
     UvmContext uvmContext;
     
     public SessionMonitorImpl ()
     {
+        SessionMonitorImpl.execManager = UvmContextFactory.context().createExecManager();
         uvmContext = UvmContextFactory.context();
     }
 
@@ -379,7 +382,7 @@ public class SessionMonitorImpl implements SessionMonitor
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-jnettop" + " " + systemIntfName);
 
         try {
-            String output = uvmContext.execManager().execOutput(execStr);
+            String output = SessionMonitorImpl.execManager.execOutput(execStr);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
             
@@ -398,7 +401,7 @@ public class SessionMonitorImpl implements SessionMonitor
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
 
         try {
-            String output = uvmContext.execManager().execOutput(execStr);
+            String output = SessionMonitorImpl.execManager.execOutput(execStr);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
