@@ -37,7 +37,7 @@ Ext.define("Ung.window.ReportEditor", {
                 scope: this
             }];
         } else {
-            this.tbar = [{
+            this.bbar = ['->', {
                 xtype: 'button',
                 text: i18n._('Save as New Report'),
                 iconCls: 'save-icon',
@@ -61,7 +61,23 @@ Ext.define("Ung.window.ReportEditor", {
                     }
                 },
                 scope: this
-            }];
+            },'-',{
+                name: "Cancel",
+                id: this.getId() + "_cancelBtn",
+                iconCls: 'cancel-icon',
+                text: i18n._('Cancel'),
+                handler: Ext.bind(function() {
+                    this.cancelAction();
+                }, this)
+            },'-',{
+                name: "View Report",
+                id: this.getId() + "_doneBtn",
+                iconCls: 'apply-icon',
+                text: i18n._('View Report'),
+                handler: Ext.bind(function() {
+                    Ext.defer(this.updateAction,1, this);
+                }, this)
+            },'-'];
         }
 
         var categoryStore = Ext.create('Ext.data.Store', {
