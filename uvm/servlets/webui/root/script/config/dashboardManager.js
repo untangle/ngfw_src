@@ -88,76 +88,20 @@ Ext.define('Webui.config.dashboardManager', {
             handler({javaClass:"java.util.LinkedList", list: widgets}, exception);
         }, this));
     },
-    buildEntrySelector: function() {
-        this.entrySelector = Ext.create("Ext.container",{
-            dataIndex: "entryId",
-            getValue: function() {
-                return "111";
-
-            },
-            setValue: function(value) {
-                this.entryId = value;
-            },
-            layout: "border",
-            height: 500,
-            width: '100%',
-            items: [{
-                xtype : 'treepanel',
-                region : 'west',
-                autoScroll : true,
-                rootVisible : false,
-                title : i18n._('Reports'),
-                enableDrag : false,
-                width : 220,
-                minWidth : 65,
-                maxWidth : 350,
-                split : true,
-                store : Ext.create('Ext.data.TreeStore', {
-                    root : {
-                        expanded : true,
-                        children : []
+    resetSettingsToDefault: function() {
+        Ext.MessageBox.confirm(i18n._("Warning"),
+                i18n._("This will overwrite the current dashboard settings with the defaults.") + "<br/><br/>" +
+                i18n._("Do you want to continue?"),
+                Ext.bind(function(btn, text) {
+                    if (btn == 'yes') {
+                        rpc.dashboardManager.resetSettingsToDefault(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.needDashboardReload = true;
+                            this.gridDashboardWidgets.reload();
+                        }, this));
                     }
-                }),
-                selModel : {
-                    selType : 'rowmodel',
-                    listeners : {
-                        select : Ext.bind(function(rowModel, record, rowIndex, eOpts) {
-                            var category = record.get("category");
-                        }, this)
-                    }
-                }
-            }, {
-                name: 'entriesGrid',
-                xtype: 'grid',
-                header: false,
-                border: false,
-                margin: '0 0 10 0',
-                hideHeaders: true,
-                store:  Ext.create('Ext.data.Store', {
-                    fields: ["category", "title", "description"],
-                    data: []
-                }),
-                reserveScrollbar: true,
-                columns: [{
-                    dataIndex: 'title',
-                    flex: 1,
-                    renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
-                        var description = record.get("description");
-                        if(description) {
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._(description) ) + '"';
-                        }
-                        return i18n._(value);
-                    }
-                }],
-                selModel: {
-                    selType: 'rowmodel',
-                    listeners: {
-                        select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
-                        }, this)
-                    }
-                }
-            }]
-        });
+                }, this));
+        
     },
     // Dashboard Widgets Panel
     buildPanelDashboardWidgets: function() {
@@ -168,6 +112,14 @@ Ext.define('Webui.config.dashboardManager', {
             addAtTop: false,
             header: false,
             flex: 1,
+            bbar: [{
+                xtype: 'button',
+                text: i18n._('Reset dashboard to defaults'),
+                iconCls: "reboot-icon",
+                handler: Ext.bind(function() {
+                    this.resetSettingsToDefault();
+                }, this)
+            }],
             dataFn: Ext.bind(this.getDashboardWidgets, this),
             recordJavaClass: "com.untangle.uvm.DashboardWidgetSettings",
             emptyRow: {
