@@ -5,7 +5,8 @@ package com.untangle.node.virus_blocker;
 
 import java.io.File;
 import java.util.Date;
-
+import com.untangle.uvm.vnet.NodeSession;
+ 
 import com.untangle.uvm.node.Scanner;
 
 public interface VirusScanner extends Scanner
@@ -18,7 +19,7 @@ public interface VirusScanner extends Scanner
      * @param msgFile a <code>File</code> value
      * @return a <code>VirusScannerResult</code> value
      */
-    VirusScannerResult scanFile(File msgFile, String msgHash);
+    VirusScannerResult scanFile(File msgFile, NodeSession session);
 
     Date getLastSignatureUpdate();
 }

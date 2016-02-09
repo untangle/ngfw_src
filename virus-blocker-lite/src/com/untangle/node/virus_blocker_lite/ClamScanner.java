@@ -14,6 +14,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScanner;
 import com.untangle.node.virus_blocker.VirusScannerResult;
 import com.untangle.node.clam.ClamScannerClientLauncher;
+import com.untangle.uvm.vnet.NodeSession;
 import org.apache.log4j.Logger;
 
 public class ClamScanner implements VirusScanner
@@ -33,7 +34,7 @@ public class ClamScanner implements VirusScanner
         return "virus_blocker_lite";
     }
 
-    public VirusScannerResult scanFile(File scanfile, String filehash)
+    public VirusScannerResult scanFile(File scanfile, NodeSession session)
     {
         ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
         return scan.doScan(timeout);

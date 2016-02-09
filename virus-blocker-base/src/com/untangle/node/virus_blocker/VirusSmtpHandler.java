@@ -59,10 +59,9 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
     private final WrappedMessageGenerator generator;
 
-    protected class VirusSmtpStatus
+    protected class VirusSmtpStatus extends VirusBlockerState
     {
         private File diskFile = null;
-        private String fileHash = null;
     }
 
     public VirusSmtpHandler(VirusBlockerBaseApp node)
@@ -329,7 +328,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
         // Call VirusScanner
         try {
-            VirusScannerResult result = this.node.getScanner().scanFile(status.diskFile, status.fileHash);
+            VirusScannerResult result = this.node.getScanner().scanFile(status.diskFile, session);
             if (result == null || result == VirusScannerResult.ERROR) {
                 this.logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
                 return null;

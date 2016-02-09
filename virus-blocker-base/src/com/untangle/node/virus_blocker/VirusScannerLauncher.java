@@ -8,21 +8,22 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.vnet.NodeSession;
 
 abstract public class VirusScannerLauncher implements Runnable
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
     protected String scanfilePath = null;
-    protected String scanfileHash = null;
+    protected NodeSession nodeSession = null;
 
     // This must be volatile since they are written and read by different threads.  bug948
     protected volatile VirusScannerResult result = null;
 
-    protected VirusScannerLauncher(File scanfile, String filehash)
+    protected VirusScannerLauncher(File scanfile, NodeSession session)
     {
         scanfilePath = scanfile.getAbsolutePath();
-        scanfileHash = filehash;
+	nodeSession = session;
     }
 
     /**

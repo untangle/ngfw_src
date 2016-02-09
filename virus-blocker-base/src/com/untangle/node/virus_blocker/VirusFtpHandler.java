@@ -50,10 +50,9 @@ class VirusFtpHandler extends FtpEventHandler
 
     private final Logger logger = Logger.getLogger(FtpEventHandler.class);
 
-    private class VirusFtpState
+    private class VirusFtpState extends VirusBlockerState
     {
         private File diskFile = null;
-        private String fileHash = null;
         private FileInputStream inStream = null;
         private FileOutputStream outStream = null;
         private FileChannel inChannel = null;
@@ -255,7 +254,7 @@ class VirusFtpHandler extends FtpEventHandler
             if( ignoredHost( session.sessionEvent().getSServerAddr() ) ){
                 result = VirusScannerResult.CLEAN;
             } else {
-                result = node.getScanner().scanFile( state.diskFile, state.fileHash );                
+                result = node.getScanner().scanFile( state.diskFile, session );                
             }
         } catch (Exception exn) {
             // Should never happen

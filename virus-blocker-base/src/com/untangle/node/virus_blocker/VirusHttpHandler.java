@@ -72,17 +72,14 @@ class VirusHttpHandler extends HttpEventHandler
 
     private VirusUrlCache<VirusUrlCacheKey,VirusUrlCacheEntry> urlCache = new VirusUrlCache<VirusUrlCacheKey,VirusUrlCacheEntry>();
     
-    protected class VirusHttpState
+    protected class VirusHttpState extends VirusBlockerState
     {
         private boolean scan = false;
         private long bufferingStart;
         private int outstanding;
         private int totalSize;
         private String filenameContentDisposition = null; /* The content disposition filename extension */
-        private String host = null;
-        private String uri = null;
         private File diskFile = null;
-        private String fileHash = null;
         private FileInputStream inStream = null;
         private FileOutputStream outStream = null;
         private FileChannel inChannel = null;
@@ -255,7 +252,7 @@ class VirusHttpHandler extends HttpEventHandler
                 logger.debug("Scanning the file: " + state.diskFile);
             }
             node.incrementScanCount();
-            result = node.getScanner().scanFile(state.diskFile, state.fileHash);
+            result = node.getScanner().scanFile(state.diskFile, session);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
