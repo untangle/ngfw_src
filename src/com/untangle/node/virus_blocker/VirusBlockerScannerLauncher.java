@@ -16,6 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScannerLauncher;
 import com.untangle.node.virus_blocker.VirusScannerResult;
+import com.untangle.uvm.vnet.NodeSession;
 
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
@@ -45,11 +46,11 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     protected class CloudScanner extends Thread
     {
         CloudResult cloudResult = null;
-        String fileHash = null;
+        VirusBlockerState virusState = null;
 
-        public CloudScanner(String fileHash)
+        public CloudScanner(VirusBlockerState virusState)
         {
-            this.fileHash = fileHash;
+            this.virusState = virusState;
         }
 
         protected synchronized CloudResult getCloudResult()
@@ -66,11 +67,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         {
             StringBuilder builder = new StringBuilder(256);
             CloudResult cloudResult = new CloudResult();
-            String body = "[\n\"" + fileHash + "\"\n]\n";
+
+            String body = "[\n\"" + virusState.fileHash + "\"\n]\n";
 
             logger.debug("CloudScanner thread has started for: " + body);
 
-            // uncomment this string to force cloud detection for testing
+            // ----- uncomment this string to force cloud detection for testing -----
             // String body = "[\n\"" + EICAR_TEST_MD5 + "\"\n]\n";
 
             try {
@@ -157,30 +159,38 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
     protected class CloudFeedback extends Thread
     {
-        String fileHash = null;
+        VirusBlockerState virusState = null;
         String scanResult = null;
         long fileLength = 0;
 
-        public CloudFeedback(String fileHash, String scanResult, long fileLength)
+        public CloudFeedback(VirusBlockerState virusState, String scanResult, long fileLength)
         {
-            this.fileHash = fileHash;
+            this.virusState = virusState;
             this.scanResult = scanResult;
-            this.fileLength = 0;
+            this.fileLength = fileLength;
         }
 
         public void run()
         {
-            String body = "[{\"Length\":" + fileLength + "}]\n";
+            StringBuilder feedback = new StringBuilder(256);
 
-            logger.debug("CloudFeedback thread has started for: " + fileHash);
+            feedback.append("[");
+            feedback.append("{Length:" + fileLength + "}");
+            feedback.append(",{Hash:\"" + virusState.fileHash + "\"}");
+            feedback.append(",{BDresult:\"" + scanResult + "\"}");
+            if (virusState.host != null) feedback.append(",{Host:\"" + virusState.host + "\"}");
+            if (virusState.uri != null) feedback.append(",{URI:\"" + virusState.uri + "\"}");
+            feedback.append("]");
+      
+            logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
             try {
-                String target = (CLOUD_FEEDBACK_URL + "?hash=" + fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW" );
+                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW" );
                 URL myurl = new URL(target);
                 HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
                 mycon.setRequestMethod("POST");
 
-                mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
+                mycon.setRequestProperty("Content-length", String.valueOf(feedback.length()));
                 mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
                 mycon.setRequestProperty("UID", UvmContextFactory.context().getServerUID());
                 mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
@@ -188,7 +198,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 mycon.setDoInput(true);
 
                 DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
-                output.writeBytes(body);
+                output.writeBytes(feedback.toString());
                 output.close();
 
                 mycon.disconnect();
@@ -209,9 +219,9 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     /**
      * Create a Launcher for the give file
      */
-    public VirusBlockerScannerLauncher(File scanfile, String filehash)
+    public VirusBlockerScannerLauncher(File scanfile, NodeSession session)
     {
-        super(scanfile, filehash);
+        super(scanfile, session);
     }
 
     /**
@@ -226,7 +236,9 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         CloudResult cloudResult = null;
         String virusName = null;
 
-        logger.debug("Scanning file: " + scanfilePath + " MD5: " + scanfileHash);
+        VirusBlockerState virusState = (VirusBlockerState) nodeSession.attachment();
+
+        logger.debug("Scanning file: " + scanfilePath + " MD5: " + virusState.fileHash);
 
         try {
             // Bug #9796 - to avoid large memory usage don't scan large files // XXX
@@ -249,8 +261,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         // if we have a good MD5 hash then spin up the cloud checker
-        if (scanfileHash != null) {
-            cloudScanner = new CloudScanner(scanfileHash);
+        if (virusState.fileHash != null) {
+            cloudScanner = new CloudScanner(virusState);
             cloudScanner.start();
         }
 
@@ -339,11 +351,11 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.CLEAN);
             break;
         case 222: // known infection
-            feedback = new CloudFeedback(scanfileHash, tokens[2], scanFileLength);
+            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 223: // likely infection
-            feedback = new CloudFeedback(scanfileHash, tokens[2], scanFileLength);
+            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 225: // password protected file

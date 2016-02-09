@@ -15,6 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScanner;
 import com.untangle.node.virus_blocker.VirusScannerResult;
 import com.untangle.uvm.node.License;
+import com.untangle.uvm.vnet.NodeSession;
 
 public class VirusBlockerScanner implements VirusScanner
 {
@@ -84,14 +85,14 @@ public class VirusBlockerScanner implements VirusScanner
         return (new Date(timeSeconds * 1000l));
     }
 
-    public VirusScannerResult scanFile(File scanfile, String filehash)
+    public VirusScannerResult scanFile(File scanfile, NodeSession session)
     {
         if (!isLicenseValid()) {
             logger.warn("VirusBlocker scan circumvented: license expired.");
             return VirusScannerResult.ERROR;
         }
 
-        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, filehash);
+        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, session);
         return scan.doScan(VirusBlockerScanner.timeout);
     }
 
