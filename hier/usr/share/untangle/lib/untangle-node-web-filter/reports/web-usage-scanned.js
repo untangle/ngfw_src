@@ -2,7 +2,7 @@
     "uniqueId": "web-filter-y3kSEfxoTe",
     "category": "Web Filter",
     "description": "The amount of total, flagged, and blocked web requests over time.",
-    "displayOrder": 101,
+    "displayOrder": 102,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
