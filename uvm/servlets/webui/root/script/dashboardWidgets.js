@@ -81,7 +81,8 @@ Ext.define('Ung.dashboard', {
             type = widget.type;
             if (type !== "ReportEntry" && type !== "EventEntry") {
                 this.widgetsList.push(Ext.create('Ung.dashboard.' + type, {
-                    widgetType: type
+                    widgetType: type,
+                    entryId: widget.entryId
                 }));
             } else {
                 if (rpc.reportsEnabled) {
@@ -761,7 +762,7 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
     hasStats: true,
     items: [],
     initComponent: function () {
-        this.title = i18n._("Interface Load");
+        this.title = i18n._("Interface Load") +" | "+(Ung.dashboard.Util.getInterfaceMap()[this.entryId] || this.entryId);
         this.items.push({
             xtype: 'cartesian',
             name: 'chart',
@@ -857,12 +858,11 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
         if (data.length > 30) {
             data.shift();
         }
-        var interfaceNum = 1; /* FIXME should be pulled from widget settings */
         try {
             data.push({
                 time: d.getTime(),
-                rx: Math.round(stats['interface_'+interfaceNum+'_rxBps']/1024),
-                tx: Math.round(stats['interface_'+interfaceNum+'_txBps']/1024)
+                rx: Math.round(stats['interface_'+this.entryId+'_rxBps']/1024),
+                tx: Math.round(stats['interface_'+this.entryId+'_txBps']/1024)
             });
             chart.store.loadData(data);
         } catch (err) {}
@@ -1042,6 +1042,28 @@ Ext.define('Ung.dashboard.EventEntry', {
 
 Ext.define('Ung.dashboard.Util', {
     singleton: true,
+    buildInterfaces: function() {
+        if(!this.interfaces) {
+            this.interfaces = [];
+            this.interfaceMap = {};
+            var networkSettings = Ung.Main.getNetworkSettings();
+            for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+                var intf = networkSettings.interfaces.list[c];
+                var name = intf.name;
+                var key = intf.interfaceId;
+                this.interfaces.push( [ key, name ] );
+                this.interfaceMap[key] = name;
+            }
+        }
+    },
+    getInterfaces: function() {
+        this.buildInterfaces();
+        return this.interfaces;
+    },
+    getInterfaceMap: function() {
+        this.buildInterfaces();
+        return this.interfaceMap;
+    },
     createTimeChart: function (entry) {
         if (!entry.timeDataColumns) {
             entry.timeDataColumns = [];

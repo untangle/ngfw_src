@@ -47,10 +47,10 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('CPU Load'),
             displayMode: 'small',
             singleInstance: true
-        // },{
-        //     name: 'InterfaceLoad',
-        //     title: i18n._('Interface Load'),
-        //     displayMode: 'small'
+//         },{
+//             name: 'InterfaceLoad',
+//             title: i18n._('Interface Load'),
+//             displayMode: 'small'
         },{
             name: 'ReportEntry',
             title: i18n._('Report'),
@@ -170,7 +170,8 @@ Ext.define('Webui.config.dashboardManager', {
                         return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
                     }
                     if(value == "InterfaceLoad") {
-                        //FIXME
+                        var interfaceVale = Ung.dashboard.Util.getInterfaceMap()[record.get("entryId")] || record.get("entryId");
+                        return "<b>"+i18n._("Interface Load")+":</b> " + interfaceVale;
                     }
                     return "";
                 }, this)
@@ -235,9 +236,6 @@ Ext.define('Webui.config.dashboardManager', {
             }, {
                 name: 'eventEntryId',
                 fieldLabel: i18n._("Events Id")
-            }, {
-                name: 'interfaceLoadInterfaceId',
-                fieldLabel: i18n._("Interface")
             }];
         } else {
             this.entrySelector.defaults = {
@@ -299,13 +297,29 @@ Ext.define('Webui.config.dashboardManager', {
                     data: Ung.dashboard.eventEntries,
                     sorters: ['category', 'title']
                 })
-            }, {
-                name: 'interfaceLoadInterfaceId',
-                fieldLabel: i18n._("Select Interface"),
-                emptyText: i18n._("[interface ID]")
-                //FIXME should be a dropdown selector of current interfaces
             }];
         }
+        this.entrySelector.items.push({
+            xtype: 'combo',
+            name: 'interfaceLoadInterfaceId',
+            fieldLabel: i18n._("Select Interface"),
+            emptyText: i18n._("[interface ID]"),
+            allowBlank: false,
+            forceSelection: true,
+            anyMatch: true,
+            valueField: "id",
+            displayField: "name",
+            queryMode: 'local',
+            labelWidth: 150,
+            width: 400,
+            tpl: null,
+            listConfig: null,
+            store: Ext.create('Ext.data.ArrayStore', {
+                fields: ["id", "name"],
+                data: Ung.dashboard.Util.getInterfaces()
+            })
+        });
+        
         this.gridDashboardWidgets.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             rowEditorLabelWidth: 150,
             inputLines: [{
@@ -467,13 +481,13 @@ Ext.define('Webui.config.dashboardManager', {
                 this.cmps.refreshIntervalSec.setVisible(widgetConfig.hasRefreshInterval);
                 this.cmps.refreshIntervalSec.setDisabled(!widgetConfig.hasRefreshInterval);
 
-                this.cmps.timeframe.setVisible( type == "ReportEntry" || type == "EventEntry" );
-                this.cmps.timeframe.setDisabled( type != "ReportEntry" && type != "EventEntry" );
+                this.cmps.timeframe.setVisible( type == "ReportEntry" || type == "EventEntry");
+                this.cmps.timeframe.setDisabled( type != "ReportEntry" && type != "EventEntry");
 
 
                 this.cmps.entryId.setType(type);
-                this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry" );
-                this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" );
+                this.cmps.entryId.setVisible( type == "ReportEntry" || type == "EventEntry"  || type == "InterfaceLoad");
+                this.cmps.entryId.setDisabled( type != "ReportEntry" && type != "EventEntry" && type != "InterfaceLoad");
 
                 this.cmps.displayColumns.setVisible( type == "EventEntry" );
                 this.cmps.displayColumns.setDisabled( type != "EventEntry" );
