@@ -660,13 +660,13 @@ Ext.define('Ung.dashboard.Network', {
 });
 
 /* CPULoad Widget */
-var cpuDataStorage = []; // to keep cpu data across dashboard reload
 Ext.define('Ung.dashboard.CPULoad', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
     layout: 'fit',
     hasStats: true,
+    cpuDataStorage: [], // used to keep data after dashboard reloads
     items: [{
         xtype: 'cartesian',
         name: 'chart',
@@ -728,7 +728,7 @@ Ext.define('Ung.dashboard.CPULoad', {
     updateStats: function (stats) {
         var d = new Date(),
             chart = this.down("[name=chart]"),
-            data = cpuDataStorage;
+            data = this.cpuDataStorage;
 
         // set the limits just once after data is loaded
         if (chart.getAxes()[0].getLimits().length === 0) {
@@ -766,8 +766,8 @@ Ext.define('Ung.dashboard.CPULoad', {
             minutes1: stats.oneMinuteLoadAvg
         });
 
-        cpuDataStorage = data;
-        chart.store.loadData(cpuDataStorage);
+        this.cpuDataStorage = data;
+        chart.store.loadData(this.cpuDataStorage);
     }
 });
 
