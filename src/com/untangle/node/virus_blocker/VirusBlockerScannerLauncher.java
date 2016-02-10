@@ -68,12 +68,11 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             StringBuilder builder = new StringBuilder(256);
             CloudResult cloudResult = new CloudResult();
 
+            // ----- uncomment this string to force cloud detection for testing -----
+            // String body = "[\n\"" + EICAR_TEST_MD5 + "\"\n]\n";
             String body = "[\n\"" + virusState.fileHash + "\"\n]\n";
 
             logger.debug("CloudScanner thread has started for: " + body);
-
-            // ----- uncomment this string to force cloud detection for testing -----
-            // String body = "[\n\"" + EICAR_TEST_MD5 + "\"\n]\n";
 
             try {
                 URL myurl = new URL(CLOUD_SCANNER_URL);
@@ -338,7 +337,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         // if the cloud says it is infected we set the result and return now
-        if ((cloudResult != null) && (cloudResult.itemCategory != null)) {
+        if ((cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
             setResult(new VirusScannerResult(false, cloudResult.itemCategory));
             return;
         }
