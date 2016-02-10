@@ -660,70 +660,75 @@ Ext.define('Ung.dashboard.Network', {
 });
 
 /* CPULoad Widget */
+var cpuDataStorage = []; // to keep cpu data across dashboard reload
 Ext.define('Ung.dashboard.CPULoad', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
     height: 190,
     layout: 'fit',
     hasStats: true,
-    items: [],
+    items: [{
+        xtype: 'cartesian',
+        name: 'chart',
+        border: false,
+        animation: false,
+        width: '100%',
+        height: '100%',
+        store: {
+            fields: ['minutes1', 'time'],
+            data: []
+        },
+        axes: [{
+            type: 'numeric',
+            position: 'left',
+            grid: {
+                lineDash: [3, 3],
+                odd: {
+                    opacity: 0.5,
+                    fill: '#EEE'
+                }
+            },
+            minimum: 0,
+            fields: ['minutes1'],
+            style : {
+                strokeStyle: '#CCC'
+            },
+            label: {
+                fontSize: 11,
+                color: '#999'
+            },
+            limits: []
+        }, {
+            type: 'category',
+            position: 'bottom',
+            //hidden: true,
+            fields: ['time'],
+            style : {
+                strokeStyle: '#CCC'
+            },
+            minorTickSteps: 0.5,
+            renderer : Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
+        }],
+        series: [{
+            type: 'area',
+            xField: 'time',
+            yField: ['minutes1'],
+            style: {
+                stroke: '#666666',
+                lineWidth: 0,
+                fillOpacity: 0.8
+            }
+        }]
+    }],
     initComponent: function () {
         this.title = i18n._("CPU Load");
         this.addCls('nopadding');
-        this.items.push({
-            xtype: 'cartesian',
-            name: 'chart',
-            border: false,
-            animation: false,
-            width: '100%',
-            height: '100%',
-            store: {
-                fields: ['minutes1', 'time'],
-                data: []
-            },
-            axes: [{
-                type: 'numeric',
-                position: 'left',
-                grid: {
-                    lineDash: [3, 3],
-                    odd: {
-                        opacity: 0.5,
-                        fill: '#EEE'
-                    }
-                },
-                minimum: 0,
-                fields: ['minutes1'],
-                style : {
-                    strokeStyle: '#CCC'
-                },
-                label: {
-                    fontSize: 11,
-                    color: '#999'
-                },
-                limits: []
-            }, {
-                type: 'category',
-                position: 'bottom',
-                hidden: true,
-                fields: ['time']
-            }],
-            series: [{
-                type: 'area',
-                xField: 'time',
-                yField: ['minutes1'],
-                style: {
-                    stroke: '#666666',
-                    lineWidth: 0,
-                    fillOpacity: 0.8
-                }
-            }]
-        });
         this.callParent(arguments);
     },
     updateStats: function (stats) {
         var d = new Date(),
             chart = this.down("[name=chart]"),
-            data = chart.getStore().getProxy().reader.rawData;
+            data = cpuDataStorage;
 
         // set the limits just once after data is loaded
         if (chart.getAxes()[0].getLimits().length === 0) {
@@ -733,23 +738,36 @@ Ext.define('Ung.dashboard.CPULoad', {
                     strokeStyle: '#CCC'
                 }
             }]);
-            if (stats.oneMinuteLoadAvg < stats.numCpus) {
-                chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
-            } else {
-                chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+            // initial fill with 0 values
+            if (data.length === 0) {
+                for (i = 0; i < 30; i += 1) {
+                    data.push({
+                        time: i,
+                        minutes1: -1
+                    });
+                }
             }
         }
+
+        // set the maximum axis value
+        if (stats.oneMinuteLoadAvg < stats.numCpus) {
+            chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
+        } else {
+            chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+        }
+
 
         if (data.length > 30) {
             data.shift();
         }
+
         data.push({
             time: d.getTime(),
-            minutes1: stats.oneMinuteLoadAvg,
-            minutes5: stats.fiveMinuteLoadAvg,
-            minutes15: stats.fifteenMinuteLoadAvg
+            minutes1: stats.oneMinuteLoadAvg
         });
-        chart.store.loadData(data);
+
+        cpuDataStorage = data;
+        chart.store.loadData(cpuDataStorage);
     }
 });
 
