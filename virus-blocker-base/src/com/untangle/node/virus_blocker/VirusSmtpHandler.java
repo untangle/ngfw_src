@@ -322,6 +322,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         VirusSmtpStatus status = null;
         try {
             status = partToFile(session, part);
+            session.attach(status);
         } catch (Exception ex) {
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
