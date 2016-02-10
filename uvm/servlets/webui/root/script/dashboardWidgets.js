@@ -726,7 +726,7 @@ Ext.define('Ung.dashboard.CPULoad', {
         this.callParent(arguments);
     },
     updateStats: function (stats) {
-        var d = new Date(),
+        var d = new Date(), maxVal = 0,
             chart = this.down("[name=chart]"),
             data = this.cpuDataStorage;
 
@@ -750,12 +750,13 @@ Ext.define('Ung.dashboard.CPULoad', {
         }
 
         // set the maximum axis value
-        if (stats.oneMinuteLoadAvg < stats.numCpus) {
-            chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
-        } else {
-            chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
+        for (i = 0; i < data.length; i += 1) {
+            if (data[i].minutes1 > maxVal) {
+                maxVal = data[i].minutes1;
+            }
         }
 
+        chart.getAxes()[0].setMaximum(maxVal < stats.numCpus ? (stats.numCpus + 0.5) : (maxVal + 0.5));
 
         if (data.length > 30) {
             data.shift();
