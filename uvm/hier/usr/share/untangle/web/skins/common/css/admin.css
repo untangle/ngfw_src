@@ -796,3 +796,30 @@ a.forgot-password:hover {
     font-family: 'PT Sans', sans-serif;
     font-size: 13px;
 }
+
+.widget .x-legend {
+    padding: 0 !important;
+}
+
+.widget .x-legend-container {
+    border: 0;
+    margin-bottom: 5px;
+}
+
+.widget .x-legend-item {
+    padding: 3px 7px 3px 20px;
+    border: none !important;
+    cursor: pointer;
+    font-family: 'PT Sans', sans-serif;
+}
+.widget .x-legend-item-marker {
+    top: 5px;
+    left: 5px;
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+}
+.widget .x-legend-item.x-view-item-focused {
+    outline: none !important;
+    border: none !important;
+}

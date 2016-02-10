@@ -1189,18 +1189,10 @@ Ext.define('Ung.dashboard.Util', {
                 type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
                 fields: 'time_trunc',
                 position: 'bottom',
-                hidden: true,
                 style : {
                     strokeStyle: '#CCC'
                 },
-                label: {
-                    fontSize: 11,
-                    color: '#999',
-                    x: 0,
-                    rotate: {
-                        degrees: -90
-                    }
-                }
+                renderer : Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
             }]
         };
 
