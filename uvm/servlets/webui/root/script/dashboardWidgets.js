@@ -5,6 +5,7 @@ Ext.define('Ung.dashboard', {
     singleton: true,
     widgetsList: [],
     widgetsGrid: [],
+    reportEntriesModified: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;

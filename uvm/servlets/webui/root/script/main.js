@@ -204,6 +204,11 @@ Ext.define("Ung.Main", {
                     }],
                     listeners: {
                         'activate': function(container) {
+                            if (Ung.dashboard.reportEntriesModified) {
+                                Ung.dashboard.resetReports();
+                                Ung.dashboard.loadDashboard();
+                                Ung.dashboard.reportEntriesModified = false;
+                            }
                             Ung.dashboard.Queue.resume();
                         },
                         "deactivate": function(container) {

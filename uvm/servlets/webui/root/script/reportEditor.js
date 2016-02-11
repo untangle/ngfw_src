@@ -52,11 +52,12 @@ Ext.define("Ung.window.ReportEditor", {
                         this.record.set("readOnly", false);
                         this.record.set("uniqueId", this.getUniqueId());
                         var entry = this.record.getData();
-                        
+
                         Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.closeWindow();
                             this.parentCmp.loadReportEntries(entry.uniqueId);
+                            Ung.dashboard.reportEntriesModified = true;
                         }, this), entry);
                     }
                 },
@@ -110,14 +111,14 @@ Ext.define("Ung.window.ReportEditor", {
             }
             tablesStore.loadData(tables);
         }, this));
-        
+
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
             fields: ["dataIndex", "header"],
             data: []
         });
         var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
-        
+
         var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
             name: 'Sql Conditions',
             height: 180,
@@ -132,7 +133,7 @@ Ext.define("Ung.window.ReportEditor", {
                 "column": "",
                 "operator": "=",
                 "value": ""
-                
+
             },
             fields: ["column", "value", "operator"],
             columns: [{
@@ -207,7 +208,7 @@ Ext.define("Ung.window.ReportEditor", {
                 return val.length == 0 ? null: val;
             }
         });
-        
+
         this.inputLines = [{
             xtype: 'combo',
             name: 'Category',
@@ -338,7 +339,7 @@ Ext.define("Ung.window.ReportEditor", {
                         }
                     }
                 }
-                
+
                 return textColumns.length==0 ? null : textColumns;
             },
             setReadOnly: function(val) {
@@ -443,7 +444,7 @@ Ext.define("Ung.window.ReportEditor", {
                         }
                     }
                 }
-                
+
                 return timeDataColumns.length==0 ? null : timeDataColumns;
             },
             setReadOnly: function(val) {
@@ -516,7 +517,7 @@ Ext.define("Ung.window.ReportEditor", {
                         }
                     }
                 }
-                
+
                 return colors.length==0 ? null : colors;
             },
             setReadOnly: function(val) {
@@ -585,7 +586,7 @@ Ext.define("Ung.window.ReportEditor", {
             };
         }
         var type = this.cmps.typeCmp.getValue();
-        
+
         this.cmps.textColumns.setVisible(type=="TEXT");
         this.cmps.textColumns.setDisabled(type!="TEXT");
 
