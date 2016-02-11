@@ -1184,7 +1184,8 @@ Ext.define('Ung.dashboard.Util', {
                 label: {
                     fontSize: 11,
                     color: '#999'
-                }
+                },
+                title: entry.units
             }, {
                 type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
                 fields: 'time_trunc',
