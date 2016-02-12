@@ -262,6 +262,11 @@ div.x-column-header-inner {
     font-weight: bold;
 }
 
+/* We use wider icons for OK/Cancel/Apply */
+.x-btn-icon-left > .x-btn-icon-el-default-toolbar-small, .x-btn-icon-right > .x-btn-icon-el-default-toolbar-small {
+    width: 22px;
+}
+
 textarea.ua-test-output {
     font-family: Courier, monospace;
     padding: 5px 5px 0px 5px;
@@ -305,9 +310,15 @@ a.link,a.link:visited {
     color: #B2B6C0;
 }
 
-.menu-button.x-btn.x-btn-pressed,.menu-button.x-btn.x-btn-over {
+.menu-button.x-btn.x-btn-pressed {
     border-color: #67bd4a;
     background-color: #67bd4a;
+    background-image: none;
+}
+
+.menu-button.x-btn.x-btn-over {
+    border-color: #315e22;
+    background-color: #315e22;
     background-image: none;
 }
 
