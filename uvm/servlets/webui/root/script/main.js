@@ -135,7 +135,7 @@ Ext.define("Ung.Main", {
                     items: [{
                         text: i18n._('Dashboard'),
                         iconCls: 'icon-dashboard',
-                        pressed: true,
+                        pressed: rpc.isRegistered,
                         handler: function() {
                             this.panelCenter.setActiveItem("dashboard");
                         },
@@ -143,6 +143,7 @@ Ext.define("Ung.Main", {
                     }, {
                         text: i18n._('Apps'),
                         iconCls: 'icon-apps',
+                        pressed: !rpc.isRegistered,
                         handler: function() {
                             this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
                         },
@@ -171,7 +172,7 @@ Ext.define("Ung.Main", {
                 xtype: 'container',
                 cls: 'main-panel',
                 layout: 'card',
-                activeItem: 'dashboard',
+                activeItem: rpc.isRegistered ? 'dashboard' : 'apps',
                 items: [{
                     xtype: 'container',
                     itemId: 'dashboard',
