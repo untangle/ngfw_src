@@ -678,7 +678,7 @@ a.forgot-password:hover {
 /* custom widget loading */
 .widget-loader {
     z-index: 999;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .widget-loader .x-mask-msg-text {
@@ -779,8 +779,8 @@ a.forgot-password:hover {
 }
 
 .widget.loading {
-    box-shadow: 0 0 10px rgba(103,189,74,0.8);
-    border-color: rgba(103,189,74,1);
+    box-shadow: 0 0 5px rgba(103,189,74,0.3);
+    border-color: rgba(103,189,74,0.5);
 }
 
 .widget.loading .x-tool-refresh {
