@@ -310,15 +310,15 @@ a.link,a.link:visited {
     color: #B2B6C0;
 }
 
-.menu-button.x-btn.x-btn-pressed {
-    border-color: #67bd4a;
-    background-color: #67bd4a;
-    background-image: none;
-}
-
 .menu-button.x-btn.x-btn-over {
     border-color: #315e22;
     background-color: #315e22;
+    background-image: none;
+}
+
+.menu-button.x-btn.x-btn-pressed {
+    border-color: #67bd4a;
+    background-color: #67bd4a;
     background-image: none;
 }
 
