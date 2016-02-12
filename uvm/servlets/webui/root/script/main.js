@@ -1359,13 +1359,23 @@ Ext.define("Ung.Main", {
                         { displayName: "Reports", name: 'untangle-node-reports'},
                         { displayName: "Policy Manager", name: 'untangle-node-policy-manager'},
                         { displayName: "Directory Connector", name: 'untangle-node-directory-connector'},
-                        { displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
-                        { displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},
+                        //{ displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
+                        //{ displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},
                         { displayName: "IPsec VPN", name: 'untangle-node-ipsec-vpn'},
                         { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
                         { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
                         { displayName: "Branding Manager", name: 'untangle-node-branding-manager'},
                         { displayName: "Live Support", name: 'untangle-node-live-support'}];
+
+                    // only install WAN failover/balancer apps if more than 2 interfaces
+                    try {
+                        var networkSettings = Ung.Main.getNetworkSettings();
+                        if ( networkSettings.interfaces.list.length > 2 ) {
+                            apps.push( { displayName: "WAN Failover", name: 'untangle-node-wan-failover'} );
+                            apps.push( { displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'} );
+                        }
+                    }
+                    catch (e) {}
 
                     // only install this on 1gig+ machines
                     if ( Ung.Main.totalMemoryMb > 900 ) {
@@ -1376,8 +1386,11 @@ Ext.define("Ung.Main", {
                     var fn = function( appsToInstall ) {
                         // if there are no more apps left to install we are done
                         if ( appsToInstall.length == 0 ) {
-                            Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"), function(){
-                                Ung.Main.panelCenter.setActiveItem("installApps");
+                            Ext.MessageBox.alert(i18n._("Installation Complete!"),
+                                                 i18n._("The recommended applications have successfully been installed.")  + "<br/><br/>" + 
+                                                 i18n._("Thank you for using Untangle!"),
+                                                 function(){
+                                Ung.Main.panelCenter.setActiveItem("apps"); // go to the apps tab
                             });
                             return;
                         }
@@ -1399,6 +1412,7 @@ Ext.define("Ung.Main", {
                 text: i18n._("No, I will install the apps manually."),
                 handler: Ext.bind(function() {
                     popup.close();
+                    Ung.Main.panelCenter.setActiveItem("installApps"); // go to the install apps tab
                 }, this)
             }]
         });
