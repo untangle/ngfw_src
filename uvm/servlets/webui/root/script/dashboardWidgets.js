@@ -310,7 +310,12 @@ Ext.define('Ung.dashboard.Widget', {
         if (this.hasRefresh) {
             this.loadingMask.hide();
         }
-        this.removeCls('loading');
+
+        try {
+            this.removeCls('loading');
+        } catch (err) {
+            //console.log('null widget conf');
+        }
 
         Ung.dashboard.Queue.next();
         if (this && this.refreshIntervalSec && this.refreshIntervalSec > 0) {
