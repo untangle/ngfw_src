@@ -377,6 +377,9 @@ Ext.define('Ung.panel.Reports', {
         }
         rpc.reportsManager.getReportEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
+            if (this.reportEntriesGrid.getStore() == null) {
+                return;
+            }
             var reportEntries = [];
             var entry;
             for(var i=0; i<result.list.length; i++) {
@@ -401,6 +404,9 @@ Ext.define('Ung.panel.Reports', {
         }
         rpc.reportsManager.getEventEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
+            if (this.reportEntriesGrid.getStore() == null) {
+                return;
+            }
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
             if(initialEntryId) {
@@ -1590,7 +1596,7 @@ Ext.define("Ung.panel.ExtraConditions", {
                 var values = result[column];
                 if(values.length > 0) {
                     columnItems = [];
-                    columnRenderer = Ung.panel.Reports.getColumnRenderer(column);
+                    var columnRenderer = Ung.panel.Reports.getColumnRenderer(column);
                     for(i=0; i<values.length; i++) {
                         columnItems.push({
                             text: Ext.isFunction(columnRenderer) ? columnRenderer(values[i]) : values[i],
@@ -1607,7 +1613,12 @@ Ext.define("Ung.panel.ExtraConditions", {
                     });
                 }
             }
-            quickAddMenu.add(hintMenus);
+            try {
+                quickAddMenu.add(hintMenus);
+            } catch(e) {
+                //throws an exception if reports is no longer visible
+                //ignore it
+            }
             
         }, this));
         this.tbar = [{

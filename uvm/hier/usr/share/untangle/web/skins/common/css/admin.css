@@ -320,6 +320,7 @@ a.link,a.link:visited {
     border-color: #67bd4a;
     background-color: #67bd4a;
     background-image: none;
+    outline: none !important; /* FIXME does not seem to work */
 }
 
 .menu-button.x-btn-pressed .x-btn-inner,.menu-button.x-btn-over .x-btn-inner {
