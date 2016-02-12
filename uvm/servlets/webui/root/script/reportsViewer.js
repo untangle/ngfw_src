@@ -108,12 +108,14 @@ Ext.define('Ung.reportsViewer', {
                     }
                 }
                 if(apps.length > 0) {
-                    this.treepanel.getStore().getRoot().appendChild({
-                        text : i18n._("Applications"),
-                        leaf : false,
-                        expanded : true,
-                        children : apps
-                    });
+                    if ( this.treepanel.getStore() != null ) { // if the tab has been switch the store is null
+                        this.treepanel.getStore().getRoot().appendChild({
+                            text : i18n._("Applications"),
+                            leaf : false,
+                            expanded : true,
+                            children : apps
+                        });
+                    }
                 }
             }
             this.openTarget();
@@ -137,7 +139,9 @@ Ext.define('Ung.reportsViewer', {
             }
             delete Ung.Main.target;
         } else {
-            this.treepanel.getSelectionModel().select(0);
+            if ( this.treepanel.getStore() != null ) { // if the tab has been switch the store is null
+                this.treepanel.getSelectionModel().select(0);
+            }
         }
     }
 });
