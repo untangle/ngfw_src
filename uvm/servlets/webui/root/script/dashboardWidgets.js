@@ -89,7 +89,7 @@ Ext.define('Ung.dashboard', {
                 if (rpc.reportsEnabled) {
                     if (type === "ReportEntry") {
                         entry = this.reportsMap[widget.entryId];
-                        if (!entry && !entry.enabled) {
+                        if (entry && !entry.enabled) {
                             entry = null;
                         }
                     } else {
