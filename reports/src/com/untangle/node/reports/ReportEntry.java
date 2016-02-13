@@ -242,8 +242,10 @@ public class ReportEntry implements Serializable, JSONString
 
         if ( timeDiffSec > ( 60 * 60 * 24 * 2 ) ) /* more than 2 days, use days */
             return TimeDataInterval.DAY;
-        if ( timeDiffSec > ( 60 * 60 * 2 ) ) /* more than 2 hours */
+        else if ( timeDiffSec >= ( 60 * 60 * 10 ) ) /* >= 10 hours */
             return TimeDataInterval.HOUR;
+        else if ( timeDiffSec >= ( 60 * 60 * 2 ) ) /* >= 2 hours */
+            return TimeDataInterval.TENMINUTE;
         else
             return TimeDataInterval.MINUTE;
     }

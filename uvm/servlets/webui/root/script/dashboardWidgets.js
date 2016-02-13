@@ -906,7 +906,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
     hasRefresh: true,
     initComponent: function () {
         this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
-        this.items = [Ung.dashboard.Util.createChart(this.entry)];
+        this.items = [Ung.dashboard.Util.createChart(this.entry,this)];
         this.callParent(arguments);
     },
     loadData: function (handler) {
@@ -957,7 +957,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 }
                 this.entry.timeDataColumns = columns;
                 this.removeAll();
-                this.add(Ung.dashboard.Util.createChart(this.entry));
+                this.add(Ung.dashboard.Util.createChart(this.entry,this));
                 this.down("[name=chart]").getStore().loadData(data);
             } else if (this.entry.type === 'TIME_GRAPH') {
                 chart.getStore().loadData(data);
@@ -1089,7 +1089,7 @@ Ext.define('Ung.dashboard.Util', {
         this.buildInterfaces();
         return this.interfaceMap;
     },
-    createTimeChart: function (entry) {
+    createTimeChart: function (entry,widget) {
         if (!entry.timeDataColumns) {
             entry.timeDataColumns = [];
         }
@@ -1199,6 +1199,7 @@ Ext.define('Ung.dashboard.Util', {
                 style : {
                     strokeStyle: '#CCC'
                 },
+                title: (widget.timeframe/3600 > 1 ? widget.timeframe/3600+" "+i18n._("hours") : widget.timeframe/3600+" "+i18n._("hour")),
                 renderer : Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
             }]
         };
@@ -1306,7 +1307,7 @@ Ext.define('Ung.dashboard.Util', {
         }
         return chart;
     },
-    createPieChart: function (entry) {
+    createPieChart: function (entry,widget) {
         var descriptionFn = function (val, record) {
             var title = (record.get(entry.pieGroupColumn) === null) ? i18n._("none") : record.get(entry.pieGroupColumn),
                 value = Ung.panel.Reports.renderValue(record.get("value"), entry);
@@ -1317,8 +1318,15 @@ Ext.define('Ung.dashboard.Util', {
             text: i18n._("Not enough data to generate the chart."),
             fontSize: 12,
             fillStyle: '#FF0000',
-            x: 10,
+            x: 20,
             y: 20
+        }), timeFrameSprite = Ext.create("Ext.draw.sprite.Text", {
+            type: 'text',
+            text: (widget.timeframe/3600 > 1 ? widget.timeframe/3600+" "+i18n._("hours") : widget.timeframe/3600+" "+i18n._("hour")),
+            fontSize: 12,
+            fillStyle: '#000000',
+            x: 20,
+            y: 310
         }),
             chart = {
                 xtype: 'polar',
@@ -1339,7 +1347,7 @@ Ext.define('Ung.dashboard.Util', {
                 legend: {
                     docked: 'right'
                 },
-                sprites: [ noDataSprite],
+                sprites: [ noDataSprite, timeFrameSprite ],
                 noDataSprite: noDataSprite,
                 interactions: ['rotate', 'itemhighlight'],
                 series: [{
@@ -1348,16 +1356,32 @@ Ext.define('Ung.dashboard.Util', {
                     rotation: 45,
                     label: {
                         field: 'description',
+                        renderer: function(text,sprite,config,rendererData,index) {
+                            // calculate percentage.
+                            // only show labels for large slices
+                            var store = rendererData.store;
+                            var total = 0;
+                            store.each(function(rec) {
+                                total += rec.get('value');
+                            });
+                            var storeItem = store.getAt(index);
+                            var value = store.getAt(index).get('value');
+                            var percent = value/total;
+                            if ( percent > 0.2 )
+                                return storeItem.get(entry.pieGroupColumn);
+                            else
+                                return '';
+                        },
                         calloutLine: {
                             length: 10,
-                            width: 3
+                            width: 1
                         }
                     }
                 }]
             };
         return chart;
     },
-    createTextReport: function (entry) {
+    createTextReport: function (entry,widget) {
         return {
             xtype: 'component',
             name: "chart",
@@ -1366,15 +1390,15 @@ Ext.define('Ung.dashboard.Util', {
         };
     },
     // creates the chart based on entry report type
-    createChart: function (entry) {
+    createChart: function (entry,widget) {
         if (entry.type === 'PIE_GRAPH') {
-            return this.createPieChart(entry);
+            return this.createPieChart(entry,widget);
         }
         if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
-            return this.createTimeChart(entry);
+            return this.createTimeChart(entry,widget);
         }
         if (entry.type === 'TEXT') {
-            return this.createTextReport(entry);
+            return this.createTextReport(entry,widget);
         }
     }
 });
