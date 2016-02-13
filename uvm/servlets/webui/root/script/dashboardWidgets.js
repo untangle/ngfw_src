@@ -1367,7 +1367,7 @@ Ext.define('Ung.dashboard.Util', {
                             var storeItem = store.getAt(index);
                             var value = store.getAt(index).get('value');
                             var percent = value/total;
-                            if ( percent >= 0.15 )
+                            if ( percent > 0.9 ) //more than 9%
                                 return storeItem.get(entry.pieGroupColumn);
                             else
                                 return '';
