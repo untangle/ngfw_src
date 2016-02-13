@@ -96,7 +96,7 @@ public class DashboardManagerImpl implements DashboardManager
 
         widgetSettings = new DashboardWidgetSettings("EventEntry");
         widgetSettings.setRefreshIntervalSec(60);
-        widgetSettings.setTimeframe(3600);
+        widgetSettings.setTimeframe(3600*24);
         widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
         widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
         widgets.add( widgetSettings);
