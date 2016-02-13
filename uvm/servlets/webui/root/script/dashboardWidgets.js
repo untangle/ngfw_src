@@ -1367,14 +1367,15 @@ Ext.define('Ung.dashboard.Util', {
                             var storeItem = store.getAt(index);
                             var value = store.getAt(index).get('value');
                             var percent = value/total;
-                            if ( percent > 0.2 )
+                            if ( percent >= 0.15 )
                                 return storeItem.get(entry.pieGroupColumn);
                             else
                                 return '';
                         },
                         calloutLine: {
-                            length: 10,
-                            width: 1
+                            color: '#FFFFFF',
+                            length: 30,
+                            width: 0
                         }
                     }
                 }]
