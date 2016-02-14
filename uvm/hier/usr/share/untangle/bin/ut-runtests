@@ -192,9 +192,11 @@ def runTestSuite(suite):
             testStartTime = time.time()
 
         print "\n\n"
+        print "="*70
         print test_name + " start [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         print test_name + " end   [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
+        print "="*70
 
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime
