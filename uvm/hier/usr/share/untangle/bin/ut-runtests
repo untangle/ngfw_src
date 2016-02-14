@@ -5,6 +5,7 @@ import signal
 import os
 import time
 import traceback
+import time
 sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 for f in os.listdir('@PREFIX@/usr/lib/python2.7/tests'):
@@ -190,7 +191,10 @@ def runTestSuite(suite):
         if (parser.timedTests):
             testStartTime = time.time()
 
+        print "\n\n"
+        print test_name + " start [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        print test_name + " end   [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
 
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime
