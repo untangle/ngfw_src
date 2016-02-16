@@ -938,9 +938,9 @@ Ext.define("Ung.SystemStats", {
         // network tooltip
         var networkArr=[
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span></div>',
+            '<div class="values"><span name="tx_speed">&nbsp;</span></div>',
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
-            '<div class="values"><span name="rx_speed"></span></div>'
+            '<div class="values"><span name="rx_speed">&nbsp;</span></div>'
         ];
         this.networkToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=network]"),
@@ -954,11 +954,11 @@ Ext.define("Ung.SystemStats", {
         // sessions tooltip
         var sessionsArr=[
             '<div class="title">'+i18n._("Total Sessions:")+'</div>',
-            '<div class="values"><span name="totalSessions"></span></div>',
+            '<div class="values"><span name="totalSessions">&nbsp;</span></div>',
             '<div class="title">'+i18n._("TCP Sessions:")+'</div>',
-            '<div class="values"><span name="uvmTCPSessions"></span></div>',
+            '<div class="values"><span name="uvmTCPSessions">&nbsp;</span></div>',
             '<div class="title">'+i18n._("UDP Sessions:")+'</div>',
-            '<div class="values"><span name="uvmUDPSessions"></span></div>',
+            '<div class="values"><span name="uvmUDPSessions">&nbsp;</span></div>',
             '<div class="title">'+i18n._("Click to open Session Viewer")+'</div>'
         ];
         this.sessionsToolTip= Ext.create('Ext.tip.ToolTip',{
@@ -973,7 +973,7 @@ Ext.define("Ung.SystemStats", {
         // hosts tooltip
         var hostsArr=[
             '<div class="title">'+i18n._("Active Hosts:")+'</div>',
-            '<div class="values"><span name="activeHosts"></span></div>',
+            '<div class="values"><span name="activeHosts">&nbsp</span></div>',
             '<div class="title">'+i18n._("Click to open Host Viewer")+'</div>'
         ];
         this.hostsToolTip= Ext.create('Ext.tip.ToolTip',{
@@ -987,14 +987,13 @@ Ext.define("Ung.SystemStats", {
         // cpu tooltip
         var cpuArr=[
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
-            '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
+            '<div class="values"><span name="num_cpus">&nbsp;</span>, <span name="cpu_model">&nbsp;</span>, <span name="cpu_speed">&nbsp;</span></div>',
             '<div class="title">'+i18n._("Load average (1 min , 5 min , 15 min):")+'</div>',
-            '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>',
-
+            '<div class="values"><span name="load_average_1_min">&nbsp;</span>, <span name="load_average_5_min">&nbsp;</span>, <span name="load_average_15_min">&nbsp;</span></div>',
             '<div class="title">'+i18n._("Tasks (Processes)")+'</div>',
-            '<div class="values"><span name="tasks"></span>'+'</div>',
+            '<div class="values"><span name="tasks">&nbsp;</span>'+'</div>',
             '<div class="title">'+i18n._("Uptime:")+'</div>',
-            '<div class="values"><span name="uptime"></span></div>'
+            '<div class="values"><span name="uptime">&nbsp;</span></div>'
         ];
         this.cpuToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=cpu]"),
@@ -1008,13 +1007,13 @@ Ext.define("Ung.SystemStats", {
         // memory tooltip
         var memoryArr=[
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
-            '<div class="values"><span name="memory_total"></span> MB</div>',
+            '<div class="values"><span name="memory_total">&nbsp;</span> MB</div>',
             '<div class="title">'+i18n._("Memory Used:")+'</div>',
-            '<div class="values"><span name="memory_used"></span> MB, <span name="memory_used_percent"></span> %</div>',
+            '<div class="values"><span name="memory_used">&nbsp;</span> MB, <span name="memory_used_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Free:")+'</div>',
-            '<div class="values"><span name="memory_free"></span> MB, <span name="memory_free_percent"></span> %</div>',
+            '<div class="values"><span name="memory_free">&nbsp;</span> MB, <span name="memory_free_percent"></span> %</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
-            '<div class="values"><span name="swap_total"></span> MB '+i18n._("total swap space")+' (<span name="swap_used"></span> MB '+i18n._("used")+')</div>'
+            '<div class="values"><span name="swap_total">&nbsp;</span> MB '+i18n._("total swap space")+' (<span name="swap_used"></span> MB '+i18n._("used")+')</div>'
         ];
         this.memoryToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=memory]"),
@@ -1088,7 +1087,7 @@ Ext.define("Ung.SystemStats", {
         }
         if(this.hostsToolTip.rendered) {
             toolTipEl=this.hostsToolTip.getEl();
-            toolTipEl.down("span[name=activeHosts]").dom.innerHTML=stats.hosts;
+            toolTipEl.down("span[name=activeHosts]").dom.innerHTML=stats.activeHosts;
         }
 
         if(this.cpuToolTip.rendered) {
