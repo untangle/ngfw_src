@@ -2755,6 +2755,7 @@ Ext.define('Webui.config.network', {
             settingsCmp: this,
             hasReorder: true,
             hasAdd: false,
+            hasImportExport: true,
             addAtTop: false,
             dataProperty:'portForwardRules',
             addSimpleRuleHandler:function() {
