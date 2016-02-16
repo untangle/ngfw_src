@@ -7,10 +7,9 @@
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
         "round(coalesce(sum(s2p_bytes + p2s_bytes), 0)/(1024*1024)) as megabytes",
-        "count(*) as sessions",
-        "sum(bypassed::int) as bypassed"
+        "count(*) as sessions"
     ],
-    "textString": "The server has scanned {0} megabytes across {1} sessions, of which {2} were bypassed.", 
+    "textString": "The server has passed {0} megabytes across {1} sessions.", 
     "readOnly": true,
     "table": "sessions",
     "title": "Network Summary",
