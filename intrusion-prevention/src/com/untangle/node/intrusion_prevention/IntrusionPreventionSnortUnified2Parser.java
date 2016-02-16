@@ -93,7 +93,8 @@ public class IntrusionPreventionSnortUnified2Parser
         IDS_EVENTV2_VLAN_ID_SIZE +
         IDS_EVENTV2_PADDING_SIZE;
     
-	public IntrusionPreventionSnortUnified2Parser() {
+	public IntrusionPreventionSnortUnified2Parser()
+    {
 		ipv4bytes = new byte[4];
 		ipv6bytes = new byte[16];
         
@@ -103,7 +104,8 @@ public class IntrusionPreventionSnortUnified2Parser
         reloadEventMap();
     }
 
-    public void reloadEventMap(){
+    public void reloadEventMap()
+    {
         IntrusionPreventionEventMap newIntrusionPreventionEventMap = new IntrusionPreventionEventMap();
         File f = new File( "/etc/snort/intrusion-prevention.event.map.conf" );
         if (f.exists()) {
@@ -156,7 +158,8 @@ public class IntrusionPreventionSnortUnified2Parser
         ipsEventMap = newIntrusionPreventionEventMap;
     }
     
-    public long parse( File file, long startPosition, IntrusionPreventionApp ipsNode ){
+    public long parse( File file, long startPosition, IntrusionPreventionApp ipsNode )
+    {
         fc = null;
         RandomAccessFile f = null;
 		try {
@@ -191,15 +194,15 @@ public class IntrusionPreventionSnortUnified2Parser
                     case IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_IPV6:
                     case IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2:
                     case IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6:
-                        IntrusionPreventionSnortUnified2IdsEvent idsEvent = null;
+                        IntrusionPreventionLogEvent ipsEvent = null;
 				        try{
-                            idsEvent = parseIdsEvent();
+                            ipsEvent = parseIdsEvent();
                         }catch( Exception e ){
                             logger.debug( "parse: Unable to parse event:" + e );
                             abort = true;
                             break;
                         }
-                        ipsNode.logEvent( new IntrusionPreventionLogEvent( idsEvent ) );
+                        ipsNode.logEvent( ipsEvent );
                         recordCount++;
                         break;
                     case IntrusionPreventionSnortUnified2SerialHeader.TYPE_PACKET:
@@ -236,8 +239,8 @@ public class IntrusionPreventionSnortUnified2Parser
         return pos;
     }
 
-	public void parseSerialHeader() throws Exception {
-        
+	public void parseSerialHeader() throws Exception
+    {
         if( bufSerialHeader == null ){
 		    bufSerialHeader = ByteBuffer.allocate( SERIAL_HEADER_SIZE );
         }
@@ -265,9 +268,9 @@ public class IntrusionPreventionSnortUnified2Parser
 		serialHeader.setLength( bufSerialHeader.getInt( pos ) );
 	}
 
-	public IntrusionPreventionSnortUnified2IdsEvent parseIdsEvent() throws Exception {
-        IntrusionPreventionSnortUnified2IdsEvent idsEvent = new IntrusionPreventionSnortUnified2IdsEvent();
-        idsEvent.clear();
+	public IntrusionPreventionLogEvent parseIdsEvent() throws Exception
+    {
+        IntrusionPreventionLogEvent ipsEvent = new IntrusionPreventionLogEvent();
 
         int eventLength = (int) serialHeader.getLength();
         
@@ -292,41 +295,39 @@ public class IntrusionPreventionSnortUnified2Parser
        
 		bufIdsEvent.rewind();
 
-		idsEvent.clear();
-        
-        idsEvent.setEventType( (int) serialHeader.getType() );
+        ipsEvent.setEventType( (int) serialHeader.getType() );
         
         int pos = 0;
-		idsEvent.setSensorId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setSensorId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_SENSOR_ID_SIZE;
         
-		idsEvent.setEventId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setEventId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_EVENT_ID_SIZE;
 
-		idsEvent.setEventSecond( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setEventSecond( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_SECOND_SIZE;
         
-		idsEvent.setEventMicrosecond( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setEventMicrosecond( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_MICROSECOND_SIZE;
         
-		idsEvent.setSignatureId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setSignatureId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_SIG_ID_SIZE;
         
-		idsEvent.setGeneratorId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setGeneratorId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_GID_ID_SIZE;
         
-		idsEvent.setSignatureRevision( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setSignatureRevision( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_SIG_REV_SIZE;
         
-		idsEvent.setClassificationId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setClassificationId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_CLASS_ID_SIZE;
         
-		idsEvent.setPriorityId( bufIdsEvent.getInt( pos ) );
+		ipsEvent.setPriorityId( bufIdsEvent.getInt( pos ) );
         pos += IDS_EVENT_PRIORITY_ID_SIZE;
 
 		bufIdsEvent.position(pos);
-        if( ( idsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_IPV6 ) ||
-            ( idsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6 ) ){
+        if( ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_IPV6 ) ||
+            ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6 ) ){
 		    bufIdsEvent.get( ipv6bytes, 0, IDS_EVENTIP6_IP_SRC_SIZE );
             InetAddress si = null;
             try{
@@ -334,7 +335,7 @@ public class IntrusionPreventionSnortUnified2Parser
             }catch( Exception e) {
                 logger.warn( "Unable to process source IPv6 address:", e );
             }
-		    idsEvent.setIpSource( si );
+		    ipsEvent.setIpSource( si );
             pos += IDS_EVENTIP6_IP_SRC_SIZE;
         
 		    bufIdsEvent.get( ipv6bytes, 0, IDS_EVENTIP6_IP_DST_SIZE );
@@ -344,7 +345,7 @@ public class IntrusionPreventionSnortUnified2Parser
             }catch( Exception e) {
                 logger.warn( "Unable to process destination IPv6 address:", e );
             }
-		    idsEvent.setIpDestination( di );
+		    ipsEvent.setIpDestination( di );
             pos += IDS_EVENTIP6_IP_DST_SIZE;
         }else{
 		    bufIdsEvent.get( ipv4bytes, 0, IDS_EVENT_IP_SRC_SIZE );
@@ -354,7 +355,7 @@ public class IntrusionPreventionSnortUnified2Parser
             }catch( Exception e) {
                 logger.warn( "Unable to process source IPv4 address:", e );
             }
-		    idsEvent.setIpSource( si );
+		    ipsEvent.setIpSource( si );
             pos += IDS_EVENT_IP_SRC_SIZE;
         
 		    bufIdsEvent.get( ipv4bytes, 0, IDS_EVENT_IP_DST_SIZE );
@@ -364,48 +365,48 @@ public class IntrusionPreventionSnortUnified2Parser
             }catch( Exception e) {
                 logger.warn( "Unable to process destination IPv4 address:", e );
             }
-		    idsEvent.setIpDestination( di );
+		    ipsEvent.setIpDestination( di );
             pos += IDS_EVENT_IP_DST_SIZE;
         }
         
-		idsEvent.setSportItype( bufIdsEvent.getShort( pos ) );
+		ipsEvent.setSportItype( bufIdsEvent.getShort( pos ) );
         pos += IDS_EVENT_PORT_SRC_SIZE;
         
-		idsEvent.setDportIcode( bufIdsEvent.getShort( pos ) );
+		ipsEvent.setDportIcode( bufIdsEvent.getShort( pos ) );
         pos += IDS_EVENT_PORT_DST_SIZE;
         
-		idsEvent.setProtocol( (short) bufIdsEvent.get( pos ) );
+		ipsEvent.setProtocol( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_PROTOCOL_SIZE;
         
-		idsEvent.setImpactFlag( (short) bufIdsEvent.get( pos ) );
+		ipsEvent.setImpactFlag( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_IMPACT_FLAG_SIZE;
         
-		idsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
+		ipsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_IMPACT_SIZE;
         
-		idsEvent.setBlocked( (short) bufIdsEvent.get( pos ) );
+		ipsEvent.setBlocked( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_BLOCKED_SIZE;
   
-        if( ( idsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2 ) ||
-            ( idsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6 ) ){
-		    idsEvent.setMplsLabel( bufIdsEvent.getInt( pos ) );
+        if( ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2 ) ||
+            ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6 ) ){
+		    ipsEvent.setMplsLabel( bufIdsEvent.getInt( pos ) );
             pos += IDS_EVENTV2_MPLS_LABEL_SIZE;
             
-		    idsEvent.setVlanId( bufIdsEvent.getShort( pos ) );
+		    ipsEvent.setVlanId( bufIdsEvent.getShort( pos ) );
             pos += IDS_EVENTV2_VLAN_ID_SIZE;
         
-		    idsEvent.setPadding( bufIdsEvent.getShort( pos ) );
+		    ipsEvent.setPadding( bufIdsEvent.getShort( pos ) );
             pos += IDS_EVENTV2_PADDING_SIZE;
         }
 
-        IntrusionPreventionEventMapRule mapRule = ipsEventMap.getRuleBySignatureAndGeneratorId( idsEvent.getSignatureId(), idsEvent.getGeneratorId() );
+        IntrusionPreventionEventMapRule mapRule = ipsEventMap.getRuleBySignatureAndGeneratorId( ipsEvent.getSignatureId(), ipsEvent.getGeneratorId() );
         if( mapRule != null ){
-            idsEvent.setMsg( mapRule.getMsg() );
-            idsEvent.setClasstype( mapRule.getClasstype() );
-            idsEvent.setCategory( mapRule.getCategory() );
+            ipsEvent.setMsg( mapRule.getMsg() );
+            ipsEvent.setClasstype( mapRule.getClasstype() );
+            ipsEvent.setCategory( mapRule.getCategory() );
         }
 
-        return idsEvent;
+        return ipsEvent;
 	}
 
 	public void parseSkip()
