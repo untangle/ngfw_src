@@ -78,6 +78,7 @@ public class FixedReports
     }
 
     public enum Filter{
+        FIRST,
         FORMAT
     }
 
@@ -103,7 +104,8 @@ public class FixedReports
         TagPatterns.put(Tag.CYCLE_NEXT, Pattern.compile("\\{\\%\\s*cycle ([^\\s]+?) \\s*\\%\\}"));
 
         FilterPatterns = new HashMap<Filter, Pattern>();
-        FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=(.+)"));
+        FilterPatterns.put(Filter.FIRST, Pattern.compile("first"));
+        FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
 
@@ -783,11 +785,7 @@ public class FixedReports
                     }
                 }
 
-                if(((List) object).size() > 0 &&
-                    variableSelector.filters.get(0).equals("first")){
-                    object = ((List) object).get(0); 
-                }
-
+                object = filterProcess(object, variableSelector.filters);
             }else if(object.getClass().getName().contains(".String")){
                 object = filterProcess(object,variableSelector.filters);
             }
@@ -888,8 +886,11 @@ public class FixedReports
                     filterMatcher = syntax.getValue().matcher(filter);
                     while( filterMatcher.find()){
                         switch(syntax.getKey()){
+                            case FIRST:
+                                object = ((List) object).get(0);
+                                break;
                             case FORMAT:
-                                object = filterProcessFormat(object, (JSONObject) getVariable(new selector(filterMatcher.group(1))));
+                                object = filterProcessFormat(object, (JSONObject) getVariable(new selector(filterMatcher.group(1))), getVariable(new selector(filterMatcher.group(2))));
                                 break;
                         }
                     }
@@ -903,8 +904,16 @@ public class FixedReports
 
     /*
      * Process a template through an argument list
+     * 
+     * Additionally, order results according to sortOrder list.
+     * Results are expected to be in JSONObject format and sortOrder expected to be
+     * in String[] format.
+     *
+     * Basically used to sort report result list in textColumn format since results
+     * are not guaranteed to be in order.  Attempt to look at last word in each
+     * entry, expecting the format to be in SQL format to name column like "select ... as resultName"
      */
-    Object filterProcessFormat(Object template, JSONObject arguments){
+    Object filterProcessFormat(Object template, JSONObject arguments, Object sortOrder){
         /*
          * It's not a guaranteee that the arguments list will match the number of
          * template arguments (e.g.,.SQL will leave fields blank instead of empty unless
@@ -921,12 +930,29 @@ public class FixedReports
         }
 
         Map<String,String> replacements = new HashMap<String,String>();
-        if(arguments.names() != null){
-            for( argumentIndex = 0; argumentIndex < arguments.names().length(); argumentIndex++){
-                try{
-                    replacements.put("{" + Integer.toString(argumentIndex) + "}", arguments.get(arguments.names().getString(argumentIndex)).toString() );
-                }catch(Exception e){
-                    logger.warn("Unable to process argument entry " + Integer.toString(argumentIndex) + " :" + e);
+
+        ArrayList<String> sortOrderList = null;
+        if(sortOrder.getClass().isArray()){
+            sortOrderList = new ArrayList<String>(Arrays.asList((String[]) sortOrder));
+        }
+        String orderName = null;
+        int lastSpaceIndex = -1;
+        int resultsNameIndex;
+        for(int i = 0; i < sortOrderList.size(); i++){
+            orderName = sortOrderList.get(i);
+            lastSpaceIndex= orderName.lastIndexOf(" ");
+            if(lastSpaceIndex != -1){
+                orderName = orderName.substring(lastSpaceIndex + 1);
+            }
+            if(arguments.names() != null){
+                for( argumentIndex = 0; argumentIndex < arguments.names().length(); argumentIndex++){
+                    try{
+                        if(arguments.names().getString(argumentIndex).equals(orderName)){
+                            replacements.put("{" + Integer.toString(i) + "}", arguments.get(arguments.names().getString(argumentIndex)).toString() );
+                        }
+                    }catch(Exception e){
+                        logger.warn("Unable to process argument entry " + Integer.toString(argumentIndex) + " :" + e);
+                    }
                 }
             }
         }

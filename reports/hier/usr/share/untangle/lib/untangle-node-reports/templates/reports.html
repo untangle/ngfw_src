@@ -120,7 +120,7 @@ table {
 		<td>
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 		{% with reportRow=reportRows|first %}
-{{ report.getTextString|format=reportRow }}
+{{ report.getTextString|format=reportRow,report.getTextColumns }}
 		{% endwith %}
 		{% endwith %}
 		</td></tr>
@@ -171,7 +171,7 @@ table {
 		<td></td>
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 		{% with reportRow=reportRows|first %}
-		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow }}</td>
+		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow,report.getTextColumns }}</td>
 		{% endwith %}
 		{% endwith %}
 	</tr>
