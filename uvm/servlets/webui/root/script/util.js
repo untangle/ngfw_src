@@ -430,6 +430,16 @@ Ext.define('Ung.Util', {
         bytes = Math.round(bytes*100)/100;
         return bytes + " " + units[units_itr];
     },
+    bytesRendererCompact: function(bytes) {
+        var units = ["", "K", "M", "G"];
+        var units_itr = 0;
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+        bytes = Math.round(bytes*100)/100;
+        return bytes + " " + units[units_itr];
+    },
     resizeWindows: function() {
         Ext.WindowMgr.each(Ung.Util.doSize);
     },

@@ -1191,7 +1191,10 @@ Ext.define('Ung.dashboard.Util', {
                     fontSize: 11,
                     color: '#999'
                 },
-                title: entry.units
+                title: entry.units,
+                renderer: ( entry.units == "bytes" || entry.units == "bytes/s" ? function (tooltip, storeItem, item) {
+                    return Ung.Util.bytesRendererCompact( storeItem );
+                } : null )
             }, {
                 type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
                 fields: 'time_trunc',
