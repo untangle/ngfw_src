@@ -81,17 +81,6 @@ include Debug
 
 class BuildEnv
   ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
-  #JVM = (ARCH == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
-  JVM = case ARCH
-    when "armel"
-#    "jdk-7-oracle-arm-vfp-sflt"
-     "java-7-openjdk-armel"
-    when "armhf"
-    "jdk-7-oracle-arm-vfp-hflt"
-    else
-    "j2sdk1.7-oracle"
-  end
-  JAVA_HOME = "/usr/lib/jvm/#{JVM}"
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   SERVLET_COMMON = "./servlet/common"
@@ -167,12 +156,12 @@ class BuildEnv
 end
 
 class JavaCompiler
-  JavacCommand = "#{BuildEnv::JAVA_HOME}/bin/javac"
-  JarCommand   = "#{BuildEnv::JAVA_HOME}/bin/jar"
-  JarSignerCommand = "#{BuildEnv::JAVA_HOME}/bin/jarsigner"
-  JavaCommand  = "#{BuildEnv::JAVA_HOME}/bin/java"
-  JavahCommand = "#{BuildEnv::JAVA_HOME}/bin/javah"
-  KeyToolCommand = "#{BuildEnv::JAVA_HOME}/bin/keytool"
+  JavacCommand = "#{ENV['JAVA_HOME']}/bin/javac"
+  JarCommand   = "#{ENV['JAVA_HOME']}/bin/jar"
+  JarSignerCommand = "#{ENV['JAVA_HOME']}/bin/jarsigner"
+  JavaCommand  = "#{ENV['JAVA_HOME']}/bin/java"
+  JavahCommand = "#{ENV['JAVA_HOME']}/bin/javah"
+  KeyToolCommand = "#{ENV['JAVA_HOME']}/bin/keytool"
 
   def JavaCompiler.compile(dstdir, classpath, fileList)
     ## ... could move the tempfile into an open block, it would be a

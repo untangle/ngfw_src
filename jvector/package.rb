@@ -28,6 +28,6 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 
 
 ArchiveTarget.build_target(jvector, [BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah],
-                          compilerEnv, ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
+                          compilerEnv, ["#{ENV['JAVA_HOME']}/include", "#{ENV['JAVA_HOME']}/include/linux"])
 
 stamptask BuildEnv::SRC.installTarget => jvector

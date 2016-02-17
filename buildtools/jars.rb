@@ -94,6 +94,6 @@ class Jars
                                    HttpClient, Jstl, Json, Jabsorb,
                                    Slf4j, DnsJava, Ant))
 
-    const_set(:JDKTools, [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ])
+    const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end
 end

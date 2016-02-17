@@ -21,6 +21,6 @@ compilerEnv = CCompilerEnv.new({'pkg' => "#{CCompilerEnv::JNetcap}" })
 
 ## jnetcap
 ArchiveTarget.build_target(jnetcap, [ BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah ], compilerEnv,
-                          ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
+                          ["#{ENV['JAVA_HOME']}/include", "#{ENV['JAVA_HOME']}/include/linux"])
 
 stamptask BuildEnv::SRC.installTarget => jnetcap

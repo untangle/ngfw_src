@@ -316,7 +316,7 @@ end
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
     "#{BuildEnv::downloads}/#{n}"
-  } + ["#{BuildEnv::JAVA_HOME}/lib/tools.jar"];
+  } + ["#{ENV['JAVA_HOME']}/lib/tools.jar"];
 
   def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname

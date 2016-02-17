@@ -12,7 +12,7 @@ jvm = case arch
       else
         "j2sdk1.7-oracle"
       end
-ENV["JAVA_HOME"] = "/usr/lib/jvm/#{jvm}"
+ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
 
