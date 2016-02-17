@@ -8,6 +8,10 @@ Ext.define('Ung.Wizard', {
     finished: false,
     showLogo: false,
     initComponent : function() {
+        // use Enter key to navigate setup
+        Ext.getWin().addKeyListener(13, function () {
+            this.goNext();
+        }, this);
         if(this.showLogo) {
             Ext.DomHelper.append(this.renderTo,{
                 tag: 'div',
@@ -49,7 +53,7 @@ Ext.define('Ung.Wizard', {
             });
             bbarArr.unshift(this.cancelButton);
         }
-        
+
         if ( this.cardDefaults == null ) { this.cardDefaults = {}; }
         Ext.apply(this.cardDefaults, { border: true, autoScroll: true });
 
