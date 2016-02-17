@@ -10,8 +10,10 @@ jvm = case arch
       when "armhf"
         "jdk-7-oracle-arm-vfp-hflt"
       else
-        "j2sdk1.7-oracle"
+        openjdk8="java-8-openjdk-#{arch}"
+        File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "j2sdk1.7-oracle"
       end
+warn "JVM = #{jvm}"
 ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
