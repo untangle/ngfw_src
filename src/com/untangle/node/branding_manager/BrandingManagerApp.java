@@ -164,7 +164,10 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         this.settings = newSettings;
 
         setFileLogo(settings.binary_getLogo());
-        createRootCaInstaller();
+
+        // FIXME
+        // disable for now: bug #12586
+        // createRootCaInstaller(); 
     }
 
     @Override
