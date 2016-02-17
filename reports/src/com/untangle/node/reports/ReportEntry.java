@@ -24,7 +24,7 @@ import org.json.JSONString;
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
-    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
@@ -344,15 +344,23 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         String generate_series;
+        Date endDateSeries = endDate;
+        if ( endDate.getTime() > System.currentTimeMillis() ) {
+            // when endDate = null, we assume now+1minute.
+            // if the endDate is effectively "now" or later, then chop off the last minute from the generate_series 
+            // we do this because otherwise it adds an extra minute onto the range. usually you want that, but in this case it ends up adding a datapoint to the series
+            // which when joined with the actual data just results in a null point at the end which looks poor in the graph
+            endDateSeries = new Date( endDate.getTime() - (60*1000) );
+        }
         if ( dataInterval.equals("tenminute") )
             generate_series = " SELECT generate_series( " +
                 " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
             generate_series = " SELECT generate_series( " +
                 " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
 
