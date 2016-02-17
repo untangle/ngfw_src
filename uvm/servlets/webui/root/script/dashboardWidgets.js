@@ -1312,8 +1312,9 @@ Ext.define('Ung.dashboard.Util', {
     },
     createPieChart: function (entry,widget) {
         var descriptionFn = function (val, record) {
-            var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn);
-            return title;
+            var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn),
+                value = Ung.panel.Reports.renderValue(record.get("value"), entry);
+            return title + ": " + value;
         }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
             type: 'text',
             hidden: true,
@@ -1369,8 +1370,9 @@ Ext.define('Ung.dashboard.Util', {
                             var storeItem = store.getAt(index);
                             var value = store.getAt(index).get('value');
                             var percent = value/total;
+                            var title = (storeItem.get(entry.pieGroupColumn) == null) ? i18n._("none") : storeItem.get(entry.pieGroupColumn);
                             if ( percent > 0.09 ) //more than 9%
-                                return storeItem.get(entry.pieGroupColumn);
+                                return title;
                             else
                                 return '';
                         },
