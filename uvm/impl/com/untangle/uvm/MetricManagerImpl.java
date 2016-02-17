@@ -123,7 +123,7 @@ public class MetricManagerImpl implements MetricManager
 
     private class SystemStatCollector implements Runnable
     {
-        private int LOG_DELAY = 60; // in seconds
+        private int  SYSTEM_STAT_LOG_DELAY = 60; // in seconds
         private long ONE_BILLION = 1000000000l;
         private long lastLogTimeStamp = 0;
 
@@ -149,7 +149,7 @@ public class MetricManagerImpl implements MetricManager
                 getDiskUsage(m);
 
                 long time = System.nanoTime();
-                if ((time - lastLogTimeStamp)/ONE_BILLION >= LOG_DELAY) {
+                if ((time - lastLogTimeStamp)/ONE_BILLION >= SYSTEM_STAT_LOG_DELAY) {
                     SystemStatEvent sse = new SystemStatEvent();
                     sse.setMemTotal(Long.parseLong(m.get("MemTotal").toString()));
                     sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
@@ -168,22 +168,22 @@ public class MetricManagerImpl implements MetricManager
                     logger.debug("Logging SystemStatEvent");
                     UvmContextFactory.context().logEvent(sse);
 
-                    for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
-                        String key = "interface_" + intfSettings.getInterfaceId() + "_";
-                        Object rxBps_o = m.get(key + "rxBps");
-                        Object txBps_o = m.get(key + "txBps");
-                        if ( rxBps_o == null || txBps_o == null )
-                            continue;
-                        double rxBps = Double.parseDouble( rxBps_o.toString() );
-                        double txBps = Double.parseDouble( txBps_o.toString() );
-                        InterfaceStatEvent event = new InterfaceStatEvent();
-                        event.setInterfaceId( intfSettings.getInterfaceId() );
-                        event.setRxRate( rxBps );
-                        event.setTxRate( txBps );
-                        UvmContextFactory.context().logEvent(event);
-                    }
-
                     lastLogTimeStamp = time;
+                }
+                
+                for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+                    String key = "interface_" + intfSettings.getInterfaceId() + "_";
+                    Object rxBps_o = m.get(key + "rxBps");
+                    Object txBps_o = m.get(key + "txBps");
+                    if ( rxBps_o == null || txBps_o == null )
+                        continue;
+                    double rxBps = Double.parseDouble( rxBps_o.toString() );
+                    double txBps = Double.parseDouble( txBps_o.toString() );
+                    InterfaceStatEvent event = new InterfaceStatEvent();
+                    event.setInterfaceId( intfSettings.getInterfaceId() );
+                    event.setRxRate( rxBps );
+                    event.setTxRate( txBps );
+                    UvmContextFactory.context().logEvent(event);
                 }
             } catch (Exception e) {
                 logger.warn("Exception:",e);
