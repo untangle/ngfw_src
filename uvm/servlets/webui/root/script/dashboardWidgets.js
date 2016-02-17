@@ -1312,7 +1312,7 @@ Ext.define('Ung.dashboard.Util', {
     },
     createPieChart: function (entry,widget) {
         var descriptionFn = function (val, record) {
-            var title = (record.get(entry.pieGroupColumn) === null) ? i18n._("none") : record.get(entry.pieGroupColumn),
+            var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn),
                 value = Ung.panel.Reports.renderValue(record.get("value"), entry);
             return title + ": " + value;
         }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
