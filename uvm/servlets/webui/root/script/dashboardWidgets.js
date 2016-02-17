@@ -5,6 +5,7 @@ Ext.define('Ung.dashboard', {
     singleton: true,
     widgetsList: [],
     widgetsGrid: [],
+    reportEntriesModified: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
         var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
@@ -1369,8 +1370,9 @@ Ext.define('Ung.dashboard.Util', {
                             var storeItem = store.getAt(index);
                             var value = store.getAt(index).get('value');
                             var percent = value/total;
+                            var title = (storeItem.get(entry.pieGroupColumn) == null) ? i18n._("none") : storeItem.get(entry.pieGroupColumn);
                             if ( percent > 0.09 ) //more than 9%
-                                return storeItem.get(entry.pieGroupColumn);
+                                return title;
                             else
                                 return '';
                         },
