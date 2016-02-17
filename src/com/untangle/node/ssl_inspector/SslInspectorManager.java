@@ -98,7 +98,6 @@ class SslInspectorManager
     private SSLEngine sslEngine;
     private boolean clientSide;
     private boolean dataMode;
-    private int chompCount;
 
     public static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
     public static final byte IPC_RELEASE_MESSAGE[] = "SSL_INSPECTOR_IPC_RELEASE".getBytes();
@@ -123,7 +122,6 @@ class SslInspectorManager
 
         this.clientSide = clientSide;
         this.dataMode = false;
-        this.chompCount = 0;
 
         casingBuffer = ByteBuffer.allocate(8192);
     }
@@ -456,22 +454,6 @@ class SslInspectorManager
     public void setDataMode(boolean argMode)
     {
         this.dataMode = argMode;
-    }
-
-    public int getChompCount()
-    {
-        return (chompCount);
-    }
-
-    public int addChompCount(int value)
-    {
-        chompCount = (chompCount + value);
-        return (chompCount);
-    }
-
-    public void clearChompCount()
-    {
-        chompCount = 0;
     }
 
 // THIS IS FOR ECLIPSE - @formatter:off

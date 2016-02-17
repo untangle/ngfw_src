@@ -61,7 +61,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // attach something to let everyone else know we are working the session 
         session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.TRUE);
-        
+
         // set the server read buffer size and limit really large to deal
         // with huge certs that contain lots of subject alt names
         // such as cert returned from google.co.nz
@@ -159,21 +159,20 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     public void parse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
-        ByteBuffer buff = data;
         String sslProblem = null;
         String logDetail = null;
         boolean success = false;
 
-        logger.debug("---------- " + (manager.getClientSide() ? "CLIENT" : "SERVER") + " parse() received " + buff.limit() + " bytes ----------");
+        logger.debug("---------- " + (manager.getClientSide() ? "CLIENT" : "SERVER") + " parse() received " + data.limit() + " bytes ----------");
 
         // empty buffer indicates the session is terminating
-        if (buff.limit() == 0) {
+        if (data.limit() == 0) {
             return;
         }
 
         // pass the data to the parse worker function
         try {
-            success = parseWorker(session, buff);
+            success = parseWorker(session, data);
         }
 
         catch (SSLException ssl) {
@@ -199,7 +198,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         catch (Exception exn) {
-            logger.debug("Exception calling parseWorker", exn);
+            logger.warn("Exception calling parseWorker", exn);
         }
 
         // no success result means something went haywire so we kill the session
@@ -251,7 +250,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     private boolean parseWorker(NodeTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
-        ByteBuffer target = ByteBuffer.allocate(32768);
         boolean done = false;
         SslInspectorRule ruleMatch = null;
         HandshakeStatus status;
@@ -308,7 +306,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             // let everyone else know that we are ignoring the session
             session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
-            
+
             // release the session on both sides and send the original
             // message received from the server to the client
             shutdownOtherSide(session, false);
@@ -321,6 +319,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         while (done == false) {
             status = manager.getSSLEngine().getHandshakeStatus();
             logger.debug("STATUS = " + status);
+            logger.debug("BUFFER = " + data.toString());
 
             // if isInboundDone() becomes true on the server side during the
             // handshake we likely have encountered an untrusted certificate
@@ -373,17 +372,17 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             // handle unwrap during handshake
             case NEED_UNWRAP:
-                done = doNeedUnwrap(session, data, target);
+                done = doNeedUnwrap(session, data);
                 break;
 
             // handle wrap during handshake
             case NEED_WRAP:
-                done = doNeedWrap(session, data, target);
+                done = doNeedWrap(session, data);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                done = doNotHandshaking(session, data, target);
+                done = doNotHandshaking(session, data);
                 break;
 
             // should never happen but we handle just to be safe
@@ -592,19 +591,23 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedUnwrap(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedUnwrap(NodeTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
+        ByteBuffer target = ByteBuffer.allocate(32768);
         SSLEngineResult result;
 
-        // unwrap the argumented data into the engine buffer
+        // unwrap the argumented data into the engine buffer - we expect all 
+        // all the data to be consumed internally with no bytes produced
         result = manager.getSSLEngine().unwrap(data, target);
         logger.debug("EXEC_UNWRAP " + result.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
+
             // underflow during unwrap means the SSLEngine needs more data
             // but it's also possible it used some of the passed data so we
-            // compact the receive buffer and hand it back for more
+            // compact the receive buffer which leaves the position at the
+            // end of the existing data and ready to receive more
             data.compact();
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
@@ -663,9 +666,10 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedWrap(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedWrap(NodeTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
+        ByteBuffer target = ByteBuffer.allocate(32768);
         SSLEngineResult result;
 
         // wrap the argumented data into the engine buffer
@@ -675,35 +679,36 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // check for engine problems
         if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
+        // if the wrap call produced some data send it to the peer
+        if (result.bytesProduced() != 0) {
+            target.flip();
+            // during handshake client data goes from client to client and server
+            // data goes from server to server, because they are two separate handshakes
+            // unlike how normally client flows from client to server and vice versa
+            if (manager.getClientSide()) {
+                session.sendDataToClient(target);
+            } else {
+                session.sendDataToServer(target);
+            }
+        }
+
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
         // if the handshake completed set the dataMode flag
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) manager.setDataMode(true);
 
-        // if the wrap call didn't produce any data return done=false
-        if (result.bytesProduced() == 0) return false;
-
-        // the wrap call produced some data so prepare it for return to peer
-        target.flip();
-
-        // during handshake client data goes from client to client and server
-        // data goes from server to server, because they are two separate handshakes
-        // unlike how normally client flows from client to server and vice versa
-        if (manager.getClientSide()) {
-            session.sendDataToClient(target);
-        } else {
-            session.sendDataToServer(target);
-        }
+        if (data.position() < data.limit()) return (false);
 
         return true;
     }
 
     // ------------------------------------------------------------------------
 
-    private boolean doNotHandshaking(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNotHandshaking(NodeTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
+        ByteBuffer target = ByteBuffer.allocate(32768);
         SSLEngineResult result;
 
         // we don't expect to get here unless dataMode is already active
@@ -712,7 +717,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // the parser will always call unwrap to convert SSL to plain
         result = manager.getSSLEngine().unwrap(data, target);
         logger.debug("EXEC_HANDSHAKING " + result.toString());
-        logger.debug("LOCAL_BUFFER = " + target.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
             // if the target buffer is empty we are finished so return done=true 
@@ -734,7 +738,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_OVERFLOW) {
-            manager.clearChompCount();
             data.compact();
             logger.debug("OVERFLOW_LEFTOVER = " + data.toString());
 
@@ -755,8 +758,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
-            manager.clearChompCount();
-
             // if the data buffer is full allocate a new larger buffer
             // and copy the leftover data from the passed buffer
             if (data.limit() == data.capacity()) {
@@ -770,10 +771,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 data.compact();
             }
 
+            // the allocate or compact will both leave the position at the end
+            // of any existing data in the buffer and ready to receive more 
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
-            // if unwrap hasn't produce any data just re-use the data buffer
-            // so the session manager can fill it with more data
+            // use the partially filled buffer for the next receive
             if (target.position() == 0) {
                 if (manager.getClientSide()) {
                     session.setClientBuffer(data);
@@ -783,8 +785,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 return true;
             }
 
-            // unwrap did produce some data so we'll return it now along
-            // with the partially filled data buffer so we can get more
+            // unwrap did produce some data so we'll return it now
             target.flip();
 
             // when the handshake is complete and data is flowing we send
@@ -796,6 +797,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 session.sendDataToClient(target);
                 session.setServerBuffer(data);
             }
+
             return true;
         }
 
@@ -809,22 +811,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             return false;
         }
 
-        // The SSLEngine may not consume all data on the first call so we use the chomp
-        // counter to track consumption and keep looping until everything has been unwrapped
-        int count = manager.addChompCount(result.bytesConsumed());
-        logger.debug("RECEIVED = " + data.limit() + "  CONSUMED = " + count);
-        if (manager.getChompCount() != data.limit()) return false;
-
-        // everything consumed so clear the chomp counter
-        manager.clearChompCount();
-
         // if the unwrap call doesn't produce any data we just return
         // done=false and let the processing continue
         if (result.bytesProduced() == 0) return false;
 
-        // The SSLEngine gave us some data so pass it along. We only get
-        // this far if all the data passed is consumed so we don't have
-        // to worry about dealing with leftover stuff in the buffer
+        // The SSLEngine gave us some data so pass it along
         target.flip();
 
         // when the handshake is complete and data is flowing we send
@@ -834,6 +825,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         } else {
             session.sendDataToClient(target);
         }
+
+        // if there is still data in the buffer we return done=false
+        // to let the processing continue
+        if (data.position() < data.limit()) {
+            logger.debug("PARTIAL_LEFTOVER = " + data.toString());
+            return (false);
+        }
+
         return true;
     }
 
