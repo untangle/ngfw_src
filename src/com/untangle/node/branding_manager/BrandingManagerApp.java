@@ -164,10 +164,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         this.settings = newSettings;
 
         setFileLogo(settings.binary_getLogo());
-
-        // FIXME
-        // disable for now: bug #12586
-        // createRootCaInstaller(); 
+        createRootCaInstaller();
     }
 
     @Override
@@ -304,8 +301,8 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         /*
          * Convert images to .bmp format
          */
-        UvmContextFactory.context().execManager().exec("jpegtopnm " + BRANDING_LOGO + " | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-header.bmp");
-        UvmContextFactory.context().execManager().exec("jpegtopnm " + BRANDING_LOGO + " | pnmrotate 90 | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-wizard.bmp");
+        UvmContextFactory.context().execManager().exec("anytopnm " + BRANDING_LOGO + " | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-header.bmp");
+        UvmContextFactory.context().execManager().exec("anytopnm " + BRANDING_LOGO + " | pnmrotate 90 | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-wizard.bmp");
 
         /*
          * Parse files replacing Untangle defaults
@@ -318,17 +315,18 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
             String name = file.getName();
             HashMap<REGEX_TYPE, Pattern> regexes = new HashMap<REGEX_TYPE, Pattern>();
             String quotedString = "";
+            int flags = 0;
             if(filenameSet.getKey() == FILE_PARSE_TYPE.QUOTED){
                 quotedString = "\"";
+            }else{
+                flags = Pattern.CASE_INSENSITIVE;                
             }
 
             /*
-             * Build up regexes to exclude our current names.  Otherwise, based on how we must process
-             * quoted strings, we'll loop when trying to forever replace instances of say, "Untangle" with
-             * "Untangle" or even superstrings like "Untangle A".
+             * Build up regexes to find the first occurance of our current name.
              */
-            regexes.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(" + quotedString + ".*)(?!" + companyName + ")" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*" + quotedString + ")"));
-            regexes.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(" + quotedString + ".*)(?!" + companyUrl + ")" + "http://.*.untangle.com(.*" + quotedString + ")"));
+            regexes.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(" + quotedString + ".*?)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*" + quotedString + ")", flags));
+            regexes.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(" + quotedString + ".*?)" + "http://.*.untangle.com(.*" + quotedString + ")", flags));
 
             StringBuilder parsed = new StringBuilder();
             Matcher match = null;
@@ -341,16 +339,26 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
                      */
                     for(Map.Entry<REGEX_TYPE, Pattern> regex : regexes.entrySet()) {
                         match = regex.getValue().matcher(line);
-                        while(match.find()){
+                        int startPos = 0;
+                        while(match.find(startPos)){
                             switch(regex.getKey()){
                                 case COMPANY_NAME:
+                                    startPos = match.start() + match.group(1).length() + companyName.length();
                                     line = match.replaceAll("$1" + companyName + "$2");
                                     break;
                                 case COMPANY_URL:
+                                    startPos = match.start() + match.group(1).length() + companyUrl.length();
                                     line = match.replaceAll("$1" + companyUrl + "$2");
                                     break;
+
+                                default:
+                                    /* Shouldn'e be here...but if we are, make sure we exit the loop. */
+                                    startPos = line.length();
                             }
-                            match = regex.getValue().matcher(line);
+                            if(startPos >= line.length()){
+                                break;
+                            }
+                           match = regex.getValue().matcher(line);
                         }
                     }
                     parsed.append(line).append(EOL);
