@@ -366,7 +366,9 @@ public class IpsecVpnManager
     {
         logger.debug("writeIptablesScript(" + IPTABLES_GRE_SCRIPT + ")");
 
+        AddressCalculator calculator = new AddressCalculator(settings.getVirtualNetworkPool());
         LinkedList<IpsecVpnNetwork> networkList = settings.getNetworks();
+        String greAddr = calculator.getFirstIP();
         IpsecVpnNetwork network;
         String iface;
         String iaddr;
@@ -401,10 +403,11 @@ public class IpsecVpnManager
         gre_script.write("# delete the old nat-reverse-filter rule" + RET);
         gre_script.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\" >/dev/null 2>&1" + RET);
         gre_script.write(RET);
+        
 
         gre_script.write("# delete the old admin forwards for GRE networks" + RET);
-        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
-        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
+        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
+        gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);
         gre_script.write(RET);
 
         for (x = 0; x < networkList.size(); x++) {
@@ -414,7 +417,7 @@ public class IpsecVpnManager
             if (network.getActive() != true) continue;
 
             iface = ("gre" + String.valueOf(x + 1));
-            iaddr = ("198.51.100." + String.valueOf(x + 1));
+            iaddr = calculator.getOffsetIP(x + 1);
 
             gre_script.write("# IpsecVpnNetwork - " + network.getDescription() + RET);
             gre_script.write("ip tunnel add " + iface + " mode gre remote " + network.getRemoteAddress() + " local " + network.getLocalAddress() + " ttl 64" + RET);
@@ -445,8 +448,8 @@ public class IpsecVpnManager
         gre_script.write(RET);
 
         gre_script.write("# create admin forwards for GRE networks" + RET);
-        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\"" + RET);
-        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d 198.51.100.1 --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\"" + RET);
+        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\"" + RET);
+        gre_script.write("${IPTABLES} -t nat -I port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send GRE to apache\"" + RET);
         gre_script.write(RET);
 
         gre_script.close();

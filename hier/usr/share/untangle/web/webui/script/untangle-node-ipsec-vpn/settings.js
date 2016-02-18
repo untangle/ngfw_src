@@ -944,6 +944,20 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         }, this)
                     }
                 },{
+                    xtype: 'textfield',
+                    name: 'virtualNetworkPool',
+                    width: 300,
+                    padding: '3 0 3 0',
+                    dataIndex: 'virtualNetworkPool',
+                    fieldLabel: i18n._("GRE Address Pool"),
+                    value: this.getSettings().virtualNetworkPool,
+                    vtype: 'cidrBlock',
+                    listeners: {
+                        "change": Ext.bind(function( elem, newValue ) {
+                            this.getSettings().virtualNetworkPool = newValue;
+                        }, this)
+                    }
+                },{
                     xtype: 'container',
                     layout: 'column',
                     items: [{

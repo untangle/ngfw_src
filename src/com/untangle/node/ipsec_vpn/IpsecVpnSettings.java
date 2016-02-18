@@ -23,11 +23,12 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean vpnflag = false;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
-    private String virtualAddressPool = "198.18.0.0/16";
+    private String virtualNetworkPool = "198.51.100.0/24";   // used for GRE
+    private String virtualAddressPool = "198.18.0.0/16";    // used for L2TP
+    private String virtualXauthPool = "198.19.0.0/16";      // used for XAUTH
     private String virtualSecret = "Please_Change_Me";
     private String virtualDnsOne = "";
     private String virtualDnsTwo = "";
-    private String virtualXauthPool = "198.19.0.0/16";
     private String charonDebug = "";
 
     public IpsecVpnSettings()
@@ -71,6 +72,9 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public String getVirtualXauthPool() { return (virtualXauthPool); }
     public void setVirtualXauthPool(String virtualXauthPool) { this.virtualXauthPool = virtualXauthPool; }
+    
+    public String getVirtualNetworkPool() { return (virtualNetworkPool); }
+    public void setVirtualNetworkPool(String virtualNetworkPool) { this.virtualNetworkPool = virtualNetworkPool; }
 
     public String getCharonDebug() { return (charonDebug); }
     public void setCharonDebug(String charonDebug) { this.charonDebug = charonDebug; }

@@ -160,4 +160,11 @@ public class AddressCalculator
     {
         return (lastIP);
     }
+
+    public String getOffsetIP(int offset)
+    {
+        Integer baseIP = baseIPnumeric & netmaskNumeric;
+        String address = convertNumericIpToSymbolic(baseIP + offset);
+        return (address);
+    }
 }
