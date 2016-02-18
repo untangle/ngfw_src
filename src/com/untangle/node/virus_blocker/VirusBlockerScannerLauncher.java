@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
+import org.json.JSONObject;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScannerLauncher;
 import com.untangle.node.virus_blocker.VirusScannerResult;
@@ -172,19 +174,24 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         public void run()
         {
             StringBuilder feedback = new StringBuilder(256);
+            JSONObject json = new JSONObject();
 
-            feedback.append("[");
-            feedback.append("{Length:" + fileLength + "}");
-            feedback.append(",{Hash:\"" + virusState.fileHash + "\"}");
-            feedback.append(",{BDresult:\"" + scanResult + "\"}");
-            if (virusState.host != null) feedback.append(",{Host:\"" + virusState.host + "\"}");
-            if (virusState.uri != null) feedback.append(",{URI:\"" + virusState.uri + "\"}");
-            feedback.append("]");
-      
+            try {
+                json.put("hash", virusState.fileHash);
+                json.put("length", fileLength);
+                json.put("bdresult", scanResult);
+                if (virusState.host != null) json.put("host", virusState.host);
+                if (virusState.uri != null) json.put("uri", virusState.uri);
+            } catch (Exception exn) {
+                logger.warn("Exception building CloudFeedback JSON object.", exn);
+            }
+
+            feedback.append(json.toString());
+
             logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
             try {
-                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW" );
+                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW");
                 URL myurl = new URL(target);
                 HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
                 mycon.setRequestMethod("POST");
