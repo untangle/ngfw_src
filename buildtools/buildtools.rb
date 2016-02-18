@@ -2,15 +2,15 @@
 # Dirk Morris <dmorris@untangle.com>
 
 arch = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
+openjdk8 = "java-8-openjdk-#{arch}"
 
 jvm = case arch
       when "armel"
         # "jdk-7-oracle-arm-vfp-sflt"
         "java-7-openjdk-armel"
       when "armhf"
-        "jdk-7-oracle-arm-vfp-hflt"
+        File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "jdk-7-oracle-arm-vfp-hflt"
       else
-        openjdk8="java-8-openjdk-#{arch}"
         File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "j2sdk1.7-oracle"
       end
 warn "JVM = #{jvm}"
