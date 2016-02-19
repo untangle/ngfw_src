@@ -772,4 +772,12 @@ public class IPMaskedAddress implements Serializable
 
         return true;
     }
+
+    public int hashCode()
+    {
+        if ( address != null )
+            return address.hashCode() * prefixLength;
+        else
+            return 0;
+    }
 }

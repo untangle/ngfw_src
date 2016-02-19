@@ -41,8 +41,6 @@ public class PortRange
         return high;
     }
 
-    // Object methods ---------------------------------------------------------
-
     public boolean equals(Object o)
     {
         if (!(o instanceof PortRange)) {
@@ -51,5 +49,10 @@ public class PortRange
             PortRange pr = (PortRange)o;
             return low == pr.low && high == pr.high;
         }
+    }
+
+    public int hashCode()
+    {
+        return low*high;
     }
 }

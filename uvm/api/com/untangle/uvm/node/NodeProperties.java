@@ -134,4 +134,12 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     {
         return new Integer(getViewPosition()).compareTo(a.getViewPosition());
     }
+
+    public int hashCode( )
+    {
+        if ( getClassName() != null )
+            return getClassName().hashCode();
+        else
+            return 0;
+    }
 }

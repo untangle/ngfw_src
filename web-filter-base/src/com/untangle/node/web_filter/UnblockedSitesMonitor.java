@@ -21,7 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
  * certain delay.
  *
  */
-class UnblockedSitesMonitor
+public class UnblockedSitesMonitor
 {
     private static long MONITOR_SLEEP_DELAY_MS = 5l * 60l * 1000l;
 

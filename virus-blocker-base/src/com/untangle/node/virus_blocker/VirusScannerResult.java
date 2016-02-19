@@ -77,4 +77,12 @@ public class VirusScannerResult implements Serializable, TemplateValues
             return new String("Infected(" + virusName + ")");
         }
     }
+
+    public int hashCode()
+    {
+        if ( virusName != null )
+            return virusName.hashCode();
+        else
+            return 0;
+    }
 }

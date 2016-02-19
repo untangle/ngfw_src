@@ -198,7 +198,9 @@ public class AlertManagerImpl implements AlertManager
         }
     }
 
-
+    /*
+     * This test that disk free % is less than 75%
+     */
     private void testDiskFree(List<String> alertList)
     {
         String result = this.execManager.execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
@@ -213,6 +215,9 @@ public class AlertManagerImpl implements AlertManager
 
     }
 
+    /**
+     * Looks for somewhat comman errors in kern.log related to problematic disks
+     */
     private void testDiskErrors(List<String> alertList)
     {
         ExecManagerResult result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'" );
@@ -582,6 +587,10 @@ public class AlertManagerImpl implements AlertManager
         }
     }
 
+    /**
+     * Tests that zvelo queries can be resolved correctly
+     */
+    @SuppressWarnings("rawtypes")
     private void testZveloDNSServers(List<String> alertList)
     {
         List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");

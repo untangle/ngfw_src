@@ -68,4 +68,13 @@ public class SafelistSettings implements Serializable
         SafelistSettings sls = (SafelistSettings) o;
         return (true == recipient.equals(sls.recipient) && true == sender.equals(sls.sender));
     }
+
+    public int hashCode()
+    {
+        if ( recipient != null )
+            return recipient.hashCode();
+        else
+            return 0;
+    }
+
 }
