@@ -19,6 +19,15 @@ Ext.define('Webui.config.deviceMonitor', {
     },
     // Current Devices Grid
     buildGridCurrentDevices: function() {
+        var dateConvertFn = function(value) {
+            if( value == 0 || value == "") {
+                return " ";
+            } else {
+                var d=new Date();
+                d.setTime(value);
+                return d;
+            }
+        };
         this.gridCurrentDevices = Ext.create('Ung.grid.Panel',{
             helpSource: 'device_list_current_devices',
             settingsCmp: this,
@@ -47,8 +56,11 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "httpUserAgent",
                 type: 'string'
             }, {
-                name: "lastSeenTime",
-                sortType: 'asTimestamp'
+                name: "lastSeenTime"
+            }, {
+                name: "lastSeenTimeDate",
+                mapping: "lastSeenTime",
+                convert: dateConvertFn
             }],
             columns: [{
                 header: i18n._("MAC Address"),
@@ -95,10 +107,14 @@ Ext.define('Webui.config.deviceMonitor', {
                 }
             }, {
                 header: i18n._("Last Seen Time"),
-                dataIndex: "lastSeenTime",
+                dataIndex: "lastSeenTimeDate",
                 width: 150,
-                renderer: function(value) {
-                    return value == 0 || value == "" ? "" : i18n.timestampFormat(value);
+                renderer: function(value, metaData, record) {
+                    var val=record.get("lastSeenTime");
+                    return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
+                },
+                filter: {
+                    type: 'date'
                 }
             }],
             reload: function() {
