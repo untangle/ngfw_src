@@ -276,6 +276,8 @@ public abstract class NodeBase implements Node
                 }
                 catch (Exception exn) {
                     staticLogger.error("Exception during node resumeState", exn);
+                    if ( exn.getCause() != null )
+                        staticLogger.error("Cause", exn.getCause() );
                     // still return the initialized node
                 }
             }
@@ -284,6 +286,8 @@ public abstract class NodeBase implements Node
 
         } catch (Exception exn) {
             staticLogger.error("Exception during node initialization", exn);
+            if ( exn.getCause() != null )
+                staticLogger.error("Cause", exn.getCause() );
             throw exn;
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
