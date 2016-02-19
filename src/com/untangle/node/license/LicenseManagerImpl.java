@@ -502,6 +502,10 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             logger.error("Invalid argument:" + revoke);
             return false;
         }
+        if ( revoke.getName() == null ) {
+            logger.error("Invalid name:" + revoke.getName());
+            return false;
+        }
 
         /**
          * See if you find a match in the current licenses
@@ -510,7 +514,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         Iterator<License> itr = this.settings.getLicenses().iterator();
         while ( itr.hasNext() ) {
             License existingLicense = itr.next();
-            if (existingLicense.getName().equals(revoke.getName())) {
+            
+            if (revoke.getName().equals(existingLicense.getName())) {
                 logger.warn("Revoking License: " + revoke.getName());
                 itr.remove();
                 return true;
@@ -588,60 +593,64 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          */
         Iterator<License> itr = this.settings.getLicenses().iterator();
         while ( itr.hasNext() ) {
-            License existingLicense = itr.next();
-            if (existingLicense.getName().equals(license.getName())) {
+            try {
+                License existingLicense = itr.next();
+                if (existingLicense.getName().equals(license.getName())) {
 
-                /**
-                 * As a measure of safety we only replace an existing license under certain circumstances
-                 * This is so we are careful to only increase entitlements during this phase
-                 */
-                boolean replaceLicense = false;
-                insertNewLicense = false;
+                    /**
+                     * As a measure of safety we only replace an existing license under certain circumstances
+                     * This is so we are careful to only increase entitlements during this phase
+                     */
+                    boolean replaceLicense = false;
+                    insertNewLicense = false;
 
-                /**
-                 * Check the validity of the current license
-                 * If it isn't valid, we might as well try the new one
-                 * Note: we have to use getLicenses to do this because the settings don't store validity
-                 */
-                if ( (getLicense(existingLicense.getName()) != null) && !(getLicense(existingLicense.getName()).getValid()) ) {
-                    logger.info("REFRESH: Replacing license " + license + " - old one is invalid");
-                    replaceLicense = true;
-                }
+                    /**
+                     * Check the validity of the current license
+                     * If it isn't valid, we might as well try the new one
+                     * Note: we have to use getLicenses to do this because the settings don't store validity
+                     */
+                    if ( (getLicense(existingLicense.getName()) != null) && !(getLicense(existingLicense.getName()).getValid()) ) {
+                        logger.info("REFRESH: Replacing license " + license + " - old one is invalid");
+                        replaceLicense = true;
+                    }
 
-                /**
-                 * If the current one is a trial, and the new one is not, use the new one
-                 */
-                if ( !(License.LICENSE_TYPE_TRIAL.equals(license.getType())) && License.LICENSE_TYPE_TRIAL.equals(existingLicense.getType())) {
-                    logger.info("REFRESH: Replacing license " + license + " - old one is trial");
-                    replaceLicense = true;
-                }
+                    /**
+                     * If the current one is a trial, and the new one is not, use the new one
+                     */
+                    if ( !(License.LICENSE_TYPE_TRIAL.equals(license.getType())) && License.LICENSE_TYPE_TRIAL.equals(existingLicense.getType())) {
+                        logger.info("REFRESH: Replacing license " + license + " - old one is trial");
+                        replaceLicense = true;
+                    }
 
-                /**
-                 * If the new one has a later end date, use the new one
-                 */
-                if ( license.getEnd() > existingLicense.getEnd() ) {
-                    logger.info("REFRESH: Replacing license " + license + " - new one has later end date");
-                    replaceLicense = true;
-                }
+                    /**
+                     * If the new one has a later end date, use the new one
+                     */
+                    if ( license.getEnd() > existingLicense.getEnd() ) {
+                        logger.info("REFRESH: Replacing license " + license + " - new one has later end date");
+                        replaceLicense = true;
+                    }
 
-                /**
-                 * If the new one has a different seat amount
-                 */
-                if ( license.getSeats() != null && existingLicense.getSeats() == null ) {
-                    logger.info("REFRESH: Replacing license " + license + " - number of seats now specified");
-                    replaceLicense = true;
-                }
-                if ( license.getSeats() != null && existingLicense.getSeats() != null && license.getSeats() > existingLicense.getSeats() ) {
-                    logger.info("REFRESH: Replacing license " + license + " - new one has more seats");
-                    replaceLicense = true;
-                }
+                    /**
+                     * If the new one has a different seat amount
+                     */
+                    if ( license.getSeats() != null && existingLicense.getSeats() == null ) {
+                        logger.info("REFRESH: Replacing license " + license + " - number of seats now specified");
+                        replaceLicense = true;
+                    }
+                    if ( license.getSeats() != null && existingLicense.getSeats() != null && license.getSeats() > existingLicense.getSeats() ) {
+                        logger.info("REFRESH: Replacing license " + license + " - new one has more seats");
+                        replaceLicense = true;
+                    }
                 
-                if (replaceLicense) {
-                    itr.remove();
-                    insertNewLicense = true;
-                } else {
-                    logger.info("REFRESH: Keeping current license: " + license);
+                    if (replaceLicense) {
+                        itr.remove();
+                        insertNewLicense = true;
+                    } else {
+                        logger.info("REFRESH: Keeping current license: " + license);
+                    }
                 }
+            } catch (Exception e) {
+                logger.warn("Exception processing existing license.",e);
             }
         }
 
@@ -798,9 +807,16 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         /**
          * Compute metadata before saving
          */
-        for (License lic : newSettings.getLicenses()) {
-            _setValidAndStatus(lic);
+        Iterator<License> itr = this.settings.getLicenses().iterator();
+        while ( itr.hasNext() ) {
+            License license = itr.next();
+            _setValidAndStatus(license);
+            if ( license.getValid() != null && !license.getValid() ) {
+                logger.warn("Removing invalid license from list: " + license);
+                itr.remove();
+            }
         }
+
 
         /**
          * Save the settings
