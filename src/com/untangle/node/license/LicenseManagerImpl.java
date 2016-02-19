@@ -225,8 +225,12 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         int validCount = 0;
         for ( License lic : this.settings.getLicenses() ) {
-            if (lic.getValid())
-                validCount++;
+            try {
+                if (lic.getValid())
+                    validCount++;
+            } catch (Exception e) {
+                logger.warn("Exception",e);
+            }
         }
         return validCount;
     }
@@ -662,31 +666,41 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         /* Create a new map of all of the valid licenses */
         Map<String, License> newMap = new ConcurrentHashMap<String, License>();
         LinkedList<License> newList = new LinkedList<License>();
-
+        License license = null;
+        
         if (this.settings != null) {
             for (License lic : this.settings.getLicenses()) {
-                /**
-                 * Create a duplicate - we're about to fill in metadata
-                 * But we don't want to mess with the original
-                 */
-                License license = new License(lic);
+                try {
+                    /**
+                     * Create a duplicate - we're about to fill in metadata
+                     * But we don't want to mess with the original
+                     */
+                    license = new License(lic);
 
-                /**
-                 * Complete Meta-data
-                 */
-                _setValidAndStatus(license);
+                    /**
+                     * Complete Meta-data
+                     */
+                    _setValidAndStatus(license);
             
-                String identifier = license.getName();
-                License current = newMap.get(identifier);
+                    String identifier = license.getName();
+                    if ( identifier == null ) {
+                        logger.warn("Ignoring license with no name: " + license );
+                        continue;
+                    }
+                        
+                    License current = newMap.get(identifier);
 
-                /* current license is newer and better */
-                if ((current != null) && (current.getEnd() > license.getEnd()))
-                    continue;
+                    /* current license is newer and better */
+                    if ((current != null) && (current.getEnd() > license.getEnd()))
+                        continue;
 
-                logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
+                    logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
             
-                newMap.put(identifier, license);
-                newList.add(license);
+                    newMap.put(identifier, license);
+                    newList.add(license);
+                } catch (Exception e) {
+                    logger.warn("Failed to load license: " + license, e);
+                }
             }
         }
 
