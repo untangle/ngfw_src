@@ -244,14 +244,14 @@ public class NetFilterLogger
                 event.setCServerAddr(dstAddress);
                 event.setSServerAddr(dstAddress);
 
-                event.setSServerPort(new Integer(dstPort));
                 event.setSClientPort(new Integer(srcPort));
+                event.setCClientPort(new Integer(srcPort));
 
-                event.setCServerPort(new Integer(srcPort));
-                event.setCClientPort(new Integer(dstPort));
+                event.setSServerPort(new Integer(dstPort));
+                event.setCServerPort(new Integer(dstPort));
 
-                event.setServerIntf(new Integer(srcIntf));
-                event.setClientIntf(new Integer(dstIntf));
+                event.setClientIntf(new Integer(srcIntf));
+                event.setServerIntf(new Integer(dstIntf));
 
                 event.setFilterPrefix(logPrefix);
 
