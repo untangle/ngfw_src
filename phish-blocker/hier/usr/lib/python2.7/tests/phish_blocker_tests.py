@@ -21,6 +21,7 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 nodeData = None
+nodeSSL = None
 canRelay = True
 canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
@@ -61,7 +62,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, nodeSSLData, canRelay, canRelayTLS
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay, canRelayTLS
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -72,7 +73,6 @@ class PhishBlockerTests(unittest2.TestCase):
             raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
-        nodeSSLData = nodeSSL.getSettings()
         try:
             canRelay = global_functions.sendTestmessage(mailhost=smtpServerHost)
         except Exception,e:
@@ -201,6 +201,7 @@ class PhishBlockerTests(unittest2.TestCase):
         assert(tlsSMTPResult == 0)
        
     def test_060_checkTLSwSSLInspector(self):
+        global nodeSSL
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
