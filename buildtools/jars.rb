@@ -45,20 +45,21 @@ class Jars
 
     const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',
                                'tomcat-embed-core.jar',
+                               'tomcat-embed-el.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
               end)
 
     const_set(:TomcatServer, ['tomcat-dbcp.jar',
                               'ecj-4.2.2.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
               end)
 
     const_set(:TomcatLogging, ['tomcat-embed-logging-juli.jar',
-                              'tomcat-embed-logging-log4j.jar',
+                               'tomcat-embed-logging-log4j.jar',
                          ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
              end)
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)

@@ -44,9 +44,6 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.naming.resources.FileDirContext;
-import org.apache.naming.resources.ResourceAttributes;
-import org.apache.naming.resources.ProxyDirContext;
 import org.apache.log4j.Logger;
 
 import org.apache.tomcat.JarScanner;
@@ -62,7 +59,10 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class TomcatManagerImpl implements TomcatManager
 {
-    private static final int  TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
+    private static final int     TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
+    private static final String  TOMCAT_AJP_MIN_THREADS = "2"; 
+    private static final String  TOMCAT_AJP_MAX_THREADS = "10"; 
+
     private static final String WELCOME_URI = "/setup/welcome.do";
     private static final String WELCOME_FILE = System.getProperty("uvm.conf.dir") + "/apache2/conf.d/homepage.conf";
 
@@ -124,7 +124,7 @@ public class TomcatManagerImpl implements TomcatManager
 
     public ServletContext loadServlet(String urlBase, String rootDir, boolean requireAdminPrivs)
     {
-        return loadServlet(urlBase, rootDir, null, null, new WebAppOptions(new AdministrationValve()));
+        return loadServlet(urlBase, rootDir, null, null, new AdministrationValve());
     }
 
     public boolean unloadServlet(String contextRoot)
@@ -213,6 +213,8 @@ public class TomcatManagerImpl implements TomcatManager
         jkConnector.setProperty("port", "8009");
         jkConnector.setProperty("address", "127.0.0.1");
         jkConnector.setProperty("tomcatAuthentication", "false");
+        jkConnector.setProperty("minSpareThreads", TOMCAT_AJP_MIN_THREADS);
+        jkConnector.setProperty("maxThreads", TOMCAT_AJP_MAX_THREADS);
         jkConnector.setMaxPostSize(TOMCAT_MAX_POST_SIZE);
         jkConnector.setMaxSavePostSize(TOMCAT_MAX_POST_SIZE); 
 
@@ -235,46 +237,14 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Tomcat started");
     }
 
-    private static class WebAppOptions
-    {
-        public static final int DEFAULT_SESSION_TIMEOUT = 30;
-
-        final boolean allowLinking;
-        final int sessionTimeout; // Minutes
-        final Valve valve;
-
-        WebAppOptions() {
-            this(true, DEFAULT_SESSION_TIMEOUT);
-        }
-
-        WebAppOptions(Valve valve) {
-            this(true, valve);
-        }
-
-        WebAppOptions(boolean allowLinking, Valve valve) {
-            this(allowLinking, DEFAULT_SESSION_TIMEOUT, valve);
-        }
-
-        WebAppOptions(boolean allowLinking, int sessionTimeout) {
-            this(allowLinking, sessionTimeout, null);
-        }
-
-        WebAppOptions(boolean allowLinking, int sessionTimeout, Valve valve) {
-            this.allowLinking = allowLinking;
-            this.sessionTimeout = sessionTimeout;
-            this.valve  = valve;
-
-        }
-    }
-
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
-        return loadServlet(urlBase, rootDir, realm, auth, new WebAppOptions());
+        return loadServlet(urlBase, rootDir, realm, auth, null);
     }
 
-    private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
+    private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
     {
-        return loadServletImpl(urlBase, rootDir, realm, auth, options);
+        return loadServletImpl(urlBase, rootDir, realm, auth, valve);
     }
 
     /**
@@ -287,7 +257,7 @@ public class TomcatManagerImpl implements TomcatManager
      * @param auth an <code>AuthenticatorBase</code> value
      * @return a <code>boolean</code> value
      */
-    private synchronized ServletContext loadServletImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, WebAppOptions options)
+    private synchronized ServletContext loadServletImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
@@ -296,32 +266,19 @@ public class TomcatManagerImpl implements TomcatManager
         try {
             StandardContext ctx = (StandardContext)tomcat.addWebapp(urlBase,fqRoot);
             final Logger log = logger;
-            JarScanner jarScanner = new JarScanner() {
-                public void scan(ServletContext ctx, ClassLoader cld,  JarScannerCallback jsCallback, Set<String> jarsToSkip)  {
-                    new StandardJarScanner().scan(ctx,cld, new JarScannerCallbackProxy(jsCallback,logger), jarsToSkip);
-                }
-            };
-            ctx.setJarScanner(jarScanner);
-            if (options.allowLinking)
-                ctx.setAllowLinking(true);
+
             ctx.setCrossContext(true);
-            ctx.setSessionTimeout(options.sessionTimeout);
-            if (null != realm) {
+            ctx.setSessionTimeout(30); // 30 minutes
+            if ( realm != null ) {
                 ctx.setRealm(realm);
             }
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); // disable session persistence
             ctx.setManager(mgr);
-            DirContext dc = ctx.getResources();
-            if ( dc == null) {
-                ctx.setResources(new StrongETagDirContext());
-            } else {
-                ctx.stop();
-                ctx.setResources(new StrongETagDirContext());
-                ctx.start();
-            }
-            if (null != options.valve) ctx.addValve(options.valve);
-            if (null != auth) {
+
+            if ( valve != null )
+                ctx.addValve(valve);
+            if ( auth != null ) {
                 Pipeline pipe = ctx.getPipeline();
                 auth.setDisableProxyCaching(false);
                 pipe.addValve(auth);
@@ -395,66 +352,6 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         return p.getProperty("worker.uvmWorker.secret");
-    }
-
-    @SuppressWarnings("unchecked")
-    private class StrongETagDirContext extends FileDirContext
-    {
-        protected Attributes doGetAttributes(String name, String[] attrIds) throws NamingException
-        {
-            ResourceAttributes r = (ResourceAttributes) super.doGetAttributes(name, attrIds);
-            if ( r != null) {
-                long cl = r.getContentLength();
-                long lm = r.getLastModified();
-                String strongETag = String.format("\"%s-%s\"", cl, lm);
-                r.setETag(strongETag);
-            }
-            return r;
-        }
-
-    }
-    
-    private class JarScannerCallbackProxy implements JarScannerCallback 
-    {
-
-        private JarScannerCallback wrapped;
-        private Logger logger;
-            
-        public JarScannerCallbackProxy(JarScannerCallback instance,Logger log) 
-        {
-            wrapped = instance;
-            logger = log;
-        }
-        
-        private boolean shouldScan(String name) 
-        {
-            for (String s:tldScanTargets) {
-                if ( name.contains(s)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        public void scan(JarURLConnection urlConn)throws IOException 
-        {
-            String name = urlConn.getJarFile().getName();
-            if ( shouldScan(name)) {
-                //logger.info("Scanning " + name);
-                wrapped.scan(urlConn);
-                return;
-            } 
-        }
-
-        public void scan(File file) throws IOException 
-        {
-            String name = file.getName();
-            if ( shouldScan(name)) {
-                //logger.info("Scanning " + name);
-                wrapped.scan(file);
-                return;
-            } 
-        }
     }
 
     private class AdministrationValve extends ValveBase
