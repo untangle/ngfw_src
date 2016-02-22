@@ -50,14 +50,12 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
               end)
 
-    const_set(:TomcatServer, ['tomcat-dbcp.jar',
-                              'ecj-4.4.2.jar',
+    const_set(:TomcatServer, ['ecj-4.4.2.jar',
                             ].map do |n|
                 Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
               end)
 
-    const_set(:TomcatLogging, ['tomcat-embed-logging-juli.jar',
-                               'tomcat-embed-logging-log4j.jar',
+    const_set(:TomcatLogging, ['tomcat-embed-logging-log4j.jar',
                          ].map do |n|
                 Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
              end)
