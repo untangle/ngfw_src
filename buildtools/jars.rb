@@ -51,7 +51,7 @@ class Jars
               end)
 
     const_set(:TomcatServer, ['tomcat-dbcp.jar',
-                              'ecj-4.2.2.jar',
+                              'ecj-4.4.2.jar',
                             ].map do |n|
                 Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
               end)
