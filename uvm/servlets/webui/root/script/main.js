@@ -194,6 +194,12 @@ Ext.define("Ung.Main", {
                                 Ung.Main.showDashboardManager();
                             }
                         }, {
+                          xtype: "component",
+                          cls: "alert-container",
+                          margin: '0 0 0 10',
+                          itemId: "alertContainer",
+                          hidden: true
+                        }, {
                             xtype: 'component',
                             html: '',
                             flex: 1
@@ -257,12 +263,6 @@ Ext.define("Ung.Main", {
                             margin: '0 0 0 10',
                             hidden: true,
                             html: ""
-                        }, {
-                            xtype: "component",
-                            cls: "alert-container",
-                            margin: '0 0 0 10',
-                            itemId: "alertContainer",
-                            hidden: true
                         }, {
                             xtype: "component",
                             cls: "no-ie-container",
@@ -1387,7 +1387,7 @@ Ext.define("Ung.Main", {
                         // if there are no more apps left to install we are done
                         if ( appsToInstall.length == 0 ) {
                             Ext.MessageBox.alert(i18n._("Installation Complete!"),
-                                                 i18n._("The recommended applications have successfully been installed.")  + "<br/><br/>" + 
+                                                 i18n._("The recommended applications have successfully been installed.")  + "<br/><br/>" +
                                                  i18n._("Thank you for using Untangle!"),
                                                  function(){
                                 Ung.Main.panelCenter.setActiveItem("apps"); // go to the apps tab
