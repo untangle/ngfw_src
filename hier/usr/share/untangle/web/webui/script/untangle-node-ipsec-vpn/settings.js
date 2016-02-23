@@ -74,24 +74,32 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             columns: [{
                 header: i18n._("Local IP"),
                 dataIndex:'src',
-                width: 150
+                width: 140
             },{
                 header: i18n._("Remote Host"),
                 dataIndex:'dst',
-                width: 150
+                width: 140
             },{
                 header: i18n._("Local Network"),
                 dataIndex:'tmplSrc',
-                width: 150
+                width: 140
             },{
                 header: i18n._("Remote Network"),
                 dataIndex:'tmplDst',
-                width: 150
+                width: 140
             },{
                 header: i18n._("Description"),
                 dataIndex:'proto',
                 width: 200,
                 flex: 1
+            },{
+                header: i18n._("Bytes In"),
+                dataIndex:'inBytes',
+                width: 100
+            },{
+                header: i18n._("Bytes Out"),
+                dataIndex:'outBytes',
+                width: 100
             },{
                 header: i18n._("Status"),
                 dataIndex: 'mode',

@@ -44,6 +44,8 @@ public class ConnectionStatusRecord implements JSONString, Serializable
     private String tmplDst;
     private String selSrc;
     private String selDst;
+    private String inBytes;
+    private String outBytes;
 
     public ConnectionStatusRecord()
     {
@@ -117,6 +119,12 @@ public class ConnectionStatusRecord implements JSONString, Serializable
     public String getSelDst() { return(selDst); }
     public void setSelDst(String selDst) { this.selDst = selDst; }
     
+    public String getInBytes() { return(inBytes); }
+    public void setInBytes(String inBytes) { this.inBytes = inBytes; }
+    
+    public String getOutBytes() { return(outBytes); }
+    public void setOutBytes(String outBytes) { this.outBytes = outBytes; }
+    
     // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toString()
@@ -143,6 +151,8 @@ public class ConnectionStatusRecord implements JSONString, Serializable
         local += " tmplDst:" + tmplDst;
         local += " selSrc:" + selSrc;
         local += " selDst:" + selDst;
+        local += " inBytes:" + inBytes;
+        local += " outBytes:" + outBytes;
 
         return (local);
     }

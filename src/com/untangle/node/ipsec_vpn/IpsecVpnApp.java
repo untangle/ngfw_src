@@ -34,6 +34,7 @@ public class IpsecVpnApp extends NodeBase
     private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
     private final static String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
     private final static String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
+    private final static String GRAB_TRAFFIC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
 
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
     private final static String STRONGSWAN_STROKE_TIMEOUT = "15000";
@@ -512,6 +513,8 @@ public class IpsecVpnApp extends NodeBase
         record.setTmplSrc(tunnel.getLeftSubnet());
         record.setTmplDst(tunnel.getRightSubnet());
         record.setMode("inactive");
+        record.setInBytes("0");
+        record.setOutBytes("0");
 
         // make sure we have the remote IP address in case they used the hostname
         try {
@@ -567,6 +570,7 @@ public class IpsecVpnApp extends NodeBase
             // when we find the correct status record with matching in/out records
             if (tunnel.getConntype().equals("transport")) {
                 record.setMode("active");
+                getTrafficStatistics(record);
                 break;
             }
 
@@ -584,6 +588,7 @@ public class IpsecVpnApp extends NodeBase
             record.setTmplSrc(finder.getDst());
             record.setTmplDst(finder.getSrc());
             record.setMode("active");
+            getTrafficStatistics(record);
             break;
         }
 
@@ -627,7 +632,60 @@ public class IpsecVpnApp extends NodeBase
         return null;
     }
 
-    // https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+    private void getTrafficStatistics(ConnectionStatusRecord status)
+    {
+        long outValue = 0;
+        long inValue = 0;
+        int top, len;
+
+        // Use the id and description to create a unique connection name that won't cause
+        // problems in the ipsec.conf file by replacing non-word characters with a hyphen.
+        // We also prefix this name with UT123_ to ensure no dupes in the config file.
+        String workname = ("UT" + status.getId() + "_" + status.getDescription().replaceAll("\\W", "-"));
+
+        /*
+         * the script should return the tunnel stats in the following format |
+         * TUNNNEL:tunnel_name IN:123 OUT:456 |
+         */
+        String result = IpsecVpnApp.execManager().execOutput(GRAB_TRAFFIC_SCRIPT + " " + workname);
+
+        /*
+         * We use the IN: and OUT: tags to find the beginning of each value and
+         * the trailing space to isolate the numeric portions of the string to
+         * keep Long.valueOf happy.
+         */
+
+        try {
+            top = result.indexOf("IN:");
+            if (top > 0) {
+                len = result.substring(top + 3).indexOf(" ");
+                if (len > 0) {
+                    inValue = Long.valueOf(result.substring(top + 3, top + 3 + len));
+                    status.setInBytes(Long.toString(inValue));
+                }
+            }
+
+            top = result.indexOf("OUT:");
+            if (top > 0) {
+                len = result.substring(top + 4).indexOf(" ");
+                if (len > 0) {
+                    outValue = Long.valueOf(result.substring(top + 4, top + 4 + len));
+                    status.setOutBytes(Long.toString(outValue));
+                }
+            }
+        }
+
+        /*
+         * If we can't parse the tunnel stats just return
+         */
+        catch (Exception exn) {
+            return;
+        }
+    }
+
+    /*
+     * https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+     */
 
     private void fixStrongswanConfig() throws Exception
     {
