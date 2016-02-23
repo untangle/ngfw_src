@@ -322,8 +322,8 @@ a.link,a.link:visited {
     background-image: none;
 }
 
-.menu-button.x-btn .x-btn-wrap {
-    outline: none;
+.x-btn-focus .x-btn-wrap {
+    outline: none !important;
 }
 
 .menu-button.x-btn-pressed .x-btn-inner,.menu-button.x-btn-over .x-btn-inner {
@@ -331,11 +331,22 @@ a.link,a.link:visited {
 }
 
 .action-button.x-btn {
-    border-radius: 16px;
+    border-radius: 8px;
     background-color: #67bd4a;
-    border-color: #67bd4a;
-    background-image: none;
+    border: 0;
+    background-image: none !important;
+    padding: 3px 10px;
 }
+
+.action-button.x-btn:hover {
+    color: #FFF;
+    background-color: rgba(103,189,74,.9);
+}
+.action-button.x-btn:hover:active {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    box-shadow: inset 0 3px 5px rgba(0,0,0,.2);
+}
+
 
 .action-button .x-btn-wrap {
     height: 30px;
@@ -344,7 +355,7 @@ a.link,a.link:visited {
 .action-button .x-btn-inner {
     font-size: 14px;
     font-family: 'Source Sans Pro', sans-serif;
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .action-button.x-btn-over .x-btn-inner {
@@ -684,7 +695,7 @@ a.forgot-password:hover {
     border: 0;
     padding: 0 10px;
     border-radius: 3px;
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    /*box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);*/
     font-size: 11px;
     cursor: pointer;
 }
