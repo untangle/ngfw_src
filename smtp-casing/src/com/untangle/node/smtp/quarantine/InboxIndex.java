@@ -71,7 +71,7 @@ public final class InboxIndex implements Serializable, Iterable<InboxRecord>
     {
         long inboxSize = 0;
         for (InboxRecord iRecord : this.inboxMap.values()) {
-            inboxSize += iRecord.getSize();
+            inboxSize += iRecord.getMailSummary().getQuarantineSize();
         }
         return inboxSize;
     }
@@ -104,7 +104,7 @@ public final class InboxIndex implements Serializable, Iterable<InboxRecord>
             System.out.println("----- RECORD -----");
             System.out.println("\tID: " + record.getMailID());
             System.out.println("\tDate: " + record.getInternDate());
-            System.out.println("\tSize: " + record.getSize());
+            System.out.println("\tSize: " + record.getMailSummary().getQuarantineSize());
             System.out.println("\tSender: " + record.getMailSummary().getTruncatedSender());
             System.out.println("\tSubject: " + record.getMailSummary().getTruncatedSubject());
             System.out.println("\tAttchCount: " + record.getMailSummary().getAttachmentCount());

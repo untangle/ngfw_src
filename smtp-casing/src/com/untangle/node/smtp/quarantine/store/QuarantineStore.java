@@ -487,9 +487,9 @@ public class QuarantineStore
                 file.delete();
             }
 
-            if (!masterTable.mailRemoved(address, record.getSize())) {
+            if (!masterTable.mailRemoved(address, record.getMailSummary().getQuarantineSize())) {
                 masterTable = MasterTable.rebuild(rootDir.getAbsolutePath());
-                masterTable.mailRemoved(address, record.getSize());
+                masterTable.mailRemoved(address, record.getMailSummary().getQuarantineSize());
             }
         }
 

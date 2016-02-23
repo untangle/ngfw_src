@@ -88,19 +88,6 @@ public final class InboxRecord implements Serializable
         this.mailSummary = summary;
     }
 
-    /**
-     * Get the size of the mail's MIME file.
-     */
-    public final long getSize()
-    {
-        return mailSummary.getQuarantineSize();
-    }
-
-    public final void setSize(long size)
-    {
-        this.mailSummary.setQuarantineSize(size);
-    }
-
     @Override
     public String toString()
     {

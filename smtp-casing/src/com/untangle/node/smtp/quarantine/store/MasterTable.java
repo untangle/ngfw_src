@@ -237,7 +237,7 @@ final class MasterTable
             long totalSz = 0;
             int totalMails = 0;
             for (InboxRecord record : inboxIndex) {
-                totalSz += record.getSize();
+                totalSz += record.getMailSummary().getQuarantineSize();
                 totalMails++;
             }
             storeMeta.addInbox(inboxIndex.getOwnerAddress(), new InboxSummary(f.getName(), totalSz, totalMails));
