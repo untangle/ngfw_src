@@ -44,6 +44,11 @@ function doRestore()
     cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
+    # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
+    if [ -x @PREFIX@/etc/init.d/untangle-vm ] ; then
+        @PREFIX@/etc/init.d/untangle-vm stop
+    fi
+
     # restore the files, both system and the /usr/share/untangle important stuf
     debug "Restoring files..."
 
