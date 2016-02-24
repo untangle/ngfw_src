@@ -93,6 +93,7 @@ Ext.define('Ung.reportsViewer', {
         this.treepanel = this.down("treepanel"); 
         Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
+            if(!this.getEl()) return;
             var currentApplications = result.list;
             if (currentApplications) {
                 var i, app, apps = [];
@@ -108,40 +109,40 @@ Ext.define('Ung.reportsViewer', {
                     }
                 }
                 if(apps.length > 0) {
-                    if ( this.treepanel.getStore() != null ) { // if the tab has been switch the store is null
-                        this.treepanel.getStore().getRoot().appendChild({
-                            text : i18n._("Applications"),
-                            leaf : false,
-                            expanded : true,
-                            children : apps
-                        });
-                    }
+                    this.treepanel.getStore().getRoot().appendChild({
+                        text : i18n._("Applications"),
+                        leaf : false,
+                        expanded : true,
+                        children : apps
+                    });
                 }
             }
             this.openTarget();
         },this));
     },
     openTarget: function() {
+        if(!this.getEl()) return;
         if(Ung.Main.target) {
             var targetTokens = Ung.Main.target.split(".");
             if(targetTokens.length >= 2 && targetTokens[1] !=null ) {
                 var rootNode = this.treepanel.getStore().getRoot();
-                rootNode.cascade(function(node) {
-                    if(node.get("category") == targetTokens[1]){
-                        if(targetTokens.length >= 4 && targetTokens[2] !=null && targetTokens[3] !=null ) {
-                            this.initialEntry={type: targetTokens[2], entryId: targetTokens[3]};
+                rootNode.cascadeBy({
+                    before: function(node) {
+                        if(node.get("category") == targetTokens[1]){
+                            if(targetTokens.length >= 4 && targetTokens[2] !=null && targetTokens[3] !=null ) {
+                                this.initialEntry={type: targetTokens[2], entryId: targetTokens[3]};
+                            }
+                            this.treepanel.getSelectionModel().select(node);
+                            delete this.initialEntry;
+                            return false;
                         }
-                        this.treepanel.getSelectionModel().select(node);
-                        delete this.initialEntry;
-                        return false;
-                    }
-                }, this);
+                    },
+                    scope: this
+                });
             }
             delete Ung.Main.target;
         } else {
-            if ( this.treepanel.getStore() != null ) { // if the tab has been switch the store is null
-                this.treepanel.getSelectionModel().select(0);
-            }
+            this.treepanel.getSelectionModel().select(0);
         }
     }
 });
