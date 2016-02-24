@@ -44,7 +44,7 @@ function doRestore()
     cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
-    # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
+    # stop the untangle-vm
     if [ -x @PREFIX@/etc/init.d/untangle-vm ] ; then
         @PREFIX@/etc/init.d/untangle-vm stop
     fi
