@@ -21,7 +21,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildData();
 
         var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
-        
+
         this.buildTabPanel(panels);
         this.callParent(arguments);
     },
@@ -99,7 +99,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         emailTime.setTime(0);
         emailTime.setHours(this.getSettings().generationHour);
         emailTime.setMinutes(this.getSettings().generationMinute);
-        
+
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
             header: i18n._("Change Password"),
@@ -708,7 +708,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 dataProperty: "reportEntries",
                 sortField: 'displayOrder',
                 columnsDefaultSortable: false,
-                fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions', 
+                fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
                          'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
                 columns: [{
                     header: i18n._("Title"),
@@ -1026,6 +1026,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
         this.getSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();
         this.getSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();
+
+        // when saving set the dashboard flag
+        Ung.dashboard.reportEntriesModified = true;
 
         handler.call(this, isApply);
     },
