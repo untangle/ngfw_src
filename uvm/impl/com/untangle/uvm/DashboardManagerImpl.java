@@ -88,6 +88,8 @@ public class DashboardManagerImpl implements DashboardManager
         widgets.add( new DashboardWidgetSettings("Memory"));
         widgets.add( new DashboardWidgetSettings("Server"));
 
+        widgets.add( new DashboardWidgetSettings("NetworkLayout"));
+        
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
