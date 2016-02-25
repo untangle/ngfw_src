@@ -57,7 +57,16 @@ div.node div.node-label {
 }
 /* node trial info text */
 div.node div.node-faceplate-info {
-    display: none;
+    position: absolute;
+    top: 5px;
+    left: 0px;
+    width: 100%;
+    line-height: 12px;
+    text-align: center;
+    font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
+    font-size: 9px;
+    text-shadow: 1px 1px #FFFFFF;
+    color: #DE2020;
 }
 /* node state container */
 div.node div.node-state {
