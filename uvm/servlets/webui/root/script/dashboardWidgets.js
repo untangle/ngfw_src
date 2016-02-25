@@ -894,6 +894,128 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
     }
 });
 
+/* Network Layout Widget */
+Ext.define('Ung.dashboard.NetworkLayout', {
+    extend: 'Ung.dashboard.Widget',
+    displayMode: 'big',
+    height: 400,
+    hasStats: true,
+    refreshIntervalSec: 0,
+    hasRefresh: true,
+    data: {},
+    initComponent: function () {
+        this.title = i18n._("Network Layout");
+        this.callParent(arguments);
+    },
+    tpl: '<div class="wg-wrapper network-intf">' +
+            '<button id="fake-interface-add" class="wg-button" style="position: absolute; right: 10px; top: 0;">Add Fake Interface</button>' +
+            '<div class="external">' +
+              '<div class="iface" id="interface_{externalInterface.id}">' +
+                '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 10px;"/>' +
+                '<p class="name">{externalInterface.name}</p>' +
+                '<div class="speeds" style="display: inline-block; text-align: left;">' +
+                  '<span class="up">{externalInterface.tx} kb/s</span>' +
+                  '<span class="down">{externalInterface.rx} kb/s</span>' +
+                '</div>' +
+                '<br/><span class="connection ext"></span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="wire"></div>' +
+            '<div class="wrap">' +
+              '<div class="internal">' +
+                '<tpl for="internalInterfaces">' +
+                  '<div class="iface" id="interface_{id}">' +
+                    '<span class="connection int"></span><br/>' +
+                    '<div class="speeds" style="display: inline-block; text-align: left;">' +
+                      '<span class="up">??? kb/s</span>' +
+                      '<span class="down">??? kb/s</span>' +
+                    '</div>' +
+                    '<p class="name">{name}</p>' +
+                    '<p class="devs">23</p>' +
+                  '</div>' +
+                '</tpl>' +
+              '</div>' +
+            '</div>' +
+         '</div>',
+    updateStats: function (stats) {
+        //console.log(stats);
+        if (this.data.externalInterface) {
+            var speedElExt = document.querySelector('#interface_' + this.data.externalInterface.id);
+            if (speedElExt) {
+                speedElExt.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterface.id + '_txBps'] / 1024) + ' kb/s';
+                speedElExt.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterface.id + '_rxBps'] / 1024) + ' kb/s';
+            }
+        }
+
+        if (this.data.internalInterfaces) {
+            var speedsEl;
+            for (i = 0; i < this.data.internalInterfaces.length; i++) {
+                speedsEl = document.querySelector('#interface_' + this.data.internalInterfaces[i].id);
+                if (speedsEl) {
+                    speedsEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
+                    speedsEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+                }
+            }
+        }
+
+    },
+    loadData: function (handler) {
+        this.data.externalInterface = {};
+        this.data.internalInterfaces = [];
+
+        var me = this;
+
+        rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
+            handler.call(this);
+
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            var allInterfaces = result.interfaces.list, i;
+
+            this.data.externalInterface = {
+                id: allInterfaces[0].interfaceId,
+                name: allInterfaces[0].name,
+                //physicalDev: allInterfaces[0].physicalDev,
+                //disabled: allInterfaces[0].disabled,
+                rx: '???',
+                tx: '???'
+            };
+
+            for (i = 1; i < allInterfaces.length; i += 1) {
+                if (!allInterfaces[i].disabled) {
+                    this.data.internalInterfaces.push({
+                        id: allInterfaces[i].interfaceId,
+                        name: allInterfaces[i].name,
+                        //physicalDev: allInterfaces[i].physicalDev,
+                        //disabled: allInterfaces[i].disabled,
+                        rx: '???',
+                        tx: '???'
+                    });
+                }
+            }
+
+            this.update(this.data);
+
+            Ext.get('fake-interface-add').on('click', function () {
+                me.addFakeInterface();
+            });
+
+        }, this));
+    },
+    addFakeInterface: function () {
+        var fakeIntf = {
+            name: 'Fake interface',
+            disabled: false,
+            rx: 100,
+            tx: 10
+        };
+        this.data.internalInterfaces.push(fakeIntf);
+        this.update(this.data);
+    }
+});
+
+
 /* ReportEntry Widget */
 Ext.define('Ung.dashboard.ReportEntry', {
     extend: 'Ung.dashboard.Widget',

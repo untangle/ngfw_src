@@ -52,6 +52,11 @@ Ext.define('Webui.config.dashboardManager', {
 //             title: i18n._('Interface Load'),
 //             displayMode: 'small'
         },{
+            name: 'NetworkLayout',
+            title: i18n._('Network Layout'),
+            displayMode: 'big',
+            singleInstance: true
+        },{
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big',
