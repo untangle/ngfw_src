@@ -368,7 +368,10 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     name: 'close',
                     iconCls: 'cancel-icon',
                     text: i18n._('Close'),
-                    handler: Ext.bind(this.close, this )
+                    handler: function() {
+                        this.distributeWindow.close();
+                    },
+                    scope: this
                 }],
                 closeWindow: function() {
                     this.hide();
