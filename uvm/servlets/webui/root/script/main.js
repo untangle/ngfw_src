@@ -434,6 +434,7 @@ Ext.define("Ung.Main", {
             query = query + "&" + "version=" + rpc.fullVersion;
             query = query + "&" + "webui=true";
             query = query + "&" + "lang=" + rpc.languageSettings.language;
+            query = query + "&" + "applianceModel=" + rpc.applianceModel;
 
             rpc.about = query;
         }
