@@ -42,8 +42,8 @@ public class CaptivePortalUserEvent extends LogEvent
     public String getLoginName() { return loginName; }
     public void setLoginName(String loginName) { this.loginName = loginName; }
 
-    private String getEventValue() { return eventValue; }
-    private void setEventValue(String eventValue) { this.eventValue = eventValue; }
+    public String getEventValue() { return eventValue; }
+    public void setEventValue(String eventValue) { this.eventValue = eventValue; }
 
     public EventType getEvent() { return EventType.valueOf(this.eventValue); }
     public void setEvent(EventType newEvent) { this.eventValue = newEvent.toString(); }
@@ -51,8 +51,8 @@ public class CaptivePortalUserEvent extends LogEvent
     public Long getPolicyId() { return policyId; }
     public void setPolicyId(Long policyId) { this.policyId = policyId; }
 
-    private String getAuthenticationTypeValue() { return authenticationTypeValue; }
-    private void setAuthenticationTypeValue(String newValue) { this.authenticationTypeValue = newValue; }
+    public String getAuthenticationTypeValue() { return authenticationTypeValue; }
+    public void setAuthenticationTypeValue(String newValue) { this.authenticationTypeValue = newValue; }
 
     public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
     public void setAuthenticationType(AuthenticationType newValue) { this.authenticationTypeValue = newValue.toString(); }

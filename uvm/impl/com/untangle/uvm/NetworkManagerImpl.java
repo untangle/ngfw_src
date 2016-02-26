@@ -2046,20 +2046,20 @@ public class NetworkManagerImpl implements NetworkManager
 	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
 
 	try {
-            String lines[] = channelResult.split("\\n");
-            for ( String line : lines ) {
-		Matcher match = channelRegex.matcher(line);
-		Matcher disabledMatch = channelDisabledRegex.matcher(line);
-		if ( match.find() && !disabledMatch.find() ) {
-		    Integer channel = Integer.valueOf(match.group(3));
-		    channels.add(channel);
-		    if (channel > maxChannel) maxChannel = channel;
-                }
+        String lines[] = channelResult.split("\\n");
+        for ( String line : lines ) {
+            Matcher match = channelRegex.matcher(line);
+            Matcher disabledMatch = channelDisabledRegex.matcher(line);
+            if ( match.find() && !disabledMatch.find() ) {
+                Integer channel = Integer.valueOf(match.group(3));
+                channels.add(channel);
+                if (channel > maxChannel) maxChannel = channel;
             }
-        } catch (Exception e) {
-            logger.error( "Error parsing wireless channels", e );
-            return channels;
         }
+    } catch (Exception e) {
+        logger.error( "Error parsing wireless channels", e );
+        return channels;
+    }
 	
 	if (maxChannel > 11) channels.add(1, new Integer( -2 ));
 
