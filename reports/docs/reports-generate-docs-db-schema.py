@@ -90,6 +90,7 @@ dict['server_events'].update({
     'table_description' : 'This table stores server status events.',
     'mem_free' : 'The number of free bytes of memory',
     'mem_total' : 'The total bytes of memory',
+    'active_hosts' : 'The number of active hosts',
     'load_1' : 'The 1-minute CPU load',
     'load_5' : 'The 5-minute CPU load',
     'load_15' : 'The 15-minute CPU load',
@@ -353,6 +354,14 @@ dict['settings_changes'].update({
     'settings_file' : 'The name of the file changed',
     'username' : 'The username logged in at the time of the change',
     'hostname' : 'The remote hostname',
+})
+
+dict['interface_stat_events'] = copy.deepcopy(generic)
+dict['interface_stat_events'].update({
+    'table_description' : 'This table stores stats for interfaces.',
+    'interface_id' : 'The interface ID',
+    'rx_rate' : 'The RX rate (bytes/s)',
+    'tx_rate' : 'The TX rate (bytes/s)',
 })
 
 
