@@ -338,7 +338,7 @@ public class AdBlockerHandler extends HttpEventHandler
         Map<RequestLineToken, List<String>> killers = (Map<RequestLineToken, List<String>>) session.attachment();
 
         List<String> cookieKillers = killers.remove(rl);
-        if (null == cookieKillers) {
+        if (cookieKillers == null) {
             return h;
         }
 

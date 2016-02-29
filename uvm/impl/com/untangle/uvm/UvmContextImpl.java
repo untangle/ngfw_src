@@ -409,6 +409,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return com.untangle.uvm.Version.getVersion();
     }
 
+    public void gc()
+    {
+        System.gc();
+    }
+    
     public String getFullVersion()
     {
         return com.untangle.uvm.Version.getFullVersion();
@@ -867,6 +872,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         hideUpgradeSplash();
+
+        // Full System GC so the JVM gives memory back
+        UvmContextFactory.context().gc();
 
         // start capturing traffic last
         networkManager.insertRules();

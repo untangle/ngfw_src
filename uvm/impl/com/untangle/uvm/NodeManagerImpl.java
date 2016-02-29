@@ -266,6 +266,9 @@ public class NodeManagerImpl implements NodeManager
             node.start();
         }
 
+        // Full System GC so the JVM gives memory back
+        UvmContextFactory.context().gc();
+        
         return node;
     }
 
@@ -296,6 +299,12 @@ public class NodeManagerImpl implements NodeManager
             this._setSettings(this.settings);
         }
 
+
+        // Full System GC so the JVM gives memory back for unloaded memory/classes
+        // This is necessary because the G1 does not actually account for MaxHeapFreeRatio
+        // except during an full GC.
+        UvmContextFactory.context().gc();
+        
         return;
     }
 

@@ -7,6 +7,9 @@ class UvmManager(Manager):
     def api_version( self ):
         print self.__uvmContext.version()
 
+    def api_gc( self ):
+        self.__uvmContext.gc()
+        
     def api_setnetcapdebuglevel( self, debugLevel ):
         self.__uvmContext.netcapManager().setNetcapDebugLevel( debugLevel )
 

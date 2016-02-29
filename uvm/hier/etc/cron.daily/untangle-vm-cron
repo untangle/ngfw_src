@@ -8,4 +8,7 @@ apt-get update >/dev/null 2>&1
 # remove old temp files older than 7 days (safety mechanism)
 /usr/bin/find /tmp -mtime +7 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
 
+# run a full stop-the-world GC
+/usr/bin/ucli gc
+
 exit 0

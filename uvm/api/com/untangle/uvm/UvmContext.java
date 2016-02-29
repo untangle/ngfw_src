@@ -297,6 +297,11 @@ public interface UvmContext
     UvmState state();
 
     /**
+     * Run a full System.gc()
+     */
+    void gc();
+    
+    /**
      * Thread utilities
      */
     Thread newThread( Runnable runnable );

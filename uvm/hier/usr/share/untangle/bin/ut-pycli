@@ -97,6 +97,7 @@ def printUsage():
     ucli version - show the untangle-vm version
     ucli setNetcapDebugLevel <level> - set the netcap debug level
     ucli setJNetcapDebugLevel <level> - set the jnetcap debug level
+    ucli gc - run full System.gc()
 """ % sys.argv[0] )
 
 
