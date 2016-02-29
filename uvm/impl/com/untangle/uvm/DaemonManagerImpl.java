@@ -44,6 +44,8 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         MonitorType monitorType = MonitorType.DISABLED;
         String transmitString = null;
         String searchString = null;
+        String extraRestartCommand = null;
+        long extraRestartDelay = 0;
         long monitorInterval = 0;
         long lastCheck = 0;
         String hostString = null;
@@ -120,6 +122,15 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             }
         }
     }
+    
+    public void setExtraRestartCommand(String daemonName, String extraRestartCommand, long extraRestartDelay)
+    {
+        DaemonObject daemonObject = getDaemonObject( daemonName );
+        synchronized( daemonObject ) {
+            daemonObject.extraRestartCommand = extraRestartCommand;
+            daemonObject.extraRestartDelay = extraRestartDelay;
+        }        
+    }
 
     public boolean enableDaemonMonitoring(String daemonName, long secondInterval, String searchString)
     {
@@ -185,13 +196,13 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private void execDaemonControlEvil(String daemonName, String command)
     {
-        String cmd = "/etc/init.d/" + daemonName + " " + command;
+        String cmd = (daemonName == null ? command : "/etc/init.d/" + daemonName + " " + command);        
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             reader.waitFor();
         }
-        catch( Exception e ) {
-            logger.warn("Failed to run command: " + command, e);
+        catch( Exception exn ) {
+            logger.warn("Failed to run command: " + command, exn);
         }
     }
 
@@ -199,15 +210,15 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * executes daemon control command using execOutput()
      * execOutput() is safer but the execManager can only run one at at time
      */
-    private void execDaemonControl(String daemonName, String command)
+    private void execDaemonControlSafe(String daemonName, String command)
     {
-        String cmd = "/etc/init.d/" + daemonName + " " + command;
+        String cmd = (daemonName == null ? command : "/etc/init.d/" + daemonName + " " + command);
         String output = UvmContextFactory.context().execManager().execOutput(cmd);
         try {
             String lines[] = output.split("\\r?\\n");
             for (String line : lines)
                 logger.info(cmd + ": " + line);
-        } catch (Exception e) {
+        } catch ( Exception exn ) {
         }
     }
     
@@ -229,7 +240,16 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             // process does not seem to be running so log and restart
             logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
             logger.warn("Restarting failed daemon: " + object.daemonName);
-            execDaemonControl(object.daemonName, "restart");
+            execDaemonControlSafe(object.daemonName, "restart");
+            
+            if (object.extraRestartCommand != null) {
+                try {
+                    Thread.sleep(object.extraRestartDelay);
+                }
+                catch (Exception exn) {
+                }
+                execDaemonControlSafe(null,object.extraRestartCommand);
+            }
         }
     }
 
@@ -261,7 +281,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             }
 
             // catch and log any exceptions and set the restart flag
-            catch (Exception exn) {
+            catch ( Exception exn ) {
                 String reason = exn.getMessage();
                 if (reason == null && exn.getCause() != null)
                     reason = exn.getCause().toString();
@@ -282,7 +302,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                     rxstream.close();
                 if (socket != null)
                     socket.close();
-            } catch (Exception exn) {
+            } catch ( Exception exn ) {
             }
 
             // if no exceptions then we check the response for the search string
@@ -297,7 +317,16 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                 return;
 
             logger.warn("Restarting failed daemon: " + object.daemonName);
-            execDaemonControl(object.daemonName, "restart");
+            execDaemonControlSafe(object.daemonName, "restart");
+
+            if (object.extraRestartCommand != null) {
+                try {
+                    Thread.sleep(object.extraRestartDelay);
+                }
+                catch ( Exception exn ) {
+                }
+                execDaemonControlSafe(null,object.extraRestartCommand);
+            }
         }
     }
 }
