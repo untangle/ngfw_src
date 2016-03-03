@@ -7,6 +7,7 @@ package com.untangle.node.ssl_inspector;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import org.json.JSONString;
 import org.json.JSONObject;
 
@@ -23,6 +24,18 @@ public class SslInspectorSettings implements Serializable
     private boolean serverBlindTrust;
     private boolean javaxDebug;
     private boolean enabled;
+
+    private boolean client_SSLv2Hello = true;
+    private boolean client_SSLv3 = true;
+    private boolean client_TLSv10 = true;
+    private boolean client_TLSv11 = true;
+    private boolean client_TLSv12 = true;
+
+    private boolean server_SSLv2Hello = false;
+    private boolean server_SSLv3 = false;
+    private boolean server_TLSv10 = true;
+    private boolean server_TLSv11 = true;
+    private boolean server_TLSv12 = true;
 
     // constructors -----------------------------------------------------------
 
@@ -136,6 +149,110 @@ public class SslInspectorSettings implements Serializable
     public void setEnabled(boolean flag)
     {
         this.enabled = flag;
+    }
+
+    // ----- client side protocols ----- client side protocols -----
+
+    public boolean getClient_SSLv2Hello()
+    {
+        return (client_SSLv2Hello);
+    }
+
+    public void setClient_SSLv2Hello(boolean flag)
+    {
+        this.client_SSLv2Hello = flag;
+    }
+
+    public boolean getClient_SSLv3()
+    {
+        return (client_SSLv3);
+    }
+
+    public void setClient_SSLv3(boolean flag)
+    {
+        this.client_SSLv3 = flag;
+    }
+
+    public boolean getClient_TLSv10()
+    {
+        return (client_TLSv10);
+    }
+
+    public void setClient_TLSv10(boolean flag)
+    {
+        this.client_TLSv10 = flag;
+    }
+
+    public boolean getClient_TLSv11()
+    {
+        return (client_TLSv11);
+    }
+
+    public void setClient_TLSv11(boolean flag)
+    {
+        this.client_TLSv11 = flag;
+    }
+
+    public boolean getClient_TLSv12()
+    {
+        return (client_TLSv12);
+    }
+
+    public void setClient_TLSv12(boolean flag)
+    {
+        this.client_TLSv12 = flag;
+    }
+
+    // ----- server side protocols ----- server side protocols -----
+
+    public boolean getServer_SSLv2Hello()
+    {
+        return (server_SSLv2Hello);
+    }
+
+    public void setServer_SSLv2Hello(boolean flag)
+    {
+        this.server_SSLv2Hello = flag;
+    }
+
+    public boolean getServer_SSLv3()
+    {
+        return (server_SSLv3);
+    }
+
+    public void setServer_SSLv3(boolean flag)
+    {
+        this.server_SSLv3 = flag;
+    }
+
+    public boolean getServer_TLSv10()
+    {
+        return (server_TLSv10);
+    }
+
+    public void setServer_TLSv10(boolean flag)
+    {
+        this.server_TLSv10 = flag;
+    }
+
+    public boolean getServer_TLSv11()
+    {
+        return (server_TLSv11);
+    }
+
+    public void setServer_TLSv11(boolean flag)
+    {
+        this.server_TLSv11 = flag;
+    }
+
+    public boolean getServer_TLSv12()
+    {
+        return (server_TLSv12);
+    }
+
+    public void setServer_TLSv12(boolean flag)
+    {
+        this.server_TLSv12 = flag;
     }
 
     public String toJSONString()

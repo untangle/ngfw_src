@@ -157,6 +157,110 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     value:  i18n._("When the SSL Inspector detects non-HTTPS traffic on port 443, it will normally ignore this traffic and allow it to flow unimpeded.  If you enable this checkbox, non-HTTPS traffic will instead be blocked.")
                 }]
             }, {
+                xtype: 'fieldset',
+                layout: { type: 'hbox', align: 'left' },
+                defaults: {
+                    margin: '0 0 0 30',
+                    labelWidth: 50
+                },
+                title: i18n._("Client Connection Protocols"),
+                items: [{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("SSLv2Hello"),
+                    labelWidth: 70,
+                    name: 'client_SSLv2Hello',
+                    checked: this.settings.client_SSLv2Hello,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.client_SSLv2Hello = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("SSLv3"),
+                    labelWidth: 40,
+                    name: 'client_SSLv3',
+                    checked: this.settings.client_SSLv3,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.client_SSLv3 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1"),
+                    labelWidth: 40,
+                    name: 'client_TLSv10',
+                    checked: this.settings.client_TLSv10,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.client_TLSv10 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1.1"),
+                    name: 'client_TLSv11',
+                    checked: this.settings.client_TLSv11,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.client_TLSv11 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1.2"),
+                    name: 'client_TLSv12',
+                    checked: this.settings.client_TLSv12,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.client_TLSv12 = checked;
+                        }, this)
+                }]
+            }, {
+                xtype: 'fieldset',
+                layout: { type: 'hbox', align: 'left' },
+                defaults: {
+                    margin: '0 0 0 30',
+                    labelWidth: 50
+                },
+                title: i18n._("Server Connection Protocols"),
+                items: [{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("SSLv2Hello"),
+                    labelWidth: 70,
+                    name: 'server_SSLv2Hello',
+                    checked: this.settings.server_SSLv2Hello,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.server_SSLv2Hello = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("SSLv3"),
+                    labelWidth: 40,
+                    name: 'server_SSLv3',
+                    checked: this.settings.server_SSLv3,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.server_SSLv3 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1"),
+                    labelWidth: 40,
+                    name: 'server_TLSv10',
+                    checked: this.settings.server_TLSv10,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.server_TLSv10 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1.1"),
+                    name: 'server_TLSv11',
+                    checked: this.settings.server_TLSv11,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.server_TLSv11 = checked;
+                        }, this)
+                },{
+                    xtype: 'checkbox',
+                    fieldLabel: i18n._("TLSv1.2"),
+                    name: 'server_TLSv12',
+                    checked: this.settings.server_TLSv12,
+                    handler: Ext.bind(function(elem, checked) {
+                        this.settings.server_TLSv12 = checked;
+                        }, this)
+                }]
+            }, {
                 title: i18n._("Server Trust"),
                 labelWidth: 230,
                 items: [{
@@ -197,7 +301,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.gridTrustList = Ext.create('Ung.grid.Panel',{
             title: i18n._("Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"),
             autoGenerateId: true,
-            height: 280,
+            height: 160,
             hasDelete: false,
             hasEdit: false,
             hasAdd: false,

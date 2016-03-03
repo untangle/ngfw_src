@@ -11,12 +11,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.security.MessageDigest;
 import java.security.KeyStore;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -24,9 +26,11 @@ import java.util.List;
 import java.nio.ByteBuffer;
 import java.io.FileInputStream;
 import java.io.File;
+
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.GlobUtil;
+
 import org.apache.log4j.Logger;
 
 class SslInspectorManager
@@ -61,9 +65,6 @@ class SslInspectorManager
      * On the client side we leave everything enabled for maximum compatibility.
      */
 
-    private static String[] clientProtocols = { "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" };
-    private static String[] serverProtocols = { "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" };
-
     // This is the list of subject name tags that we know work with the
     // openssl utility. The key is the tag we retrieve from the server cert
     // by calling X509Certificate.getSubjectDN().getName() and the object
@@ -86,6 +87,11 @@ class SslInspectorManager
         validAlternateList.put(0x06, "URI");
         validAlternateList.put(0x07, "IP");
         validAlternateList.put(0x08, "RID");
+    }
+
+    public enum ProtocolList
+    {
+        CLIENT, SERVER
     }
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -287,7 +293,7 @@ class SslInspectorManager
         sslContext = SSLContext.getInstance("TLS");
         sslContext.init(kmf.getKeyManagers(), new TrustManager[] { trust_all_certificates }, null);
         sslEngine = sslContext.createSSLEngine();
-        sslEngine.setEnabledProtocols(clientProtocols);
+        sslEngine.setEnabledProtocols(generateProtocolList(ProtocolList.CLIENT));
 
         // on the client side we act like an SSL server
         sslEngine.setUseClientMode(false);
@@ -342,7 +348,7 @@ class SslInspectorManager
             sslEngine = sslContext.createSSLEngine(sniHostname, 443);
         }
 
-        sslEngine.setEnabledProtocols(serverProtocols);
+        sslEngine.setEnabledProtocols(generateProtocolList(ProtocolList.SERVER));
 
         // on the server side we act like an SSL client
         sslEngine.setUseClientMode(true);
@@ -602,6 +608,32 @@ for more data when a full packet has not yet been received.
         }
 
         return buf.toString();
+    }
+
+    public String[] generateProtocolList(ProtocolList listType)
+    {
+        ArrayList<String> protoList = new ArrayList<String>();
+
+        switch (listType)
+        {
+        case CLIENT:
+            if (node.getSettings().getClient_SSLv2Hello()) protoList.add("SSLv2Hello");
+            if (node.getSettings().getClient_SSLv3()) protoList.add("SSLv3");
+            if (node.getSettings().getClient_TLSv10()) protoList.add("TLSv1");
+            if (node.getSettings().getClient_TLSv11()) protoList.add("TLSv1.1");
+            if (node.getSettings().getClient_TLSv12()) protoList.add("TLSv1.2");
+            break;
+        case SERVER:
+            if (node.getSettings().getServer_SSLv2Hello()) protoList.add("SSLv2Hello");
+            if (node.getSettings().getServer_SSLv3()) protoList.add("SSLv3");
+            if (node.getSettings().getServer_TLSv10()) protoList.add("TLSv1");
+            if (node.getSettings().getServer_TLSv11()) protoList.add("TLSv1.1");
+            if (node.getSettings().getServer_TLSv12()) protoList.add("TLSv1.2");
+            break;
+        }
+
+        String protoArray[] = new String[protoList.size()];
+        return (protoList.toArray(protoArray));
     }
 
     public boolean checkIPCMessage(byte[] haystack, byte[] needle)
