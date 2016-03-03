@@ -208,7 +208,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     },
 
     buildPanelOptions: function() {
-        this.panelOptions = Ext.create('Ext.form.Panel',{
+        this.panelOptions = Ext.create('Ext.panel.Panel',{
             name: 'panelOptions',
             helpSource: 'ipsec_vpn_ipsec_options',
             title: i18n._("IPsec Options"),
@@ -1049,7 +1049,6 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     handler: Ext.bind(this.configureRadius, this )
                 }]
             },{
-
                 title: i18n._( "Server Listen Addresses" ),
                 labelWidth: 300,
                 items: [{
@@ -1093,7 +1092,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.gridNetworks = Ext.create('Ung.grid.Panel', {
             settingsCmp: this,
             name: 'gridNetworks',
-            title: 'Remote Networks',
+            title: i18n._('Remote Networks'),
             height: 600,
             dataProperty:'networks',
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnNetwork',
@@ -1173,8 +1172,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         left.setValue(newValue);
                     }, this)
                 }
-            },
-            {
+            },{
                 xtype: 'container',
                 layout: 'column',
                 margin: '0 0 5 0',
@@ -1255,10 +1253,11 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             }
         }));
 
-        this.panelGRENetworks = Ext.create('Ext.form.Panel',{
+        this.panelGRENetworks = Ext.create('Ext.panel.Panel',{
             name: 'panelGRENetworks',
             helpSource: 'ipsec_vpn_gre_networks',
             title: i18n._("GRE Networks"),
+            settingsCmp: this,
             cls: 'ung-panel',
             autoScroll: true,
             trackResetOnLoad: true,
@@ -1347,7 +1346,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 }
             });
 
-            this.menuInterfacePicker.add([{ text: 'Manual Address Input', ipaddr: '1.2.3.4' }]);
+            this.menuInterfacePicker.add([{ text: i18n._('Manual Address Input'), ipaddr: '1.2.3.4' }]);
             var x, status, intf, disabled;
             for( x = 0 ; x < this.rpc.intStatus.list.length ; x++) {
                 status = this.rpc.intStatus.list[x];
