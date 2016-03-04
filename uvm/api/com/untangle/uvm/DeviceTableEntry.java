@@ -32,6 +32,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     private String      httpUserAgent = null;
     
     private long        lastSeenTime = 0;
+    private int         lastSeenInterfaceId = 0;
 
     private static final String IPV4_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     private static Pattern ipv4Pattern = Pattern.compile( IPV4_PATTERN );
@@ -70,6 +71,9 @@ public class DeviceTableEntry implements Serializable, JSONString
     public long getLastSeenTime() { return this.lastSeenTime; }
     public void setLastSeenTime( long newValue ) { this.lastSeenTime = newValue; }
 
+    public long getLastSeenInterfaceId() { return this.lastSeenInterfaceId; }
+    public void setLastSeenInterfaceId( int newValue ) { this.lastSeenInterfaceId = newValue; }
+    
     public String getMacVendor() { return this.macVendor; }
     public void setMacVendor( String newValue )
     {

@@ -22,6 +22,7 @@ public class HostTableEntry implements Serializable, JSONString
 
     private InetAddress address = null;
     private String      macAddress = null;
+    private int         interfaceId = 0;
     private long        creationTime = 0;
     private long        lastAccessTime = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
@@ -76,6 +77,16 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public int getInterfaceId() { return this.interfaceId; }
+    public void setInterfaceId( int newValue )
+    {
+        updateEvent("interfaceId",(new Integer(this.interfaceId)).toString(),new Integer(newValue).toString());
+        this.interfaceId = newValue;
+        if ( this.device != null )
+            device.setLastSeenInterfaceId( newValue );
+        updateAccessTime();
+    }
+    
     public long getCreationTime() { return this.creationTime; }
     public void setCreationTime( long newValue )
     {

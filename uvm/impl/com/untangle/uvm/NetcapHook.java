@@ -150,7 +150,10 @@ public abstract class NetcapHook implements Runnable
                     entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                 }
                 /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
-                if ( netcapSession.clientSide().interfaceId() == 0xfa || netcapSession.clientSide().interfaceId() == 0xfb || netcapSession.clientSide().interfaceId() == 0xfc || netcapSession.clientSide().interfaceId() == 0xfd ) {
+                if ( netcapSession.clientSide().interfaceId() == 0xfa ||
+                     netcapSession.clientSide().interfaceId() == 0xfb ||
+                     netcapSession.clientSide().interfaceId() == 0xfc ||
+                     netcapSession.clientSide().interfaceId() == 0xfd ) {
                     entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
                 }
             } 
@@ -158,7 +161,9 @@ public abstract class NetcapHook implements Runnable
             /* if entry is still not null */
             if ( entry != null ) {
                 entry.setLastSessionTime( System.currentTimeMillis() );
-
+                if ( clientIntf != entry.getInterfaceId() )
+                    entry.setInterfaceId( clientIntf );
+                
                 if ( ! entry.getEntitled() )
                     entitled = false;
                 

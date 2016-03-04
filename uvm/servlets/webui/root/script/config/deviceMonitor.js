@@ -50,6 +50,8 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "hostname",
                 type: 'string'
             },{
+                name: "lastSeenInterfaceId"
+            },{
                 name: "deviceUsername",
                 type: 'string'
             },{
@@ -79,6 +81,13 @@ Ext.define('Webui.config.deviceMonitor', {
                 editor: {
                     xtype:'textfield',
                     emptyText: i18n._("[no MAC Vendor]")
+                }
+            }, {
+                header: i18n._("Interface"),
+                dataIndex: "lastSeenInterfaceId",
+                width: 100,
+                filter: {
+                    type: 'number'
                 }
             }, {
                 header: i18n._("Hostname"),
