@@ -296,7 +296,11 @@ class Update:
             if result == 0:
                 node.saveSettings( temp_settings_file_name )
                 node.setUpdatedSettingsFlag( True )
-                node.reconfigure()
+                try:
+                    node.reconfigure()
+                except:
+                    # This may time out on slow machines, continue on
+                    pass
         return True
 
 def usage():
