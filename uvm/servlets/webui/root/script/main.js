@@ -1148,7 +1148,7 @@ Ext.define("Ung.Main", {
         var items=[];
         var selVirtualRackIndex = 0;
         rpc.policyNamesMap = {};
-        rpc.policyNamesMap[0] = i18n._("No Rack");
+        rpc.policyNamesMap[0] = i18n._("None");
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
             var policy = rpc.policies[i];
             rpc.policyNamesMap[policy.policyId] = policy.name;

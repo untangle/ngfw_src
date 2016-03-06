@@ -54,7 +54,7 @@ Ext.define("Ung.Main", {
                         rpc.reportsManager.getPoliciesInfo(Ext.bind(function( result, exception ) {
                             if(Ung.Util.handleException(exception)) return;
                             rpc.policyNamesMap = {};
-                            rpc.policyNamesMap[0] = i18n._("No Rack");
+                            rpc.policyNamesMap[0] = i18n._("None");
                             var policy;
                             for(var i=0; i<result.list.length; i++) {
                                 policy=result.list[i];

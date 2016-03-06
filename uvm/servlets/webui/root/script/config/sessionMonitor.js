@@ -120,7 +120,7 @@ Ext.define('Webui.config.sessionMonitor', {
         return appList;
     },
     getColumns: function() {
-        var policyListOptions=[[null, i18n._( "Services" )], ["0", i18n._("No Rack")]];
+        var policyListOptions=[[null, i18n._( "Services" )], ["0", i18n._("None")]];
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
             var policy = rpc.policies[i];
             policyListOptions.push([policy.policyId+"", policy.name]);
