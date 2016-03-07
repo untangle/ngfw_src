@@ -191,14 +191,14 @@ public class CertCacheManagerImpl implements CertCacheManager
 
         // we log and ignore all socket timeout exceptions 
         catch (SocketTimeoutException tex) {
-            logger.warn("Socket timeout fetching server certificate from " + serverAddress);
+            logger.debug("Socket timeout fetching server certificate from " + serverAddress);
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder());
         }
 
         // we log and ignore all other socket exceptions
         catch (SocketException soc) {
-            logger.warn("Socket exception fetching server certificate from " + serverAddress);
+            logger.debug("Socket exception fetching server certificate from " + serverAddress);
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder());
         }
