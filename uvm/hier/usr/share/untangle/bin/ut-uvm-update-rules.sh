@@ -13,24 +13,8 @@ MASK_BYPASS=$((0x01000000))
 MASK_BOGUS=$((0x80000000)) # unused mark
 TCP_REDIRECT_PORTS="9500-9627"
 
-iptables_debug()
-{
-   echo "[`date`] /sbin/iptables $@"
-   /sbin/iptables "$@"
-}
-
-iptables_debug_onerror()
-{
-    # Ignore -N errors
-    /sbin/iptables "$@" || {
-        [ "${3}x" != "-Nx" ] && echo "[`date`] Failed: /sbin/iptables $@"
-    }
-
-    true
-}
-
 if [ -z "${IPTABLES}" ] ; then
-    IPTABLES=iptables
+    IPTABLES=iptables -w
 fi
 
 ## Function to determine the pid of the process that owns the queue
