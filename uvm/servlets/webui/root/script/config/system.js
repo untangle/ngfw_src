@@ -516,6 +516,19 @@ Ext.define('Webui.config.system', {
                             }, this)
                         }
                     }
+                },{
+                    xtype: "checkbox",
+                    boxLabel: i18n._("Log Referer in HTTP events."),
+                    hideLabel: true,
+                    name: "Log Referer",
+                    checked: this.getHttpSettings().logReferer,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.getHttpSettings().logReferer = newValue;
+                            }, this)
+                        }
+                    }
                 }]
             });
         }
