@@ -20,34 +20,24 @@ public class HttpSettings implements Serializable
     private boolean blockLongHeaders = false;
     private int maxUriLength = MAX_URI_LENGTH;
     private boolean blockLongUris = false;
-    private boolean logReferer = false;
+    private boolean logReferer = true;
     
-    // constructors -----------------------------------------------------------
-
     public HttpSettings() { }
-
-    // accessors --------------------------------------------------------------
 
     /**
      * Enabled status for casing.
-     *
-     * @return true when casing is enabled, false otherwise.
      */
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     /**
      * Enables non-http traffic on port 80.
-     *
-     * @return a <code>boolean</code> value
      */
     public boolean isNonHttpBlocked() { return nonHttpBlocked; }
     public void setNonHttpBlocked(boolean nonHttpBlocked) { this.nonHttpBlocked = nonHttpBlocked; }
 
     /**
      * Maximum allowable header length.
-     *
-     * @return maximum characters allowed in a HTTP header.
      */
     public int getMaxHeaderLength() { return 8192; }
     public void setMaxHeaderLength(int maxHeaderLength) { return; }
@@ -56,24 +46,18 @@ public class HttpSettings implements Serializable
      * Enable blocking of headers that exceed maxHeaderLength. If not
      * explicitly blocked the connection is treated as non-HTTP and
      * the behavior is determined by setNonHttpBlocked.
-     *
-     * @return true if connections containing long headers are blocked.
      */
     public boolean getBlockLongHeaders() { return blockLongHeaders; }
     public void setBlockLongHeaders(boolean blockLongHeaders) { this.blockLongHeaders = blockLongHeaders; }
 
     /**
      * Maximum allowable URI length.
-     *
-     * @return maximum characters allowed in the request-line URI.
      */
     public int getMaxUriLength() { return maxUriLength; }
     public void setMaxUriLength(int maxUriLength)
     {
-        if (MIN_URI_LENGTH > maxUriLength
-            || MAX_URI_LENGTH < maxUriLength) {
-            throw new IllegalArgumentException("out of bounds: "
-                                               + maxUriLength);
+        if (MIN_URI_LENGTH > maxUriLength || MAX_URI_LENGTH < maxUriLength) {
+            throw new IllegalArgumentException("out of bounds: " + maxUriLength);
         }
         this.maxUriLength = maxUriLength;
     }
@@ -82,12 +66,13 @@ public class HttpSettings implements Serializable
      * Enable blocking of URIs that exceed maxUriLength. If not
      * explicitly blocked the connection is treated as non-HTTP and
      * the behavior is determined by setNonHttpBlocked.
-     *
-     * @return true if connections containing long URIs are blocked.
      */
     public boolean getBlockLongUris() { return blockLongUris; }
     public void setBlockLongUris(boolean blockLongUris) { this.blockLongUris = blockLongUris; }
 
+    /**
+     * If true the referer header is logged in each HttpRequestEvent
+     */
     public boolean getLogReferer() { return this.logReferer; }
     public void setLogReferer(boolean newValue) { this.logReferer = newValue; }
 }
