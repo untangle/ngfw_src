@@ -26,7 +26,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public class SearchEngine
 {
-    private static final Logger logger = Logger.getLogger(UrlRewriter.class);
+    private static final Logger logger = Logger.getLogger(SearchEngine.class);
 
     private static final List<Pattern> searchEngines;
     static {
