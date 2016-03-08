@@ -552,7 +552,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             int sc = state.statusLine.getStatusCode();
             if ( sc != 100 && sc != 408 ) { /* not continue or request timed out */
                 if ( state.requests.size() == 0 ) {
-                    if ( sc / 100 != 4 ) {
+                    if ( sc / 100 != 4 && sc != 200 && sc != 503 ) {
                         logger.warn("requests is empty, code: " + sc);
                     }
                 } else {
