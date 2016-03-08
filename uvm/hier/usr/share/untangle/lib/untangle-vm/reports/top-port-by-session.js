@@ -10,6 +10,7 @@
     "units": "sessions",
     "pieGroupColumn": "s_server_port",
     "pieSumColumn": "count(*)",
+    "seriesRenderer": "port",
     "readOnly": true,
     "table": "sessions",
     "title": "Top Server Ports",

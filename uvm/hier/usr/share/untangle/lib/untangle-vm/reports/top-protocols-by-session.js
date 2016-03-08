@@ -10,6 +10,7 @@
     "units": "sessions",
     "pieGroupColumn": "protocol",
     "pieSumColumn": "count(*)",
+    "seriesRenderer": "protocol",
     "readOnly": true,
     "table": "sessions",
     "title": "Top IP Protocols",
