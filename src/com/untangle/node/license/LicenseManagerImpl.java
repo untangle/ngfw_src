@@ -152,21 +152,33 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         if (isGPLApp(identifier))
             return null;
 
-        License license = this.licenseMap.get(identifier);
-        logger.debug("getLicense(" + identifier + ") = " + license );
-        if (license != null)
-            return license;
-
         /**
-         * Try old names for backwards compatibility
+         * Check the correct name first,
+         * If the license exists and is valid use that one
          */
+        License license = null;
+        License oldLicense = null;
+
+        license = this.licenseMap.get(identifier);
+        logger.debug("getLicense(" + identifier + ") = " + license );
+
         String oldIdentifier = getOldIdentifier(identifier);
         if ( oldIdentifier != null ) {
-            license = this.licenseMap.get(oldIdentifier);
-            logger.debug("getLicense(" + oldIdentifier + ") = " + license );
-            if (license != null)
-                return license;
+            oldLicense = this.licenseMap.get(oldIdentifier);
+            logger.debug("getLicense(" + oldIdentifier + ") = " + oldLicense );
         }
+
+        /**
+         * Ranked in order of preference
+         */
+        if (license != null && license.getValid())
+            return license;
+        if (oldLicense != null && oldLicense.getValid())
+            return oldLicense;
+        if (license != null)
+            return license;
+        if (oldLicense != null)
+            return oldLicense;
 
         /**
          * Special for development environment
