@@ -415,10 +415,10 @@ Ext.define('Webui.config.system', {
                     Ext.MessageBox.alert(i18n._("Failed"), i18n._("Please select a file to upload."));
                     return;
                 }
+                Ung.MetricManager.stop();
                 fileForm.getForm().submit({
-                    waitMsg: i18n._("Inspecting File..."),
+                    waitMsg: i18n._("Restoring from File..."),
                     success: Ext.bind(function(form, action) {
-                        Ung.MetricManager.stop();
                         Ext.MessageBox.alert(i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
                     }, this),
                     failure: Ext.bind(function(form, action) {
@@ -426,7 +426,7 @@ Ext.define('Webui.config.system', {
                         if (action.result && action.result.msg) {
                             errorMsg = action.result.msg;
                         }
-                        Ext.MessageBox.alert(i18n._("Failed"), errorMsg);
+                        Ext.MessageBox.alert(i18n._("Failed"), errorMsg, Ung.Util.goToStartPage);
                     }, this)
                 });
             }, this),
