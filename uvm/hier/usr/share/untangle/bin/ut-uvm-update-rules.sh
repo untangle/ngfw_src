@@ -14,7 +14,7 @@ MASK_BOGUS=$((0x80000000)) # unused mark
 TCP_REDIRECT_PORTS="9500-9627"
 
 if [ -z "${IPTABLES}" ] ; then
-    IPTABLES=iptables -w
+    IPTABLES="/sbin/iptables -w"
 fi
 
 ## Function to determine the pid of the process that owns the queue
