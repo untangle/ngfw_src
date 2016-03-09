@@ -67,6 +67,7 @@ public class IntrusionPreventionApp extends NodeBase
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
+    private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
 
     private float memoryThreshold = .25f;
@@ -93,6 +94,13 @@ public class IntrusionPreventionApp extends NodeBase
         this.ipsEventMonitor   = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
+
+        File settingsFile = new File( getSettingsFileName() );
+        File snortDebianConf = new File(SNORT_DEBIAN_CONF);
+        if (settingsFile.lastModified() > snortDebianConf.lastModified() ) {
+            logger.warn("Settings file newer than snort debian configuration, Syncing...");
+            reconfigure();
+        }
     }
 
     @Override
