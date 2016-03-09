@@ -11,6 +11,16 @@ class SnortRule:
     var_regex = re.compile(r'^\$(.+)')
 
     options_key_regexes = {}
+    
+    # For the very rare circumstances where we need to override a rule's enabled value.
+    # Currently being used for Snort version 2.9.2.2 compiled for Jessie.
+    # Once we have a newer version and confirm the rule no longer has a problem,
+    # remove this particular rule.
+    rule_enabled_overrides = [{
+        "sid": "403",
+        "gid": "116",
+        "enabled": False
+    }]
 
     def __init__(self, match, category, path="rules"):
         self.category = category
@@ -122,7 +132,21 @@ class SnortRule:
         """
         Get enabled
         """
-        return self.enabled
+        enabled = self.enabled
+        if len(SnortRule.rule_enabled_overrides):
+            for override in SnortRule.rule_enabled_overrides:
+                match = True
+                for rule_key in override.keys():
+                    if rule_key == "enabled":
+                        continue
+                    if override[rule_key] != self.options[rule_key]:
+                        match = False
+                        break
+                if match:
+                    enabled = override["enabled"]
+                    break
+    
+        return enabled
     
     def get_category(self):
         """
@@ -163,7 +187,7 @@ class SnortRule:
         """
         Build for snort.conf usage
         """
-        if self.enabled == True:
+        if self.get_enabled() == True:
             enabled = ""
         else:
             enabled = "#"
