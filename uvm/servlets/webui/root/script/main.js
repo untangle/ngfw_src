@@ -197,7 +197,7 @@ Ext.define("Ung.Main", {
                           xtype: "component",
                           cls: "alert-container",
                           margin: '0 0 0 10',
-                          itemId: "alertContainer",
+                          itemId: "alertContainerDashboard",
                           hidden: true
                         }, {
                             xtype: 'component',
@@ -257,6 +257,12 @@ Ext.define("Ung.Main", {
                             handler: function() {
                                 Ung.Main.openInstallApps();
                             }
+                        }, {
+                            xtype: "component",
+                            cls: "alert-container",
+                            margin: '0 0 0 10',
+                            itemId: "alertContainerApps",
+                            hidden: true
                         }, {
                             xtype: 'component',
                             itemId: 'parentPolicy',
@@ -1042,41 +1048,48 @@ Ext.define("Ung.Main", {
     checkForAlerts: function (handler) {
         //check for upgrades
         rpc.alertManager.getAlerts(Ext.bind(function( result, exception, opt, handler ) {
-            var alertContainer = this.viewport.down("#alertContainer");
-            var alertArr=[];
-            if (result != null && result.list.length > 0) {
-                alertContainer.show();
-                alertArr.push('<div class="title">'+i18n._("Alerts:")+'</div>');
-                for (var i = 0; i < result.list.length; i++) {
-                    alertArr.push('<div class="values">&middot;&nbsp;'+i18n._(result.list[i])+'</div>');
-                }
-            } else {
-                alertContainer.hide();
-            }
+            var alertContainers = [
+                this.viewport.down("#alertContainerDashboard"),
+                this.viewport.down("#alertContainerApps")
+            ];
 
-            this.alertToolTip= Ext.create('Ext.tip.ToolTip', {
-                target: alertContainer.getEl(),
-                dismissDelay: 0,
-                hideDelay: 1500,
-                width: 500,
-                cls: 'extended-stats',
-                items: [{
-                    xtype: 'container',
-                    html: alertArr.join('')
-                },{
-                    xtype: 'container',
-                    html: '<br/>' + '<b>' + i18n._('Press Help for more information') + "</b>"
-                },{
-                    xtype: 'button',
-                    name: 'Help',
-                    iconCls: 'icon-help',
-                    text: i18n._('Help with Administration Alerts'),
-                    handler: function() {
-                        //helpSource: 'admin_alerts'
-                        Ung.Main.openHelp('admin_alerts');
+            Ext.each(alertContainers, function(alertContainer) {
+                
+                var alertArr=[];
+                if (result != null && result.list.length > 0) {
+                    alertContainer.show();
+                    alertArr.push('<div class="title">'+i18n._("Alerts:")+'</div>');
+                    for (var i = 0; i < result.list.length; i++) {
+                        alertArr.push('<div class="values">&middot;&nbsp;'+i18n._(result.list[i])+'</div>');
                     }
-                }]
-            });
+                } else {
+                    alertContainer.hide();
+                }
+
+                this.alertToolTip= Ext.create('Ext.tip.ToolTip', {
+                    target: alertContainer.getEl(),
+                    dismissDelay: 0,
+                    hideDelay: 1500,
+                    width: 500,
+                    cls: 'extended-stats',
+                    items: [{
+                        xtype: 'container',
+                        html: alertArr.join('')
+                    },{
+                        xtype: 'container',
+                        html: '<br/>' + '<b>' + i18n._('Press Help for more information') + "</b>"
+                    },{
+                        xtype: 'button',
+                        name: 'Help',
+                        iconCls: 'icon-help',
+                        text: i18n._('Help with Administration Alerts'),
+                        handler: function() {
+                            //helpSource: 'admin_alerts'
+                            Ung.Main.openHelp('admin_alerts');
+                        }
+                    }]
+                });                
+            });            
         }, this,[handler],true));
     },
     openConfig: function(configItem) {
