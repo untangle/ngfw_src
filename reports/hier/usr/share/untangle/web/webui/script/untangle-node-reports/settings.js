@@ -760,9 +760,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
             this.winViewReport = Ext.create('Ung.Window', {
                 title: i18n._('View Report'),
                 bbar: ['->', {
-                    name: "Cancel",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
+                    name: "Done",
+                    iconCls: 'save-icon',
+                    text: i18n._('Done'),
                     handler: function() {
                         this.up('window').cancelAction();
                     }
@@ -770,7 +770,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 items: Ext.create('Ung.panel.Reports',{
                     width: 1000,
                     height: 600,
-                    hasEntriesSection: false
+                    hasEntriesSection: false,
+                    hideCustomization: true
                 }),
                 listeners: {
                     "hide": {

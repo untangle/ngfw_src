@@ -501,7 +501,7 @@ Ext.define('Ung.panel.Reports', {
         var tbar = [{
             xtype: 'button',
             text: i18n._('Customize'),
-            hidden: !Ung.Main.webuiMode,
+            hidden: !Ung.Main.webuiMode || this.hideCustomization,
             name: "edit",
             tooltip: i18n._('Advanced report customization'),
             iconCls: 'icon-edit',
