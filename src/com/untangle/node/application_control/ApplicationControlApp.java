@@ -212,7 +212,11 @@ public class ApplicationControlApp extends NodeBase
             else {
                 logger.info("Loaded settings from " + settingsFile);
                 workingList = vineyard.mergeProtoList(readSettings.getProtoRules());
-                readSettings.setProtoRules(workingList);
+                if (workingList != null) {
+                    readSettings.setProtoRules(workingList);
+                    logger.info("Saving updated protocol list to " + settingsFile);
+                    settingsManager.save(settingsFile, readSettings);
+                }
                 this.settings = readSettings;
                 settings.applyNodeRules(statistics);
             }

@@ -30,7 +30,8 @@ public class ApplicationControlProtoList
      * look for new protocols added to Vineyard that we don't know about and add
      * them to our working list. In the middle of all of this we look for
      * differences between our rules and the vineyard rules so we can pull in
-     * any chages to name, description, category, etc.
+     * any chages to name, description, category, etc.  We use a counter to
+     * keep track of differences so we can return null if nothing changed.
      */
 
     public LinkedList<ApplicationControlProtoRule> mergeProtoList(LinkedList<ApplicationControlProtoRule> loadedList)
@@ -40,6 +41,7 @@ public class ApplicationControlProtoList
         Hashtable<String, ApplicationControlProtoRule> vineyardHash = new Hashtable<String, ApplicationControlProtoRule>();
         Hashtable<String, ApplicationControlProtoRule> masterHash = new Hashtable<String, ApplicationControlProtoRule>();
         ApplicationControlProtoRule local, find;
+        int changeCount = 0;
         int x;
 
         // put all the vineyard rules into a hashtable
@@ -69,11 +71,13 @@ public class ApplicationControlProtoList
                     local.setRisk(find.getRisk());
                     masterList.add(local);
                     logger.info("PROTOLIST updating modified rule " + local.getGuid());
+                    changeCount += 1;
                 }
             }
 
             else {
                 logger.info("PROTOLIST removing stale rule " + local.getGuid());
+                changeCount += 1;
             }
         }
 
@@ -95,9 +99,13 @@ public class ApplicationControlProtoList
             if (find == null) {
                 masterList.add(local);
                 logger.info("PROTOLIST inserting new rule " + local.getGuid());
+                changeCount += 1;
             }
         }
 
+        // if nothing changed just return null
+        if (changeCount == 0) return(null);
+        
         // return the new and improved protocol list
         return (masterList);
     }
