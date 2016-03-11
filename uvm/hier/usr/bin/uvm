@@ -324,15 +324,6 @@ def needToRestart(pid):
         debug("*** Tomcat bound to wrong port: %s " % output.rstrip());
         return True;
 
-    # nighttime only checks
-    if datetime.datetime.now().hour == 1:
-        p = os.popen("awk '/VmSize/ {print $2}' /proc/%i/status" % pid);
-        output = p.readline().rstrip();
-        virt_size = int(output)
-        if (virt_size > int(max_virtual_size)):
-            debug("*** Max virtual size exceeded (%i > %i)" % (virt_size, int(max_virtual_size)));
-            return True;
-
     return False;
 
 #
@@ -444,10 +435,14 @@ while True:
     monitor_thread.start()
 
     result = 0;
+    exit_sig = 0;
+    exit_code = 0;
     while True:
         try:
             result = 0;
             ppid, result = os.waitpid(uvm_pid, 0);
+            exit_sig = result & 0xff
+            exit_code = (result & 0xff00) >> 8
             break;
         except OSError,e :
             # If its EINTR (interrupted), dont print error
@@ -469,7 +464,7 @@ while True:
             devEnvRestoreSystem()
         sys.exit(0);
     
-    debug("*** untangle-vm unexpectedly exited (%i)" % result);
+    debug("*** untangle-vm unexpectedly exited ( exit code:%i exit signal:%i )" % (exit_code, exit_sig));
     
     resetIptables();
     flushConntrack();
