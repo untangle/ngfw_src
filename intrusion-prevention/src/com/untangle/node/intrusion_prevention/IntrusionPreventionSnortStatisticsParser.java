@@ -126,26 +126,17 @@ public class IntrusionPreventionSnortStatisticsParser
 
 	public void parse( IntrusionPreventionApp ipsNode )
     {
-        String pid = null;
-
         File f = new File( SNORT_PID );
         if( !f.exists() ){
             logger.warn("Snort pid not found");
             return;
         }
 
-        try{
-            pid = new String(Files.readAllBytes(Paths.get(SNORT_PID))).trim();
-        }catch ( IOException e ){
-            logger.warn("Can't get snort pid: ", e);
-            return;
-        }
-        
         RandomAccessFile raf = null;
         File file = new File(SNORT_LOG);
-        try{
+        try {
             raf = new RandomAccessFile( file, "r" );
-        }catch( Exception e){
+        } catch( Exception e) {
             /*
              * The file likely does not exist but there's no need to 
              * fill up the logs with this as it will eventually be
@@ -153,15 +144,26 @@ public class IntrusionPreventionSnortStatisticsParser
              */
             return;
         }
-        try{
+        try {
             raf.seek( file.length() );
-        }catch( IOException e ){
+        } catch( IOException e ) {
             logger.warn("parse: Cannot seek snort log file: ", e);
             return;
         }
         long lastLength = file.length();
 
-        String cmd = "/bin/kill -SIGUSR1 " + pid;
+        /**
+         * I changed this to killall because if snort crashes it leaves its PID file in place
+         * When that happens evenually something else takes the PID and we send it a signal
+         * If java takes that PID, then we actually kill java with a SIGUSR1
+         *
+         * Given that the we dont check that snort owns that PID, I just changed kill to killall which is a bit safer.
+         * I left the logic to check that the PID file still exists as that seems useful
+         *
+         * bug #12837 for more info
+         */
+        String cmd = "/bin/killall -SIGUSR1 /usr/sbin/snort";
+        // String cmd = "/bin/kill -SIGUSR1 " + pid;
         ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
 
         long currentLength = file.length();
