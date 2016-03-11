@@ -89,7 +89,7 @@ public class FirewallApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3, false);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -900, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 
