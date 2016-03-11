@@ -50,7 +50,7 @@ public class WanBalancerApp extends NodeBase
         updateNodeMetrics( );
 
         /* premium = false because the handler is just used for monitoring & stats so it should still handle traffic even for hosts over the limit */
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("wan-balancer", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3, false );
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("wan-balancer", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 100, false );
         this.connectors = new PipelineConnector[] { connector };
     }
 
