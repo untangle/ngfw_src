@@ -20,7 +20,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
 
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp).
-    protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("phish-smtp", this, null, new PhishBlockerSmtpHandler( this ), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 12, false);
+    protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("phish-smtp", this, null, new PhishBlockerSmtpHandler( this ), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 20, false);
     protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
 
     public PhishBlockerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )

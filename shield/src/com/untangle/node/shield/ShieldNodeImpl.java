@@ -40,7 +40,7 @@ public class ShieldNodeImpl extends NodeBase
 
         this.handler = new EventHandler( this );
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1, false);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -10000, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

@@ -66,7 +66,7 @@ public class OpenVpnNodeImpl extends NodeBase
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2, false);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

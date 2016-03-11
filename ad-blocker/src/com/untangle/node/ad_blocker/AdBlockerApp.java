@@ -65,7 +65,7 @@ public class AdBlockerApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Ads blocked")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("ad-blocker-http", this, null, new AdBlockerHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 0, false);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("ad-blocker-http", this, null, new AdBlockerHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 5, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 

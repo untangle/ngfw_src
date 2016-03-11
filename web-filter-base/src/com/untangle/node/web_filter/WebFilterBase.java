@@ -57,7 +57,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1, isPremium());
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
         this.connectors = new PipelineConnector[] { connector };
         
         String nodeName = this.getName();
