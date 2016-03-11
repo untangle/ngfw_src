@@ -655,7 +655,7 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
     pkt->nat_info.reply.src_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_SRC);
     pkt->nat_info.reply.src_protocol_id = nfct_get_attr_u16(ct,ATTR_REPL_PORT_SRC);
     pkt->nat_info.reply.dst_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_DST);
-    pkt->nat_info.reply.dst_protocol_id = nfct_get_attr_u32(ct,ATTR_REPL_PORT_DST);
+    pkt->nat_info.reply.dst_protocol_id = nfct_get_attr_u16(ct,ATTR_REPL_PORT_DST);
 
     nfct_destroy( ct );
     return 0;
