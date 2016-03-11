@@ -122,29 +122,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset'
             },
             items: [{
-                title: i18n._("Daily Sending Time"),
-                labelWidth: 150,
-                items: [{
-                    xtype: 'timefield',
-                    fieldLabel: i18n._("Scheduled time to email report summary"),
-                    labelWidth: 260,
-                    width: 360,
-                    name: 'Email Time',
-                    value: emailTime,
-                    toValidate: true,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                if (newValue && newValue instanceof Date) {
-                                    this.getSettings().generationMinute = newValue.getMinutes();
-                                    this.getSettings().generationHour = newValue.getHours();
-                                }
-                            }, this)
-                        }
-                    }
-                }]
-            }, {
-                title: i18n._('Email'),
+                title: i18n._('Emails and Users'),
                 flex: 1,
                 layout: 'fit',
                 items: [ this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
@@ -189,13 +167,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         xtype:'checkcolumn',
                         header: i18n._("Email Summaries"),
                         dataIndex: "emailSummaries",
-                        width: 100,
+                        width: 150,
                         resizable: false
                     }, {
                         xtype:'checkcolumn',
                         header: i18n._("Online Access"),
                         dataIndex: "onlineAccess",
-                        width: 100,
+                        width: 150,
                         resizable: false
                     }, changePasswordColumn ],
                     rowEditorInputLines: [{
