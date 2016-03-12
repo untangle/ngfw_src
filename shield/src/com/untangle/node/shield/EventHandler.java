@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Load;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
@@ -21,7 +22,7 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 class EventHandler extends AbstractEventHandler
 {
-    private StatsTableHashMap<InetAddress,HostStats> hostStatsTable = new StatsTableHashMap<InetAddress,HostStats>();
+    private StatsTableHashMap<InetAddress,Load> hostStatsTable = new StatsTableHashMap<InetAddress,Load>();
 
     private ShieldNodeImpl node;
     
@@ -53,13 +54,13 @@ class EventHandler extends AbstractEventHandler
         }
 
         InetAddress clientAddr = request.getOrigClientAddr();
-        HostStats stats;
+        Load load;
         
         synchronized ( this.node ) {
-            stats = hostStatsTable.get( clientAddr );
-            if ( stats == null ) {
-                stats = new HostStats();
-                hostStatsTable.put( clientAddr, stats );
+            load = hostStatsTable.get( clientAddr );
+            if ( load == null ) {
+                load = new Load( 5*60 );
+                hostStatsTable.put( clientAddr, load );
             }
         }
 
@@ -78,13 +79,12 @@ class EventHandler extends AbstractEventHandler
         }
 
 
-        //update stats
-        stats.pulse(0);
+        double currentLoad = load.getLoad();
 
-        if ( multiplier > 0 && stats.load5 > ( node.getSettings().getRequestPerSecondLimit() * 5 * multiplier ) ) {
+        if ( multiplier > 0 && currentLoad > ( node.getSettings().getRequestPerSecondLimit() * 5 * multiplier ) ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
                 this.lastLoggedWarningTime = System.currentTimeMillis();
-                logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",stats.load5) );
+                logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",currentLoad) );
             }
 
             ShieldEvent evt = new ShieldEvent( request.sessionEvent(), true );
@@ -97,10 +97,11 @@ class EventHandler extends AbstractEventHandler
             }
         } else {
             if ( logger.isDebugEnabled() ) {
-                logger.debug("Session allowed for " + clientAddr.getHostAddress() + "." + " 5-second-load: " + String.format("%.2f",stats.load5) );
+                logger.debug("Session allowed for " + clientAddr.getHostAddress() + "." + " 5-second-load: " + String.format("%.2f",currentLoad) );
             }
 
-            stats.pulse(1);
+            //update load
+            currentLoad = load.incrementLoad();
             request.release();
         }
     }

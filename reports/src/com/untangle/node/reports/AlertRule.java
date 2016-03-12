@@ -16,7 +16,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.util.Load;
 
 /**
  * This in the implementation of a Alert Rule
@@ -45,7 +45,7 @@ public class AlertRule implements JSONString, Serializable
     private String description;
 
     private long lastAlertTime = 0; /* stores the last time this rule sent an alert */
-    private Map<String,LoadState> loadStateCache = null;
+    private Map<String,Load> loadStateCache = null;
     
     private List<AlertRuleCondition> conditions;
 
@@ -174,32 +174,14 @@ public class AlertRule implements JSONString, Serializable
         if ( this.loadStateCache == null )
             this.loadStateCache = createLoadCache( LOAD_STATE_CACHE_MAX_SIZE );
 
-        LoadState loadState = this.loadStateCache.get( groupingFieldValue );
+        Load loadState = this.loadStateCache.get( groupingFieldValue );
         if ( loadState == null ) {
-            loadState = new LoadState();
-            loadState.lastUpdate = System.currentTimeMillis();
-            loadState.load = 0.0;
+            loadState = new Load( this.thresholdTimeframeSec );
             this.loadStateCache.put( groupingFieldValue, loadState );
         }
-            
-        long now = System.currentTimeMillis();
-        long duration = now - loadState.lastUpdate;
-        loadState.lastUpdate = now;
 
-        /**
-         * If the clock went backwards or has not moved
-         * just assume 1 millisec
-         */
-        if ( duration <= 0 )
-            duration = 1;
-        
-        double num  = Math.exp( -duration / ( 1000.0 * this.thresholdTimeframeSec ) );
-        loadState.load  = (num * loadState.load) + ((1-num) * (( 1000.0 * this.thresholdTimeframeSec ) / duration));
-        //logger.warn("Current Load [" + groupingFieldValue + "] : " + loadState.load + " per " + this.thresholdTimeframeSec + " sec.");
-
-        return loadState.load;
+        return loadState.incrementLoad();
     }
-
 
     private boolean thresholdEnabled()
     {
@@ -219,11 +201,5 @@ public class AlertRule implements JSONString, Serializable
                 return size() > maxSize;
             }
         };
-    }
-
-    private class LoadState
-    {
-        private long lastUpdate;
-        private double load;
     }
 }
