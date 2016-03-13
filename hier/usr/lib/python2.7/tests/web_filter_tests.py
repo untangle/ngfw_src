@@ -99,8 +99,22 @@ class WebFilterTests(WebFilterBaseTests):
         result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://penthouse.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)        
 
+    # Check google safe search
+    def test_540_safeSearchEnabled(self):
+        settings = self.node.getSettings()
+        settings["enforceSafeSearch"] = False
+        self.node.setSettings(settings)        
+        resultWithoutSafe = remote_control.runCommand("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
+
+        settings["enforceSafeSearch"] = True
+        self.node.setSettings(settings)        
+        resultWithSafe = remote_control.runCommand("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=active'");
+
+        assert( resultWithoutSafe == 0 )               
+        assert( resultWithSafe == 0 )               
+
     # Query eventlog
-    def test_550_queryEventLog(self):
+    def test_600_queryEventLog(self):
         termTests = [{
             "host": "www.bing.com",
             "uri":  "/search?q=oneterm&qs=n&form=QBRE",
