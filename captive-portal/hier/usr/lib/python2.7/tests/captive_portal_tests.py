@@ -7,6 +7,7 @@ import re
 import socket
 import subprocess
 import base64
+import copy
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -156,12 +157,16 @@ class CaptivePortalTests(unittest2.TestCase):
         return "untangle-node-directory-connector"
 
     @staticmethod
+    def nodeNameWeb():
+        return "untangle-node-web-filter"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult, test_untangle_com_ip
+        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, nodeWeb, adResult, radiusResult, test_untangle_com_ip
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             print "ERROR: Node %s already installed" % self.nodeName()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
@@ -173,6 +178,11 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
         nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
         nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWeb())):
+            print "ERROR: Node %s already installed" % self.nodeNameWeb()
+            raise unittest2.SkipTest('node %s already instantiated' % self.nodeNameWeb())
+        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
         adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
@@ -216,6 +226,37 @@ class CaptivePortalTests(unittest2.TestCase):
                                             'c_client_addr', remote_control.clientIP,
                                             'captive_portal_blocked', True )
         assert( found )
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_021b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_021b.out")
+        assert (search == 0)
+        
+    def test_022_captureTrafficVsWebFilterCheck(self):
+        global node, nodeData, nodeWeb
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        node.setSettings(nodeData)
+ 
+        newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": "test.untangle.com" }
+        rules_orig = nodeWeb.getBlockedUrls()
+        rules = copy.deepcopy(rules_orig)
+        rules["list"].append(newRule)
+        nodeWeb.setBlockedUrls(rules)
+
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Captive Portal' /tmp/capture_test_022.out")
+        assert (search == 0)
+
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        nodeWeb.setBlockedUrls(rules_orig)
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_022b.out")
+        assert (search == 0)
 
     def test_023_captureAnonymousLogin(self):
         global node, nodeData
@@ -627,7 +668,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeAD
+        global node, nodeAD, nodeWeb
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -635,5 +676,8 @@ class CaptivePortalTests(unittest2.TestCase):
         if nodeAD != None:
             uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
             nodeAD = None
+        if nodeWeb != None:
+            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+            nodeWeb = None
 
 test_registry.registerNode("captive-portal", CaptivePortalTests)
