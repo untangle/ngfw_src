@@ -182,7 +182,6 @@ class CaptivePortalTests(unittest2.TestCase):
             print "ERROR: Node %s already installed" % self.nodeNameWeb()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeNameWeb())
         nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
-        nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
         adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
