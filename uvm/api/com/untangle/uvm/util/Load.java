@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.util;
 
+import org.apache.log4j.Logger;
+
 /**
  *
  * Load represents a "load" like a CPU load.
@@ -10,6 +12,8 @@ package com.untangle.uvm.util;
  */
 public class Load
 {
+    private final Logger logger = Logger.getLogger(Load.class);
+
     /**
      * The last time (in System.currentTimeMillis()) that the load value was updated
      */
@@ -24,7 +28,7 @@ public class Load
      * The timeframe (in seconds) to compute the load
      * 60 is a 1-minute load
      */
-    private int timeframeSec;
+    private final int timeframeSec;
 
 
     public Load( int timeframeSec )
@@ -48,7 +52,8 @@ public class Load
             duration = 1;
         
         double num  = Math.exp( -duration / ( 1000.0 * this.timeframeSec ) );
-        this.load  = (num * load) + ((1-num) * ( (times*(1000.0*this.timeframeSec)) / duration));
+        double newLoad = ( (times*(1000.0*this.timeframeSec)) / duration);
+        this.load  = (num*this.load) + ((1-num)*newLoad);
         return this.load;
     }
     

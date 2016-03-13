@@ -22,6 +22,8 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 class EventHandler extends AbstractEventHandler
 {
+    private final static int LOAD_SECONDS_DURATION = 5;
+    
     private StatsTableHashMap<InetAddress,Load> hostStatsTable = new StatsTableHashMap<InetAddress,Load>();
 
     private ShieldNodeImpl node;
@@ -59,7 +61,7 @@ class EventHandler extends AbstractEventHandler
         synchronized ( this.node ) {
             load = hostStatsTable.get( clientAddr );
             if ( load == null ) {
-                load = new Load( 5*60 );
+                load = new Load( LOAD_SECONDS_DURATION );
                 hostStatsTable.put( clientAddr, load );
             }
         }
