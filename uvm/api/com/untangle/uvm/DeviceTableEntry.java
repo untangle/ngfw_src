@@ -98,9 +98,17 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.httpUserAgent = newValue;
     }
     
-    public String getDeviceUsername() { return this.deviceUsername; }
+    public String getDeviceUsername()
+    {
+        if ( "".equals(this.deviceUsername) )
+             return null;
+        return this.deviceUsername;
+    }
+    
     public void setDeviceUsername( String newValue )
     {
+        if ( "".equals(newValue) )
+            newValue = null;
         updateEvent("deviceUsername",this.deviceUsername,newValue);
         this.deviceUsername = newValue;
     }
