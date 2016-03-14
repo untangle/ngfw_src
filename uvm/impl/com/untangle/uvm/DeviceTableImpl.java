@@ -67,6 +67,9 @@ public class DeviceTableImpl implements DeviceTable
 
     public synchronized void setDevices( LinkedList<DeviceTableEntry> newDevices )
     {
+        ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = this.deviceTable;
+        this.deviceTable = new ConcurrentHashMap<String, DeviceTableEntry>();
+        
         /**
          * For each entry, copy the value on top of the exitsing objects so references are maintained
          * If there aren't in the table, create new entries
@@ -76,12 +79,19 @@ public class DeviceTableImpl implements DeviceTable
             if (macAddress == null)
                 continue;
 
-            DeviceTableEntry existingEntry = getDevice( macAddress );
-            if ( existingEntry != null )
+            DeviceTableEntry existingEntry = oldDeviceTable.get( macAddress );
+            if ( existingEntry != null ) {
                 existingEntry.copy( entry );
-            else 
+                this.deviceTable.put( existingEntry.getMacAddress(), existingEntry );
+            }
+            else {
                 addDevice( entry );
+                entry.enableLogging();
+                this.deviceTable.put( entry.getMacAddress(), entry );
+            }
         }
+
+        saveDevices();
     }
     
     public DeviceTableEntry getDevice( String macAddress )
