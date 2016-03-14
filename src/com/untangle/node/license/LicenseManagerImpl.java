@@ -5,7 +5,9 @@ package com.untangle.node.license;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -46,13 +48,17 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
 
     private static final double LIENENCY_PERCENT = 1.25; /* the enforced seat limit is the license seat limit TIMES this value */
     private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
+    private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
+    private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
     
     private static final String EXPIRED = "expired";
 
-    /* update every 4 hours, leaves an hour window */
+    /**
+     * update every 4 hours, leaves an hour window
+     */
     private static final long TIMER_DELAY = 1000 * 60 * 60 * 4;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(LicenseManagerImpl.class);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
@@ -273,7 +279,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         }
 
         if ( seats > 0 && lienency )
-            seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT;
+            seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT + LIENENCY_GIFT;
         
         return seats;
     }
@@ -987,5 +993,25 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             return "";
         else
             return foo.toString();
+    }
+
+    private static int getLienencyGift()
+    {
+        try {
+            File giftFile = new File(LIENENCY_GIFT_FILE);
+            if (!giftFile.exists())
+                return 0;
+            
+            BufferedReader reader = new BufferedReader(new FileReader(giftFile));
+            Integer i = Integer.parseInt(reader.readLine());
+            if ( i == null )
+                return 0;
+            else
+                return i;
+
+        } catch (Exception x) {
+            logger.warn("Exception",x);
+            return 0;
+        }
     }
 }
