@@ -149,7 +149,7 @@ table {
 <td colspan="2">
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-{% for node in nodeManager.nodeInstances %}
+{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
 	{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|getType==TEXT %}
 	{% if reports.size != 0 %}
 <table>
