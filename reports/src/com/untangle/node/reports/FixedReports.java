@@ -79,6 +79,7 @@ public class FixedReports
 
     public enum Filter{
         FIRST,
+        DISTINCT,
         FORMAT
     }
 
@@ -105,6 +106,7 @@ public class FixedReports
 
         FilterPatterns = new HashMap<Filter, Pattern>();
         FilterPatterns.put(Filter.FIRST, Pattern.compile("first"));
+        FilterPatterns.put(Filter.DISTINCT, Pattern.compile("distinct\\=([^,]+)"));
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
@@ -889,6 +891,9 @@ public class FixedReports
                             case FIRST:
                                 object = ((List) object).get(0);
                                 break;
+                            case DISTINCT:
+                                object = filterProcessDistinct(object, new selector(filterMatcher.group(1)));
+                                break;
                             case FORMAT:
                                 object = filterProcessFormat(object, (JSONObject) getVariable(new selector(filterMatcher.group(1))), getVariable(new selector(filterMatcher.group(2))));
                                 break;
@@ -968,5 +973,48 @@ public class FixedReports
         }
 
         return (Object) formatted;
+    }
+
+    /*
+     * Process the list and filter out duplicates.
+     *
+     * Simplisitic in string comparisions are expected and no method arguments are allowed.
+     * Use case is to eliminate nodes with the same name (e.g.,multiple policies with same app)
+     */
+    Object filterProcessDistinct(Object incomings, selector filterSelector){
+        List<Object> outgoings = new ArrayList<Object>();
+        List<Object> seens = new ArrayList<Object>();
+
+        Method method = null;
+        Object object = null;
+
+        int fieldIndex;
+        boolean filterSeen;
+        for(int i = 0; i < ((List) incomings).size(); i++){
+            filterSeen = false;
+            object = ((List) incomings).get(i);
+            for(fieldIndex = 0; fieldIndex < filterSelector.fields.size(); fieldIndex++){
+                try{
+                    /* No arguments allowed at this time. */
+                    method = object.getClass().getMethod(filterSelector.fields.get(fieldIndex));
+                    object = method.invoke(object);
+                }catch(Exception e){
+                    logger.warn("Unable to get variable: " + filterSelector );
+                    break;
+                }
+            }
+            for(Object seen : seens){
+                if(seen.toString().equals(object.toString())){
+                    filterSeen = true;
+                }
+            }
+            if( filterSeen == false){
+                seens.add(object);
+                outgoings.add(((List) incomings).get(i));
+            }
+
+        }
+
+        return (Object) outgoings;
     }
 }
