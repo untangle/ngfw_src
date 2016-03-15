@@ -1,6 +1,6 @@
 /*global
- Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, document
-*/
+ Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, window, document, Highcharts
+ */
 Ext.define('Ung.dashboard', {
     singleton: true,
     widgetsList: [],
@@ -16,12 +16,13 @@ Ext.define('Ung.dashboard', {
             }
         }, this);
         rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
+            var i;
             if (Ung.Util.handleException(exception)) {
                 return;
             }
             this.allWidgets = [];
             for (i = 0; i < result.widgets.list.length; i += 1) {
-                if(result.widgets.list[i].enabled) {
+                if (result.widgets.list[i].enabled) {
                     this.allWidgets.push(result.widgets.list[i]);
                 }
             }
@@ -54,7 +55,9 @@ Ext.define('Ung.dashboard', {
     },
     inView: function (widget) {
         // checks if the widget is in viewport
-        if (!widget.getEl()) { return false; }
+        if (!widget.getEl()) {
+            return false;
+        }
         var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
         return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
     },
@@ -73,9 +76,7 @@ Ext.define('Ung.dashboard', {
         this.widgetsGrid = [];
         this.widgetsList = [];
         this.dashboardPanel.removeAll();
-        var i, j, k,
-            gridList = [],
-            grid, gridEl, type, entry, widget;
+        var i, j, type, entry, widget;
 
         for (i = 0; i < this.allWidgets.length; i += 1) {
             widget = this.allWidgets[i];
@@ -109,40 +110,19 @@ Ext.define('Ung.dashboard', {
         }
 
         for (j = 0; j < this.widgetsList.length; j += 1) {
-            if (gridList.length > 0) {
-                grid = gridList[gridList.length - 1];
-
-                if (grid.type === 'small' && this.widgetsList[j].displayMode === 'small') {
-                    if (grid.items.length < 4) {
-                        grid.items.push(this.widgetsList[j]);
-                    } else {
-                        gridList.push({type: 'small', items: [this.widgetsList[j]]});
-                    }
+            this.widgetsList[j].cls = 'small';
+            if (this.widgetsList[j].widgetType === 'NetworkLayout') {
+                this.widgetsList[j].cls = 'large';
+            }
+            if (this.widgetsList[j].entry) {
+                if (this.widgetsList[j].entry.type === 'PIE_GRAPH') {
+                    this.widgetsList[j].cls = 'medium';
                 } else {
-                    gridList.push({type: this.widgetsList[j].displayMode, items: [this.widgetsList[j]]});
+                    this.widgetsList[j].cls = 'large';
                 }
-
-            } else {
-                grid = {type: this.widgetsList[j].displayMode, items: [this.widgetsList[j]]};
-                gridList.push(grid);
             }
         }
-
-        for (k = 0; k < gridList.length; k += 1) {
-            gridEl = {
-                'xtype': 'container',
-                'items':  gridList[k].items
-            };
-
-            if (gridList[k].type === 'small') {
-                gridEl.cls = 'grid-cell small-' + gridList[k].items.length;
-            } else {
-                gridEl.cls = 'grid-cell big';
-            }
-            this.widgetsGrid.push(gridEl);
-        }
-
-        this.dashboardPanel.add(this.widgetsGrid);
+        this.dashboardPanel.add(this.widgetsList);
 
         if (!this.scrollInitialized) {
             this.scrollInitialized = true;
@@ -150,6 +130,15 @@ Ext.define('Ung.dashboard', {
             Ext.on('resize', this.debounce(this.onScrollChange, 500));
         }
 
+        var timer;
+        Ext.on('resize', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                Highcharts.charts.forEach(function (chart) {
+                    chart.reflow();
+                });
+            }, 100);
+        });
     },
     resetReports: function () {
         this.reportEntries = null;
@@ -207,9 +196,7 @@ Ext.define('Ung.dashboard.Queue', {
             this.queue.push(widget);
             //console.log("Adding: "+widget.title);
             this.process();
-        } else {
-            //console.log("Prevent Double queuing: " + widget.title);
-        }
+        } /* else { console.log("Prevent Double queuing: " + widget.title); } */
     },
     addFirst: function (widget) {
         if (!this.queueMap[widget.id]) {
@@ -259,17 +246,18 @@ Ext.define('Ung.dashboard.Queue', {
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
-    cls: 'widget small-widget',
+    cls: 'widget init',
     refreshIntervalSec: 0,
+    height: 320,
     initComponent: function () {
         if (this.hasRefresh) {
             this.loadingMask = new Ext.LoadMask({
                 cls: 'widget-loader',
                 msg: '<div class="loader">' +
-                        '<svg class="circular" viewBox="25 25 50 50">' +
-                        '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
-                        '</svg>' +
-                     '</div>',
+                    '<svg class="circular" viewBox="25 25 50 50">' +
+                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
+                    '</svg>' +
+                    '</div>',
                 target: this
             });
             this.tools = [];
@@ -279,7 +267,7 @@ Ext.define('Ung.dashboard.Widget', {
                     tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
                         var entry = panel.entry;
-                        Ung.Main.target = "reports."+entry.category + (panel.widgetType=="ReportEntry"?".report.":".event.")+panel.entry.uniqueId;
+                        Ung.Main.target = "reports." + entry.category + (panel.widgetType === "ReportEntry" ? ".report." : ".event.") + panel.entry.uniqueId;
                         Ung.Main.openReports();
                     }
                 });
@@ -297,6 +285,25 @@ Ext.define('Ung.dashboard.Widget', {
                     Ung.dashboard.Queue.addFirst(panel);
                 }
             });
+            /*
+            this.tools.push({
+                type: 'refresh',
+                tooltip: i18n._('Refresh'),
+                margin: '0 5 0 5',
+                callback: function (panel) {
+                    var dimm = document.createElement('div');
+                    dimm.className = 'dimm';
+                    document.body.appendChild(dimm);
+
+                    panel.addCls('enlarged');
+                    console.log(panel.chart);
+                    setTimeout(function () {
+                        panel.chart.reflow();
+                    }, 500);
+
+                }
+            });
+            */
         }
         this.callParent(arguments);
     },
@@ -311,10 +318,12 @@ Ext.define('Ung.dashboard.Widget', {
         if (this.hasRefresh) {
             this.loadingMask.hide();
         }
-
+        //console.log(this.getHeader());
+        this.header = true;
         try {
+            this.removeCls('init');
             this.removeCls('loading');
-        } catch (err) {
+        } catch (ignore) {
             //console.log('null widget conf');
         }
 
@@ -336,37 +345,55 @@ Ext.define('Ung.dashboard.Widget', {
 /* Information Widget */
 Ext.define('Ung.dashboard.Information', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
     hasStats: true,
     refreshIntervalSec: 600,
+    /*
+    loader: {
+        url: 'script/widget-template/information.tpl',
+        autoLoad: true,
+        renderer: function (loader, response, active) {
+            this.tpl = new Ext.XTemplate(response.responseText);
+            this.update();
+            return true;
+        }
+    },
+    */
     initComponent: function () {
-        this.title = i18n._("Information");
+        this.title = '<h3>' + i18n._('Information') + '</h3>';
         this.callParent(arguments);
     },
-    tpl: '<div class="wg-wrapper">' +
-        '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Hostname') + ':</label>' +
-            '<div class="cell">{hostname}</div>' +
-        '</div>' +
-        '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Model') + ':</label>' +
-            '<div class="cell">{applianceModel}</div>' +
-        '</div>' +
-        '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Uptime') + ':</label>' +
-            '<div class="cell">{uptime}</div>' +
-        '</div>' +
-        '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Version') + ':</label>' +
-            '<div class="cell">{version}</div>' +
-        '</div>' +
-        // '<div class="row">' +
-        //     '<label style="width: 90px;">' + i18n._('Subscriptions') + ':</label>' +
-        //     '<div class="cell">{subscriptions}</div>' +
-        // '</div>' +
-        '</div>',
     data: {},
+    tpl: '<div class="wg-wrapper information">' +
+            '<p class="info-hostname">{hostname}<br/> <span>version: {version}</span></p>' +
+            '<p class="info-uptime"><i class="material-icons" style="vertical-align: middle; font-size: 16px; margin-right: 5px;">access_time</i>' + i18n._('uptime') + ': {uptime}</p>' +
+            '<div class="info-hardware">' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('Server') + ':</label>' +
+                '<div class="cell">{applianceModel}</div>' +
+                '</div>' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
+                '<div class="cell">{cpuCount}</div>' +
+                '</div>' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('CPU Type') + ':</label>' +
+                '<div class="cell">{cpuType}</div>' +
+                '</div>' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('Architecture') + ':</label>' +
+                '<div class="cell">{architecture}</div>' +
+                '</div>' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('Memory') + ':</label>' +
+                '<div class="cell">{totalMemory} MB</div>' +
+                '</div>' +
+                '<div class="row">' +
+                '<label style="width: 90px;">' + i18n._('Disk') + ':</label>' +
+                '<div class="cell">{totalDisk} GB</div>' +
+                '</div>' +
+            '</div>' +
+         '</div>' +
+         '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Information") + '</p></div>',
     updateStats: function (stats) {
         var numdays = Math.floor((stats.uptime % 31536000) / 86400),
             numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
@@ -385,409 +412,313 @@ Ext.define('Ung.dashboard.Information', {
 
         this.update({
             hostname: rpc.hostname,
-            applianceModel: ( rpc.applianceModel == undefined || rpc.applianceModel == null || rpc.applianceModel == "" ? i18n._("custom") : rpc.applianceModel ),
+            applianceModel: (rpc.applianceModel === undefined || rpc.applianceModel === null || rpc.applianceModel === '' ? i18n._('custom') : rpc.applianceModel),
             uptime: _uptime,
-            version: rpc.fullVersion
-            //subscriptions: this.subscriptions
+            version: rpc.fullVersion,
+
+            cpuCount: stats.numCpus,
+            cpuType: stats.cpuModel,
+            architecture: stats.architecture,
+            totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
+            totalDisk: Math.round(stats.totalDiskSpace / 10000000) / 100
         });
+
+        this.removeCls('init');
     }
-    /*
-    loadData: function (handler) {
-        rpc.licenseManager.validLicenseCount(Ext.bind(function (result, exception) {
-            handler.call(this);
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            this.subscriptions = result;
-        }, this));
-    }
-    */
 });
 
-/* Memory Widget */
-Ext.define('Ung.dashboard.Memory', {
+/* Resources Widget */
+Ext.define('Ung.dashboard.Resources', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
     hasStats: true,
     initComponent: function () {
-        this.title = i18n._("Memory Resources");
+        this.title = '<h3>' + i18n._("Resources") + '</h3>';
         this.callParent(arguments);
     },
-    tpl: '<div class="wg-wrapper">' +
-        '<div class="row">' +
-        '<label style="width: 60px;">' + i18n._('Memory') + ':</label>' +
-        '<div class="cell">' +
-        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFree}%;"></span></div><p>{totalMemory} MB</p></div>' +
-        '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedMemory} MB</span> used <em>({percentUsed}%)</em></div>' +
-        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> free <em>({percentFree}%)</em></div>' +
+    tpl:
+        /*
+        '<div class="wg-wrapper flex resources" style="padding: 0 30px;">' +
+        '<div class="info-box" style="padding: 0;">' +
+            '<p>Memory<br/><span style="font-size: 20px; font-weight: 400;">{totalMemory} Mb</span></p>' +
+            '<div class="donut"><div class="chart res1"></div><span>50</span></div>' +
+        '</div>' +
+        '<div class="info-box" style="padding: 0;">' +
+            '<p>Swap<br/><span style="font-size: 20px; font-weight: 400;">23456 Mb</span></p>' +
+            '<div class="donut"><div class="chart res2"></div><span>50</span></div>' +
+        '</div>' +
+        '<div class="info-box" style="padding: 0;">' +
+            '<p>Disk<br/><span style="font-size: 20px; font-weight: 400;">23456 Mb</span></p>' +
+            '<div class="donut"><div class="chart res3"></div><span>50</span></div>' +
+        '</div>' +
+        */
+        '<div class="wg-wrapper flex" style="padding: 0 30px; align-items: initial;">' +
+        '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Memory') + '</p>' +
+        '<div>' +
+            '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeMemory}%;"></span></div><p>{totalMemory} MB</p></div>' +
+            '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedMemory} MB</span> used <em>({percentUsedMemory}%)</em></div>' +
+            '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> free <em>({percentFreeMemory}%)</em></div>' +
+        '</div>' +
+        '<div style="border-top: 1px #EEE solid; border-bottom: 1px #EEE solid; margin: 5px 0; padding: 0 0 10px 0;">' +
+            '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Swap') + '</p>' +
+            '<div>' +
+                '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
+                '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedSwap} MB</span> used <em>({percentUsedSwap}%)</em></div>' +
+                '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeSwap} MB</span> free <em>({percentFreeSwap}%)</em></div>' +
+            '</div>' +
+        '</div>' +
+        '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Disk') + '</p>' +
+        '<div>' +
+        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeDisk}%;"></span></div><p>{totalDisk} GB</p></div>' +
+        '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedDisk} GB</span> used <em>({percentUsedDisk}%)</em></div>' +
+        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> free <em>({percentFreeDisk}%)</em></div>' +
         '</div>' +
         '</div>' +
-        '<div class="row">' +
-        '<label style="width: 60px;">' + i18n._('Swap') + ':</label>' +
-        '<div class="cell">' +
-        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
-        '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedSwap} MB</span> used <em>({percentUsedSwap}%)</em></div>' +
-        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeSwap} MB</span> free <em>({percentFreeSwap}%)</em></div>' +
-        '</div>' +
-        '</div>' +
-        '</div>',
+        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Resources") + '</p></div>',
     data: {},
+    listeners: {
+        /*
+        'afterrender': function (widget) {
+            for (var i=1; i<=3; i++) {
+                new Highcharts.Chart({
+                    chart: {
+                        type: 'solidgauge',
+                        renderTo: widget.getEl().query('.chart.res' + i)[0],
+                        margin: [0,0,0,0],
+                        padding: 0,
+                        backgroundColor: 'transparent'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    title: null,
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    pane: {
+                        startAngle: 0,
+                        endAngle: 360,
+                        background: [{
+                            outerRadius: '100%',
+                            innerRadius: '90%',
+                            backgroundColor: '#EEE',
+                            borderWidth: 0
+                        }]
+                    },
+
+                    yAxis: {
+                        min: 0,
+                        max: 100,
+                        lineWidth: 0,
+                        tickPositions: []
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            //borderWidth: '8px',
+                            dataLabels: {
+                                enabled: false
+                            },
+                            //linecap: 'round',
+                            stickyTracking: false
+                        }
+                    },
+
+
+                    series: [{
+                        name: 'Move',
+                        data: [{
+                            color: 'coral',
+                            radius: '100%',
+                            innerRadius: '90%',
+                            y: 60
+                        }]
+                    }]
+                });       
+            }
+        }
+        */
+    },
     updateStats: function (stats) {
+        //if (!this.loaded) {
         this.update({
             totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
             usedMemory: Ung.Util.bytesToMBs(stats.MemTotal - stats.MemFree),
-            percentUsed: parseFloat((1 - parseFloat(stats.MemFree / stats.MemTotal)) * 100).toFixed(1),
             freeMemory: Ung.Util.bytesToMBs(stats.MemFree),
-            percentFree: parseFloat(stats.MemFree / stats.MemTotal * 100).toFixed(1),
+            percentUsedMemory: parseFloat((1 - parseFloat(stats.MemFree / stats.MemTotal)) * 100).toFixed(1),
+            percentFreeMemory: parseFloat(stats.MemFree / stats.MemTotal * 100).toFixed(1),
+
             totalSwap: Ung.Util.bytesToMBs(stats.SwapTotal),
             usedSwap: Ung.Util.bytesToMBs(stats.SwapTotal - stats.SwapFree),
-            percentUsedSwap: parseFloat((1 - parseFloat(stats.SwapFree / stats.SwapTotal)) * 100).toFixed(1),
             freeSwap: Ung.Util.bytesToMBs(stats.SwapFree),
-            percentFreeSwap: parseFloat(stats.SwapFree / stats.SwapTotal * 100).toFixed(1)
-        });
-    }
-});
+            percentUsedSwap: parseFloat((1 - parseFloat(stats.SwapFree / stats.SwapTotal)) * 100).toFixed(1),
+            percentFreeSwap: parseFloat(stats.SwapFree / stats.SwapTotal * 100).toFixed(1),
 
-/* Server Widget */
-Ext.define('Ung.dashboard.Server', {
-    extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
-    hasStats: true,
-    initComponent: function () {
-        this.title = i18n._("Server Resources");
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper">' +
-        '<div class="row">' +
-            '<label style="width: 40px;">' + i18n._('CPU') + ':</label>' +
-            '<div class="cell">' +
-                '<div style="line-height: 20px;">{cpuLoadText}</div>' +
-                '<div style="line-height: 20px;">{avgCpuLoad}</div>' +
-            '</div>' +
-        '</div>' +
-        '<div class="row">' +
-            '<label style="width: 40px;">' + i18n._('Disk') + ':</label>' +
-            '<div class="cell">' +
-                '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{freePercent}%;"></span></div><p>{totalDisk} GB</p></div>' +
-                '<div class="wg-progress-vals"><span style="color: #D0AE26; font-weight: 600;">{usedDisk} GB</span> used <em>({usedPercent}%)</em></div>' +
-                '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> free <em>({freePercent}%)</em></div>' +
-            '</div>' +
-        '</div>' +
-        '</div>',
-    data: {},
-    updateStats: function (stats) {
-        var oneMinuteLoadAvg = stats.oneMinuteLoadAvg,
-            oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus,
-            loadText = '<font color="#55BA47">' + i18n._('LOW') + '</font>';
-        if (oneMinuteLoadAvgAdjusted > 1.0) {
-            loadText = '<font color="orange">' + i18n._('MEDIUM') + '</font>';
-        }
-        if (oneMinuteLoadAvgAdjusted > 4.0) {
-            loadText = '<font color="red">' + i18n._('HIGH') + '</font>';
-        }
-
-
-        this.update({
-            cpuLoadText: loadText,
-            avgCpuLoad: '<strong>' + stats.oneMinuteLoadAvg + '</strong> 1-min load',
             totalDisk: Math.round(stats.totalDiskSpace / 10000000) / 100,
             usedDisk: Math.round((stats.totalDiskSpace - stats.freeDiskSpace) / 10000000) / 100,
-            usedPercent: parseFloat((1 - parseFloat(stats.freeDiskSpace / stats.totalDiskSpace)) * 100).toFixed(1),
             freeDisk: Math.round(stats.freeDiskSpace / 10000000) / 100,
-            freePercent: parseFloat(stats.freeDiskSpace / stats.totalDiskSpace * 100).toFixed(1)
+            percentUsedDisk: parseFloat((1 - parseFloat(stats.freeDiskSpace / stats.totalDiskSpace)) * 100).toFixed(1),
+            percentFreeDisk: parseFloat(stats.freeDiskSpace / stats.totalDiskSpace * 100).toFixed(1)
         });
-    }
-});
-
-/* Hardware Widget */
-Ext.define('Ung.dashboard.Hardware', {
-    extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
-    hasStats: true,
-    initComponent: function () {
-        this.title = i18n._("Hardware");
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper">' +
-            '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
-            '<div class="cell">{cpuCount}</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('CPU Type') + ':</label>' +
-            '<div class="cell">{cpuType}</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Architecture') + ':</label>' +
-            '<div class="cell">{architecture}</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Memory') + ':</label>' +
-            '<div class="cell">{totalMemory} MB</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 90px;">' + i18n._('Disk') + ':</label>' +
-            '<div class="cell">{totalDisk} GB</div>' +
-            '</div>' +
-        '</div>',
-    data: {},
-    dataSet: false,
-    updateStats: function (stats) {
-        // set values just once
-        if (!this.dataSet) {
-            this.update({
-                cpuCount: stats.numCpus,
-                cpuType: stats.cpuModel,
-                architecture: stats.architecture,
-                totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
-                totalDisk: Math.round(stats.totalDiskSpace / 10000000) / 100
-            });
-            this.dataSet = true;
-        }
-    }
-});
-
-/* Hosts&Devices Widget */
-Ext.define('Ung.dashboard.HostsDevices', {
-    extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
-    hasStats: true,
-    initComponent: function () {
-        this.title = i18n._("Hosts & Devices");
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper">' +
-            '<div class="row">' +
-            '<label style="width: 110px;">' + i18n._('Currently Active') + ':</label>' +
-            '<div class="cell">{activeHosts}</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 110px;">' + i18n._('Maximum Active') + ':</label>' +
-            '<div class="cell">{maxActiveHosts}</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<label style="width: 110px;">' + i18n._('Known Devices') + ':</label>' +
-            '<div class="cell">{knownDevices}</div>' +
-            '</div>' +
-        '</div>' +
-        '<div style="text-align: center; margin-top: 20px;">' +
-            '<button class="wg-button" onclick="Ung.Main.showHosts();">Show Hosts</button> ' +
-            '<button class="wg-button" onclick="Ung.Main.showDevices();">Show Devices</button>' +
-        '</div>',
-    data: {},
-    updateStats: function (stats) {
-        this.update({
-            activeHosts: stats.activeHosts,
-            maxActiveHosts: stats.maxActiveHosts,
-            knownDevices: stats.knownDevices
-        });
-    }
-});
-
-/* Sessions Widget */
-Ext.define('Ung.dashboard.Sessions', {
-    extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
-    refreshIntervalSec: 10, // seconds
-    initComponent: function () {
-        this.title = i18n._("Sessions");
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper">' +
-        '<div class="row">' +
-        '<label style="width: 150px;">' + i18n._('Total Sessions') + ':</label>' +
-        '<div class="cell">{totalSessions}</div>' +
-        '</div>' +
-        '<div class="row">' +
-        '<label style="width: 150px;">' + i18n._('Scanned Sessions') + ':</label>' +
-        '<div class="cell">{scannedSessions}</div>' +
-        '</div>' +
-        '<div class="row">' +
-        '<label style="width: 150px;">' + i18n._('Bypassed Sessions') + ':</label>' +
-        '<div class="cell">{bypassedSessions}</div>' +
-        '</div>' +
-        '</div>' +
-        '<div style="text-align: center; margin-top: 20px;">' +
-            '<button class="wg-button" onclick="Ung.Main.showSessions();">Show Sessions</button> ' +
-        '</div>',
-    loadData: function (handler) {
-        rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
-            handler.call(this);
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            this.update(result);
-        }, this));
-    }
-});
-
-/* Network Widget */
-Ext.define('Ung.dashboard.Network', {
-    extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
-    refreshIntervalSec: 180, // refresh timer in seconds
-    initComponent: function () {
-        this.title = i18n._("Network");
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper">' +
-        '<tpl for=".">' +
-            '<div class="row">' +
-            '<label style="width: 80px;">' + i18n._('Interface') + ' {#}:</label>' +
-            '<div class="cell">{name} {physicalDev}<tpl if="isWan"> - WAN</tpl></div>' +
-            '</div>' +
-        '</tpl>' +
-        '</div>',
-    data: {},
-    loadData: function (handler) {
-        rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
-            handler.call(this);
-
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            var allInterfaces = result.interfaces.list,
-                addressedInterfaces = [], i;
-
-            for (i = 0; i < allInterfaces.length; i += 1) {
-                if (!allInterfaces[i].disabled) {
-                    addressedInterfaces.push(allInterfaces[i]);
-                }
-            }
-            this.update(addressedInterfaces);
-        }, this));
+        this.removeCls('init');
+            //this.loaded = true;
+        //}
     }
 });
 
 /* CPULoad Widget */
 Ext.define('Ung.dashboard.CPULoad', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
     layout: 'fit',
     hasStats: true,
     cpuDataStorage: [], // used to keep data after dashboard reloads
-    items: [{
-        xtype: 'cartesian',
-        name: 'chart',
-        border: false,
-        animation: false,
-        width: '100%',
-        height: '100%',
-        store: {
-            fields: ['minutes1', 'time'],
-            data: []
-        },
-        axes: [{
-            type: 'numeric',
-            position: 'left',
-            grid: {
-                lineDash: [3, 3],
-                odd: {
-                    opacity: 0.5,
-                    fill: '#EEE'
-                }
-            },
-            minimum: 0,
-            fields: ['minutes1'],
-            style : {
-                strokeStyle: '#CCC'
-            },
-            label: {
-                fontSize: 11,
-                color: '#999'
-            },
-            limits: []
-        }, {
-            type: 'category',
-            position: 'bottom',
-            //hidden: true,
-            fields: ['time'],
-            style : {
-                strokeStyle: '#CCC'
-            },
-            minorTickSteps: 0.5,
-            renderer : Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
-        }],
-        series: [{
-            type: 'area',
-            xField: 'time',
-            yField: ['minutes1'],
-            style: {
-                stroke: '#666666',
-                lineWidth: 0,
-                fillOpacity: 0.8
-            }
-        }]
-    }],
     initComponent: function () {
-        this.title = i18n._("CPU Load");
-        this.addCls('nopadding');
+        this.title = '<h3>' + i18n._("CPU Load") + '</h3>';
         this.callParent(arguments);
     },
+    tpl: '<div class="wg-wrapper no-padding cpuload">' +
+            '<div class="chart1" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
+            '<div class="chart2" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
+            '<div class="cpuLoadVal"></div>' +
+        '</div>' +
+        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
+    data: {},
+    chart1: null,
+    chart2: null,
+    listeners: {
+        'afterrender': function (widget) {
+            widget.chart1 = Ung.dashboard.Charts.cpuLoad1(widget);
+            widget.chart2 = Ung.dashboard.Charts.cpuLoad2(widget);
+        }
+    },
     updateStats: function (stats) {
-        var d = new Date(), maxVal = 0,
-            chart = this.down("[name=chart]"),
-            data = this.cpuDataStorage;
+        var medLimit = stats.numCpus + 1;
+        var highLimit = stats.numCpus + 4;
+        var loadLabel = 'low';
 
-        // set the limits just once after data is loaded
-        if (chart.getAxes()[0].getLimits().length === 0) {
-            chart.getAxes()[0].setLimits([{
-                value: stats.numCpus,
-                line: {
-                    strokeStyle: '#CCC'
-                }
-            }]);
-            // initial fill with 0 values
-            if (data.length === 0) {
-                for (i = 0; i < 30; i += 1) {
-                    data.push({
-                        time: i,
-                        minutes1: -1
-                    });
-                }
+        if (!this.loaded && this.chart1 !== null && this.chart2 !== null) {
+            this.chart1.yAxis[0].update({
+                minRange: stats.numCpus
+            });
+
+            this.chart2.yAxis[0].update({
+                max: highLimit + 1,
+                plotBands: [{
+                    from: 0,
+                    to: medLimit,
+                    color: 'rgba(112, 173, 112, 0.5)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }, {
+                    from: medLimit,
+                    to: highLimit,
+                    color: 'rgba(255, 255, 0, 0.5)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }, {
+                    from: highLimit,
+                    to: highLimit + 1,
+                    color: 'rgba(255, 0, 0, 0.5)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }]
+            });
+
+            this.removeCls('init');
+
+            var me = this;
+            setTimeout(function () {
+                me.chart1.reflow();
+                me.chart2.reflow();
+            }, 100);
+            this.loaded = true;
+        }
+
+
+        //if (this.chart1 !== null && this.chart2 !== null) {
+        if (stats.oneMinuteLoadAvg > medLimit) {
+            loadLabel = 'medium';
+        }
+        if (stats.oneMinuteLoadAvg > highLimit) {
+            loadLabel = 'high';
+        }
+        if (Ext.select('.cpuLoadVal', this).elements[0]) {
+            Ext.select('.cpuLoadVal', this).elements[0].addCls(loadLabel).setHtml(stats.oneMinuteLoadAvg + '<br/><span>' + loadLabel + '</span>');
+        }
+        this.chart1.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
+        this.chart2.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
+        //}
+    }
+});
+
+/* Network Information Widget */
+Ext.define('Ung.dashboard.NetworkInformation', {
+    extend: 'Ung.dashboard.Widget',
+    displayMode: 'small',
+    hasStats: true,
+    initComponent: function () {
+        this.title = '<h3 style="padding: 5px 0;">' + i18n._("Network Information") + '</h3>';
+        this.callParent(arguments);
+    },
+    tpl: '<div class="wg-wrapper no-padding flex">' +
+            '<div class="info-box" style="border-bottom: 1px #EEE solid;">' +
+                '<div class="info-item">' + i18n._("Currently Active") + '<br/><span>{hosts.activeHosts}</span></div>' +
+                '<div class="info-item">' + i18n._("Maximum Active") + '<br/><span>{hosts.maxActiveHosts}</span></div>' +
+                '<div class="info-item">' + i18n._("Known Devices") + '<br/><span>{hosts.knownDevices}</span></div>' +
+                '<div class="info-actions">' +
+                    '<button class="wg-button" onclick="Ung.Main.showHosts();" style="flex: 1;">View Hosts</button>' +
+                    '<button class="wg-button" onclick="Ung.Main.showDevices();" style="flex: 1;">View Devices</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="info-box">' +
+                '<div class="info-item">' + i18n._("Total Sessions") + '<br/><span>{sessions.totalSessions}</span></div>' +
+                '<div class="info-item">' + i18n._("Scanned Sessions") + '<br/><span>{sessions.scannedSessions}</span></div>' +
+                '<div class="info-item">' + i18n._("Bypassed Sessions") + '<br/><span>{sessions.bypassedSessions}</span></div>' +
+                '<div class="info-actions">' +
+                    '<button class="wg-button" onclick="Ung.Main.showSessions();" style="flex: 1;">View Sessions</button> ' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Information") + '</p></div>',
+    data: {
+        hosts: {},
+        sessions: {}
+    },
+    updateStats: function (stats) {
+        this.data.hosts = {
+            activeHosts: stats.activeHosts,
+            maxActiveHosts: stats.maxActiveHosts,
+            knownDevices: stats.knownDevices
+        };
+        this.update(this.data);
+    },
+    loadData: function (handler) {
+        rpc.sessionMonitor.getSessionStats(Ext.bind(function (result, exception) {
+            handler.call(this);
+            if (Ung.Util.handleException(exception)) {
+                return;
             }
-        }
-
-        // set the maximum axis value
-        for (i = 0; i < data.length; i += 1) {
-            if (data[i].minutes1 > maxVal) {
-                maxVal = data[i].minutes1;
+            if (this === null || !this.rendered) {
+                return;
             }
-        }
-
-        chart.getAxes()[0].setMaximum(maxVal < stats.numCpus ? (stats.numCpus + 0.5) : (maxVal + 0.5));
-
-        if (data.length > 30) {
-            data.shift();
-        }
-
-        data.push({
-            time: d.getTime(),
-            minutes1: stats.oneMinuteLoadAvg
-        });
-
-        this.cpuDataStorage = data;
-        chart.store.loadData(this.cpuDataStorage);
+            this.data.sessions = result;
+            this.update(this.data);
+        }, this));
     }
 });
 
 /* InterfaceLoad Widget */
 Ext.define('Ung.dashboard.InterfaceLoad', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'small',
-    height: 190,
     layout: 'fit',
     hasStats: true,
     items: [],
     initComponent: function () {
-        this.title = i18n._("Interface Load") +" | "+(Ung.dashboard.Util.getInterfaceMap()[this.entryId] || this.entryId);
+        this.title = i18n._("Interface Load") + " | " + (Ung.dashboard.Util.getInterfaceMap()[this.entryId] || this.entryId);
         this.items.push({
             xtype: 'cartesian',
             name: 'chart',
@@ -809,8 +740,8 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
                     lineDash: [3, 3]
                 },
                 minimum: 0,
-                fields: ['rx','tx'],
-                style : {
+                fields: ['rx', 'tx'],
+                style: {
                     strokeStyle: '#CCC'
                 },
                 label: {
@@ -844,7 +775,7 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
                     lineWidth: 4,
                     fillOpacity: 0.8
                 }
-            },{
+            }, {
                 type: 'line',
                 title: 'TX KB/s',
                 //FIXME smoothing doesnt seem to work
@@ -886,57 +817,57 @@ Ext.define('Ung.dashboard.InterfaceLoad', {
         try {
             data.push({
                 time: d.getTime(),
-                rx: Math.round(stats['interface_'+this.entryId+'_rxBps']/1024),
-                tx: Math.round(stats['interface_'+this.entryId+'_txBps']/1024)
+                rx: Math.round(stats['interface_' + this.entryId + '_rxBps'] / 1024),
+                tx: Math.round(stats['interface_' + this.entryId + '_txBps'] / 1024)
             });
             chart.store.loadData(data);
-        } catch (err) {}
+        } catch (ignore) {
+        }
     }
 });
 
 /* Network Layout Widget */
 Ext.define('Ung.dashboard.NetworkLayout', {
     extend: 'Ung.dashboard.Widget',
-    displayMode: 'big',
-    height: 400,
     hasStats: true,
     refreshIntervalSec: 0,
     hasRefresh: true,
     data: {},
     initComponent: function () {
-        this.title = i18n._("Network Layout");
+        this.title = '<h3>' + i18n._("Network Layout") + '</h3>';
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper network-intf">' +
-            '<button id="fake-interface-add" class="wg-button" style="position: absolute; right: 10px; top: 0;">Add Fake Interface</button>' +
-            '<div class="external">' +
-              '<div class="iface" id="interface_{externalInterface.id}">' +
-                '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 10px;"/>' +
-                '<p class="name">{externalInterface.name}</p>' +
-                '<div class="speeds" style="display: inline-block; text-align: left;">' +
-                  '<span class="up">{externalInterface.tx} kb/s</span>' +
-                  '<span class="down">{externalInterface.rx} kb/s</span>' +
-                '</div>' +
-                '<br/><span class="connection ext"></span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="wire"></div>' +
-            '<div class="wrap">' +
-              '<div class="internal">' +
-                '<tpl for="internalInterfaces">' +
-                  '<div class="iface" id="interface_{id}">' +
-                    '<span class="connection int"></span><br/>' +
-                    '<div class="speeds" style="display: inline-block; text-align: left;">' +
-                      '<span class="up">??? kb/s</span>' +
-                      '<span class="down">??? kb/s</span>' +
-                    '</div>' +
-                    '<p class="name">{name}</p>' +
-                    '<p class="devs">23</p>' +
-                  '</div>' +
-                '</tpl>' +
-              '</div>' +
-            '</div>' +
-         '</div>',
+        '<button id="fake-interface-add" class="wg-button" style="position: absolute; right: 10px; top: 0;">Add Fake Interface</button>' +
+        '<div class="external">' +
+        '<div class="iface" id="interface_{externalInterface.id}">' +
+        '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 5px; height: 30px;"/>' +
+        '<p class="name">{externalInterface.name}</p>' +
+        '<div class="speeds" style="display: inline-block; text-align: left;">' +
+        '<span class="up">{externalInterface.tx} kb/s</span>' +
+        '<span class="down">{externalInterface.rx} kb/s</span>' +
+        '</div>' +
+        '<br/><span class="connection ext"></span>' +
+        '</div>' +
+        '</div>' +
+        '<div class="wire"></div>' +
+        '<div class="wrap">' +
+        '<div class="internal">' +
+        '<tpl for="internalInterfaces">' +
+        '<div class="iface" id="interface_{id}">' +
+        '<span class="connection int"></span><br/>' +
+        '<div class="speeds" style="display: inline-block; text-align: left;">' +
+        '<span class="up">??? kb/s</span>' +
+        '<span class="down">??? kb/s</span>' +
+        '</div>' +
+        '<p class="name">{name}</p>' +
+        '<p class="devs">23</p>' +
+        '</div>' +
+        '</tpl>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
     updateStats: function (stats) {
         //console.log(stats);
         if (this.data.externalInterface) {
@@ -948,8 +879,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         }
 
         if (this.data.internalInterfaces) {
-            var speedsEl;
-            for (i = 0; i < this.data.internalInterfaces.length; i++) {
+            var speedsEl, i;
+            for (i = 0; i < this.data.internalInterfaces.length; i += 1) {
                 speedsEl = document.querySelector('#interface_' + this.data.internalInterfaces[i].id);
                 if (speedsEl) {
                     speedsEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
@@ -1015,22 +946,70 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     }
 });
 
-
 /* ReportEntry Widget */
 Ext.define('Ung.dashboard.ReportEntry', {
     extend: 'Ung.dashboard.Widget',
-    height: 400,
-    cls: 'widget small-widget nopadding',
     layout: 'fit',
     border: false,
     entry: null,
-    items: null,
     hasRefresh: true,
+
+    tpl: '<div class="wg-wrapper no-padding">' +
+        '<div class="chart-types" style="height: 20px;">' +
+            '<button data-type="spline" data-d3="false">Line</button>' +
+            '<button data-type="areaspline" data-d3="false">Area</button>' +
+            '<button data-type="column" data-d3="false">Column</button>' +
+            //'<button data-type="column" data-d3="true">3D Column</button>' +
+        '</div>' +
+        '<div class="chart" style="height: 240px;  position: absolute; left: 0; bottom: 0; right: 0;">' +
+        '</div>' +
+        '</div>' +
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>Loading ...</p></div>' +
+        '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>No data!</p></div>',
+    data: {},
+    chart: null,
+
     initComponent: function () {
-        this.title =  i18n._('Reports') + ' | ' + this.entry.category + ' | ' + this.entry.title;
-        this.items = [Ung.dashboard.Util.createChart(this.entry,this)];
+        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
+        //this.items = [Ung.dashboard.Util.createChart(this.entry,this)];
         this.callParent(arguments);
     },
+
+    listeners: {
+        'afterrender': function (widget) {
+            widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
+            var i;
+            if (widget.entry.type === 'PIE_GRAPH') {
+                widget.getEl().query('.chart-types')[0].style.display = 'none';
+                widget.chart = Ung.dashboard.Charts.pieChart(widget);
+            } else {
+                widget.chart = Ung.dashboard.Charts.timeChart(widget, false);
+            }
+
+            widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
+                if (evt.target.dataset.type) {
+                    for (i = 0; i < widget.chart.series.length; i += 1) {
+                        widget.chart.series[i].update({
+                            type: evt.target.dataset.type
+                        }, true, true);
+                    }
+                }
+            });
+
+            /*
+            this.getEl().on({
+                click: {
+                    fn: function (evt) {
+                        if (evt.target.className === 'chart-line') {
+                            widget.chart.series[0].update({type: 'areaspline'}, true, true);
+                        }
+                    }
+                }
+            });
+            */
+        }
+    },
+
     loadData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             handler.call(this);
@@ -1041,70 +1020,146 @@ Ext.define('Ung.dashboard.ReportEntry', {
             if (this === null || !this.rendered) {
                 return;
             }
-            var data = result.list, chart = this.down("[name=chart]"), column;
+
+            if (result.list.length === 0) {
+                this.addCls('nodata');
+                return;
+            }
+
+            var data = [], i, j;
+
             if (this.entry.type === 'PIE_GRAPH') {
-                var topData = data;
-                if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
-                    topData = [];
-                    var others = {value: 0};
-                    others[this.entry.pieGroupColumn] = i18n._("Others");
-                    for (i = 0; i < data.length; i += 1) {
-                        if (i < this.entry.pieNumSlices) {
-                            topData.push(data[i]);
-                        } else {
-                            others.value += data[i].value;
+
+                data = [];
+                for (i = 0; i < result.list.length; i += 1) {
+                    data.push({
+                        name: result.list[i][this.entry.pieGroupColumn],
+                        y: result.list[i].value
+                    });
+                }
+                this.chart.series[0].setData(data, true, true);
+            }
+
+            if (this.entry.type === 'TIME_GRAPH_DYNAMIC' || this.entry.type === 'TIME_GRAPH') {
+                if (this.chart.series.length === 0) {
+                    if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                        var columnsMap = {}, columns = [], values = {};
+                        for (i = 0; i < result.list.length; i += 1) {
+                            for (column in result.list[i]) {
+                                columnsMap[column] = true;
+                            }
+                        }
+                        for (column in columnsMap) {
+                            if (column !== 'time_trunc') {
+                                columns.push(column);
+                            }
                         }
                     }
-                    others.value = Math.round(others.value * 10) / 10;
-                    topData.push(others);
-                }
-                if (topData.length === 0) {
-                    chart.noDataSprite.show();
-                } else {
-                    chart.noDataSprite.hide();
+                    this.entry.timeDataColumns = columns;
+                    
+                    for (c = 0; c < this.entry.timeDataColumns.length; c++) {
+                        var sName = this.entry.timeDataColumns[c];
+                        if (this.entry.seriesRenderer === 'interface') {
+                            sName = Ung.dashboard.Util.getInterfaceMap()[this.entry.timeDataColumns[c]] + ' [ ' + this.entry.timeDataColumns[c] + ' ] ';
+                        }
+                        
+                        this.chart.addSeries({
+                            id: this.entry.timeDataColumns[c],
+                            name: sName,
+                            data: []
+                        })
+                    }
                 }
 
-                chart.getStore().loadData(topData);
-            } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                var columnsMap = {}, columns = [], values = {};
-                for (i = 0; i < data.length; i += 1) {
-                    for (column in data[i]) {
-                        columnsMap[column] = true;
+                for (j = 0; j < this.entry.timeDataColumns.length; j++) {
+                    data = [];
+                    for (i = 0; i < result.list.length; i++) {
+                        data.push([
+                            result.list[i].time_trunc.time,
+                            result.list[i][this.chart.series[j].options.id] ? Math.floor(result.list[i][this.chart.series[j].options.id]) : 0
+                        ]);
                     }
+                    this.chart.series[j].setData(data);
                 }
-                for (column in columnsMap) {
-                    if (column !== 'time_trunc') {
-                        columns.push(column);
-                    }
-                }
-                this.entry.timeDataColumns = columns;
-                this.removeAll();
-                this.add(Ung.dashboard.Util.createChart(this.entry,this));
-                this.down("[name=chart]").getStore().loadData(data);
-            } else if (this.entry.type === 'TIME_GRAPH') {
-                chart.getStore().loadData(data);
-            } else if (this.entry.type === 'TEXT') {
-                var infos = [], reportData = [];
-                if (data.length > 0 && this.entry.textColumns !== null) {
-                    var value, i;
-                    for (i = 0; i < this.entry.textColumns.length; i += 1) {
-                        column = this.entry.textColumns[i].split(" ").splice(-1)[0];
-                        value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
-                        infos.push(value);
-                        reportData.push({data: column, value: value});
-                    }
-                }
-                chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
             }
+            this.chart.reflow();
         }, this), this.entry, this.timeframe, -1);
+
+
+        /*
+         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
+         handler.call(this);
+
+         if (Ung.Util.handleException(exception)) {
+         return;
+         }
+         if (this === null || !this.rendered) {
+         return;
+         }
+         var data = result.list, chart = this.down("[name=chart]"), column;
+         if (this.entry.type === 'PIE_GRAPH') {
+         var topData = data;
+         if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
+         topData = [];
+         var others = {value: 0};
+         others[this.entry.pieGroupColumn] = i18n._("Others");
+         for (i = 0; i < data.length; i += 1) {
+         if (i < this.entry.pieNumSlices) {
+         topData.push(data[i]);
+         } else {
+         others.value += data[i].value;
+         }
+         }
+         others.value = Math.round(others.value * 10) / 10;
+         topData.push(others);
+         }
+         if (topData.length === 0) {
+         chart.noDataSprite.show();
+         } else {
+         chart.noDataSprite.hide();
+         }
+
+         chart.getStore().loadData(topData);
+         } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+         var columnsMap = {}, columns = [], values = {};
+         for (i = 0; i < data.length; i += 1) {
+         for (column in data[i]) {
+         columnsMap[column] = true;
+         }
+         }
+         for (column in columnsMap) {
+         if (column !== 'time_trunc') {
+         columns.push(column);
+         }
+         }
+         this.entry.timeDataColumns = columns;
+         this.removeAll();
+         this.add(Ung.dashboard.Util.createChart(this.entry,this));
+         this.down("[name=chart]").getStore().loadData(data);
+         } else if (this.entry.type === 'TIME_GRAPH') {
+         chart.getStore().loadData(data);
+         } else if (this.entry.type === 'TEXT') {
+         var infos = [], reportData = [];
+         if (data.length > 0 && this.entry.textColumns !== null) {
+         var value, i;
+         for (i = 0; i < this.entry.textColumns.length; i += 1) {
+         column = this.entry.textColumns[i].split(" ").splice(-1)[0];
+         value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
+         infos.push(value);
+         reportData.push({data: column, value: value});
+         }
+         }
+         chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
+         }
+         }, this), this.entry, this.timeframe, -1);
+         */
     }
 });
 
 /* EventEntry Widget */
 Ext.define('Ung.dashboard.EventEntry', {
     extend: 'Ung.dashboard.Widget',
-    height: 400,
-    cls: 'widget small-widget nopadding',
+    cls: 'widget',
     layout: 'fit',
     border: false,
     entry: null,
@@ -1112,7 +1167,7 @@ Ext.define('Ung.dashboard.EventEntry', {
     items: null,
     hasRefresh: true,
     initComponent: function () {
-        this.title =  i18n._('Events') + ' | ' + this.entry.category + ' | ' + this.entry.title;
+        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3>';
         this.items = [this.buildGrid()];
         this.callParent(arguments);
         this.gridEvents = this.down("grid[name=gridEvents]");
@@ -1148,7 +1203,7 @@ Ext.define('Ung.dashboard.EventEntry', {
             viewConfig: {
                 enableTextSelection: true
             },
-            store:  Ext.create('Ext.data.Store', {
+            store: Ext.create('Ext.data.Store', {
                 fields: tableConfig.fields,
                 data: [],
                 proxy: {
@@ -1189,29 +1244,30 @@ Ext.define('Ung.dashboard.EventEntry', {
 
 Ext.define('Ung.dashboard.Util', {
     singleton: true,
-    buildInterfaces: function() {
-        if(!this.interfaces) {
+
+    buildInterfaces: function () {
+        if (!this.interfaces) {
             this.interfaces = [];
             this.interfaceMap = {};
             var networkSettings = Ung.Main.getNetworkSettings();
-            for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+            for (var c = 0; c < networkSettings.interfaces.list.length; c++) {
                 var intf = networkSettings.interfaces.list[c];
                 var name = intf.name;
                 var key = intf.interfaceId;
-                this.interfaces.push( [ key, name ] );
+                this.interfaces.push([key, name]);
                 this.interfaceMap[key] = name;
             }
         }
     },
-    getInterfaces: function() {
+    getInterfaces: function () {
         this.buildInterfaces();
         return this.interfaces;
     },
-    getInterfaceMap: function() {
+    getInterfaceMap: function () {
         this.buildInterfaces();
         return this.interfaceMap;
     },
-    createTimeChart: function (entry,widget) {
+    createTimeChart: function (entry, widget) {
         if (!entry.timeDataColumns) {
             entry.timeDataColumns = [];
         }
@@ -1234,15 +1290,40 @@ Ext.define('Ung.dashboard.Util', {
 
             timeStyleButtons = [], timeStyle,
             timeStyles = [
-                { name: 'LINE', iconCls: 'icon-line-chart', text: i18n._("Line"), tooltip: i18n._("Switch to Line Chart") },
-                { name: 'AREA', iconCls: 'icon-area-chart', text: i18n._("Area"), tooltip: i18n._("Switch to Area Chart") },
-                { name: 'BAR_3D', iconCls: 'icon-bar3d-chart', text: i18n._("Bar 3D"), tooltip: i18n._("Switch to Bar 3D Chart") },
-                { name: 'BAR_3D_OVERLAPPED', iconCls: 'icon-bar3d-overlapped-chart', text: i18n._("Bar 3D Overlapped"), tooltip: i18n._("Switch to Bar 3D Overlapped Chart") },
-                { name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart") },
-                { name: 'BAR_OVERLAPPED', iconCls: 'icon-bar-overlapped-chart', text: i18n._("Bar Overlapped"), tooltip: i18n._("Switch to Bar Overlapped Chart") }
+                {
+                    name: 'LINE',
+                    iconCls: 'icon-line-chart',
+                    text: i18n._("Line"),
+                    tooltip: i18n._("Switch to Line Chart")
+                },
+                {
+                    name: 'AREA',
+                    iconCls: 'icon-area-chart',
+                    text: i18n._("Area"),
+                    tooltip: i18n._("Switch to Area Chart")
+                },
+                {
+                    name: 'BAR_3D',
+                    iconCls: 'icon-bar3d-chart',
+                    text: i18n._("Bar 3D"),
+                    tooltip: i18n._("Switch to Bar 3D Chart")
+                },
+                {
+                    name: 'BAR_3D_OVERLAPPED',
+                    iconCls: 'icon-bar3d-overlapped-chart',
+                    text: i18n._("Bar 3D Overlapped"),
+                    tooltip: i18n._("Switch to Bar 3D Overlapped Chart")
+                },
+                {name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart")},
+                {
+                    name: 'BAR_OVERLAPPED',
+                    iconCls: 'icon-bar-overlapped-chart',
+                    text: i18n._("Bar Overlapped"),
+                    tooltip: i18n._("Switch to Bar Overlapped Chart")
+                }
             ];
         if (!Ext.isEmpty(entry.seriesRenderer)) {
-            seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
+            seriesRenderer = Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
         }
 
         for (i = 0; i < entry.timeDataColumns.length; i += 1) {
@@ -1260,7 +1341,7 @@ Ext.define('Ung.dashboard.Util', {
         if (!entry.timeStyle) {
             entry.timeStyle = "LINE";
         }
-        if (entry.timeStyle.indexOf('OVERLAPPED') !== -1  && entry.timeDataColumns.length <= 1) {
+        if (entry.timeStyle.indexOf('OVERLAPPED') !== -1 && entry.timeDataColumns.length <= 1) {
             entry.timeStyle = entry.timeStyle.replace("_OVERLAPPED", "");
         }
 
@@ -1305,7 +1386,7 @@ Ext.define('Ung.dashboard.Util', {
                 grid: {
                     lineDash: [3, 3]
                 },
-                style : {
+                style: {
                     strokeStyle: '#CCC'
                 },
                 minimum: 0,
@@ -1315,17 +1396,17 @@ Ext.define('Ung.dashboard.Util', {
                 },
                 title: entry.units,
                 renderer: ( entry.units == "bytes" || entry.units == "bytes/s" ? function (tooltip, storeItem, item) {
-                    return Ung.Util.bytesRendererCompact( storeItem );
+                    return Ung.Util.bytesRendererCompact(storeItem);
                 } : null )
             }, {
                 type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
                 fields: 'time_trunc',
                 position: 'bottom',
-                style : {
+                style: {
                     strokeStyle: '#CCC'
                 },
-                title: (widget.timeframe/3600 > 1 ? widget.timeframe/3600+" "+i18n._("hours") : widget.timeframe/3600+" "+i18n._("hour")),
-                renderer : Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
+                title: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
+                renderer: Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
             }]
         };
 
@@ -1395,7 +1476,10 @@ Ext.define('Ung.dashboard.Util', {
                     title: axesFieldsTitles[i],
                     xField: 'time_trunc',
                     yField: axesFields[i],
-                    style: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? { opacity: 0.70, lineWidth: 1 + 5 * i } : {  opacity: 0.60,  maxBarWidth: Math.max(40 - 2 * i, 2) },
+                    style: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? {
+                        opacity: 0.70,
+                        lineWidth: 1 + 5 * i
+                    } : {opacity: 0.60, maxBarWidth: Math.max(40 - 2 * i, 2)},
                     tooltip: {
                         trackMouse: true,
                         style: 'background: #fff',
@@ -1432,27 +1516,28 @@ Ext.define('Ung.dashboard.Util', {
         }
         return chart;
     },
-    createPieChart: function (entry,widget) {
+
+    createPieChart: function (entry, widget) {
         var descriptionFn = function (val, record) {
-            var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn),
-                value = Ung.panel.Reports.renderValue(record.get("value"), entry);
-            return title + ": " + value;
-        }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
-            type: 'text',
-            hidden: true,
-            text: i18n._("Not enough data to generate the chart."),
-            fontSize: 12,
-            fillStyle: '#FF0000',
-            x: 20,
-            y: 20
-        }), timeFrameSprite = Ext.create("Ext.draw.sprite.Text", {
-            type: 'text',
-            text: (widget.timeframe/3600 > 1 ? widget.timeframe/3600+" "+i18n._("hours") : widget.timeframe/3600+" "+i18n._("hour")),
-            fontSize: 12,
-            fillStyle: '#000000',
-            x: 20,
-            y: 310
-        }),
+                var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn),
+                    value = Ung.panel.Reports.renderValue(record.get("value"), entry);
+                return title + ": " + value;
+            }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
+                type: 'text',
+                hidden: true,
+                text: i18n._("Not enough data to generate the chart."),
+                fontSize: 12,
+                fillStyle: '#FF0000',
+                x: 20,
+                y: 20
+            }), timeFrameSprite = Ext.create("Ext.draw.sprite.Text", {
+                type: 'text',
+                text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
+                fontSize: 12,
+                fillStyle: '#000000',
+                x: 20,
+                y: 310
+            }),
             chart = {
                 xtype: 'polar',
                 name: 'chart',
@@ -1461,7 +1546,7 @@ Ext.define('Ung.dashboard.Util', {
                 colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
                 store: Ext.create('Ext.data.JsonStore', {
                     fields: [
-                        {name: 'description', convert: descriptionFn },
+                        {name: 'description', convert: descriptionFn},
                         {name: 'value'}
                     ],
                     data: []
@@ -1472,7 +1557,7 @@ Ext.define('Ung.dashboard.Util', {
                 legend: {
                     docked: 'right'
                 },
-                sprites: [ noDataSprite, timeFrameSprite ],
+                sprites: [noDataSprite, timeFrameSprite],
                 noDataSprite: noDataSprite,
                 interactions: ['rotate', 'itemhighlight'],
                 series: [{
@@ -1481,19 +1566,19 @@ Ext.define('Ung.dashboard.Util', {
                     rotation: 45,
                     label: {
                         field: 'description',
-                        renderer: function(text,sprite,config,rendererData,index) {
+                        renderer: function (text, sprite, config, rendererData, index) {
                             // calculate percentage.
                             // only show labels for large slices
                             var store = rendererData.store;
                             var total = 0;
-                            store.each(function(rec) {
+                            store.each(function (rec) {
                                 total += rec.get('value');
                             });
                             var storeItem = store.getAt(index);
                             var value = store.getAt(index).get('value');
-                            var percent = value/total;
+                            var percent = value / total;
                             var title = (storeItem.get(entry.pieGroupColumn) == null) ? i18n._("none") : storeItem.get(entry.pieGroupColumn);
-                            if ( percent > 0.09 ) //more than 9%
+                            if (percent > 0.09) //more than 9%
                                 return title;
                             else
                                 return '';
@@ -1508,7 +1593,7 @@ Ext.define('Ung.dashboard.Util', {
             };
         return chart;
     },
-    createTextReport: function (entry,widget) {
+    createTextReport: function (entry, widget) {
         return {
             xtype: 'component',
             name: "chart",
@@ -1517,15 +1602,16 @@ Ext.define('Ung.dashboard.Util', {
         };
     },
     // creates the chart based on entry report type
-    createChart: function (entry,widget) {
+    createChart: function (entry, widget) {
+        console.log('create');
         if (entry.type === 'PIE_GRAPH') {
-            return this.createPieChart(entry,widget);
+            return this.createPieChart(entry, widget);
         }
         if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
-            return this.createTimeChart(entry,widget);
+            return this.createTimeChart(entry, widget);
         }
         if (entry.type === 'TEXT') {
-            return this.createTextReport(entry,widget);
+            return this.createTextReport(entry, widget);
         }
     }
 });

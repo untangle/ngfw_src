@@ -10,52 +10,27 @@ Ext.define('Webui.config.dashboardManager', {
         this.widgetsConfig = [{
             name: 'Information',
             title: i18n._('Information'),
-            displayMode: 'small',
             singleInstance: true
         },{
-            name: 'Server',
-            title: i18n._('Server'),
-            displayMode: 'small',
-            singleInstance: true
-        },{
-            name: 'Sessions',
-            title: i18n._('Sessions'),
-            displayMode: 'small',
-            singleInstance: true
-        },{
-            name: 'HostsDevices',
-            title: i18n._('Hosts & Devices'),
-            displayMode: 'small',
-            singleInstance: true
-        },{
-            name: 'Hardware',
-            title: i18n._('Hardware'),
-            displayMode: 'small',
-            singleInstance: true
-        },{
-            name: 'Memory',
-            title: i18n._('Memory'),
-            displayMode: 'small',
-            singleInstance: true
-        },{
-            name: 'Network',
-            title: i18n._('Network'),
-            displayMode: 'small',
+            name: 'Resources',
+            title: i18n._('Resources'),
             singleInstance: true
         },{
             name: 'CPULoad',
             title: i18n._('CPU Load'),
-            displayMode: 'small',
+            singleInstance: true
+        },{
+            name: 'NetworkInformation',
+            title: i18n._('Network Information'),
+            singleInstance: true
+        },{
+            name: 'NetworkLayout',
+            title: i18n._('Network Layout'),
             singleInstance: true
 //         },{
 //             name: 'InterfaceLoad',
 //             title: i18n._('Interface Load'),
 //             displayMode: 'small'
-        },{
-            name: 'NetworkLayout',
-            title: i18n._('Network Layout'),
-            displayMode: 'big',
-            singleInstance: true
         },{
             name: 'ReportEntry',
             title: i18n._('Report'),

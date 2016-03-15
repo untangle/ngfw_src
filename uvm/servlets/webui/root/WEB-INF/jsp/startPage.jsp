@@ -12,6 +12,13 @@
         @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=${buildStamp}";
     </style>
 
+    <script type="text/javascript" src="/highcharts/highcharts.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/exporting.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/highcharts-more.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/highcharts-3d.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/solid-gauge.js?s=${buildStamp}"></script>
+    <!--<script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>-->
+    
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
 </c:if>
@@ -38,6 +45,7 @@
     <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/dashboardCharts.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportsViewer.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
