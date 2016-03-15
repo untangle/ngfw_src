@@ -1042,8 +1042,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
             if (this.entry.type === 'TIME_GRAPH_DYNAMIC' || this.entry.type === 'TIME_GRAPH') {
                 if (this.chart.series.length === 0) {
+                    var columns = [];
                     if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        var columnsMap = {}, columns = [], values = {};
+                        var columnsMap = {}, values = {}, column = null;
                         for (i = 0; i < result.list.length; i += 1) {
                             for (column in result.list[i]) {
                                 columnsMap[column] = true;
@@ -1067,7 +1068,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                             id: this.entry.timeDataColumns[c],
                             name: sName,
                             data: []
-                        })
+                        });
                     }
                 }
 
