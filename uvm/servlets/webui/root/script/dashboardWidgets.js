@@ -639,7 +639,6 @@ Ext.define('Ung.dashboard.CPULoad', {
         }
 
 
-        //if (this.chart1 !== null && this.chart2 !== null) {
         if (stats.oneMinuteLoadAvg > medLimit) {
             loadLabel = 'medium';
         }
@@ -649,9 +648,12 @@ Ext.define('Ung.dashboard.CPULoad', {
         if (Ext.select('.cpuLoadVal', this).elements[0]) {
             Ext.select('.cpuLoadVal', this).elements[0].addCls(loadLabel).setHtml(stats.oneMinuteLoadAvg + '<br/><span>' + loadLabel + '</span>');
         }
-        this.chart1.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
-        this.chart2.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
-        //}
+
+        if (this.chart1 !== null && this.chart2 !== null) {
+            this.chart1.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
+            this.chart2.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
+        }
+
     }
 });
 
@@ -708,121 +710,6 @@ Ext.define('Ung.dashboard.NetworkInformation', {
             this.data.sessions = result;
             this.update(this.data);
         }, this));
-    }
-});
-
-/* InterfaceLoad Widget */
-Ext.define('Ung.dashboard.InterfaceLoad', {
-    extend: 'Ung.dashboard.Widget',
-    layout: 'fit',
-    hasStats: true,
-    items: [],
-    initComponent: function () {
-        this.title = i18n._("Interface Load") + " | " + (Ung.dashboard.Util.getInterfaceMap()[this.entryId] || this.entryId);
-        this.items.push({
-            xtype: 'cartesian',
-            name: 'chart',
-            border: false,
-            animation: false,
-            width: '100%',
-            height: '100%',
-            legend: {
-                docked: 'right'
-            },
-            store: {
-                fields: ['rx', 'time'],
-                data: []
-            },
-            axes: [{
-                type: 'numeric',
-                position: 'left',
-                grid: {
-                    lineDash: [3, 3]
-                },
-                minimum: 0,
-                fields: ['rx', 'tx'],
-                style: {
-                    strokeStyle: '#CCC'
-                },
-                label: {
-                    fontSize: 11,
-                    color: '#999'
-                }
-            }, {
-                type: 'category',
-                position: 'bottom',
-                hidden: true,
-                fields: ['time']
-            }],
-            series: [{
-                type: 'line',
-                title: 'RX KB/s',
-                //FIXME smoothing doesnt seem to work
-                // smooth: 1000 should apply minimal smoothing but looks the same
-                // as smooth: true for some reason
-                smooth: 100,
-                xField: 'time',
-                yField: ['rx'],
-                tooltip: {
-                    trackMouse: true,
-                    style: 'background: #fff',
-                    renderer: function (tooltip, storeItem, item) {
-                        tooltip.setHtml('RX KB/s');
-                    }
-                },
-                style: {
-                    stroke: '#396c2b',
-                    lineWidth: 4,
-                    fillOpacity: 0.8
-                }
-            }, {
-                type: 'line',
-                title: 'TX KB/s',
-                //FIXME smoothing doesnt seem to work
-                // smooth: 1000 should apply minimal smoothing but looks the same
-                // as smooth: true for some reason
-                smooth: 100,
-                xField: 'time',
-                yField: ['tx'],
-                tooltip: {
-                    trackMouse: true,
-                    style: 'background: #fff',
-                    renderer: function (tooltip, storeItem, item) {
-                        tooltip.setHtml('TX KB/s');
-                    }
-                },
-                style: {
-                    stroke: '#3399ff',
-                    lineWidth: 4,
-                    fillOpacity: 0.8
-                }
-            }]
-        });
-        this.callParent(arguments);
-    },
-    updateStats: function (stats) {
-        var d = new Date(),
-            chart = this.down("[name=chart]"),
-            data = chart.getStore().getProxy().reader.rawData;
-
-        // if (stats.oneMinuteLoadAvg < stats.numCpus) {
-        //     chart.getAxes()[0].setMaximum(stats.numCpus + 0.5);
-        // } else {
-        //     chart.getAxes()[0].setMaximum(stats.oneMinuteLoadAvg + 0.5);
-        // }
-
-        if (data.length > 30) {
-            data.shift();
-        }
-        try {
-            data.push({
-                time: d.getTime(),
-                rx: Math.round(stats['interface_' + this.entryId + '_rxBps'] / 1024),
-                tx: Math.round(stats['interface_' + this.entryId + '_txBps'] / 1024)
-            });
-            chart.store.loadData(data);
-        } catch (ignore) {
-        }
     }
 });
 
@@ -1042,9 +929,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
             if (this.entry.type === 'TIME_GRAPH_DYNAMIC' || this.entry.type === 'TIME_GRAPH') {
                 if (this.chart.series.length === 0) {
-                    var columns = [];
+                    var columns = [], c, seriesName;
                     if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        var columnsMap = {}, values = {}, column = null;
+                        var columnsMap = {}, column = null;
                         for (i = 0; i < result.list.length; i += 1) {
                             for (column in result.list[i]) {
                                 columnsMap[column] = true;
@@ -1057,24 +944,24 @@ Ext.define('Ung.dashboard.ReportEntry', {
                         }
                     }
                     this.entry.timeDataColumns = columns;
-                    
-                    for (c = 0; c < this.entry.timeDataColumns.length; c++) {
-                        var sName = this.entry.timeDataColumns[c];
+
+                    for (c = 0; c < this.entry.timeDataColumns.length; c += 1) {
+                        seriesName = this.entry.timeDataColumns[c];
                         if (this.entry.seriesRenderer === 'interface') {
-                            sName = Ung.dashboard.Util.getInterfaceMap()[this.entry.timeDataColumns[c]] + ' [ ' + this.entry.timeDataColumns[c] + ' ] ';
+                            seriesName = Ung.dashboard.Util.getInterfaceMap()[this.entry.timeDataColumns[c]] + ' [ ' + this.entry.timeDataColumns[c] + ' ] ';
                         }
-                        
+
                         this.chart.addSeries({
                             id: this.entry.timeDataColumns[c],
-                            name: sName,
+                            name: seriesName,
                             data: []
                         });
                     }
                 }
 
-                for (j = 0; j < this.entry.timeDataColumns.length; j++) {
+                for (j = 0; j < this.entry.timeDataColumns.length; j += 1) {
                     data = [];
-                    for (i = 0; i < result.list.length; i++) {
+                    for (i = 0; i < result.list.length; i += 1) {
                         data.push([
                             result.list[i].time_trunc.time,
                             result.list[i][this.chart.series[j].options.id] ? Math.floor(result.list[i][this.chart.series[j].options.id]) : 0
@@ -1247,14 +1134,15 @@ Ext.define('Ung.dashboard.Util', {
     singleton: true,
 
     buildInterfaces: function () {
+        var c, intf, name, key;
         if (!this.interfaces) {
             this.interfaces = [];
             this.interfaceMap = {};
             var networkSettings = Ung.Main.getNetworkSettings();
-            for (var c = 0; c < networkSettings.interfaces.list.length; c++) {
-                var intf = networkSettings.interfaces.list[c];
-                var name = intf.name;
-                var key = intf.interfaceId;
+            for (c = 0; c < networkSettings.interfaces.list.length; c += 1) {
+                intf = networkSettings.interfaces.list[c];
+                name = intf.name;
+                key = intf.interfaceId;
                 this.interfaces.push([key, name]);
                 this.interfaceMap[key] = name;
             }
@@ -1268,332 +1156,7 @@ Ext.define('Ung.dashboard.Util', {
         this.buildInterfaces();
         return this.interfaceMap;
     },
-    createTimeChart: function (entry, widget) {
-        if (!entry.timeDataColumns) {
-            entry.timeDataColumns = [];
-        }
-        var chart, axesFields = [], axesFieldsTitles = [], series = [],
-            legendHint = (entry.timeDataColumns.length > 1) ? "<br/>" + i18n._('Hint: Click this label on the legend to hide this series') : '',
-            zeroFn = function (val) {
-                return (val == null) ? 0 : val;
-            },
-            timeFn = function (val) {
-                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
-            },
-            storeFields = [{name: 'time_trunc', convert: timeFn}],
-            reportDataColumns = [{
-                dataIndex: 'time_trunc',
-                header: i18n._("Timestamp"),
-                width: 130,
-                flex: entry.timeDataColumns.length > 2 ? 0 : 1
-            }],
-            seriesRenderer = null, title, column, i,
 
-            timeStyleButtons = [], timeStyle,
-            timeStyles = [
-                {
-                    name: 'LINE',
-                    iconCls: 'icon-line-chart',
-                    text: i18n._("Line"),
-                    tooltip: i18n._("Switch to Line Chart")
-                },
-                {
-                    name: 'AREA',
-                    iconCls: 'icon-area-chart',
-                    text: i18n._("Area"),
-                    tooltip: i18n._("Switch to Area Chart")
-                },
-                {
-                    name: 'BAR_3D',
-                    iconCls: 'icon-bar3d-chart',
-                    text: i18n._("Bar 3D"),
-                    tooltip: i18n._("Switch to Bar 3D Chart")
-                },
-                {
-                    name: 'BAR_3D_OVERLAPPED',
-                    iconCls: 'icon-bar3d-overlapped-chart',
-                    text: i18n._("Bar 3D Overlapped"),
-                    tooltip: i18n._("Switch to Bar 3D Overlapped Chart")
-                },
-                {name: 'BAR', iconCls: 'icon-bar-chart', text: i18n._("Bar"), tooltip: i18n._("Switch to Bar Chart")},
-                {
-                    name: 'BAR_OVERLAPPED',
-                    iconCls: 'icon-bar-overlapped-chart',
-                    text: i18n._("Bar Overlapped"),
-                    tooltip: i18n._("Switch to Bar Overlapped Chart")
-                }
-            ];
-        if (!Ext.isEmpty(entry.seriesRenderer)) {
-            seriesRenderer = Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
-        }
-
-        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
-            column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
-            title = seriesRenderer ? seriesRenderer(column) : column;
-            axesFields.push(column);
-            axesFieldsTitles.push(title);
-            storeFields.push({name: column, convert: zeroFn, type: 'integer'});
-            reportDataColumns.push({
-                dataIndex: column,
-                header: title,
-                width: entry.timeDataColumns.length > 2 ? 60 : 90
-            });
-        }
-        if (!entry.timeStyle) {
-            entry.timeStyle = "LINE";
-        }
-        if (entry.timeStyle.indexOf('OVERLAPPED') !== -1 && entry.timeDataColumns.length <= 1) {
-            entry.timeStyle = entry.timeStyle.replace("_OVERLAPPED", "");
-        }
-
-        for (i = 0; i < timeStyles.length; i += 1) {
-            timeStyle = timeStyles[i];
-            timeStyleButtons.push({
-                xtype: 'button',
-                pressed: entry.timeStyle === timeStyle.name,
-                hidden: (timeStyle.name.indexOf('OVERLAPPED') !== -1) && (entry.timeDataColumns.length <= 1),
-                name: timeStyle.name,
-                iconCls: timeStyle.iconCls,
-                text: timeStyle.text,
-                tooltip: timeStyle.tooltip,
-                handler: Ext.bind(function (button) {
-                    entry.timeStyle = button.name;
-                    this.loadReportEntry(entry);
-                }, this)
-            });
-        }
-        timeStyleButtons.push('-');
-
-        chart = {
-            xtype: 'cartesian',
-            name: 'chart',
-            store: Ext.create('Ext.data.JsonStore', {
-                fields: storeFields,
-                data: []
-            }),
-            theme: 'category2',
-            border: false,
-            animation: false,
-            width: '100%',
-            height: '100%',
-            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
-            legend: {
-                docked: 'bottom'
-            },
-            axes: [{
-                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'numeric3d' : 'numeric',
-                fields: axesFields,
-                position: 'left',
-                grid: {
-                    lineDash: [3, 3]
-                },
-                style: {
-                    strokeStyle: '#CCC'
-                },
-                minimum: 0,
-                label: {
-                    fontSize: 11,
-                    color: '#999'
-                },
-                title: entry.units,
-                renderer: ( entry.units == "bytes" || entry.units == "bytes/s" ? function (tooltip, storeItem, item) {
-                    return Ung.Util.bytesRendererCompact(storeItem);
-                } : null )
-            }, {
-                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'category3d' : 'category',
-                fields: 'time_trunc',
-                position: 'bottom',
-                style: {
-                    strokeStyle: '#CCC'
-                },
-                title: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
-                renderer: Ext.util.Format.numberRenderer('0') // this looks like a hack to hide labels
-            }]
-        };
-
-        if (entry.timeStyle === 'LINE') {
-            for (i = 0; i < axesFields.length; i += 1) {
-                series.push({
-                    type: 'line',
-                    axis: 'left',
-                    title: axesFieldsTitles[i],
-                    xField: 'time_trunc',
-                    yField: axesFields[i],
-                    style: {
-                        opacity: 0.90,
-                        lineWidth: 1
-                    },
-                    highlight: {
-                        fillStyle: '#000',
-                        radius: 4,
-                        lineWidth: 1,
-                        strokeStyle: '#fff'
-                    },
-                    tooltip: {
-                        trackMouse: true,
-                        style: 'background: #fff',
-                        renderer: function (tooltip, storeItem, item) {
-                            title = item.series.getTitle();
-                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
-                        }
-                    }
-                });
-            }
-            chart.series = series;
-        } else if (entry.timeStyle === 'AREA') {
-            for (i = 0; i < axesFields.length; i += 1) {
-                series.push({
-                    type: 'area',
-                    axis: 'left',
-                    title: axesFieldsTitles[i],
-                    xField: 'time_trunc',
-                    yField: axesFields[i],
-                    style: {
-                        opacity: 0.60,
-                        lineWidth: 1
-                    },
-                    highlight: {
-                        fillStyle: '#000',
-                        radius: 4,
-                        lineWidth: 1,
-                        strokeStyle: '#fff'
-                    },
-                    tooltip: {
-                        trackMouse: true,
-                        style: 'background: #fff',
-                        renderer: function (tooltip, storeItem, item) {
-                            title = item.series.getTitle();
-                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
-                        }
-                    }
-                });
-            }
-            chart.series = series;
-        } else if (entry.timeStyle.indexOf('OVERLAPPED') !== -1) {
-            for (i = 0; i < axesFields.length; i += 1) {
-                series.push({
-                    type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
-                    axis: 'left',
-                    title: axesFieldsTitles[i],
-                    xField: 'time_trunc',
-                    yField: axesFields[i],
-                    style: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? {
-                        opacity: 0.70,
-                        lineWidth: 1 + 5 * i
-                    } : {opacity: 0.60, maxBarWidth: Math.max(40 - 2 * i, 2)},
-                    tooltip: {
-                        trackMouse: true,
-                        style: 'background: #fff',
-                        renderer: function (tooltip, storeItem, item) {
-                            title = item.series.getTitle();
-                            tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " + i18n._(entry.units) + legendHint);
-                        }
-                    }
-                });
-            }
-            chart.series = series;
-        } else if (entry.timeStyle.indexOf('BAR') !== -1) {
-            chart.series = [{
-                type: (entry.timeStyle.indexOf('BAR_3D') !== -1) ? 'bar3d' : 'bar',
-                axis: 'left',
-                title: axesFieldsTitles,
-                xField: 'time_trunc',
-                yField: axesFields,
-                stacked: false,
-                style: {
-                    opacity: 0.90,
-                    inGroupGapWidth: 1
-                },
-                highlight: true,
-                tooltip: {
-                    trackMouse: true,
-                    style: 'background: #fff',
-                    renderer: function (tooltip, storeItem, item) {
-                        title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                        tooltip.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " + i18n._(entry.units) + legendHint);
-                    }
-                }
-            }];
-        }
-        return chart;
-    },
-
-    createPieChart: function (entry, widget) {
-        var descriptionFn = function (val, record) {
-                var title = (record.get(entry.pieGroupColumn) == null) ? i18n._("none") : record.get(entry.pieGroupColumn),
-                    value = Ung.panel.Reports.renderValue(record.get("value"), entry);
-                return title + ": " + value;
-            }, noDataSprite = Ext.create("Ext.draw.sprite.Text", {
-                type: 'text',
-                hidden: true,
-                text: i18n._("Not enough data to generate the chart."),
-                fontSize: 12,
-                fillStyle: '#FF0000',
-                x: 20,
-                y: 20
-            }), timeFrameSprite = Ext.create("Ext.draw.sprite.Text", {
-                type: 'text',
-                text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
-                fontSize: 12,
-                fillStyle: '#000000',
-                x: 20,
-                y: 310
-            }),
-            chart = {
-                xtype: 'polar',
-                name: 'chart',
-                width: '100%',
-                height: '100%',
-                colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
-                store: Ext.create('Ext.data.JsonStore', {
-                    fields: [
-                        {name: 'description', convert: descriptionFn},
-                        {name: 'value'}
-                    ],
-                    data: []
-                }),
-                border: false,
-                insetPadding: {top: 40, left: 40, right: 10, bottom: 10},
-                innerPadding: 20,
-                legend: {
-                    docked: 'right'
-                },
-                sprites: [noDataSprite, timeFrameSprite],
-                noDataSprite: noDataSprite,
-                interactions: ['rotate', 'itemhighlight'],
-                series: [{
-                    type: 'pie',
-                    angleField: 'value',
-                    rotation: 45,
-                    label: {
-                        field: 'description',
-                        renderer: function (text, sprite, config, rendererData, index) {
-                            // calculate percentage.
-                            // only show labels for large slices
-                            var store = rendererData.store;
-                            var total = 0;
-                            store.each(function (rec) {
-                                total += rec.get('value');
-                            });
-                            var storeItem = store.getAt(index);
-                            var value = store.getAt(index).get('value');
-                            var percent = value / total;
-                            var title = (storeItem.get(entry.pieGroupColumn) == null) ? i18n._("none") : storeItem.get(entry.pieGroupColumn);
-                            if (percent > 0.09) //more than 9%
-                                return title;
-                            else
-                                return '';
-                        },
-                        calloutLine: {
-                            color: '#FFFFFF',
-                            length: 30,
-                            width: 0
-                        }
-                    }
-                }]
-            };
-        return chart;
-    },
     createTextReport: function (entry, widget) {
         return {
             xtype: 'component',
@@ -1601,19 +1164,6 @@ Ext.define('Ung.dashboard.Util', {
             margin: 10,
             html: ''
         };
-    },
-    // creates the chart based on entry report type
-    createChart: function (entry, widget) {
-        console.log('create');
-        if (entry.type === 'PIE_GRAPH') {
-            return this.createPieChart(entry, widget);
-        }
-        if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
-            return this.createTimeChart(entry, widget);
-        }
-        if (entry.type === 'TEXT') {
-            return this.createTextReport(entry, widget);
-        }
     }
 });
 

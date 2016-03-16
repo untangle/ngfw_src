@@ -238,7 +238,6 @@ Ext.define('Ung.dashboard.Charts', {
     },
 
     timeChart: function (widget, d3) {
-
         var seriesRenderer, column, i;
 
         if (!widget.entry.timeDataColumns) {
@@ -284,10 +283,7 @@ Ext.define('Ung.dashboard.Charts', {
                 type: chartType,
                 zoomType: 'x',
                 renderTo: widget.getEl().query('.chart')[0],
-                //animation: Highcharts.svg, // don't animate in old IE
-                //marginTop: 25,
-                //marginRight: 10,
-                //marginRight: 0,
+                colors: (widget.entry.colors !== null && widget.entry.colors.length > 0) ? widget.entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
                 marginBottom: 50,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
@@ -303,7 +299,6 @@ Ext.define('Ung.dashboard.Charts', {
                     viewDistance: 25
                 }
             },
-            //colors: widget.entry.colors ? widget.entry.colors : Highcharts.theme,
             credits: {
                 enabled: false
             },
@@ -342,39 +337,64 @@ Ext.define('Ung.dashboard.Charts', {
             xAxis: {
                 type: 'datetime',
                 crosshair: true,
+                lineColor: "#C0D0E0",
+                lineWidth: 1,
+                tickLength: 5,
+                tickPixelInterval: 70,
                 labels: {
                     style: {
                         color: '#999',
-                        fontSize: '10px'
+                        fontSize: '9px'
                     }
                 },
                 maxPadding: 0,
-                minPadding: 0
+                minPadding: 0,
+                title: {
+                    align: 'high',
+                    offset: 20,
+                    text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
+                    style: {
+                        color: '#C0D0E0'
+                    }
+                }
             },
             yAxis: {
                 allowDecimals: false,
                 min: 0,
                 minRange: 2,
-                title: null,
+                lineColor: "#C0D0E0",
+                lineWidth: 1,
                 gridLineWidth: 1,
                 gridLineDashStyle: 'dash',
                 gridLineColor: '#EEE',
                 tickPixelInterval: 50,
+                tickLength: 5,
+                tickWidth: 1,
                 labels: {
                     align: 'right',
                     padding: 0,
                     style: {
-                        color: '#555',
-                        fontSize: '10px'
+                        color: '#999',
+                        fontSize: '9px'
+                    },
+                    formatter: function () {
+                        return Ung.Util.bytesRendererCompact(this.value).replace(/ /g, '');
                     },
                     x: -10
                 },
-                visible: true
+                title: {
+                    align: 'high',
+                    offset: -10,
+                    text: widget.entry.units,
+                    style: {
+                        color: '#C0D0E0'
+                    }
+                }
             },
             legend: {
                 enabled: true,
                 padding: 0,
-                y: 5,
+                y: 3,
                 itemStyle: {
                     color: '#555'
                     //fontWeight: 300
@@ -384,21 +404,30 @@ Ext.define('Ung.dashboard.Charts', {
                 symbolRadius: 4
             },
             tooltip: {
+                animation: false,
                 shared: true,
-                valueSuffix: ' ' + widget.entry.units,
-                shadow: false
-                /*
-                 positioner: function () {
-                 return { x: 80, y: 50 };
-                 },
-                 shadow: false
-                 */
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                useHTML: true,
+                style: {
+                    padding: '5px',
+                    fontSize: '11px'
+                },
+                //valueSuffix: ' ' + widget.entry.units,
+                headerFormat: '<div style="font-size: 12px; font-weight: bold; line-height: 1.5; border-bottom: 1px #EEE solid; margin-bottom: 5px; color: #777;">{point.key}</div>',
+                pointFormatter: function () {
+                    var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                    if (widget.entry.units === "bytes" || widget.entry.units === "bytes/s") {
+                        str += ': <b>' + Ung.Util.bytesRenderer(this.y) + '</b>';
+                    } else {
+                        str += ': <b>' + this.y + '</b> ' + widget.entry.units;
+                    }
+                    return '<div>' + str + '</div>';
+                }
             },
             plotOptions: {
                 column: {
                     depth: 15,
                     //colorByPoint: true,
-                    //colors: ['rgba(255, 0, 0, 0.45)', 'rgba(113, 255, 0, 0.45)', 'rgba(0, 105, 255, 0.45)'],
                     //pointWidth: 10,
                     //pointInterval: 6000,
                     //pointPlacement: 'between',
@@ -407,14 +436,15 @@ Ext.define('Ung.dashboard.Charts', {
                     borderWidth: 0,
                     pointPadding: 0,
                     groupPadding: 0.1
-                    //pointRange: 60 * 1000
                 },
                 areaspline: {
-                    lineWidth: 1,
+                    lineWidth: 2,
                     fillOpacity: 0.2
+                    //shadow: true
                 },
                 spline: {
                     lineWidth: 2
+                    //shadow: true
                 },
                 series: {
                     //shadow: true,
@@ -424,7 +454,7 @@ Ext.define('Ung.dashboard.Charts', {
                             hover: {
                                 enabled: true,
                                 lineWidthPlus: 0,
-                                radius: 3,
+                                radius: 4,
                                 radiusPlus: 0
                             }
                         }
@@ -454,7 +484,7 @@ Ext.define('Ung.dashboard.Charts', {
                 spacing: [20, 10, 20, 20],
                 backgroundColor: 'transparent',
                 style: {
-                    //fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
                 },
                 options3d: {
@@ -472,7 +502,7 @@ Ext.define('Ung.dashboard.Charts', {
             },
             legend: {
                 title: {
-                    text: seriesName + '<br/><span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                    text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
                     style: {
                         fontStyle: 'italic'
                     }
