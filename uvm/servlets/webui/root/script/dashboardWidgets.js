@@ -843,10 +843,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
     tpl: '<div class="wg-wrapper no-padding">' +
         '<div class="chart-types" style="height: 20px;">' +
-            '<button data-type="spline" data-d3="false">Line</button>' +
-            '<button data-type="areaspline" data-d3="false">Area</button>' +
-            '<button data-type="column" data-d3="false">Column</button>' +
-            //'<button data-type="column" data-d3="true">3D Column</button>' +
+            '<button data-type="spline" data-is3d="0">Line</button>' +
+            '<button data-type="areaspline" data-is3d="0">Area</button>' +
+            '<button data-type="column" data-is3d="0">Column</button>' +
+            '<button data-type="column" data-is3d="1">3D Column</button>' +
         '</div>' +
         '<div class="chart" style="height: 240px;  position: absolute; left: 0; bottom: 0; right: 0;">' +
         '</div>' +
@@ -855,10 +855,27 @@ Ext.define('Ung.dashboard.ReportEntry', {
         '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>No data!</p></div>',
     data: {},
     chart: null,
-
+    chartType: null,
+    chart3d: 0,
     initComponent: function () {
         this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
-        //this.items = [Ung.dashboard.Util.createChart(this.entry,this)];
+        switch (this.entry.timeStyle) {
+        case 'LINE':
+            this.chartType = 'spline';
+            this.chart3d = 0;
+            break;
+        case 'AREA':
+            this.chartType = 'areaspline';
+            this.chart3d = 0;
+            break;
+        case 'BAR_3D_OVERLAPPED':
+            this.chartType = 'column';
+            this.chart3d = 1;
+            break;
+        default:
+            this.chartType = 'areaspline';
+            this.chart3d = 0;
+        }
         this.callParent(arguments);
     },
 
@@ -874,13 +891,36 @@ Ext.define('Ung.dashboard.ReportEntry', {
             }
 
             widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
-                if (evt.target.dataset.type) {
+                widget.chartType = evt.target.dataset.type;
+                if (widget.chart3d !== parseInt(evt.target.dataset.is3d, 10)) {
+
+                    var seriesCopy = [];
+                    widget.chart.series.forEach(function (serie, index) {
+                        seriesCopy[index] = [];
+                        serie.data.forEach(function (data) {
+                            seriesCopy[index].push({x: data.x, y: data.y});
+                        });
+                    });
+
+                    // recreate chart
+                    widget.chart.destroy();
+                    widget.chart3d = parseInt(evt.target.dataset.is3d, 10);
+                    widget.chart = Ung.dashboard.Charts.timeChart(widget);
+
+                    for (var i=0; i< seriesCopy.length; i++) {
+                        widget.chart.series[i].setData(seriesCopy[i], true, false);    
+                    }
+                    seriesCopy = [];
+                    //Ung.dashboard.Queue.addFirst(widget);
+                } else {
+                    // just update series
                     for (i = 0; i < widget.chart.series.length; i += 1) {
                         widget.chart.series[i].update({
-                            type: evt.target.dataset.type
+                            type: widget.chartType
                         }, true, true);
                     }
                 }
+                
             });
 
             /*

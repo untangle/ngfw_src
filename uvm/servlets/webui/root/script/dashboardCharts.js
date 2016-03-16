@@ -237,7 +237,7 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    timeChart: function (widget, d3) {
+    timeChart: function (widget) {
         var seriesRenderer, column, i;
 
         if (!widget.entry.timeDataColumns) {
@@ -252,35 +252,43 @@ Ext.define('Ung.dashboard.Charts', {
         }
         */
 
-        var chartType, chartSeries = [];
+        var chartSeries = [];
 
+        /*
+        switch (widget.chartType) {
+        case 'spline':
+            chartType = 'spline';
+            break;
+        case 'areaspline':
+            chartType = 'areaspline';
+            break;
+        case 'column':
+            chartType = 'column';
+            break;
+        case 'column-3d':
+            chartType = 'column';
+            chart3d = true;
+            break;
+        default:
+            chartType = 'areaspline';
+        }
+        */
+
+        var alphaColors = ['rgba(178, 178, 178, 0.7)', 'rgba(57, 108, 53, 0.7)', 'rgba(51, 153, 255, 0.7)'];
         for (i = 0; i < widget.entry.timeDataColumns.length; i += 1) {
             column = widget.entry.timeDataColumns[i].split(' ').splice(-1)[0];
             chartSeries.push({
                 id: column,
                 name: column,
-                data: [],
-                pointPadding: 0.15 * i
+                data: []
+                //color: alphaColors[i]
+                //pointPadding: 0.15 * i
             });
-        }
-
-        switch (widget.entry.timeStyle) {
-        case 'LINE':
-            chartType = 'spline';
-            break;
-        case 'AREA':
-            chartType = 'areaspline';
-            break;
-        case 'BAR_3D_OVERLAPPED':
-            chartType = 'column';
-            break;
-        default:
-            chartType = 'areaspline';
         }
 
         return new Highcharts.Chart({
             chart: {
-                type: chartType,
+                type: widget.chartType,
                 zoomType: 'x',
                 renderTo: widget.getEl().query('.chart')[0],
                 colors: (widget.entry.colors !== null && widget.entry.colors.length > 0) ? widget.entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
@@ -292,11 +300,11 @@ Ext.define('Ung.dashboard.Charts', {
                     fontSize: '12px'
                 },
                 options3d: {
-                    enabled: d3,
-                    alpha: 15,
-                    beta: 15,
-                    depth: 50,
-                    viewDistance: 25
+                    enabled: widget.chart3d,
+                    alpha: 0,
+                    beta: 0,
+                    depth: 20,
+                    viewDistance: 10
                 }
             },
             credits: {
@@ -341,6 +349,9 @@ Ext.define('Ung.dashboard.Charts', {
                 lineWidth: 1,
                 tickLength: 5,
                 tickPixelInterval: 70,
+                //startOnTick: true,
+                //endOnTick: true,
+                //tickInterval: 60 * 1000,
                 labels: {
                     style: {
                         color: '#999',
@@ -426,16 +437,20 @@ Ext.define('Ung.dashboard.Charts', {
             },
             plotOptions: {
                 column: {
-                    depth: 15,
+                    depth: 10,
                     //colorByPoint: true,
                     //pointWidth: 10,
-                    //pointInterval: 6000,
+                    //pointInterval: 1,
+                    //pointIntervalUnit: 'minute',
+                    //pointRange: 60 * 1000,
                     //pointPlacement: 'between',
                     grouping: false,
                     edgeWidth: 0,
-                    borderWidth: 0,
-                    pointPadding: 0,
-                    groupPadding: 0.1
+                    edgeColor: '#FFF',
+                    borderWidth: 1,
+                    //borderColor: '#FFF',
+                    pointPadding: 0.1,
+                    groupPadding: 0
                 },
                 areaspline: {
                     lineWidth: 2,
