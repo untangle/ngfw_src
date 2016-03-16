@@ -882,7 +882,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
     listeners: {
         'afterrender': function (widget) {
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
-            var i;
+
             if (widget.entry.type === 'PIE_GRAPH') {
                 widget.getEl().query('.chart-types')[0].style.display = 'none';
                 widget.chart = Ung.dashboard.Charts.pieChart(widget);
@@ -891,6 +891,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
             }
 
             widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
+                var i;
                 widget.chartType = evt.target.dataset.type;
                 if (widget.chart3d !== parseInt(evt.target.dataset.is3d, 10)) {
 
@@ -907,7 +908,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     widget.chart3d = parseInt(evt.target.dataset.is3d, 10);
                     widget.chart = Ung.dashboard.Charts.timeChart(widget);
 
-                    for (var i=0; i< seriesCopy.length; i++) {
+                    for (i = 0; i < seriesCopy.length; i += 1) {
                         widget.chart.series[i].setData(seriesCopy[i], true, false);    
                     }
                     seriesCopy = [];
