@@ -100,6 +100,19 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
         // special handling for SMTP stream in plain text mode
         if ((session.getServerPort() == 25) && (tlsFlag == false)) {
+            
+            if (manager.checkIPCMessage(data.array(), SslInspectorManager.IPC_RELEASE_MESSAGE) == true) {
+                logger.debug("Received IPC_RELEASE message");
+                session.release();
+                return;
+            }
+
+            if (manager.checkIPCMessage(data.array(), SslInspectorManager.IPC_DESTROY_MESSAGE) == true) {
+                logger.debug("Received IPC_DESTROY message");
+                session.killSession();
+                return;
+            }
+
             logger.debug("---------- " + (s2c ? "CLIENT" : "SERVER") + " unparse() received " + data.limit() + " bytes ----------");
 
             if (s2c == true) {

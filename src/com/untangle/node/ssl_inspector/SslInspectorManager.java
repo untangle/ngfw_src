@@ -694,7 +694,7 @@ for more data when a full packet has not yet been received.
         if (rawdata[1] != '2') return (false);
         if (rawdata[2] != '0') return (false);
 
-        // the last character should be LF be we allow CR as well
+        // the last character should be LF but we allow CR as well
         if ((rawdata[rawlen - 1] != '\n') && (rawdata[rawlen - 1] != '\r')) return (false);
 
         return (true);

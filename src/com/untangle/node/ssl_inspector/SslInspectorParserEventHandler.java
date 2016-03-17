@@ -9,10 +9,13 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
+
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -122,6 +125,19 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // special handling for SMTP stream in plain text mode  
         if ((session.getServerPort() == 25) && (tlsFlag == false)) {
+
+            if (manager.checkIPCMessage(data.array(), SslInspectorManager.IPC_RELEASE_MESSAGE) == true) {
+                logger.debug("Received IPC_RELEASE message");
+                session.release();
+                return;
+            }
+
+            if (manager.checkIPCMessage(data.array(), SslInspectorManager.IPC_DESTROY_MESSAGE) == true) {
+                logger.debug("Received IPC_DESTROY message");
+                session.killSession();
+                return;
+            }
+
             logger.debug("---------- " + (s2c ? "CLIENT" : "SERVER") + " parse() received " + data.limit() + " bytes ----------");
 
             if (s2c == true) {

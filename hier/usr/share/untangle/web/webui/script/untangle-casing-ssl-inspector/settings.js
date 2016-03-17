@@ -127,7 +127,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 items: [{
                     xtype: 'checkbox',
                     fieldLabel: i18n._("Enable SMTPS Traffic Processing"),
-                    labelWidth: 200,
+                    labelWidth: 240,
                     name: 'scanMailTraffic',
                     checked: this.settings.processEncryptedMailTraffic,
                     handler: Ext.bind(function(elem, checked) {
@@ -136,7 +136,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 },{
                     xtype: 'checkbox',
                     fieldLabel: i18n._("Enable HTTPS Traffic Processing"),
-                    labelWidth: 200,
+                    labelWidth: 240,
                     name: 'scanWebTraffic',
                     checked: this.settings.processEncryptedWebTraffic,
                     handler: Ext.bind(function(elem, checked) {
@@ -145,7 +145,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                 },{
                     xtype: 'checkbox',
                     fieldLabel: i18n._("Block Invalid HTTPS Traffic"),
-                    labelWidth: 200,
+                    labelWidth: 240,
                     name: 'blockInvalidTraffic',
                     checked: this.settings.blockInvalidTraffic,
                     handler: Ext.bind(function(elem, checked) {
