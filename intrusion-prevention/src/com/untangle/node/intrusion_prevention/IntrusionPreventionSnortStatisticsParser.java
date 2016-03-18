@@ -162,7 +162,7 @@ public class IntrusionPreventionSnortStatisticsParser
          *
          * bug #12837 for more info
          */
-        String cmd = "/bin/killall -SIGUSR1 /usr/sbin/snort";
+        String cmd = "killall -SIGUSR1 snort";
         // String cmd = "/bin/kill -SIGUSR1 " + pid;
         ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
 
