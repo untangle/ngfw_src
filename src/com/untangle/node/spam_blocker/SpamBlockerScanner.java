@@ -50,7 +50,7 @@ public class SpamBlockerScanner implements SpamScanner
     {
         if (!isLicenseValid()) {
             logger.warn("No valid license found - skipping scan");
-            new SpamReport(new LinkedList<ReportItem>(), 0, threshold);
+            return new SpamReport(new LinkedList<ReportItem>(), 0, threshold);
         }
 
         SpamAssassinClient client = new SpamAssassinClient(msgFile, SpamAssassinClient.SPAMD_DEFHOST, SpamAssassinClient.SPAMD_DEFPORT, threshold, SPAM_SCANNER_USERNAME);
