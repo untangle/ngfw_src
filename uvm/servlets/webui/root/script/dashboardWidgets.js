@@ -135,7 +135,9 @@ Ext.define('Ung.dashboard', {
             clearTimeout(timer);
             timer = setTimeout(function () {
                 Highcharts.charts.forEach(function (chart) {
-                    chart.reflow();
+                    if (chart) {
+                        chart.reflow();
+                    }
                 });
             }, 100);
         });
@@ -591,8 +593,8 @@ Ext.define('Ung.dashboard.CPULoad', {
     chart2: null,
     listeners: {
         'afterrender': function (widget) {
-            widget.chart1 = Ung.dashboard.Charts.cpuLoad1(widget);
-            widget.chart2 = Ung.dashboard.Charts.cpuLoad2(widget);
+            widget.chart1 = Ung.dashboard.Charts.cpuLoad1(widget.getEl().query('.chart1')[0]);
+            widget.chart2 = Ung.dashboard.Charts.cpuLoad2(widget.getEl().query('.chart2')[0]);
         }
     },
     updateStats: function (stats) {
@@ -846,7 +848,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
             '<button data-type="spline" data-is3d="0">Line</button>' +
             '<button data-type="areaspline" data-is3d="0">Area</button>' +
             '<button data-type="column" data-is3d="0">Column</button>' +
-            '<button data-type="column" data-is3d="1">3D Column</button>' +
+            //'<button data-type="column" data-is3d="1">3D Column</button>' +
         '</div>' +
         '<div class="chart" style="height: 240px;  position: absolute; left: 0; bottom: 0; right: 0;">' +
         '</div>' +
@@ -885,9 +887,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
             if (widget.entry.type === 'PIE_GRAPH') {
                 widget.getEl().query('.chart-types')[0].style.display = 'none';
-                widget.chart = Ung.dashboard.Charts.pieChart(widget);
+                widget.chart = Ung.dashboard.Charts.pieChart(widget.entry, widget.getEl().query('.chart')[0], true);
             } else {
-                widget.chart = Ung.dashboard.Charts.timeChart(widget, false);
+                widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
             }
 
             widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
@@ -906,10 +908,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     // recreate chart
                     widget.chart.destroy();
                     widget.chart3d = parseInt(evt.target.dataset.is3d, 10);
-                    widget.chart = Ung.dashboard.Charts.timeChart(widget);
+                    widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
 
                     for (i = 0; i < seriesCopy.length; i += 1) {
-                        widget.chart.series[i].setData(seriesCopy[i], true, false);    
+                        widget.chart.series[i].setData(seriesCopy[i], true, false);
                     }
                     seriesCopy = [];
                     //Ung.dashboard.Queue.addFirst(widget);
@@ -921,7 +923,6 @@ Ext.define('Ung.dashboard.ReportEntry', {
                         }, true, true);
                     }
                 }
-                
             });
 
             /*

@@ -12,7 +12,8 @@
         @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=${buildStamp}";
     </style>
 
-    <script type="text/javascript" src="/highcharts/highcharts.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>
+    <!--<script type="text/javascript" src="/highcharts/highcharts.js?s=${buildStamp}"></script>-->
     <script type="text/javascript" src="/highcharts/exporting.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highcharts-more.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highcharts-3d.js?s=${buildStamp}"></script>

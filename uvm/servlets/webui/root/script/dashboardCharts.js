@@ -9,11 +9,11 @@
 Ext.define('Ung.dashboard.Charts', {
     singleton: true,
 
-    cpuLoad1: function (widget) {
+    cpuLoad1: function (container) {
         return new Highcharts.Chart({
             chart: {
                 type: 'areaspline',
-                renderTo: widget.getEl().query('.chart1')[0],
+                renderTo: container,
                 animation: Highcharts.svg, // don't animate in old IE
                 marginTop: 25,
                 marginRight: 10,
@@ -154,11 +154,11 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    cpuLoad2: function (widget) {
+    cpuLoad2: function (container) {
         return new Highcharts.Chart({
             chart: {
                 type: 'gauge',
-                renderTo: widget.getEl().query('.chart2')[0],
+                renderTo: container,
                 height: 140,
                 margin: [-20, 0, 0, 0],
                 backgroundColor: 'transparent'
@@ -237,11 +237,11 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    timeChart: function (widget) {
+    timeChart: function (entry, container, forDashboard) {
         var seriesRenderer, column, i;
 
-        if (!widget.entry.timeDataColumns) {
-            widget.entry.timeDataColumns = [];
+        if (!entry.timeDataColumns) {
+            entry.timeDataColumns = [];
         }
         /*
         if (!Ext.isEmpty(widget.entry.seriesRenderer)) {
@@ -252,31 +252,31 @@ Ext.define('Ung.dashboard.Charts', {
         }
         */
 
-        var chartSeries = [];
+        var chartSeries = [], chartType, chart3d;
 
-        /*
-        switch (widget.chartType) {
-        case 'spline':
+
+        switch (entry.timeStyle) {
+        case 'LINE':
             chartType = 'spline';
+            chart3d = 0;
             break;
-        case 'areaspline':
+        case 'AREA':
             chartType = 'areaspline';
+            chart3d = 0;
             break;
-        case 'column':
+        case 'BAR_3D_OVERLAPPED':
             chartType = 'column';
-            break;
-        case 'column-3d':
-            chartType = 'column';
-            chart3d = true;
+            chart3d = 0;
             break;
         default:
             chartType = 'areaspline';
+            chart3d = 0;
         }
-        */
 
-        var alphaColors = ['rgba(178, 178, 178, 0.7)', 'rgba(57, 108, 53, 0.7)', 'rgba(51, 153, 255, 0.7)'];
-        for (i = 0; i < widget.entry.timeDataColumns.length; i += 1) {
-            column = widget.entry.timeDataColumns[i].split(' ').splice(-1)[0];
+
+        //var alphaColors = ['rgba(178, 178, 178, 0.7)', 'rgba(57, 108, 53, 0.7)', 'rgba(51, 153, 255, 0.7)'];
+        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
+            column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
             chartSeries.push({
                 id: column,
                 name: column,
@@ -286,12 +286,12 @@ Ext.define('Ung.dashboard.Charts', {
             });
         }
 
-        return new Highcharts.Chart({
+        return new Highcharts.StockChart({
             chart: {
-                type: widget.chartType,
+                type: chartType,
                 zoomType: 'x',
-                renderTo: widget.getEl().query('.chart')[0],
-                colors: (widget.entry.colors !== null && widget.entry.colors.length > 0) ? widget.entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+                renderTo: container,
+                colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
                 marginBottom: 50,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
@@ -300,12 +300,39 @@ Ext.define('Ung.dashboard.Charts', {
                     fontSize: '12px'
                 },
                 options3d: {
-                    enabled: widget.chart3d,
+                    enabled: chart3d,
                     alpha: 0,
                     beta: 0,
                     depth: 20,
                     viewDistance: 10
                 }
+            },
+            navigator: {
+                enabled: !forDashboard
+            },
+            rangeSelector : {
+                enabled: !forDashboard,
+                inputEnabled: false,
+                buttons: [{
+                    type: 'minute',
+                    count: 60,
+                    text: '1h'
+                }, {
+                    type: 'minute',
+                    count: 180,
+                    text: '3h'
+                }, {
+                    type: 'minute',
+                    count: 360,
+                    text: '6h'
+                }, {
+                    type: 'all',
+                    text: '24h'
+                }],
+                selected : 3
+            },
+            scrollbar: {
+                enabled: false
             },
             credits: {
                 enabled: false
@@ -363,7 +390,8 @@ Ext.define('Ung.dashboard.Charts', {
                 title: {
                     align: 'high',
                     offset: 20,
-                    text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
+                    //text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
+                    text: '1 hour',
                     style: {
                         color: '#C0D0E0'
                     }
@@ -381,6 +409,7 @@ Ext.define('Ung.dashboard.Charts', {
                 tickPixelInterval: 50,
                 tickLength: 5,
                 tickWidth: 1,
+                opposite: false,
                 labels: {
                     align: 'right',
                     padding: 0,
@@ -396,7 +425,7 @@ Ext.define('Ung.dashboard.Charts', {
                 title: {
                     align: 'high',
                     offset: -10,
-                    text: widget.entry.units,
+                    text: entry.units,
                     style: {
                         color: '#C0D0E0'
                     }
@@ -427,10 +456,10 @@ Ext.define('Ung.dashboard.Charts', {
                 headerFormat: '<div style="font-size: 12px; font-weight: bold; line-height: 1.5; border-bottom: 1px #EEE solid; margin-bottom: 5px; color: #777;">{point.key}</div>',
                 pointFormatter: function () {
                     var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
-                    if (widget.entry.units === "bytes" || widget.entry.units === "bytes/s") {
+                    if (entry.units === "bytes" || entry.units === "bytes/s") {
                         str += ': <b>' + Ung.Util.bytesRenderer(this.y) + '</b>';
                     } else {
-                        str += ': <b>' + this.y + '</b> ' + widget.entry.units;
+                        str += ': <b>' + this.y + '</b> ' + entry.units;
                     }
                     return '<div>' + str + '</div>';
                 }
@@ -447,19 +476,32 @@ Ext.define('Ung.dashboard.Charts', {
                     grouping: false,
                     edgeWidth: 0,
                     edgeColor: '#FFF',
-                    borderWidth: 1,
+                    borderWidth: 0,
                     //borderColor: '#FFF',
                     pointPadding: 0.1,
                     groupPadding: 0
                 },
                 areaspline: {
-                    lineWidth: 2,
-                    fillOpacity: 0.2
+                    lineWidth: 0,
+                    fillOpacity: 0.5
                     //shadow: true
                 },
                 spline: {
-                    lineWidth: 2
+                    lineWidth: 1
                     //shadow: true
+                },
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    showInLegend: true,
+                    depth: 15,
+                    dataLabels: {
+                        enabled: true,
+                        distance: 3,
+                        padding: 0,
+                        format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
+                    }
                 },
                 series: {
                     //shadow: true,
@@ -489,13 +531,12 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    pieChart: function (widget) {
-        var seriesName = widget.entry.seriesRenderer || widget.entry.pieGroupColumn;
+    pieChart: function (entry, container, forDashboard) {
+        var seriesName = entry.seriesRenderer || entry.pieGroupColumn;
         return new Highcharts.Chart({
             chart: {
                 type: 'pie',
-                renderTo: widget.getEl().query('.chart')[0],
-                animation: Highcharts.svg,
+                renderTo: container,
                 spacing: [20, 10, 20, 20],
                 backgroundColor: 'transparent',
                 style: {
@@ -551,8 +592,8 @@ Ext.define('Ung.dashboard.Charts', {
                 }
             },
             series: [{
-                id: widget.entry.units,
-                name: widget.entry.units,
+                id: entry.units,
+                name: entry.units,
                 colorByPoint: true,
                 data: []
             }]
