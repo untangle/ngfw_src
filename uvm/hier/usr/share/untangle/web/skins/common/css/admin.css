@@ -339,7 +339,7 @@ a.link,a.link:visited {
     /*background: #EEF1F5;*/
     /*background: #FFF;*/
     background: rgba(27, 30, 38, 0.1);
-    background: url(/images/texture2.jpg);
+    /*background: url(/images/texture2.jpg);*/
 }
 
 .menu-button.x-btn {

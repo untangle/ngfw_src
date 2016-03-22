@@ -291,7 +291,6 @@ Ext.define('Ung.dashboard.Charts', {
                 type: chartType,
                 zoomType: 'x',
                 renderTo: container,
-                colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
                 marginBottom: 50,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
@@ -307,6 +306,7 @@ Ext.define('Ung.dashboard.Charts', {
                     viewDistance: 10
                 }
             },
+            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
             navigator: {
                 enabled: !forDashboard
             },
@@ -490,19 +490,6 @@ Ext.define('Ung.dashboard.Charts', {
                     lineWidth: 1
                     //shadow: true
                 },
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    showInLegend: true,
-                    depth: 15,
-                    dataLabels: {
-                        enabled: true,
-                        distance: 3,
-                        padding: 0,
-                        format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
-                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
-                    }
-                },
                 series: {
                     //shadow: true,
                     marker: {
@@ -533,6 +520,23 @@ Ext.define('Ung.dashboard.Charts', {
 
     pieChart: function (entry, container, forDashboard) {
         var seriesName = entry.seriesRenderer || entry.pieGroupColumn;
+        var colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
+
+        // create gradients from colors
+        colors = colors.map(function (color) {
+            return {
+                radialGradient: {
+                    cx: 0.5,
+                    cy: 0.3,
+                    r: 0.7
+                },
+                stops: [
+                    [0, color],
+                    [1, Highcharts.Color(color).brighten(-0.2).get('rgb')] // darken
+                ]
+            };
+        });
+
         return new Highcharts.Chart({
             chart: {
                 type: 'pie',
@@ -544,17 +548,44 @@ Ext.define('Ung.dashboard.Charts', {
                     fontSize: '12px'
                 },
                 options3d: {
-                    enabled: false,
+                    enabled: entry.chart3d,
                     alpha: 45,
                     beta: 0
                 }
             },
+            colors: colors,
             credits: {
                 enabled: false
             },
             title: null,
             exporting: {
                 enabled: false
+            },
+            xAxis: {
+                type: 'category',
+                crosshair: true,
+                labels: {
+                    //rotation: -45,
+                    style: {
+                        fontSize: '11px'
+                    }
+                },
+                title: {
+                    align: 'high',
+                    offset: 20,
+                    text: seriesName,
+                    style: {
+                        color: '#C0D0E0'
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: entry.units,
+                    style: {
+                        color: '#C0D0E0'
+                    }
+                }
             },
             legend: {
                 title: {
@@ -581,13 +612,93 @@ Ext.define('Ung.dashboard.Charts', {
                     allowPointSelect: true,
                     cursor: 'pointer',
                     showInLegend: true,
-                    depth: 15,
+                    depth: 35,
                     dataLabels: {
                         enabled: true,
                         distance: 3,
                         padding: 0,
                         format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
+                    }
+                }
+            },
+            series: [{
+                id: entry.units,
+                name: entry.units,
+                colorByPoint: true,
+                data: []
+            }]
+        });
+    },
+
+    columnChart: function (entry, container, forDashboard) {
+        var seriesName = entry.seriesRenderer || entry.pieGroupColumn;
+
+        return new Highcharts.Chart({
+            chart: {
+                type: 'column',
+                renderTo: container,
+                //margin: [0, 0, 0, 0],
+                backgroundColor: 'transparent',
+                style: {
+                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                    fontSize: '12px'
+                },
+                options3d: {
+                    enabled: false,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+            credits: {
+                enabled: false
+            },
+            title: null,
+            exporting: {
+                enabled: false
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: false
+            },
+            plotOptions: {
+                column: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        align: 'center'
+                    }
+                }
+            },
+            xAxis: {
+                type: 'category',
+                crosshair: true,
+                labels: {
+                    //rotation: -45,
+                    style: {
+                        fontSize: '11px'
+                    }
+                },
+                title: {
+                    align: 'high',
+                    offset: 20,
+                    text: seriesName,
+                    style: {
+                        color: '#C0D0E0'
+                    }
+                }
+            },
+            yAxis: {
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                title: {
+                    text: entry.units,
+                    style: {
+                        color: '#C0D0E0'
                     }
                 }
             },
