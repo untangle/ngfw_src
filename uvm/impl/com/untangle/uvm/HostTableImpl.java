@@ -676,9 +676,6 @@ public class HostTableImpl implements HostTable
                 logger.debug("HostTableReverseHostnameLookup: Running... ");
 
                 try {
-                    /**
-                     * Remove old entries
-                     */
                     LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
                     for (HostTableEntry entry : entries) {
                         String currentHostname = entry.getHostname();

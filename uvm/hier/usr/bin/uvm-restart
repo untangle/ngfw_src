@@ -23,11 +23,11 @@ echo $$ >$pidfile
 # Wait for apt-get to complete
 while true; do
     if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
-        echo "$0: waiting for apt-get to complete..."
+        echo "$0: waiting for apt-get to complete... `date`"
         sleep 1
     else
         /bin/rm -f $pidfile
-        echo "$0: starting untangle-vm"
+        echo "$0: starting untangle-vm `date`"
         /etc/init.d/untangle-vm start
         exit
     fi
