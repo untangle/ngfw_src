@@ -885,12 +885,14 @@ Ext.define('Ung.dashboard.ReportEntry', {
         'afterrender': function (widget) {
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
 
+            /*
             if (widget.entry.type === 'PIE_GRAPH') {
                 widget.getEl().query('.chart-types')[0].style.display = 'none';
                 widget.chart = Ung.dashboard.Charts.pieChart(widget.entry, widget.getEl().query('.chart')[0], true);
             } else {
                 widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
             }
+            */
 
             widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
                 var i;
@@ -908,7 +910,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     // recreate chart
                     widget.chart.destroy();
                     widget.chart3d = parseInt(evt.target.dataset.is3d, 10);
-                    widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
+                    //widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
 
                     for (i = 0; i < seriesCopy.length; i += 1) {
                         widget.chart.series[i].setData(seriesCopy[i], true, false);
@@ -950,139 +952,46 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 return;
             }
 
+            if (!this.chart) {
+                switch (this.entry.timeStyle) {
+                case 'LINE':
+                    this.entry.chartType = 'spline';
+                    break;
+                case 'AREA':
+                    this.entry.chartType = 'areaspline';
+                    break;
+                case 'BAR':
+                case 'BAR_3D':
+                case 'BAR_OVERLAPPED':
+                case 'BAR_3D_OVERLAPPED':
+                    this.entry.chartType = 'column';
+                    break;
+                default:
+                    this.entry.chartType = 'areaspline';
+                }
+
+                switch (this.entry.type) {
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                    this.chart = Ung.dashboard.Charts.timeChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    break;
+                case 'PIE_GRAPH':
+                    this.chart = Ung.dashboard.Charts.pieChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    break;
+                default:
+                    this.chart = Ung.dashboard.Charts.columnChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                }
+            } else {
+                Ung.dashboard.Charts.generateSeries(this.entry, result.list, this.chart);
+            }
+
             if (result.list.length === 0) {
                 this.addCls('nodata');
                 return;
             }
 
-            var data = [], i, j;
 
-            if (this.entry.type === 'PIE_GRAPH') {
-
-                data = [];
-                for (i = 0; i < result.list.length; i += 1) {
-                    data.push({
-                        name: result.list[i][this.entry.pieGroupColumn],
-                        y: result.list[i].value
-                    });
-                }
-                this.chart.series[0].setData(data, true, true);
-            }
-
-            if (this.entry.type === 'TIME_GRAPH_DYNAMIC' || this.entry.type === 'TIME_GRAPH') {
-                if (this.chart.series.length === 0) {
-                    var columns = [], c, seriesName;
-                    if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        var columnsMap = {}, column = null;
-                        for (i = 0; i < result.list.length; i += 1) {
-                            for (column in result.list[i]) {
-                                columnsMap[column] = true;
-                            }
-                        }
-                        for (column in columnsMap) {
-                            if (column !== 'time_trunc') {
-                                columns.push(column);
-                            }
-                        }
-                    }
-                    this.entry.timeDataColumns = columns;
-
-                    for (c = 0; c < this.entry.timeDataColumns.length; c += 1) {
-                        seriesName = this.entry.timeDataColumns[c];
-                        if (this.entry.seriesRenderer === 'interface') {
-                            seriesName = Ung.dashboard.Util.getInterfaceMap()[this.entry.timeDataColumns[c]] + ' [ ' + this.entry.timeDataColumns[c] + ' ] ';
-                        }
-
-                        this.chart.addSeries({
-                            id: this.entry.timeDataColumns[c],
-                            name: seriesName,
-                            data: []
-                        });
-                    }
-                }
-
-                for (j = 0; j < this.entry.timeDataColumns.length; j += 1) {
-                    data = [];
-                    for (i = 0; i < result.list.length; i += 1) {
-                        data.push([
-                            result.list[i].time_trunc.time,
-                            result.list[i][this.chart.series[j].options.id] ? Math.floor(result.list[i][this.chart.series[j].options.id]) : 0
-                        ]);
-                    }
-                    this.chart.series[j].setData(data);
-                }
-            }
-            this.chart.reflow();
         }, this), this.entry, this.timeframe, -1);
-
-
-        /*
-         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
-         handler.call(this);
-
-         if (Ung.Util.handleException(exception)) {
-         return;
-         }
-         if (this === null || !this.rendered) {
-         return;
-         }
-         var data = result.list, chart = this.down("[name=chart]"), column;
-         if (this.entry.type === 'PIE_GRAPH') {
-         var topData = data;
-         if (this.entry.pieNumSlices && data.length > this.entry.pieNumSlices) {
-         topData = [];
-         var others = {value: 0};
-         others[this.entry.pieGroupColumn] = i18n._("Others");
-         for (i = 0; i < data.length; i += 1) {
-         if (i < this.entry.pieNumSlices) {
-         topData.push(data[i]);
-         } else {
-         others.value += data[i].value;
-         }
-         }
-         others.value = Math.round(others.value * 10) / 10;
-         topData.push(others);
-         }
-         if (topData.length === 0) {
-         chart.noDataSprite.show();
-         } else {
-         chart.noDataSprite.hide();
-         }
-
-         chart.getStore().loadData(topData);
-         } else if (this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-         var columnsMap = {}, columns = [], values = {};
-         for (i = 0; i < data.length; i += 1) {
-         for (column in data[i]) {
-         columnsMap[column] = true;
-         }
-         }
-         for (column in columnsMap) {
-         if (column !== 'time_trunc') {
-         columns.push(column);
-         }
-         }
-         this.entry.timeDataColumns = columns;
-         this.removeAll();
-         this.add(Ung.dashboard.Util.createChart(this.entry,this));
-         this.down("[name=chart]").getStore().loadData(data);
-         } else if (this.entry.type === 'TIME_GRAPH') {
-         chart.getStore().loadData(data);
-         } else if (this.entry.type === 'TEXT') {
-         var infos = [], reportData = [];
-         if (data.length > 0 && this.entry.textColumns !== null) {
-         var value, i;
-         for (i = 0; i < this.entry.textColumns.length; i += 1) {
-         column = this.entry.textColumns[i].split(" ").splice(-1)[0];
-         value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
-         infos.push(value);
-         reportData.push({data: column, value: value});
-         }
-         }
-         chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
-         }
-         }, this), this.entry, this.timeframe, -1);
-         */
     }
 });
 
