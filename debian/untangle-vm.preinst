@@ -19,11 +19,10 @@ if [ -f /var/run/uvm.pid ] ; then
             ourInit untangle-vm stop || true
         fi
 
-        if [ ! -x /usr/sbin/policy-rc.d ] ; then
-          echo "Restarting untangle-vm after apt-get completes..."
-          nohup /usr/bin/uvm-restart >>/var/log/restart-uvm.log 2>&1 &
-          exit 0
-        fi
+        echo "Restarting untangle-vm after apt-get completes..."
+        rm -f /var/log/uvm/restart.log
+        nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
+        exit 0
     fi
 fi
 

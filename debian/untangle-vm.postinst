@@ -1,16 +1,7 @@
 #! /bin/bash
 
-ourInit() {
-if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
-  invoke-rc.d $1 $2
-else
-  /etc/init.d/$1 $2
-fi
-}
-
-UVM_LOGDIR="/var/log/uvm"
-
 # right permissions for log dir
+UVM_LOGDIR="/var/log/uvm"
 /bin/chmod 775 ${UVM_LOGDIR}
 
 # enable en_US locale (used by java)
@@ -22,25 +13,8 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 95 5 > /dev/null
 fi
 
-# It's almost never right to just start the untangle-vm after installation, so let
-# the user know what to do next.
-if [ -z "$2" ]; then
-    if uname -r | grep -iq "untangle"; then
-        echo "**************************************************************"
-        echo "Untangle installed.  Start with: /etc/init.d/untangle-vm start"
-        echo "**************************************************************"
-    else
-        echo "********************************************************"
-        echo "Untangle installed.  Need to reboot into Untangle kernel"
-        echo "********************************************************"
-    fi
-fi
-
-# 12.0 upgrade, change sources.list
-sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
-# remove old directory
-rm -rf /usr/share/untangle/work
-
-ourInit apache2 reload
+# 12.1 upgrade
+sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
+rm -f /var/log/restart-uvm.log
 
 exit 0
