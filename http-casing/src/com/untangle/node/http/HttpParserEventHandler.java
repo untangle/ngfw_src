@@ -40,11 +40,14 @@ public class HttpParserEventHandler extends AbstractEventHandler
     private static final byte CR = '\r';
     private static final byte LF = '\n';
 
-    private static final int NO_BODY = 0;
-    private static final int CLOSE_ENCODING = 1;
-    private static final int CHUNKED_ENCODING = 2;
-    private static final int CONTENT_LENGTH_ENCODING = 3;
     private static final int TIMEOUT = 30000;
+
+    private static enum BodyEncoding {
+        NO_BODY, // no body
+        CLOSE_ENCODING, // server will close session after body
+        CHUNKED_ENCODING, // chunked encoding
+        CONTENT_LENGTH_ENCODING, // body will be specified length
+    };
     
     private static enum ParseState {
         PRE_FIRST_LINE_STATE,
@@ -78,7 +81,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
         protected byte[] buf;
         protected ParseState currentState;
-        protected int transferEncoding;
+        protected BodyEncoding transferEncoding;
         protected long contentLength; /* counts down content-length and chunks */
         protected long lengthCounter; /* counts up to final */
     }
@@ -224,11 +227,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
         try {
-            if (last) {
-                parseEnd( session, buf );
-            } else {
-                parse( session, buf );
-            }
+            parse( session, buf, last );
         } catch (Throwable exn) {
             String sessionEndpoints = "[" +
                 session.getProtocol() + " : " + 
@@ -283,11 +282,30 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
     
-    public void parse( NodeTCPSession session, ByteBuffer buffer )
+    public void parse( NodeTCPSession session, ByteBuffer buffer, boolean last )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         cancelTimer( session );
 
+        // if the session has ended
+        if ( last ) {
+            // if there is data throw a warning
+            // except for ACCUMULATE_HEADER_STATE AND CLOSED_BODY_STATE
+            // both of which can have the connection closed while data is still in buffer
+            if ( buffer.hasRemaining() &&
+                 state.currentState != ParseState.ACCUMULATE_HEADER_STATE &&
+                 state.currentState != ParseState.CLOSED_BODY_STATE ) {
+                throw new RuntimeException("in state: " + state + " data trapped in read buffer: " + buffer.remaining());
+            }
+            // if the connection is closed and there is no data to parse just return
+            // except for CLOSED_BODY_STATE, which we need to handle because the close of the connection
+            // signals the end of the body
+            if ( !buffer.hasRemaining() &&
+                 state.currentState != ParseState.CLOSED_BODY_STATE ) {
+                return;
+            }
+        }
+             
         if (logger.isDebugEnabled()) {
             logger.debug("parsing chunk: " + buffer);
         }
@@ -368,6 +386,17 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 break;
             }
             case ACCUMULATE_HEADER_STATE: {
+                // if session has ended, send header on 
+                if ( last ) {
+                    buffer.flip();
+                    if ( clientSide ) {
+                        session.sendObjectToServer( header( session, buffer) );
+                    } else {
+                        session.sendObjectToClient( header( session, buffer) );
+                    }
+                    return;
+                }                    
+
                 if (!completeHeader(buffer)) {
                     if (buffer.capacity() < maxHeader) {
                         ByteBuffer nb = ByteBuffer.allocate(maxHeader + 2);
@@ -411,7 +440,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     if ( state.requestLineToken != null ) {
                         HttpMethod method = state.requestLineToken.getMethod();
                         if ( method == HttpMethod.HEAD ) {
-                            state.transferEncoding = NO_BODY;
+                            state.transferEncoding = BodyEncoding.NO_BODY;
                         }
                     }
                 } else {
@@ -421,20 +450,20 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     state.requestLineToken.getRequestLine().setHttpRequestEvent(evt);
                 }
 
-                if ( state.transferEncoding == NO_BODY ) {
+                if ( state.transferEncoding == BodyEncoding.NO_BODY ) {
                     state.currentState = ParseState.END_MARKER_STATE;
                     done = false;
-                } else if ( state.transferEncoding == CLOSE_ENCODING ) {
+                } else if ( state.transferEncoding == BodyEncoding.CLOSE_ENCODING ) {
                     lineBuffering( session, false );
                     state.currentState = ParseState.CLOSED_BODY_STATE;
                     done = true;
                     buffer = null;
-                } else if ( state.transferEncoding == CHUNKED_ENCODING ) {
+                } else if ( state.transferEncoding == BodyEncoding.CHUNKED_ENCODING ) {
                     lineBuffering( session, true );
                     state.currentState = ParseState.CHUNK_LENGTH_STATE;
                     done = true;
                     buffer = null;
-                } else if ( state.transferEncoding == CONTENT_LENGTH_ENCODING ) {
+                } else if ( state.transferEncoding == BodyEncoding.CONTENT_LENGTH_ENCODING ) {
                     lineBuffering( session, false );
                     if ( buffer.hasRemaining() )
                         logger.warn("bytes remaining in buffer");
@@ -455,8 +484,13 @@ public class HttpParserEventHandler extends AbstractEventHandler
             }
             case CLOSED_BODY_STATE: {
                 tokenList.add( closedBody( session, buffer ) );
-                buffer = null;
-                done = true;
+                if ( last ) {
+                    buffer = null;
+                    state.currentState = ParseState.END_MARKER_STATE;
+                } else {
+                    buffer = null;
+                    done = true;
+                }
                 break;
             }
             case CONTENT_LENGTH_BODY_STATE: {
@@ -684,31 +718,6 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer buffer )
-    {
-        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
-
-        if (buffer.hasRemaining()) {
-            switch ( state.currentState ) {
-            case ACCUMULATE_HEADER_STATE:
-                buffer.flip();
-
-                if ( clientSide ) {
-                    session.sendObjectToServer( header( session, buffer) );
-                } else {
-                    session.sendObjectToClient( header( session, buffer) );
-                }
-                return;
-            default:
-                // I think we want to release in most circumstances
-                throw new RuntimeException("in state: " + state + " data trapped in read buffer: " + buffer.remaining());
-            }
-        }
-
-        // we should implement this to make sure end markers get sent always
-        return;
-    }
-
     public void endSession( NodeTCPSession session )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -803,7 +812,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
-        state.transferEncoding = NO_BODY;
+        state.transferEncoding = BodyEncoding.NO_BODY;
 
         HttpMethod method = HttpMethod.getInstance( token( session, data ) );
         if (logger.isDebugEnabled()) {
@@ -824,7 +833,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
-        state.transferEncoding = CLOSE_ENCODING;
+        state.transferEncoding = BodyEncoding.CLOSE_ENCODING;
 
         String httpVersion = version(data);
         eat(data, SP);
@@ -840,7 +849,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         // first empty line after the header fields, regardless of the
         // entity-header fields present in the message.
         if ( statusCode >= 100 && statusCode <= 199 || statusCode == 204 || statusCode == 304 ) {
-            state.transferEncoding = NO_BODY;
+            state.transferEncoding = BodyEncoding.NO_BODY;
         }
 
         if (100 != statusCode && 408 != statusCode) {
@@ -935,23 +944,21 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 if (logger.isDebugEnabled()) {
                     logger.debug("using chunked encoding");
                 }
-                state.transferEncoding = CHUNKED_ENCODING;
+                state.transferEncoding = BodyEncoding.CHUNKED_ENCODING;
             } else {
                 logger.warn("don't know transfer-encoding: " + value);
             }
-        } else if ( key.equalsIgnoreCase("content-length") && state.transferEncoding != CHUNKED_ENCODING ) {
+        } else if ( key.equalsIgnoreCase("content-length") && state.transferEncoding != BodyEncoding.CHUNKED_ENCODING ) {
 
             if (logger.isDebugEnabled()) {
                 logger.debug("using content length encoding");
             }
-            state.transferEncoding = CONTENT_LENGTH_ENCODING;
+            state.transferEncoding = BodyEncoding.CONTENT_LENGTH_ENCODING;
             state.contentLength = Long.parseLong(value);
             if (logger.isDebugEnabled()) {
                 logger.debug("contentLength = " + state.contentLength);
             }
-        } else if (key.equalsIgnoreCase("accept-encoding")) {
-            //value = "identity";
-        }
+        } 
 
         // Some servers do not support 100-continue so clients should send the data anyway immediately (section 8.2.3)
         // However, some clients do not, and since we do not support a continue state and it complicates the logic, 

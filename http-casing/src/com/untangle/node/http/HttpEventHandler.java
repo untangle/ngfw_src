@@ -748,11 +748,13 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     private ServerState nextServerState( ServerState serverState, Object o)
     {
         switch ( serverState ) {
-        case RESP_START_STATE:
+        case RESP_START_STATE: {
             return ServerState.RESP_STATUS_LINE_STATE;
+        }
 
-        case RESP_STATUS_LINE_STATE:
+        case RESP_STATUS_LINE_STATE: {
             return ServerState.RESP_HEADER_STATE;
+        }
 
         case RESP_HEADER_STATE:
             if (o instanceof ChunkToken) {
@@ -768,8 +770,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 return ServerState.RESP_BODY_END_STATE;
             }
 
-        case RESP_BODY_END_STATE:
+        case RESP_BODY_END_STATE: {
             return ServerState.RESP_STATUS_LINE_STATE;
+        }
 
         default:
             throw new IllegalStateException("Illegal state: " + serverState);
