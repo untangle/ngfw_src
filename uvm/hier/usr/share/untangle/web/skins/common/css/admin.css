@@ -827,14 +827,22 @@ a.forgot-password:hover {
 .wg-wrapper .chart-types button {
     font-family: 'PT Sans', sans-serif;
     background-color: #EEE;
-    border-radius: 2px;
+    border-radius: 3px;
     font-size: 12px;
-    border: 0;
-    margin: 0 1px;
+    margin-right: 5px;
     cursor: pointer;
     padding: 2px 8px;
+    box-sizing: border-box;
+    border: 0;
+    color: #777;
 }
-
+.wg-wrapper .chart-types button:hover {
+    color: #000;
+}
+.wg-wrapper .chart-types button.selected {
+    background: #CCC;
+    color: #000;
+}
 
 .wg-wrapper .row {
     display: table-row;

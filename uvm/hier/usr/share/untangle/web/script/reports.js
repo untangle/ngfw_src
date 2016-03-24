@@ -553,11 +553,12 @@ Ext.define('Ung.panel.Reports', {
             }]);
 
             var timeStyleButtons = [], timeStyle, timeStyles = [
-                { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie"), tooltip: i18n._("Switch to Pie Chart") },
-                { type: 'pie-3d', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie"), tooltip: i18n._("Switch to 3D Pie Chart") },
-                { type: 'donut', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut"), tooltip: i18n._("Switch to Donut Chart") },
-                { type: 'donut-3d', isDonut: true, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Donut"), tooltip: i18n._("Switch to 3D Donut Chart") },
-                { type: 'column', iconCls: 'icon-bar-chart', text: i18n._("Column"), tooltip: i18n._("Switch to Column Chart") }
+                { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
+                { type: 'pie', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie") },
+                { type: 'pie', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut") },
+                { type: 'pie', isDonut: true, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Donut") },
+                { type: 'column', is3d: false, iconCls: 'icon-bar-chart', text: i18n._("Column") },
+                { type: 'column', is3d: true, iconCls: 'icon-bar-chart', text: i18n._("3D Column") }
             ];
 
             for(i=0; i<timeStyles.length; i++) {
@@ -568,7 +569,6 @@ Ext.define('Ung.panel.Reports', {
                     iconCls: timeStyle.iconCls,
                     text: timeStyle.text,
                     chartType: timeStyle.type,
-                    tooltip: timeStyle.tooltip,
                     isDonut: timeStyle.isDonut,
                     is3d: timeStyle.is3d,
                     handler: Ext.bind(function(button) {
@@ -576,13 +576,8 @@ Ext.define('Ung.panel.Reports', {
                         entry.chartType = button.chartType;
                         entry.isDonut = button.isDonut;
                         entry.is3d = button.is3d;
-                        //Ung.dashboard.Charts.updateType(this.chart, button.chartType);
                         this.chart.destroy();
-                        if (button.chartType === 'column') {
-                            this.chart = Ung.dashboard.Charts.columnChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
-                        } else {
-                            this.chart = Ung.dashboard.Charts.pieChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
-                        }
+                        this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
                     }, this)
                 });
             }
@@ -628,11 +623,10 @@ Ext.define('Ung.panel.Reports', {
             this.reportDataGrid.setColumns(reportDataColumns);
 
             var timeStyleButtons = [], timeStyle, timeStyles = [
-                { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Spline"), tooltip: i18n._("Switch to Spline Chart") },
-                { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Areaspline"), tooltip: i18n._("Switch to Areaspline Chart") },
-                //{ type: 'line', iconCls: 'icon-line-chart', text: i18n._("Line"), tooltip: i18n._("Switch to Line Chart") },
-                //{ type: 'area', iconCls: 'icon-area-chart', text: i18n._("Area"), tooltip: i18n._("Switch to Area Chart") },
-                { type: 'column', iconCls: 'icon-bar-chart', text: i18n._("Column"), tooltip: i18n._("Switch to Column Chart") }
+                { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
+                { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
+                { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
+                { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
             ];
 
             for(i=0; i<timeStyles.length; i++) {
@@ -643,26 +637,11 @@ Ext.define('Ung.panel.Reports', {
                     iconCls: timeStyle.iconCls,
                     text: timeStyle.text,
                     chartType: timeStyle.type,
-                    tooltip: timeStyle.tooltip,
+                    columnOverlapped: timeStyle.overlapped,
                     handler: Ext.bind(function(button) {
-                        entry.chartType = button.chartType;
-                        Ung.dashboard.Charts.updateType(this.chart, button.chartType);
-                        /*
-                        this.chart.destroy();
-
-                        switch (entry.type) {
-                            case 'TIME_GRAPH':
-                            case 'TIME_GRAPH_DYNAMIC':
-                                this.chart = Ung.dashboard.Charts.timeChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
-                                break;
-                            case 'PIE_GRAPH':
-                                this.chart = Ung.dashboard.Charts.pieChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
-                                break;
-                            default:
-                                this.chart = Ung.dashboard.Charts.columnChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
-                        }
-                        */
-                        
+                        //entry.chartType = button.chartType;
+                        entry.columnOverlapped = button.columnOverlapped;
+                        Ung.charts.updateSeriesType(entry, this.chart, button.chartType);
                     }, this)
                 });
             }
@@ -694,33 +673,14 @@ Ext.define('Ung.panel.Reports', {
             if(Ung.Util.handleException(exception)) return;
             this.chartData = result.list;
 
-            switch (this.entry.timeStyle) {
-                case 'LINE':
-                    this.entry.chartType = 'spline';
-                    break;
-                case 'AREA':
-                    this.entry.chartType = 'areaspline';
-                    break;
-                case 'BAR':
-                case 'BAR_3D':
-                case 'BAR_OVERLAPPED':
-                case 'BAR_3D_OVERLAPPED':
-                    this.entry.chartType = 'column';
-                    break;
-                default:
-                    this.entry.chartType = 'areaspline';
-            }
-
             switch (this.entry.type) {
                 case 'TIME_GRAPH':
                 case 'TIME_GRAPH_DYNAMIC':
-                    this.chart = Ung.dashboard.Charts.timeChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
-                    break;
-                case 'PIE_GRAPH':
-                    this.chart = Ung.dashboard.Charts.pieChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
                     break;
                 default:
-                    this.chart = Ung.dashboard.Charts.columnChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+                    this.entry.chartType = 'pie';
+                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
             }
 
             this.loadReportData(result.list);
@@ -840,7 +800,7 @@ Ext.define('Ung.panel.Reports', {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             this.chartData = result.list;
-            Ung.dashboard.Charts.generateSeries(this.entry, result.list, this.chart);
+            Ung.charts.setSeries(this.entry, result.list, this.chart);
             this.loadReportData(result.list);
             if(this!=null && this.rendered && this.autoRefreshEnabled) {
                 Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);

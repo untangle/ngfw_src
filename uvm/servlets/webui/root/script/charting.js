@@ -1,15 +1,20 @@
 /*global
- Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, window, document, Highcharts
+ Ext, Ung, i18n, console, Highcharts
  */
 
 /**
- * Highcharts for dashboard widgets
+ * Highcharts implementation
  */
 
-Ext.define('Ung.dashboard.Charts', {
+Ext.define('Ung.charts', {
     singleton: true,
 
-    cpuLoad1: function (container) {
+    /**
+     * Creates the Line chart for the CPU Load widget from Dashboard
+     * @param {Object} container - the DOM element where the chart is rendered
+     * @returns {Object}         - the HighCharts chart object
+     */
+    cpuLineChart: function (container) {
         return new Highcharts.Chart({
             chart: {
                 type: 'areaspline',
@@ -57,35 +62,6 @@ Ext.define('Ung.dashboard.Charts', {
                     x: 0,
                     y: -3
                 },
-                /*
-                 plotLines: [{
-                 value: 2,
-                 width: 1,
-                 color: 'green',
-                 dashStyle: 'solid'
-                 }, {
-                 value: 3,
-                 width: 1,
-                 color: 'rgba(255, 255, 0, 1)',
-                 dashStyle: 'solid'
-                 }, {
-                 value: 6,
-                 width: 1,
-                 color: 'rgba(255, 0, 0, 1)',
-                 dashStyle: 'solid'
-                 }],
-                 */
-                /*
-                plotBands: [{
-                    color: '#FCFFC5',
-                    from: 3,
-                    to: 6
-                }, {
-                    color: 'rgba(255, 0, 0, 0.1)',
-                    from: 6,
-                    to: 100
-                }],
-                */
                 visible: true
             },
             plotOptions: {
@@ -94,15 +70,6 @@ Ext.define('Ung.dashboard.Charts', {
                     lineWidth: 3
                 },
                 series: {
-                    /*
-                    point: {
-                        events: {
-                            mouseOver: function () {
-                                //widget.chart2.series[0].points[0].update(this.y <= 7 ? this.y : 7, true);
-                            }
-                        }
-                    },
-                    */
                     marker: {
                         enabled: false,
                         states: {
@@ -154,7 +121,12 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    cpuLoad2: function (container) {
+    /**
+     * Creates the Gauge chart for the CPU Load widget from Dashboard
+     * @param {Object} container - DOM element where the chart is rendered
+     * @returns {Object}         - the HighCharts chart object
+     */
+    cpuGaugeChart: function (container) {
         return new Highcharts.Chart({
             chart: {
                 type: 'gauge',
@@ -227,8 +199,6 @@ Ext.define('Ung.dashboard.Charts', {
                     }
                 }
             },
-
-
             series: [{
                 data: [0],
                 yAxis: 0
@@ -237,12 +207,16 @@ Ext.define('Ung.dashboard.Charts', {
         });
     },
 
-    timeChart: function (entry, data, container, forDashboard) {
-        var seriesRenderer, column, i;
-
-        if (!entry.timeDataColumns) {
-            entry.timeDataColumns = [];
-        }
+    /**
+     * Creates a TimeSeries based chart
+     * It renders a Line (spline), Area (areaspline) or a Column chart with data grouping possibilities
+     * @param {Object} entry         - the Report entry object
+     * @param {Object} data          - the data used upon chart creation
+     * @param {Object} container     - the DOM element where the chart is rendered
+     * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
+     * @returns {Object}             - the HighStock chart object
+     */
+    timeSeriesChart: function (entry, data, container, forDashboard) {
         /*
         if (!Ext.isEmpty(widget.entry.seriesRenderer)) {
             seriesRenderer = Ung.panel.Reports.getColumnRenderer(widget.entry.seriesRenderer);
@@ -252,13 +226,33 @@ Ext.define('Ung.dashboard.Charts', {
         }
         */
 
-        var chartSeries = [], chartType, chart3d;
+        var chartType, i;
 
-        //var alphaColors = ['rgba(178, 178, 178, 0.7)', 'rgba(57, 108, 53, 0.7)', 'rgba(51, 153, 255, 0.7)'];
+        switch (entry.timeStyle) {
+        case 'LINE':
+            chartType = 'spline';
+            break;
+        case 'AREA':
+            chartType = 'areaspline';
+            break;
+        case 'BAR':
+        case 'BAR_3D':
+        case 'BAR_OVERLAPPED':
+        case 'BAR_3D_OVERLAPPED':
+            chartType = 'column';
+            break;
+        default:
+            chartType = 'areaspline';
+        }
 
+        /*
+        if (!entry.timeDataColumns) {
+            entry.timeDataColumns = [];
+        }
+        */
         return new Highcharts.StockChart({
             chart: {
-                type: entry.chartType,
+                type: chartType,
                 zoomType: 'x',
                 renderTo: container,
                 marginBottom: 50,
@@ -267,15 +261,20 @@ Ext.define('Ung.dashboard.Charts', {
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
-                },
-                options3d: {
-                    enabled: chart3d,
-                    alpha: 0,
-                    beta: 0,
-                    depth: 20,
-                    viewDistance: 10
                 }
             },
+            title: !forDashboard ? {
+                text: entry.description,
+                align: 'center',
+                margin: 20,
+                y: 20,
+                style: {
+                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                    color: '#777',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                }
+            } : null,
             colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
             navigator: {
                 enabled: !forDashboard
@@ -283,23 +282,7 @@ Ext.define('Ung.dashboard.Charts', {
             rangeSelector : {
                 enabled: !forDashboard,
                 inputEnabled: false,
-                buttons: [{
-                    type: 'minute',
-                    count: 60,
-                    text: '1h'
-                }, {
-                    type: 'minute',
-                    count: 180,
-                    text: '3h'
-                }, {
-                    type: 'minute',
-                    count: 360,
-                    text: '6h'
-                }, {
-                    type: 'all',
-                    text: '24h'
-                }],
-                selected : 3
+                buttons: this.setRangeButtons(data)
             },
             scrollbar: {
                 enabled: false
@@ -307,7 +290,6 @@ Ext.define('Ung.dashboard.Charts', {
             credits: {
                 enabled: false
             },
-            title: null,
             exporting: {
                 enabled: false,
                 buttons: {
@@ -368,6 +350,9 @@ Ext.define('Ung.dashboard.Charts', {
                 lineWidth: 1,
                 tickLength: 5,
                 tickPixelInterval: 70,
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
                 //startOnTick: true,
                 //endOnTick: true,
                 //tickInterval: 60 * 1000,
@@ -378,16 +363,7 @@ Ext.define('Ung.dashboard.Charts', {
                     }
                 },
                 maxPadding: 0,
-                minPadding: 0,
-                title: {
-                    align: 'high',
-                    offset: 20,
-                    //text: (widget.timeframe / 3600 > 1 ? widget.timeframe / 3600 + " " + i18n._("hours") : widget.timeframe / 3600 + " " + i18n._("hour")),
-                    text: '1 hour',
-                    style: {
-                        color: '#C0D0E0'
-                    }
-                }
+                minPadding: 0
             },
             yAxis: {
                 allowDecimals: false,
@@ -412,14 +388,17 @@ Ext.define('Ung.dashboard.Charts', {
                     formatter: function () {
                         return Ung.Util.bytesRendererCompact(this.value).replace(/ /g, '');
                     },
-                    x: -10
+                    x: -10,
+                    y: 3
                 },
                 title: {
                     align: 'high',
                     offset: -10,
+                    y: 3,
                     text: entry.units,
                     style: {
-                        color: '#C0D0E0'
+                        fontSize: !forDashboard ? '14px' : '10px',
+                        color: 'green'
                     }
                 }
             },
@@ -444,7 +423,6 @@ Ext.define('Ung.dashboard.Charts', {
                     padding: '5px',
                     fontSize: '11px'
                 },
-                //valueSuffix: ' ' + widget.entry.units,
                 headerFormat: '<div style="font-size: 12px; font-weight: bold; line-height: 1.5; border-bottom: 1px #EEE solid; margin-bottom: 5px; color: #777;">{point.key}</div>',
                 pointFormatter: function () {
                     var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
@@ -458,23 +436,25 @@ Ext.define('Ung.dashboard.Charts', {
             },
             plotOptions: {
                 column: {
-                    //colorByPoint: true,
-                    //pointWidth: 5,
-                    //pointInterval: 1,
-                    //pointIntervalUnit: 'minute',
-                    //pointRange: 60 * 1000,
-                    //pointPlacement: 'on',
-                    //groupPadding: 0.2,
-                    //pointRange: 60 * 1000,
                     edgeWidth: 0,
-                    edgeColor: '#FFF',
                     borderWidth: 0,
-                    //borderColor: '#FFF',
                     pointPadding: 0,
+                    groupPadding: 0.2,
                     dataGrouping: {
                         groupPixelWidth: 50
+                    },
+                    dataLabels: {
+                        enabled: false,
+                        align: 'left',
+                        rotation: -45,
+                        x: 0,
+                        y: -2,
+                        style: {
+                            fontSize: '9px',
+                            color: '#999',
+                            textShadow: false
+                        }
                     }
-                    //shadow: true
                 },
                 area: {
                     lineWidth: 1,
@@ -517,15 +497,25 @@ Ext.define('Ung.dashboard.Charts', {
                     }
                 }
             },
-            series: this.generateSeries(entry, data, null)
+            series: this.setSeries(entry, data, null)
         });
     },
 
-    pieChart: function (entry, data, container, forDashboard) {
-        var seriesName = entry.seriesRenderer || entry.pieGroupColumn;
-        var colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
+    /**
+     * Creates a Category based chart
+     * It renders a Pie (spline), Donut (areaspline) or a Column chart with 3D variants
+     * @param {Object} entry         - the Report entry object
+     * @param {Object} data          - the data used upon chart creation
+     * @param {Object} container     - the DOM element where the chart is rendered
+     * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
+     * @returns {Object}             - the HighCharts chart object
+     */
+    categoriesChart: function (entry, data, container, forDashboard) {
+        var seriesName = entry.seriesRenderer || entry.pieGroupColumn,
+            colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
 
-        // create gradients from colors
+        // apply gradient colors for the Pie chart
+        /*
         colors = colors.map(function (color) {
             return {
                 radialGradient: {
@@ -539,13 +529,13 @@ Ext.define('Ung.dashboard.Charts', {
                 ]
             };
         });
+        */
 
         return new Highcharts.Chart({
             chart: {
-                type: 'pie',
+                type: entry.chartType,
                 renderTo: container,
-                //animation: false,
-                spacing: [50, 10, 50, 50],
+                margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 backgroundColor: 'transparent',
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
@@ -553,28 +543,44 @@ Ext.define('Ung.dashboard.Charts', {
                 },
                 options3d: {
                     enabled: entry.is3d,
-                    alpha: 45,
-                    beta: 0
+                    alpha: entry.chartType === 'pie' ? 45 : 20,
+                    beta: 0,
+                    depth: entry.chartType === 'pie' ? 0 : 50
                 }
             },
+            title: !forDashboard ? {
+                text: entry.description,
+                align: 'center',
+                margin: 20,
+                y: 20,
+                style: {
+                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
+                    color: '#777',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                }
+            } : null,
             colors: colors,
             credits: {
                 enabled: false
             },
-            title: null,
             exporting: {
                 enabled: false
             },
             xAxis: {
                 type: 'category',
-                //crosshair: true,
                 labels: {
-                    //rotation: -45,
                     style: {
                         fontSize: '11px'
                     }
                 },
-                title: {
+                title: !forDashboard ? {
+                    align: 'middle',
+                    text: seriesName,
+                    style: {
+                        fontSize: '16px'
+                    }
+                } : {
                     align: 'high',
                     offset: 20,
                     text: seriesName,
@@ -583,33 +589,9 @@ Ext.define('Ung.dashboard.Charts', {
                     }
                 }
             },
-            yAxis: {
-                title: {
-                    text: entry.units,
-                    style: {
-                        color: '#C0D0E0'
-                    }
-                }
-            },
-            legend: {
-                title: {
-                    text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
-                    style: {
-                        fontStyle: 'italic'
-                    }
-                },
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                symbolHeight: 8,
-                symbolWidth: 8,
-                symbolRadius: 4
-                //x: -10,
-                //y: 100                
-            },
             tooltip: {
                 headerFormat: '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ' {point.key}</span><br/>',
-                pointFormat: '{series.name}: <b>{point.y}</b> ({point.percentage:.1f}%)'
+                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? '({point.percentage:.1f}%)' : '')
             },
             plotOptions: {
                 pie: {
@@ -626,70 +608,14 @@ Ext.define('Ung.dashboard.Charts', {
                         format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
                     }
-                }
-            },
-            series: this.generateSeries(entry, data, null)
-        });
-    },
-
-    columnChart: function (entry, data, container, forDashboard) {
-        var seriesName = entry.seriesRenderer || entry.pieGroupColumn;
-
-        return new Highcharts.Chart({
-            chart: {
-                type: 'column',
-                renderTo: container,
-                //margin: [0, 0, 0, 0],
-                backgroundColor: 'transparent',
-                style: {
-                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
-                    fontSize: '12px'
                 },
-                options3d: {
-                    enabled: false,
-                    alpha: 45,
-                    beta: 0
-                }
-            },
-            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
-            credits: {
-                enabled: false
-            },
-            title: null,
-            exporting: {
-                enabled: false
-            },
-            legend: {
-                enabled: false
-            },
-            tooltip: {
-                enabled: false
-            },
-            plotOptions: {
                 column: {
                     borderWidth: 0,
                     colorByPoint: true,
+                    depth: 50,
                     dataLabels: {
                         enabled: true,
                         align: 'center'
-                    }
-                }
-            },
-            xAxis: {
-                type: 'category',
-                crosshair: true,
-                labels: {
-                    //rotation: -45,
-                    style: {
-                        fontSize: '11px'
-                    }
-                },
-                title: {
-                    align: 'high',
-                    offset: 20,
-                    text: seriesName,
-                    style: {
-                        color: '#C0D0E0'
                     }
                 }
             },
@@ -697,18 +623,49 @@ Ext.define('Ung.dashboard.Charts', {
                 gridLineWidth: 1,
                 gridLineDashStyle: 'dash',
                 gridLineColor: '#EEE',
-                title: {
+                title: !forDashboard ? {
+                    align: 'middle',
                     text: entry.units,
                     style: {
-                        color: '#C0D0E0'
+                        fontSize: '16px'
+                    }
+                } : {
+                    align: 'high',
+                    offset: -10,
+                    text: entry.units,
+                    style: {
+                        color: 'green'
                     }
                 }
             },
-            series: this.generateSeries(entry, data, null)
+            legend: {
+                enabled: entry.chartType === 'pie',
+                title: {
+                    text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
+                    style: {
+                        fontStyle: 'italic'
+                    }
+                },
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                y: !forDashboard ? 50 : 0,
+                symbolHeight: 8,
+                symbolWidth: 8,
+                symbolRadius: 4
+            },
+            series: this.setSeries(entry, data, null)
         });
     },
 
-    generateSeries: function (entry, data, chart) {
+    /**
+     * Creates or updates the chart series with data
+     * @param {Object} entry - the Report entry object
+     * @param {Object} data  - the data used for the series
+     * @param {Object} chart - the chart for which data is updated; is null when creating the chart
+     * @returns {Array}      - the series array
+     */
+    setSeries: function (entry, data, chart) {
         var i, j, _data, _seriesOptions = [];
 
         if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
@@ -730,12 +687,16 @@ Ext.define('Ung.dashboard.Charts', {
                 if (entry.seriesRenderer === 'interface') {
                     _seriesOptions[i] = {
                         id: entry.timeDataColumns[i],
-                        name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] '
+                        name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] ',
+                        grouping: entry.columnOverlapped ? false : true,
+                        pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1
                     };
                 } else {
                     _seriesOptions[i] = {
                         id: entry.timeDataColumns[i].split(' ').splice(-1)[0],
-                        name: entry.timeDataColumns[i].split(' ').splice(-1)[0]
+                        name: entry.timeDataColumns[i].split(' ').splice(-1)[0],
+                        grouping: entry.columnOverlapped ? false : true,
+                        pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1
                     };
                 }
 
@@ -775,11 +736,91 @@ Ext.define('Ung.dashboard.Charts', {
         return _seriesOptions;
     },
 
-    updateType: function (chart, newType) {
+    /**
+     * Updates the Series type for the TimeSeries charts
+     * @param {Object} entry   - the Report entry object
+     * @param {Object} chart   - the chart for which series are updated
+     * @param {string} newType - the new type of the Series: 'spline', 'areaspline' or 'column'
+     */
+    updateSeriesType: function (entry, chart, newType) {
         var i;
         for (i = 0; i < chart.series.length; i += 1) {
-            chart.series[i].update({type: newType}, false);
+            chart.series[i].update({
+                grouping: entry.columnOverlapped ? false : true,
+                pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1,
+                type: newType
+            }, false);
         }
         chart.redraw();
+    },
+
+    /**
+     * Set the zooming range buttons for Time Series based on datetime extremes
+     * @param {Object} data - the series data
+     * @returns {Object}    - the range buttons definition
+     * TODO: WIP on setting correct range buttons
+     */
+    setRangeButtons: function (data) {
+        var buttons = [],
+            range = (data[data.length - 1].time_trunc.time - data[0].time_trunc.time) / 1000; // seconds
+
+        buttons.push({
+            type: 'all',
+            text: 'All'
+        });
+
+        if (range / (3600 * 24 * 31) > 1) { // more than a month
+            buttons.unshift({
+                type: 'week',
+                count: 1,
+                text: '1wk'
+            });
+        }
+
+        if (range / (3600 * 24 * 7) >= 1) { // more than a week
+            buttons.unshift({
+                type: 'day',
+                count: 1,
+                text: '1d'
+            });
+        }
+
+        if (range / (3600 * 24) >= 1 && range / (3600 * 24 * 7) < 1) { // more than a day
+            buttons.unshift({
+                type: 'minute',
+                count: 6 * 60,
+                text: '6h'
+            });
+            buttons.unshift({
+                type: 'minute',
+                count: 3 * 60,
+                text: '3h'
+            });
+            buttons.unshift({
+                type: 'minute',
+                count: 60,
+                text: '1h'
+            });
+        }
+
+        if (range / 3600 >= 1 && range / (3600 * 24) < 1) { // less than an hour
+            buttons.unshift({
+                type: 'minute',
+                count: 30,
+                text: '30m'
+            });
+            buttons.unshift({
+                type: 'minute',
+                count: 10,
+                text: '10m'
+            });
+            buttons.unshift({
+                type: 'minute',
+                count: 1,
+                text: '1m'
+            });
+        }
+        return buttons;
     }
+
 });

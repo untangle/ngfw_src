@@ -46,7 +46,7 @@
     <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/dashboardCharts.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/charting.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportsViewer.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 

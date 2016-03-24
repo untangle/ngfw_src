@@ -583,18 +583,18 @@ Ext.define('Ung.dashboard.CPULoad', {
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper no-padding cpuload">' +
-            '<div class="chart1" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
-            '<div class="chart2" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
+            '<div class="cpu-line-chart" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
+            '<div class="cpu-gauge-chart" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
             '<div class="cpuLoadVal"></div>' +
         '</div>' +
         '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
     data: {},
-    chart1: null,
-    chart2: null,
+    lineChart: null,
+    gaugeChart: null,
     listeners: {
         'afterrender': function (widget) {
-            widget.chart1 = Ung.dashboard.Charts.cpuLoad1(widget.getEl().query('.chart1')[0]);
-            widget.chart2 = Ung.dashboard.Charts.cpuLoad2(widget.getEl().query('.chart2')[0]);
+            widget.lineChart = Ung.charts.cpuLineChart(widget.getEl().query('.cpu-line-chart')[0]);
+            widget.gaugeChart = Ung.charts.cpuGaugeChart(widget.getEl().query('.cpu-gauge-chart')[0]);
         }
     },
     updateStats: function (stats) {
@@ -602,12 +602,12 @@ Ext.define('Ung.dashboard.CPULoad', {
         var highLimit = stats.numCpus + 4;
         var loadLabel = 'low';
 
-        if (!this.loaded && this.chart1 !== null && this.chart2 !== null) {
-            this.chart1.yAxis[0].update({
+        if (!this.loaded && this.lineChart !== null && this.chart2 !== null) {
+            this.lineChart.yAxis[0].update({
                 minRange: stats.numCpus
             });
 
-            this.chart2.yAxis[0].update({
+            this.gaugeChart.yAxis[0].update({
                 max: highLimit + 1,
                 plotBands: [{
                     from: 0,
@@ -634,8 +634,8 @@ Ext.define('Ung.dashboard.CPULoad', {
 
             var me = this;
             setTimeout(function () {
-                me.chart1.reflow();
-                me.chart2.reflow();
+                me.lineChart.reflow();
+                me.gaugeChart.reflow();
             }, 100);
             this.loaded = true;
         }
@@ -651,9 +651,9 @@ Ext.define('Ung.dashboard.CPULoad', {
             Ext.select('.cpuLoadVal', this).elements[0].addCls(loadLabel).setHtml(stats.oneMinuteLoadAvg + '<br/><span>' + loadLabel + '</span>');
         }
 
-        if (this.chart1 !== null && this.chart2 !== null) {
-            this.chart1.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
-            this.chart2.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
+        if (this.lineChart !== null && this.gaugeChart !== null) {
+            this.lineChart.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
+            this.gaugeChart.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
         }
 
     }
@@ -845,99 +845,72 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
     tpl: '<div class="wg-wrapper no-padding">' +
         '<div class="chart-types" style="height: 20px;">' +
-            '<button data-type="spline" data-is3d="0">Line</button>' +
-            '<button data-type="areaspline" data-is3d="0">Area</button>' +
-            '<button data-type="column" data-is3d="0">Column</button>' +
-            //'<button data-type="column" data-is3d="1">3D Column</button>' +
         '</div>' +
-        '<div class="chart" style="height: 240px;  position: absolute; left: 0; bottom: 0; right: 0;">' +
+        '<div class="chart" style="height: 240px; position: absolute; left: 0; bottom: 0; right: 0;">' +
         '</div>' +
         '</div>' +
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>Loading ...</p></div>' +
         '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>No data!</p></div>',
     data: {},
     chart: null,
-    chartType: null,
-    chart3d: 0,
+    chartData: null,
     initComponent: function () {
         this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
         switch (this.entry.timeStyle) {
         case 'LINE':
             this.chartType = 'spline';
-            this.chart3d = 0;
             break;
         case 'AREA':
             this.chartType = 'areaspline';
-            this.chart3d = 0;
             break;
         case 'BAR_3D_OVERLAPPED':
             this.chartType = 'column';
-            this.chart3d = 1;
             break;
         default:
             this.chartType = 'areaspline';
-            this.chart3d = 0;
         }
         this.callParent(arguments);
     },
 
     listeners: {
         'afterrender': function (widget) {
+            var chartButtons = widget.getEl().query('.chart-types')[0];
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
 
-            /*
-            if (widget.entry.type === 'PIE_GRAPH') {
-                widget.getEl().query('.chart-types')[0].style.display = 'none';
-                widget.chart = Ung.dashboard.Charts.pieChart(widget.entry, widget.getEl().query('.chart')[0], true);
-            } else {
-                widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
-            }
-            */
-
-            widget.getEl().query('.chart-types')[0].addEventListener('click', function (evt) {
+            switch (widget.entry.type) {
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
                 var i;
-                widget.chartType = evt.target.dataset.type;
-                if (widget.chart3d !== parseInt(evt.target.dataset.is3d, 10)) {
-
-                    var seriesCopy = [];
-                    widget.chart.series.forEach(function (serie, index) {
-                        seriesCopy[index] = [];
-                        serie.data.forEach(function (data) {
-                            seriesCopy[index].push({x: data.x, y: data.y});
-                        });
-                    });
-
-                    // recreate chart
+                chartButtons.innerHTML =
+                    '<button data-type="spline" class="selected">' + i18n._('Line') + '</button>' +
+                    '<button data-type="areaspline">' + i18n._('Area') + '</button>' +
+                    '<button data-type="column">' + i18n._('Grouped Columns') + '</button>' +
+                    '<button data-type="column" data-overlapped>' + i18n._('Overlapped Columns') + '</button>';
+                chartButtons.addEventListener('click', function (evt) {
+                    for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
+                        chartButtons.querySelectorAll('button')[i].removeAttribute('class');
+                    }
+                    evt.target.className = 'selected';
+                    widget.entry.columnOverlapped = evt.target.dataset.overlapped !== undefined;
+                    Ung.charts.updateSeriesType(widget.entry, widget.chart, evt.target.dataset.type);
+                });
+                break;
+            default:
+                chartButtons.innerHTML =
+                    '<button data-type="pie" class="selected">' + i18n._('Pie') + '</button>' +
+                    '<button data-type="pie" data-donut>' + i18n._('Donut') + '</button>' +
+                    '<button data-type="column">' + i18n._('Column') + '</button>';
+                chartButtons.addEventListener('click', function (evt) {
+                    for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
+                        chartButtons.querySelectorAll('button')[i].removeAttribute('class');
+                    }
+                    evt.target.className = 'selected';
+                    widget.entry.chartType = evt.target.dataset.type;
+                    widget.entry.isDonut = evt.target.dataset.donut !== undefined;
                     widget.chart.destroy();
-                    widget.chart3d = parseInt(evt.target.dataset.is3d, 10);
-                    //widget.chart = Ung.dashboard.Charts.timeChart(widget.entry, widget.getEl().query('.chart')[0], true);
-
-                    for (i = 0; i < seriesCopy.length; i += 1) {
-                        widget.chart.series[i].setData(seriesCopy[i], true, false);
-                    }
-                    seriesCopy = [];
-                    //Ung.dashboard.Queue.addFirst(widget);
-                } else {
-                    // just update series
-                    for (i = 0; i < widget.chart.series.length; i += 1) {
-                        widget.chart.series[i].update({
-                            type: widget.chartType
-                        }, true, true);
-                    }
-                }
-            });
-
-            /*
-            this.getEl().on({
-                click: {
-                    fn: function (evt) {
-                        if (evt.target.className === 'chart-line') {
-                            widget.chart.series[0].update({type: 'areaspline'}, true, true);
-                        }
-                    }
-                }
-            });
-            */
+                    widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget.getEl().query('.chart')[0], true);
+                });
+            }
         }
     },
 
@@ -952,37 +925,20 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 return;
             }
 
-            if (!this.chart) {
-                switch (this.entry.timeStyle) {
-                case 'LINE':
-                    this.entry.chartType = 'spline';
-                    break;
-                case 'AREA':
-                    this.entry.chartType = 'areaspline';
-                    break;
-                case 'BAR':
-                case 'BAR_3D':
-                case 'BAR_OVERLAPPED':
-                case 'BAR_3D_OVERLAPPED':
-                    this.entry.chartType = 'column';
-                    break;
-                default:
-                    this.entry.chartType = 'areaspline';
-                }
+            this.chartData = result.list;
 
+            if (!this.chart || this.chart.series.length === 0) {
                 switch (this.entry.type) {
                 case 'TIME_GRAPH':
                 case 'TIME_GRAPH_DYNAMIC':
-                    this.chart = Ung.dashboard.Charts.timeChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
-                    break;
-                case 'PIE_GRAPH':
-                    this.chart = Ung.dashboard.Charts.pieChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
                     break;
                 default:
-                    this.chart = Ung.dashboard.Charts.columnChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    this.entry.chartType = 'pie';
+                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
                 }
             } else {
-                Ung.dashboard.Charts.generateSeries(this.entry, result.list, this.chart);
+                Ung.charts.setSeries(this.entry, result.list, this.chart);
             }
 
             if (result.list.length === 0) {
