@@ -4,13 +4,13 @@
 # It will restart the untangle-vm after everything is complete (apt-get is no longer running)
 # If the untangle-vm was not running, it will not restart it
 
-echo "$0: $0 $@ $$ `date`"
+echo "`date -Iseconds` $0: $0 $@ $$"
 
 # If there is another uvm-restart running, just exit
 pidfile=/var/run/uvm-restart.pid
 if [ -e $pidfile ]; then
     if ps p $(cat $pidfile) >/dev/null 2>&1; then
-        echo "$0: uvm-restart already running"
+        echo "`date -Iseconds` $0: uvm-restart already running"
         exit 0
     else
         # remove stale pidfile
@@ -23,11 +23,11 @@ echo $$ >$pidfile
 # Wait for apt-get to complete
 while true; do
     if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
-        echo "$0: waiting for apt-get to complete... `date`"
+        echo "`date -Iseconds` $0: waiting for apt-get to complete..."
         sleep 1
     else
         /bin/rm -f $pidfile
-        echo "$0: starting untangle-vm `date`"
+        echo "`date -Iseconds` $0: starting untangle-vm"
         /etc/init.d/untangle-vm start
         exit
     fi
