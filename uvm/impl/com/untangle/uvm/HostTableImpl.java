@@ -680,20 +680,30 @@ public class HostTableImpl implements HostTable
                     for (HostTableEntry entry : entries) {
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
-                        if ( address == null )
+                        if ( address == null ) {
+                            logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;
-                        if ( entry.isHostnameKnown() )
+                        }
+                        if ( entry.isHostnameKnown() ) {
+                            logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - already known hostname: " + currentHostname);
                             continue;
+                        }
                         
                         try {
                             String hostname = address.getHostName();
 
-                            if ( hostname == null )
+                            if ( hostname == null ) {
+                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup failed.");
                                 continue;
-                            if ( hostname.equals( currentHostname ) )
+                            }
+                            if ( hostname.equals( currentHostname ) ) {
+                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup result same as current:" + currentHostname);
                                 continue;
-                            if ( hostname.equals( address.getHostAddress() ) )
+                            }
+                            if ( hostname.equals( address.getHostAddress() ) ) {
+                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup results is address:" + address.getHostAddress());
                                 continue;
+                            }
 
                             /* use just the first part of the name */
                             int firstdot = hostname.indexOf('.');
