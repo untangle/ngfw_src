@@ -689,7 +689,7 @@ public class HostTableImpl implements HostTable
                             continue;
                         
                         try {
-                            String hostname = address.getHostName();
+                            String hostname = org.xbill.DNS.Address.getHostName(address);
 
                             if ( hostname == null )
                                 continue;
