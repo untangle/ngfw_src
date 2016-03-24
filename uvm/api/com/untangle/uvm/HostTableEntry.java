@@ -17,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class HostTableEntry implements Serializable, JSONString
 {
-    private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 30 * 60 * 1000; /* 30 minutes */
+    private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
     private static final Logger logger = Logger.getLogger(HostTableEntry.class);
 
     private InetAddress address = null;
