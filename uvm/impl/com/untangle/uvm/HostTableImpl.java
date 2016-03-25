@@ -681,11 +681,13 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
                         if ( address == null ) {
-                            logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
+                            if ( logger.isDebugEnabled() )
+                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;
                         }
                         if ( entry.isHostnameKnown() ) {
-                            logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - already known hostname: " + currentHostname);
+                            if ( logger.isDebugEnabled() )
+                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - already known hostname: " + currentHostname);
                             continue;
                         }
                         
@@ -693,15 +695,18 @@ public class HostTableImpl implements HostTable
                             String hostname = org.xbill.DNS.Address.getHostName(address);
 
                             if ( hostname == null ) {
-                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup failed.");
+                                if ( logger.isDebugEnabled() )
+                                    logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup failed.");
                                 continue;
                             }
                             if ( hostname.equals( currentHostname ) ) {
-                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup result same as current:" + currentHostname);
+                                if ( logger.isDebugEnabled() )
+                                    logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup result same as current:" + currentHostname);
                                 continue;
                             }
                             if ( hostname.equals( address.getHostAddress() ) ) {
-                                logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup results is address:" + address.getHostAddress());
+                                if ( logger.isDebugEnabled() )
+                                    logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - lookup results is address:" + address.getHostAddress());
                                 continue;
                             }
 
@@ -715,7 +720,7 @@ public class HostTableImpl implements HostTable
                         } catch (java.net.UnknownHostException e ) {
                             //do nothing
                         } catch (Exception e) {
-                            logger.debug("Exception in reverse lookup",e);
+                            logger.warn("Exception in reverse lookup",e);
                         }
                     }
                 } catch (Exception e) {
