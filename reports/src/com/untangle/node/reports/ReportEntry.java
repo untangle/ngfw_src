@@ -237,17 +237,22 @@ public class ReportEntry implements Serializable, JSONString
         if ( this.timeDataInterval != TimeDataInterval.AUTO )
             return this.timeDataInterval;
 
-        /* otherwise its auto, calculate a good interval based on the data */
-        long timeDiffSec = ((endDate.getTime() - startDate.getTime())/1000);
+        // with high charts the data combination is handled in the frontend
+        // as such we can return as granular of data as possible and the UI
+        // will handle combining the data into a manageable chunks
+        return TimeDataInterval.MINUTE;
+        
+        // /* otherwise its auto, calculate a good interval based on the data */
+        // long timeDiffSec = ((endDate.getTime() - startDate.getTime())/1000);
 
-        if ( timeDiffSec > ( 60 * 60 * 24 * 2 ) ) /* more than 2 days, use days */
-            return TimeDataInterval.DAY;
-        else if ( timeDiffSec >= ( 60 * 60 * 10 ) ) /* >= 10 hours */
-            return TimeDataInterval.HOUR;
-        else if ( timeDiffSec >= ( 60 * 60 * 2 ) ) /* >= 2 hours */
-            return TimeDataInterval.TENMINUTE;
-        else
-            return TimeDataInterval.MINUTE;
+        // if ( timeDiffSec > ( 60 * 60 * 24 * 2 ) ) /* more than 2 days, use days */
+        //     return TimeDataInterval.DAY;
+        // else if ( timeDiffSec >= ( 60 * 60 * 10 ) ) /* >= 10 hours */
+        //     return TimeDataInterval.HOUR;
+        // else if ( timeDiffSec >= ( 60 * 60 * 2 ) ) /* >= 2 hours */
+        //     return TimeDataInterval.TENMINUTE;
+        // else
+        //     return TimeDataInterval.MINUTE;
     }
 
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
