@@ -850,7 +850,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
         '</div>' +
         '</div>' +
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>Loading ...</p></div>' +
-        '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>No data!</p></div>',
+        '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>' + i18n._('No data available yet!') + '</p></div>',
     data: {},
     chart: null,
     chartData: null,
@@ -941,12 +941,14 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 Ung.charts.setSeries(this.entry, result.list, this.chart);
             }
 
-            if (result.list.length === 0) {
+            //console.log(this.chart.series[0].data);
+
+            /*
+            if (this.chart.series[0].data.length === 0) {
                 this.addCls('nodata');
-                return;
+                return false;
             }
-
-
+            */
         }, this), this.entry, this.timeframe, -1);
     }
 });

@@ -14,10 +14,11 @@
 
     <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>
     <!--<script type="text/javascript" src="/highcharts/highcharts.js?s=${buildStamp}"></script>-->
-    <script type="text/javascript" src="/highcharts/exporting.js?s=${buildStamp}"></script>
+    <!--<script type="text/javascript" src="/highcharts/exporting.js?s=${buildStamp}"></script>-->
     <script type="text/javascript" src="/highcharts/highcharts-more.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highcharts-3d.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/solid-gauge.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/no-data-to-display.js?s=${buildStamp}"></script>
     <!--<script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>-->
     
 <c:if test="${isDebug==false}">

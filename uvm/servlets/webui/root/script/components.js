@@ -1196,55 +1196,7 @@ Ext.define("Ung.FaceplateMetric", {
         for(i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
         }
-        this.chart = Ext.create({
-            xtype: 'cartesian',
-            border: false,
-            background: {
-                type: 'image',
-                src: "/skins/"+rpc.skinSettings.skinName+"/images/admin/background_activity_blinger_border.png"
-            },
-            insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
-            renderTo: chartContainerEl,
-            width: chartContainerEl.getWidth(),
-            height: chartContainerEl.getHeight(),
-            animation: false,
-            theme: 'green-gradients',
-            store: Ext.create('Ext.data.JsonStore', {
-                fields: ['time', 'sessions'],
-                data: this.chartData
-            }),
-            axes: [{
-                type: 'numeric',
-                position: 'left',
-                fields: ['sessions'],
-                minimum: 0,
-                majorTickSteps: 0,
-                minorTickSteps: 3
-            }],
-            series: [{
-                type: 'line',
-                axis: 'left',
-                showMarkers: false,
-                fill: true,
-                xField: 'time',
-                yField: 'sessions',
-                style: {
-                    lineWidth: 2
-                },
-                tooltip: {
-                    trackMouse: true,
-                    style: 'background: #fff',
-                    dismissDelay: 2000,
-                    renderer: function(tooltip, record, item) {
-                        tooltip.setHtml(
-                            i18n._("Session History:") + record.get('sessions') + '<br/>' +
-                            i18n._("Current Sessions:") + me.currentSessions + '<br/>' +
-                            i18n._("Click chart to open Sesion Viewer for") + " " + me.displayName
-                        );
-                    }
-                }
-            }]
-        });
+        this.chart = Ung.charts.nodeChart(chartContainerEl.dom, this.chartData);
         
         chartContainerEl.on("click", function(e) { 
             Ung.Main.showNodeSessions( this.parentNodeId ); 
@@ -1409,7 +1361,7 @@ Ext.define("Ung.FaceplateMetric", {
             this.chartData[this.chartData.length-1].sessions=this.currentSessions;
 
             if(reloadChart) {
-                this.chart.store.loadData(this.chartData);
+                Ung.charts.nodeChartUpdate(this.chart, this.chartData);
             }
         }
     },
@@ -1438,7 +1390,7 @@ Ext.define("Ung.FaceplateMetric", {
             for(i = 0; i<this.chartData.length; i++) {
                 this.chartData[i].sessions=0;
             }
-            this.chart.store.loadData(this.chartData);
+            Ung.charts.nodeChartUpdate(this.chart, this.chartData);
             for (i = 0; i < 4; i++) {
                 var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
                 valueDiv.innerHTML = "&nbsp;";

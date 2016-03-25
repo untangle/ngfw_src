@@ -8,6 +8,8 @@
 
 Ext.define('Ung.charts', {
     singleton: true,
+    //generateRandomData: true,
+    baseColors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
 
     /**
      * Creates the Line chart for the CPU Load widget from Dashboard
@@ -226,7 +228,16 @@ Ext.define('Ung.charts', {
         }
         */
 
-        var chartType, i;
+        var chartType,
+            colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
+
+        // add transparency to colors
+        if (entry.columnOverlapped) {
+            colors = colors.map(function (color) {
+                Highcharts.Color(color).setOpacity(0.5).get('rgba');
+            });
+            console.log(colors);
+        }
 
         switch (entry.timeStyle) {
         case 'LINE':
@@ -245,11 +256,6 @@ Ext.define('Ung.charts', {
             chartType = 'areaspline';
         }
 
-        /*
-        if (!entry.timeDataColumns) {
-            entry.timeDataColumns = [];
-        }
-        */
         return new Highcharts.StockChart({
             chart: {
                 type: chartType,
@@ -275,7 +281,16 @@ Ext.define('Ung.charts', {
                     fontWeight: 'bold'
                 }
             } : null,
-            colors: (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+            lang: {
+                noData: i18n._("No data available yet!")
+            },
+            noData: {
+                style: {
+                    fontSize: '16px',
+                    color: '#999'
+                }
+            },
+            colors: colors,
             navigator: {
                 enabled: !forDashboard
             },
@@ -291,57 +306,7 @@ Ext.define('Ung.charts', {
                 enabled: false
             },
             exporting: {
-                enabled: false,
-                buttons: {
-                    contextButton: {
-                        enabled: false
-                    },
-                    areaSplineButton: {
-                        text: 'Areaspline',
-                        onclick: function () {
-                            for (i = 0; i < this.series.length; i += 1) {
-                                this.series[i].update({type: 'areaspline'}, true, true);
-                            }
-                        }
-                    },
-                    areaButton: {
-                        text: 'Area',
-                        onclick: function () {
-                            for (i = 0; i < this.series.length; i += 1) {
-                                this.series[i].update({type: 'area'}, true, true);
-                            }
-                        }
-                    },
-                    lineButton: {
-                        text: 'Line',
-                        onclick: function () {
-                            for (i = 0; i < this.series.length; i += 1) {
-                                this.series[i].update({type: 'line'}, true, true);
-                            }
-                        }
-                    },
-                    splineButton: {
-                        text: 'Spline',
-                        onclick: function () {
-                            for (i = 0; i < this.series.length; i += 1) {
-                                this.series[i].update({type: 'spline'}, true, true);
-                            }
-                        }
-                    },
-                    columnButton: {
-                        text: 'Column',
-                        onclick: function () {
-                            for (i = 0; i < this.series.length; i += 1) {
-                                this.series[i].update({type: 'column'}, true, true);
-                            }
-                        }
-                    }
-                }
-            },
-            navigation: {
-                buttonOptions: {
-                    align: 'right'
-                }
+                enabled: false
             },
             xAxis: {
                 type: 'datetime',
@@ -456,17 +421,9 @@ Ext.define('Ung.charts', {
                         }
                     }
                 },
-                area: {
-                    lineWidth: 1,
-                    fillOpacity: 0.5
-                },
                 areaspline: {
-                    lineWidth: 1,
+                    lineWidth: 0,
                     fillOpacity: 0.5
-                    //shadow: true
-                },
-                line: {
-                    lineWidth: 2
                     //shadow: true
                 },
                 spline: {
@@ -512,7 +469,7 @@ Ext.define('Ung.charts', {
      */
     categoriesChart: function (entry, data, container, forDashboard) {
         var seriesName = entry.seriesRenderer || entry.pieGroupColumn,
-            colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
+            colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
         // apply gradient colors for the Pie chart
         /*
@@ -560,6 +517,15 @@ Ext.define('Ung.charts', {
                     fontWeight: 'bold'
                 }
             } : null,
+            lang: {
+                noData: i18n._("No data available yet!")
+            },
+            noData: {
+                style: {
+                    fontSize: '16px',
+                    color: '#999'
+                }
+            },
             colors: colors,
             credits: {
                 enabled: false
@@ -673,11 +639,17 @@ Ext.define('Ung.charts', {
             if (entry.type === 'TIME_GRAPH_DYNAMIC') {
                 entry.timeDataColumns = [];
                 var column;
-                for (column in data[0]) {
-                    if (data[0].hasOwnProperty(column) && column !== 'time_trunc') {
+                for (column in data[data.length - 1]) {
+                    if (data[data.length - 1].hasOwnProperty(column) && column !== 'time_trunc') {
                         entry.timeDataColumns.push(column);
                     }
                 }
+            }
+
+            if (entry.timeDataColumns.length === 0) {
+                _seriesOptions[0] = {
+                    data: []
+                };
             }
 
             for (i = 0; i < entry.timeDataColumns.length; i += 1) {
@@ -689,14 +661,14 @@ Ext.define('Ung.charts', {
                         id: entry.timeDataColumns[i],
                         name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] ',
                         grouping: entry.columnOverlapped ? false : true,
-                        pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1
+                        pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
                     };
                 } else {
                     _seriesOptions[i] = {
                         id: entry.timeDataColumns[i].split(' ').splice(-1)[0],
                         name: entry.timeDataColumns[i].split(' ').splice(-1)[0],
                         grouping: entry.columnOverlapped ? false : true,
-                        pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1
+                        pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
                     };
                 }
 
@@ -704,15 +676,17 @@ Ext.define('Ung.charts', {
                 for (j = 0; j < data.length; j += 1) {
                     _data.push([
                         data[j].time_trunc.time,
-                        data[j][_seriesOptions[i].id] ? Math.floor(data[j][_seriesOptions[i].id]) : 0
+                        data[j][_seriesOptions[i].id] ? Math.floor(data[j][_seriesOptions[i].id]) : (this.generateRandomData ? Math.floor(Math.random() * 120) : 0)
                     ]);
                 }
                 if (!chart) {
                     _seriesOptions[i].data = _data;
+                    //_seriesOptions[i].data = []; // test for no data
                 } else {
-                    chart.series[i].setData(_data);
+                    chart.series[i].setData(_data, false, true);
                 }
             }
+
         }
 
         if (entry.type === 'PIE_GRAPH') {
@@ -728,12 +702,18 @@ Ext.define('Ung.charts', {
                     name: entry.units,
                     data: _data
                 };
+                //_seriesOptions[0].data = []; // test for no data
             } else {
-                chart.series[0].setData(_data);
+                chart.series[0].setData(_data, false, true);
             }
         }
 
-        return _seriesOptions;
+        if (!chart) {
+            return _seriesOptions;
+        }
+
+        chart.redraw();
+
     },
 
     /**
@@ -743,13 +723,19 @@ Ext.define('Ung.charts', {
      * @param {string} newType - the new type of the Series: 'spline', 'areaspline' or 'column'
      */
     updateSeriesType: function (entry, chart, newType) {
-        var i;
+        var i, _newOptions;
         for (i = 0; i < chart.series.length; i += 1) {
-            chart.series[i].update({
+            _newOptions = {
                 grouping: entry.columnOverlapped ? false : true,
                 pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1,
                 type: newType
-            }, false);
+            };
+            if (entry.columnOverlapped) {
+                _newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
+            } else {
+                _newOptions.color = chart.options.colors[i];
+            }
+            chart.series[i].update(_newOptions, false);
         }
         chart.redraw();
     },
@@ -761,6 +747,10 @@ Ext.define('Ung.charts', {
      * TODO: WIP on setting correct range buttons
      */
     setRangeButtons: function (data) {
+        if (!data[data.length - 1].time_trunc.time) {
+            return false;
+        }
+
         var buttons = [],
             range = (data[data.length - 1].time_trunc.time - data[0].time_trunc.time) / 1000; // seconds
 
@@ -821,6 +811,135 @@ Ext.define('Ung.charts', {
             });
         }
         return buttons;
+    },
+
+    /**
+     * Set the chart display for the node in RackView
+     * @param {Object} container - the DOM element where the chart is rendered
+     * @param {Object} data      - the series data
+     * @returns {Object}         - the HighCharts chart object
+     */
+    nodeChart: function (container, data) {
+        var i, _data = [];
+        for (i = 0; i < data.length; i += 1) {
+            _data.push({
+                x: data[i].time,
+                y: data[i].sessions
+            });
+        }
+
+        return new Highcharts.Chart({
+            chart: {
+                type: 'areaspline',
+                renderTo: container,
+                margin: [0, 0, 0, 0],
+                backgroundColor: 'transparent'
+            },
+            credits: {
+                enabled: false
+            },
+            colors: ['#FFF'],
+            title: null,
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    enabled: false,
+                    style: {
+                        color: '#999',
+                        fontSize: '10px'
+                    }
+                },
+                maxPadding: 0,
+                minPadding: 0
+            },
+            yAxis: {
+                minRange: 1,
+                min: 0,
+                tickAmount: 4,
+                title: null,
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#777',
+                labels: {
+                    align: 'left',
+                    style: {
+                        color: '#999',
+                        fontSize: '9px'
+                    },
+                    x: 0,
+                    y: -3
+                },
+                visible: true
+            },
+            plotOptions: {
+                areaspline: {
+                    fillOpacity: 0.15,
+                    lineWidth: 1
+                },
+                series: {
+                    marker: {
+                        enabled: false,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineWidthPlus: 0,
+                                radius: 3,
+                                radiusPlus: 0
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            enabled: false,
+                            lineWidthPlus: 0,
+                            halo: {
+                                size: 0
+                            }
+                        }
+                    }
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: false,
+                animation: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                useHTML: true,
+                style: {
+                    padding: '5px',
+                    fontSize: '11px'
+                },
+                headerFormat: '',
+                pointFormatter: function () {
+                    var str = '<span>' + this.series.name + '</span>';
+                    return '<div>' + str + '</div>';
+                }
+            },
+            series: [{
+                data: _data
+            }]
+        });
+    },
+
+    /**
+     * Updates the Rack node chart
+     * @param {Object} chart - the chart object
+     * @param {Object} data  - new data to update
+     */
+    nodeChartUpdate: function (chart, data) {
+        var i, _data = [];
+        for (i = 0; i < data.length; i += 1) {
+            _data.push({
+                x: data[i].time,
+                y: data[i].sessions
+            });
+        }
+        chart.series[0].setData(_data, true, false);
     }
 
 });
