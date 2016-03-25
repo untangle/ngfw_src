@@ -163,7 +163,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         VirusBlockerState virusState = null;
         String scanResult = null;
         long fileLength = 0;
-        NodeSession session;
+        NodeSession session = null;
         
         public CloudFeedback(VirusBlockerState virusState, String scanResult, long fileLength, NodeSession session)
         {
