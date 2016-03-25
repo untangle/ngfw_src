@@ -7,6 +7,7 @@ package com.untangle.node.virus_blocker;
 import java.lang.StringBuilder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.Serializable;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -14,6 +15,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus_blocker.VirusScannerLauncher;
@@ -37,12 +39,28 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     // ---------- cloud scanning and telemetry feedback ----------
     // -----------------------------------------------------------
 
-    protected class CloudResult
-    {
+    @SuppressWarnings("serial")
+    protected class CloudResult implements Serializable, JSONString
+    { 
         String itemCategory = null;
         String itemClass = null;
         String itemConfidence = null;
         String itemHash = null;
+
+        public String getItemCategory() { return itemCategory; }
+        public void   setItemCategory(String newValue) { this.itemCategory = newValue; }
+        public String getItemClass() { return itemClass; }
+        public void   setItemClass(String newValue) { this.itemClass = newValue; }
+        public String getItemConfidence() { return itemConfidence; }
+        public void   setItemConfidence(String newValue) { this.itemConfidence = newValue; }
+        public String getItemHash() { return itemHash; }
+        public void   setItemHash(String newValue) { this.itemHash = newValue; }
+
+        public String toJSONString()
+        {
+            JSONObject jO = new JSONObject(this);
+            return jO.toString();
+        }
     }
 
     protected class CloudScanner extends Thread
@@ -161,16 +179,18 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     protected class CloudFeedback extends Thread
     {
         VirusBlockerState virusState = null;
-        String scanResult = null;
         long fileLength = 0;
         NodeSession session = null;
+        String bitdefenderResult = null;
+        CloudResult cloudResult = null;
         
-        public CloudFeedback(VirusBlockerState virusState, String scanResult, long fileLength, NodeSession session)
+        public CloudFeedback(VirusBlockerState virusState, String bitdefenderResult, long fileLength, NodeSession session, CloudResult cloudResult)
         {
             this.virusState = virusState;
-            this.scanResult = scanResult;
+            this.bitdefenderResult = bitdefenderResult;
             this.fileLength = fileLength;
             this.session = session;
+            this.cloudResult = cloudResult;
         }
 
         public void run()
@@ -181,7 +201,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             try {
                 json.put("hash", virusState.fileHash);
                 json.put("length", fileLength);
-                json.put("bdresult", scanResult);
+                json.put("bitdefenderResult", bitdefenderResult);
+                json.put("cloudResult", cloudResult);
                 if ( session != null ) {
                     if ( session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ) != null )
                         json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ));
@@ -207,12 +228,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 logger.warn("Exception building CloudFeedback JSON object.", exn);
             }
 
+            logger.warn("XXXX " + json.toString());
             feedback.append(json.toString());
 
             logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
             try {
-                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + scanResult + "&detProvider=BD&metaProvider=NGFW");
+                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + bitdefenderResult + "&detProvider=BD&metaProvider=NGFW");
                 URL myurl = new URL(target);
                 HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
                 mycon.setRequestMethod("POST");
@@ -346,11 +368,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         // split the string on the spaces so we can find all the fields
         String[] tokens = message.split(" ");
         int retcode = 0;
-
+        String bdResult = null;
+        
         try {
             retcode = Integer.valueOf(tokens[0]);
+            bdResult = tokens[2];
         } catch (Exception exn) {
-            logger.warn("Exception parsing result code: " + tokens[0], exn);
+            logger.warn("Exception parsing result code: " + message, exn);
         }
 
         if (cloudScanner != null) {
@@ -364,13 +388,28 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             cloudResult = cloudScanner.getCloudResult();
         }
 
+        CloudFeedback feedback = null;
+
+        /**
+         * If BD returned positive result - send feedback
+         * If cloud return positive result - send feedback
+         */
+        if (retcode == 222 || retcode == 223) {
+            feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+        }
+        if (feedback == null && (cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
+            feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+        }
+        
+        // if we have a feedback object start it up now
+        if (feedback != null)
+            feedback.run();
+        
         // if the cloud says it is infected we set the result and return now
         if ((cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
             setResult(new VirusScannerResult(false, cloudResult.itemCategory));
             return;
         }
-
-        CloudFeedback feedback = null;
 
         switch (retcode)
         {
@@ -378,11 +417,9 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.CLEAN);
             break;
         case 222: // known infection
-            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength, nodeSession);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 223: // likely infection
-            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength, nodeSession);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 225: // password protected file
@@ -398,9 +435,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.ERROR);
             break;
         }
-
-        // if we have a feedback object start it up now
-        if (feedback != null) feedback.run();
+        return;
     }
 
     private void setResult(VirusScannerResult value)
