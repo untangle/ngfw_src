@@ -163,12 +163,14 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         VirusBlockerState virusState = null;
         String scanResult = null;
         long fileLength = 0;
-
-        public CloudFeedback(VirusBlockerState virusState, String scanResult, long fileLength)
+        NodeSession session;
+        
+        public CloudFeedback(VirusBlockerState virusState, String scanResult, long fileLength, NodeSession session)
         {
             this.virusState = virusState;
             this.scanResult = scanResult;
             this.fileLength = fileLength;
+            this.session = session;
         }
 
         public void run()
@@ -180,8 +182,27 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 json.put("hash", virusState.fileHash);
                 json.put("length", fileLength);
                 json.put("bdresult", scanResult);
-                if (virusState.host != null) json.put("host", virusState.host);
-                if (virusState.uri != null) json.put("uri", virusState.uri);
+                if ( session != null ) {
+                    if ( session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ) != null )
+                        json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ));
+                    if ( session.globalAttachment( NodeSession.KEY_HTTP_URI ) != null )
+                        json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment( NodeSession.KEY_HTTP_URI ));
+                    if ( session.globalAttachment( NodeSession.KEY_HTTP_URL ) != null )
+                        json.put(NodeSession.KEY_HTTP_URL, session.globalAttachment( NodeSession.KEY_HTTP_URL ));
+                    if ( session.globalAttachment( NodeSession.KEY_HTTP_REFERER ) != null )
+                        json.put(NodeSession.KEY_HTTP_REFERER, session.globalAttachment( NodeSession.KEY_HTTP_REFERER ));
+                    if ( session.globalAttachment( NodeSession.KEY_FTP_FILE_NAME ) != null )
+                        json.put(NodeSession.KEY_FTP_FILE_NAME, session.globalAttachment( NodeSession.KEY_FTP_FILE_NAME ));
+                    if ( session.getOrigClientAddr() != null )
+                        json.put("clientAddr", session.getOrigClientAddr().getHostAddress() );
+                    if ( session.getNewServerAddr() != null )
+                        json.put("serverAddr", session.getNewServerAddr().getHostAddress() );
+                    json.put("clientPort", session.getOrigClientPort() );
+                    json.put("serverPort", session.getNewServerPort() );
+                    if ( session.getAttachments() != null )
+                        json.put("attachments", session.getAttachments() );
+                }
+                
             } catch (Exception exn) {
                 logger.warn("Exception building CloudFeedback JSON object.", exn);
             }
@@ -357,11 +378,11 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.CLEAN);
             break;
         case 222: // known infection
-            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength);
+            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength, nodeSession);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 223: // likely infection
-            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength);
+            feedback = new CloudFeedback(virusState, tokens[2], scanFileLength, nodeSession);
             setResult(new VirusScannerResult(false, tokens[2]));
             break;
         case 225: // password protected file
