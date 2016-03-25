@@ -228,7 +228,6 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 logger.warn("Exception building CloudFeedback JSON object.", exn);
             }
 
-            logger.warn("XXXX " + json.toString());
             feedback.append(json.toString());
 
             logger.debug("CloudFeedback thread has started for: " + feedback.toString());
