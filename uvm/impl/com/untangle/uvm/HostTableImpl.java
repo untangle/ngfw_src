@@ -712,12 +712,14 @@ public class HostTableImpl implements HostTable
                             
                             logger.debug("HostTable Reverse lookup hostname = " + hostname);
                             entry.setHostname( hostname );
+                        } catch (java.net.UnknownHostException e ) {
+                            //do nothing
                         } catch (Exception e) {
                             logger.debug("Exception in reverse lookup",e);
                         }
                     }
                 } catch (Exception e) {
-                    logger.warn("Exception while cleaning host table",e);
+                    logger.warn("Exception while doing reverse lookups:",e);
                 }
             }
         }
