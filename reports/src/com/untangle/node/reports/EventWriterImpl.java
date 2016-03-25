@@ -346,8 +346,16 @@ public class EventWriterImpl implements Runnable
             
             try {
                 event.compileStatements( this.dbConnection, statementCache );
+            } catch ( java.sql.BatchUpdateException e) {
+                logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString(), e);
+                if ( e.getNextException() != null )
+                    logger.warn("Next Exception: ", e.getNextException());
+                if ( e.getCause() != null )
+                    logger.warn("Cause: ", e.getCause());
             } catch (Exception e) {
                 logger.warn("Failed SQL query(s) for event \"" + event.getClass() + "\" object: \"" + event.toJSONString(), e);
+                if ( e.getCause() != null )
+                    logger.warn("Cause: ", e.getCause());
             }
 
             i.remove();
