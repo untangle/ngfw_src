@@ -27,7 +27,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
 {
     private static final Logger logger = Logger.getLogger(HttpUnparserEventHandler.class);
 
-    private static final String STATE_KEY = "HTTP-unparser-state";
+    private static final String STATE_KEY = "http-unparser-state";
     
     private static final byte[] LAST_CHUNK = "0\r\n\r\n".getBytes();
     private static final byte[] CRLF = "\r\n".getBytes();
@@ -371,11 +371,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     @SuppressWarnings("unchecked")
     void queueRequest( NodeTCPSession session, RequestLineToken request )
     {
-        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "HTTP-request-queue" );
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
 
         if ( requests == null ) {
             requests = new LinkedList<RequestLineToken>();
-            session.globalAttach( "HTTP-request-queue", requests );
+            session.globalAttach( "http-request-queue", requests );
         }
 
         requests.add(request);

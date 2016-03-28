@@ -32,7 +32,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String SESSION_STATE_KEY = "HTTP-session-state";
+    private static final String SESSION_STATE_KEY = "http-session-state";
 
     protected enum ClientState {
         REQ_START_STATE,

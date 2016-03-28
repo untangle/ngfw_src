@@ -33,7 +33,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 public class HttpParserEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(HttpParserEventHandler.class);
-    private static final String STATE_KEY = "HTTP-parser-state";
+    private static final String STATE_KEY = "http-parser-state";
 
     private static final byte SP = ' ';
     private static final byte HT = '\t';
@@ -1361,7 +1361,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     @SuppressWarnings("unchecked")
     RequestLineToken dequeueRequest( NodeTCPSession session, int statusCode )
     {
-        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "HTTP-request-queue" );
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
 
         if ( requests != null && requests.size() > 0 ) {
             return requests.remove(0);
