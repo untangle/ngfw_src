@@ -19,7 +19,7 @@
     <script type="text/javascript" src="/highcharts/highcharts-3d.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/solid-gauge.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/no-data-to-display.js?s=${buildStamp}"></script>
-    <!--<script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>-->
+    <script type="text/javascript" src="/highcharts/drilldown.js?s=${buildStamp}"></script>
     
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>

@@ -928,17 +928,17 @@ Ext.define('Ung.dashboard.ReportEntry', {
             this.chartData = result.list;
 
             if (!this.chart || this.chart.series.length === 0) {
-                switch (this.entry.type) {
-                case 'TIME_GRAPH':
-                case 'TIME_GRAPH_DYNAMIC':
+                if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
                     this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
-                    break;
-                default:
-                    this.entry.chartType = 'pie';
+                } else {
                     this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
                 }
             } else {
-                Ung.charts.setSeries(this.entry, result.list, this.chart);
+                if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                    Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+                } else {
+                    Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+                }
             }
 
             //console.log(this.chart.series[0].data);

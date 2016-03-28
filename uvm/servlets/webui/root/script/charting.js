@@ -454,8 +454,77 @@ Ext.define('Ung.charts', {
                     }
                 }
             },
-            series: this.setSeries(entry, data, null)
+            series: this.setTimeSeries(entry, data, null)
         });
+    },
+
+    /**
+     * Creates or updates the Time Series chart data
+     * @param {Object} entry - the Report entry object
+     * @param {Object} data  - the data used for the series
+     * @param {Object} chart - the chart for which data is updated; is null when creating the chart
+     * @returns {Array}      - the series array
+     */
+    setTimeSeries: function (entry, data, chart) {
+        var i, j, _data, _seriesOptions = [];
+
+        if (entry.type === 'TIME_GRAPH_DYNAMIC') {
+            entry.timeDataColumns = [];
+            var column;
+            for (column in data[data.length - 1]) {
+                if (data[data.length - 1].hasOwnProperty(column) && column !== 'time_trunc') {
+                    entry.timeDataColumns.push(column);
+                }
+            }
+        }
+
+        if (entry.timeDataColumns.length === 0) {
+            _seriesOptions[0] = {
+                data: []
+            };
+        }
+
+        for (i = 0; i < entry.timeDataColumns.length; i += 1) {
+            // special case series naming for interface usage
+            // adding 'id' to refeer to the actual data properties
+            // TODO: check other special cases
+            if (entry.seriesRenderer === 'interface') {
+                _seriesOptions[i] = {
+                    id: entry.timeDataColumns[i],
+                    name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] ',
+                    grouping: entry.columnOverlapped ? false : true,
+                    pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
+                };
+            } else {
+                _seriesOptions[i] = {
+                    id: entry.timeDataColumns[i].split(' ').splice(-1)[0],
+                    name: entry.timeDataColumns[i].split(' ').splice(-1)[0],
+                    grouping: entry.columnOverlapped ? false : true,
+                    pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
+                };
+            }
+
+            _data = [];
+            for (j = 0; j < data.length; j += 1) {
+                _data.push([
+                    data[j].time_trunc.time,
+                    data[j][_seriesOptions[i].id] ? Math.floor(data[j][_seriesOptions[i].id]) : (this.generateRandomData ? Math.floor(Math.random() * 120) : 0)
+                ]);
+            }
+            if (!chart) {
+                _seriesOptions[i].data = _data;
+                //_seriesOptions[i].data = []; // test for no data
+            } else {
+                chart.series[i].setData(_data, false, true);
+            }
+        }
+
+        if (!chart) {
+            return _seriesOptions;
+        }
+
+        chart.redraw();
+
     },
 
     /**
@@ -469,6 +538,7 @@ Ext.define('Ung.charts', {
      */
     categoriesChart: function (entry, data, container, forDashboard) {
         var seriesName = entry.seriesRenderer || entry.pieGroupColumn,
+            that = this,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
         // apply gradient colors for the Pie chart
@@ -494,6 +564,7 @@ Ext.define('Ung.charts', {
                 renderTo: container,
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 backgroundColor: 'transparent',
+                animation: false,
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
@@ -503,6 +574,25 @@ Ext.define('Ung.charts', {
                     alpha: entry.chartType === 'pie' ? 45 : 20,
                     beta: 0,
                     depth: entry.chartType === 'pie' ? 0 : 50
+                },
+                events: {
+                    drilldown: function (e) {
+                        this.isDrillDown = true;
+
+                        var i, _ddData = [];
+                        for (i = entry.ddBreakPoint; i < entry.data.length; i += 1) {
+                            _ddData.push({
+                                name: entry.data[i][entry.pieGroupColumn],
+                                y: entry.data[i].value
+                            });
+                        }
+                        this.addSeriesAsDrilldown(e.point, {name: 'sessions', data: _ddData});
+                        //that.setCategoriesSeries(entry, data, this);
+                    },
+                    drillup: function (e) {
+                        this.isDrillDown = false;
+                        that.setCategoriesSeries(entry, data, this);
+                    }
                 }
             },
             title: !forDashboard ? {
@@ -557,7 +647,7 @@ Ext.define('Ung.charts', {
             },
             tooltip: {
                 headerFormat: '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ' {point.key}</span><br/>',
-                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? '({point.percentage:.1f}%)' : '')
+                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percentage:.1f}%)' : '')
             },
             plotOptions: {
                 pie: {
@@ -571,7 +661,10 @@ Ext.define('Ung.charts', {
                         enabled: true,
                         distance: 5,
                         padding: 0,
-                        format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
+                        //format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
+                        formatter: function () {
+                            return '<b>' + this.point.y + '</b> (' + this.point.percentage.toFixed(1) + '%)';
+                        },
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
                     }
                 },
@@ -620,101 +713,104 @@ Ext.define('Ung.charts', {
                 symbolWidth: 8,
                 symbolRadius: 4
             },
-            series: this.setSeries(entry, data, null)
+            series: this.setCategoriesSeries(entry, data, null),
+            drilldown: {
+                drillUpButton: {
+                    position: {
+                        align: 'left'
+                    },
+                    relativeTo: 'spacingBox'
+                }
+            }
+
         });
     },
 
     /**
-     * Creates or updates the chart series with data
+     * Creates or updates the Categories chart data
      * @param {Object} entry - the Report entry object
      * @param {Object} data  - the data used for the series
      * @param {Object} chart - the chart for which data is updated; is null when creating the chart
      * @returns {Array}      - the series array
      */
-    setSeries: function (entry, data, chart) {
-        var i, j, _data, _seriesOptions = [];
+    setCategoriesSeries: function (entry, data, chart) {
+        // TODO: Pie percentage not correct inside DrillDown
 
-        if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
-            // build time data columns for TIME_GRAPH_DYNAMIC case
-            if (entry.type === 'TIME_GRAPH_DYNAMIC') {
-                entry.timeDataColumns = [];
-                var column;
-                for (column in data[data.length - 1]) {
-                    if (data[data.length - 1].hasOwnProperty(column) && column !== 'time_trunc') {
-                        entry.timeDataColumns.push(column);
-                    }
-                }
+        var i, _otherCumulateVal = 0, _mainData = [], _drillDownData = [], _total = 0;
+
+        if (this.generateRandomData) {
+            data = [];
+            for (i = 0; i < Math.floor(Math.random() * 12) + 5; i += 1) {
+                data.push({
+                    name: 'random',
+                    value: Math.floor(Math.random() * 100) + 1
+                });
             }
 
-            if (entry.timeDataColumns.length === 0) {
-                _seriesOptions[0] = {
-                    data: []
-                };
-            }
-
-            for (i = 0; i < entry.timeDataColumns.length; i += 1) {
-                // special case series naming for interface usage
-                // adding 'id' to refeer to the actual data properties
-                // TODO: check other special cases
-                if (entry.seriesRenderer === 'interface') {
-                    _seriesOptions[i] = {
-                        id: entry.timeDataColumns[i],
-                        name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] ',
-                        grouping: entry.columnOverlapped ? false : true,
-                        pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
-                    };
-                } else {
-                    _seriesOptions[i] = {
-                        id: entry.timeDataColumns[i].split(' ').splice(-1)[0],
-                        name: entry.timeDataColumns[i].split(' ').splice(-1)[0],
-                        grouping: entry.columnOverlapped ? false : true,
-                        pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
-                    };
-                }
-
-                _data = [];
-                for (j = 0; j < data.length; j += 1) {
-                    _data.push([
-                        data[j].time_trunc.time,
-                        data[j][_seriesOptions[i].id] ? Math.floor(data[j][_seriesOptions[i].id]) : (this.generateRandomData ? Math.floor(Math.random() * 120) : 0)
-                    ]);
-                }
-                if (!chart) {
-                    _seriesOptions[i].data = _data;
-                    //_seriesOptions[i].data = []; // test for no data
-                } else {
-                    chart.series[i].setData(_data, false, true);
-                }
-            }
-
+            // sort descending by value
+            data.sort(function (d1, d2) {
+                return d2.value - d1.value;
+            });
         }
 
-        if (entry.type === 'PIE_GRAPH') {
-            _data = [];
-            for (i = 0; i < data.length; i += 1) {
-                _data.push({
+        // calculate total
+        for (i = 0; i < data.length; i += 1) {
+            _total += data[i].value;
+        }
+
+        // calculate percentages to use in drilldown
+        for (i = 0; i < data.length; i += 1) {
+            data[i].percentage = parseFloat((data[i].value * 100 / _total).toFixed(1));
+        }
+
+        // store data inside entry for drilldown usage
+        entry.data = data;
+
+        entry.ddBreakPoint = null;
+        // find drilldown breakpoint under 15%
+        for (i = 0; i < data.length; i += 1) {
+            if (data[i].percentage < 15 && !entry.ddBreakPoint) {
+                entry.ddBreakPoint = i;
+            }
+        }
+
+        var _mainSeries = [{
+            name: entry.units
+        }];
+
+        for (i = 0; i < data.length; i += 1) {
+            if (i < entry.ddBreakPoint) {
+                _mainData.push({
+                    name: data[i][entry.pieGroupColumn],
+                    y: data[i].value
+                });
+            } else {
+                _otherCumulateVal += data[i].value;
+                _drillDownData.push({
                     name: data[i][entry.pieGroupColumn],
                     y: data[i].value
                 });
             }
-            if (!chart) {
-                _seriesOptions[0] = {
-                    name: entry.units,
-                    data: _data
-                };
-                //_seriesOptions[0].data = []; // test for no data
-            } else {
-                chart.series[0].setData(_data, false, true);
-            }
         }
+
+        _mainData.push({
+            name: 'other',
+            y: _otherCumulateVal,
+            drilldown: true
+        });
 
         if (!chart) {
-            return _seriesOptions;
+            _mainSeries[0].data = _mainData;
+            return _mainSeries;
         }
 
-        chart.redraw();
-
+        if (!chart.isDrillDown) {
+            chart.series[0].setData(_mainData, true, true);
+        } else {
+            chart.series[0].setData(_drillDownData, true, true);
+        }
     },
+
 
     /**
      * Updates the Series type for the TimeSeries charts
@@ -747,7 +843,7 @@ Ext.define('Ung.charts', {
      * TODO: WIP on setting correct range buttons
      */
     setRangeButtons: function (data) {
-        if (!data[data.length - 1].time_trunc.time) {
+        if (!data || !data[data.length - 1].time_trunc) {
             return false;
         }
 

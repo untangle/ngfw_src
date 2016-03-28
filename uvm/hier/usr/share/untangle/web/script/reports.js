@@ -800,7 +800,14 @@ Ext.define('Ung.panel.Reports', {
             this.setLoading(false);
             if(Ung.Util.handleException(exception)) return;
             this.chartData = result.list;
-            Ung.charts.setSeries(this.entry, result.list, this.chart);
+
+            if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+            }
+            else {
+                Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+            } 
+                
             this.loadReportData(result.list);
             if(this!=null && this.rendered && this.autoRefreshEnabled) {
                 Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
