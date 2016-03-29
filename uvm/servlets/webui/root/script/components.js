@@ -1532,70 +1532,14 @@ Ext.define('Ung.panel.Status', {
                 });
             }
             if(this.hasChart) {
-                var chartDataLength = 30;
-                var chartData = [];
-                for(i=0; i<chartDataLength; i++) {
-                    chartData.push({time: i, sessions: 0});
-                }
-
-                var chart = Ext.create({
-                    xtype: 'cartesian',
-                    name: 'sessionsChart',
-                    border: false,
-                    chartDataLength: chartDataLength,
-                    chartData: chartData,
-                    currentSessions: 0,
-                    insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
-                    width: 300,
-                    height: 130,
-                    animation: false,
-                    theme: 'green-gradients',
-                    store: Ext.create('Ext.data.JsonStore', {
-                        fields: ['time', 'sessions'],
-                        data: chartData
-                    }),
-                    axes: [{
-                        type: 'numeric',
-                        position: 'left',
-                        fields: ['sessions'],
-                        minimum: 0,
-                        majorTickSteps: 0,
-                        minorTickSteps: 3
-                    }],
-                    series: [{
-                        type: 'line',
-                        axis: 'left',
-                        showMarkers: false,
-                        fill: true,
-                        xField: 'time',
-                        yField: 'sessions',
-                        style: {
-                            lineWidth: 2
-                        },
-                        tooltip: {
-                            trackMouse: true,
-                            style: 'background: #fff',
-                            dismissDelay: 2000,
-                            renderer: function(tooltip, record, item) {
-                                tooltip.setHtml(
-                                    i18n._("Session History:") + record.get('sessions') + '<br/>' +
-                                    i18n._("Current Sessions:") + me.chart.currentSessions + '<br/>' +
-                                    i18n._("Click chart to open Sesion Viewer for") + " " + me.displayName
-                                );
-                            }
-                        }
-                    }],
-                    listeners: {
-                        afterrender: function(chart) {
-                            chart.getEl().on("click", function(e) { 
-                                Ung.Main.showNodeSessions( me.nodeId ); 
-                            }, this);
-                        }
-                    }
-                });
                 this.items.push({
                     title: i18n._('Sessions'),
-                    items: chart
+                    items: [{
+                        xtype: 'container',
+                        width: 300,
+                        height: 130,
+                        name: 'sessionsChart'
+                    }]
                 });
             }
             this.items.push({
@@ -1622,7 +1566,7 @@ Ext.define('Ung.panel.Status', {
         if(this.hasMetrics) {
             this.metricsSection = this.down("fieldset[name=metrics]");
             if(this.hasChart) {
-                this.chart = this.down("cartesian[name=sessionsChart]");
+                this.chart = Ung.charts.appStatusChart(this.down("container[name=sessionsChart]").getEl().dom);
             }
         }
     },
@@ -1676,19 +1620,10 @@ Ext.define('Ung.panel.Status', {
                     metricField.setValue(metric.value);
                 }
                 if(this.hasChart && metric.name=="live-sessions") {
-                    chart = this.chart;
-                    reloadChart = chart.chartData[0].sessions != 0;
-                    for(j=0;j<chart.chartData.length-1;j++) {
-                        chart.chartData[j].sessions=chart.chartData[j+1].sessions;
-                        reloadChart = (reloadChart || (chart.chartData[j].sessions != 0));
-                    }
-                    chart.currentSessions = metric.value;
-                    reloadChart = (reloadChart || (chart.currentSessions!=0));
-                    chart.chartData[chart.chartData.length-1].sessions=chart.currentSessions;
-
-                    if(reloadChart) {
-                        chart.store.loadData(chart.chartData);
-                    }
+                    this.chart.series[0].addPoint({
+                        x: (new Date()).getTime(),
+                        y: metric.value
+                    }, true, true);
                 }
             }
         }

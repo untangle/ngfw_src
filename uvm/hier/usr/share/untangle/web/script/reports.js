@@ -1,5 +1,5 @@
 /*global
- Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, window, document, Highcharts
+ Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, window, document, Highcharts, testMode
  */
 
 Ext.define('Ung.panel.Reports', {
@@ -168,10 +168,10 @@ Ext.define('Ung.panel.Reports', {
                         initialLabel:  i18n._('One day ago'),
                         width: 132,
                         tooltip: i18n._('Select Start date and time'),
-                        handler: Ext.bind(function(button) {
+                        handler: Ext.bind(function (button) {
                             this.startDateWindow.show();
                         }, this)
-                    },{
+                    }, {
                         xtype: 'tbtext',
                         text: '-'
                     }, {
@@ -181,7 +181,7 @@ Ext.define('Ung.panel.Reports', {
                         initialLabel:  i18n._('Present'),
                         width: 132,
                         tooltip: i18n._('Select End date and time'),
-                        handler: Ext.bind(function(button) {
+                        handler: Ext.bind(function (button) {
                             this.endDateWindow.show();
                         }, this)
                     }, {
@@ -190,7 +190,7 @@ Ext.define('Ung.panel.Reports', {
                         name: "refresh",
                         tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
                         iconCls: 'icon-refresh',
-                        handler:function () {
+                        handler: function () {
                             this.refreshHandler();
                         },
                         scope: this
@@ -200,25 +200,25 @@ Ext.define('Ung.panel.Reports', {
                         text: i18n._('Auto Refresh'),
                         enableToggle: true,
                         pressed: false,
-                        tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'),this.autoRefreshInterval),
+                        tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'), this.autoRefreshInterval),
                         iconCls: 'icon-autorefresh',
-                        handler: Ext.bind(function(button) {
-                            if(button.pressed) {
+                        handler: Ext.bind(function (button) {
+                            if (button.pressed) {
                                 this.startAutoRefresh();
                             } else {
                                 this.stopAutoRefresh();
                             }
                         }, this)
-                    },{
+                    }, {
                         text: i18n._('Reset View'),
                         name: "resetView",
                         hidden: true,
                         tooltip: i18n._('Restore default columns positions, widths and visibility'),
                         handler: Ext.bind(function () {
-                            if(!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
+                            if (!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
                                 return;
                             }
-                            var gridEvents = this.down("grid[name=gridEvents]"); 
+                            var gridEvents = this.down("grid[name=gridEvents]");
                             Ext.state.Manager.clear(gridEvents.stateId);
                             gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
                         }, this)
@@ -268,23 +268,23 @@ Ext.define('Ung.panel.Reports', {
             }]
         }];
 
-        if(this.hasEntriesSection) {
+        if (this.hasEntriesSection) {
             this.items.push(this.buildEntriesSection());
         }
 
         this.callParent(arguments);
-        
+
         this.cardsContainer = this.down("container[name=cardsContainer]");
-        
+
         this.chartContainer = this.down("container[name=chartContainer]");
         this.reportDataGrid = this.down("grid[name=reportDataGrid]");
 
         this.gridEvents = this.down("grid[name=gridEvents]");
-        this.searchField=this.down('textfield[name=searchField]');
+        this.searchField = this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.limitSelector = this.down("combo[name=limitSelector]");
         this.resetView = this.down("button[name=resetView]");
-        
+
         this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
             title: i18n._('Start date and time'),
             dateTimeEmptyText: i18n._('start date and time'),
@@ -298,10 +298,10 @@ Ext.define('Ung.panel.Reports', {
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
 
-        this.pieLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this slice');
-        this.cartesianLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this series');
-        
-        if(this.category) {
+        //this.pieLegendHint = "<br/>" + i18n._('Hint: Click this label on the legend to hide this slice');
+        //this.cartesianLegendHint = "<br/>" + i18n._('Hint: Click this label on the legend to hide this series');
+
+        if (this.category) {
             this.loadEntries();
         }
     },
@@ -313,9 +313,9 @@ Ext.define('Ung.panel.Reports', {
             width: 250,
             split: true,
             collapsible: true,
-            collapsed: Ung.Main.viewport.getWidth()<800,
+            collapsed: Ung.Main.viewport.getWidth() < 800,
             floatable: true,
-            items:[{
+            items: [{
                 name: 'reportEntriesGrid',
                 title: i18n._("Select Report"),
                 xtype: 'grid',
@@ -331,10 +331,10 @@ Ext.define('Ung.panel.Reports', {
                 columns: [{
                     dataIndex: 'title',
                     flex: 1,
-                    renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
+                    renderer: function (value, metaData, record, rowIdx, colIdx, store) {
                         var description = record.get("description");
-                        if(description) {
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._(description) ) + '"';
+                        if (description) {
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(i18n._(description)) + '"';
                         }
                         return i18n._(value);
                     }
@@ -342,7 +342,7 @@ Ext.define('Ung.panel.Reports', {
                 selModel: {
                     selType: 'rowmodel',
                     listeners: {
-                        select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
+                        select: Ext.bind(function (rowModel, record, rowIndex, eOpts) {
                             this.loadReportEntry(Ext.clone(record.getData()));
                             this.eventEntriesGrid.getSelectionModel().deselectAll();
                         }, this)
@@ -364,10 +364,10 @@ Ext.define('Ung.panel.Reports', {
                 columns: [{
                     dataIndex: 'title',
                     flex: 1,
-                    renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
+                    renderer: function (value, metaData, record, rowIdx, colIdx, store) {
                         var description = record.get("description");
-                        if(description) {
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._(description) ) + '"';
+                        if (description) {
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(i18n._(description)) + '"';
                         }
                         return i18n._(value);
                     }
@@ -375,7 +375,7 @@ Ext.define('Ung.panel.Reports', {
                 selModel: {
                     selType: 'rowmodel',
                     listeners: {
-                        select: Ext.bind(function( rowModel, record, rowIndex, eOpts ) {
+                        select: Ext.bind(function (rowModel, record, rowIndex, eOpts) {
                             this.loadEventEntry(Ext.clone(record.getData()));
                             this.reportEntriesGrid.getSelectionModel().deselectAll();
                         }, this)
@@ -386,73 +386,82 @@ Ext.define('Ung.panel.Reports', {
         return entriesSection;
     },
     //initialEntry obj: {type:["report"|"event"], entryId: uniqueId}
-    setCategory: function(category, initialEntry) {
+    setCategory: function (category, initialEntry) {
         this.category = category;
         this.cardsContainer.setActiveItem("pleaseSelectEntryContrainer");
         this.reportDataGrid.hide();
         this.loadEntries(initialEntry);
     },
-    loadEntries: function(initialEntry) {
-        this.loadReportEntries(initialEntry && initialEntry.type=="report"?initialEntry.entryId: null);
-        this.loadEventEntries(initialEntry && initialEntry.type=="event"?initialEntry.entryId: null);
+    loadEntries: function (initialEntry) {
+        this.loadReportEntries(initialEntry && initialEntry.type == 'report' ? initialEntry.entryId : null);
+        this.loadEventEntries(initialEntry && initialEntry.type == 'event' ? initialEntry.entryId : null);
     },
-    loadReportEntries: function(initialEntryId) {
-        if(!this.reportEntriesGrid) {
+    loadReportEntries: function (initialEntryId) {
+        if (!this.reportEntriesGrid) {
             this.reportEntriesGrid = this.down("grid[name=reportEntriesGrid]");
         }
-        rpc.reportsManager.getReportEntries(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            if(!this.getEl()) return;
+        rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
+            var i;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (!this.getEl()) {
+                return;
+            }
             var reportEntries = [];
             var entry;
-            for(var i=0; i<result.list.length; i++) {
+            for (i = 0; i < result.list.length; i += 1) {
                 entry = result.list[i];
-                if(entry.enabled) {
+                if (entry.enabled) {
                     reportEntries.push(entry);
                 }
             }
             this.reportEntriesGrid.getStore().loadData(reportEntries);
             this.reportEntriesGrid.setHidden(reportEntries.length == 0);
-            if(initialEntryId) {
-                var record = this.reportEntriesGrid.getStore().findRecord("uniqueId", initialEntryId);
-                if(record) {
+            if (initialEntryId) {
+                var record = this.reportEntriesGrid.getStore().findRecord('uniqueId', initialEntryId);
+                if (record) {
                     this.reportEntriesGrid.getSelectionModel().select(record);
                 }
             }
         }, this), this.category);
     },
-    loadEventEntries: function(initialEntryId) {
-        if(!this.eventEntriesGrid) {
+    loadEventEntries: function (initialEntryId) {
+        if (!this.eventEntriesGrid) {
             this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
         }
-        rpc.reportsManager.getEventEntries(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            if(!this.getEl()) return;
+        rpc.reportsManager.getEventEntries(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (!this.getEl()) {
+                return;
+            }
             this.eventEntriesGrid.getStore().loadData(result.list);
             this.eventEntriesGrid.setHidden(result.list.length == 0);
-            if(initialEntryId) {
-                var record = this.eventEntriesGrid.getStore().findRecord("uniqueId", initialEntryId);
-                if(record) {
+            if (initialEntryId) {
+                var record = this.eventEntriesGrid.getStore().findRecord('uniqueId', initialEntryId);
+                if (record) {
                     this.eventEntriesGrid.getSelectionModel().select(record);
                 }
             }
         }, this), this.category);
     },
-    
-    loadReportData: function(data) {
-        var i, column;
-        if(!this.entry) {
+
+    loadReportData: function (data) {
+        var i, column, infos, reportData;
+        if (!this.entry) {
             return;
         }
 
         if (this.entry.type == 'TEXT') {
-            var infos=[], reportData=[];
-
-            if(data.length>0 && this.entry.textColumns!=null) {
-                var textColumns=[], value;
-                for(i=0; i<this.entry.textColumns.length; i++) {
-                    column = this.entry.textColumns[i].split(" ").splice(-1)[0];
-                    value = Ext.isEmpty(data[0][column])? 0 : data[0][column];
+            infos = [];
+            reportData = [];
+            if (data.length > 0 && this.entry.textColumns != null) {
+                var value;
+                for (i = 0; i < this.entry.textColumns.length; i += 1) {
+                    column = this.entry.textColumns[i].split(' ').splice(-1)[0];
+                    value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
                     infos.push(value);
                     reportData.push({data: column, value: value});
                 }
@@ -468,10 +477,10 @@ Ext.define('Ung.panel.Reports', {
             });
         }
         // set data for the datagrid
-        this.reportDataGrid.getStore().loadData(reportData ? reportData : data);
+        this.reportDataGrid.getStore().loadData(reportData || data);
 
     },
-    buildReportEntry: function(entry) {
+    buildReportEntry: function (entry) {
         this.entry = entry;
         this.cardsContainer.setActiveItem("chartContainer");
         this.cardsContainer.remove(this.down('toolbar[name=chart-options]'));
@@ -479,12 +488,11 @@ Ext.define('Ung.panel.Reports', {
         this.reportDataGrid.show();
         this.limitSelector.hide();
         this.resetView.hide();
-        
-        this.chartContainer.removeAll();
-        
-        var i, column;
 
-        var data = [];
+        this.chartContainer.removeAll();
+
+        var i, column;
+        var timeStyleButtons = [], timeStyle, timeStyles;
         var tbar = [{
             xtype: 'button',
             text: i18n._('Customize'),
@@ -492,17 +500,17 @@ Ext.define('Ung.panel.Reports', {
             name: "edit",
             tooltip: i18n._('Advanced report customization'),
             iconCls: 'icon-edit',
-            handler:function () {
+            handler: function () {
                 this.customizeReport();
             },
             scope: this
-        }, '->' , {
+        }, '->', {
             xtype: 'button',
             text: i18n._('View Events'),
             name: "edit",
             tooltip: i18n._('View events for this report'),
             iconCls: 'icon-edit',
-            handler:Ext.bind(this.viewEventsForReport, this)
+            handler: Ext.bind(this.viewEventsForReport, this)
         }, {
             xtype: 'button',
             iconCls: 'icon-export',
@@ -512,35 +520,35 @@ Ext.define('Ung.panel.Reports', {
 
         this.reportDataGrid.getStore().loadData([]);
 
-        if(entry.type == 'TEXT') {
+        if (entry.type == 'TEXT') {
             this.reportDataGrid.setColumns([{
                 dataIndex: 'data',
                 header: i18n._("data"),
                 width: 100,
                 flex: 1
-            },{
+            }, {
                 dataIndex: 'value',
                 header: i18n._("value"),
                 width: 100
             }]);
-        } else if(entry.type == 'PIE_GRAPH') {
+        } else if (entry.type == 'PIE_GRAPH') {
             this.reportDataGrid.setColumns([{
                 dataIndex: entry.pieGroupColumn,
                 header: entry.pieGroupColumn,
                 width: 100,
                 flex: 1
-            },{
+            }, {
                 dataIndex: 'value',
                 header: i18n._("value"),
                 width: 100
-            },{
+            }, {
                 xtype: 'actioncolumn',
                 menuDisabled: true,
                 width: 20,
                 items: [{
                     iconCls: 'icon-row icon-filter',
                     tooltip: i18n._('Add Condition'),
-                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
                         this.buildWindowAddCondition();
                         var data = {
                             column: entry.pieGroupColumn,
@@ -552,7 +560,8 @@ Ext.define('Ung.panel.Reports', {
                 }]
             }]);
 
-            var timeStyleButtons = [], timeStyle, timeStyles = [
+            timeStyleButtons = [];
+            timeStyles = [
                 { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
                 { type: 'pie', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie") },
                 { type: 'pie', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut") },
@@ -561,7 +570,7 @@ Ext.define('Ung.panel.Reports', {
                 { type: 'column', is3d: true, iconCls: 'icon-bar-chart', text: i18n._("3D Column") }
             ];
 
-            for(i=0; i<timeStyles.length; i++) {
+            for (i = 0; i < timeStyles.length; i += 1) {
                 timeStyle = timeStyles[i];
                 timeStyleButtons.push({
                     xtype: 'button',
@@ -571,7 +580,7 @@ Ext.define('Ung.panel.Reports', {
                     chartType: timeStyle.type,
                     isDonut: timeStyle.isDonut,
                     is3d: timeStyle.is3d,
-                    handler: Ext.bind(function(button) {
+                    handler: Ext.bind(function (button) {
                         //button.setPressed(true);
                         entry.chartType = button.chartType;
                         entry.isDonut = button.isDonut;
@@ -584,16 +593,16 @@ Ext.define('Ung.panel.Reports', {
             timeStyleButtons.push("-");
             tbar = timeStyleButtons.concat(tbar);
 
-        } else if(entry.type == 'TIME_GRAPH' || entry.type == 'TIME_GRAPH_DYNAMIC') {
-            var zeroFn = function(val) {
-                return (val==null)?0:val;
+        } else if (entry.type == 'TIME_GRAPH' || entry.type == 'TIME_GRAPH_DYNAMIC') {
+            var zeroFn = function (val) {
+                return (val == null) ? 0 : val;
             };
-            var timeFn = function(val) {
-                return (val==null || val.time==null) ? 0 : i18n.timestampFormat(val);
+            var timeFn = function (val) {
+                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
             };
-            var storeFields =[{name: 'time_trunc', convert: timeFn}];
+            var storeFields = [{name: 'time_trunc', convert: timeFn}];
 
-            if(!entry.timeDataColumns) {
+            if (!entry.timeDataColumns) {
                 entry.timeDataColumns = [];
             }
 
@@ -605,12 +614,12 @@ Ext.define('Ung.panel.Reports', {
 
             var seriesRenderer = null, title;
 
-            if(!Ext.isEmpty(entry.seriesRenderer)) {
+            if (!Ext.isEmpty(entry.seriesRenderer)) {
                 seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
             }
 
-            for(i=0; i<entry.timeDataColumns.length; i++) {
-                column = entry.timeDataColumns[i].split(" ").splice(-1)[0];
+            for (i = 0; i < entry.timeDataColumns.length; i += 1) {
+                column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
                 title = seriesRenderer ? seriesRenderer(column) : column;
                 storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
@@ -622,14 +631,15 @@ Ext.define('Ung.panel.Reports', {
 
             this.reportDataGrid.setColumns(reportDataColumns);
 
-            var timeStyleButtons = [], timeStyle, timeStyles = [
+            timeStyleButtons = [];
+            timeStyles = [
                 { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
                 { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
                 { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
                 { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
             ];
 
-            for(i=0; i<timeStyles.length; i++) {
+            for (i = 0; i < timeStyles.length; i += 1) {
                 timeStyle = timeStyles[i];
                 timeStyleButtons.push({
                     xtype: 'button',
@@ -638,14 +648,14 @@ Ext.define('Ung.panel.Reports', {
                     text: timeStyle.text,
                     chartType: timeStyle.type,
                     columnOverlapped: timeStyle.overlapped,
-                    handler: Ext.bind(function(button) {
+                    handler: Ext.bind(function (button) {
                         //entry.chartType = button.chartType;
                         entry.columnOverlapped = button.columnOverlapped;
                         Ung.charts.updateSeriesType(entry, this.chart, button.chartType);
                     }, this)
                 });
             }
-            timeStyleButtons.push("-");
+            timeStyleButtons.push('-');
             tbar = timeStyleButtons.concat(tbar);
 
             this.reportDataGrid.setStore(Ext.create('Ext.data.JsonStore', {
@@ -662,73 +672,75 @@ Ext.define('Ung.panel.Reports', {
             items: tbar
         });
     },
-    loadReportEntry: function(entry) {
+    loadReportEntry: function (entry) {
         this.setLoading(i18n._('Loading report... '));
-        if(this.autoRefreshEnabled) {
+        if (this.autoRefreshEnabled) {
             this.stopAutoRefresh(true);
         }
         this.buildReportEntry(entry);
-        rpc.reportsManager.getDataForReportEntry(Ext.bind(function(result, exception) {
+        rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
             this.setLoading(false);
-            if(Ung.Util.handleException(exception)) return;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.chartData = result.list;
 
             switch (this.entry.type) {
-                case 'TIME_GRAPH':
-                case 'TIME_GRAPH_DYNAMIC':
-                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
-                    break;
-                default:
-                    this.entry.chartType = 'pie';
-                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
+                this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+                break;
+            default:
+                this.entry.chartType = 'pie';
+                this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
             }
 
             this.loadReportData(result.list);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
-    loadEventEntry: function(entry) {
-        var i, col, sortType, config;
+    loadEventEntry: function (entry) {
+        var i, col;
         this.entry = entry;
-        if(this.autoRefreshEnabled) {
+        if (this.autoRefreshEnabled) {
             this.stopAutoRefresh(true);
         }
-        if(!entry.defaultColumns) {
+        if (!entry.defaultColumns) {
             entry.defaultColumns = [];
         }
-        this.cardsContainer.setActiveItem("gridEvents");
+        this.cardsContainer.setActiveItem('gridEvents');
         this.reportDataGrid.hide();
         this.limitSelector.show();
         this.resetView.show();
-        
+
         this.gridEvents.setTitle(entry.title);
-        this.gridEvents.stateId = "eventGrid-" + (entry.category? (entry.category.toLowerCase().replace(" ","_") + "-"):"") + entry.table;
-        
+        this.gridEvents.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
+
         var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
         var state = Ext.state.Manager.get(this.gridEvents.stateId);
-        if(!tableConfig) {
-            console.log("Warning: table '"+entry.table+"' is not defined");
+        if (!tableConfig) {
+            console.log('Warning: table "' + entry.table + '" is not defined');
             tableConfig = {
                 fields: [],
                 columns: []
             };
         } else {
             var columnsNames = {};
-            for(i=0; i< tableConfig.columns.length; i++) {
+            for (i = 0; i < tableConfig.columns.length; i += 1) {
                 col = tableConfig.columns[i].dataIndex;
-                columnsNames[col]=true;
+                columnsNames[col] = true;
                 col = tableConfig.columns[i];
-                if((entry.defaultColumns.length>0) && (entry.defaultColumns.indexOf(col.dataIndex) < 0)) {
+                if ((entry.defaultColumns.length > 0) && (entry.defaultColumns.indexOf(col.dataIndex) < 0)) {
                     col.hidden = true;
                 }
-                if( col.stateId === undefined ){
+                if (col.stateId === undefined) {
                     col.stateId = col.dataIndex;
                 }
             }
-            for(i=0; i<entry.defaultColumns.length; i++) {
+            for (i = 0; i < entry.defaultColumns.length; i += 1) {
                 col = entry.defaultColumns[i];
-                if(!columnsNames[col]) {
-                    console.log("Warning: column '"+col+"' is not defined in the tableConfig for "+entry.table);
+                if (!columnsNames[col]) {
+                    console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
                 }
             }
             this.gridEvents.defaultTableConfig = tableConfig;
@@ -745,7 +757,7 @@ Ext.define('Ung.panel.Reports', {
         });
         this.gridEvents.reconfigure(store, tableConfig.columns);
         state = Ext.state.Manager.get(this.gridEvents.stateId);
-        if(state != null && state.columns != undefined){
+        if (state != null && state.columns != undefined) {
             // Performing a state restore to a dynamic grid is very picky.
             // If you decide to revisit, see the test procedures in
             // https://bugzilla.untangle.com/show_bug.cgi?id=12594
@@ -753,11 +765,11 @@ Ext.define('Ung.panel.Reports', {
             this.gridEvents.getView().getHeaderCt().purgeCache();
             this.gridEvents.applyState(state);
             this.gridEvents.updateLayout();
-            Ext.Array.each(this.gridEvents.getColumns(), function(column, index) {
-                if(column.hidden == true){
+            Ext.Array.each(this.gridEvents.getColumns(), function (column, index) {
+                if (column.hidden == true) {
                     column.setVisible(true);
                     column.setVisible(false);
-                }else{
+                } else {
                     column.setVisible(false);
                     column.setVisible(true);
                 }
@@ -770,141 +782,145 @@ Ext.define('Ung.panel.Reports', {
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
     refreshHandler: function () {
-        if(this.autoRefreshEnabled) {
+        if (this.autoRefreshEnabled) {
             return;
         }
         this.refresheEntry();
     },
-    autoRefresh: function() {
-        if(!this.autoRefreshEnabled) {
+    autoRefresh: function () {
+        if (!this.autoRefreshEnabled) {
             return;
         }
         this.refresheEntry();
     },
-    refresheEntry: function() {
-        if(!this.entry) {
+    refresheEntry: function () {
+        if (!this.entry) {
             return;
         }
-        if(Ung.panel.Reports.isEvent(this.entry)) {
+        if (Ung.panel.Reports.isEvent(this.entry)) {
             this.refreshEvents();
         } else {
             this.refreshReportData();
         }
     },
-    refreshReportData: function() {
-        if(!this.entry) {
+    refreshReportData: function () {
+        if (!this.entry) {
             return;
         }
-        if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Refreshing report... ')); }
-        rpc.reportsManager.getDataForReportEntry(Ext.bind(function(result, exception) {
+        if (!this.autoRefreshEnabled) { this.setLoading(i18n._('Refreshing report... ')); }
+        rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
             this.setLoading(false);
-            if(Ung.Util.handleException(exception)) return;
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             this.chartData = result.list;
 
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
                 Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
-            }
-            else {
+            } else {
                 Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
-            } 
-                
+            }
             this.loadReportData(result.list);
-            if(this!=null && this.rendered && this.autoRefreshEnabled) {
-                Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
+            if (this != null && this.rendered && this.autoRefreshEnabled) {
+                Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval * 1000, this);
             }
         }, this), this.entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
     },
-    refreshEvents: function() {
-        if(!this.entry) {
+    refreshEvents: function () {
+        if (!this.entry) {
             return;
         }
         var limit = this.limitSelector.getValue();
-            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Querying Database...')); }
-            rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function(result, exception) {
-                this.setLoading(false);
-                if(Ung.Util.handleException(exception)) return;
-                this.loadResultSet(result);
-            }, this), this.entry, this.extraConditions, limit, this.startDateWindow.serverDate, this.endDateWindow.serverDate);
+        if (!this.autoRefreshEnabled) { this.setLoading(i18n._('Querying Database...')); }
+        rpc.reportsManager.getEventsForDateRangeResultSet(Ext.bind(function (result, exception) {
+            this.setLoading(false);
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.loadResultSet(result);
+        }, this), this.entry, this.extraConditions, limit, this.startDateWindow.serverDate, this.endDateWindow.serverDate);
     },
     autoRefreshEnabled: false,
-    startAutoRefresh: function(setButton) {
-        if(!this.entry) {
+    startAutoRefresh: function (setButton) {
+        if (!this.entry) {
             this.down('button[name=auto_refresh]').toggle(false);
             return;
         }
 
-        this.autoRefreshEnabled=true;
+        this.autoRefreshEnabled = true;
         this.down('button[name=refresh]').disable();
         this.autoRefresh();
     },
-    stopAutoRefresh: function(setButton) {
-        this.autoRefreshEnabled=false;
-        if(setButton) {
+    stopAutoRefresh: function (setButton) {
+        this.autoRefreshEnabled = false;
+        if (setButton) {
             this.down('button[name=auto_refresh]').toggle(false);
         }
         this.down('button[name=refresh]').enable();
     },
     //Used to get dummy records in testing
-    getTestRecord:function(index, fields) {
-        var rec= {};
-        var property;
-        for (var i=0; i<fields.length ; i++) {
-            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
-            rec[property]=
-                (property=='id')?index+1:
-                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
-                (property.indexOf('_addr') != -1)?Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"/"+Math.floor((Math.random()*32)):
-                (property.indexOf('_port') != -1)?Math.floor((Math.random()*65000)):
-                (property=="spam_blocker_action")?'P':
-            property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
+    getTestRecord: function (index, fields) {
+        var rec = {}, property, i;
+        for (i = 0; i < fields.length; i += 1) {
+            property = (fields[i].mapping != null) ? fields[i].mapping : fields[i].name;
+            rec[property] =
+                (property == 'id') ? index + 1 :
+                        (property == 'time_stamp') ? {javaClass: "java.util.Date", time: (new Date(Math.floor((Math.random() * index * 12345678)))).getTime()} :
+                                (property.indexOf('_addr') != -1) ? Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "/" + Math.floor((Math.random() * 32)) :
+                                        (property.indexOf('_port') != -1) ? Math.floor((Math.random() * 65000)) :
+                                                (property == "spam_blocker_action") ? 'P' :
+                                                        property + "_" + (i * index) + "_" + Math.floor((Math.random() * 10));
         }
         return rec;
     },
-    loadNextChunkCallback: function(result, exception) {
-        if(Ung.Util.handleException(exception)) return;
+    loadNextChunkCallback: function (result, exception) {
+        if (Ung.Util.handleException(exception)) {
+            return;
+        }
         var newEvents = result;
         // If we got results append them to the current events list, and make another call for more
-        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
-            this.events.push.apply( this.events, newEvents.list );
-            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')'); }
+        if (newEvents != null && newEvents.list != null && newEvents.list.length != 0) {
+            this.events.push.apply(this.events, newEvents.list);
+            if (!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')'); }
             this.reader.getNextChunk(Ext.bind(this.loadNextChunkCallback, this), 1000);
             return;
         }
         // If we got here, then we either reached the end of the resultSet or ran out of room display the results
-        if (this.gridEvents!=null && this.gridEvents.getStore() != null) {
+        if (this.gridEvents != null && this.gridEvents.getStore() != null) {
             this.gridEvents.getStore().getProxy().setData(this.events);
             this.gridEvents.getStore().load();
         }
         this.setLoading(false);
-        
-        if(this!=null && this.rendered && this.autoRefreshEnabled) {
-            Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
+
+        if (this != null && this.rendered && this.autoRefreshEnabled) {
+            Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval * 1000, this);
         }
     },
     // Refresh the events list
-    loadResultSet: function(result) {
+    loadResultSet: function (result) {
+        var i;
         this.events = [];
 
-        if( testMode ) {
-            var emptyRec={};
-            var length = Math.floor((Math.random()*5000));
+        if (testMode) {
+            //var emptyRec = {};
+            var length = Math.floor((Math.random() * 5000));
             var fields = this.gridEvents.getStore().getModel().getFields();
-            for(var i=0; i<length; i++) {
+            for (i = 0; i < length; i += 1) {
                 this.events.push(this.getTestRecord(i, fields));
             }
         }
 
         this.reader = result;
-        if(this.reader) {
-            if(!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...')); }
+        if (this.reader) {
+            if (!this.autoRefreshEnabled) { this.setLoading(i18n._('Fetching Events...')); }
             this.reader.getNextChunk(Ext.bind(this.loadNextChunkCallback, this), 1000);
         } else {
             this.loadNextChunkCallback(null);
         }
     },
-    getColumnList: function() {
-        var columns= this.gridEvents.getColumns(), columnList = "";
-        for (var i=0; i<columns.length ; i++) {
+    getColumnList: function () {
+        var columns = this.gridEvents.getColumns(), columnList = '', i;
+        for (i = 0; i < columns.length; i += 1) {
             if (i !== 0) {
                 columnList += ",";
             }
@@ -914,83 +930,83 @@ Ext.define('Ung.panel.Reports', {
         }
         return columnList;
     },
-    exportReportDataHandler: function() {
-        if(!this.entry) {
+    exportReportDataHandler: function () {
+        if (!this.entry) {
             return;
         }
         var processRow = function (row) {
-            var data = [];
-            for (var j = 0; j < row.length; j++) {
-                var innerValue = row[j] == null ? '' : row[j].toString();
+            var data = [], j, innerValue;
+            for (j = 0; j < row.length; j += 1) {
+                innerValue = row[j] == null ? '' : row[j].toString();
                 data.push('"' + innerValue.replace(/"/g, '""') + '"');
             }
             return data.join(",") + '\r\n';
         };
 
-        var records = this.reportDataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
+        var records = this.reportDataGrid.getStore().getRange(), list = [], columns = [], headers = [], i, j, row;
         var gridColumns = this.reportDataGrid.getColumns();
-        for(i=0; i<gridColumns.length;i++) {
-            if(gridColumns[i].initialConfig.dataIndex) {
+        for (i = 0; i < gridColumns.length; i += 1) {
+            if (gridColumns[i].initialConfig.dataIndex) {
                 columns.push(gridColumns[i].initialConfig.dataIndex);
                 headers.push(gridColumns[i].initialConfig.header);
             }
         }
         list.push(processRow(headers));
-        for(i=0; i<records.length;i++) {
+        for (i = 0; i < records.length; i += 1) {
             row = [];
-            for(j=0; j<columns.length;j++) {
+            for (j = 0; j < columns.length; j += 1) {
                 row.push(records[i].get(columns[j]));
             }
             list.push(processRow(row));
         }
-        var content = list.join("");
-        var fileName = this.entry.title.trim().replace(/ /g,"_")+".csv";
+        var content = list.join('');
+        var fileName = this.entry.title.trim().replace(/ /g, '_') + '.csv';
         Ung.Util.download(content, fileName, 'text/csv');
     },
-    downloadChart: function() {
-        if(!this.entry) {
+    downloadChart: function () {
+        if (!this.entry) {
             return;
         }
         var chart = this.chartContainer.down("[name=chart]");
-        if(!chart) {
+        if (!chart) {
             return;
         }
-        var fileName = this.entry.title.trim().replace(/ /g,"_")+".png";
+        var fileName = this.entry.title.trim().replace(/ /g, '_') + '.png';
         Ext.MessageBox.wait(i18n._("Downloading Chart..."), i18n._("Please wait"));
         var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value="imageDownload";
-        downloadForm["arg1"].value=fileName;
-        downloadForm["arg2"].value=chart.getImage().data;
-        downloadForm["arg3"].value="";
-        downloadForm["arg4"].value="";
-        downloadForm["arg5"].value="";
-        downloadForm["arg6"].value="";
+        downloadForm["type"].value = "imageDownload";
+        downloadForm["arg1"].value = fileName;
+        downloadForm["arg2"].value = chart.getImage().data;
+        downloadForm["arg3"].value = "";
+        downloadForm["arg4"].value = "";
+        downloadForm["arg5"].value = "";
+        downloadForm["arg6"].value = "";
         downloadForm.submit();
         Ext.MessageBox.hide();
     },
-    exportEventsHandler: function() {
-        if(!this.entry) {
+    exportEventsHandler: function () {
+        if (!this.entry) {
             return;
         }
         var startDate = this.startDateWindow.serverDate;
         var endDate = this.endDateWindow.serverDate;
-        
+
         Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
-        var name=this.entry.title.trim().replace(/ /g,"_");
+        var name = this.entry.title.trim().replace(/ /g, '_');
         var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value="eventLogExport";
-        downloadForm["arg1"].value=name;
-        downloadForm["arg2"].value=Ext.encode(this.entry);
-        downloadForm["arg3"].value=Ext.encode(this.extraConditions);
-        downloadForm["arg4"].value=this.getColumnList();
-        downloadForm["arg5"].value=startDate?startDate.getTime():-1;
-        downloadForm["arg6"].value=endDate?endDate.getTime():-1;
+        downloadForm["type"].value = "eventLogExport";
+        downloadForm["arg1"].value = name;
+        downloadForm["arg2"].value = Ext.encode(this.entry);
+        downloadForm["arg3"].value = Ext.encode(this.extraConditions);
+        downloadForm["arg4"].value = this.getColumnList();
+        downloadForm["arg5"].value = startDate ? startDate.getTime() : -1;
+        downloadForm["arg6"].value = endDate ? endDate.getTime() : -1;
         downloadForm.submit();
         Ext.MessageBox.hide();
     },
-    buildWindowAddCondition: function() {
+    buildWindowAddCondition: function () {
         var me = this;
-        if(!this.windowAddCondition) {
+        if (!this.windowAddCondition) {
             this.windowAddCondition = Ext.create("Ung.EditWindow", {
                 title: i18n._("Add Condition"),
                 grid: null,
@@ -1027,7 +1043,7 @@ Ext.define('Ung.panel.Reports', {
                             displayField: "name",
                             queryMode: 'local',
                             value: "=",
-                            store: ["=", "!=", ">", "<", ">=", "<=", "like", "not like", "is","is not", "in", "not in"]
+                            store: ["=", "!=", ">", "<", ">=", "<=", "like", "not like", "is", "is not", "in", "not in"]
                         }, {
                             xtype: "textfield",
                             name: "value",
@@ -1036,7 +1052,7 @@ Ext.define('Ung.panel.Reports', {
                         }]
                     }]
                 }],
-                updateAction: function() {
+                updateAction: function () {
                     var data = {
                         column: this.down("[name=column]").getValue(),
                         operator: this.down("[name=operator]").getValue(),
@@ -1046,27 +1062,27 @@ Ext.define('Ung.panel.Reports', {
                     me.extraConditionsPanel.fillCondition(data);
                     this.cancelAction();
                 },
-                setCondition: function(data) {
+                setCondition: function (data) {
                     this.show();
                     this.down("[name=column]").setValue(data.column);
                     this.down("[name=operator]").setValue(data.operator);
                     this.down("[name=value]").setValue(data.value);
                 },
-                isDirty: function() {
+                isDirty: function () {
                     return false;
                 },
-                closeWindow: function() {
+                closeWindow: function () {
                     this.hide();
                 }
             });
             this.subCmps.push(this.windowAddCondition);
         }
     },
-    customizeReport: function() {
-        if(!this.entry) {
+    customizeReport: function () {
+        if (!this.entry) {
             return;
         }
-        if(!this.winReportEditor) {
+        if (!this.winReportEditor) {
             var me = this;
             this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
                 sizeToComponent: this.chartContainer,
@@ -1074,12 +1090,12 @@ Ext.define('Ung.panel.Reports', {
                 forReportCustomization: true,
                 parentCmp: this,
                 grid: {
-                    reconfigure: function(){}
+                    reconfigure: function () {}
                 },
-                isDirty: function() {
+                isDirty: function () {
                     return false;
                 },
-                updateAction: function() {
+                updateAction: function () {
                     Ung.window.ReportEditor.prototype.updateAction.apply(this, arguments);
                     me.entry = this.record.getData();
                     me.loadReportEntry(me.entry);
@@ -1091,11 +1107,11 @@ Ext.define('Ung.panel.Reports', {
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
     },
-    viewEventsForReport: function() {
-        if(!this.entry) {
+    viewEventsForReport: function () {
+        if (!this.entry) {
             return;
         }
-        
+
         var entry = {
             javaClass: "com.untangle.node.reports.EventEntry",
             category: this.entry.category,
@@ -1105,60 +1121,60 @@ Ext.define('Ung.panel.Reports', {
             title: Ext.String.format(i18n._('Events for report: {0}'), this.entry.title)
         };
         this.loadEventEntry(entry);
-        if(this.reportEntriesGrid){
+        if (this.reportEntriesGrid) {
             this.reportEntriesGrid.getSelectionModel().deselectAll();
         }
     },
-    isDirty: function() {
+    isDirty: function () {
         return false;
     },
     listeners: {
         "deactivate": {
-            fn: function() {
-                if(this.autoRefreshEnabled) {
+            fn: function () {
+                if (this.autoRefreshEnabled) {
                     this.stopAutoRefresh(true);
                 }
             }
         }
     },
     statics: {
-        isEvent: function(entry) {
+        isEvent: function (entry) {
             return "com.untangle.node.reports.EventEntry" == entry.javaClass;
         },
-        significantFigures: function(n, sig) {
-            if(isNaN(n)) {
+        significantFigures: function (n, sig) {
+            if (isNaN(n)) {
                 return n;
             }
-            if(n==0) {
+            if (n == 0) {
                 return 0;
             }
-            var isNegative = n<0;
-            if(isNegative) n = -n;
+            var isNegative = n < 0;
+            if (isNegative) { n = -n; }
             var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
             var result =  Math.round(n * mult) / mult;
-            return isNegative? -result : result;
+            return isNegative ? -result : result;
         },
-        renderValue: function(value, entry) {
+        renderValue: function (value, entry) {
             var showValue;
-            if(entry.units == "bytes" || entry.units == "bytes/s") {
+            if (entry.units == "bytes" || entry.units == "bytes/s") {
                 showValue = Ung.Util.bytesRenderer(value, entry.units == "bytes/s");
             } else {
-                showValue = value + (Ext.isEmpty(entry.units)? "" : " " + i18n._(entry.units));
+                showValue = value + (Ext.isEmpty(entry.units) ? "" : " " + i18n._(entry.units));
             }
             return showValue;
         },
-        getColumnRenderer: function(columnName) {
-            if(!this.columnRenderers) {
+        getColumnRenderer: function (columnName) {
+            if (!this.columnRenderers) {
                 this.columnRenderers = {
-                    "policy_id": function(value) {
+                    "policy_id": function (value) {
                         var name = Ung.Main.getPolicyName(value);
-                        if ( name != null )
+                        if (name != null) {
                             return name + " (" + value + ")";
-                        else
-                            return value;
+                        }
+                        return value;
                     },
-                    "protocol": function(value) {
-                        if(!Ung.panel.Reports.protocolMap) {
+                    "protocol": function (value) {
+                        if (!Ung.panel.Reports.protocolMap) {
                             Ung.panel.Reports.protocolMap = {
                                 0: "HOPOPT (0)",
                                 1: "ICMP (1)",
@@ -1300,26 +1316,26 @@ Ext.define('Ung.panel.Reports', {
                                 142: "ROHC (142)"
                             };
                         }
-                        return (value!=null)?Ung.panel.Reports.protocolMap[value] || value.toString():"";
+                        return (value != null) ? Ung.panel.Reports.protocolMap[value] || value.toString() : "";
                     },
-                    "interface": function(value) {
-                        if(!Ung.panel.Reports.interfaceMap) {
-                            var interfacesList = [];
+                    "interface": function (value) {
+                        if (!Ung.panel.Reports.interfaceMap) {
+                            var interfacesList = [], i;
                             try {
                                 interfacesList = rpc.reportsManager.getInterfacesInfo().list;
                             } catch (e) {
                                 Ung.Util.rpcExHandler(e);
                             }
-                            interfacesList.push({ interfaceId: 250, name: "OpenVPN" } ); // 0xfa
-                            interfacesList.push({ interfaceId: 251, name: "L2TP" } ); // 0xfb
-                            interfacesList.push({ interfaceId: 252, name: "Xauth" } ); // 0xfc
-                            interfacesList.push({ interfaceId: 253, name: "GRE" } ); // 0xfd
+                            interfacesList.push({ interfaceId: 250, name: "OpenVPN" }); // 0xfa
+                            interfacesList.push({ interfaceId: 251, name: "L2TP" }); // 0xfb
+                            interfacesList.push({ interfaceId: 252, name: "Xauth" }); // 0xfc
+                            interfacesList.push({ interfaceId: 253, name: "GRE" }); // 0xfd
                             Ung.panel.Reports.interfaceMap = {};
-                            for(var i=0;i<interfacesList.length;i++) {
-                                Ung.panel.Reports.interfaceMap[interfacesList[i].interfaceId]=interfacesList[i].name;
+                            for (i = 0; i < interfacesList.length; i += 1) {
+                                Ung.panel.Reports.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name;
                             }
                         }
-                        return (value!=null) ? Ung.panel.Reports.interfaceMap[value] || value.toString() : "";
+                        return (value != null) ? Ung.panel.Reports.interfaceMap[value] || value.toString() : "";
                     }
                 };
             }
@@ -1337,36 +1353,41 @@ Ext.define("Ung.panel.ExtraConditions", {
     defaultCount: 1,
     autoScroll: true,
     layout: { type: 'vbox'},
-    initComponent: function() {
+    initComponent: function () {
+        var i;
         //this.title = Ext.String.format( i18n._("Conditions: {0}"), i18n._("None"));
-        this.collapsed = Ung.Main.viewport.getHeight()<500;
+        this.collapsed = Ung.Main.viewport.getHeight() < 500;
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
             fields: ["dataIndex", "header"],
             data: []
         });
         this.items = [];
-        for(var i=0; i<this.defaultCount; i++) {
+        for (i = 0; i < this.defaultCount; i += 1) {
             this.items.push(this.generateRow());
         }
         var quickAddMenu = Ext.create('Ext.menu.Menu');
-        var addQuickCondition = Ext.bind(function(item) {
+        var addQuickCondition = Ext.bind(function (item) {
             this.fillCondition({
                 column: item.column,
                 operator: "=",
                 value: item.value
             });
         }, this);
-        rpc.reportsManager.getConditionQuickAddHints(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            if(!this.getEl()) return;
-            var column, hintMenus = [], columnItems, i, text, value, columnRenderer;
-            for(column in result) {
-                var values = result[column];
-                if(values.length > 0) {
+        rpc.reportsManager.getConditionQuickAddHints(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (!this.getEl()) {
+                return;
+            }
+            var column, hintMenus = [], columnItems, i, text, value, columnRenderer, values;
+            for (column in result) {
+                values = result[column];
+                if (values.length > 0) {
                     columnItems = [];
                     columnRenderer = Ung.panel.Reports.getColumnRenderer(column);
-                    for(i=0; i<values.length; i++) {
+                    for (i = 0; i < values.length; i += 1) {
                         columnItems.push({
                             text: Ext.isFunction(columnRenderer) ? columnRenderer(values[i]) : values[i],
                             column: column,
@@ -1383,34 +1404,34 @@ Ext.define("Ung.panel.ExtraConditions", {
                 }
             }
             quickAddMenu.add(hintMenus);
-            
+
         }, this));
         this.tbar = [{
             text: i18n._("Add Condition"),
             tooltip: i18n._('Add New Condition'),
             iconCls: 'icon-add-row',
-            handler: function() {
+            handler: function () {
                 this.addRow();
             },
             scope: this
         }, {
-            text:i18n._('Quick Add'),
+            text: i18n._('Quick Add'),
             iconCls: 'icon-add-row',
             menu: quickAddMenu
         }, '->', {
             text: i18n._("Delete All"),
             tooltip: i18n._('Delete All Conditions'),
             iconCls: 'cancel-icon',
-            handler: function() {
+            handler: function () {
                 this.deleteConditions();
             },
             scope: this
         }];
         this.callParent(arguments);
     },
-    generateRow: function(data) {
-        if(!data) {
-            data = {column: "", operator:"=", value: ""};
+    generateRow: function (data) {
+        if (!data) {
+            data = {column: "", operator: "=", value: ""};
         }
         return {
             xtype: 'container',
@@ -1437,33 +1458,32 @@ Ext.define("Ung.panel.ExtraConditions", {
                     '<ul class="x-list-plain"><tpl for=".">',
                         '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
                     '</tpl></ul>'
-                ),
+                    ),
                 // template for the content inside text field
                 displayTpl: Ext.create('Ext.XTemplate',
                     '<tpl for=".">',
                         '{header} [{dataIndex}]',
                     '</tpl>'
-                ),
+                    ),
                 listeners: {
                     change: {
-                        fn: function(combo, newValue, oldValue, opts) {
+                        fn: function (combo, newValue, oldValue, opts) {
                             this.setConditions(true);
                         },
                         scope: this
                     },
                     blur: {
-                        fn: function(field, e) {
+                        fn: function (field, e) {
                             var skipReload = Ext.isEmpty(field.next("[dataIndex=value]").getValue());
                             this.setConditions(skipReload);
                         },
                         scope: this
                     },
                     specialkey: {
-                        fn: function(field, e) {
+                        fn: function (field, e) {
                             if (e.getKey() == e.ENTER) {
                                 this.setConditions();
                             }
-                            
                         },
                         scope: this
                     }
@@ -1478,10 +1498,10 @@ Ext.define("Ung.panel.ExtraConditions", {
                 queryMode: 'local',
                 value: data.operator,
                 disabled: Ext.isEmpty(data.column),
-                store: ["=", "!=", ">", "<", ">=", "<=", "like", "not like", "is","is not", "in", "not in"],
+                store: ["=", "!=", ">", "<", ">=", "<=", "like", "not like", "is", "is not", "in", "not in"],
                 listeners: {
                     change: {
-                        fn: function(combo, newValue, oldValue, opts) {
+                        fn: function (combo, newValue, oldValue, opts) {
                             var skipReload = Ext.isEmpty(combo.next("[dataIndex=value]").getValue());
                             this.setConditions(skipReload);
                         },
@@ -1497,17 +1517,16 @@ Ext.define("Ung.panel.ExtraConditions", {
                 value: data.value,
                 listeners: {
                     blur: {
-                        fn: function(field, e) {
+                        fn: function (field, e) {
                             this.setConditions();
                         },
                         scope: this
                     },
                     specialkey: {
-                        fn: function(field, e) {
+                        fn: function (field, e) {
                             if (e.getKey() == e.ENTER) {
                                 this.setConditions();
                             }
-                            
                         },
                         scope: this
                     }
@@ -1516,7 +1535,7 @@ Ext.define("Ung.panel.ExtraConditions", {
                 xtype: 'button',
                 name: "delete",
                 text: i18n._("Delete"),
-                handler: Ext.bind(function(button) {
+                handler: Ext.bind(function (button) {
                     var skipReload = Ext.isEmpty(button.prev("[dataIndex=column]").getValue());
                     this.remove(button.up("container"));
                     this.setConditions(skipReload);
@@ -1524,14 +1543,14 @@ Ext.define("Ung.panel.ExtraConditions", {
             }]
         };
     },
-    addRow: function(data) {
-      this.add(this.generateRow(data));
+    addRow: function (data) {
+        this.add(this.generateRow(data));
     },
-    fillCondition: function(data) {
+    fillCondition: function (data) {
         var added = false;
         this.bulkOperation = true;
-        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
-            if(Ext.isEmpty(item.down("[dataIndex=column]").getValue())) {
+        Ext.Array.each(this.query("container[name=condition]"), function (item, index, len) {
+            if (Ext.isEmpty(item.down("[dataIndex=column]").getValue())) {
                 item.down("[dataIndex=column]").setValue(data.column);
                 item.down("[dataIndex=operator]").setValue(data.operator);
                 item.down("[dataIndex=value]").setValue(data.value);
@@ -1539,17 +1558,17 @@ Ext.define("Ung.panel.ExtraConditions", {
                 return false;
             }
         });
-        if(!added) {
+        if (!added) {
             this.addRow(data);
         }
         this.bulkOperation = false;
         this.setConditions();
     },
-    deleteConditions: function() {
+    deleteConditions: function () {
         var me = this;
         this.bulkOperation = true;
-        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
-            if(index < me.defaultCount) {
+        Ext.Array.each(this.query("container[name=condition]"), function (item, index, len) {
+            if (index < me.defaultCount) {
                 item.down("[dataIndex=column]").setValue("");
                 item.down("[dataIndex=operator]").setValue("=");
                 item.down("[dataIndex=value]").setValue("");
@@ -1558,20 +1577,20 @@ Ext.define("Ung.panel.ExtraConditions", {
             }
         });
         this.bulkOperation = false;
-        var skipReload = !this.parentPanel.extraConditions || this.parentPanel.extraConditions.length==0;
+        var skipReload = !this.parentPanel.extraConditions || this.parentPanel.extraConditions.length == 0;
         this.setConditions(skipReload);
     },
-    setConditions: function(skipReload) {
-        if(this.bulkOperation) {
+    setConditions: function (skipReload) {
+        if (this.bulkOperation) {
             return;
         }
         var conditions = [], columnValue, operator, value, isEmptyColumn;
-        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+        Ext.Array.each(this.query("container[name=condition]"), function (item, index, len) {
             columnValue = item.down("[dataIndex=column]").getValue();
             operator = item.down("[dataIndex=operator]");
             value = item.down("[dataIndex=value]");
             isEmptyColumn = Ext.isEmpty(columnValue);
-            if(!isEmptyColumn) {
+            if (!isEmptyColumn) {
                 conditions.push({
                     "javaClass": "com.untangle.node.reports.SqlCondition",
                     "column": columnValue,
@@ -1582,35 +1601,35 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
         });
-        if(!skipReload) {
+        if (!skipReload) {
             var encodedConditions = Ext.encode(conditions);
-            if(this.currentConditions != encodedConditions) {
+            if (this.currentConditions != encodedConditions) {
                 this.currentConditions = encodedConditions;
-                this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
-                this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
+                this.parentPanel.extraConditions = (conditions.length > 0) ? conditions : null;
+                this.setTitle(Ext.String.format(i18n._("Conditions: {0}"), (conditions.length > 0) ? conditions.length : i18n._("None")));
                 this.parentPanel.refreshHandler();
             }
         }
 
     },
-    setValue: function(extraConditions) {
+    setValue: function (extraConditions) {
         var me = this, i;
         this.bulkOperation = true;
-        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+        Ext.Array.each(this.query("container[name=condition]"), function (item, index, len) {
             me.remove(item);
         });
-        if(!extraConditions) {
-            for(i=0; i<this.defaultCount; i++) {
+        if (!extraConditions) {
+            for (i = 0; i < this.defaultCount; i += 1) {
                 this.addRow();
             }
         } else {
-            for(i=0; i<extraConditions.length; i++) {
+            for (i = 0; i < extraConditions.length; i += 1) {
                 this.addRow(extraConditions[i]);
             }
         }
         this.bulkOperation = false;
     }
-    
+
 });
 
 Ext.define("Ung.grid.feature.GlobalFilter", {
@@ -1618,7 +1637,7 @@ Ext.define("Ung.grid.feature.GlobalFilter", {
     useVisibleColumns: true,
     useFields: null,
     init: function (grid) {
-        this.grid=grid;
+        this.grid = grid;
 
         this.globalFilter = Ext.create('Ext.util.Filter', {
             regExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
@@ -1628,26 +1647,26 @@ Ext.define("Ung.grid.feature.GlobalFilter", {
             regExp: null,
             stateId: 'globalFilter',
             searchFields: {},
-            filterFn: function(record) {
-                if(!this.regExp) {
+            filterFn: function (record) {
+                if (!this.regExp) {
                     return true;
                 }
                 var datas = record.getData(), key, val;
-                for(key in this.searchFields) {
-                    if(datas[key] !== undefined){
+                for (key in this.searchFields) {
+                    if (datas[key] !== undefined) {
                         val = datas[key];
-                        if(val == null) {
+                        if (val == null) {
                             continue;
                         }
-                        if(typeof val == 'boolean' || typeof val == 'number') {
-                            val=val.toString();
-                        } else if(typeof val == 'object') {
-                            if(val.time != null) {
+                        if (typeof val == 'boolean' || typeof val == 'number') {
+                            val = val.toString();
+                        } else if (typeof val == 'object') {
+                            if (val.time != null) {
                                 val = i18n.timestampFormat(val);
                             }
                         }
-                        if(typeof val == 'string') {
-                            if(this.regExp.test(val)) {
+                        if (typeof val == 'string') {
+                            if (this.regExp.test(val)) {
                                 return true;
                             }
                         }
@@ -1655,7 +1674,7 @@ Ext.define("Ung.grid.feature.GlobalFilter", {
                 }
                 return false;
             },
-            getSearchValue: function(value) {
+            getSearchValue: function (value) {
                 if (value === '' || value === '^' || value === '$') {
                     return null;
                 }
@@ -1672,36 +1691,36 @@ Ext.define("Ung.grid.feature.GlobalFilter", {
                 }
                 return value;
             },
-            buildSearch: function(value, caseSensitive, searchFields) {
+            buildSearch: function (value, caseSensitive, searchFields) {
                 this.searchFields = searchFields;
                 this.setCaseSensitive(caseSensitive);
                 var searchValue = this.getSearchValue(value);
-                this.regExp = searchValue==null? null:new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
-                this.setDisabled(this.regExp==null);
+                this.regExp = searchValue == null ? null : new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
+                this.setDisabled(this.regExp == null);
             }
         });
-        
-        this.grid.on("afterrender", Ext.bind(function() {
+
+        this.grid.on("afterrender", Ext.bind(function () {
             this.grid.getStore().addFilter(this.globalFilter);
         }, this));
-        this.grid.on("beforedestroy", Ext.bind(function() {
+        this.grid.on("beforedestroy", Ext.bind(function () {
             this.grid.getStore().removeFilter(this.globalFilter);
             Ext.destroy(this.globalFilter);
         }, this));
         this.callParent(arguments);
     },
-    updateGlobalFilter: function(value, caseSensitive) {
+    updateGlobalFilter: function (value, caseSensitive) {
         var searchFields = {}, i, col;
-        if(this.useVisibleColumns) {
-            var visibleColumns = this.grid.getVisibleColumns(); 
-            for(i=0; i<visibleColumns.length; i++) {
+        if (this.useVisibleColumns) {
+            var visibleColumns = this.grid.getVisibleColumns();
+            for (i = 0; i < visibleColumns.length; i += 1) {
                 col = visibleColumns[i];
-                if(col.dataIndex) {
+                if (col.dataIndex) {
                     searchFields[col.dataIndex] = true;
                 }
             }
-        } else if(this.searchFields!=null) {
-            for(i=0; i<this.searchFields.length; i++) {
+        } else if (this.searchFields != null) {
+            for (i = 0; i < this.searchFields.length; i += 1) {
                 searchFields[this.searchFields[i]] = true;
             }
         }
@@ -1714,9 +1733,9 @@ Ext.define("Ung.window.SelectDateTime", {
     extend: "Ext.window.Window",
     date: null,
     buttonObj: null,
-    modal:true,
+    modal: true,
     closeAction: 'hide',
-    initComponent: function() {
+    initComponent: function () {
         this.items = [{
             xtype: 'textfield',
             name: 'dateAndTime',
@@ -1727,9 +1746,9 @@ Ext.define("Ung.window.SelectDateTime", {
         }, {
             xtype: 'datepicker',
             name: 'date',
-            handler: function(picker, date) {
+            handler: function (picker, date) {
                 var timeValue = this.down("timefield[name=time]").getValue();
-                if(timeValue != null) {
+                if (timeValue != null) {
                     date.setHours(timeValue.getHours());
                     date.setMinutes(timeValue.getMinutes());
                 }
@@ -1744,20 +1763,20 @@ Ext.define("Ung.window.SelectDateTime", {
             increment: 30,
             width: 180,
             emptyText: i18n._('Time'),
-            value: Ext.Date.parse('12:00 AM','h:i A'),
+            value: Ext.Date.parse('12:00 AM', 'h:i A'),
             listeners: {
                 change: {
-                    fn: function(combo, newValue, oldValue, opts) {
-                        if(!this.buttonObj) {
+                    fn: function (combo, newValue, oldValue, opts) {
+                        if (!this.buttonObj) {
                             return;
                         }
-                        var comboValue = combo.getValue(); 
-                        if (comboValue!=null) {
-                            if(!this.date) {
-                                var selDate=this.down("datepicker[name=date]").getValue();
-                                if(!selDate) {
-                                    selDate=new Date();
-                                    selDate.setHours(0,0,0,0);
+                        var comboValue = combo.getValue();
+                        if (comboValue != null) {
+                            if (!this.date) {
+                                var selDate = this.down("datepicker[name=date]").getValue();
+                                if (!selDate) {
+                                    selDate = new Date();
+                                    selDate.setHours(0, 0, 0, 0);
                                 }
                                 this.date = new Date(selDate.getTime());
                             }
@@ -1772,34 +1791,34 @@ Ext.define("Ung.window.SelectDateTime", {
         }];
         this.buttons = [{
             text: i18n._("Done"),
-            handler: function() {
+            handler: function () {
                 this.hide();
             },
             scope: this
         }, '->', {
             name: 'Clear',
             text: i18n._("Clear Value"),
-            handler: function() {
+            handler: function () {
                 this.setDate(null);
                 this.hide();
-                },
+            },
             scope: this
         }];
         this.callParent(arguments);
     },
-    setDate: function(date) {
+    setDate: function (date) {
         this.date = date;
         this.serverDate = (this.date) ? (new Date(this.date.getTime() - i18n.timeoffset)) : null;
-        var dateStr ="";
+        var dateStr = "";
         var buttonLabel = null;
-        if(this.date) {
-            var displayTime = this.date.getTime()-i18n.timeoffset;
+        if (this.date) {
+            var displayTime = this.date.getTime() - i18n.timeoffset;
             dateStr = i18n.timestampFormat({time: displayTime});
             buttonLabel = i18n.timestampFormat({time: displayTime});
         }
         this.down("textfield[name=dateAndTime]").setValue(dateStr);
-        if(this.buttonObj) {
-            this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
+        if (this.buttonObj) {
+            this.buttonObj.setText(buttonLabel != null ? buttonLabel : this.buttonObj.initialLabel);
         }
     }
 });

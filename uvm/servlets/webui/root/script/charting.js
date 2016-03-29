@@ -1,5 +1,5 @@
 /*global
- Ext, Ung, i18n, console, Highcharts
+ Ext, Ung, i18n, console, Highcharts, window
  */
 
 /**
@@ -21,7 +21,6 @@ Ext.define('Ung.charts', {
             chart: {
                 type: 'areaspline',
                 renderTo: container,
-                animation: Highcharts.svg, // don't animate in old IE
                 marginTop: 25,
                 marginRight: 10,
                 marginLeft: 10,
@@ -69,7 +68,7 @@ Ext.define('Ung.charts', {
             plotOptions: {
                 areaspline: {
                     fillOpacity: 0.25,
-                    lineWidth: 3
+                    lineWidth: 1
                 },
                 series: {
                     marker: {
@@ -236,7 +235,6 @@ Ext.define('Ung.charts', {
             colors = colors.map(function (color) {
                 Highcharts.Color(color).setOpacity(0.5).get('rgba');
             });
-            console.log(colors);
         }
 
         switch (entry.timeStyle) {
@@ -470,11 +468,16 @@ Ext.define('Ung.charts', {
 
         if (entry.type === 'TIME_GRAPH_DYNAMIC') {
             entry.timeDataColumns = [];
-            var column;
-            for (column in data[data.length - 1]) {
-                if (data[data.length - 1].hasOwnProperty(column) && column !== 'time_trunc') {
-                    entry.timeDataColumns.push(column);
+            var _column, _iterator = 1;
+            while (entry.timeDataColumns.length === 0) {
+                for (_column in data[data.length - _iterator]) {
+                    if (data[data.length - _iterator].hasOwnProperty(_column)) {
+                        if (_column !== 'time_trunc') {
+                            entry.timeDataColumns.push(_column);
+                        }
+                    }
                 }
+                _iterator += 1;
             }
         }
 
@@ -542,8 +545,8 @@ Ext.define('Ung.charts', {
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
         // apply gradient colors for the Pie chart
-        /*
-        colors = colors.map(function (color) {
+
+        var gradientColors = colors.map(function (color) {
             return {
                 radialGradient: {
                     cx: 0.5,
@@ -556,15 +559,14 @@ Ext.define('Ung.charts', {
                 ]
             };
         });
-        */
 
         return new Highcharts.Chart({
             chart: {
-                type: entry.chartType,
+                type: entry.chartType || 'pie',
                 renderTo: container,
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
+                spacing: [10, 10, 10, 10],
                 backgroundColor: 'transparent',
-                animation: false,
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
@@ -583,15 +585,19 @@ Ext.define('Ung.charts', {
                         for (i = entry.ddBreakPoint; i < entry.data.length; i += 1) {
                             _ddData.push({
                                 name: entry.data[i][entry.pieGroupColumn],
+                                percent: entry.data[i].percent,
                                 y: entry.data[i].value
                             });
                         }
                         this.addSeriesAsDrilldown(e.point, {name: 'sessions', data: _ddData});
                         //that.setCategoriesSeries(entry, data, this);
                     },
-                    drillup: function (e) {
+                    drillup: function () {
                         this.isDrillDown = false;
-                        that.setCategoriesSeries(entry, data, this);
+                        var _chart = this;
+                        window.setTimeout(function () {
+                            that.setCategoriesSeries(entry, data, _chart);
+                        }, 1000);
                     }
                 }
             },
@@ -608,7 +614,8 @@ Ext.define('Ung.charts', {
                 }
             } : null,
             lang: {
-                noData: i18n._("No data available yet!")
+                noData: i18n._('No data available yet!'),
+                drillUpText: '< ' + i18n._('Back')
             },
             noData: {
                 style: {
@@ -616,7 +623,7 @@ Ext.define('Ung.charts', {
                     color: '#999'
                 }
             },
-            colors: colors,
+            colors: entry.chartType !== 'column' ? gradientColors : colors,
             credits: {
                 enabled: false
             },
@@ -646,8 +653,12 @@ Ext.define('Ung.charts', {
                 }
             },
             tooltip: {
-                headerFormat: '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ' {point.key}</span><br/>',
-                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percentage:.1f}%)' : '')
+                headerFormat: '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ': {point.key}</span><br/>',
+                //pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percent}%)' : '')
+                formatter: function () {
+                    return '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ': ' + this.point.name + '</span><br/>' +
+                           '<span style="font-weight: bold;">' + this.point.y + ' sessions </span>(' + this.point.percent + '%)';
+                }
             },
             plotOptions: {
                 pie: {
@@ -659,11 +670,17 @@ Ext.define('Ung.charts', {
                     depth: 45,
                     dataLabels: {
                         enabled: true,
-                        distance: 5,
+                        distance: !forDashboard ? 15 : 5,
                         padding: 0,
-                        //format: '<b>{point.y}</b> ({point.percentage:.1f}%)',
+                        reserveSpace: false,
+                        style: {
+                            fontSize: !forDashboard ? '14px' : '11px'
+                        },
                         formatter: function () {
-                            return '<b>' + this.point.y + '</b> (' + this.point.percentage.toFixed(1) + '%)';
+                            if (this.point.drilldown) {
+                                return '<b>' + this.point.y + '</b> (more)';
+                            }
+                            return '<b>' + this.point.y + '</b>';
                         },
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
                     }
@@ -698,12 +715,15 @@ Ext.define('Ung.charts', {
                 }
             },
             legend: {
-                enabled: entry.chartType === 'pie',
+                enabled: entry.chartType !== 'column',
                 title: {
                     text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
                     style: {
                         fontStyle: 'italic'
                     }
+                },
+                itemStyle: {
+                    fontSize: !forDashboard ? '14px' : '11px'
                 },
                 layout: 'vertical',
                 align: 'right',
@@ -717,9 +737,23 @@ Ext.define('Ung.charts', {
             drilldown: {
                 drillUpButton: {
                     position: {
-                        align: 'left'
+                        align: entry.chartType !== 'column' ? 'left' : 'right',
+                        x: entry.chartType !== 'column' ? 3 : -3,
+                        y: 3
                     },
-                    relativeTo: 'spacingBox'
+                    relativeTo: 'plotBox',
+                    theme: {
+                        fill: '#EEE',
+                        strokeWidth: 0,
+                        stroke: 'silver',
+                        fontSize: '10px',
+                        r: 3,
+                        states: {
+                            hover: {
+                                fill: '#DDD'
+                            }
+                        }
+                    }
                 }
             }
 
@@ -737,7 +771,15 @@ Ext.define('Ung.charts', {
         // TODO: Pie percentage not correct inside DrillDown
 
         var i, _otherCumulateVal = 0, _mainData = [], _drillDownData = [], _total = 0;
+        var _mainSeries = [{
+            name: entry.units
+        }];
 
+        // store data inside entry for drilldown usage
+        entry.data = data;
+        entry.ddBreakPoint = null;
+
+        /*
         if (this.generateRandomData) {
             data = [];
             for (i = 0; i < Math.floor(Math.random() * 12) + 5; i += 1) {
@@ -746,12 +788,12 @@ Ext.define('Ung.charts', {
                     value: Math.floor(Math.random() * 100) + 1
                 });
             }
-
             // sort descending by value
             data.sort(function (d1, d2) {
                 return d2.value - d1.value;
             });
         }
+        */
 
         // calculate total
         for (i = 0; i < data.length; i += 1) {
@@ -760,44 +802,50 @@ Ext.define('Ung.charts', {
 
         // calculate percentages to use in drilldown
         for (i = 0; i < data.length; i += 1) {
-            data[i].percentage = parseFloat((data[i].value * 100 / _total).toFixed(1));
+            data[i].percent = parseFloat((data[i].value * 100 / _total).toFixed(2));
         }
 
-        // store data inside entry for drilldown usage
-        entry.data = data;
-
-        entry.ddBreakPoint = null;
-        // find drilldown breakpoint under 15%
-        for (i = 0; i < data.length; i += 1) {
-            if (data[i].percentage < 15 && !entry.ddBreakPoint) {
-                entry.ddBreakPoint = i;
+        // find drilldown breakpoint under 10% and more than 5 slices
+        if (data.length > 5) {
+            for (i = 0; i < data.length - 1; i += 1) {
+                if (data[i].percent < 10 && !entry.ddBreakPoint) {
+                    entry.ddBreakPoint = i;
+                }
             }
         }
 
-        var _mainSeries = [{
-            name: entry.units
-        }];
-
-        for (i = 0; i < data.length; i += 1) {
-            if (i < entry.ddBreakPoint) {
+        if (entry.ddBreakPoint > 0) {
+            for (i = 0; i < data.length; i += 1) {
+                if (i < entry.ddBreakPoint) {
+                    _mainData.push({
+                        name: data[i][entry.pieGroupColumn],
+                        percent: data[i].percent,
+                        y: data[i].value
+                    });
+                } else {
+                    _otherCumulateVal += data[i].value;
+                    _drillDownData.push({
+                        name: data[i][entry.pieGroupColumn],
+                        percent: data[i].percent,
+                        y: data[i].value
+                    });
+                }
+            }
+            _mainData.push({
+                name: 'other',
+                y: _otherCumulateVal,
+                percent: parseFloat((_otherCumulateVal * 100 / _total).toFixed(2)),
+                drilldown: true
+            });
+        } else {
+            for (i = 0; i < data.length; i += 1) {
                 _mainData.push({
                     name: data[i][entry.pieGroupColumn],
-                    y: data[i].value
-                });
-            } else {
-                _otherCumulateVal += data[i].value;
-                _drillDownData.push({
-                    name: data[i][entry.pieGroupColumn],
+                    percent: data[i].percent,
                     y: data[i].value
                 });
             }
         }
-
-        _mainData.push({
-            name: 'other',
-            y: _otherCumulateVal,
-            drilldown: true
-        });
 
         if (!chart) {
             _mainSeries[0].data = _mainData;
@@ -1036,6 +1084,128 @@ Ext.define('Ung.charts', {
             });
         }
         chart.series[0].setData(_data, true, false);
+    },
+
+    /**
+     * Set the sessions chart displayed in App Status view
+     * @param {Object} container - the DOM element where the chart is rendered
+     * @returns {Object}         - the HighCharts chart object
+     */
+    appStatusChart: function (container) {
+        return new Highcharts.Chart({
+            chart: {
+                type: 'areaspline',
+                renderTo: container,
+                margin: [0, 0, 20, 0],
+                backgroundColor: 'transparent'
+            },
+            credits: {
+                enabled: false
+            },
+            //colors: ['#FFF'],
+            title: null,
+            xAxis: {
+                type: 'datetime',
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                labels: {
+                    enabled: true,
+                    style: {
+                        color: '#999',
+                        fontSize: '10px'
+                    }
+                },
+                crosshair: {
+                    width: 1,
+                    color: 'rgba(0,0,0,0.1)'
+                }
+            },
+            yAxis: {
+                minRange: 1,
+                min: 0,
+                tickPixelInterval: 50,
+                title: null,
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                labels: {
+                    align: 'left',
+                    style: {
+                        color: '#999',
+                        fontSize: '9px'
+                    },
+                    x: 0,
+                    y: -3
+                },
+                visible: true
+            },
+            plotOptions: {
+                areaspline: {
+                    fillOpacity: 0.15,
+                    lineWidth: 1
+                },
+                series: {
+                    marker: {
+                        enabled: false,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineWidthPlus: 0,
+                                radius: 3,
+                                radiusPlus: 0
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineWidthPlus: 0,
+                            halo: {
+                                size: 0
+                            }
+                        }
+                    }
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: true,
+                animation: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                useHTML: true,
+                style: {
+                    padding: '5px',
+                    fontSize: '10px'
+                },
+                formatter: function () {
+                    return '<b>' + this.y + ' ' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%H:%M:%S', this.x);
+                }
+            },
+            series: [{
+                name: 'Sessions',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -29; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 3000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                }())
+            }]
+        });
     }
 
 });

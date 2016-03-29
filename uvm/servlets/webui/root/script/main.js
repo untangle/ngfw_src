@@ -8,7 +8,7 @@ Ext.Loader.setConfig({
 });
 
 var rpc = {}; // the main json rpc object
-var testMode = true;
+var testMode = false;
 
 // Main object class
 Ext.define("Ung.Main", {

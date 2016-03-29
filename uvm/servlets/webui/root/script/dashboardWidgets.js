@@ -602,7 +602,7 @@ Ext.define('Ung.dashboard.CPULoad', {
         var highLimit = stats.numCpus + 4;
         var loadLabel = 'low';
 
-        if (!this.loaded && this.lineChart !== null && this.chart2 !== null) {
+        if (!this.loaded && this.lineChart !== null && this.gaugeChart !== null) {
             this.lineChart.yAxis[0].update({
                 minRange: stats.numCpus
             });
@@ -874,13 +874,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
     listeners: {
         'afterrender': function (widget) {
-            var chartButtons = widget.getEl().query('.chart-types')[0];
+            var chartButtons = widget.getEl().query('.chart-types')[0], i;
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
 
-            switch (widget.entry.type) {
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                var i;
+            if (widget.entry.type === 'TIME_GRAPH' || widget.entry.type === 'TIME_GRAPH_DYNAMIC') {
                 chartButtons.innerHTML =
                     '<button data-type="spline" class="selected">' + i18n._('Line') + '</button>' +
                     '<button data-type="areaspline">' + i18n._('Area') + '</button>' +
@@ -894,8 +891,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     widget.entry.columnOverlapped = evt.target.dataset.overlapped !== undefined;
                     Ung.charts.updateSeriesType(widget.entry, widget.chart, evt.target.dataset.type);
                 });
-                break;
-            default:
+            } else {
                 chartButtons.innerHTML =
                     '<button data-type="pie" class="selected">' + i18n._('Pie') + '</button>' +
                     '<button data-type="pie" data-donut>' + i18n._('Donut') + '</button>' +

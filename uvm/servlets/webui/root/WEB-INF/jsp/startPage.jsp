@@ -13,14 +13,8 @@
     </style>
 
     <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>
-    <!--<script type="text/javascript" src="/highcharts/highcharts.js?s=${buildStamp}"></script>-->
-    <!--<script type="text/javascript" src="/highcharts/exporting.js?s=${buildStamp}"></script>-->
-    <script type="text/javascript" src="/highcharts/highcharts-more.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/highcharts/highcharts-3d.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/highcharts/solid-gauge.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/highcharts/no-data-to-display.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/highcharts/drilldown.js?s=${buildStamp}"></script>
-    
+    <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=${buildStamp}"></script>
+
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
 </c:if>
@@ -29,7 +23,6 @@
 </c:if>
 
     <script type="text/javascript" src="/ext6/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext6/packages/charts/classic/charts.js?s=${buildStamp}"></script>
     <script type="text/javascript">
         Ext.buildStamp='${buildStamp}';
     </script>
