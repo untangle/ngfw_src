@@ -268,6 +268,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         s.add(new GenericRule("scr", "executable", "download" , null, true));
         s.add(new GenericRule("cpl", "executable", "download" , null, true));
         s.add(new GenericRule("hta", "executable", "download" , null, true));
+        s.add(new GenericRule("msi", "executable", "download" , null, true));
         s.add(new GenericRule("vb",  "script", "download" , null, true));
         s.add(new GenericRule("vbe", "script", "download" , null, true));
         s.add(new GenericRule("vbs", "script", "download" , null, true));
