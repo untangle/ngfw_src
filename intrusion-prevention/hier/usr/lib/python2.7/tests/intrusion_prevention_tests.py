@@ -252,7 +252,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
+        global node, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
@@ -264,6 +264,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", patch )
 
         node.start() # must be called since intrusion-prevention doesn't auto-start
+        pre_scanned_events = global_functions.getStatusValue("detect")
 
     def setUp(self):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
@@ -646,6 +647,12 @@ class IntrusionPreventionTests(unittest2.TestCase):
         
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
+
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("detect")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
