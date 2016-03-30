@@ -103,7 +103,7 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP
+        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -119,6 +119,7 @@ class OpenVpnTests(unittest2.TestCase):
             vpnServerResult = remote_control.runCommand("ping -W 5 -c 1 " + wanIP, host=vpnClientVpnIP)
         else:
             vpnServerResult = 1
+        pre_scanned_events = global_functions.getStatusValue("connect")
 
     def setUp(self):
         pass
@@ -305,6 +306,11 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result2==0)
         assert(webresult==0)
 
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("connect")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
