@@ -106,11 +106,12 @@ class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
+        global node, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-
+        pre_scanned_events = global_functions.getStatusValue("block")
+        
     def setUp(self):
         pass
 
@@ -713,6 +714,11 @@ class FirewallTests(unittest2.TestCase):
                                             'firewall_blocked', False,
                                             'firewall_flagged', False)
 
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("block")
+        assert(pre_scanned_events < post_scanned_events)
+        
     @staticmethod
     def finalTearDown(self):
         global node
