@@ -200,7 +200,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
+        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -246,6 +246,7 @@ class BandwidthControlTests(unittest2.TestCase):
         origNetworkSettingsWithoutQoS['qosSettings']['qosEnabled'] = False
         
         uvmContext.networkManager().setNetworkSettings(origNetworkSettingsWithQoS)
+        pre_scanned_events = global_functions.getStatusValue("prioritize")
         
     def setUp(self):
         pass
@@ -621,6 +622,11 @@ class BandwidthControlTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, "address", remote_control.clientIP)
         assert(found)
 
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("prioritize")
+        assert(pre_scanned_events < post_scanned_events)
+ 
     @staticmethod
     def finalTearDown(self):
         global node, nodeWF, origNetworkSettings
