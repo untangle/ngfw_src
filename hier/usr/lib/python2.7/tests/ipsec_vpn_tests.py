@@ -11,6 +11,7 @@ from uvm import Uvm
 import remote_control
 import test_registry
 import base64
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -125,7 +126,7 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
+        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult, pre_scanned_events
         tunnelUp = False
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
@@ -137,6 +138,7 @@ class IPsecTests(unittest2.TestCase):
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        pre_scanned_events = global_functions.getStatusValue("enabled")
 
     def setUp(self):
         pass
@@ -231,6 +233,11 @@ class IPsecTests(unittest2.TestCase):
         vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         assert(found)
 
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("enabled")
+        assert(pre_scanned_events < post_scanned_events)
+               
     @staticmethod
     def finalTearDown(self):
         global node, nodeAD
