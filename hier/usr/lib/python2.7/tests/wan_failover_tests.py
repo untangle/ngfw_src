@@ -139,7 +139,7 @@ class WanFailoverTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global indexOfWans, nodeData, node, orig_netsettings
+        global indexOfWans, nodeData, node, orig_netsettings, pre_scanned_events
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
@@ -147,6 +147,7 @@ class WanFailoverTests(unittest2.TestCase):
         node.start()
         nodeData = node.getSettings()
         indexOfWans = foundWans()
+        pre_scanned_events = global_functions.getStatusValue("changed")
 
     def setUp(self):
         pass
@@ -365,6 +366,11 @@ class WanFailoverTests(unittest2.TestCase):
                 result = global_functions.getIpAddress()
                 print "IP address %s and validWanIP %s" % (result,validWanIP)
                 assert (result == validWanIP)    
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("changed")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
