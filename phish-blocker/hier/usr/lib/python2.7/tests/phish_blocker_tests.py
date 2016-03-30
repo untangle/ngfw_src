@@ -62,7 +62,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay, canRelayTLS
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay, canRelayTLS, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -82,7 +82,8 @@ class PhishBlockerTests(unittest2.TestCase):
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
-
+        pre_scanned_events = global_functions.getStatusValue("INSPECTED")
+        
     def setUp(self):
         # flush quarantine.
         curQuarantine = nodeSP.getQuarantineMaintenenceView()
@@ -222,7 +223,12 @@ class PhishBlockerTests(unittest2.TestCase):
                                             'addr', 'qa@example.com',
                                             'c_client_addr', remote_control.clientIP,
                                             'phish_blocker_action', 'D')
-
+    
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("INSPECTED")
+        assert(pre_scanned_events < post_scanned_events)
+        
     @staticmethod
     def finalTearDown(self):
         global node, nodeSSL
