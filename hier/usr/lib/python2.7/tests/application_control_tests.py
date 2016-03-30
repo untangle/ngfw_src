@@ -84,13 +84,14 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeSettings, node
+        global nodeSettings, node, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodeSettings = node.getSettings()
         # run a few sessions so that the classd daemon starts classifying
         for i in range(2): remote_control.isOnline()
+        pre_scanned_events = global_functions.getStatusValue("pass")
 
     def setUp(self):
         pass
@@ -197,6 +198,11 @@ class ApplicationControlTests(unittest2.TestCase):
         for i in range(5):
             result = remote_control.isOnline()
             time.sleep(1)
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("pass")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
