@@ -57,7 +57,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS
+        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS, pre_scanned_events
         # download eicar and trojan files before installing virus blocker
         remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -83,8 +83,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
-        
+        pre_scanned_events = global_functions.getStatusValue("INSPECTED")
 
+        
     def setUp(self):
         pass
 
@@ -342,6 +343,11 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             self.shortName() + '_clean', False,
                                             min_date=startTime)
         assert( found )
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("INSPECTED")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
