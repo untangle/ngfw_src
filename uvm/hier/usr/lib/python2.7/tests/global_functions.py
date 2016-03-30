@@ -196,3 +196,12 @@ def sendTestmessage(mailhost=smtpServerHost):
     except smtplib.SMTPException, e:
        print "Error: unable to send email through " + mailhost + " " + str(e)
        return 0
+
+def getStatusValue(label):
+    allstats = Uvm().getUvmContext().metricManager().getMetricsAndStats()
+    if allstats == None:
+        return 0
+    for nodemetric in allstats['metrics']:
+        for stat in allstats['metrics'][nodemetric]['list']:
+            if label == stat['name']:
+                return stat['value']
