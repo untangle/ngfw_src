@@ -58,7 +58,7 @@ def nukeBlockedExtensions():
     rules = node.getBlockedExtensions()
     rules["list"] = []
     node.setBlockedExtensions(rules)
-
+    
 class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -79,10 +79,12 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
+        global node, pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        nodemetrics = uvmContext.metricManager().getMetrics(node.getNodeSettings()["id"])
+        pre_scanned_events = global_functions.getStatusValue("scan")
         self.node = node
         
     def setUp(self):
@@ -469,6 +471,11 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukePassedUrls()
         assert( resultReferer == 0 )        
 
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("scan")
+        assert(pre_scanned_events < post_scanned_events)
+        
     @staticmethod
     def finalTearDown(self):
         global node
