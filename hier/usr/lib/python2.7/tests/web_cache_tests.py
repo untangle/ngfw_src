@@ -23,11 +23,12 @@ class WebCacheTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
+        global node,pre_scanned_events
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         node.start() # must be called since web cache doesn't auto-start
+        pre_scanned_events = global_functions.getStatusValue("hit")
 
     def setUp(self):
         pass
@@ -52,6 +53,11 @@ class WebCacheTests(unittest2.TestCase):
         # verify at least one hit
         assert(events['list'][0])
         assert(events['list'][0]['hits'])
+
+    # Check to see if the faceplate counters have incremented. 
+    def test_900_checkCounters(self):
+        post_scanned_events = global_functions.getStatusValue("hit")
+        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
