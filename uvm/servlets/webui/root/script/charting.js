@@ -213,7 +213,7 @@ Ext.define('Ung.charts', {
      * It renders a Line (spline), Area (areaspline) or a Column chart with data grouping possibilities
      * @param {Object} entry         - the Report entry object
      * @param {Object} data          - the data used upon chart creation
-     * @param {Object} container     - the DOM element where the chart is rendered
+     * @param {Object} container     - the ExtJS component containing the chart
      * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
      * @returns {Object}             - the HighStock chart object
      */
@@ -258,8 +258,9 @@ Ext.define('Ung.charts', {
             chart: {
                 type: chartType,
                 zoomType: 'x',
-                renderTo: container,
+                renderTo: !forDashboard ? container.getEl().dom : container.getEl().query('.chart')[0],
                 marginBottom: 50,
+                marginTop: 0,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
                 style: {
@@ -290,7 +291,7 @@ Ext.define('Ung.charts', {
             },
             colors: colors,
             navigator: {
-                enabled: !forDashboard
+                enabled: false
             },
             rangeSelector : {
                 enabled: !forDashboard,
@@ -326,7 +327,18 @@ Ext.define('Ung.charts', {
                     }
                 },
                 maxPadding: 0,
-                minPadding: 0
+                minPadding: 0,
+                events: {
+                    setExtremes: function (event) {
+                        if (!forDashboard) {
+                            var panelReports = container.up('panel[name=panelReports]');
+                            panelReports.timeFrame = {
+                                start: new Date(event.min),
+                                end: new Date(event.max)
+                            };
+                        }
+                    }
+                }
             },
             yAxis: {
                 allowDecimals: false,
@@ -535,7 +547,7 @@ Ext.define('Ung.charts', {
      * It renders a Pie (spline), Donut (areaspline) or a Column chart with 3D variants
      * @param {Object} entry         - the Report entry object
      * @param {Object} data          - the data used upon chart creation
-     * @param {Object} container     - the DOM element where the chart is rendered
+     * @param {Object} container     - the ExtJS component containing the chart
      * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
      * @returns {Object}             - the HighCharts chart object
      */
@@ -563,7 +575,7 @@ Ext.define('Ung.charts', {
         return new Highcharts.Chart({
             chart: {
                 type: entry.chartType || 'pie',
-                renderTo: container,
+                renderTo: !forDashboard ? container.getEl().dom : container.getEl().query('.chart')[0],
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 spacing: [10, 10, 10, 10],
                 backgroundColor: 'transparent',
@@ -637,18 +649,33 @@ Ext.define('Ung.charts', {
                         fontSize: '11px'
                     }
                 },
-                title: !forDashboard ? {
+                title: {
                     align: 'middle',
                     text: seriesName,
+                    style: {
+                        fontSize: !forDashboard ? '14px' : '12px',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            yAxis: {
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                title: !forDashboard ? {
+                    align: 'middle',
+                    text: entry.units,
                     style: {
                         fontSize: '16px'
                     }
                 } : {
                     align: 'high',
-                    offset: 20,
-                    text: seriesName,
+                    offset: -10,
+                    y: 3,
+                    text: entry.units,
                     style: {
-                        color: '#C0D0E0'
+                        fontSize: !forDashboard ? '14px' : '10px',
+                        color: 'green'
                     }
                 }
             },
@@ -692,25 +719,6 @@ Ext.define('Ung.charts', {
                     dataLabels: {
                         enabled: true,
                         align: 'center'
-                    }
-                }
-            },
-            yAxis: {
-                gridLineWidth: 1,
-                gridLineDashStyle: 'dash',
-                gridLineColor: '#EEE',
-                title: !forDashboard ? {
-                    align: 'middle',
-                    text: entry.units,
-                    style: {
-                        fontSize: '16px'
-                    }
-                } : {
-                    align: 'high',
-                    offset: -10,
-                    text: entry.units,
-                    style: {
-                        color: 'green'
                     }
                 }
             },
@@ -976,13 +984,17 @@ Ext.define('Ung.charts', {
             chart: {
                 type: 'areaspline',
                 renderTo: container,
-                margin: [0, 0, 0, 0],
-                backgroundColor: 'transparent'
+                //margin: [2, 2, 2, 4],
+                spacing: [2, 2, 2, 2],
+                backgroundColor: '#FFF',
+                plotShadow: true,
+                plotBorderColor: '#ADADAD',
+                plotBorderWidth: 1
             },
             credits: {
                 enabled: false
             },
-            colors: ['#FFF'],
+            colors: ['green'],
             title: null,
             xAxis: {
                 type: 'datetime',
@@ -997,13 +1009,13 @@ Ext.define('Ung.charts', {
                 minPadding: 0
             },
             yAxis: {
-                minRange: 1,
+                //minRange: 3,
                 min: 0,
-                tickAmount: 4,
+                //tickAmount: 4,
                 title: null,
                 gridLineWidth: 1,
                 gridLineDashStyle: 'dash',
-                gridLineColor: '#777',
+                gridLineColor: '#EEE',
                 labels: {
                     align: 'left',
                     style: {
@@ -1013,7 +1025,7 @@ Ext.define('Ung.charts', {
                     x: 0,
                     y: -3
                 },
-                visible: true
+                visible: false
             },
             plotOptions: {
                 areaspline: {
@@ -1027,14 +1039,14 @@ Ext.define('Ung.charts', {
                             hover: {
                                 enabled: true,
                                 lineWidthPlus: 0,
-                                radius: 3,
+                                radius: 2,
                                 radiusPlus: 0
                             }
                         }
                     },
                     states: {
                         hover: {
-                            enabled: false,
+                            enabled: true,
                             lineWidthPlus: 0,
                             halo: {
                                 size: 0
@@ -1050,19 +1062,16 @@ Ext.define('Ung.charts', {
                 enabled: false
             },
             tooltip: {
-                enabled: false,
+                enabled: true,
                 animation: false,
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 useHTML: true,
                 style: {
                     padding: '5px',
-                    fontSize: '11px'
+                    fontSize: '10px'
                 },
                 headerFormat: '',
-                pointFormatter: function () {
-                    var str = '<span>' + this.series.name + '</span>';
-                    return '<div>' + str + '</div>';
-                }
+                pointFormat: '{point.y} ' + i18n._('sessions')
             },
             series: [{
                 data: _data

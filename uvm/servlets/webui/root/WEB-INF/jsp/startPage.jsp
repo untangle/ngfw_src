@@ -9,7 +9,6 @@
     <title>${companyName}</title>
     <style type="text/css">
         @import "/ext6/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css?s=${buildStamp}";
-        @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=${buildStamp}";
     </style>
 
     <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>

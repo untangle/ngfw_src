@@ -727,7 +727,6 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper network-intf">' +
-        '<button id="fake-interface-add" class="wg-button" style="position: absolute; right: 10px; top: 0;">Add Fake Interface</button>' +
         '<div class="external">' +
         '<div class="iface" id="interface_{externalInterface.id}">' +
         '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 5px; height: 30px;"/>' +
@@ -816,11 +815,6 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             }
 
             this.update(this.data);
-
-            Ext.get('fake-interface-add').on('click', function () {
-                me.addFakeInterface();
-            });
-
         }, this));
     },
     addFakeInterface: function () {
@@ -904,7 +898,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     widget.entry.chartType = evt.target.dataset.type;
                     widget.entry.isDonut = evt.target.dataset.donut !== undefined;
                     widget.chart.destroy();
-                    widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget.getEl().query('.chart')[0], true);
+                    widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget, true);
                 });
             }
         }
@@ -925,9 +919,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
             if (!this.chart || this.chart.series.length === 0) {
                 if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this, true);
                 } else {
-                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.getEl().query('.chart')[0], true);
+                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this, true);
                 }
             } else {
                 if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {

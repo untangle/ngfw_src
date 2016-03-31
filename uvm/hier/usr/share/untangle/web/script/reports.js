@@ -14,6 +14,10 @@ Ext.define('Ung.panel.Reports', {
     entry: null,
     chart: null,
     chartData: null,
+    timeFrame: {
+        start: null,
+        end: null
+    },
     beforeDestroy: function () {
         Ext.destroy(this.subCmps);
         this.callParent(arguments);
@@ -228,7 +232,7 @@ Ext.define('Ung.panel.Reports', {
                 region: 'south',
                 parentPanel: this,
                 layout: 'border',
-                height: 250,
+                height: 100,
                 split: true,
                 collapsible: true,
                 title: i18n._('Options'),
@@ -237,33 +241,8 @@ Ext.define('Ung.panel.Reports', {
                     split: true,
                     bodyStyle: 'padding:5px'
                 },
-                items: [{
-                    region: 'west',
-                    //title: i18n._("Current Data"),
-                    width: 350,
-                    padding: 0,
-                    name: 'reportDataGrid',
-                    xtype: 'grid',
-                    store:  Ext.create('Ext.data.Store', {
-                        fields: [],
-                        data: []
-                    }),
-                    columns: [{
-                        flex: 1
-                    }],
-                    tbar: ['->', {
-                        xtype: 'button',
-                        text: i18n._('Export'),
-                        name: "Export",
-                        tooltip: i18n._('Export Data to File'),
-                        iconCls: 'icon-export',
-                        handler: Ext.bind(this.exportReportDataHandler, this)
-                    }]
-                }, this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
+                items: [this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
                     region: 'center'
-                    //parentPanel: this,
-                    //collapsed: true,
-                    //collapsible: true
                 })]
             }]
         }];
@@ -277,7 +256,7 @@ Ext.define('Ung.panel.Reports', {
         this.cardsContainer = this.down("container[name=cardsContainer]");
 
         this.chartContainer = this.down("container[name=chartContainer]");
-        this.reportDataGrid = this.down("grid[name=reportDataGrid]");
+        //this.reportDataGrid = this.down("grid[name=reportDataGrid]");
 
         this.gridEvents = this.down("grid[name=gridEvents]");
         this.searchField = this.down('textfield[name=searchField]');
@@ -389,7 +368,7 @@ Ext.define('Ung.panel.Reports', {
     setCategory: function (category, initialEntry) {
         this.category = category;
         this.cardsContainer.setActiveItem("pleaseSelectEntryContrainer");
-        this.reportDataGrid.hide();
+        //this.reportDataGrid.hide();
         this.loadEntries(initialEntry);
     },
     loadEntries: function (initialEntry) {
@@ -477,7 +456,7 @@ Ext.define('Ung.panel.Reports', {
             });
         }
         // set data for the datagrid
-        this.reportDataGrid.getStore().loadData(reportData || data);
+        //this.reportDataGrid.getStore().loadData(reportData || data);
 
     },
     buildReportEntry: function (entry) {
@@ -485,7 +464,7 @@ Ext.define('Ung.panel.Reports', {
         this.cardsContainer.setActiveItem("chartContainer");
         this.cardsContainer.remove(this.down('toolbar[name=chart-options]'));
 
-        this.reportDataGrid.show();
+        //this.reportDataGrid.show();
         this.limitSelector.hide();
         this.resetView.hide();
 
@@ -518,48 +497,9 @@ Ext.define('Ung.panel.Reports', {
             handler: Ext.bind(this.downloadChart, this)
         }];
 
-        this.reportDataGrid.getStore().loadData([]);
+        //this.reportDataGrid.getStore().loadData([]);
 
-        if (entry.type == 'TEXT') {
-            this.reportDataGrid.setColumns([{
-                dataIndex: 'data',
-                header: i18n._("data"),
-                width: 100,
-                flex: 1
-            }, {
-                dataIndex: 'value',
-                header: i18n._("value"),
-                width: 100
-            }]);
-        } else if (entry.type == 'PIE_GRAPH') {
-            this.reportDataGrid.setColumns([{
-                dataIndex: entry.pieGroupColumn,
-                header: entry.pieGroupColumn,
-                width: 100,
-                flex: 1
-            }, {
-                dataIndex: 'value',
-                header: i18n._("value"),
-                width: 100
-            }, {
-                xtype: 'actioncolumn',
-                menuDisabled: true,
-                width: 20,
-                items: [{
-                    iconCls: 'icon-row icon-filter',
-                    tooltip: i18n._('Add Condition'),
-                    handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
-                        this.buildWindowAddCondition();
-                        var data = {
-                            column: entry.pieGroupColumn,
-                            operator: "=",
-                            value: record.get(entry.pieGroupColumn)
-                        };
-                        this.windowAddCondition.setCondition(data);
-                    }, this)
-                }]
-            }]);
-
+        if (entry.type == 'PIE_GRAPH') {
             timeStyleButtons = [];
             timeStyles = [
                 { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
@@ -586,7 +526,7 @@ Ext.define('Ung.panel.Reports', {
                         entry.isDonut = button.isDonut;
                         entry.is3d = button.is3d;
                         this.chart.destroy();
-                        this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.chartContainer.getEl().dom, false);
+                        this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.chartContainer, false);
                     }, this)
                 });
             }
@@ -594,43 +534,6 @@ Ext.define('Ung.panel.Reports', {
             tbar = timeStyleButtons.concat(tbar);
 
         } else if (entry.type == 'TIME_GRAPH' || entry.type == 'TIME_GRAPH_DYNAMIC') {
-            var zeroFn = function (val) {
-                return (val == null) ? 0 : val;
-            };
-            var timeFn = function (val) {
-                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
-            };
-            var storeFields = [{name: 'time_trunc', convert: timeFn}];
-
-            if (!entry.timeDataColumns) {
-                entry.timeDataColumns = [];
-            }
-
-            var reportDataColumns = [{
-                dataIndex: 'time_trunc',
-                header: i18n._("Timestamp"),
-                flex: entry.timeDataColumns.length > 2 ? 0 : 1
-            }];
-
-            var seriesRenderer = null, title;
-
-            if (!Ext.isEmpty(entry.seriesRenderer)) {
-                seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
-            }
-
-            for (i = 0; i < entry.timeDataColumns.length; i += 1) {
-                column = entry.timeDataColumns[i].split(' ').splice(-1)[0];
-                title = seriesRenderer ? seriesRenderer(column) : column;
-                storeFields.push({name: column, convert: zeroFn, type: 'integer'});
-                reportDataColumns.push({
-                    dataIndex: column,
-                    header: title,
-                    width: entry.timeDataColumns.length > 2 ? 60 : 90
-                });
-            }
-
-            this.reportDataGrid.setColumns(reportDataColumns);
-
             timeStyleButtons = [];
             timeStyles = [
                 { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
@@ -657,14 +560,7 @@ Ext.define('Ung.panel.Reports', {
             }
             timeStyleButtons.push('-');
             tbar = timeStyleButtons.concat(tbar);
-
-            this.reportDataGrid.setStore(Ext.create('Ext.data.JsonStore', {
-                fields: storeFields,
-                data: []
-            }));
-            this.reportDataGrid.setColumns(reportDataColumns);
         }
-
         this.cardsContainer.addDocked({
             xtype: 'toolbar',
             dock: 'top',
@@ -688,11 +584,11 @@ Ext.define('Ung.panel.Reports', {
             switch (this.entry.type) {
             case 'TIME_GRAPH':
             case 'TIME_GRAPH_DYNAMIC':
-                this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+                this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer, false);
                 break;
             default:
                 this.entry.chartType = 'pie';
-                this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer.getEl().dom, false);
+                this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer, false);
             }
 
             this.loadReportData(result.list);
@@ -709,7 +605,7 @@ Ext.define('Ung.panel.Reports', {
             entry.defaultColumns = [];
         }
         this.cardsContainer.setActiveItem('gridEvents');
-        this.reportDataGrid.hide();
+        //this.reportDataGrid.hide();
         this.limitSelector.show();
         this.resetView.show();
 
@@ -943,8 +839,8 @@ Ext.define('Ung.panel.Reports', {
             return data.join(",") + '\r\n';
         };
 
-        var records = this.reportDataGrid.getStore().getRange(), list = [], columns = [], headers = [], i, j, row;
-        var gridColumns = this.reportDataGrid.getColumns();
+        //var records = this.reportDataGrid.getStore().getRange(), list = [], columns = [], headers = [], i, j, row;
+        //var gridColumns = this.reportDataGrid.getColumns();
         for (i = 0; i < gridColumns.length; i += 1) {
             if (gridColumns[i].initialConfig.dataIndex) {
                 columns.push(gridColumns[i].initialConfig.dataIndex);
