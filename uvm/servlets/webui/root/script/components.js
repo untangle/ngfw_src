@@ -137,7 +137,10 @@ Ext.define("Ung.AppItem", {
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
-        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_80x80.png"/></div><div class="app-icon-install icon-arrow-install"></div>', '<div class="app-name"><span>{text}</span></div>', '<div class="app-progress" id="app_progress_{id}"></div>'), 
+        template: new Ext.Template('<div class="app-icon"><img src="/skins/{skin}/images/admin/apps/{name}_80x80.png"/><div class="app-name">{text}</div></div>',
+                                   '<div class="app-install"><i class="material-icons">get_app</i></div>',
+                                   '<div class="app-loader"><div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="8" fill="none" stroke-width="3" stroke-miterlimit="10"/></svg></div></div>',
+                                   '<div class="app-done"><i class="material-icons">check</i> ' + i18n._('DONE') + '</div>'),
         setLoading: function(name, loadingFlag) {
             Ung.AppItem.loadingFlags[name] = loadingFlag;
             var app = Ung.AppItem.getApp(name);
@@ -172,48 +175,16 @@ Ext.define("Ung.AppItem", {
         }, this);
         this.syncProgress();
     },
-    getProgressBar: function() {
-        if(!this.progressBar) {
-            this.progressBar = Ext.create('Ext.ProgressBar',{
-                renderTo: 'app_progress_'+this.getId(),
-                style: "position: absolute",
-                height: '100%',
-                width: '100%',
-                hidden: true
-            });
-        }
-        return this.progressBar;
-    },
     //Sync progress bar status
     syncProgress: function() {
         if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
             if(this.rendered) {
-                this.getEl().mask();
-                if(!this.getProgressBar().isVisible()) {
-                    this.progressBar.show();
-                }
-                this.progressBar.reset();
-                this.progressBar.wait({
-                    text: '<p class="app-progress-text">' +this.nodeProperties.displayName + '</p>',
-                    interval: 100,
-                    increment: 15
-                });
-            }
-        } else {
-            if(this.rendered) {
-                this.getEl().unmask();
-                if(this.progressBar) {
-                    this.progressBar.reset(true);
-                }
+                this.addCls('progress');
             }
         }
     },
     // before Destroy
     beforeDestroy: function() {
-        if(this.progressBar) {
-            this.progressBar.reset(true);
-            this.progressBar.destroy();
-        }
         this.callParent(arguments);
     },
     // install node
@@ -229,7 +200,7 @@ Ext.define("Ung.ConfigItem", {
     extend: "Ext.Component",
     cls: 'app-item',
     statics: {
-        template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div>', '<div class="app-name"><span>{text}</span></div>')
+        template: new Ext.Template('<div class="app-icon app-config-icon {iconCls}"></div><div class="app-name">{text}</div>')
     },
     afterRender: function() {
         this.callParent(arguments);
@@ -395,6 +366,22 @@ Ext.define("Ung.Node", {
                     cls: 'buy-button',
                     text: i18n._('Buy Now'),
                     handler: Ext.bind(this.onBuyNowAction, this)
+                }, {
+                    xtype: "button",
+                    name: "Remove app",
+                    iconCls: 'node-remove-icon',
+                    text: i18n._('Remove'),
+                    handler: Ext.bind(function() {
+                        var message =
+                            Ext.String.format( i18n._("{0} will be uninstalled from this policy."), this.displayName) + "<br/>" +
+                            i18n._("All of its settings will be lost.") + "\n" + "<br/>" + "<br/>" +
+                            i18n._("Would you like to continue?");
+                        Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
+                            if (btn == 'yes') {
+                                this.removeAction();
+                            }
+                        }, this));
+                    }, this)
                 }]
             });
             this.subCmps.push(this.buttonsPanel);

@@ -97,19 +97,91 @@ div.app-item {
     float: left;
     height: 140px;
     width: 140px;
-    margin: 15px;
-    border: solid 1px #d8dbe0;
-    background-color: white;
+    margin: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    background: #FFF;
     overflow: visible;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+div.app-item:hover, div.app-item.progress {
+    background: #EEE;
+}
+
+div.app-item .x-mask {
+    background: transparent;
 }
 
 div.app-item div.app-icon {
     display: block;
     position: relative;
-    margin: 20px auto 0px auto;
+    margin: 20px auto 0 auto;
+    text-align: center;
+    transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 10;
+}
+div.app-item:hover .app-icon, div.app-item.progress .app-icon {
+    transform-origin: top;
+    transform: scale(0.85);
+}
+div.app-item div.app-icon.app-config-icon {
+    transform: none;
     width: 80px;
     height: 80px;
 }
+
+
+div.app-item .app-install, div.app-item .app-done {
+    opacity: 0;
+    color: #67bd4a;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 11px;
+    transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+div.app-item.progress .app-install, div.app-item .app-done, div.app-item.progress.x-item-disabled .app-loader {
+    display: none;
+}
+
+div.app-item .app-done {
+    opacity: 1;
+    bottom: 3px;
+}
+
+div.app-item.x-item-disabled .app-done {
+    display: block;
+}
+
+
+div.app-item i {
+    vertical-align: middle;
+}
+div.app-item:hover .app-install {
+    opacity: 1;
+    bottom: 3px;
+}
+div.app-item:hover .app-install i {
+    opacity: 1;
+}
+
+div.app-item .app-loader {
+    display: none;
+    position: relative;
+    bottom: 20px;
+}
+
+div.app-item .app-loader .loader {
+    width: 40px;
+}
+
+div.app-item.progress .app-loader {
+    display: block;
+}
+
+
 
 div.app-item div.app-config-icon {
     background-color: transparent;
@@ -132,10 +204,7 @@ div.app-item p.app-progress-text {
 }
 
 div.app-item div.app-name {
-    display: table;
-    height: 38px;
-    width: 100%;
-    padding: 0 3px;
+    line-height: 24px;
     text-align: center;
     color: #4E4C4C;
     font-weight: bold;
@@ -495,7 +564,7 @@ a.forgot-password:hover {
 
 .dashboard .x-autocontainer-innerCt::after {
     content: '';
-    /*flex-grow: 1000000000;*/
+    flex-grow: 1000000000;
 }
 
 .dashboard .x-autocontainer-form-item,.dashboard .x-form-display-field-default {
@@ -1045,18 +1114,18 @@ a.forgot-password:hover {
     background: transparent;
 }
 
-.widget-loader .loader {
+.loader {
     position: relative;
     margin: 0px auto;
     width: 50px;
 }
-.widget-loader .loader:before {
+.loader:before {
     content: '';
     display: block;
     padding-top: 100%;
 }
 
-.widget-loader .circular {
+.loader .circular {
     -webkit-animation: rotate 2s linear infinite;
     animation: rotate 2s linear infinite;
     height: 100%;
@@ -1071,7 +1140,7 @@ a.forgot-password:hover {
     margin: auto;
 }
 
-.widget-loader .path {
+.loader .path {
     stroke-dasharray: 1,200;
     stroke-dashoffset: 0;
     -webkit-animation: dash 1.5s ease-in-out infinite, color 3s ease-in-out infinite;

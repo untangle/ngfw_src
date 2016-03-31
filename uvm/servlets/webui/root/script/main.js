@@ -255,6 +255,7 @@ Ext.define("Ung.Main", {
                             cls: 'action-button',
                             text: i18n._('Install Apps'),
                             handler: function() {
+                                Ung.Main.buildApps(); // when moving to App, rebuild them
                                 Ung.Main.openInstallApps();
                             }
                         }, {
@@ -334,6 +335,9 @@ Ext.define("Ung.Main", {
                         }, this.buildLinksMenu()]
                     }, {
                         xtype: 'container',
+                        style: {
+                            padding: '10px'
+                        },
                         itemId: "appsContainer"
                     }]
                 }, {
@@ -357,7 +361,10 @@ Ext.define("Ung.Main", {
                         xtype: 'container',
                         items: [{
                             xtype: 'container',
-                            itemId: 'configContainer'
+                            itemId: 'configContainer',
+                            style: {
+                                padding: '10px'
+                            }
                         }, {
                             xtype: 'component',
                             cls: 'config-separator top-title',
@@ -365,7 +372,10 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: 'container',
                             title: i18n._('Tools'),
-                            itemId: "toolsContainer"
+                            itemId: "toolsContainer",
+                            style: {
+                                padding: '10px'
+                            }
                         }]
                     }]
                 }, {
@@ -875,7 +885,7 @@ Ext.define("Ung.Main", {
         var callback = Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
-            Ung.Main.buildApps();
+            //Ung.Main.buildApps(); - disable app removal from 'Install' view, when install finishes
             Ung.Main.buildNodes();
         }, this);
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
@@ -924,6 +934,11 @@ Ext.define("Ung.Main", {
                 Ung.Main.updateRackView();
                 Ung.Util.handleException(exception);
                 return;
+            }
+            var app = Ung.AppItem.getApp(nodeProperties.name);
+            if (app) {
+                // apply disabled state for the installed app
+                app.setDisabled(true);
             }
             Ung.Main.updateRackView();
             if (completeFn)
