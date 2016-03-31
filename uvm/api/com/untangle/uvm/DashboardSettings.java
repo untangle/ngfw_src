@@ -17,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DashboardSettings implements Serializable, JSONString
 {
-    private int version = 1;
+    private Integer version = null;
     
     private List<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
     
@@ -31,4 +31,7 @@ public class DashboardSettings implements Serializable, JSONString
 
     public List<DashboardWidgetSettings> getWidgets(){ return widgets; }
     public void setWidgets( List<DashboardWidgetSettings> newValue) { this.widgets = newValue; }
+
+    public Integer getVersion() { return this.version; }
+    public void setVersion( Integer newValue ) { this.version = newValue ; }
 }

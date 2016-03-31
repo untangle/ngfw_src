@@ -3,7 +3,9 @@
  */
 package com.untangle.uvm;
 
+import java.util.List;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,40 @@ public class DashboardManagerImpl implements DashboardManager
         else {
             this.settings = readSettings;
             logger.debug("Loading Settings: " + this.settings.toJSONString());
+        }
+
+        if ( settings.getVersion() == null || settings.getVersion() < 2 ) {
+            logger.info("Migrating dashboard settings to v2...");
+
+            settings.setVersion(2);
+
+            List<DashboardWidgetSettings> widgets = settings.getWidgets();
+            for ( ListIterator<DashboardWidgetSettings> iterator = widgets.listIterator() ; iterator.hasNext() ; ) {
+                DashboardWidgetSettings widget = iterator.next();
+
+                // Hardware widget is gone, replace with Resources
+                if ( "Hardware".equals(widget.getType()) ) {
+                    iterator.remove();
+                    iterator.add( new DashboardWidgetSettings("Resources") );
+                }
+                // Network widget is gone, 
+                if ( "Network".equals(widget.getType()) ) {
+                    iterator.remove();
+                    iterator.add( new DashboardWidgetSettings("NetworkLayout") );
+                    iterator.add( new DashboardWidgetSettings("NetworkInformation") );
+                }
+                if ( "HostsDevices".equals(widget.getType()) )
+                    iterator.remove();
+                if ( "Sessions".equals(widget.getType()) )
+                    iterator.remove();
+                if ( "Memory".equals(widget.getType()) )
+                    iterator.remove();
+                if ( "Server".equals(widget.getType()) )
+                    iterator.remove();
+            }
+
+            this.setSettings( settings );
+            logger.info("Migrating dashboard settings to v2... done.");
         }
 
         logger.info("Initialized DashboardManager");
