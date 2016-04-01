@@ -83,7 +83,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
-        pre_scanned_events = global_functions.getStatusValue("INSPECTED")
+        pre_scanned_events = global_functions.getStatusValue("scan")
 
         
     def setUp(self):
@@ -118,6 +118,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_017_httpVirusZipBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
+
+        # Check to see if the faceplate counters have incremented.
+        post_scanned_events = global_functions.getStatusValue("scan")
+        assert(pre_scanned_events < post_scanned_events)
 
     # test that client can block a partial fetch after full fetch (using cache)
     def test_018_httpPartialVirusBlockedWithCache(self):
@@ -343,11 +347,6 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             self.shortName() + '_clean', False,
                                             min_date=startTime)
         assert( found )
-
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("INSPECTED")
-        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):

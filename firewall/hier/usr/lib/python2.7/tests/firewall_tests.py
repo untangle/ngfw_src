@@ -682,6 +682,9 @@ class FirewallTests(unittest2.TestCase):
                                             'firewall_blocked', True,
                                             'firewall_flagged', True)
         assert( found )
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("block")
+        assert(pre_scanned_events < post_scanned_events)
 
     # verify a flag port 80 rule works
     def test_501_flagDstPort80EventLog(self):
@@ -713,11 +716,6 @@ class FirewallTests(unittest2.TestCase):
                                             's_server_port', 80,
                                             'firewall_blocked', False,
                                             'firewall_flagged', False)
-
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("block")
-        assert(pre_scanned_events < post_scanned_events)
         
     @staticmethod
     def finalTearDown(self):

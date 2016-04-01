@@ -471,8 +471,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukePassedUrls()
         assert( resultReferer == 0 )        
 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
+        # Check to see if the faceplate counters have incremented. 
         post_scanned_events = global_functions.getStatusValue("scan")
         assert(pre_scanned_events < post_scanned_events)
         

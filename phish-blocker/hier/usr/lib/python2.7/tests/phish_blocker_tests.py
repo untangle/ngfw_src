@@ -82,7 +82,7 @@ class PhishBlockerTests(unittest2.TestCase):
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
-        pre_scanned_events = global_functions.getStatusValue("INSPECTED")
+        pre_scanned_events = global_functions.getStatusValue("quarantine")
         
     def setUp(self):
         # flush quarantine.
@@ -143,6 +143,10 @@ class PhishBlockerTests(unittest2.TestCase):
                                             'phish_blocker_action', 'Q')
         assert( found )
             
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("quarantine")
+        assert(pre_scanned_events < post_scanned_events)
+        
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
@@ -224,11 +228,6 @@ class PhishBlockerTests(unittest2.TestCase):
                                             'c_client_addr', remote_control.clientIP,
                                             'phish_blocker_action', 'D')
     
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("INSPECTED")
-        assert(pre_scanned_events < post_scanned_events)
-        
     @staticmethod
     def finalTearDown(self):
         global node, nodeSSL

@@ -239,6 +239,10 @@ class OpenVpnTests(unittest2.TestCase):
                                             'remote_address', vpnClientVpnIP,
                                             'client_name', vpnClientName )
         assert( found )
+
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("connect")
+        assert(pre_scanned_events < post_scanned_events)
         
     def test_050_createClientVPNFullTunnel(self):
         global nodeData, vpnServerResult, vpnClientResult, vpnClientVpnIP
@@ -305,12 +309,6 @@ class OpenVpnTests(unittest2.TestCase):
         assert(result1==0)
         assert(result2==0)
         assert(webresult==0)
-
-
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("connect")
-        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):

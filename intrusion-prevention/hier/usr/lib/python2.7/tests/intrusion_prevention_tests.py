@@ -648,9 +648,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
 
-
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
+        # Check to see if the faceplate counters have incremented. 
         post_scanned_events = global_functions.getStatusValue("detect")
         assert(pre_scanned_events < post_scanned_events)
 
