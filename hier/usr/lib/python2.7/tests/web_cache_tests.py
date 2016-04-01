@@ -54,8 +54,7 @@ class WebCacheTests(unittest2.TestCase):
         assert(events['list'][0])
         assert(events['list'][0]['hits'])
 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
+        # Check to see if the faceplate counters have incremented. 
         post_scanned_events = global_functions.getStatusValue("hit")
         assert(pre_scanned_events < post_scanned_events)
 
