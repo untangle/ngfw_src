@@ -155,6 +155,10 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result1 == 0)
         assert (result2 != 0)
 
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("pass")
+        assert(pre_scanned_events < post_scanned_events)
+
     def test_030_logicRule_Allow_Default(self):
         result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result == 0)
@@ -198,11 +202,6 @@ class ApplicationControlTests(unittest2.TestCase):
         for i in range(5):
             result = remote_control.isOnline()
             time.sleep(1)
-
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("pass")
-        assert(pre_scanned_events < post_scanned_events)
 
     @staticmethod
     def finalTearDown(self):
