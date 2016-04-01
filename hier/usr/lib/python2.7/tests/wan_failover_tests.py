@@ -367,8 +367,7 @@ class WanFailoverTests(unittest2.TestCase):
                 print "IP address %s and validWanIP %s" % (result,validWanIP)
                 assert (result == validWanIP)    
 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
+        # Check to see if the faceplate counters have incremented. 
         post_scanned_events = global_functions.getStatusValue("changed")
         assert(pre_scanned_events < post_scanned_events)
 
