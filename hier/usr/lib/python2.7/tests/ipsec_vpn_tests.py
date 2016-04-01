@@ -173,6 +173,10 @@ class IPsecTests(unittest2.TestCase):
         assert (ipsecHostLANResult == 0)
         tunnelUp = True
 
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("enabled")
+        assert(pre_scanned_events < post_scanned_events)
+               
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
         if (not tunnelUp):
@@ -233,11 +237,6 @@ class IPsecTests(unittest2.TestCase):
         vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         assert(found)
 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("enabled")
-        assert(pre_scanned_events < post_scanned_events)
-               
     @staticmethod
     def finalTearDown(self):
         global node, nodeAD
