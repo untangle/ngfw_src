@@ -26,11 +26,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -355,39 +356,40 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
         }
         
+        CloseableHttpClient httpClient = HttpClients.custom().build();
+        CloseableHttpResponse response = null;
+        HttpGet get;
         URL url;
-        HttpClient hc;
-        HttpMethod get;
         
         try {
             logger.info("Requesting Trial: " + urlStr);
             url = new URL(urlStr);
-            hc = new HttpClient();
-            get = new GetMethod(url.toString());
-            hc.executeMethod(get);
-
+            get = new HttpGet(url.toString());
+            response = httpClient.execute(get);
+            if ( response != null ) { response.close(); response = null; }
+            
             if ( urlStr2 != null ) {
                 logger.info("Requesting Trial: " + urlStr2);
                 url = new URL(urlStr2);
-                hc = new HttpClient();
-                get = new GetMethod(url.toString());
-                hc.executeMethod(get);
+                get = new HttpGet(url.toString());
+                response = httpClient.execute(get);
+                if ( response != null ) { response.close(); response = null; }
             }
 
             if ( urlStr3 != null ) {
                 logger.info("Requesting Trial: " + urlStr3);
                 url = new URL(urlStr3);
-                hc = new HttpClient();
-                get = new GetMethod(url.toString());
-                hc.executeMethod(get);
+                get = new HttpGet(url.toString());
+                response = httpClient.execute(get);
+                if ( response != null ) { response.close(); response = null; }
             }
 
             if ( urlStr4 != null ) {
                 logger.info("Requesting Trial: " + urlStr4);
                 url = new URL(urlStr4);
-                hc = new HttpClient();
-                get = new GetMethod(url.toString());
-                hc.executeMethod(get);
+                get = new HttpGet(url.toString());
+                response = httpClient.execute(get);
+                if ( response != null ) { response.close(); response = null; }
             }
 
         } catch ( java.net.UnknownHostException e ) {
@@ -399,6 +401,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         } catch ( Exception e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
+        } finally {
+            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
+            try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
 
         // blocking call because we need the new trial license
