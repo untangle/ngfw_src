@@ -565,9 +565,7 @@ class WanBalancerTests(unittest2.TestCase):
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         nukeFailoverRules()
- 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
+        # Check to see if the faceplate counters have incremented. 
         post_scanned_events = global_functions.getStatusValue("changed")
         assert(pre_scanned_events < post_scanned_events)
                
