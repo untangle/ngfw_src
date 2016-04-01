@@ -35,7 +35,6 @@ class Jars
   def Jars.findJars
     ## Named groups of jars
     const_set(:Log4j, [ Jars.downloadTarget('apache-log4j-1.2.16/log4j-1.2.16.jar') ])
-    const_set(:Ant, [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ])
     const_set(:JavaMailApi, [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ])
     const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')])
     const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')])
@@ -60,7 +59,7 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
              end)
 
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')] +  TomcatLogging)
 
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
@@ -73,13 +72,11 @@ class Jars
                          Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-core-1.1.4.jar'),
                          Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-dictionary-1.1.4.jar')])
 
-    ## Jars required to run/compile unit tests
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
 
     const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpclient-4.5.1.jar'),
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar'),
-                             Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
-                             Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
+                             Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar'),
                              Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
               
@@ -91,7 +88,7 @@ class Jars
     const_set(:Base, Jars.makeGroup(Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
-                                   Slf4j, DnsJava, Ant))
+                                   Slf4j, DnsJava))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end

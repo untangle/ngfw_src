@@ -21,16 +21,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
+
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SettingsChangesEvent;
@@ -91,33 +92,21 @@ public class SettingsManagerImpl implements SettingsManager
     {
         InputStream is = null;
 
+        CloseableHttpClient httpClient = HttpClients.custom().build();
+        CloseableHttpResponse response = null;
+        
         try {
             URL url = new URL(urlStr);
             logger.debug("Fetching Settings from URL: " + url); 
 
-            HttpClient hc = new HttpClient();
-            HttpMethod get = new GetMethod(url.toString());
-            get.setRequestHeader("Accept-Encoding", "gzip");
-            hc.executeMethod(get);
-
-            Header h = get.getResponseHeader("Content-Encoding");
-
-            /**
-             * Check for gzipped response
-             */
-            if (h != null) {
-                String ce = h.getValue();
-                if (ce != null && ce.equals("gzip")) {
-                    is = new GZIPInputStream(get.getResponseBodyAsStream());
-                }
+            HttpGet get = new HttpGet(url.toString());
+            get.addHeader("Accept-Encoding", "gzip");
+            response = httpClient.execute(get);
+            HttpEntity entity = response.getEntity();
+            if ( entity == null ) {
+                throw new IllegalArgumentException("Invalid Response: " + entity);
             }
-
-            /**
-             * Otherwise just assume its in clear text
-             */
-            if (is == null) {
-                is = get.getResponseBodyAsStream();
-            }
+            is = entity.getContent();
 
             Object lock = this.getLock(urlStr);
             synchronized(lock) {
@@ -129,6 +118,9 @@ public class SettingsManagerImpl implements SettingsManager
         }
         catch (java.io.IOException e) {
             throw new IllegalArgumentException("Invalid content in URL: '" + urlStr + "'", e);
+        } finally {
+            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
+            try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
     }
 
