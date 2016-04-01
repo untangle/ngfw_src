@@ -13,14 +13,18 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TXTRecord;
@@ -275,18 +279,24 @@ class WebFilterDecisionEngine extends DecisionEngine
 
                 lastDiaTry = t;
 
+                CloseableHttpClient httpClient = HttpClients.custom().build();
+                CloseableHttpResponse response = null;
+                CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new UsernamePasswordCredentials("untangle", "wu+glev6"));
+                HttpClientContext context = HttpClientContext.create();
+                context.setCredentialsProvider(credsProvider);
+                
                 try {
-                    HttpClient hc = new HttpClient();
-                    hc.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
-                    hc.getHttpConnectionManager().getParams().setSoTimeout(30000);
-                    Credentials defaultcreds = new UsernamePasswordCredentials("untangle", "wu+glev6");
-                    hc.getState().setCredentials(AuthScope.ANY, defaultcreds);
-                    String u = "*REMOVED*";
-                    logger.debug("Fetch URL: \"" + u + "\""); 
-                    HttpMethod get = new GetMethod(u);
-                    int rc = hc.executeMethod(get);
-                    if (200 == rc) {
-                        String s = get.getResponseBodyAsString().trim();
+
+                    String url = "*REMOVED*";
+                    logger.debug("Fetch URL: \"" + url + "\""); 
+                    HttpGet get = new HttpGet(url);
+
+                    response = httpClient.execute(get, context);
+                    
+                    if (response != null && response.getStatusLine().getStatusCode() == 200) {
+                        String s = EntityUtils.toString(response.getEntity(), "UTF-8");
+                        s = s.trim();
 
                         if (s.toUpperCase().startsWith("ERROR")) {
                             logger.warn("Could not get a dia key: " + s.substring(0, 10));
@@ -294,10 +304,15 @@ class WebFilterDecisionEngine extends DecisionEngine
                             diaKey = s;
                             lastDiaUpdate = System.currentTimeMillis();
                         }
+                    } else {
+                        logger.warn("Failed to get dia key: " + response);
                     }
                 } catch (Exception exn) {
                     logger.warn("Could not get dia key", exn);
-                } 
+                } finally {
+                    try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
+                    try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
+                }
                 
             }
         }
@@ -405,22 +420,6 @@ class WebFilterDecisionEngine extends DecisionEngine
         }
 
         return Long.toHexString(crc);
-    }
-
-    private String getOemKey()
-    {
-        byte[] e;
-
-        e = Base64.decodeBase64("VVtCSbC1urirkcnT".getBytes());
-
-        byte[] m = new byte[e.length];
-        char c = 'd';
-        for (int i = 0; i < e.length; i++) {
-            m[i] = (byte)(e[i] ^ c);
-            c += 7;
-        }
-
-        return new String(m);
     }
 
     private String[] lookupDns( String question )
