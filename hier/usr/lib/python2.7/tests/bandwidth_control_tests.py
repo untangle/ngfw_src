@@ -544,6 +544,10 @@ class BandwidthControlTests(unittest2.TestCase):
                                             "c_client_addr", remote_control.clientIP)
         assert( found )
 
+        # Check to see if the faceplate counters have incremented. 
+        post_scanned_events = global_functions.getStatusValue("prioritize")
+        assert(pre_scanned_events < post_scanned_events)
+ 
     def test_060_quota(self):
         global node
         nukeRules()
@@ -622,11 +626,6 @@ class BandwidthControlTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, "address", remote_control.clientIP)
         assert(found)
 
-    # Check to see if the faceplate counters have incremented. 
-    def test_900_checkCounters(self):
-        post_scanned_events = global_functions.getStatusValue("prioritize")
-        assert(pre_scanned_events < post_scanned_events)
- 
     @staticmethod
     def finalTearDown(self):
         global node, nodeWF, origNetworkSettings
