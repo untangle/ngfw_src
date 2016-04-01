@@ -1,15 +1,120 @@
-html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td {
-    margin: 0;
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('PT Sans'), local('PTSans-Regular'), url(../fonts/PTSans.woff) format('woff');
+}
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/images/fonts/material-icons/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(/images/fonts/material-icons/MaterialIcons-Regular.woff2) format('woff2'),
+    url(/images/fonts/material-icons/MaterialIcons-Regular.woff) format('woff'),
+    url(/images/fonts/material-icons/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+body.blockpage {
+    color: #FFF;
+    background-color: #C0C0C0;
+    text-align: center;
+    margin: 0 10px;
     padding: 0;
+    font-family: 'PT Sans', Tahoma, Arial, Helvetica, sans-serif;
 }
 
-img,body,html {
+.block {
+    max-width: 500px;
+    margin: 10px auto;
+    border-radius: 10px;
+    padding: 30px 10px;
+    background-color: #505050;
+    text-align: center;
+}
+
+.block h1 {
+    color: #67BD4A;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.block p {
+    margin: 5px;
+}
+
+.block hr {
     border: 0;
+    margin: 20px 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
 }
 
-body {
-    font-family: Tahoma, Arial, Helvetica, sans-serif;
+.block button {
+    display: inline-block;
+    font-size: 13px;
+    padding: 4px 12px;
+    font-weight: 400;
+    margin: 5px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    outline: none;
+    background-color: #67BD4A;
+    color: #FFF;
+    transition: all ease-in-out .15s;
 }
+
+.block button:hover {
+    background-color: rgba(103,189,74,.8);
+}
+.block button:active {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    box-shadow: inset 0 3px 5px rgba(0,0,0,.2);
+}
+
+@media ( max-width : 320px) {
+    .block .company-logo {
+        height: 60px;
+    }
+}
+
+
 /* user pages content container */
 #content {
     padding: 17px 12px 12px 12px;
@@ -38,7 +143,6 @@ body.blockpage #content {
 
 /* blockpage body*/
 body.blockpage {
-    font-family: arial, tahoma, helvetica, sans-serif;
     font-size: 10pt;
 }
 

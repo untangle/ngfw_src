@@ -26,7 +26,8 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
     <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>  
     <link rel="icon"  type="image/png" href="/images/block-favicon.png"/>  
     <title><c:out value="${pageTitle}"/></title>
@@ -46,53 +47,46 @@
 
     <c:out escapeXml="false" value="${javascript}"/>
   </head>
-  
-  <body id="simple" class="blockpage">
-    <div id="content" style="width:738px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
-      <div id="header" style="margin:15px 3px 3px 15px !important;">
-        <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt=""/></a>
-        <div class="title"><c:out value="${title}" escapeXml="false"/></div>
-      </div>
-      
-      <div id="main" style="top: auto !important;height:auto !important;position:relative !important;margin-top:30px !important;">
-        <p class="icon-block" style="float:left;width:170px;">
-            <br/>
-        </p>
-        <p class="description" style="text-align:left;margin-bottom:0px;font-size:14px;">
-          <span>${description}</span>
-          <br/>
-          
-          <span style="font-size:8pt;">${contact}</span>
-        </p>
-        <p class="contact" style="bottom:110px !important;left:70px;">
 
-        </p>        
-        <div class="info-list" style="float:left;margin-bottom:10px !important;">
-          <div><b style="margin-right:5px;"><uvm:i18n>Host:</uvm:i18n> </b><c:out value="${bd.formattedHost}"/></div>
-          <div><b style="margin-right:5px;"><uvm:i18n>URL:</uvm:i18n> </b><c:out value="${bd.formattedUrl}"/></div>
-          <c:if test="${!empty reason}">
-            <div><b style="margin-right:5px;"><uvm:i18n>Reason:</uvm:i18n></b> <c:out value="${reason}"/></div>
-          </c:if>
-        </div>
-        
+  <body class="blockpage">
+    <div class="block">
+      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo"/></a>
+      <hr/>
+
+      <h1><c:out value="${title}" escapeXml="false"/></h1>
+      <i class="material-icons" style="font-size: 64px; color: red; vertical-align: top;">block</i>
+      <div style="display: inline-block; vertical-align: top; width: 70%; text-align: left;">
+        <p style="font-weight: bold;">${description}</p>
+        <p style="font-size: 12px; color: #CCC;">${contact}</p>
+      </div>
+
+
+      <hr/>
+      <i class="material-icons" style="font-size: 64px; color: #999; vertical-align: middle;">link</i>
+      <div style="display: inline-block; vertical-align: middle; width: 70%; text-align: left; font-size: 12px; color: #CCC;">
+        <p><strong><uvm:i18n>Host:</uvm:i18n></strong> <c:out value=" ${bd.formattedHost}"/></p>
+        <p><strong><uvm:i18n>URL:</uvm:i18n></strong> <c:out value=" ${bd.formattedUrl}"/></p>
+        <c:if test="${!empty reason}">
+          <p><strong><uvm:i18n>Reason:</uvm:i18n></strong> <c:out value=" ${reason}"/></p>
+        </c:if>
+
         <c:if test="${!empty additional_fields}">
           ${additional_fields}
         </c:if>
-        <div class="u-form-item">
-            <c:if test="${showUnblockNow}">
-              <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
-                <uvm:i18n>Unblock For Now</uvm:i18n>
-              </button>
-            </c:if>
-            
-            <c:if test="${showUnblockGlobal}">
-              <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
-                <uvm:i18n>Unblock Permanently</uvm:i18n>
-              </button>
-            </c:if>
-        </div>
+
       </div>
-              
+
+      <c:if test="${showUnblockNow}">
+        <button onclick="unblockSite(false)">
+          <uvm:i18n>Unblock For Now</uvm:i18n>
+        </button>
+      </c:if>
+      <c:if test="${showUnblockGlobal}">
+        <button type="button" onclick="unblockSite(true)">
+          <uvm:i18n>Unblock Permanently</uvm:i18n>
+        </button>
+      </c:if>
+
       <div id="footer">
         <p><span><c:out value="${footer}"/></span></p>
       </div>
@@ -103,7 +97,7 @@
       <div id="extra-div-4"><span></span></div>
       <div id="extra-div-5"><span></span></div>
       <div id="extra-div-6"><span></span></div>
-    </div>
 
+    </div>
   </body>
 </html>
