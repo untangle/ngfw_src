@@ -366,22 +366,6 @@ Ext.define("Ung.Node", {
                     cls: 'buy-button',
                     text: i18n._('Buy Now'),
                     handler: Ext.bind(this.onBuyNowAction, this)
-                }, {
-                    xtype: "button",
-                    name: "Remove app",
-                    iconCls: 'node-remove-icon',
-                    text: i18n._('Remove'),
-                    handler: Ext.bind(function() {
-                        var message =
-                            Ext.String.format( i18n._("{0} will be uninstalled from this policy."), this.displayName) + "<br/>" +
-                            i18n._("All of its settings will be lost.") + "\n" + "<br/>" + "<br/>" +
-                            i18n._("Would you like to continue?");
-                        Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
-                            if (btn == 'yes') {
-                                this.removeAction();
-                            }
-                        }, this));
-                    }, this)
                 }]
             });
             this.subCmps.push(this.buttonsPanel);
