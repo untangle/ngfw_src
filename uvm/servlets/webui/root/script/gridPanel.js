@@ -274,6 +274,42 @@ Ext.define('Ung.grid.Panel', {
                 handler: Ext.bind(this.addHandler, this)
             });
         }
+
+        if (this.filterFields) {
+            this.tbar.push({ xtype: 'tbseparator' });
+            this.tbar.push(i18n._('Search'));
+            this.tbar.push({
+                xtype: 'textfield',
+                enableKeyEvents: true,
+                listeners: {
+                    keyup: {
+                        fn: function (string, e) {
+                            if (e.getKey() !== e.ENTER) {
+                                return;
+                            }
+                            if (string.getValue().length === 0) {
+                                grid.store.clearFilter();
+                                return;
+                            }
+                            var re = new RegExp(string.getValue(), 'ig');
+                            this.filter = new Ext.util.Filter({
+                                filterFn: function (item) {
+                                    var filtered = false;
+                                    grid.filterFields.forEach(function (field) {
+                                        if (!filtered && item.get(field) && re.test(item.get(field))) {
+                                            filtered = true;
+                                        }
+                                    });
+                                    return filtered;
+                                }
+                            });
+                            grid.store.filter(this.filter);
+                        }
+                    }
+                }
+            });
+        }
+
         if (this.hasCheckAll) {
             for (i = 0; i < this.columns.length; i++) {
                 col=this.columns[i];

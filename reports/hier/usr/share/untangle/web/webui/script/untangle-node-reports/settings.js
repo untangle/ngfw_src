@@ -688,6 +688,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 columnsDefaultSortable: false,
                 fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
                          'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
+                filterFields: ['title', 'description', 'units', 'displayOrder'],
                 columns: [{
                     header: i18n._("Title"),
                     width: 230,
