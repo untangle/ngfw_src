@@ -74,6 +74,16 @@ public class GoogleManagerImpl
         }
     }
 
+    public boolean authenticate( String username, String pwd )
+    {
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
+            return false;
+        if (!this.settings.getAuthenticationEnabled())
+            return false;
+
+        return GoogleAuthenticator.authenticate( username, pwd );
+    }
+    
     /**
      * This returns true if google drive is configured.
      * False otherwise

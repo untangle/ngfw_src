@@ -165,7 +165,6 @@ public class ActiveDirectoryManagerImpl
             
         return false;                
     }
-    
   
     private String listToString(List<String> input) 
     {

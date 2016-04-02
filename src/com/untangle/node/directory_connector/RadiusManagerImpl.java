@@ -85,18 +85,14 @@ public class RadiusManagerImpl
 
     public boolean authenticate( String username, String pwd )
     {
-        // No blank usernames or passwords.
         if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
             return false;
-        
         if ( this.radiusAdapter == null ) 
             return false;
-
         if (!this.currentSettings.isEnabled())
             return false;
         
         return radiusAdapter.authenticate(username, pwd);
     }
-
     
 }

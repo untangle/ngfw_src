@@ -225,40 +225,65 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
 
     public boolean activeDirectoryAuthenticate(String username, String pwd)
     {
-        if (!isLicenseValid()) {
+        if (!isLicenseValid()) 
             return false;
-        }
-
-        // No blank usernames or passwords.
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) {
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
             return false;
-        }
-
-        if (this.activeDirectoryManager == null) {
+        if (this.activeDirectoryManager == null) 
             return false;
-        }
 
         return this.activeDirectoryManager.authenticate(username, pwd);
     }
 
     public boolean radiusAuthenticate(String username, String pwd)
     {
-        if (!isLicenseValid()) {
+        if (!isLicenseValid())
             return false;
-        }
-
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) {
-            // No blank usernames or passwords.
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
             return false;
-        }
-
-        if (this.radiusManager == null) {
+        if (this.radiusManager == null)
             return false;
-        }
 
         return this.radiusManager.authenticate(username, pwd);
     }
 
+    public boolean googleAuthenticate(String username, String pwd)
+    {
+        if (!isLicenseValid())
+            return false;
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
+            return false;
+        if (this.googleManager == null)
+            return false;
+
+        return this.googleManager.authenticate(username, pwd);
+    }
+
+    public boolean anyAuthenticate(String username, String pwd)
+    {
+        if (!isLicenseValid())
+            return false;
+        if (username == null || username.equals("") || pwd == null || pwd.equals(""))
+            return false;
+        try {
+            if ( UvmContextFactory.context().localDirectory().authenticate(username, pwd) )
+                return true;
+        } catch (Exception e) {}
+        try {
+            if (activeDirectoryAuthenticate( username, pwd ))
+                return true;                              
+        } catch (Exception e) {}
+        try {
+            if (radiusAuthenticate( username, pwd ))
+                return true;                              
+        } catch (Exception e) {}
+        try {
+            if (googleAuthenticate( username, pwd ))
+                return true;                              
+        } catch (Exception e) {}
+        return false;
+    }
+    
     public boolean isMemberOf(String user, String group)
     {
         if (!isLicenseValid()) {

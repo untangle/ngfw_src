@@ -61,9 +61,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 this.getGoogleManager().isGoogleDriveConnected(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.googleDriveConnected = result;
-                    var googleConnectorStatus = this.panelGoogle.down('component[name=googleConnectorStatus]');
-                    googleConnectorStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
-                    googleConnectorStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
+                    var googleDriveStatus = this.panelGoogle.down('component[name=googleDriveStatus]');
+                    googleDriveStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
+                    googleDriveStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
 
                     if ( this.googleDriveConnected ) {
                         this.refreshGoogleTask.stop();
@@ -80,6 +80,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     },
     getRadiusSettings: function() {
         return this.getSettings().radiusSettings;
+    },
+    getGoogleSettings: function() {
+        return this.getSettings().googleSettings;
     },
     getActiveDirectoryManager: function(forceReload) {
         if (forceReload || this.rpc.activeDirectoryManager === undefined) {
@@ -771,36 +774,121 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
-                title: i18n._('Google Connector'),
-                name: 'Google Connector',
+                name: 'Google Drive',
+                title: i18n._('Google Drive'),
                 xtype: 'fieldset',
-                labelWidth: 250,
                 items: [{
                     xtype: 'container',
                     margin: '5 0 15 0',
-                    html: i18n._('This allows your server to connect to various Google APIs such as Google Drive.')
+                    html: i18n._('This allows your server to connect to Google Drive.')
                 }, {
                     xtype: 'component',
-                    name: 'googleConnectorStatus',
-                    html: (this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")),
+                    name: 'googleDriveStatus',
+                    html: (this.googleDriveConnected ? i18n._("The Google Drive is configured.") : i18n._("The Google Drive is unconfigured.")),
                     style: (this.googleDriveConnected ? {color:'green'} : {color:'red'}),
                     cls: (this.googleDriveConnected ? null : 'warning')
                 }, {
                     xtype: "button",
                     margin: '10 0 0 0',
-                    name: 'configure_google_connector',
-                    text: (this.googleDriveConnected ? i18n._("Reconfigure Google Connector") : i18n._("Configure Google Connector")),
+                    name: 'configure_google_drive',
+                    text: (this.googleDriveConnected ? i18n._("Reconfigure Google Drive") : i18n._("Configure Google Drive")),
                     iconCls: "action-icon",
                     handler: Ext.bind(function() {
                         this.refreshGoogleTask.start();
                         window.open(this.authorizationUrl);
                     }, this)
                 }]
-            }]
+            },{
+                name: 'Google Authentication',
+                title: i18n._('Google Authentication'),
+                xtype: 'fieldset',
+                items: [{
+                    xtype: 'container',
+                    html: Ext.String.format(i18n._('This allows your server to connect to {0}Google{1} in order to identify users for use by Captive Portal.'),'<b>','</b>')
+                }, {
+                    xtype: 'radio',
+                    boxLabel: '<b>'+i18n._('Disabled')+'</b>',
+                    style: {marginLeft: '50px'},
+                    hideLabel: true,
+                    name: 'enableGoogle',
+                    checked: (!this.getGoogleSettings().authenticationEnabled),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, checked) {
+                                this.getGoogleSettings().authenticationEnabled = !checked;
+
+                                var components = this.query('textfield[requiresGoogle="true"]'), c;
+                                for ( c = 0 ; c < components.length ; c++ ) {
+                                    if ( checked ) {
+                                        components[c].disable();
+                                    } else {
+                                        components[c].enable();
+                                    }
+                                }
+
+                                this.panelGoogle.down('button[name=google_test]').setDisabled( checked );
+                                this.panelGoogle.down('textfield[name=google_test_username]').setDisabled( checked );
+                                this.panelGoogle.down('textfield[name=google_test_password]').setDisabled( checked );
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype: 'radio',
+                    boxLabel: '<b>'+i18n._('Enabled')+'</b>',
+                    style: {marginLeft: '50px'},
+                    hideLabel: true,
+                    name: 'enableGoogle',
+                    checked: this.getGoogleSettings().authenticationEnabled
+                },{
+                    xtype: 'component',
+                    html: "<BR><HR><BR>",
+                    style: {marginRight: '20px'}
+                },{
+                    xtype: 'component',
+                    html: Ext.String.format(i18n._('The {0}Google Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                },{
+                    xtype:'textfield',
+                    style: {marginTop: '10px'},
+                    name: 'google_test_username',
+                    fieldLabel: i18n._('Username'),
+                    labelWidth:250,
+                    labelAlign:'right',
+                    width: 450,
+                    disabled: (!this.getGoogleSettings().authenticationEnabled)
+                },{
+                    xtype:'textfield',
+                    name: 'google_test_password',
+                    fieldLabel: i18n._('Password'),
+                    labelWidth:250,
+                    labelAlign:'right',
+                    width: 450,
+                    disabled: (!this.getGoogleSettings().authenticationEnabled)
+                },{
+                    xtype: 'button',
+                    text: i18n._('Google Test'),
+                    iconCls: 'test-icon',
+                    name: 'google_test',
+                    disabled: (!this.getGoogleSettings().authenticationEnabled),
+                    handler: Ext.bind(function() {
+                        this.panelGoogle.onGoogleTestClick();
+                    }, this)
+                }]
+            }],
+            onGoogleTestClick: Ext.bind(function() {
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Google Test"));
+                var userCmp = this.panelGoogle.down('textfield[name=google_test_username]').getValue();
+                var passwordCmp = this.panelGoogle.down('textfield[name=google_test_password]').getValue();
+
+                var message = this.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var message = i18n._(result);
+                    Ext.MessageBox.alert(i18n._("GOOGLE Test"), message);
+                }, this), userCmp, passwordCmp);
+            }, this)
         });
     },
 
-    //validate AD connector settings
+    //validate directory connector settings
     validate: function() {
         if(this.getSettings().activeDirectorySettings.enabled) {
             var hostCmp = this.panelActiveDirectoryConnector.down("textfield[name=LDAPHost]");
