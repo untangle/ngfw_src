@@ -95,23 +95,31 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
+        print "looking for: \"%s\""%newCompanyName
+        print "in :\"%s\""%matchText
         assert(newCompanyName in matchText)
 
         # Verify email address is in the contact link
         myRegex = re.compile('mailto:(.*?)\?', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
+        print "looking for: \"%s\""%newContactEmail
+        print "in :\"%s\""%matchText
         assert(newContactEmail in matchText)
 
         # Verify contact name is in the mailto
         myRegex = re.compile('mailto:.*?>(.*?)<\/a>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
+        print "looking for: \"%s\""%newContactName
+        print "in :\"%s\""%matchText
         assert(newContactName in matchText)
 
         # Verify URL is in the Logo box
-        myRegex = re.compile('<a href\=\"(.*?)\"><img alt\=\"\" src\=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
+        myRegex = re.compile('<a href\=\"(.*?)\"><img .* src\=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
+        print "looking for: \"%s\""%newURL
+        print "in :\"%s\""%matchText
         assert(newURL in matchText)
        
         # Check login page for branding
@@ -125,7 +133,8 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        # print "MatchText <%s>" % matchText
+        print "looking for: \"%s\""%newCompanyName
+        print "in :\"%s\""%matchText
         assert(newCompanyName in matchText)
 
         # Check quarantine page
@@ -136,7 +145,8 @@ class BrandingManagerTests(unittest2.TestCase):
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        # print "MatchText <%s>" % matchText
+        print "looking for: \"%s\""%newCompanyName
+        print "in :\"%s\""%matchText
         assert(newCompanyName in matchText)
 
     def test_021_changeBranding_bannerMessage_added(self):
