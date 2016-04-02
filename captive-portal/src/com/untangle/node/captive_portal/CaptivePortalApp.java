@@ -460,7 +460,7 @@ public class CaptivePortalApp extends NodeBase
                 isAuthenticated = directoryConnector.activeDirectoryAuthenticate(originalUsername, password);
                 if (isAuthenticated == false) isAuthenticated = directoryConnector.activeDirectoryAuthenticate(strippedUsername, password);
             } catch (Exception e) {
-                logger.warn("Active Directory failure", e);
+                logger.warn("Active Directory authentication failure", e);
                 isAuthenticated = false;
             }
             break;
@@ -469,7 +469,7 @@ public class CaptivePortalApp extends NodeBase
             try {
                 isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password);
             } catch (Exception e) {
-                logger.warn("Local Directory failure", e);
+                logger.warn("Local Directory authentication failure", e);
                 isAuthenticated = false;
             }
             break;
@@ -479,7 +479,27 @@ public class CaptivePortalApp extends NodeBase
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.radiusAuthenticate(username, password);
             } catch (Exception e) {
-                logger.warn("Radius Directory failure", e);
+                logger.warn("Radius authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+            
+        case GOOGLE:
+            try {
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.googleAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Google authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+
+        case ANY:
+            try {
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("ANY authentication failure", e);
                 isAuthenticated = false;
             }
             break;

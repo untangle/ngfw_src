@@ -391,7 +391,37 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 },{
                     xtype: "radio",
                     style: {marginTop: '15px'},
-                    boxLabel: Ext.String.format( i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
+                    boxLabel: i18n._("Any Method") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                    hideLabel: true,
+                    disabled: !directoryConnectorLicense,
+                    name: "authenticationType",
+                    inputValue: "ANY",
+                    listeners: {
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
+                    }
+                },{
+                    xtype: "radio",
+                    style: {marginTop: '15px'},
+                    boxLabel: "Google" + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                    hideLabel: true,
+                    disabled: !directoryConnectorLicense,
+                    name: "authenticationType",
+                    inputValue: "GOOGLE",
+                    listeners: {
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
+                    }
+                },{
+                    xtype: "button",
+                    disabled: !directoryConnectorLicense,
+                    name: "configureGoogleServer",
+                    text: i18n._("Configure Google"),
+                    handler: Ext.bind(this.configureGoogle, this )
+                },{
+                    xtype: "radio",
+                    style: {marginTop: '15px'},
+                    boxLabel: i18n._("RADIUS") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
                     hideLabel: true,
                     disabled: !directoryConnectorLicense,
                     name: "authenticationType",
@@ -409,7 +439,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 },{
                     xtype: "radio",
                     style: {marginTop: '15px'},
-                    boxLabel: Ext.String.format( i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
+                    boxLabel: i18n._("Active Directory") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
                     hideLabel: true,
                     disabled: !directoryConnectorLicense,
                     name: "authenticationType",
@@ -1036,6 +1066,16 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
     },
     configureLocalDirectory: function() {
         Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
+    },
+    configureGoogle: function() {
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.Google Connector";
+                nodeCmp.loadSettings();
+            }
+        }
     },
     configureRadius: function() {
         var node = Ung.Main.getNode("untangle-node-directory-connector");

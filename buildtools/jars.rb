@@ -79,7 +79,14 @@ class Jars
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar'),
                              Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
-              
+
+    const_set(:Selenium, [ Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/selenium-java-2.53.0.jar'),
+                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/phantomjsdriver-1.2.1.jar'),
+                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/gson-2.3.1.jar'),
+                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/guava-19.0.jar'),
+                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-exec-1.3.jar'),
+                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-logging-1.2.jar')])
+    
     const_set(:Jstl, [ Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/jstl.jar'),
                        Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/standard.jar') ])
 
@@ -88,7 +95,7 @@ class Jars
     const_set(:Base, Jars.makeGroup(Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
-                                   Slf4j, DnsJava))
+                                   Slf4j, DnsJava, Selenium))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end
