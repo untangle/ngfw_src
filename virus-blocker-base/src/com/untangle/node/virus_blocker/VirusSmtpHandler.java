@@ -119,7 +119,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     @Override
     public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
-        logger.debug("[blockPassOrModify] called");
+        logger.debug("Message[" + msgInfo.getMessageId() + "] blockPassOrModify()");
         this.node.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getParts(msg);
@@ -135,7 +135,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         String actionTaken = "pass";
         String configuredAction = node.getSettings().getSmtpAction();
-
+        String virusName = null;
+        
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
@@ -170,10 +171,6 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             else
                 actionTaken = configuredAction;
 
-            // Make log report
-            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), actionTaken, this.node.getName());
-            this.node.logEvent(event);
-
             if (scanResult.isClean()) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Clean part: Disposition: " + disposition + " ContentType: " + contentType);
             } else {
@@ -183,7 +180,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                     scanResultForWrap = scanResult;
                 }
                 foundVirus = true;
-
+                virusName = scanResult.getVirusName();
+                
                 if ("pass".equals(actionTaken)) {
                     logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected part as-per policy");
                 } else if ("block".equals(actionTaken)) {
@@ -206,6 +204,9 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             }
         }
 
+        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, actionTaken, this.node.getName());
+        this.node.logEvent(event);
+        
         if (foundVirus) {
             if ("block".equals(configuredAction)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Returning BLOCK as-per policy");
@@ -220,7 +221,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected message (as-per policy)");
                 this.node.incrementPassedInfectedMessageCount();
             }
-        }
+        } 
         this.node.incrementPassCount();
         return new ScannedMessageResult(BlockOrPassResult.PASS);
     }
@@ -228,7 +229,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     @Override
     public BlockOrPassResult blockOrPass(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
-        logger.debug("[blockOrPass] called");
+        logger.debug("Message[" + msgInfo.getMessageId() + "] blockOrPass()");
         this.node.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getParts(msg);
@@ -247,7 +248,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         boolean foundVirus = false;
         VirusScannerResult scanResultForWrap = null;
-
+        String virusName = null;
+        
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
@@ -291,6 +293,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                     scanResultForWrap = scanResult;
                 }
                 foundVirus = true;
+                virusName = scanResult.getVirusName();
 
                 // Make log report
                 VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), scanResult.isClean() ? "pass" : action, this.node.getName());
@@ -304,6 +307,10 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 }
             }
         }
+
+        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, (foundVirus ? action : "pass"), this.node.getName());
+        this.node.logEvent(event);
+
         if (foundVirus) {
             if ("block".equals(action)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Blocking mail as-per policy");
