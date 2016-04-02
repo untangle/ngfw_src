@@ -7,7 +7,7 @@ openjdk8 = "java-8-openjdk-#{arch}"
 jvm = case arch
       when "armel"
         # "jdk-7-oracle-arm-vfp-sflt"
-        "java-7-openjdk-armel"
+        File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "java-7-openjdk-armel"
       when "armhf"
         File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "jdk-7-oracle-arm-vfp-hflt"
       else
