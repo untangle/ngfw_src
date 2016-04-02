@@ -27,7 +27,8 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
-	jradius-client-1.1.4-release.zip jakarta-taglibs-standard-1.1.2.zip
+	jradius-client-1.1.4-release.zip jakarta-taglibs-standard-1.1.2.zip \
+	selenium-java-2.53.0.zip
 
 jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \
 	dnsjava-2.1.6.jar
@@ -47,17 +48,17 @@ all: $(packages) ;
 	@find ${OUTPUT_DIRECTORY} -type f -name '* *' -print0 | xargs -0 rm -f
 	@find ${OUTPUT_DIRECTORY} -type d -name '* *' -print0 | xargs -0 rm -rf
 
-$(OUTPUT_DIRECTORY)/%: %.tar.gz %.excl $(OUTPUT_DIRECTORY).$(dir_target)
+$(OUTPUT_DIRECTORY)/%: %.tar.gz $(OUTPUT_DIRECTORY).$(dir_target)
 	@echo "[untar gz] $< -> $@"
 	@$(RM_DIR) $@
-	@$(TAR) -C $(OUTPUT_DIRECTORY) -X $(<:.tar.gz=.excl) -zxf $<
+	@$(TAR) -C $(OUTPUT_DIRECTORY) -zxf $<
 	@if [ -x $(<:.tar.gz=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.tar.gz=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
-$(OUTPUT_DIRECTORY)/%: %.tar.bz2 %.excl $(OUTPUT_DIRECTORY).$(dir_target)
+$(OUTPUT_DIRECTORY)/%: %.tar.bz2 $(OUTPUT_DIRECTORY).$(dir_target)
 	@echo "[untar bz] $< -> $@"
 	@$(RM_DIR) $@
-	@$(TAR) -C $(OUTPUT_DIRECTORY) -X $(<:.tar.bz2=.excl) -jxf $<
+	@$(TAR) -C $(OUTPUT_DIRECTORY) -jxf $<
 	@if [ -x $(<:.tar.bz2=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.tar.bz2=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
