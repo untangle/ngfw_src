@@ -232,7 +232,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_021b.out")
         assert (search == 0)
         
-    def test_022_captureTrafficVsWebFilterCheck(self):
+    def test_022_webFilterAffinityCheck(self):
         global node, nodeData, nodeWeb
         nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
@@ -246,6 +246,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022.out http://test.untangle.com/")
         assert (result == 0)
+        # User should see captive portal page (not web filter block page)
         search = remote_control.runCommand("grep -q 'Captive Portal' /tmp/capture_test_022.out")
         assert (search == 0)
 
@@ -257,7 +258,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_022b.out")
         assert (search == 0)
 
-    def test_023_captureAnonymousLogin(self):
+    def test_023_loginAnonymous(self):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
@@ -289,7 +290,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_023b.out")
         assert (search == 0)
 
-    def test_024_captureAnonymousLoginTimeout(self):
+    def test_024_loginAnonymousTimeout(self):
         global node, nodeData
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
@@ -323,7 +324,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Captive Portal' /tmp/capture_test_024b.out")
         assert (search == 0)
 
-    def test_025_captureAnonymousLoginHTTPS(self):
+    def test_025_loginAnonymousHttps(self):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
@@ -355,7 +356,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_025b.out")
         assert (search == 0)
 
-    def test_030_captureLocalDirLogin(self):
+    def test_030_loginLocalDirectory(self):
         global node, nodeData
 
         # Create Internal NIC capture rule with basic login page
@@ -391,7 +392,43 @@ class CaptivePortalTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)        
 
-    def test_035_captureADLogin(self):
+    def test_031_loginAny(self):
+        global node, nodeData
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        nodeData['authenticationType']="ANY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        assert (search == 0)
+
+        # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername)        
+
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(not foundUsername)        
+        
+    def test_035_loginActiveDirectory(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
         if (adResult != 0):
             raise unittest2.SkipTest("No AD server available")
@@ -456,7 +493,8 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035f.out")
         assert (search == 0)
 
-    def test_040_captureRadiusLogin(self):
+        
+    def test_040_loginRadius(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
         if (radiusResult != 0):
             raise unittest2.SkipTest("No RADIUS server available")
@@ -514,7 +552,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040d.out")
         assert (search == 0)
 
-    def test_050_captureCookie(self):
+    def test_050_cookie(self):
         """
         Cookie test
         """
@@ -575,7 +613,7 @@ class CaptivePortalTests(unittest2.TestCase):
         time.sleep(20)
         node.runCleanup() # run the periodic cleanup task to remove expired users
 
-    def test_051_captureCookie_timeout(self):
+    def test_051_cookieTimeout(self):
         """
         Cookie expiration
         """
@@ -630,7 +668,7 @@ class CaptivePortalTests(unittest2.TestCase):
         print "second_difference: %i cookie_timeout: %i" %(second_difference, cookie_timeout)
         assert(second_difference > cookie_timeout)
 
-    def test_052_captureCookie_disabled_try_cookie(self):
+    def test_052_cookieDisabled(self):
         """
         User has a cookie but cookies have been disabled
         """
@@ -640,7 +678,7 @@ class CaptivePortalTests(unittest2.TestCase):
         capture_file_name = "/tmp/capture_test_052.out"
         cookieExistsResults = remote_control.runCommand("test -e " + savedCookieFileName)
         if (cookieExistsResults == 1):
-            raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captureCookie_timeout' % savedCookieFileName)
+            raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captivePortalCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
