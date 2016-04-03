@@ -362,7 +362,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             cls: "ung-panel",
             items: [{
                 xtype: "fieldset",
-                title: i18n._( "User Authentication" ),
+                title: i18n._( "Authentication Method" ),
                 items: [{
                     xtype: "radio",
                     boxLabel: i18n._("None"),
@@ -374,23 +374,28 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         "afterrender": onRenderAuthenticationType
                     }
                 },{
-                    xtype: "radio",
-                    boxLabel: i18n._("Local Directory"),
-                    hideLabel: true,
-                    name: "authenticationType",
-                    inputValue: "LOCAL_DIRECTORY",
-                    listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
-                    }
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: "radio",
+                        style: {marginRight: '15px'},
+                        boxLabel: i18n._("Local Directory"),
+                        hideLabel: true,
+                        name: "authenticationType",
+                        inputValue: "LOCAL_DIRECTORY",
+                        listeners: {
+                            "change": onUpdateAuthenticationType,
+                            "afterrender": onRenderAuthenticationType
+                        }
+                    },{
+                        xtype: "button",
+                        name: "configureLocalDirectory",
+                        text: i18n._("Configure Local Directory"),
+                        handler: Ext.bind(this.configureLocalDirectory, this )
+                    }]
                 },{
-                    xtype: "button",
-                    name: "configureLocalDirectory",
-                    text: i18n._("Configure Local Directory"),
-                    handler: Ext.bind(this.configureLocalDirectory, this )
-                },{
                     xtype: "radio",
-                    style: {marginTop: '15px'},
                     boxLabel: i18n._("Any Method") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
                     hideLabel: true,
                     disabled: !directoryConnectorLicense,
@@ -401,59 +406,101 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         "afterrender": onRenderAuthenticationType
                     }
                 },{
-                    xtype: "radio",
-                    style: {marginTop: '15px'},
-                    boxLabel: "Google" + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
-                    hideLabel: true,
-                    disabled: !directoryConnectorLicense,
-                    name: "authenticationType",
-                    inputValue: "GOOGLE",
-                    listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
-                    }
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    bodyPadding: '0 0 50 0',
+                    items: [{
+                        xtype: "radio",
+                        style: {marginRight: '15px'},
+                        boxLabel: "Google" + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                        hideLabel: true,
+                        disabled: !directoryConnectorLicense,
+                        name: "authenticationType",
+                        inputValue: "GOOGLE",
+                        listeners: {
+                            "change": onUpdateAuthenticationType,
+                            "afterrender": onRenderAuthenticationType
+                        }
+                    },{
+                        xtype: "button",
+                        disabled: !directoryConnectorLicense,
+                        name: "configureGoogleServer",
+                        text: i18n._("Configure Google"),
+                        handler: Ext.bind(this.configureGoogle, this )
+                    }]
                 },{
-                    xtype: "button",
-                    disabled: !directoryConnectorLicense,
-                    name: "configureGoogleServer",
-                    text: i18n._("Configure Google"),
-                    handler: Ext.bind(this.configureGoogle, this )
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    bodyPadding: '0 0 50 0',
+                    items: [{
+                        xtype: "radio",
+                        style: {marginRight: '15px'},
+                        boxLabel: "Facebook" + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                        hideLabel: true,
+                        disabled: !directoryConnectorLicense,
+                        name: "authenticationType",
+                        inputValue: "FACEBOOK",
+                        listeners: {
+                            "change": onUpdateAuthenticationType,
+                            "afterrender": onRenderAuthenticationType
+                        }
+                    },{
+                        xtype: "button",
+                        disabled: !directoryConnectorLicense,
+                        name: "configureFacebookServer",
+                        text: i18n._("Configure Facebook"),
+                        handler: Ext.bind(this.configureFacebook, this )
+                    }]
                 },{
-                    xtype: "radio",
-                    style: {marginTop: '15px'},
-                    boxLabel: i18n._("RADIUS") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
-                    hideLabel: true,
-                    disabled: !directoryConnectorLicense,
-                    name: "authenticationType",
-                    inputValue: "RADIUS",
-                    listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
-                    }
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    bodyPadding: '0 0 50 0',
+                    items: [{
+                        xtype: "radio",
+                        style: {marginRight: '15px'},
+                        boxLabel: i18n._("RADIUS") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                        hideLabel: true,
+                        disabled: !directoryConnectorLicense,
+                        name: "authenticationType",
+                        inputValue: "RADIUS",
+                        listeners: {
+                            "change": onUpdateAuthenticationType,
+                            "afterrender": onRenderAuthenticationType
+                        }
+                    },{
+                        xtype: "button",
+                        disabled: !directoryConnectorLicense,
+                        name: "configureRadiusServer",
+                        text: i18n._("Configure RADIUS"),
+                        handler: Ext.bind(this.configureRadius, this )
+                    }]
                 },{
-                    xtype: "button",
-                    disabled: !directoryConnectorLicense,
-                    name: "configureRadiusServer",
-                    text: i18n._("Configure RADIUS"),
-                    handler: Ext.bind(this.configureRadius, this )
-                },{
-                    xtype: "radio",
-                    style: {marginTop: '15px'},
-                    boxLabel: i18n._("Active Directory") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
-                    hideLabel: true,
-                    disabled: !directoryConnectorLicense,
-                    name: "authenticationType",
-                    inputValue: "ACTIVE_DIRECTORY",
-                    listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
-                    }
-                },{
-                    xtype: "button",
-                    disabled: !directoryConnectorLicense,
-                    name: "configureActiveDirectory",
-                    text: i18n._("Configure Active Directory"),
-                    handler: Ext.bind(this.configureActiveDirectory, this )
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    bodyPadding: '0 0 50 0',
+                    items: [{
+                        xtype: "radio",
+                        style: {marginRight: '15px'},
+                        boxLabel: i18n._("Active Directory") + " <i>(" + i18n._("requires") + " Directory Connector)</i>",
+                        hideLabel: true,
+                        disabled: !directoryConnectorLicense,
+                        name: "authenticationType",
+                        inputValue: "ACTIVE_DIRECTORY",
+                        listeners: {
+                            "change": onUpdateAuthenticationType,
+                            "afterrender": onRenderAuthenticationType
+                        }
+                    },{
+                        xtype: "button",
+                        disabled: !directoryConnectorLicense,
+                        name: "configureActiveDirectory",
+                        text: i18n._("Configure Active Directory"),
+                        handler: Ext.bind(this.configureActiveDirectory, this )
+                    }]
                 }]
             },{
                 xtype: "fieldset",
@@ -480,7 +527,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         }
                     },{
                         xtype: 'label',
-                        html: i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Use zero to disable." ),
+                        html: i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately.  Zero disables idle timeout." ),
                         cls: 'boxlabel'
                     }]
                 },{
@@ -1073,6 +1120,16 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
                 Ung.Main.target="node.untangle-node-directory-connector.Google Connector";
+                nodeCmp.loadSettings();
+            }
+        }
+    },
+    configureFacebook: function() {
+        var node = Ung.Main.getNode("untangle-node-directory-connector");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                Ung.Main.target="node.untangle-node-directory-connector.Facebook Connector";
                 nodeCmp.loadSettings();
             }
         }

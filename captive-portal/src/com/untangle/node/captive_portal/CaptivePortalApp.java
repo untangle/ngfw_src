@@ -494,6 +494,16 @@ public class CaptivePortalApp extends NodeBase
             }
             break;
 
+        case FACEBOOK:
+            try {
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                if (directoryConnector != null) isAuthenticated = directoryConnector.facebookAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Facebook authentication failure", e);
+                isAuthenticated = false;
+            }
+            break;
+            
         case ANY:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
@@ -503,6 +513,9 @@ public class CaptivePortalApp extends NodeBase
                 isAuthenticated = false;
             }
             break;
+        default:
+            logger.error("Unknown Authenticate Method: " + captureSettings.getAuthenticationType());
+            
         }
 
         if (!isAuthenticated) {
