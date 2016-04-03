@@ -74,6 +74,11 @@ public class GoogleManagerImpl
         }
     }
 
+    public GoogleSettings getSettings()
+    {
+        return this.settings;
+    }
+    
     public boolean authenticate( String username, String pwd )
     {
         if (username == null || username.equals("") || pwd == null || pwd.equals("")) 

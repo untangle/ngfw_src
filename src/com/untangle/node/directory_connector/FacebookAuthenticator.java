@@ -1,5 +1,5 @@
 /*
- * $Id: GoogleAuthenticator.java,v 1.00 2016/04/02 13:18:29 dmorris Exp $
+ * $Id: FacebookAuthenticator.java,v 1.00 2016/04/02 13:18:29 dmorris Exp $
  */
 package com.untangle.node.directory_connector;
 
@@ -20,55 +20,46 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class GoogleAuthenticator
+public class FacebookAuthenticator
 {
-    private static final Logger logger = Logger.getLogger(GoogleAuthenticator.class);
+    private static final Logger logger = Logger.getLogger(FacebookAuthenticator.class);
 
     public static boolean authenticate(String username, String password)
     {
         WebDriver driver = new PhantomJSDriver();
         Wait<WebDriver> wait = new WebDriverWait(driver, 30);
         try {
-            String baseUrl = "https://accounts.google.com/ServiceLogin?sacu=1";
+            String baseUrl = "https://facebook.com/login";
             logger.debug("[" + username + "] Authenticating...");
 
             logger.debug("[" + username + "] Loading page...");
             driver.get(baseUrl);
-            waitForElementId(driver, wait, "next");
-        
-            logger.debug("[" + username + "] Sending email...");
-            List<WebElement> emailElements = driver.findElements(By.name("Email"));
-            List<WebElement> nextButtonElements = driver.findElements(By.id("next"));
+
+            logger.debug("[" + username + "] Sending email/password...");
+            List<WebElement> emailElements = driver.findElements(By.name("email"));
+            List<WebElement> passElements = driver.findElements(By.name("pass"));
+            List<WebElement> loginButtonElements = driver.findElements(By.id("loginbutton"));
             if ( emailElements.size() < 1 ) {
                 logger.warn("Email element missing");
                 return false;
             }
-            if ( nextButtonElements.size() < 1 ) {
-                logger.warn("Next button missing");
+            if ( passElements.size() < 1 ) {
+                logger.warn("Password element missing");
+                return false;
+            }
+            if ( loginButtonElements.size() < 1 ) {
+                logger.warn("login button missing");
                 return false;
             }
             emailElements.get(0).sendKeys(username);
-            nextButtonElements.get(0).click();
-            waitForElementName(driver, wait, "Passwd");
+            passElements.get(0).sendKeys(password);
+            loginButtonElements.get(0).click();
 
-            logger.debug("[" + username + "] Sending password...");
-            List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
-            List<WebElement> signInButtonElements = driver.findElements(By.id("signIn"));
-            if ( passwdElements.size() < 1 ) {
-                logger.warn("Email element missing");
-                return false;
-            }
-            if ( signInButtonElements.size() < 1 ) {
-                logger.warn("Next button missing");
-                return false;
-            }
-            passwdElements.get(0).sendKeys(password);
-            signInButtonElements.get(0).click();
-            waitForLogin(driver, wait, "Email", "xb");
+            waitForElementId(driver, wait, "facebook");
 
             //printElements(driver);
             //takeScreenshot(driver,"/tmp/screenshot1.png");
-        
+
             logger.debug("[" + username + "] Analyzing page...");
             boolean succeeded = wasLoginSuccessful( driver );
             if ( succeeded ) 
@@ -86,52 +77,32 @@ public class GoogleAuthenticator
     private static boolean wasLoginSuccessful( WebDriver driver )
     {
         /**
-         * If prompting for email, login must have failed
+         * If prompting for password, login must have failed
          */
-        List<WebElement> emails = driver.findElements(By.name("Email"));
-        if ( emails.size() > 0 )
+        List<WebElement> passwords = driver.findElements(By.name("pass"));
+        if ( passwords.size() > 0 )
             return false;
 
         /**
-         * The XB element is only on the account page
+         * The nav element is only on the account page
          */
-        List<WebElement> xbs = driver.findElements(By.id("xb"));
-        if ( xbs.size() > 0 )
+        List<WebElement> nav = driver.findElements(By.id("pagesNav"));
+        if ( nav.size() > 0 ) {
+            logger.debug("Found NAV");
             return true;
+        }
         /**
-         * If it says account settings, must have succeeded
+         * If it says Home, must have succeeded
          * This may not be in english so this may not work
          */
-        if ( driver.getPageSource().contains("Account Settings") )
+        if ( driver.getPageSource().contains("logout_menu") ) {
+            logger.debug("Found logout_menu");
             return true;
+        }
 
-        /**
-         * If it says that you should download firefox or chrome
-         * then the login succeeded
-         */
-        if ( driver.getPageSource().contains("Firefox") )
-            return true;
-        
         return false;
     }
     
-    private static void waitForLogin(final WebDriver driver, Wait<WebDriver> wait, final String elementName1, final String elementId2)
-    {
-        wait.until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver webDriver) {
-                logger.debug("Searching for name:" + elementName1 + " or id:" + elementId2 + " ... ");
-                
-                List<WebElement> one = driver.findElements(By.name(elementName1));
-                if ( one.size() > 0 )
-                    return true;
-                List<WebElement> two = driver.findElements(By.id(elementId2));
-                if ( two.size() > 0 )
-                    return true;
-                return false;
-            }
-        });
-    }
-
     private static void waitForElementId(final WebDriver driver, Wait<WebDriver> wait, final String elementId)
     {
         wait.until(new ExpectedCondition<Boolean>() {

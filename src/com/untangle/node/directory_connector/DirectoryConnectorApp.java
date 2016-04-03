@@ -51,10 +51,15 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     private RadiusManagerImpl radiusManager = null;
 
     /**
-     * The Google API Manager
+     * The Google Manager
      */
     private GoogleManagerImpl googleManager = null;
-    
+
+    /**
+     * The Facebook Manager
+     */
+    private FacebookManagerImpl facebookManager = null;
+
     public DirectoryConnectorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
     {
         super(nodeSettings, nodeProperties);
@@ -108,11 +113,9 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         } else {
             logger.info("Loading Settings...");
 
-            // UPDATE settings if necessary
-
-            /* 12.0 - new google settings */
-            if (readSettings.getGoogleSettings() == null) {
-                readSettings.setGoogleSettings( new GoogleSettings() );
+            /* 12.1 - new facebook settings */
+            if (readSettings.getFacebookSettings() == null) {
+                readSettings.setFacebookSettings( new FacebookSettings() );
                 setSettings( readSettings );
             }
             
@@ -180,6 +183,11 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     public GoogleManagerImpl getGoogleManager()
     {
         return this.googleManager;
+    }
+
+    public FacebookManagerImpl getFacebookManager()
+    {
+        return this.facebookManager;
     }
     
     public List<UserEntry> getUserEntries()
@@ -259,6 +267,18 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         return this.googleManager.authenticate(username, pwd);
     }
 
+    public boolean facebookAuthenticate(String username, String pwd)
+    {
+        if (!isLicenseValid())
+            return false;
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
+            return false;
+        if (this.facebookManager == null)
+            return false;
+
+        return this.facebookManager.authenticate(username, pwd);
+    }
+    
     public boolean anyAuthenticate(String username, String pwd)
     {
         if (!isLicenseValid())
@@ -279,6 +299,10 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         } catch (Exception e) {}
         try {
             if (googleAuthenticate( username, pwd ))
+                return true;                              
+        } catch (Exception e) {}
+        try {
+            if (facebookAuthenticate( username, pwd ))
                 return true;                              
         } catch (Exception e) {}
         return false;
@@ -328,6 +352,7 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         this.settings.setActiveDirectorySettings(new ActiveDirectorySettings("Administrator", "mypassword", "mydomain.int", "ad_server.mydomain.int", 636, true ));
         this.settings.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
         this.settings.setGoogleSettings(new GoogleSettings());
+        this.settings.setFacebookSettings(new FacebookSettings());
         setSettings(this.settings);
     }
 
@@ -357,6 +382,14 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
             this.googleManager = new GoogleManagerImpl(settings.getGoogleSettings(), this);
         else
             this.googleManager.setSettings(settings.getGoogleSettings());
+
+        /**
+         * Initialize the Google manager (or update settings on current)
+         */
+        if (facebookManager == null)
+            this.facebookManager = new FacebookManagerImpl(settings.getFacebookSettings(), this);
+        else
+            this.facebookManager.setSettings(settings.getFacebookSettings());
         
         /**
          * Initialize the Group manager (if necessary) and Refresh

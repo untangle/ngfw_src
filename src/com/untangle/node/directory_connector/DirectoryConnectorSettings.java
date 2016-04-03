@@ -20,6 +20,7 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
     private ActiveDirectorySettings activeDirectorySettings;
     private RadiusSettings radiusSettings;
     private GoogleSettings googleSettings;
+    private FacebookSettings facebookSettings;
     
     public DirectoryConnectorSettings() { }
 
@@ -31,6 +32,9 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
 
     public GoogleSettings getGoogleSettings() { return googleSettings; }
     public void setGoogleSettings( GoogleSettings newValue ) { googleSettings = newValue; }
+
+    public FacebookSettings getFacebookSettings() { return facebookSettings; }
+    public void setFacebookSettings( FacebookSettings newValue ) { facebookSettings = newValue; }
     
     public int getVersion() { return this.version; }
     public void setVersion( int newValue ) { this.version = newValue; }

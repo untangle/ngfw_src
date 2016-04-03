@@ -13,10 +13,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         
         this.buildUserNotificationApi();
         this.buildActiveDirectoryConnector();
-        this.buildRadius();
         this.buildGoogle();
+        this.buildFacebook();
+        this.buildRadius();
 
-        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelGoogle, this.panelRadius]);
+        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelGoogle, this.panelFacebook, this.panelRadius]);
         this.callParent(arguments);
 
     },
@@ -84,6 +85,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     getGoogleSettings: function() {
         return this.getSettings().googleSettings;
     },
+    getFacebookSettings: function() {
+        return this.getSettings().facebookSettings;
+    },
     getActiveDirectoryManager: function(forceReload) {
         if (forceReload || this.rpc.activeDirectoryManager === undefined) {
             try {
@@ -103,6 +107,16 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
             }
         }
         return this.rpc.googleManager;
+    },
+    getFacebookManager: function(forceReload) {
+        if (forceReload || this.rpc.facebookManager === undefined) {
+            try {
+                this.rpc.facebookManager = this.getRpcNode().getFacebookManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.facebookManager;
     },
     getRadiusManager: function(forceReload) {
         if (forceReload || this.rpc.radiusManager === undefined) {
@@ -710,10 +724,10 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     }
                 },{
                     xtype: 'container',
-                    html: Ext.String.format(i18n._('<BR><BR><B>IMPORTANT:</B>&nbsp;&nbsp;When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.'),'<b>','</b>')
+                    html: '<br/><br/><b>' + i18n._('IMPORTANT') + ':</b>&nbsp;&nbsp' + i18n._('When using Windows as a RADIUS server, the best security and compatibility is achieved by selecting MS-CHAP v2.  Please also make sure the MS-CHAP v2 protocol is enabled for RADIUS clients in the Windows Network Policy Server.')
                 },{
                     xtype: 'component',
-                    html: "<BR><HR><BR>",
+                    html: "<br/><hr/><br/>",
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
@@ -724,23 +738,23 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginTop: '10px'},
                     name: 'radius_test_username',
                     fieldLabel: i18n._('Username'),
-                    labelWidth:250,
-                    labelAlign:'right',
-                    width: 450,
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
                     disabled: (!this.getRadiusSettings().enabled)
                 },
                 {
                     xtype:'textfield',
                     name: 'radius_test_password',
                     fieldLabel: i18n._('Password'),
-                    labelWidth:250,
-                    labelAlign:'right',
-                    width: 450,
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
                     disabled: (!this.getRadiusSettings().enabled)
                 },
                 {
                     xtype: 'button',
-                    text: i18n._('RADIUS Test'),
+                    text: i18n._('Test Username/Password with RADIUS'),
                     iconCls: 'test-icon',
                     name: 'radius_test',
                     disabled: (!this.getRadiusSettings().enabled),
@@ -851,17 +865,17 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginTop: '10px'},
                     name: 'google_test_username',
                     fieldLabel: i18n._('Username'),
-                    labelWidth:250,
-                    labelAlign:'right',
-                    width: 450,
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
                     disabled: (!this.getGoogleSettings().authenticationEnabled)
                 },{
                     xtype:'textfield',
                     name: 'google_test_password',
                     fieldLabel: i18n._('Password'),
-                    labelWidth:250,
-                    labelAlign:'right',
-                    width: 450,
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
                     disabled: (!this.getGoogleSettings().authenticationEnabled)
                 },{
                     xtype: 'button',
@@ -882,12 +896,109 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 var message = this.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var message = i18n._(result);
-                    Ext.MessageBox.alert(i18n._("GOOGLE Test"), message);
+                    Ext.MessageBox.alert(i18n._("Google Test"), message);
                 }, this), userCmp, passwordCmp);
             }, this)
         });
     },
 
+    buildFacebook: function() {
+        this.panelFacebook = Ext.create('Ext.panel.Panel',{
+            name: 'Facebook Connector',
+            helpSource: 'directory_connector_facebook_connector',
+            title: i18n._('Facebook Connector'),
+            cls: 'ung-panel',
+            autoScroll: true,
+            items: [{
+                name: 'Facebook Authentication',
+                title: i18n._('Facebook Authentication'),
+                xtype: 'fieldset',
+                items: [{
+                    xtype: 'container',
+                    html: Ext.String.format(i18n._('This allows your server to connect to {0}Facebook{1} in order to identify users for use by Captive Portal.'),'<b>','</b>')
+                }, {
+                    xtype: 'radio',
+                    boxLabel: '<b>'+i18n._('Disabled')+'</b>',
+                    style: {marginLeft: '50px'},
+                    hideLabel: true,
+                    name: 'enableFacebook',
+                    checked: (!this.getFacebookSettings().authenticationEnabled),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, checked) {
+                                this.getFacebookSettings().authenticationEnabled = !checked;
+
+                                var components = this.query('textfield[requiresFacebook="true"]'), c;
+                                for ( c = 0 ; c < components.length ; c++ ) {
+                                    if ( checked ) {
+                                        components[c].disable();
+                                    } else {
+                                        components[c].enable();
+                                    }
+                                }
+
+                                this.panelFacebook.down('button[name=facebook_test]').setDisabled( checked );
+                                this.panelFacebook.down('textfield[name=facebook_test_username]').setDisabled( checked );
+                                this.panelFacebook.down('textfield[name=facebook_test_password]').setDisabled( checked );
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype: 'radio',
+                    boxLabel: '<b>'+i18n._('Enabled')+'</b>',
+                    style: {marginLeft: '50px'},
+                    hideLabel: true,
+                    name: 'enableFacebook',
+                    checked: this.getFacebookSettings().authenticationEnabled
+                },{
+                    xtype: 'component',
+                    html: "<BR><HR><BR>",
+                    style: {marginRight: '20px'}
+                },{
+                    xtype: 'component',
+                    html: Ext.String.format(i18n._('The {0}Facebook Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                },{
+                    xtype:'textfield',
+                    style: {marginTop: '10px'},
+                    name: 'facebook_test_username',
+                    fieldLabel: i18n._('Username'),
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
+                    disabled: (!this.getFacebookSettings().authenticationEnabled)
+                },{
+                    xtype:'textfield',
+                    name: 'facebook_test_password',
+                    fieldLabel: i18n._('Password'),
+                    labelWidth:150,
+                    labelAlign:'left',
+                    width: 350,
+                    disabled: (!this.getFacebookSettings().authenticationEnabled)
+                },{
+                    xtype: 'button',
+                    text: i18n._('Facebook Test'),
+                    iconCls: 'test-icon',
+                    name: 'facebook_test',
+                    disabled: (!this.getFacebookSettings().authenticationEnabled),
+                    handler: Ext.bind(function() {
+                        this.panelFacebook.onFacebookTestClick();
+                    }, this)
+                }]
+            }],
+            onFacebookTestClick: Ext.bind(function() {
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Facebook Test"));
+                var userCmp = this.panelFacebook.down('textfield[name=facebook_test_username]').getValue();
+                var passwordCmp = this.panelFacebook.down('textfield[name=facebook_test_password]').getValue();
+
+                var message = this.getFacebookManager().authenticate( Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var message = i18n._(result);
+                    Ext.MessageBox.alert(i18n._("Facebook Test"), message);
+                }, this), userCmp, passwordCmp);
+            }, this)
+        });
+    },
+    
     //validate directory connector settings
     validate: function() {
         if(this.getSettings().activeDirectorySettings.enabled) {
