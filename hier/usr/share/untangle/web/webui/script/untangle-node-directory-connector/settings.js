@@ -13,11 +13,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         
         this.buildUserNotificationApi();
         this.buildActiveDirectoryConnector();
+        this.buildRadius();
         this.buildGoogle();
         this.buildFacebook();
-        this.buildRadius();
 
-        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelGoogle, this.panelFacebook, this.panelRadius]);
+        this.buildTabPanel([this.panelUserNotificationApi, this.panelActiveDirectoryConnector, this.panelRadius, this.panelGoogle, this.panelFacebook]);
         this.callParent(arguments);
 
     },
@@ -270,9 +270,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
     buildActiveDirectoryConnector: function() {
         this.panelActiveDirectoryConnector = Ext.create('Ext.panel.Panel',{
-            name: 'Active Directory Connector',
+            name: 'Active Directory',
             helpSource: 'directory_connector_active_directory_connector',
-            title: i18n._('Active Directory Connector'),
+            title: i18n._('Active Directory'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -458,7 +458,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 }, {
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Active Directory Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Active Directory Test{1} verifies that the server can connect to the Active Directory Server.'),'<b>','</b>')
                 }, {
                     xtype: 'button',
                     margin: '10 0 5 0',
@@ -587,9 +587,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
     buildRadius: function() {
         var enableRadius = this.getSettings().radiusSettings.enabled;
         this.panelRadius = Ext.create('Ext.panel.Panel',{
-            name: 'RADIUS Connector',
+            name: 'RADIUS',
             helpSource: 'directory_connector_radius_connector',
-            title: i18n._('RADIUS Connector'),
+            title: i18n._('RADIUS'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -731,7 +731,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Radius Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}RADIUS Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
                 },
                 {
                     xtype:'textfield',
@@ -754,7 +754,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 },
                 {
                     xtype: 'button',
-                    text: i18n._('Test Username/Password with RADIUS'),
+                    text: i18n._('RADIUS Test'),
                     iconCls: 'test-icon',
                     name: 'radius_test',
                     disabled: (!this.getRadiusSettings().enabled),
@@ -782,9 +782,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
         this.authorizationUrl = this.getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host);
         this.googleDriveConnected = this.getGoogleManager().isGoogleDriveConnected();
         this.panelGoogle = Ext.create('Ext.panel.Panel',{
-            name: 'Google Connector',
+            name: 'Google',
             helpSource: 'directory_connector_google_connector',
-            title: i18n._('Google Connector'),
+            title: i18n._('Google'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -819,6 +819,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 items: [{
                     xtype: 'container',
                     html: Ext.String.format(i18n._('This allows your server to connect to {0}Google{1} in order to identify users for use by Captive Portal.'),'<b>','</b>')
+                }, {
+                    xtype: 'component',
+                    html: i18n._('WARNING: Google Authentication is experimental and uses an unofficial API. Read the documentation for details.'),
+                    cls: 'warning',
+                    margin: '0 0 10 10'
                 }, {
                     xtype: 'radio',
                     boxLabel: '<b>'+i18n._('Disabled')+'</b>',
@@ -859,7 +864,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Google Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Google Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
                 },{
                     xtype:'textfield',
                     style: {marginTop: '10px'},
@@ -904,9 +909,9 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
 
     buildFacebook: function() {
         this.panelFacebook = Ext.create('Ext.panel.Panel',{
-            name: 'Facebook Connector',
+            name: 'Facebook',
             helpSource: 'directory_connector_facebook_connector',
-            title: i18n._('Facebook Connector'),
+            title: i18n._('Facebook'),
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -916,6 +921,11 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 items: [{
                     xtype: 'container',
                     html: Ext.String.format(i18n._('This allows your server to connect to {0}Facebook{1} in order to identify users for use by Captive Portal.'),'<b>','</b>')
+                }, {
+                    xtype: 'component',
+                    html: i18n._('WARNING: Facebook Authentication is experimental and uses an unofficial API. Read the documentation for details.'),
+                    cls: 'warning',
+                    margin: '0 0 10 10'
                 }, {
                     xtype: 'radio',
                     boxLabel: '<b>'+i18n._('Disabled')+'</b>',
@@ -956,7 +966,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Facebook Test{1} can be used to test that your settings above are correct.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Facebook Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
                 },{
                     xtype:'textfield',
                     style: {marginTop: '10px'},
