@@ -27,8 +27,6 @@ public class HttpRequestEvent extends LogEvent
     private String referer;
     private long contentLength;
 
-    // constructors -----------------------------------------------------------
-
     public HttpRequestEvent() { }
 
     public HttpRequestEvent( RequestLine requestLine, String host, String referer, long contentLength )
@@ -43,8 +41,6 @@ public class HttpRequestEvent extends LogEvent
         this.sessionEvent = requestLine.getSessionEvent();
         this.referer = referer;
     }
-
-    // accessors --------------------------------------------------------------
 
     /**
      * The host, as specified by the request header.

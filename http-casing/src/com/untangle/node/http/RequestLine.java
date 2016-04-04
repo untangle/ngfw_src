@@ -32,8 +32,6 @@ public class RequestLine implements Serializable
 
     private static long nextId = 0;
 
-    // constructors -----------------------------------------------------------
-
     public RequestLine(SessionEvent pe, HttpMethod method, byte[] requestUriBytes)
     {
         this.sessionEvent = pe;
@@ -50,12 +48,9 @@ public class RequestLine implements Serializable
         }
     }
 
-    // business methods -------------------------------------------------------
-
     public URL getUrl()
     {
-        // XXX this shouldn't happen in practice
-        String host = null == httpRequestEvent ? "" : httpRequestEvent.getHost();
+        String host = ( httpRequestEvent == null ? "" : httpRequestEvent.getHost() );
 
         URL url;
         try {
@@ -77,8 +72,6 @@ public class RequestLine implements Serializable
         }
         return b;
     }
-
-    // accessors --------------------------------------------------------------
 
     /**
      * Get the sessionId
@@ -188,14 +181,10 @@ public class RequestLine implements Serializable
         this.sessionEvent = sessionEvent;
     }
 
-    // Object methods ---------------------------------------------------------
-
     public String toString()
     {
         return "Request (" + getMethod() + ") URL:" + getUrl().toString();
     }
-
-    // private methods --------------------------------------------------------
 
     private URI getUri(byte[] b)
     {

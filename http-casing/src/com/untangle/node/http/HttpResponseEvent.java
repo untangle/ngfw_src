@@ -17,8 +17,6 @@ public class HttpResponseEvent extends LogEvent
     private String contentType;
     private long contentLength;
 
-    // constructors -----------------------------------------------------------
-
     public HttpResponseEvent() { }
 
     public HttpResponseEvent(RequestLine requestLine, String contentType, long contentLength)
@@ -28,8 +26,6 @@ public class HttpResponseEvent extends LogEvent
         this.contentLength = contentLength;
     }
 
-    // accessors --------------------------------------------------------------
-
     public RequestLine getRequestLine() { return requestLine; }
     public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
 
@@ -37,16 +33,8 @@ public class HttpResponseEvent extends LogEvent
      * The base Content-Type, without any encodings or other useless
      * nonsense.
      */
-    public String getContentType()
-    {
-        return contentType;
-    }
-
-    public void setContentType(String contentType)
-    {
-        if (contentType != null && contentType.length() > DEFAULT_STRING_SIZE) contentType = contentType.substring(0, DEFAULT_STRING_SIZE);
-        this.contentType = contentType;
-    }
+    public String getContentType() { return contentType; }
+    public void setContentType(String newValue) { this.contentType = contentType; }
 
     /**
      * Content length, as counted by the parser.

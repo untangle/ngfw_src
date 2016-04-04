@@ -28,69 +28,21 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
         this.messageInfo = messageInfo;
         this.messageId = messageInfo.getMessageId();
         this.kind = kind;
-        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
-        }
         this.addr = addr;
-        if (personal != null && personal.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
-            personal = personal.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
-        }
         this.personal = personal;
     }
 
     public Long getMessageId() { return messageId; }
-    public void setMessageId(Long id) { this.messageId = id; }
+    public void setMessageId(Long newValue) { this.messageId = newValue; }
 
-    /**
-     * The email address, in RFC822 format
-     * 
-     * @return email address.
-     */
-    public String getAddr()
-    {
-        return addr;
-    }
+    public String getAddr() { return addr; }
+    public void setAddr(String newValue) { this.addr = newValue; }
 
-    public void setAddr(String addr)
-    {
-        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
-        }
-        this.addr = addr;
-    }
+    public String getPersonal() { return personal; }
+    public void setPersonal(String newValue) { this.personal = newValue; }
 
-    /**
-     * Get a personal for display purposes.
-     * 
-     * @return personal.
-     */
-    public String getPersonal()
-    {
-        return personal;
-    }
-
-    public void setPersonal(String personal)
-    {
-        if (personal != null && personal.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
-            personal = personal.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
-        }
-        this.personal = personal;
-    }
-
-    /**
-     * The kind of address (To, CC, etc).
-     * 
-     * @return addressKind.
-     */
-    public AddressKind getKind()
-    {
-        return kind;
-    }
-
-    public void setKind(AddressKind kind)
-    {
-        this.kind = kind;
-    }
+    public AddressKind getKind() { return kind; }
+    public void setKind(AddressKind newValue) { this.kind = newValue; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception

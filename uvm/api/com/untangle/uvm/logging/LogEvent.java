@@ -28,8 +28,6 @@ public abstract class LogEvent implements Serializable, JSONString
 {
     protected static final Logger logger = Logger.getLogger(LogEvent.class);
 
-    public static final int DEFAULT_STRING_SIZE = 255;
-    
     protected Timestamp timeStamp = new Timestamp((new Date()).getTime());
     private String tag; /* syslog tag */
 
