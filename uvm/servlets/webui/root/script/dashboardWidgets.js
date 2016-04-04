@@ -122,6 +122,11 @@ Ext.define('Ung.dashboard', {
                 }
             }
         }
+        // do not fully extend last widget if the widget is not large
+        if (this.widgetsList[this.widgetsList.length - 1] && !this.widgetsList[this.widgetsList.length - 1].hasCls('large')) {
+            this.dashboardPanel.addCls('last-not-extended');
+        }
+
         this.dashboardPanel.add(this.widgetsList);
 
         if (!this.scrollInitialized) {
@@ -761,7 +766,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     updateStats: function (stats) {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
-        if (this.data.externalInterfaces) {
+        if (this.data && this.data.externalInterfaces) {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
                 if (interfaceEl) {
@@ -771,7 +776,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             }
         }
 
-        if (this.data.internalInterfaces) {
+        if (this.data && this.data.internalInterfaces) {
             rpc.deviceTable.getDevices(Ext.bind(function (res, ex) {
                 if (Ung.Util.handleException(ex)) {
                     return;

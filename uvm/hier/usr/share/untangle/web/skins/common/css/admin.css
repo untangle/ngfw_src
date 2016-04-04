@@ -562,7 +562,7 @@ a.forgot-password:hover {
     width: 100%;
 }
 
-.dashboard .x-autocontainer-innerCt::after {
+.dashboard.last-not-extended .x-autocontainer-innerCt::after {
     content: '';
     flex-grow: 1000000000;
 }

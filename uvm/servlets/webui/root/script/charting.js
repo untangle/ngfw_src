@@ -259,14 +259,21 @@ Ext.define('Ung.charts', {
                 type: chartType,
                 zoomType: 'x',
                 renderTo: !forDashboard ? container.getEl().dom : container.getEl().query('.chart')[0],
-                marginBottom: 50,
-                marginTop: 0,
+                marginBottom: !forDashboard ? 40 : 50,
+                marginTop: !forDashboard ? 50 : 10,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
                 }
+                /*
+                events: {
+                    selection: function (evt) {
+                        console.log(evt);
+                    }
+                }
+                */
             },
             title: !forDashboard ? {
                 text: entry.description,
@@ -295,11 +302,11 @@ Ext.define('Ung.charts', {
             },
             rangeSelector : {
                 enabled: !forDashboard,
-                inputEnabled: false,
+                inputEnabled: true,
                 buttons: this.setRangeButtons(data)
             },
             scrollbar: {
-                enabled: false
+                enabled: !forDashboard
             },
             credits: {
                 enabled: false
