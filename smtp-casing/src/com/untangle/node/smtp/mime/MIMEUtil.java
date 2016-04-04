@@ -42,29 +42,13 @@ public class MIMEUtil
             (byte) '?', (byte) '=' };
 
     /**
-     * Helper which returns a list of parts which may be candidates for virus scanning. Takes care of boundary case
-     * where top-level part is actualy an attachment
+     * Return a list of all parts of a messages
      */
-    public static List<Part> getCandidateParts(MimeMessage msg)
+    public static List<Part> getParts(MimeMessage msg)
     {
-        // Need to special-case the top-level message which itsef is only an attachment
         List<Part> list = new ArrayList<Part>();
         try {
-            Object msgContent = msg.getContent();
-            if (msgContent instanceof Multipart) {
-                Multipart multipart = (Multipart) msgContent;
-
-                for (int j = 0; j < multipart.getCount(); j++) {
-                    BodyPart bodyPart = multipart.getBodyPart(j);
-                    getLeafPartsInto(list, bodyPart);
-                }
-            } else {
-                if (shouldScan(msg)) {
-                    logger.debug("Message itself is scannable (no child parts, but not \""
-                            + HeaderNames.TEXT_PRIM_TYPE_STR + "/*\" content type");
-                    list.add(msg);
-                }
-            }
+            getParts(list, msg);
         } catch (MessagingException e) {
             logger.error(e);
         } catch (IOException e) {
@@ -73,29 +57,7 @@ public class MIMEUtil
         return list;
     }
 
-    /**
-     * Currently any non-text part (or attachment) is scanned
-     * 
-     * @throws MessagingException
-     */
-    public static boolean shouldScan(Part part)
-    {
-        try {
-            String disposition = part.getDisposition();
-            if (disposition != null && (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR))) {
-                return true;
-            }
-            String contentType = part.getContentType();
-            if (contentType != null && contentType.equalsIgnoreCase(HeaderNames.TEXT_PRIM_TYPE_STR)) {
-                return true;
-            }
-        } catch (MessagingException e) {
-            // ignore
-        }
-        return false;
-    }
-
-    private static void getLeafPartsInto(List<Part> list, Part part) throws IOException, MessagingException
+    private static void getParts(List<Part> list, Part part) throws IOException, MessagingException
     {
         Object msgContent = part.getContent();
         if (msgContent instanceof Multipart) {
@@ -103,7 +65,7 @@ public class MIMEUtil
 
             for (int j = 0; j < multipart.getCount(); j++) {
                 BodyPart bodyPart = multipart.getBodyPart(j);
-                getLeafPartsInto(list, bodyPart);
+                getParts(list, bodyPart);
             }
         } else {
             list.add(part);
@@ -125,7 +87,6 @@ public class MIMEUtil
      * @throws MessagingException
      * @throws IOException
      */
-
     public static void removeChild(Part child) throws IOException, MessagingException
     {
         // Boundary-case. If the parent is itself a top-level MIMEMessage, and there are no other
@@ -349,7 +310,7 @@ public class MIMEUtil
                     BodyPart bodyPart = multipart.getBodyPart(j);
 
                     String disposition = bodyPart.getDisposition();
-                    if (disposition != null && (disposition.equalsIgnoreCase("ATTACHMENT")))
+                    if (disposition != null && (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR)))
                         cnt++;
                 }
             }
