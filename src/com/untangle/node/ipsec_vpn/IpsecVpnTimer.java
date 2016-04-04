@@ -233,6 +233,6 @@ public class IpsecVpnTimer extends TimerTask
 
         TunnelStatusEvent event = new TunnelStatusEvent(shortName, inBytes, outBytes);
         app.logEvent(event);
-        logger.debug("GrabTunnelStatistics() " + event.toString());
+        logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
     }
 }

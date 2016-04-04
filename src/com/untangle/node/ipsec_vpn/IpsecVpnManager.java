@@ -30,8 +30,11 @@ public class IpsecVpnManager
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
+    private static final String APACHE_CRT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.crt";
+    private static final String APACHE_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
+    private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
     private static final String IPTABLES_GRE_SCRIPT = "/etc/untangle-netd/iptables-rules.d/712-gre";
 
     private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";
@@ -84,6 +87,9 @@ public class IpsecVpnManager
     {
         logger.debug("writeConfigFiles()");
 
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+
         LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
         LinkedList<VirtualListen> listenList = settings.getVirtualListenList();
         VirtualListen listen;
@@ -123,6 +129,9 @@ public class IpsecVpnManager
         }
 
         ipsec_conf.write(RET);
+
+        // put the server key in the secrets file for IKEv2
+        ipsec_secrets.write(": RSA " + APACHE_KEY_FILE + RET);
 
         for (x = 0; x < tunnelList.size(); x++) {
             // for each active tunne we create a corresponding
@@ -196,7 +205,10 @@ public class IpsecVpnManager
             for (x = 0; x < listenList.size(); x++) {
                 listen = listenList.get(x);
 
+                // -----------------------------------------------------------
                 // create the L2TP config section for the interface
+                // -----------------------------------------------------------
+
                 ipsec_conf.write("conn VPN-L2TP-" + Integer.toString(x) + RET);
                 ipsec_conf.write(TAB + "keyexchange=ikev1" + RET);
                 ipsec_conf.write(TAB + "authby=psk" + RET);
@@ -215,7 +227,10 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "rightprotoport=17/%any" + RET);
                 ipsec_conf.write(RET);
 
+                // -----------------------------------------------------------
                 // create the Xauth config section for the interface
+                // -----------------------------------------------------------
+
                 ipsec_conf.write("conn VPN-XAUTH-" + Integer.toString(x) + RET);
                 ipsec_conf.write(TAB + "keyexchange=ikev1" + RET);
 
@@ -264,6 +279,66 @@ public class IpsecVpnManager
 
                 ipsec_conf.write(RET);
 
+                // -----------------------------------------------------------
+                // create the IKEv2 config section for the interface
+                // -----------------------------------------------------------
+
+                ipsec_conf.write("conn VPN-IKEV2-" + Integer.toString(x) + RET);
+                ipsec_conf.write(TAB + "keyexchange=ikev2" + RET);
+                ipsec_conf.write(TAB + "auto=add" + RET);
+                ipsec_conf.write(TAB + "type=tunnel" + RET);
+                ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
+
+                if ((domainName == null) || (hostName == null)) {
+                    ipsec_conf.write(TAB + "leftid=" + listen.getAddress() + RET);
+                }
+
+                else {
+                    ipsec_conf.write(TAB + "leftid=" + hostName + "." + domainName + RET);
+                }
+
+                ipsec_conf.write(TAB + "leftauth=pubkey" + RET);
+                ipsec_conf.write(TAB + "leftcert=" + APACHE_CRT_FILE + RET);
+                ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
+                ipsec_conf.write(TAB + "leftsendcert=always" + RET);
+                ipsec_conf.write(TAB + "leftupdown=" + IKEV2_UPDOWN_SCRIPT + RET);
+
+                ipsec_conf.write(TAB + "right=%any" + RET);
+
+                if (settings.getAuthenticationType() == IpsecVpnSettings.AuthenticationType.LOCAL_DIRECTORY) {
+                    ipsec_conf.write(TAB + "rightauth=eap-mschapv2" + RET);
+                }
+
+                if (settings.getAuthenticationType() == IpsecVpnSettings.AuthenticationType.RADIUS_SERVER) {
+                    ipsec_conf.write(TAB + "rightauth=eap-radius" + RET);
+                }
+
+                ipsec_conf.write(TAB + "rightsourceip=" + settings.getVirtualXauthPool() + RET);
+
+                // if no DNS servers are configured we use the server address of the L2TP interface
+                if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() == 0)) {
+                    ipsec_conf.write(TAB + "rightdns=" + calculator.getFirstIP() + RET);
+                }
+
+                // handle only the first custom server
+                if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() == 0)) {
+                    ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + RET);
+                }
+
+                // handle only the second custom server
+                if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() > 0)) {
+                    ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsTwo() + RET);
+                }
+
+                // handle both the first and second custom server
+                if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() > 0)) {
+                    ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + "," + settings.getVirtualDnsTwo() + RET);
+                }
+
+                ipsec_conf.write(TAB + "rightsendcert=never" + RET);
+                ipsec_conf.write(TAB + "eap_identity=%any" + RET);
+
+                // add the L2TP PSK to the shared secrets file
                 ipsec_secrets.write("# VPN-L2TP-" + Integer.toString(x) + RET);
                 ipsec_secrets.write(listen.getAddress() + " %any : PSK 0x" + StringHexify(settings.getVirtualSecret()) + RET);
             }
@@ -403,7 +478,6 @@ public class IpsecVpnManager
         gre_script.write("# delete the old nat-reverse-filter rule" + RET);
         gre_script.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfd/0xff -j RETURN -m comment --comment \"Allow GRE\" >/dev/null 2>&1" + RET);
         gre_script.write(RET);
-        
 
         gre_script.write("# delete the old admin forwards for GRE networks" + RET);
         gre_script.write("${IPTABLES} -t nat -D port-forward-rules -p tcp -d " + greAddr + " --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send GRE to apache\" >/dev/null 2>&1" + RET);

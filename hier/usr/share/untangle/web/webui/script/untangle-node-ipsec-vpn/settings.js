@@ -10,7 +10,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
     pageVirtualLog: null,
     warningDisplayed: false,
     getAppSummary: function() {
-        return i18n._("IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, L2TP, and Xauth protocols.");
+        return i18n._("IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.");
     },
     initComponent: function() {
         try {
@@ -909,7 +909,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             },
             items: [{
                 title: i18n._("Description"),
-                html: i18n._("The VPN Config tab contains settings used to configure the server to support IPsec L2TP and Xauth VPN client connections.")
+                html: i18n._("The VPN Config tab contains settings used to configure the server to support IPsec L2TP, Xauth, and IKEv2 VPN client connections.")
             },{
                 title: i18n._("Server Configuration"),
                 labelWidth: 300,
@@ -918,7 +918,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },
                 items: [{
                     xtype: 'checkbox',
-                    fieldLabel: i18n._("Enable L2TP/Xauth Server"),
+                    fieldLabel: i18n._("Enable L2TP/Xauth/IKEv2 Server"),
+                    labelWidth: 240,
                     padding: '3 0 3 0',
                     name: 'vpnflag',
                     checked: this.getSettings().vpnflag,
@@ -945,7 +946,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     width: 300,
                     padding: '3 0 3 0',
                     dataIndex: 'virtualXauthPool',
-                    fieldLabel: i18n._("Xauth Address Pool"),
+                    fieldLabel: i18n._("Xauth/IKEv2 Address Pool"),
                     value: this.getSettings().virtualXauthPool,
                     vtype: 'cidrBlock',
                     listeners: {

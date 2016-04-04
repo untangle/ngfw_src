@@ -1,0 +1,20 @@
+#!/bin/dash
+
+# This script is called by IPsec when an Xauth user connects or disconnects
+# via the leftupdown= parameter in the ipsec.conf file.  It then calls
+# ipsec-virtual-user-event to register the event with the IPsec node.
+
+# The peer address is in 1.2.3.4/32 format so we use parameter expansion
+# magic to strip off the trailing garbage.
+
+CLIENT_ADDR=${PLUTO_PEER_CLIENT%/*}
+
+if [ $PLUTO_VERB = "up-client" ]
+then
+    /usr/share/untangle/bin/ipsec-virtual-user-event CONNECT IKEv2 $CLIENT_ADDR $PLUTO_XAUTH_ID $PLUTO_CONNECTION $PLUTO_UNIQUEID
+fi
+
+if [ $PLUTO_VERB = "down-client" ]
+then
+    /usr/share/untangle/bin/ipsec-virtual-user-event GOODBYE IKEv2 $CLIENT_ADDR $PLUTO_XAUTH_ID 0 0
+fi

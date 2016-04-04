@@ -69,7 +69,7 @@ public class IpsecVpnApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
         this.addMetric(new NodeMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
         this.addMetric(new NodeMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
-        this.addMetric(new NodeMetric(STAT_VIRTUAL, I18nUtil.marktr("L2TP Clients")));
+        this.addMetric(new NodeMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
 
         try {
             fixStrongswanConfig();
@@ -381,14 +381,16 @@ public class IpsecVpnApp extends NodeBase
 
     public int virtualUserConnect(String clientProtocol, InetAddress clientAddress, String clientUsername, String netInterface, String netProcess)
     {
-        logger.debug("virtualUserConnect ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " IF:" + netInterface + " PROC:" + netProcess);
+        logger.debug("virtualUserConnect PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " IF:" + netInterface + " PROC:" + netProcess);
 
-        // put the client in ther virtual user table
+        // put the client in the virtual user table
         VirtualUserEntry entry = virtualUserTable.insertVirtualUser(clientProtocol, clientAddress, clientUsername, netInterface, netProcess);
 
         // log the event in the database and save the event object for later
         VirtualUserEvent event = new VirtualUserEvent(clientAddress, clientProtocol, clientUsername, netInterface, netProcess);
         logEvent(event);
+        logger.debug("virtualUserConnect(logEvent) " + event.toString());
+        
         entry.pushEventHolder(event);
 
         updateBlingers();
@@ -397,7 +399,7 @@ public class IpsecVpnApp extends NodeBase
 
     public int virtualUserGoodbye(String clientProtocol, InetAddress clientAddress, String clientUsername, String netRXcount, String netTXcount)
     {
-        logger.debug("virtualUserGoodbye ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " RX:" + netRXcount + " TX:" + netTXcount);
+        logger.debug("virtualUserGoodbye PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " RX:" + netRXcount + " TX:" + netTXcount);
 
         // make sure the client exists in the user table
         VirtualUserEntry entry = virtualUserTable.searchVirtualUser(clientAddress);
@@ -423,6 +425,7 @@ public class IpsecVpnApp extends NodeBase
 
         event.updateEvent(elapsed, new Long(netRXcount), new Long(netTXcount));
         logEvent(event);
+        logger.debug("virtualUserGoodbye(logEvent) " + event.toString());        
 
         virtualUserTable.removeVirtualUser(clientAddress);
 
@@ -445,6 +448,11 @@ public class IpsecVpnApp extends NodeBase
 
         // for Xauth clients we call ipsec down using the connection and unique id
         if (entry.getClientProtocol().equals("XAUTH")) {
+            IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
+        }
+
+        // for IKEv2 clients we call ipsec down using the connection and unique id
+        if (entry.getClientProtocol().equals("IKEV2")) {
             IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
         }
 
