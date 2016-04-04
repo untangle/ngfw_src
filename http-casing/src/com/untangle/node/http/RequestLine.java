@@ -74,51 +74,6 @@ public class RequestLine implements Serializable
     }
 
     /**
-     * Get the sessionId
-     *
-     * @return the SessionEvent.
-     */
-    public long getSessionId()
-    {
-        return sessionEvent.getSessionId();
-    }
-
-    public void setSessionId( long sessionId )
-    {
-        this.sessionEvent.setSessionId(sessionId);
-    }
-
-    /**
-     * Get the sessionId
-     *
-     * @return the SessionEvent.
-     */
-    public long getRequestId()
-    {
-        return this.requestId;
-    }
-
-    public void setRequestId( long requestId )
-    {
-        this.requestId = requestId;
-    }
-
-    /**
-     * Request method.
-     *
-     * @return the request method.
-     */
-    public HttpMethod getMethod()
-    {
-        return method;
-    }
-
-    public void setMethod(HttpMethod method)
-    {
-        this.method = method;
-    }
-
-    /**
      * Request URI.
      *
      * @return the request URI.
@@ -137,53 +92,48 @@ public class RequestLine implements Serializable
     }
 
     /**
+     * Get the sessionId
+     *
+     * @return the SessionEvent.
+     */
+    public long getRequestId() { return this.requestId; }
+    public void setRequestId( long newValue ) { this.requestId = requestId; }
+
+    /**
+     * Request method.
+     *
+     * @return the request method.
+     */
+    public HttpMethod getMethod() { return method; }
+    public void setMethod(HttpMethod newValue) { this.method = newValue; }
+
+    /**
      * Time the event was logged, as filled in by logger.
      *
      * @return time logged.
      */
-    public Timestamp getTimeStamp()
-    {
-        return timeStamp;
-    }
-
-    /**
-     * Don't make Aaron angry!  This should only be set by the event
-     * logging system unless you're doing tricky things (with Aaron's
-     * approval).
-     */
-    public void setTimeStamp(Timestamp timeStamp)
-    {
-        this.timeStamp = timeStamp;
-    }
+    public Timestamp getTimeStamp() { return timeStamp; }
+    public void setTimeStamp(Timestamp newValue) { this.timeStamp = newValue; }
 
     /**
      * The HttpRequestEvent that logged this item.
      *
      * @return the HttpRequestEvent.
      */
-    public HttpRequestEvent getHttpRequestEvent()
-    {
-        return httpRequestEvent;
-    }
+    public HttpRequestEvent getHttpRequestEvent() { return httpRequestEvent; }
+    public void setHttpRequestEvent(HttpRequestEvent newValue) { this.httpRequestEvent = newValue; }
 
-    public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
-    {
-        this.httpRequestEvent = httpRequestEvent;
-    }
-
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
-
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
+    /**
+     * The SessionEvent that logged this item.
+     *
+     * @return the SessionEvent.
+     */
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent newValue) { this.sessionEvent = newValue; }
 
     public String toString()
     {
-        return "Request (" + getMethod() + ") URL:" + getUrl().toString();
+        return getMethod() + " " + getUrl().toString();
     }
 
     private URI getUri(byte[] b)

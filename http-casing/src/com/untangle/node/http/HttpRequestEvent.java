@@ -62,31 +62,25 @@ public class HttpRequestEvent extends LogEvent
      * Content length, as counted by the parser.
      */
     public long getContentLength() { return contentLength; }
-    public void setContentLength( long contentLength ) { this.contentLength = contentLength; }
-
-    /**
-     * Get the sessionId
-     */
-    public Long getSessionId() { return sessionEvent.getSessionId(); }
-    public void setSessionId( Long  sessionId ) { this .sessionEvent.setSessionId(sessionId); }
+    public void setContentLength( long newValue ) { this.contentLength = newValue; }
 
     /**
      * Get the requestId
      */
     public Long getRequestId() { return this.requestId; }
-    public void setRequestId(  Long requestId  ) { this.requestId = requestId; }
+    public void setRequestId(  Long newValue  ) { this.requestId = newValue; }
     
     /**
      * Request method.
      */
     public HttpMethod getMethod() { return method; }
-    public void setMethod( HttpMethod method ) { this.method = method; }
+    public void setMethod( HttpMethod newValue ) { this.method = newValue; }
 
     /**
      * Request URI.
      */
     public URI getRequestUri() { return requestUri; }
-    public void setRequestUri( URI requestUri ) { this.requestUri = requestUri; }
+    public void setRequestUri( URI newValue ) { this.requestUri = newValue; }
 
     /**
      * The referer, as specified in the header.
@@ -94,8 +88,11 @@ public class HttpRequestEvent extends LogEvent
     public String getReferer() { return referer; }
     public void setReferer( String newValue ) { this.referer = newValue; }
 
+    /**
+     * The Session event for this request
+     */
     public SessionEvent getSessionEvent() { return sessionEvent; }
-    public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
+    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
     
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
