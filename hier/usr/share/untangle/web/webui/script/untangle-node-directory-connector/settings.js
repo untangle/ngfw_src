@@ -691,6 +691,8 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     labelWidth:250,
                     labelAlign:'right',
                     width: 450,
+                    maxLength: 48,
+                    enforceMaxLength: true,
                     value: this.getRadiusSettings().sharedSecret,
                     disabled: (!this.getRadiusSettings().enabled),
                     listeners: {
