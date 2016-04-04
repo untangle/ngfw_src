@@ -30,18 +30,8 @@ public class HttpResponseEvent extends LogEvent
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * Request line for this HTTP response pair.
-     */
-    public RequestLine getRequestLine()
-    {
-        return requestLine;
-    }
-
-    public void setRequestLine(RequestLine requestLine)
-    {
-        this.requestLine = requestLine;
-    }
+    public RequestLine getRequestLine() { return requestLine; }
+    public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
 
     /**
      * The base Content-Type, without any encodings or other useless
@@ -61,16 +51,16 @@ public class HttpResponseEvent extends LogEvent
     /**
      * Content length, as counted by the parser.
      */
-    public long getContentLength()
-    {
-        return contentLength;
-    }
+    public long getContentLength() { return contentLength; }
+    public void setContentLength(long newValue) { this.contentLength = newValue; }
 
-    public void setContentLength(long contentLength)
+    public HttpRequestEvent getHttpRequestEvent()
     {
-        this.contentLength = contentLength;
+        if ( requestLine != null )
+            return requestLine.getHttpRequestEvent();
+        return null;
     }
-
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
