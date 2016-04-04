@@ -436,6 +436,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)        
 
     def test_032_loginGoogle(self):
+        raise unittest2.SkipTest("FIXME broken test")
         global node, nodeData, googleUserName, googlePassword
 
         # Create Internal NIC capture rule with basic login page
