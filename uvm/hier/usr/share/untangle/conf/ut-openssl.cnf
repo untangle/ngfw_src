@@ -2,79 +2,71 @@
 # Untangle OpenSSL configuration file
 #
 # The following environment variables are expected to be set:
+#
 #   UT_ROOT_PATH = location where the root CA files are stored
-#   UT_EXT_MODE = sets the request extensions to be used:
-#     reqext_san = include subject alternative names section
-#     reqext_nil = omit subject alternative names section
-#   UT_SAN_LIST = the list of subject alternative names.  Must be
-#   set to something even if not used or openssl will complain:
-#     "DNS:www.name.com,IP:1.2.3.4"
+#   UT_EXT_MODE = sets the X509v3 extensions to be used:
+#
+#     req_ext_san = include subject alternative names section
+#     req_ext_nil = omit subject alternative names section
+#
+#     When using copy_extensions it seems that only the ALT names get
+#     copied from the reqest to the cert when signing, so we now include
+#     the -extensions argument for both calls to openssl.
+#
+#   UT_SAN_LIST = the list of subject alternative names.  Must be set to
+#   something even if not used or openssl will complain.  Best practice
+#   is to list addresses as both DNS and IP for maximum compatibility.
+#
+#     "DNS:www.name.com,IP:1.2.3.4,DNS:1.2.3.4"
 #
 # The caller must also specify the extensions section to use:
 #   v3_root = used when creating the root certificate and key
-#   v3_cert = used when creating a certificate to be signed
+#   v3_fake = used when creating a MitM certificate
+#   v3_host = used to create a cert for, and signed by, this server
+#   v3_cert = used to request an externally signed cert for this server
 
 ##############################################################################
 [ ca ]
-default_ca	= CA_default
+default_ca  = CA_untangle
 
 ##############################################################################
-[ CA_default ]
+[ CA_untangle ]
+dir              = $ENV::UT_ROOT_PATH   # Where everything is kept
+database         = $dir/index.txt       # database index file.
+certificate      = $dir/untangle.crt    # The CA certificate
+private_key      = $dir/untangle.key    # The private key
+serial           = $dir/serial.txt      # The current serial number
+RANDFILE         = $dir/random          # private random number file
 
-dir		= $ENV::UT_ROOT_PATH	# Where everything is kept
-certs		= $dir/certs		# Where the issued certs are kept
-crl_dir		= $dir/crl		# Where the issued crl are kept
-database	= $dir/index.txt	# database index file.
-unique_subject	= no			# Set to 'no' to allow creation of
-					# several ctificates with same subject.
-new_certs_dir	= $dir/newcerts		# default place for new certs.
+unique_subject   = no                   # allow multiple certs with same subject
+name_opt         = ca_default           # Subject Name options
+cert_opt         = ca_default           # Certificate field options
 
-certificate	= $dir/untangle.crt	# The CA certificate
-serial		= $dir/serial.txt	# The current serial number
-crlnumber	= $dir/crlnumber	# the current crl number
-					# must be commented out to leave a V1 CRL
-crl		= $dir/crl.pem 		# The current CRL
-private_key	= $dir/untangle.key	# The private key
-RANDFILE	= $dir/random		# private random number file
-
-x509_extensions	= usr_cert		# The extentions to add to the cert
-
-# Comment out the following two lines for the "traditional"
-# (and highly broken) format.
-name_opt 	= ca_default		# Subject Name options
-cert_opt 	= ca_default		# Certificate field options
-
-# Extension copying option: use with caution.
-copy_extensions = copy
-
-# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
-# so this is commented out by default to leave a V1 CRL.
-# crlnumber must also be commented out to leave a V1 CRL.
-# crl_extensions	= crl_ext
-
-default_days	= 7305			# how long to certify for
-default_crl_days= 30			# how long before next CRL
-default_md	= sha256		# which md to use.
-preserve	= no			# keep passed DN ordering
-
-policy		= policy_anything
+copy_extensions  = copy                 # use the extensions in the request
+default_days     = 7305                 # how long to certify for
+default_md       = sha256               # which md to use.
+preserve         = yes                  # keep passed DN ordering
+policy           = policy_anything      # everything is optional
 
 ##############################################################################
 [ policy_anything ]
-countryName		= optional
-stateOrProvinceName	= optional
-localityName		= optional
-organizationName	= optional
-organizationalUnitName	= optional
-commonName		= optional
+
+# These are all optional.  It's not unusual to see a server cert with an
+# empty CN and all of the actual host names stuffed in subject ALT names.
+
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = optional
 
 ##############################################################################
 [ req ]
-default_bits		= 2048
-default_md		= sha256
-default_keyfile 	= privkey.pem
-distinguished_name	= req_distinguished_name
-attributes		= req_attributes
+default_bits       = 2048
+default_md         = sha256
+distinguished_name = req_dname
+attributes         = req_attr
 
 # The extentions to add to certificate requests
 req_extensions = $ENV::UT_EXT_MODE
@@ -84,76 +76,47 @@ req_extensions = $ENV::UT_EXT_MODE
 string_mask = nombstr
 
 ##############################################################################
-[ req_distinguished_name ]
-countryName			= Country Name (2 letter code)
-countryName_default		= AU
-countryName_min			= 2
-countryName_max			= 2
+[ req_dname ]
+countryName                     = Country Name (2 letter code)
+countryName_default             = US
+countryName_min                 = 2
+countryName_max                 = 2
 
-stateOrProvinceName		= State or Province Name (full name)
-stateOrProvinceName_default	= Some-State
+stateOrProvinceName             = State or Province Name (full name)
+stateOrProvinceName_default     = Alaska
 
-localityName			= Locality Name (eg, city)
+localityName                    = Locality Name (eg, city)
+localityName_default            = Umkumiut
 
-0.organizationName		= Organization Name (eg, company)
-0.organizationName_default	= Internet Widgits Pty Ltd
+0.organizationName              = Organization Name (eg, company)
+0.organizationName_default      = Internet Widgits Pty Ltd
 
-# we can do this but it is not needed normally :-)
-#1.organizationName		= Second Organization Name (eg, company)
-#1.organizationName_default	= World Wide Web Pty Ltd
+organizationalUnitName          = Organizational Unit Name (eg, section)
+organizationalUnitName_default  = Existential Hootenanny
 
-organizationalUnitName		= Organizational Unit Name (eg, section)
-#organizationalUnitName_default	=
+commonName                      = Common Name (eg, YOUR name)
+commonName_max                  = 64
 
-commonName			= Common Name (eg, YOUR name)
-commonName_max			= 64
-
-emailAddress			= Email Address
-emailAddress_max		= 64
-
-# SET-ex3			= SET extension number 3
+emailAddress                    = Email Address
+emailAddress_max                = 64
 
 ##############################################################################
-[ req_attributes ]
-challengePassword		= A challenge password
-challengePassword_min		= 4
-challengePassword_max		= 20
+[ req_attr ]
 
-unstructuredName		= An optional company name
+# This section must exist but can be empty
 
 ##############################################################################
-[ usr_cert ]
+[ req_ext_nil ]
 
-# These extensions are added when 'ca' signs a request.
-
-# This goes against PKIX guidelines but some CAs do it and some software
-# requires this to avoid interpreting an end user certificate as a CA.
-basicConstraints=CA:FALSE
-
-# This will be displayed in Netscape's comment listbox.
-nsComment			= "Untangle Certificate Authority"
-
-# PKIX recommendations harmless if included in all certificates.
-subjectKeyIdentifier=hash
-authorityKeyIdentifier=keyid,issuer
+# Request extensions when no SAN list is provided.  This is empty since
+# no ALT names were provided but it must be here to prevent errors.
 
 ##############################################################################
-[ reqext_nil ]
+[ req_ext_san ]
 
-# Request extensions when no SAN list is provided
+# Request extensions when a SAN list is provided.  Gets the ALT names list
+# from the environment.
 
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-extendedKeyUsage = serverAuth
-
-##############################################################################
-[ reqext_san ]
-
-# Request extensions when a SAN list is provided
-
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-extendedKeyUsage = serverAuth
 subjectAltName=$ENV::UT_SAN_LIST
 
 ##############################################################################
@@ -169,10 +132,39 @@ keyUsage = cRLSign, keyCertSign
 ##############################################################################
 [ v3_cert ]
 
-# Extensions for a server certificate
+# Extensions for a local server certificate to be signed by 3rd party and
+# used on this server.  We add usage flags for web, mail, and ipsec so the
+# cert can be used with our web server, SSL mail inspection, and IPsec.
 
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 basicConstraints = CA:false
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, keyAgreement
+extendedKeyUsage = serverAuth, emailProtection, 1.3.6.1.5.5.8.2.2
 
+##############################################################################
+[ v3_host ]
+
+# Extensions for a local server certificate that will be signed by our CA
+# and used on this server.  We add usage flags for web, mail, and ipsec so the
+# cert can be used with our web server, SSL mail inspection, and IPsec.
+
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+basicConstraints = CA:false
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, keyAgreement
+extendedKeyUsage = serverAuth, emailProtection, 1.3.6.1.5.5.8.2.2
+nsComment = "Untangle Certificate Authority"
+
+##############################################################################
+[ v3_fake ]
+
+# Extensions for generating a MitM certificate used by SSL Inspector.  We
+# only add usage flags for web and mail here since that's all we process.
+
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+basicConstraints = CA:false
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, keyAgreement
+extendedKeyUsage = serverAuth, emailProtection
+nsComment = "Untangle Certificate Authority"

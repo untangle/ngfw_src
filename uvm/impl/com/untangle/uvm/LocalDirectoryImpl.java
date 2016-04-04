@@ -265,7 +265,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private void updateXauthSecrets(LinkedList<LocalDirectoryUser> list)
     {
         /**
-         * The IPsec Xauth feature uses LocalDirectory for login credentials so
+         * IPsec Xauth and IKEv2 can use LocalDirectory for login credentials so
          * any time we load or save the list we'll call this function which will
          * export all of the user/pass info to the xauth.secrets file
          */
@@ -273,7 +273,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         String authFile = "/etc/xauth.secrets";
 
         try {
-            // put all the username/password pairs into a for IPsec/Xauth
+            // put all the username/password pairs into a file for IPsec Xauth and IKEv2
             FileWriter auth = new FileWriter(authFile, false);
 
             auth.write(FILE_DISCLAIMER);
@@ -282,6 +282,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
                 String userPassword = new String(rawPassword);
                 auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
+                auth.write(user.getUsername() + " : EAP 0x" + stringHexify(userPassword) + "\n");
             }
 
             auth.flush();
