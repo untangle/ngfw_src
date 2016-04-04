@@ -27,6 +27,8 @@ nodeAD = None
 adHost = "10.111.56.48"
 radiusHost = "10.112.56.71"
 localUserName = 'test20'
+googleUserName = 'johnnyutester@gmail.com'
+googlePassword = 'untanglechakas'
 adUserName = 'atsadmin'
 captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
@@ -69,7 +71,7 @@ def removeLocalDirectoryUser():
         'list': []
     }
 
-def createADSettings():
+def createDirectoryConnectorSettings():
     # Need to send Radius setting even though it's not used in this case.
     return {
        "activeDirectorySettings": {
@@ -91,7 +93,12 @@ def createADSettings():
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
+        },
+        "facebookSettings": {
+            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "authenticationEnabled": True
         }
     }
 
@@ -427,15 +434,54 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)        
+
+    def test_032_loginGoogle(self):
+        global node, nodeData, googleUserName, googlePassword
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        nodeData['authenticationType']="GOOGLE"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
+        node.setSettings(nodeData)
+
+        # Configure Directory Connector
+        nodeAD.setSettings(createDirectoryConnectorSettings())
+        
+        # check that basic captive page is shown
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        assert (search == 0)
+
+        # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(googleUserName)
+        assert(foundUsername)        
+
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(googleUserName)
+        assert(not foundUsername)        
         
     def test_035_loginActiveDirectory(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
         if (adResult != 0):
             raise unittest2.SkipTest("No AD server available")
         # Configure AD settings
-        testResultString = nodeAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createADSettings())
+        testResultString = nodeAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createDirectoryConnectorSettings())
         # print 'testResultString %s' % testResultString  # debug line
-        nodeAD.setSettings(createADSettings())
+        nodeAD.setSettings(createDirectoryConnectorSettings())
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         nodeData['captureRules']['list'] = []
