@@ -1252,7 +1252,7 @@ a.forgot-password:hover {
 
 .network-intf {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 .network-intf p {
@@ -1263,7 +1263,7 @@ a.forgot-password:hover {
 }
 .network-intf .internal {
     position: relative;
-    height: 141px;
+    height: 150px;
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;

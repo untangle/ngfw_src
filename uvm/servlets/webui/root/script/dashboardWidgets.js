@@ -728,13 +728,15 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     },
     tpl: '<div class="wg-wrapper network-intf">' +
         '<div class="external">' +
-        '<div class="iface" id="interface_{externalInterface.id}">' +
+        '<tpl for="externalInterfaces">' +
+        '<div class="iface" id="interface_{id}">' +
         '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 5px; height: 30px;"/>' +
-        '<p class="name">{externalInterface.name}</p>' +
+        '<p class="name">{name}</p>' +
         '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">{externalInterface.tx} kb/s</span>' +
-        '<span class="down">{externalInterface.rx} kb/s</span>' +
+        '<span class="up">{tx} kb/s</span>' +
+        '<span class="down">{rx} kb/s</span>' +
         '</div>' +
+        '</tpl>' +
         '<br/><span class="connection ext"></span>' +
         '</div>' +
         '</div>' +
@@ -745,11 +747,11 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '<div class="iface" id="interface_{id}">' +
         '<span class="connection int"></span><br/>' +
         '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">??? kb/s</span>' +
-        '<span class="down">??? kb/s</span>' +
+        '<span class="up">{tx} kb/s</span>' +
+        '<span class="down">{rx} kb/s</span>' +
         '</div>' +
         '<p class="name">{name}</p>' +
-        '<p class="devs">23</p>' +
+        '<p class="devs"></p>' +
         '</div>' +
         '</tpl>' +
         '</div>' +
@@ -757,75 +759,76 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '</div>' +
         '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
     updateStats: function (stats) {
-        //console.log(stats);
-        if (this.data.externalInterface) {
-            var speedElExt = document.querySelector('#interface_' + this.data.externalInterface.id);
-            if (speedElExt) {
-                speedElExt.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterface.id + '_txBps'] / 1024) + ' kb/s';
-                speedElExt.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterface.id + '_rxBps'] / 1024) + ' kb/s';
-            }
-        }
-
-        if (this.data.internalInterfaces) {
-            var speedsEl, i;
-            for (i = 0; i < this.data.internalInterfaces.length; i += 1) {
-                speedsEl = document.querySelector('#interface_' + this.data.internalInterfaces[i].id);
-                if (speedsEl) {
-                    speedsEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
-                    speedsEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+        var me = this;
+        var interfaceEl, i, interfaceDevicesMap = [], device;
+        if (this.data.externalInterfaces) {
+            for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
+                interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
+                if (interfaceEl) {
+                    interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
+                    interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
                 }
             }
         }
 
+        if (this.data.internalInterfaces) {
+            rpc.deviceTable.getDevices(Ext.bind(function (res, ex) {
+                if (Ung.Util.handleException(ex)) {
+                    return;
+                }
+                for (i = 0; i < res.list.length; i += 1) {
+                    device = res.list[i];
+                    if (interfaceDevicesMap[device.lastSeenInterfaceId] >= 0) {
+                        interfaceDevicesMap[device.lastSeenInterfaceId] += 1;
+                    } else {
+                        interfaceDevicesMap[device.lastSeenInterfaceId] = 1;
+                    }
+                }
+
+                for (i = 0; i < me.data.internalInterfaces.length; i += 1) {
+                    interfaceEl = document.querySelector('#interface_' + me.data.internalInterfaces[i].id);
+                    if (interfaceEl) {
+                        interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
+                        interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+                        interfaceEl.querySelector('.devs').innerHTML = interfaceDevicesMap[me.data.internalInterfaces[i].id];
+                    }
+                }
+            }));
+        }
+
     },
     loadData: function (handler) {
-        this.data.externalInterface = {};
-        this.data.internalInterfaces = [];
-
         var me = this;
-
+        this.data.externalInterfaces = [];
+        this.data.internalInterfaces = [];
         rpc.networkManager.getNetworkSettings(Ext.bind(function (result, exception) {
             handler.call(this);
 
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            var allInterfaces = result.interfaces.list, i;
 
-            this.data.externalInterface = {
-                id: allInterfaces[0].interfaceId,
-                name: allInterfaces[0].name,
-                //physicalDev: allInterfaces[0].physicalDev,
-                //disabled: allInterfaces[0].disabled,
-                rx: '???',
-                tx: '???'
-            };
-
-            for (i = 1; i < allInterfaces.length; i += 1) {
-                if (!allInterfaces[i].disabled) {
-                    this.data.internalInterfaces.push({
-                        id: allInterfaces[i].interfaceId,
-                        name: allInterfaces[i].name,
-                        //physicalDev: allInterfaces[i].physicalDev,
-                        //disabled: allInterfaces[i].disabled,
-                        rx: '???',
-                        tx: '???'
-                    });
+            Ext.each(result.interfaces.list, function (iface) {
+                if (!iface.disabled) {
+                    if (iface.name === 'External') {
+                        me.data.externalInterfaces.push({
+                            id: iface.interfaceId,
+                            name: iface.name,
+                            rx: 0,
+                            tx: 0
+                        });
+                    } else {
+                        me.data.internalInterfaces.push({
+                            id: iface.interfaceId,
+                            name: iface.name,
+                            rx: 0,
+                            tx: 0
+                        });
+                    }
                 }
-            }
-
+            });
             this.update(this.data);
         }, this));
-    },
-    addFakeInterface: function () {
-        var fakeIntf = {
-            name: 'Fake interface',
-            disabled: false,
-            rx: 100,
-            tx: 10
-        };
-        this.data.internalInterfaces.push(fakeIntf);
-        this.update(this.data);
     }
 });
 
