@@ -16,3 +16,4 @@ javamail: used to send mail
 jabsorb: used by the UI/uvm
 gettext-commons: unsed by the untangle-vm for I18n/localization
 jakarta-taglibs-standard: jsp taglib library (for jsps)
+selenium: browser emulation in directory connector (includes phantomjsdriver, gson, guava, commons-exec, commons-logging)
