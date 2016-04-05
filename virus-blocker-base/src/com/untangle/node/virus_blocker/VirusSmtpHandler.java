@@ -140,14 +140,16 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
+            boolean shouldScan = true;
             try {
                 disposition = part.getDisposition();
                 contentType = part.getContentType();
+                shouldScan = shouldScan( disposition, contentType );
             } catch (Exception e) {
                 logger.warn("Exception",e);
             }
             
-            if (!shouldScan(part)) {
+            if (!shouldScan) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Skip part: Disposition: " + disposition + " ContentType: " + contentType);
                 continue;
             }
@@ -253,14 +255,16 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
+            boolean shouldScan = true;
             try {
                 disposition = part.getDisposition();
                 contentType = part.getContentType();
+                shouldScan = shouldScan( disposition, contentType );
             } catch (Exception e) {
                 logger.warn("Exception",e);
             }
 
-            if (!shouldScan(part)) {
+            if (shouldScan) {
                 try {
                     logger.debug("Message[" + msgInfo.getMessageId() + "] Skip part: Disposition: " + disposition + " ContentType: " + contentType);
                 } catch (Exception e) {
@@ -450,23 +454,17 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return false;
     }
 
-    private boolean shouldScan(Part part)
+    private boolean shouldScan(String disposition, String contentType)
     {
-        try {
-            String disposition = part.getDisposition();
-            if (disposition != null ) {
-                if (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR))
-                    return true;
-            }
-            String contentType = part.getContentType();
-            if (contentType != null ) {
-                contentType = contentType.toLowerCase();
-                if (contentType.startsWith("text")) return false;
-                if (contentType.startsWith("image")) return false;
-                if (contentType.startsWith("message")) return false;
-            }
-        } catch (Exception e) {
-            logger.warn("Exception",e);
+        if (disposition != null ) {
+            if (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR))
+                return true;
+        }
+        if (contentType != null ) {
+            contentType = contentType.toLowerCase();
+            if (contentType.startsWith("text")) return false;
+            if (contentType.startsWith("image")) return false;
+            if (contentType.startsWith("message")) return false;
         }
         return false;
     }

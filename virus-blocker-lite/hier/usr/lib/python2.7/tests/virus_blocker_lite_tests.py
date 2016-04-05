@@ -13,7 +13,7 @@ import test_registry
 #
 # Just extends the virus base tests
 #
-class ClamTests(VirusBlockerBaseTests):
+class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
     @staticmethod
     def nodeName():
@@ -34,4 +34,4 @@ class ClamTests(VirusBlockerBaseTests):
         result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 
-test_registry.registerNode("virus-blocker-lite", ClamTests)
+test_registry.registerNode("virus-blocker-lite", VirusBlockerLiteTests)
