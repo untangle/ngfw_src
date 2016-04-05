@@ -118,18 +118,16 @@ public class RuleCondition implements JSONString, Serializable
      * They are stored here so that repatitive evaluation is quicker
      * They are prepared by calling _computerMatchers()
      */
-    private IPMatcher        ipMatcher       = null;
-    private IntMatcher       intMatcher     = null;
-    private IntfMatcher      intfMatcher     = null;
-    private UserMatcher      userMatcher     = null;
+    private IPMatcher        ipMatcher        = null;
+    private IntMatcher       intMatcher       = null;
+    private IntfMatcher      intfMatcher      = null;
+    private UserMatcher      userMatcher      = null;
     private GroupMatcher     groupMatcher     = null;
-    private ProtocolMatcher  protocolMatcher = null;
+    private GlobMatcher      globMatcher      = null;
+    private ProtocolMatcher  protocolMatcher  = null;
     private TimeOfDayMatcher timeOfDayMatcher = null;
     private DayOfWeekMatcher dayOfWeekMatcher = null;
-    private UrlMatcher       urlMatcher     = null;
-    private String           regexValue      = null;
-    private Integer          intValue        = null;
-    private Long             longValue        = null;
+    private UrlMatcher       urlMatcher       = null;
     
     public RuleCondition( )
     {
@@ -320,14 +318,10 @@ public class RuleCondition implements JSONString, Serializable
         case DST_MAC:
         case CLIENT_MAC_VENDOR:
         case SERVER_MAC_VENDOR:
-            this.regexValue = GlobUtil.globToRegex(value.toLowerCase());
-            break;
-
         case CLIENT_HOSTNAME:
         case SERVER_HOSTNAME:
         case HTTP_HOST:
         case HTTP_REFERER:
-        case HTTP_URI:
         case HTTP_CONTENT_TYPE:
         case HTTP_USER_AGENT:
         case HTTP_USER_AGENT_OS:
@@ -343,7 +337,8 @@ public class RuleCondition implements JSONString, Serializable
         case SSL_INSPECTOR_SNI_HOSTNAME:
         case SSL_INSPECTOR_SUBJECT_DN:
         case SSL_INSPECTOR_ISSUER_DN:
-            this.regexValue = GlobUtil.globToRegex(value);
+        case HTTP_URI:
+            this.globMatcher = new GlobMatcher(value);
             break;
 
         case APPLICATION_CONTROL_CONFIDENCE:
@@ -355,7 +350,7 @@ public class RuleCondition implements JSONString, Serializable
             try {
                 this.intMatcher = new IntMatcher(this.value);
             } catch (Exception e) {
-                logger.warn("Invalid Port Matcher: " + value, e);
+                logger.warn("Invalid Int Matcher: " + value, e);
             }
             break;
             
@@ -485,36 +480,28 @@ public class RuleCondition implements JSONString, Serializable
             if (entry == null)
                 return false;
             attachment = entry.getMacAddress();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case DST_MAC:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getMacAddress();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case CLIENT_MAC_VENDOR:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getMacVendor();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case SERVER_MAC_VENDOR:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getMacVendor();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
             
         case HTTP_URL:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
@@ -526,45 +513,33 @@ public class RuleCondition implements JSONString, Serializable
 
         case HTTP_HOST:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case HTTP_REFERER:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REFERER);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case HTTP_URI:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URI);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case HTTP_CONTENT_TYPE:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_TYPE);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case HTTP_USER_AGENT:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgent();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case HTTP_USER_AGENT_OS:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgentOs();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case HTTP_CONTENT_LENGTH:
             attachmentLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
@@ -578,21 +553,15 @@ public class RuleCondition implements JSONString, Serializable
             
         case PROTOCOL_CONTROL_SIGNATURE:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
                                                  
         case PROTOCOL_CONTROL_CATEGORY:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case PROTOCOL_CONTROL_DESCRIPTION:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case ESOFT_WEB_FILTER_CATEGORY:
         case ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION:
@@ -603,15 +572,11 @@ public class RuleCondition implements JSONString, Serializable
             
         case WEB_FILTER_CATEGORY:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case WEB_FILTER_CATEGORY_DESCRIPTION:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case WEB_FILTER_FLAGGED:
             Boolean flagged = (Boolean) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_FLAGGED);
@@ -652,49 +617,38 @@ public class RuleCondition implements JSONString, Serializable
 
         case APPLICATION_CONTROL_APPLICATION:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION);
-            if (attachment == null)
-                return false;
-            if (attachment.equals(regexValue)) //check exact equals first
-                return true;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
+
 
         case APPLICATION_CONTROL_CATEGORY:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CATEGORY);
-            if (attachment == null)
-                return false;
-            if (attachment.equals(regexValue)) //check exact equals first
-                return true;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case APPLICATION_CONTROL_PROTOCHAIN:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PROTOCHAIN);
-            if (attachment == null)
-                return false;
-            if (attachment.equals(regexValue)) //check exact equals first
-                return true;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case APPLICATION_CONTROL_DETAIL:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_DETAIL);
-            if (attachment == null)
-                return false;
-            if (attachment.equals(regexValue)) //check exact equals first
-                return true;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case APPLICATION_CONTROL_CONFIDENCE:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CONFIDENCE);
-            if (attachmentInt != null && attachmentInt > this.intValue)
-                return true;
-            else
+            if ( attachmentInt == null )
                 return false;
+            if (this.intMatcher == null) {
+                logger.warn("Invalid Matcher: " + this.intMatcher);
+                return false;
+            }
+
+            return this.intMatcher.isMatch( attachmentInt );
 
         case APPLICATION_CONTROL_PRODUCTIVITY:
             attachmentInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY);
             if ( attachmentInt == null )
                 return false;
             if (this.intMatcher == null) {
-                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
+                logger.warn("Invalid Matcher: " + this.intMatcher);
                 return false;
             }
 
@@ -705,7 +659,7 @@ public class RuleCondition implements JSONString, Serializable
             if ( attachmentInt == null )
                 return false;
             if (this.intMatcher == null) {
-                logger.warn("Invalid Dst Port Matcher: " + this.intMatcher);
+                logger.warn("Invalid Matcher: " + this.intMatcher);
                 return false;
             }
 
@@ -716,18 +670,14 @@ public class RuleCondition implements JSONString, Serializable
             if (entry == null)
                 return false;
             attachment = entry.getHostname();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case SERVER_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getHostname();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case CLIENT_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getClientAddr() );
@@ -737,21 +687,15 @@ public class RuleCondition implements JSONString, Serializable
 
         case SSL_INSPECTOR_SNI_HOSTNAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case SSL_INSPECTOR_SUBJECT_DN:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SUBJECT_DN);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         case SSL_INSPECTOR_ISSUER_DN:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_ISSUER_DN);
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         default:
             logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
@@ -841,54 +785,41 @@ public class RuleCondition implements JSONString, Serializable
             if (entry == null)
                 return false;
             attachment = entry.getMacAddress();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case DST_MAC:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
             if (entry == null)
                 return false;
-            attachment = entry.getMacAddress();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case CLIENT_MAC_VENDOR:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
                 return false;
             attachment = entry.getMacVendor();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
 
         case SERVER_MAC_VENDOR:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
             if (entry == null)
                 return false;
             attachment = entry.getMacVendor();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment.toLowerCase());
+            return globMatcher.isMatch( attachment );
             
         case CLIENT_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
                 return false;
             attachment = entry.getHostname();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case SERVER_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
             if (entry == null)
                 return false;
             attachment = entry.getHostname();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case CLIENT_IN_PENALTY_BOX:
             return UvmContextFactory.context().hostTable().hostInPenaltyBox( srcAddress );
@@ -980,18 +911,14 @@ public class RuleCondition implements JSONString, Serializable
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgent();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
             
         case HTTP_USER_AGENT_OS:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgentOs();
-            if (attachment == null)
-                return false;
-            return Pattern.matches(regexValue, attachment);
+            return globMatcher.isMatch( attachment );
 
         default:
             // this is commented out because some rules are run against sessions and attributes

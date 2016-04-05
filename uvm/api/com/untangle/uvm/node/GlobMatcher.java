@@ -58,6 +58,9 @@ public class GlobMatcher
     
     public boolean isMatch( String str )
     {
+        if (str != null )
+            str = str.toLowerCase();
+        
         switch (this.type) {
 
         case NONE:
