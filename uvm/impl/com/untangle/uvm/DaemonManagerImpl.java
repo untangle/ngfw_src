@@ -68,7 +68,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     {
         for (DaemonObject object : daemonHashMap.values()) {
             // ignore objects not configured for monitoring
-            if (object.monitorType == MonitorType.DAEMON)
+            if (object.monitorType == MonitorType.DISABLED)
                 continue;
 
             // ignore objects that don't need to be checked yet
