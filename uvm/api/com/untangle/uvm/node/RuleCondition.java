@@ -99,14 +99,6 @@ public class RuleCondition implements JSONString, Serializable
             SSL_INSPECTOR_SNI_HOSTNAME, /* "microsoft.com" */
             SSL_INSPECTOR_SUBJECT_DN, /* "CN=dropbox.com" */
             SSL_INSPECTOR_ISSUER_DN, /* "O=Thawte" */
-            /* DEPRECATED */
-            /* DEPRECATED */
-            /* DEPRECATED */
-            DIRECTORY_CONNECTOR_USERNAME, /* DEPRECATED in 9.4 */
-            WEB_FILTER_CATEGORY_FLAGGED, /* DEPRECATED */
-            ESOFT_WEB_FILTER_CATEGORY, /* DEPRECATED */
-            ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION, /* DEPRECATED */
-            ESOFT_WEB_FILTER_CATEGORY_FLAGGED, /* DEPRECATED */
     }
 
     protected RuleCondition.ConditionType matcherType = null;
@@ -263,7 +255,6 @@ public class RuleCondition implements JSONString, Serializable
             }
             break;
             
-        case DIRECTORY_CONNECTOR_USERNAME:
         case USERNAME:
             try {
                 this.userMatcher = new UserMatcher(this.value);
@@ -354,13 +345,6 @@ public class RuleCondition implements JSONString, Serializable
             }
             break;
             
-        case WEB_FILTER_CATEGORY_FLAGGED:
-        case ESOFT_WEB_FILTER_CATEGORY:
-        case ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION:
-        case ESOFT_WEB_FILTER_CATEGORY_FLAGGED:
-            logger.warn("matcher deprecated: " + this.matcherType);
-            break;
-
         case DST_LOCAL:
             break;
             
@@ -563,13 +547,6 @@ public class RuleCondition implements JSONString, Serializable
             attachment = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION);
             return globMatcher.isMatch( attachment );
 
-        case ESOFT_WEB_FILTER_CATEGORY:
-        case ESOFT_WEB_FILTER_CATEGORY_DESCRIPTION:
-        case ESOFT_WEB_FILTER_CATEGORY_FLAGGED:
-        case WEB_FILTER_CATEGORY_FLAGGED:
-            logger.warn("matcher deprecated: " + this.matcherType);
-            return false;
-            
         case WEB_FILTER_CATEGORY:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
             return globMatcher.isMatch( attachment );
@@ -584,7 +561,6 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             return flagged.booleanValue();
 
-        case DIRECTORY_CONNECTOR_USERNAME:
         case USERNAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
             if (this.userMatcher.isMatch(attachment))
