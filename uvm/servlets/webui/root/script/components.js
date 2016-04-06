@@ -930,7 +930,7 @@ Ext.define("Ung.SystemStats", {
             '<div class="values"><span name="uvmTCPSessions">&nbsp;</span></div>',
             '<div class="title">'+i18n._("UDP Sessions:")+'</div>',
             '<div class="values"><span name="uvmUDPSessions">&nbsp;</span></div>',
-            '<div class="title">'+i18n._("Click to open Session Viewer")+'</div>'
+            '<div class="title">'+i18n._("Click to view Sessions")+'</div>'
         ];
         this.sessionsToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=sessions]"),
@@ -945,7 +945,7 @@ Ext.define("Ung.SystemStats", {
         var hostsArr=[
             '<div class="title">'+i18n._("Active Hosts:")+'</div>',
             '<div class="values"><span name="activeHosts">&nbsp</span></div>',
-            '<div class="title">'+i18n._("Click to open Host Viewer")+'</div>'
+            '<div class="title">'+i18n._("Click to view Hosts")+'</div>'
         ];
         this.hostsToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=hosts]"),

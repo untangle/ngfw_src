@@ -108,7 +108,7 @@ table {
 </tr>
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-{% for name in ["Network" "Administration" "Host Viewer" "Device List"] %}
+{% for name in ["Network" "Administration" "Hosts" "Devices"] %}
 	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
 	{% if reports.size != 0 %}
 		{% for report in reports %}

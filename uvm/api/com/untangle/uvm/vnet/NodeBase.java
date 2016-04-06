@@ -343,7 +343,10 @@ public abstract class NodeBase implements Node
 
     public NodeMetric getMetric( String name )
     {
-        return metrics.get( name );
+        NodeMetric metric = metrics.get( name );
+        if ( metric == null )
+            logger.warn("Metric not found: " + name);
+        return metric;
     }
     
     public void decrementMetric( String name )

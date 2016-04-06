@@ -24,7 +24,6 @@ canRelayTLS = True
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
-
       
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
@@ -57,7 +56,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS, pre_scanned_events
+        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS
         # download eicar and trojan files before installing virus blocker
         remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -83,7 +82,6 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
-        pre_scanned_events = global_functions.getStatusValue("scan")
 
         
     def setUp(self):
@@ -106,9 +104,18 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus http download zip
     def test_015_httpEicarBlocked(self):
+        pre_events_scan = global_functions.getStatusValue(node,"scan")
+        pre_events_block = global_functions.getStatusValue(node,"block")
+
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
+        post_events_scan = global_functions.getStatusValue(node,"scan")
+        post_events_block = global_functions.getStatusValue(node,"block")
+
+        assert(pre_events_scan < post_events_scan)
+        assert(pre_events_block < post_events_block)
+        
     # test that client can block virus http download zip
     def test_016_httpVirusBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
@@ -118,10 +125,6 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_017_httpVirusZipBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
-
-        # Check to see if the faceplate counters have incremented.
-        post_scanned_events = global_functions.getStatusValue("scan")
-        assert(pre_scanned_events < post_scanned_events)
 
     # test that client can block a partial fetch after full fetch (using cache)
     def test_018_httpPartialVirusBlockedWithCache(self):

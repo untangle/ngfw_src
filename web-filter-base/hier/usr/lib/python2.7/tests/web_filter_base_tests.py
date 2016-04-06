@@ -79,12 +79,11 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, pre_scanned_events
+        global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodemetrics = uvmContext.metricManager().getMetrics(node.getNodeSettings()["id"])
-        pre_scanned_events = global_functions.getStatusValue("scan")
         self.node = node
         
     def setUp(self):
@@ -122,12 +121,21 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify blocked site url list works
     def test_016_blockedUrl(self):
+        pre_events_scan = global_functions.getStatusValue(node, "scan")
+        pre_events_block = global_functions.getStatusValue(node, "block")
+
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should now be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1", stdout=True)
         nukeBlockedUrls()
         assert ( "blockpage" in result )
 
+        # Check to see if the faceplate counters have incremented. 
+        post_events_scan = global_functions.getStatusValue(node, "scan")
+        post_events_block = global_functions.getStatusValue(node, "block")
+        assert(pre_events_scan < post_events_scan)
+        assert(pre_events_block < post_events_block)
+        
     # verify that a block list entry does not match when the URI doesnt match exactly
     def test_017_blockedUrl2(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
@@ -459,6 +467,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # disable pass referer and verify that a page with content that would be blocked is allowed.
     def test_131_passrefererEnabled(self):
         global node
+
         addBlockedUrl("test.untangle.com/test/refererPage.html")
         addPassedUrl("test.untangle.com/test/testPage1.html")
         settings = node.getSettings()
@@ -470,10 +479,6 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedUrls()
         nukePassedUrls()
         assert( resultReferer == 0 )        
-
-        # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("scan")
-        assert(pre_scanned_events < post_scanned_events)
         
     @staticmethod
     def finalTearDown(self):

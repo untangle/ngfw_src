@@ -1,17 +1,17 @@
 Ext.define('Webui.config.hostMonitor', {
     extend: 'Ung.StatusWin',
-    name: 'hostsViewer',
-    helpSource: 'host_viewer',
+    name: 'hosts',
+    helpSource: 'hosts',
     sortField:'bypassed',
     sortOrder: 'ASC',
-    displayName: 'Host Viewer',
+    displayName: 'Hosts',
     hasReports: true,
-    reportCategory: 'Host Viewer',
+    reportCategory: 'Hosts',
     defaultBandwidthColumns: false,
     enableBandwidthColumns: false,
     initComponent: function() {
         this.breadcrumbs = [{
-            title: i18n._('Host Viewer')
+            title: i18n._('Hosts')
         }];
         this.buildGridCurrentHosts();
         this.buildGridPenaltyBox();

@@ -197,11 +197,12 @@ def sendTestmessage(mailhost=smtpServerHost):
        print "Error: unable to send email through " + mailhost + " " + str(e)
        return 0
 
-def getStatusValue(label):
-    allstats = Uvm().getUvmContext().metricManager().getMetricsAndStats()
-    if allstats == None:
+def getStatusValue(node, label):
+    metric = node.getMetric(label)
+    if metric == None:
+        print "Missing metric: %s"%str(label) 
         return 0
-    for nodemetric in allstats['metrics']:
-        for stat in allstats['metrics'][nodemetric]['list']:
-            if label == stat['name']:
-                return stat['value']
+    if metric.get('value') == None:
+        print "Missing metric value: %s"%str(label) 
+        return 0
+    return metric.get('value')

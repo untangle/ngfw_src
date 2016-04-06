@@ -1,6 +1,6 @@
 {
     "uniqueId": "host-viewer-pfRvYDKKQx",
-    "category": "Host Viewer",
+    "category": "Hosts",
     "description": "The amount of active hosts by time.",
     "displayOrder": 100,
     "enabled": true,

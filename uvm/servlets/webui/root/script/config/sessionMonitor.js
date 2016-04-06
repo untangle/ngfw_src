@@ -1,15 +1,15 @@
 Ext.define('Webui.config.sessionMonitor', {
     extend: 'Ung.StatusWin',
-    name: 'sessionViewer',
-    helpSource: 'session_viewer',
+    name: 'sessions',
+    helpSource: 'sessions',
     sortField:'bypassed',
     sortOrder: 'ASC',
     bandwidthColumns: false,
-    displayName: 'Session Viewer',
+    displayName: 'Sessions',
     initComponent: function() {
         if(!this.breadcrumbs) {
             this.breadcrumbs = [{
-                title: i18n._('Session Viewer')
+                title: i18n._('Sessions')
             }];
         }
         this.buildGridCurrentSessions();
@@ -64,7 +64,7 @@ Ext.define('Webui.config.sessionMonitor', {
                                 "web_filter-best-category-flagged": (ii%2==1),
                                 "web_filter-best-category-id": null,
                                 "http-uri": "/t.gif",
-                                "platform-username": "rbooroojian"+t,
+                                "platform-username": "foobar"+t,
                                 "http-hostname": "p.twitter.com"+(t%500)
                             },
                             "javaClass": "java.util.HashMap"
@@ -89,7 +89,7 @@ Ext.define('Webui.config.sessionMonitor', {
             // iterate through each session and change its attachments map to properties
             var i, c, prop;
             for (i = 0; i < sessions.length ; i++) {
-                session = sessions[i];
+                var session = sessions[i];
                 if (session.attachments) {
                     for (prop in session.attachments.map) {
                         session[prop] = session.attachments.map[prop];

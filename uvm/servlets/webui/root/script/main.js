@@ -1017,19 +1017,19 @@ Ext.define("Ung.Main", {
             handler: Ung.Main.showPolicyManager
         }, {
             item: {
-                displayName: i18n._('Session Viewer'),
+                displayName: i18n._('Sessions'),
                 iconClass: 'icon-config-sessions'
             },
             handler: Ung.Main.showSessions
         }, {
             item: {
-                displayName: i18n._('Host Viewer'),
+                displayName: i18n._('Hosts'),
                 iconClass: 'icon-config-hosts'
             },
             handler: Ung.Main.showHosts
         }, {
             item: {
-                displayName: i18n._('Device List'),
+                displayName: i18n._('Devices'),
                 iconClass: 'icon-config-devices'
             },
             handler: Ung.Main.showDevices

@@ -1,6 +1,6 @@
 {
     "uniqueId": "host-viewer-WGQUSYhIck",
-    "category": "Host Viewer",
+    "category": "Hosts",
     "description": "The number of updates to the host table over time.",
     "displayOrder": 102,
     "enabled": true,

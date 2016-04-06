@@ -62,7 +62,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay, canRelayTLS, pre_scanned_events
+        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay, canRelayTLS
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -82,7 +82,6 @@ class PhishBlockerTests(unittest2.TestCase):
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
-        pre_scanned_events = global_functions.getStatusValue("quarantine")
         
     def setUp(self):
         # flush quarantine.
@@ -109,6 +108,8 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
+        pre_events_quarantine = global_functions.getStatusValue(node,"quarantine")
+
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['strength'] = 5
         node.setSettings(nodeData)
@@ -144,8 +145,8 @@ class PhishBlockerTests(unittest2.TestCase):
         assert( found )
             
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("quarantine")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_quarantine = global_functions.getStatusValue(node,"quarantine")
+        assert(pre_events_quarantine < post_events_quarantine)
         
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):

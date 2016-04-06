@@ -1,6 +1,6 @@
 {
     "uniqueId": "host-viewer-NIFFCexFv3",
-    "category": "Host Viewer",
+    "category": "Hosts",
     "conditions": [],
     "defaultColumns": ["time_stamp","address","key","value"],
     "description": "All updates to hosts in the host table.",

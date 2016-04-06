@@ -97,11 +97,10 @@ class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, pre_scanned_events
+        global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        pre_scanned_events = global_functions.getStatusValue("block")
         
     def setUp(self):
         pass
@@ -729,6 +728,8 @@ class FirewallTests(unittest2.TestCase):
     def test_901_blockEventLog(self):
         nukeRules()
         appendRule(createSingleConditionRule("DST_PORT","80"))
+        pre_events_block = global_functions.getStatusValue(node,"block")
+
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -740,9 +741,10 @@ class FirewallTests(unittest2.TestCase):
                                             'firewall_blocked', True,
                                             'firewall_flagged', True)
         assert( found )
+
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("block")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_block = global_functions.getStatusValue(node,"block")
+        assert(pre_events_block < post_events_block)
 
     # verify a flagged sesion event
     def test_902_flagEventLog(self):

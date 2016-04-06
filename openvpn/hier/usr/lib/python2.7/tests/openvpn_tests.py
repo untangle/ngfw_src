@@ -103,7 +103,7 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP, pre_scanned_events
+        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -119,7 +119,6 @@ class OpenVpnTests(unittest2.TestCase):
             vpnServerResult = remote_control.runCommand("ping -W 5 -c 1 " + wanIP, host=vpnClientVpnIP)
         else:
             vpnServerResult = 1
-        pre_scanned_events = global_functions.getStatusValue("connect")
 
     def setUp(self):
         pass
@@ -175,6 +174,8 @@ class OpenVpnTests(unittest2.TestCase):
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
 
+        pre_events_connect = global_functions.getStatusValue(node,"connect")
+        
         running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP,)
         loopLimit = 5
         while ((running == 0) and (loopLimit > 0)):
@@ -241,8 +242,8 @@ class OpenVpnTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("connect")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_connect = global_functions.getStatusValue(node, "connect")
+        assert(pre_events_connect < post_events_connect)
         
     def test_050_createClientVPNFullTunnel(self):
         global nodeData, vpnServerResult, vpnClientResult, vpnClientVpnIP

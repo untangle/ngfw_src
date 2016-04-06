@@ -252,7 +252,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, pre_scanned_events
+        global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
@@ -264,7 +264,6 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", patch )
 
         node.start() # must be called since intrusion-prevention doesn't auto-start
-        pre_scanned_events = global_functions.getStatusValue("detect")
 
     def setUp(self):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
@@ -637,6 +636,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
+        pre_events_detect = global_functions.getStatusValue(node,"detect")
+        
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
 
@@ -649,8 +650,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         assert( event != None and event["blocked"] == True )
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("detect")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_detect = global_functions.getStatusValue(node,"detect")
+        assert(pre_events_detect < post_events_detect)
 
     @staticmethod
     def finalTearDown(self):

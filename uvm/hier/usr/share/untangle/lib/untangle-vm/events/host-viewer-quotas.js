@@ -1,5 +1,5 @@
 {
-    "category": "Host Viewer",
+    "category": "Hosts",
     "conditions": [],
     "defaultColumns": ["time_stamp","address","action","size","reason"],
     "description": "Shows when quotas are assigned or expired.",

@@ -1,13 +1,13 @@
 Ext.define('Webui.config.deviceMonitor', {
     extend: 'Ung.ConfigWin',
-    name: 'deviceList',
-    helpSource: 'device_list',
-    displayName: 'Device List',
+    name: 'devices',
+    helpSource: 'devices',
+    displayName: 'Devices',
     hasReports: true,
-    reportCategory: 'Device List',
+    reportCategory: 'Devices',
     initComponent: function() {
         this.breadcrumbs = [{
-            title: i18n._('Device List')
+            title: i18n._('Devices')
         }];
         this.buildGridCurrentDevices();
         this.buildTabPanel([this.gridCurrentDevices]);

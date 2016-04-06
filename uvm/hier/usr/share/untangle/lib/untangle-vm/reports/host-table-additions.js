@@ -1,6 +1,6 @@
 {
     "uniqueId": "host-viewer-UkYvElV11f",
-    "category": "Host Viewer",
+    "category": "Hosts",
     "description": "The amount of hosts add and removed from the host table over time.",
     "displayOrder": 101,
     "enabled": true,

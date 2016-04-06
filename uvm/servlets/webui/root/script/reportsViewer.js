@@ -19,13 +19,13 @@ Ext.define('Ung.reportsViewer', {
             leaf : true,
             icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_summary.png'
         }, {
-            text : i18n._('Host Viewer'),
-            category : 'Host Viewer',
+            text : i18n._('Hosts'),
+            category : 'Hosts',
             leaf : true,
             icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_hosts_16x16.png'
         }, {
-            text : i18n._('Device List'),
-            category : 'Device List',
+            text : i18n._('Devices'),
+            category : 'Devices',
             leaf : true,
             icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_devices_16x16.png'
         }, {
