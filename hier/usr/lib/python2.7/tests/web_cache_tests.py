@@ -23,12 +23,11 @@ class WebCacheTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,pre_scanned_events
+        global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         node.start() # must be called since web cache doesn't auto-start
-        pre_scanned_events = global_functions.getStatusValue("hit")
 
     def setUp(self):
         pass
@@ -41,6 +40,8 @@ class WebCacheTests(unittest2.TestCase):
     def test_020_testBasicWebCache(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
+        pre_events_hit = global_functions.getStatusValue(node,"hit")
+
         node.clearSquidCache()
         for x in range(0, 10):
             result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
@@ -55,8 +56,9 @@ class WebCacheTests(unittest2.TestCase):
         assert(events['list'][0]['hits'])
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("hit")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_hit = global_functions.getStatusValue(node,"hit")
+
+        assert(pre_events_hit < post_events_hit)
 
     @staticmethod
     def finalTearDown(self):
