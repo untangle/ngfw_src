@@ -505,14 +505,14 @@ for more data when a full packet has not yet been received.
 
         // make sure we have a TLS handshake message
         int recordType = Math.abs(data.get());
-        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet does not contain a TLS Handshake");
+        if (recordType == TLS_HANDSHAKE) return(null);
 
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");
+        if (shakeType != CLIENT_HELLO) return(null);
 
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
