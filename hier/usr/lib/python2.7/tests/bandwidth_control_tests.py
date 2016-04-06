@@ -200,7 +200,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit, pre_scanned_events
+        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -246,7 +246,6 @@ class BandwidthControlTests(unittest2.TestCase):
         origNetworkSettingsWithoutQoS['qosSettings']['qosEnabled'] = False
         
         uvmContext.networkManager().setNetworkSettings(origNetworkSettingsWithQoS)
-        pre_scanned_events = global_functions.getStatusValue("prioritize")
         
     def setUp(self):
         pass
@@ -511,6 +510,8 @@ class BandwidthControlTests(unittest2.TestCase):
     def test_050_webFilterFlaggedRule(self):
         global node, nodeWF
         nukeRules()
+        pre_count = global_functions.getStatusValue(node,"prioritize")
+
         priority_level = 7
         # This test might need web filter for untangle-casing-http to start
         # Record average speed without bandwidth control configured
@@ -545,8 +546,8 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("prioritize")
-        assert(pre_scanned_events < post_scanned_events)
+        post_count = global_functions.getStatusValue(node,"prioritize")
+        assert(pre_count < post_count)
  
     def test_060_quota(self):
         global node
@@ -576,7 +577,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Host Viewer','Quota Events',None,5)
+        events = global_functions.get_events('Hosts','Quota Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                                "action", 1, #quota given
@@ -621,7 +622,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert(penalty_assigned_time < penalty_time_margin_error)
         
         # check penalty box
-        events = global_functions.get_events('Host Viewer','Penalty Box Events',None,5)
+        events = global_functions.get_events('Hosts','Penalty Box Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, "address", remote_control.clientIP)
         assert(found)
