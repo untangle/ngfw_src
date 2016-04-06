@@ -84,14 +84,13 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeSettings, node, pre_scanned_events
+        global nodeSettings, node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodeSettings = node.getSettings()
         # run a few sessions so that the classd daemon starts classifying
         for i in range(2): remote_control.isOnline()
-        pre_scanned_events = global_functions.getStatusValue("pass")
 
     def setUp(self):
         pass
@@ -147,6 +146,8 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result2 != 0)
 
     def test_026_protoRule_Pandora(self):
+        pre_count = global_functions.getStatusValue(node,"pass")
+
         touchProtoRule("Pandora",False,False)
         result1 = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
         touchProtoRule("Pandora",True,True)
@@ -156,8 +157,8 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result2 != 0)
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("pass")
-        assert(pre_scanned_events < post_scanned_events)
+        post_count = global_functions.getStatusValue(node,"pass")
+        assert(pre_count < post_count)
 
     def test_030_logicRule_Allow_Default(self):
         result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
