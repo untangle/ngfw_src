@@ -126,7 +126,7 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult, pre_scanned_events
+        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
         tunnelUp = False
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
@@ -138,7 +138,6 @@ class IPsecTests(unittest2.TestCase):
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        pre_scanned_events = global_functions.getStatusValue("enabled")
 
     def setUp(self):
         pass
@@ -152,6 +151,8 @@ class IPsecTests(unittest2.TestCase):
         global tunnelUp
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
+        pre_events_enabled = global_functions.getStatusValue(node,"enabled")
+
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
         listOfPairs = ""
@@ -174,8 +175,8 @@ class IPsecTests(unittest2.TestCase):
         tunnelUp = True
 
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("enabled")
-        assert(pre_scanned_events < post_scanned_events)
+        post_events_enabled = global_functions.getStatusValue(node,"enabled")
+        assert(pre_events_enabled < post_events_enabled)
                
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
