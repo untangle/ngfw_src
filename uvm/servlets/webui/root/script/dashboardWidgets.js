@@ -726,7 +726,10 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     hasStats: true,
     refreshIntervalSec: 0,
     hasRefresh: true,
-    data: {},
+    data: {
+        externalInterfaces: null,
+        internalInterfaces: null
+    },
     initComponent: function () {
         this.title = '<h3>' + i18n._("Network Layout") + '</h3>';
         this.callParent(arguments);
@@ -766,7 +769,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     updateStats: function (stats) {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
-        if (this.data && this.data.externalInterfaces) {
+        if (this.data.externalInterfaces) {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
                 if (interfaceEl) {
@@ -776,7 +779,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             }
         }
 
-        if (this.data && this.data.internalInterfaces) {
+        if (this.data.internalInterfaces) {
             rpc.deviceTable.getDevices(Ext.bind(function (res, ex) {
                 if (Ung.Util.handleException(ex)) {
                     return;
@@ -795,7 +798,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
                     if (interfaceEl) {
                         interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
                         interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
-                        interfaceEl.querySelector('.devs').innerHTML = interfaceDevicesMap[me.data.internalInterfaces[i].id];
+                        interfaceEl.querySelector('.devs').innerHTML = interfaceDevicesMap[me.data.internalInterfaces[i].id] || 0;
                     }
                 }
             }));

@@ -51,7 +51,7 @@
 }
 
 .logo {
-    background-size: contain;
+    background-size: 80%;
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -411,32 +411,34 @@ a.link,a.link:visited {
     /*background: url(/images/texture2.jpg);*/
 }
 
-.menu-button.x-btn {
-    border-radius: 0;
+.main-menu-btn.x-btn {
+    border-radius: 3px;
+    margin: 0 5px;
     background-color: #1b1e26;
     border-color: #1b1e26;
     background-image: none;
 }
 
-.menu-button .x-btn-wrap {
-    height: 40px;
+.main-menu-btn .x-btn-wrap {
+    /*height: 40px;*/
 }
 
-.menu-button .x-btn-inner {
-    font-size: 15px;
-    font-family: 'Source Sans Pro', sans-serif;
+.main-menu-btn .x-btn-inner {
+    font-size: 14px;
+    font-family: 'PT Sans', sans-serif;
     color: #B2B6C0;
+    text-align: center;
+    padding: 0 10px;
 }
 
-.menu-button.x-btn.x-btn-over {
-    border-color: #315e22;
-    background-color: #315e22;
-    background-image: none;
+.main-menu-btn.x-btn-over {
+    border-color: #555;
+    background: #333;
 }
 
-.menu-button.x-btn.x-btn-pressed {
-    border-color: #67bd4a;
-    background-color: #67bd4a;
+.main-menu-btn.x-btn.x-btn-pressed {
+    border-color: transparent;
+    background-color: #555;
     background-image: none;
 }
 
@@ -444,9 +446,121 @@ a.link,a.link:visited {
     outline: none !important;
 }
 
-.menu-button.x-btn-pressed .x-btn-inner,.menu-button.x-btn-over .x-btn-inner {
-    color: #ffffff;
+.main-menu-btn.x-btn-pressed .x-btn-inner, .main-menu-btn.x-btn-over .x-btn-inner {
+    color: #FFF;
 }
+
+.main-menu-btn {
+    background: none;
+    border: 0;
+    transition: all .25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.main-menu-btn .x-btn-inner span {
+    vertical-align: middle;
+    /*display: block;*/
+}
+
+.main-menu-btn i {
+    /*color: #B2B6C0;*/
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+.main-menu-btn.x-btn-focus, .main-menu-btn.x-btn-menu-active {
+    background-color: #555 !important;
+    background-image: none !important;
+    color: #FFF !important;
+}
+.main-menu-btn.x-btn-focus  i {
+    /*color: #FFF;*/
+}
+
+.user-menu, .hamburger-menu {
+    float: right;
+}
+
+.hamburger-menu {
+    display: none;
+}
+
+.hamburger-menu .x-btn-arrow-right:after {
+    display: none;
+}
+
+.user-menu-dd .x-menu-item.x-menu-item-separator {
+    background-color: #999;
+    height: 1px;
+}
+
+
+
+.user-menu-dd {
+    background: #1b1e26;
+    border: 0;
+    box-shadow: none;
+    right: 0 !important;
+    left: auto !important;
+    /*transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);*/
+}
+.user-menu-dd i {
+    vertical-align: middle;
+    font-size: 20px;
+}
+.user-menu-dd span {
+    vertical-align: middle;
+}
+
+.user-menu-dd .x-menu-body-default {
+    background: none;
+    padding: 0;
+}
+
+.user-menu-dd .x-menu-item-text-default {
+    border: 0;
+    background: none;
+    color: #B2B6C0;
+    border-radius: 0;
+    font: 14px 'PT Sans', sans-serif;
+    line-height: 36px;
+}
+.user-menu-dd .x-menu-item-default {
+    border: 0;
+    background: none;
+    border-radius: 0;
+}
+
+.user-menu-dd .x-menu-item-focus {
+    background: #555;
+}
+.user-menu-dd .x-menu-item-focus .x-menu-item-text-default {
+    color: #FFF;
+}
+
+.views-menu div, .user-menu div {
+    white-space: nowrap;
+}
+
+@media ( max-width: 1024px ) {
+    .main-menu-btn .x-btn-inner span {
+        display: block;
+    }
+}
+@media ( max-width: 800px ) {
+    .main-menu-btn .x-btn-inner span {
+        display: none;
+    }
+}
+@media ( max-width: 520px ) {
+    .hamburger-menu {
+        display: block;
+    }
+    .views-menu, .user-menu {
+        display: none;
+    }
+}
+
+
 
 .action-button.x-btn {
     border-radius: 8px;
@@ -515,7 +629,11 @@ a.forgot-password:hover {
 }
 /* Left side container */
 .main-menu {
+    height: 66px;
+    overflow: hidden;
     background-color: #1b1e26;
+    z-index: 999;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
 }
 
 .top-container {
@@ -524,18 +642,22 @@ a.forgot-password:hover {
 }
 
 .config-separator {
-    background-color: white;
+    background-color: #696B6F;
     width: 100%;
-    height: 40px;
     line-height: 40px;
-    padding-left: 20px;
-    border-bottom: 1px solid #D8DBE0;
+    padding-left: 10px;
+    border-bottom: 1px solid #CCC;
 }
 
 .top-title {
-    font-size: 18px;
-    color: #AAACAE;
+    font-size: 16px;
+    color: #CCC;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
 }
+.top-title * {
+    vertical-align: middle;
+}
+
 
 .policy-selector .x-btn-text {
     text-align: left;

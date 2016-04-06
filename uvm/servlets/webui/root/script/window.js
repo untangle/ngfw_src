@@ -73,13 +73,8 @@ Ext.define('Ung.Window', {
     },
     setSizeToRack: function () {
         var objSize = Ung.Main.viewport.getSize();
-        var left = 0;
-        if( objSize.width > 1000 ) {
-            left = Ung.Main.menuWidth;
-            objSize.width = objSize.width - Ung.Main.menuWidth;
-        }
-        this.setPosition(left, 0);
-        this.setSize(objSize);
+        this.setPosition(0, 66);
+        this.setSize(objSize.width, objSize.height - 66);
     },
     // to override if needed
     isDirty: function() {
@@ -151,10 +146,10 @@ Ext.define("Ung.SettingsWin", {
         config.rpc = {};
         var objSize = Ung.Main.viewport.getSize();
         Ext.applyIf(config, {
-            height: objSize.height,
-            width: objSize.width - Ung.Main.menuWidth,
-            x: Ung.Main.menuWidth,
-            y: 0
+            height: objSize.height - 66,
+            width: objSize.width,
+            x: 0,
+            y: 66
         });
         this.callParent(arguments);
     },

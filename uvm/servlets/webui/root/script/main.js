@@ -87,83 +87,180 @@ Ext.define("Ung.Main", {
 
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout: 'border',
-            responsiveFormulas: {
-                small: 'width < 600'
-            },
-            items:[{
-                region: 'west',
+            items: [{
+                region: 'north',
                 xtype: 'container',
                 name: 'mainMenu',
                 cls: "main-menu",
-                plugins: 'responsive',
-                responsiveConfig: {
-                    'small': {
-                        width: 97
-                    },
-                    '!small': {
-                        width: 150
-                    }
-                },
-                layout: { type: 'vbox'},
+                layout: { type: 'hbox', align: 'middle'},
                 scrollable: 'y',
                 items: [{
                     xtype: 'component',
-                    margin: '3 5 3 5',
+                    margin: '3 10 3 10',
                     cls: 'logo',
-                    style: "background-image: url(/images/BrandingLogo.png?"+(new Date()).getTime()+");",
-                    plugins: 'responsive',
-                    responsiveConfig: {
-                        'phone || small': {
-                            height: 55,
-                            width: 87
-                        },
-                        '!(phone || small)': {
-                            height: 82,
-                            width: 140
-                        }
-                    }
+                    height: 60,
+                    width: 100,
+                    style: "background-image: url(/images/BrandingLogo.png?"+(new Date()).getTime()+");"
                 }, {
-                    xtype: 'segmentedbutton',
+                    xtype: 'container',
+                    cls: 'views-menu',
                     itemId: 'viewsMenu',
-                    vertical: true,
+                    flex: 1,
                     defaults: {
-                        scale: 'large',
-                        textAlign: 'left',
-                        cls: 'menu-button'
+                        scale: 'large'
                     },
-                    width: '100%',
+                    //width: '100%',
                     items: [{
-                        text: i18n._('Dashboard'),
-                        iconCls: 'icon-dashboard',
+                        xtype: 'button',
+                        html: '<i class="material-icons">home</i> <span>' + i18n._('Dashboard') + '</span>',
+                        cls: 'main-menu-btn',
                         pressed: rpc.isRegistered,
-                        handler: function() {
+                        handler: function (btn) {
                             this.panelCenter.setActiveItem("dashboard");
+                            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
+                            btn.setPressed(true);
                         },
                         scope: this
                     }, {
-                        text: i18n._('Apps'),
-                        iconCls: 'icon-apps',
+                        xtype: 'button',
+                        html: '<i class="material-icons">apps</i> <span>' + i18n._('Apps') + '</span>',
+                        cls: 'main-menu-btn',
                         pressed: !rpc.isRegistered,
-                        handler: function() {
+                        handler: function (btn) {
                             this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
+                            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
+                            btn.setPressed(true);
                         },
                         scope: this
                     }, {
-                        text: i18n._('Config'),
-                        iconCls: 'icon-config',
-                        handler: function() {
+                        xtype: 'button',
+                        html: '<i class="material-icons">tune</i> <span>' + i18n._('Config') + '</span>',
+                        cls: 'main-menu-btn',
+                        handler: function (btn) {
                             this.panelCenter.setActiveItem("config");
+                            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
+                            btn.setPressed(true);
                         },
                         scope: this
                     }, {
-                        text: i18n._('Reports'),
-                        id: 'reportsMenuItem',
+                        xtype: 'button',
+                        html: '<i class="material-icons">show_chart</i> <span>' + i18n._('Reports') + '</span>',
+                        cls: 'main-menu-btn',
                         hidden: !rpc.reportsEnabled,
-                        iconCls: 'icon-reports',
-                        handler: function() {
+                        handler: function (btn) {
                             this.panelCenter.setActiveItem("reports");
+                            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
+                            btn.setPressed(true);
                         },
                         scope: this
+                    }]
+                }, {
+                    xtype: 'container',
+                    align: 'right',
+                    cls: 'user-menu',
+                    defaults: {
+                        scale: 'large'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        html: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
+                        cls: 'main-menu-btn'
+                    }, {
+                        xtype: 'button',
+                        html: '<i class="material-icons">account_circle</i> <span>' + i18n._('Account') + '</span>',
+                        cls: 'main-menu-btn',
+                        margin: '0, 10, 0, 0',
+                        menuAlign: 'tr-br',
+                        menu: Ext.create('Ext.menu.Menu', {
+                            cls: 'user-menu-dd',
+                            shadow: false,
+                            width: 200,
+                            plain: true,
+                            padding: '15 0 10 0',
+                            items: [{
+                                text: '<i class="material-icons">settings</i> <span>' + i18n._('Settings') + '</span>',
+                                href: this.getMyAccountLink(),
+                                hrefTarget: '_blank',
+                                handler: function () {
+                                    return Ung.LicenseLoader.check();
+                                }
+                            }, {
+                                text: '<i class="material-icons">exit_to_app</i> <span>' + i18n._('Logout') + '</span>',
+                                href: '/auth/logout?url=/webui&realm=Administrator'
+                            }]
+                        })
+                    }]
+                }, {
+                    xtype: 'container',
+                    align: 'right',
+                    cls: 'hamburger-menu',
+                    defaults: {
+                        scale: 'large'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        html: '<i class="material-icons">menu</i>',
+                        cls: 'main-menu-btn',
+                        margin: '0, 10, 0, 0',
+                        menuAlign: 'tr-br',
+                        menu: Ext.create('Ext.menu.Menu', {
+                            cls: 'user-menu-dd',
+                            shadow: false,
+                            width: 200,
+                            plain: true,
+                            padding: '15 0 10 0',
+                            items: [{
+                                text: '<i class="material-icons">home</i> <span>' + i18n._('Dashboard') + '</span>',
+                                handler: function () {
+                                    this.panelCenter.setActiveItem("dashboard");
+                                    this.viewsMenu.items.each(function (button, idx) {
+                                        button.setPressed(idx === 0);
+                                    });
+                                },
+                                scope: this
+                            }, {
+                                text: '<i class="material-icons">apps</i> <span>' + i18n._('Apps') + '</span>',
+                                handler: function () {
+                                    this.panelCenter.setActiveItem((rpc.rackView && rpc.rackView.instances.list.length==0) ? 'installApps': 'apps');
+                                    this.viewsMenu.items.each(function (button, idx) {
+                                        button.setPressed(idx === 1);
+                                    });
+                                },
+                                scope: this
+                            }, {
+                                text: '<i class="material-icons">tune</i> <span>' + i18n._('Config') + '</span>',
+                                handler: function () {
+                                    this.panelCenter.setActiveItem("config");
+                                    this.viewsMenu.items.each(function (button, idx) {
+                                        button.setPressed(idx === 2);
+                                    });
+                                },
+                                scope: this
+                            }, {
+                                text: '<i class="material-icons">show_chart</i> <span>' + i18n._('Reports') + '</span>',
+                                handler: function () {
+                                    this.panelCenter.setActiveItem("reports");
+                                    this.viewsMenu.items.each(function (button, idx) {
+                                        button.setPressed(idx === 3);
+                                    });
+                                },
+                                scope: this
+                            }, '-', {
+                                text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
+                                href: this.getHelpLink(null),
+                                hrefTarget: '_blank'
+                            }, '-', {
+                                text: '<i class="material-icons">account_circle</i> <span>' + i18n._('My Account') + '</span>',
+                                href: this.getMyAccountLink(),
+                                hrefTarget: '_blank',
+                                handler: function () {
+                                    return Ung.LicenseLoader.check();
+                                }
+                            }, {
+                                text: '<i class="material-icons">exit_to_app</i> <span>' + i18n._('Logout') + '</span>',
+                                href: '/auth/logout?url=/webui&realm=Administrator'
+                            }]
+                        })
                     }]
                 }]
             }, {
@@ -203,7 +300,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
-                        },this.buildLinksMenu()]
+                        }]
                     }, {
                         xtype: 'container',
                         itemId: 'dashboardItems',
@@ -280,7 +377,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
-                        },this.buildLinksMenu()]
+                        }]
                     }, {
                         xtype: 'container',
                         cls: 'apps-content',
@@ -332,7 +429,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
-                        }, this.buildLinksMenu()]
+                        }]
                     }, {
                         xtype: 'container',
                         style: {
@@ -347,19 +444,11 @@ Ext.define("Ung.Main", {
                     scrollable: true,
                     items: [{
                         xtype: 'container',
-                        cls: 'top-container',
-                        layout: {type: 'hbox', align: 'middle'},
-                        height: 88,
                         items: [{
                             xtype: 'component',
-                            cls: 'top-title',
-                            margin: '0 0 0 20',
-                            html: i18n._('Config'),
-                            flex: 1
-                        }, this.buildLinksMenu()]
-                    }, {
-                        xtype: 'container',
-                        items: [{
+                            cls: 'config-separator top-title',
+                            html: '<i class="material-icons">tune</i> <span>' + i18n._("Configuration") + '</span>'
+                        }, {
                             xtype: 'container',
                             itemId: 'configContainer',
                             style: {
@@ -368,7 +457,7 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: 'component',
                             cls: 'config-separator top-title',
-                            html: i18n._("Tools")
+                            html: '<i class="material-icons">build</i> <span>' + i18n._("Tools") + '</span>'
                         }, {
                             xtype: 'container',
                             title: i18n._('Tools'),
@@ -383,19 +472,6 @@ Ext.define("Ung.Main", {
                     itemId: 'reports',
                     layout: "border",
                     items: [{
-                        xtype: 'container',
-                        region: "north",
-                        cls: 'top-container',
-                        layout: {type: 'hbox', align: 'middle'},
-                        height: 40,
-                        items: [{
-                            xtype: 'component',
-                            cls: 'top-title',
-                            margin: '0 0 0 20',
-                            html: i18n._('Reports Viewer'),
-                            flex: 1
-                        }, this.buildLinksMenu()]
-                    }, {
                         xtype: 'container',
                         region: "center",
                         layout: "fit",
@@ -418,6 +494,7 @@ Ext.define("Ung.Main", {
         ]});
         Ext.QuickTips.init();
         this.mainMenu = this.viewport.down("[name=mainMenu]");
+        this.viewsMenu = this.viewport.down("#viewsMenu");
         this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.policySelector =  this.viewport.down("button[name=policySelector]");
@@ -433,15 +510,6 @@ Ext.define("Ung.Main", {
         Ung.dashboard.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
-    },
-    buildLinksMenu: function() {
-        return {
-            xtype: 'component',
-            margin: '0 10 0 20',
-            html: '<a class="menu-link" href="'+this.getHelpLink(null)+'" target="_blank">'+i18n._('Help')+'</a> '+
-                '<a class="menu-link" onclick="return Ung.LicenseLoader.check();" href="'+this.getMyAccountLink()+'" target="_blank">'+i18n._('My Account')+'</a> ' +
-                '<a class="menu-link logout" href="/auth/logout?url=/webui&realm=Administrator">'+i18n._('Logout')+'</a>'
-        };
     },
     about: function (forceReload) {
         if(rpc.about === undefined) {
