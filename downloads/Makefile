@@ -69,7 +69,7 @@ $(OUTPUT_DIRECTORY)/%: %.zip $(OUTPUT_DIRECTORY).$(dir_target)
 	@echo "[unzip   ] $< -> $@"
 	@$(RM_DIR) $@
 	@-$(UNZIP) -d $@ $< > /dev/null 2>&1
-	@if [ -x $(<:.zip=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.zip=.post) $(OUTPUT_DIRECTORY) ; fi # > /dev/null 2>&1; fi
+	@if [ -x $(<:.zip=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.zip=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
 # Jars are simpler since there is no exclusion.
