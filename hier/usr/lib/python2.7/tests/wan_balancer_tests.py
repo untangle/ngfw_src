@@ -201,7 +201,7 @@ class WanBalancerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination, pre_scanned_events
+        global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -217,7 +217,6 @@ class WanBalancerTests(unittest2.TestCase):
         indexOfWans = foundWans()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
-        pre_scanned_events = global_functions.getStatusValue("changed")
 
     def setUp(self):
         pass
@@ -518,6 +517,8 @@ class WanBalancerTests(unittest2.TestCase):
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
 
+        pre_count = global_functions.getStatusValue(node,"changed")
+        
         # raise unittest2.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         nukeWanBalancerRules();
@@ -566,8 +567,8 @@ class WanBalancerTests(unittest2.TestCase):
 
         nukeFailoverRules()
         # Check to see if the faceplate counters have incremented. 
-        post_scanned_events = global_functions.getStatusValue("changed")
-        assert(pre_scanned_events < post_scanned_events)
+        post_count = global_functions.getStatusValue(node,"changed")
+        assert(pre_count < post_count)
                
     @staticmethod
     def finalTearDown(self):
