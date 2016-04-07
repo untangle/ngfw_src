@@ -27,8 +27,6 @@ nodeAD = None
 adHost = "10.111.56.48"
 radiusHost = "10.112.56.71"
 localUserName = 'test20'
-googleUserName = 'johnnyutester@gmail.com'
-googlePassword = 'untanglechakas'
 adUserName = 'atsadmin'
 captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
@@ -437,8 +435,11 @@ class CaptivePortalTests(unittest2.TestCase):
 
     def test_032_loginGoogle(self):
         raise unittest2.SkipTest("FIXME broken test")
-        global node, nodeData, googleUserName, googlePassword
-
+        global node, nodeData
+        googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
+        # account not found if message returned
+        if googleUserName == "message":
+            raise unittest2.SkipTest(googlePassword)
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
@@ -451,17 +452,17 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeAD.setSettings(createDirectoryConnectorSettings())
         
         # check that basic captive page is shown
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
         assert (result == 0)
-        search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_032.out")
         assert (search == 0)
 
         # check if local directory login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = remote_control.runCommand("wget -O /tmp/capture_test_032a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
-        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_032a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(googleUserName)
         assert(foundUsername)        

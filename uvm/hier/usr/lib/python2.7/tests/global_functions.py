@@ -9,6 +9,7 @@ import remote_control
 import system_properties
 import ipaddr
 import smtplib
+import json
 
 from uvm import Uvm
 
@@ -17,6 +18,8 @@ iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
 smtpServerHost = 'test.untangle.com'
+accountFileServer = "10.112.56.44"
+accountFile = "account_login.json"
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -206,3 +209,22 @@ def getStatusValue(node, label):
         print "Missing metric value: %s"%str(label) 
         return 0
     return metric.get('value')
+
+def getLiveAccountInfo(accounttype):
+    # Tries to file account password file and returns account and password if available
+    accountFileServerPing = subprocess.call(["ping","-c","1",accountFileServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    if accountFileServerPing != 0:
+        return ("message",accountFileServer + " not available")
+    # result_ping = subprocess.check_output("ping -c 1 " + accountFileServer, shell=True)
+    # remove old file if it exist
+    if os.path.isfile(accountFile):
+        os.remove(accountFile)
+    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + accountFileServer + "/" + accountFile, shell=True)
+    if not os.path.isfile(accountFile):
+        return ("message",accountFile + " file not available")
+    with open(accountFile) as data_file:    
+        accounts = json.load(data_file)    
+    for account in accounts: #i is each student's name, class, and number
+        if account[0] == accounttype:
+            return (account[1], account[2])
+    return ("message",accounttype + " account not found")
