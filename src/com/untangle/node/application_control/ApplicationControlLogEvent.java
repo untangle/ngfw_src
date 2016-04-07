@@ -87,11 +87,28 @@ public class ApplicationControlLogEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " + "SET ";
-        if (application != null)
+        String app = null;
+        String pc = null;
+        if ( application != null ) {
+            app = application;
+            app = app.replaceAll("[^\\x01-\\x7F]", "");
+            if ( ! app.equals( application ) ) {
+                logger.warn("Application contained non-ascii characters: " + application + " using: " + app);
+            }
+        }
+        if ( protochain != null ) {
+            pc = protochain;
+            pc = pc.replaceAll("[^\\x01-\\x7F]", "");
+            if ( ! pc.equals( protochain ) ) {
+                logger.warn("Protochain contained non-ascii characters: " + protochain + " using: " + pc);
+            }
+        }
+
+        if (app != null)
             sql += " application_control_application = ?, ";
         if (detail != null)
             sql += " application_control_detail = ?, ";
-        if (protochain != null)
+        if (pc != null)
             sql += " application_control_protochain = ?, ";
         if (category != null)
             sql += " application_control_category = ?, ";
@@ -106,18 +123,19 @@ public class ApplicationControlLogEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
 
         int i = 0;
-        if (application != null)
-            pstmt.setString(++i, getApplication());
-        if (detail != null)
-            pstmt.setString(++i, getDetail());
-        if (protochain != null)
-            pstmt.setString(++i, getProtochain());
-        if (category != null)
-            pstmt.setString(++i,  getCategory());
-        if (confidence != null)
-            pstmt.setInt(++i, getConfidence());
-        if (ruleid != null)
-            pstmt.setInt(++i, getRuleId());
+
+        if ( app != null )
+            pstmt.setString(++i, app);
+        if ( detail != null )
+            pstmt.setString(++i, detail);
+        if ( pc != null )
+            pstmt.setString(++i, pc);
+        if ( category != null )
+            pstmt.setString(++i, category);
+        if ( confidence != null )
+            pstmt.setInt(++i, confidence);
+        if ( ruleid != null )
+            pstmt.setInt(++i, ruleid);
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setLong(++i, sessionEvent.getSessionId());
