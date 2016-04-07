@@ -39,31 +39,15 @@ class SslInspectorManager
     private static final String apacheCertPass = "password";
     private static String keyStorePath = "/var/cache/untangle-ssl";
     private static String keyStorePass = "password";
-    private static HashMap<String, String> validSubjectList = new HashMap<String, String>();
-    private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
 
     /*
-     * These arrays define the protocols for both sides of the casing. On the
-     * client side of the casing, we act like a server to the client. On the
-     * server side of the casing, we act like a client talking to the external
-     * server. Keep this in mind so you don't get confused when working in here.
-     * 
-     * Java 7 supports SSLv3, TLSv1, TLSv1.1, TLSv1.2, and SSLv2Hello but that
-     * last one is apparently some goofy hybrid that was supposed to make life
-     * easier when transitioning from SSLv2 to SSLv3 back in the day. Info I
-     * found suggests SSLv2Hello isn't supported by some servers so it seems
-     * smart to disable it on our server side.
-     * 
-     * On the server side, historically we enabled SSLv3 and TLSv1 but we've
-     * recently found some servers (www.pods.com) that break with this config.
-     * The newer versions of Java also support some newer versions. My original
-     * approach was to disable SSLv3 and only enable the TLS variants which
-     * worked but isn't ideal. More testing showed it works with SSLv3 enabled
-     * as long as all the TLS versions are also enabled, so that's our new
-     * default for maximum compatibility.
-     * 
-     * On the client side we leave everything enabled for maximum compatibility.
+     * These HashMaps are used when creating a MitM certificate. They define the
+     * components of the certificate DN that will be extracted from the real
+     * server cert and used to create the fake certificate.
      */
+
+    private static HashMap<String, String> validSubjectList = new HashMap<String, String>();
+    private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
 
     // This is the list of subject name tags that we know work with the
     // openssl utility. The key is the tag we retrieve from the server cert
@@ -466,7 +450,7 @@ class SslInspectorManager
 
 /*
 
-This table describes the structure of the TLS ClientHello message.
+This table describes the structure of the TLS ClientHello message:
 
 Size   Description
 ----------------------------------------------------------------------
@@ -487,6 +471,21 @@ Size   Description
 2      Extensions Length
 0+     Extensions Data
 
+This is the format of an SSLv2 client hello:
+
+struct {
+    uint16 msg_length;
+    uint8 msg_type;
+    Version version;
+    uint16 cipher_spec_length;
+    uint16 session_id_length;
+    uint16 challenge_length;
+    V2CipherSpec cipher_specs[V2ClientHello.cipher_spec_length];
+    opaque session_id[V2ClientHello.session_id_length];
+    opaque challenge[V2ClientHello.challenge_length;
+} V2ClientHello;
+
+
 We don't bother checking the buffer position or length here since the
 caller uses the buffer underflow exception to know when it needs to wait
 for more data when a full packet has not yet been received.
@@ -503,16 +502,37 @@ for more data when a full packet has not yet been received.
         byte[] compData = new byte[256];
         int counter = 0;
 
-        // make sure we have a TLS handshake message
+        // we use the first byte of the message to determine the protocol
         int recordType = Math.abs(data.get());
-        if (recordType == TLS_HANDSHAKE) return(null);
+
+        // First check for an SSLv2 hello which Appendix E.2 of RFC 5246
+        // says must always set the high bit of the length field
+        if ((recordType & 0x80) == 0x80) {
+            // skip over the next byte of the length word
+            data.position(data.position() + 1);
+
+            // get the message type
+            int legacyType = Math.abs(data.get());
+
+            // if not a valid ClientHello we throw an exception since
+            // they may be blocking just this kind of invalid traffic
+            if (legacyType != CLIENT_HELLO) throw new Exception("Packet contains an invalid SSL handshake");
+
+            // looks like a valid handshake message but the protocol does
+            // not support SNI so we just return null
+            logger.debug("No SNI available because SSLv2Hello was detected");
+            return (null);
+        }
+
+        // not SSLv2Hello so proceed with TLS based on the table describe above
+        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet does not contain TLS Handshake");
 
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO) return(null);
+        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");
 
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();

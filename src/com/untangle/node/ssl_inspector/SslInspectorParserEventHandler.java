@@ -230,7 +230,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // only log a warning if we didn't get an exception message for the event log 
             if (sslProblem == null) logger.warn("Session abandon on parseWorker false return for " + logDetail);
 
-            // cleanup the session on the other side and return destroy result
+            // kill the session on the other side and kill our session
             shutdownOtherSide(session, true);
             session.killSession();
         }
@@ -348,10 +348,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_UNTRUSTED, logDetail);
                 node.logEvent(logevt);
                 node.incrementMetric(SslInspectorApp.STAT_UNTRUSTED);
-
-                // the inspected metric would have been incremented already
-                // so we need to remove this session from that counter
-                node.decrementMetric(SslInspectorApp.STAT_INSPECTED);
 
                 logger.debug("UNTRUSTED SERVER = " + logDetail);
 

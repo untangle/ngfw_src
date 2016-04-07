@@ -10,6 +10,7 @@ import java.util.Arrays;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.SSLException;
 
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
@@ -100,7 +101,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
         // special handling for SMTP stream in plain text mode
         if ((session.getServerPort() == 25) && (tlsFlag == false)) {
-            
+
             if (manager.checkIPCMessage(data.array(), SslInspectorManager.IPC_RELEASE_MESSAGE) == true) {
                 logger.debug("Received IPC_RELEASE message");
                 session.release();
@@ -149,17 +150,30 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     public void unparse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
-        ByteBuffer buff = data;
+        String sslProblem = null;
+        String logDetail = null;
         boolean success = false;
 
-        logger.debug("---------- " + (manager.getClientSide() ? "CLIENT" : "SERVER") + " unparse() received " + buff.limit() + " bytes ----------");
+        logger.debug("---------- " + (manager.getClientSide() ? "CLIENT" : "SERVER") + " unparse() received " + data.limit() + " bytes ----------");
 
         // empty buffer indicates the session is terminating
-        if (buff.limit() == 0) return;
+        if (data.limit() == 0) return;
 
         try {
             // pass the data to the unparse worker function
-            success = unparseWorker(session, buff);
+            success = unparseWorker(session, data);
+        }
+
+        catch (SSLException ssl) {
+            sslProblem = ssl.getMessage();
+            if (sslProblem == null) sslProblem = "Unknown SSL exception";
+
+            // for normal close we kill both sides and return  
+            if (sslProblem.contains("close_notify")) {
+                shutdownOtherSide(session, true);
+                session.killSession();
+                return;
+            }
         }
 
         catch (Exception exn) {
@@ -168,29 +182,20 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
         // no success result means something went haywire so we kill the session 
         if (success == false) {
-            // put something in the event log
-            String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            // put something in the event log starting with any ssl message we extracted above
+            logDetail = sslProblem;
+            if (logDetail == null) logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
             node.logEvent(logevt);
             node.incrementMetric(SslInspectorApp.STAT_ABANDONED);
-            logger.warn("Session abandon on unparseWorker false return for " + logDetail);
 
-            // first we have to pass a release message to the other side
-            ByteBuffer message = ByteBuffer.allocate(256);
-            message.put(SslInspectorManager.IPC_RELEASE_MESSAGE);
-            message.flip();
+            // only log a warning if we didn't get an exception message for the event log            
+            if (sslProblem == null) logger.warn("Session abandon on unparseWorker false return for " + logDetail);
 
-            if (manager.getClientSide()) {
-                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
-                server.getSession().simulateClientData(message);
-            } else {
-                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
-                client.getSession().simulateServerData(message);
-            }
-
-            // release the session on our side
-            session.release();
+            // kill the session on the other side and kill our session
+            shutdownOtherSide(session, true);
+            session.killSession();
         }
 
         return;
