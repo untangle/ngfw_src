@@ -7,15 +7,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import com.untangle.uvm.UvmContextFactory;
 
+import org.apache.log4j.Logger;
+import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -26,9 +33,47 @@ public class FacebookAuthenticator
 
     public static boolean authenticate(String username, String password)
     {
-        WebDriver driver = new PhantomJSDriver();
-        Wait<WebDriver> wait = new WebDriverWait(driver, 30);
+        //  Xvfb :1 -screen 5 1024x768x8 &
+        logger.debug("Initializing WebDriver...");
+
+        String port = ":1.5";
+        Path   tmpDir;
+        String tmpDirName;
         try {
+            tmpDir = Files.createTempDirectory( "tmp-chromedriver" );
+            tmpDirName = "/tmp/" + tmpDir.getFileName().toString() + "/";
+        } catch ( Exception e ) {
+            logger.warn("Failed to create temp directory.",e);
+            return false;
+        }
+        
+        // WebDriver driver = new PhantomJSDriver();
+            
+        ChromeDriverService service = new ChromeDriverService.Builder()
+            .usingDriverExecutable(new File("/usr/lib/chromium/chromedriver"))
+            .usingAnyFreePort()
+            .withEnvironment(ImmutableMap.of("DISPLAY",port))
+            .build();
+        System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium/chromedriver");
+        System.setProperty("webdriver.chrome.bin", "/usr/bin/chromium");
+        System.setProperty("webdriver.chrome.logfile", "/tmp/chrome.log");
+        System.setProperty("webdriver.chrome.verboseLogging", "true");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--user-data-dir=" + tmpDirName);
+        WebDriver driver = new ChromeDriver(service, options);
+        // WebDriver driver = new ChromeDriver(service);
+
+        // System.setProperty("webdriver.firefox.bin", "/usr/bin/iceweasel");
+        // FirefoxBinary firefoxBinary = new FirefoxBinary();
+        // firefoxBinary.setEnvironmentProperty("DISPLAY", port);
+        // driver = new FirefoxDriver(firefoxBinary, null);
+            
+        logger.debug("Initializing WebDriver... done (" + port + "," + tmpDirName + ")");
+
+        try {
+            Wait<WebDriver> wait = new WebDriverWait(driver, 30);
+
             String baseUrl = "https://facebook.com/login";
             logger.debug("[" + username + "] Authenticating...");
 
