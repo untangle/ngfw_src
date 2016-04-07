@@ -50,6 +50,18 @@
     font-feature-settings: 'liga';
 }
 
+.x-grid-td {
+    vertical-align: middle;
+}
+
+.material-button i {
+    vertical-align: middle;
+    font-size: 20px;
+}
+.material-button span {
+    vertical-align: middle;
+}
+
 .logo {
     background-size: 80%;
     background-repeat: no-repeat;
@@ -563,11 +575,10 @@ a.link,a.link:visited {
 
 
 .action-button.x-btn {
-    border-radius: 8px;
-    background-color: #67bd4a;
+    border-radius: 3px;
+    background-color: transparent;
     border: 0;
     background-image: none !important;
-    padding: 3px 10px;
 }
 
 .action-button.x-btn:hover {
@@ -579,20 +590,11 @@ a.link,a.link:visited {
     box-shadow: inset 0 3px 5px rgba(0,0,0,.2);
 }
 
-
-.action-button .x-btn-wrap {
-    height: 30px;
+.action-button.x-btn .x-btn-inner {
+    color: #FFF;
+    font-size: 13px;
 }
 
-.action-button .x-btn-inner {
-    font-size: 14px;
-    font-family: 'Source Sans Pro', sans-serif;
-    color: #ffffff !important;
-}
-
-.action-button.x-btn-over .x-btn-inner {
-    color: #1b1e26;
-}
 
 a.menu-link,a.menu-link:visited {
     color: #1b1e26;
@@ -637,14 +639,15 @@ a.forgot-password:hover {
 }
 
 .top-container {
-    background-color: white;
+    background-color: #555;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 .config-separator {
-    background-color: #696B6F;
+    background-color: #555;
     width: 100%;
     line-height: 40px;
+    height: 44px;
     padding-left: 10px;
     border-bottom: 1px solid #CCC;
 }

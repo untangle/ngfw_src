@@ -267,9 +267,10 @@ Ext.define('Ung.grid.Panel', {
         }
         if (this.hasAdd) {
             this.tbar.push({
-                text: i18n._('Add'),
+                text: '<i class="material-icons" style="color: green;">add_circle</i> <span>' + i18n._('Add') + '</span>',
+                cls: 'material-button',
                 tooltip: i18n._('Add New Row'),
-                iconCls: 'icon-add-row',
+                //iconCls: 'icon-add-row',
                 name: 'Add',
                 handler: Ext.bind(this.addHandler, this)
             });
@@ -334,15 +335,17 @@ Ext.define('Ung.grid.Panel', {
         }
         if (this.hasImportExport) {
             this.tbar.push('->', {
-                text: i18n._('Import'),
+                text: '<i class="material-icons" style="color: green;">vertical_align_bottom</i> <span>' + i18n._('Import') + '</span>',
+                cls: 'material-button',
                 tooltip: i18n._('Import From File'),
-                iconCls: 'icon-import',
+                //iconCls: 'icon-import',
                 name: 'Import',
                 handler: Ext.bind(this.importHandler, this)
             }, {
-                text: i18n._('Export'),
+                text: '<i class="material-icons" style="color: red;">vertical_align_top</i> <span>' + i18n._('Export') + '</span>',
+                cls: 'material-button',
                 tooltip: i18n._('Export To File'),
-                iconCls: 'icon-export',
+                //iconCls: 'icon-export',
                 name: 'export',
                 handler: Ext.bind(this.exportHandler, this)
             },'-');

@@ -1,8 +1,11 @@
 Ext.define('Webui.config.dashboardManager', {
-    extend: 'Ung.ConfigWin',
+    extend: 'Ext.panel.Panel',
     name: 'dashboardManager',
     helpSource: 'dashboard_manager',
     displayName: 'Dashboard Manager',
+    flex: 1,
+    padding: '0 0 0 0',
+    layout: 'fit',
     initComponent: function() {
         this.breadcrumbs = [{
             title: i18n._('Dashboard Manager')
@@ -10,28 +13,29 @@ Ext.define('Webui.config.dashboardManager', {
         this.widgetsConfig = [{
             name: 'Information',
             title: i18n._('Information'),
+            description: i18n._('Information'),
             singleInstance: true
         },{
             name: 'Resources',
             title: i18n._('Resources'),
+            description: i18n._('Resources'),
             singleInstance: true
         },{
             name: 'CPULoad',
             title: i18n._('CPU Load'),
+            description: i18n._('CPU Load'),
             singleInstance: true
         },{
             name: 'NetworkInformation',
             title: i18n._('Network Information'),
+            description: i18n._('Network Information'),
             singleInstance: true
         },{
             name: 'NetworkLayout',
             title: i18n._('Network Layout'),
+            description: i18n._('Network Layout'),
             singleInstance: true
-//         },{
-//             name: 'InterfaceLoad',
-//             title: i18n._('Interface Load'),
-//             displayMode: 'small'
-        },{
+        }, {
             name: 'ReportEntry',
             title: i18n._('Report'),
             displayMode: 'big',
@@ -43,8 +47,8 @@ Ext.define('Webui.config.dashboardManager', {
             hasRefreshInterval: true
         }];
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
-        this.buildPanelDashboardWidgets();
-        this.buildTabPanel([this.panelDashboardWidgets]);
+        this.items = this.buildPanelDashboardWidgets();
+        //this.buildTabPanel([this.panelDashboardWidgets]);
         this.callParent(arguments);
     },
     needDashboardReload: false,
@@ -91,13 +95,30 @@ Ext.define('Webui.config.dashboardManager', {
             hasReorder: true,
             addAtTop: false,
             header: false,
-            flex: 1,
+            hideHeaders: true,
+            border: false,
+            padding: '0 0 0 0',
             bbar: [{
                 xtype: 'button',
-                text: i18n._('Reset dashboard to defaults'),
-                iconCls: "reboot-icon",
+                cls: 'material-button',
+                text: '<i class="material-icons">replay</i> <span>' +  i18n._('Reset dashboard') + '</span>',
+                //iconCls: "reboot-icon",
                 handler: Ext.bind(function() {
                     this.resetSettingsToDefault();
+                }, this)
+            }, '->', {
+                xtype: 'button',
+                cls: 'material-button',
+                text: '<i class="material-icons">close</i> <span>' +  i18n._('Cancel') + '</span>',
+                handler: Ext.bind(function() {
+                    this.up('[name=dashboardManager]').hide();
+                }, this)
+            }, {
+                xtype: 'button',
+                cls: 'material-button',
+                text: '<i class="material-icons" style="color: green;">save</i> <span>' +  i18n._('Save') + '</span>',
+                handler: Ext.bind(function() {
+                    this.save();
                 }, this)
             }],
             dataFn: Ext.bind(this.getDashboardWidgets, this),
@@ -117,22 +138,7 @@ Ext.define('Webui.config.dashboardManager', {
                 header: i18n._("Enabled"),
                 dataIndex: 'enabled',
                 resizable: false,
-                width: 70
-            }, {
-                header: i18n._("Widget Type"),
-                dataIndex: "type",
-                width: 120,
-                renderer: Ext.bind(function(value) {
-                    var widgetConfig = this.widgetsMap[value];
-                    return widgetConfig? widgetConfig.title: value;
-                }, this)
-            }, {
-                header: i18n._("Size"),
-                dataIndex: "type",
-                renderer: Ext.bind(function(value, metaData, record) {
-                    var widgetConfig = this.widgetsMap[record.get("type")];
-                    return widgetConfig? widgetConfig.displayMode: "";
-                }, this)
+                width: 40
             }, {
                 header: i18n._("Details"),
                 dataIndex: "type",
@@ -146,12 +152,11 @@ Ext.define('Webui.config.dashboardManager', {
                             return "<b>"+entry.category+"</b> "+entry.title;
                         }
                     }
-                    if(value == "ReportEntry" || value == "EventEntry") {
+                    if (value == "ReportEntry" || value == "EventEntry") {
                         return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
                     }
-                    if(value == "InterfaceLoad") {
-                        var interfaceVale = Ung.dashboard.Util.getInterfaceMap()[record.get("entryId")] || record.get("entryId");
-                        return "<b>"+i18n._("Interface Load")+":</b> " + interfaceVale;
+                    if (value != "ReportEntry" || value != "EventEntry") {
+                        return "<b>" + value + "</b>";
                     }
                     return "";
                 }, this)
@@ -501,18 +506,14 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Dashboard Widgets'),
             helpSource: 'dashboard_manager_dashboard_widgets',
             cls: 'ung-panel',
+            padding: '0 0 0 0',
+            border: false,
             autoScroll: true,
+            layout: 'fit',
             defaults: {
                 xtype: 'fieldset'
             },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                title: i18n._("Note"),
-                html: i18n._("Reports and Events wigets are displayed in the Dashboard if the Reports application is installed and enabled, and only if their associalted application is installed.")
-            }, this.gridDashboardWidgets ]
+            items: [this.gridDashboardWidgets ]
         });
         return this.panelDashboardWidgets;
     },
@@ -525,9 +526,12 @@ Ext.define('Webui.config.dashboardManager', {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             if (!isApply) {
-                this.closeWindow();
+                this.up('[name=dashboardManager]').hide();
+                Ung.dashboard.loadDashboard();
+                this.gridDashboardWidgets.clearDirty();
+                //this.closeWindow();
             } else {
-                this.clearDirty();
+
             }
         }, this), this.dashboardSettings);
 

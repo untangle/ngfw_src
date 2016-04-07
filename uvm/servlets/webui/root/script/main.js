@@ -145,6 +145,7 @@ Ext.define("Ung.Main", {
                     }, {
                         xtype: 'button',
                         html: '<i class="material-icons">show_chart</i> <span>' + i18n._('Reports') + '</span>',
+                        id: 'reportsMenuItem',
                         cls: 'main-menu-btn',
                         hidden: !rpc.reportsEnabled,
                         handler: function (btn) {
@@ -271,40 +272,76 @@ Ext.define("Ung.Main", {
                 layout: 'card',
                 activeItem: rpc.isRegistered ? 'dashboard' : 'apps',
                 items: [{
-                    xtype: 'container',
                     itemId: 'dashboard',
-                    layout: {type: 'vbox', align: 'stretch'},
-                    scrollable: true,
+                    layout: 'border',
+                    border: false,
+                    //scrollable: true,
                     items: [{
                         xtype: 'container',
-                        cls: 'top-container',
-                        layout: {type: 'hbox', align: 'middle'},
-                        height: 88,
-                        items: [{
-                            xtype: 'button',
-                            margin: '0 0 0 20',
-                            minWidth: 120,
-                            scale: 'large',
-                            cls: 'action-button',
-                            text : i18n._( "Manage Widgets" ),
-                            handler: function() {
-                                Ung.Main.showDashboardManager();
-                            }
-                        }, {
-                          xtype: "component",
-                          cls: "alert-container",
-                          margin: '0 0 0 10',
-                          itemId: "alertContainerDashboard",
-                          hidden: true
-                        }, {
-                            xtype: 'component',
-                            html: '',
-                            flex: 1
-                        }]
+                        region: 'west',
+                        name: 'dashboardManager',
+                        width: 400,
+                        hidden: true,
+                        layout: {
+                            type: 'vbox',
+                            align: 'stretch'
+                        },
+                        style: {
+                            boxShadow: '0 3px 5px rgba(0, 0, 0, 0.3)',
+                            zIndex: 100
+                        },
+                        items: []
                     }, {
-                        xtype: 'container',
-                        itemId: 'dashboardItems',
-                        cls: 'dashboard'
+                        layout: 'border',
+                        region: 'center',
+                        border: false,
+                        items: [{
+                            xtype: 'container',
+                            region: 'north',
+                            cls: 'top-container',
+                            layout: {type: 'hbox', align: 'middle'},
+                            height: 44,
+                            items: [{
+                                xtype: 'button',
+                                margin: '0 0 0 10',
+                                minWidth: 120,
+                                scale: 'medium',
+                                cls: 'action-button material-button',
+                                text: '<i class="material-icons">widgets</i> <span>' + i18n._("Manage Widgets") + '</span>',
+                                handler: function () {
+                                    if (this.dashboardManager.isHidden()) {
+                                        this.dashboardManager.show();
+                                    } else {
+                                        this.dashboardManager.hide();
+                                    }
+                                    if (this.dashboardManager.items.length === 0) {
+                                        this.dashboardManager.add(Ext.create('Webui.config.dashboardManager', {}));
+                                    }
+                                    //Ung.Main.showDashboardManager();
+                                },
+                                scope: this
+                            }, {
+                                xtype: 'component',
+                                html: '',
+                                flex: 1
+                            }, {
+                                xtype: "component",
+                                //cls: "alert-container",
+                                html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle;">warning</i>',
+                                margin: '0 10 0 0',
+                                itemId: "alertContainerDashboard",
+                                hidden: true
+                            }]
+                        }, {
+                            xtype: 'container',
+                            region: 'center',
+                            scrollable: true,
+                            items: [{
+                                xtype: 'container',
+                                itemId: 'dashboardItems',
+                                cls: 'dashboard'
+                            }]
+                        }]
                     }],
                     listeners: {
                         'activate': function(container) {
@@ -324,16 +361,18 @@ Ext.define("Ung.Main", {
                     xtype: 'container',
                     itemId: 'apps',
                     cls: 'apps',
-                    scrollable: true,
+                    layout: 'border',
+                    //scrollable: true,
                     items: [{
                         xtype: 'container',
                         cls: 'top-container',
+                        region: 'north',
                         layout: {type: 'hbox', align: 'middle'},
-                        height: 88,
+                        height: 44,
                         items: [{
                             xtype: 'button',
-                            margin: '0 0 0 20',
-                            scale: 'large',
+                            margin: '0 0 0 10',
+                            scale: 'medium',
                             cls: 'policy-selector',
                             minWidth: 180,
                             maxWidth: 250,
@@ -348,19 +387,13 @@ Ext.define("Ung.Main", {
                             xtype: 'button',
                             margin: '0 0 0 10',
                             minWidth: 120,
-                            scale: 'large',
-                            cls: 'action-button',
-                            text: i18n._('Install Apps'),
+                            scale: 'medium',
+                            cls: 'action-button material-button',
+                            text: '<i class="material-icons">get_app</i> <span>' + i18n._("Install Apps") + '</span>',
                             handler: function() {
                                 Ung.Main.buildApps(); // when moving to App, rebuild them
                                 Ung.Main.openInstallApps();
                             }
-                        }, {
-                            xtype: "component",
-                            cls: "alert-container",
-                            margin: '0 0 0 10',
-                            itemId: "alertContainerApps",
-                            hidden: true
                         }, {
                             xtype: 'component',
                             itemId: 'parentPolicy',
@@ -377,10 +410,18 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
+                        }, {
+                            xtype: "component",
+                            //cls: "alert-container",
+                            html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle;">warning</i>',
+                            margin: '0 10 0 0',
+                            itemId: "alertContainerApps",
+                            hidden: true
                         }]
                     }, {
-                        xtype: 'container',
+                        //xtype: 'component',
                         cls: 'apps-content',
+                        scrollable: true,
                         items: [{
                             xtype: 'container',
                             cls: 'apps-top',
@@ -402,25 +443,21 @@ Ext.define("Ung.Main", {
                 }, {
                     xtype: 'container',
                     itemId: 'installApps',
-                    layout: {type: 'vbox', align: 'stretch'},
-                    scrollable: true,
+                    layout: 'border',
+                    //layout: {type: 'vbox', align: 'stretch'},
+                    //scrollable: true,
                     items: [{
                         xtype: 'container',
                         cls: 'top-container',
+                        region: 'north',
                         layout: {type: 'hbox', align: 'middle'},
-                        height: 88,
+                        height: 44,
                         items: [{
-                            xtype: 'component',
-                            cls: 'top-title',
-                            margin: '0 0 0 20',
-                            html: i18n._('Install Apps')
-                        }, {
                             xtype: 'button',
-                            margin: '0 0 0 20',
-                            minWidth: 120,
-                            scale: 'large',
-                            cls: 'action-button',
-                            text : i18n._( "Done" ),
+                            margin: '0 0 0 10',
+                            scale: 'medium',
+                            cls: 'action-button material-button',
+                            text: '<i class="material-icons">check</i> <span>' + i18n._("Done") + '</span>',
                             handler: function() {
                                 this.panelCenter.setActiveItem("apps");
                             },
@@ -432,6 +469,8 @@ Ext.define("Ung.Main", {
                         }]
                     }, {
                         xtype: 'container',
+                        region: 'center',
+                        scrollable: true,
                         style: {
                             padding: '10px'
                         },
@@ -504,6 +543,7 @@ Ext.define("Ung.Main", {
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
+        this.dashboardManager = this.viewport.down("[name=dashboardManager]");
         Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
         Ung.dashboard.dashboardContainer = this.viewport.down("#dashboard");
 
@@ -763,6 +803,7 @@ Ext.define("Ung.Main", {
         return rpc.nodeReports;
     },
     updateReportsDependencies: function() {
+        console.log(Ext.getCmp('reportsMenuItem'));
         Ext.getCmp('reportsMenuItem').setVisible(rpc.reportsEnabled);
         Ung.dashboard.loadDashboard();
     },
@@ -1337,7 +1378,7 @@ Ext.define("Ung.Main", {
     },
     showDashboardManager: function() {
         Ext.require(['Webui.config.dashboardManager'], function() {
-            Ung.Main.dashboardManagerWin=Ext.create('Webui.config.dashboardManager', {});
+            Ung.Main.dashboardManagerWin = Ext.create('Webui.config.dashboardManager', {});
             Ung.Main.dashboardManagerWin.show();
         }, this);
     },
