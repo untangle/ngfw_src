@@ -1,18 +1,17 @@
 {
-    "uniqueId": "network-DU6NAsnJF2",
+    "uniqueId": "network-i9188kFk3D",
     "category": "Network",
-    "description": "The number of sessions grouped by server (destination) port.",
-    "displayOrder": 202,
+    "description": "The number of sessions grouped by server (destination) address.",
+    "displayOrder": 201,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",
-    "pieGroupColumn": "s_server_port",
+    "pieGroupColumn": "s_server_addr",
     "pieSumColumn": "count(*)",
-    "seriesRenderer": "port",
     "readOnly": true,
     "table": "sessions",
-    "title": "Top Server Ports",
+    "title": "Top Server Addresses",
     "type": "PIE_GRAPH"
 }
