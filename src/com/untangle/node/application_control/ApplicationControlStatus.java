@@ -4,10 +4,13 @@
 package com.untangle.node.application_control;
 
 import com.untangle.uvm.vnet.IPNewSessionRequest;
+import org.apache.log4j.Logger;
 import java.nio.ByteBuffer;
 
 public class ApplicationControlStatus
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     public enum StatusCode
     {
         EMPTY, FOUND, FAILURE
@@ -98,6 +101,11 @@ public class ApplicationControlStatus
         // first we look for an empty response
         if (traffic.startsWith("EMPTY: ") == true)
             return (StatusCode.EMPTY);
+        
+        if (traffic.indexOf('\0') >= 0) {
+            logger.warn("Detected NULL characters: " + traffic);
+            return (StatusCode.EMPTY);
+        }
 
         // not empty so search for all the parsing tags in the response.
         // note how we include the space following the colon in the
