@@ -348,8 +348,10 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         if ( ! xvfbLaunched ) {
             UvmContextFactory.context().execManager().execOutput("nohup Xvfb :1 -screen 5 1024x768x8 >/dev/null 2>&1 &");
             xvfbLaunched = true;
-            
         }
+
+        // sleep one second to give it time to start
+        try { Thread.sleep(1000); } catch (Exception e) {}
     }
 
     public void stopXvfb()

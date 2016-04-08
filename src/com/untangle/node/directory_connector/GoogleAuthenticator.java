@@ -87,7 +87,6 @@ public class GoogleAuthenticator
             waitForElementId(driver, wait, "next");
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-1.png");
         
-            logger.debug("[" + username + "] Sending email...");
             List<WebElement> emailElements = driver.findElements(By.name("Email"));
             List<WebElement> nextButtonElements = driver.findElements(By.id("next"));
             if ( emailElements.size() < 1 ) {
@@ -98,6 +97,7 @@ public class GoogleAuthenticator
                 logger.warn("Next button missing");
                 return false;
             }
+            logger.debug("[" + username + "] Sending email...");
             emailElements.get(0).sendKeys(username);
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-2.png");
@@ -106,17 +106,17 @@ public class GoogleAuthenticator
             waitForElementNameEither(driver, wait, "Passwd","Email");
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
 
-            logger.debug("[" + username + "] Sending password...");
             List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
             List<WebElement> signInButtonElements = driver.findElements(By.id("signIn"));
             if ( passwdElements.size() < 1 ) {
-                logger.warn("Email element missing");
+                logger.warn("Passwd element missing");
                 return false;
             }
             if ( signInButtonElements.size() < 1 ) {
                 logger.warn("Next button missing");
                 return false;
             }
+            logger.debug("[" + username + "] Sending password...");
             passwdElements.get(0).sendKeys(password);
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
