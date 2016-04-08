@@ -171,7 +171,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, nodeWeb, adResult, radiusResult, test_untangle_com_ip
+        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, nodeWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             print "ERROR: Node %s already installed" % self.nodeName()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
@@ -193,7 +193,8 @@ class CaptivePortalTests(unittest2.TestCase):
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # Get the IP address of test.untangle.com
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")   
-
+        captureIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
+        
         # remove previous temp files
         remote_control.runCommand("rm -f /tmp/capture_test_*")
 
@@ -215,13 +216,6 @@ class CaptivePortalTests(unittest2.TestCase):
         node.setSettings(nodeData)
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
         assert (result == 0)
-
-        # get the IP address of the capture page 
-        ipfind = remote_control.runCommand("grep 'Location' /tmp/capture_test_021.log",stdout=True)
-        # print 'ipFind %s' % ipfind
-        ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
-        captureIP = ip[0]
-        print 'Capture IP address is %s' % captureIP
 
         events = global_functions.get_events('Captive Portal','All Session Events',None,100)
         assert(events != None)
@@ -434,9 +428,12 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)        
 
     def test_032_loginGoogle(self):
-        raise unittest2.SkipTest("FIXME broken test")
         global node, nodeData
         googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
+        print "username: %s\n " % str(googleUserName)
+        if googlePassword != None:
+            print "password: %s\n" % (len(googlePassword)*"*")
+        
         # account not found if message returned
         if googleUserName == "message":
             raise unittest2.SkipTest(googlePassword)
