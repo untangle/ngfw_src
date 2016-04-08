@@ -371,6 +371,9 @@ body.wizard #container {
 .ung-panel {
     padding: 5px;
 }
+.ung-panel .x-panel-body {
+    background: transparent;
+}
 /* Ext Js Overrides - across the board */
 .x-fieldset {
     padding: 5px 10px 10px 20px;
@@ -465,7 +468,7 @@ a.link,a.link:visited {
 .main-menu-btn {
     background: none;
     border: 0;
-    transition: all .25s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: background .25s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .main-menu-btn .x-btn-inner span {
@@ -701,6 +704,114 @@ a.forgot-password:hover {
 .dashboard .x-form-item-label-default {
     font-family: 'Source Sans Pro', sans-serif !important;
     font-weight: 600;
+}
+
+.dashboard-manager .x-box-inner, .dashboard-manager .x-panel-body {
+    background-color: #333;
+}
+
+.dashboard-manager .x-autocontainer-innerCt {
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+}
+
+.dashboard-grid * {
+    color: #FFF;
+    background: none;
+    border: 0;
+}
+
+.dashboard-grid .x-toolbar-default {
+}
+
+.dashboard-grid .x-grid-with-row-lines .x-grid-item {
+    border-width: 0 0 1px 0;
+    border-color: #333;
+}
+
+.dashboard-grid .x-grid-cell-inner-checkcolumn, .dashboard-grid .x-grid-cell-inner-action-col {
+    padding: 8px 0 !important;
+    cursor: pointer;
+    text-align: center !important;
+}
+
+.dashboard-grid .x-action-col-icon {
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0; right: 0; left: 0; bottom: 0;
+}
+
+.dashboard-grid i {
+    font-size: 20px;
+    color: #999;
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dashboard-grid .x-btn-inner {
+    font-size: 13px;
+}
+
+.dashboard-grid .x-btn {
+    transition: background 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dashboard-grid .x-btn-over, .dashboard-grid .x-btn-pressed {
+    background-color: #222 !important;
+    background-image: none !important;
+}
+
+.dashboard-grid .x-btn-focus {
+    background: none;
+}
+/*
+.dashboard-grid .x-grid-item-over i.action-delete {
+    color: #E25D5D;
+}
+
+.dashboard-grid .x-grid-item-over i.action-edit {
+    color: blue;
+}
+*/
+
+
+
+.dashboard-grid .x-grid-cell-inner {
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    padding: 8px 6px;
+    /*cursor: default;*/
+}
+
+.dashboard-grid .x-panel-body {
+    background: #555;
+}
+
+.dashboard-grid table {
+    background: transparent;
+}
+
+.dashboard-grid .grid-row-modified, .dashboard-grid .grid-row-deleted, .dashboard-grid .grid-row-added {
+    background-color: #555;
+}
+
+.dashboard-grid .grid-row-modified .x-grid-cell-inner {
+    color: #75BEFF;
+}
+
+.dashboard-grid .grid-row-deleted .x-grid-cell-inner {
+    text-decoration: line-through;
+    color: #FF5151;
+}
+.dashboard-grid .grid-row-added .x-grid-cell-inner {
+    color: #57D657;
+}
+
+.dashboard-grid .x-grid-dirty-cell {
+    background: none;
+}
+
+.dashboard-grid .x-grid-item-over {
+    background: #505050;
 }
 
 

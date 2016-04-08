@@ -120,6 +120,7 @@ Ext.define('Ung.grid.Panel', {
     addedId: 0,
     useServerIds: false,
     sortingDisabled: false,
+    scale: 'small',
     constructor: function(config) {
         var defaults = {
             plugins: [],
@@ -269,6 +270,7 @@ Ext.define('Ung.grid.Panel', {
             this.tbar.push({
                 text: '<i class="material-icons" style="color: green;">add_circle</i> <span>' + i18n._('Add') + '</span>',
                 cls: 'material-button',
+                scale: this.scale,
                 tooltip: i18n._('Add New Row'),
                 //iconCls: 'icon-add-row',
                 name: 'Add',
@@ -338,6 +340,7 @@ Ext.define('Ung.grid.Panel', {
                 text: '<i class="material-icons" style="color: green;">vertical_align_bottom</i> <span>' + i18n._('Import') + '</span>',
                 cls: 'material-button',
                 tooltip: i18n._('Import From File'),
+                scale: this.scale,
                 //iconCls: 'icon-import',
                 name: 'Import',
                 handler: Ext.bind(this.importHandler, this)
@@ -345,10 +348,11 @@ Ext.define('Ung.grid.Panel', {
                 text: '<i class="material-icons" style="color: red;">vertical_align_top</i> <span>' + i18n._('Export') + '</span>',
                 cls: 'material-button',
                 tooltip: i18n._('Export To File'),
+                scale: this.scale,
                 //iconCls: 'icon-export',
                 name: 'export',
                 handler: Ext.bind(this.exportHandler, this)
-            },'-');
+            });
         }
         if(this.hasReadOnly) {
             this.on('beforeedit', function(editor, e) {

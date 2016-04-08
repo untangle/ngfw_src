@@ -280,11 +280,14 @@ Ext.define("Ung.Main", {
                         xtype: 'container',
                         region: 'west',
                         name: 'dashboardManager',
+                        cls: 'dashboard-manager',
                         width: 400,
                         hidden: true,
+                        border: false,
                         layout: {
                             type: 'vbox',
-                            align: 'stretch'
+                            align: 'stretch',
+                            pack : 'start'
                         },
                         style: {
                             boxShadow: '0 3px 5px rgba(0, 0, 0, 0.3)',
@@ -308,13 +311,22 @@ Ext.define("Ung.Main", {
                                 scale: 'medium',
                                 cls: 'action-button material-button',
                                 text: '<i class="material-icons">widgets</i> <span>' + i18n._("Manage Widgets") + '</span>',
-                                handler: function () {
+                                handler: function (btn) {
                                     if (this.dashboardManager.isHidden()) {
                                         this.dashboardManager.show();
                                     } else {
                                         this.dashboardManager.hide();
                                     }
                                     if (this.dashboardManager.items.length === 0) {
+                                        this.dashboardManager.add({
+                                            xtype: 'container',
+                                            html: '<h3 style="margin: 0 0 15px 0;">' + i18n._('Manage Widgets') + '</h3><p>' + i18n._('Reports and Events wigets are displayed in the Dashboard if the Reports application is installed and enabled, and only if their associalted application is installed.') + '</p>',
+                                            style: {
+                                                color: '#CCC'
+                                            },
+                                            padding: '10 10 10 10',
+                                            border: false
+                                        });
                                         this.dashboardManager.add(Ext.create('Webui.config.dashboardManager', {}));
                                     }
                                     //Ung.Main.showDashboardManager();

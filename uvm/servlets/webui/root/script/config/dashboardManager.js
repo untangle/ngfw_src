@@ -6,6 +6,7 @@ Ext.define('Webui.config.dashboardManager', {
     flex: 1,
     padding: '0 0 0 0',
     layout: 'fit',
+    border: false,
     initComponent: function() {
         this.breadcrumbs = [{
             title: i18n._('Dashboard Manager')
@@ -82,6 +83,10 @@ Ext.define('Webui.config.dashboardManager', {
                             if(Ung.Util.handleException(exception)) return;
                             this.needDashboardReload = true;
                             this.gridDashboardWidgets.reload();
+                            var me = this;
+                            Ext.Function.defer(function() {
+                                me.save();
+                            }, 300);
                         }, this));
                     }
                 }, this));
@@ -91,32 +96,59 @@ Ext.define('Webui.config.dashboardManager', {
     buildPanelDashboardWidgets: function() {
         var me = this;
         this.gridDashboardWidgets = Ext.create('Ung.grid.Panel',{
+            cls: 'dashboard-grid',
             settingsCmp: this,
-            hasReorder: true,
+            //hasReorder: true,
+            //disableSelection: true,
+            hasDelete: false,
+            hasEdit: false,
             addAtTop: false,
             header: false,
             hideHeaders: true,
             border: false,
             padding: '0 0 0 0',
+            flex: 1,
+            scale: 'medium',
+            viewConfig: {
+                plugins: {
+                    ptype: 'gridviewdragdrop',
+                    dragText: 'Drag and drop to reorganize'
+                }
+            },
             bbar: [{
                 xtype: 'button',
+                scale: 'medium',
                 cls: 'material-button',
-                text: '<i class="material-icons">replay</i> <span>' +  i18n._('Reset dashboard') + '</span>',
+                text: '<i class="material-icons">replay</i> <span>' +  i18n._('Reset') + '</span>',
                 //iconCls: "reboot-icon",
                 handler: Ext.bind(function() {
                     this.resetSettingsToDefault();
                 }, this)
             }, '->', {
                 xtype: 'button',
+                scale: 'medium',
                 cls: 'material-button',
-                text: '<i class="material-icons">close</i> <span>' +  i18n._('Cancel') + '</span>',
+                text: '<i class="material-icons">close</i> <span>' +  i18n._('Close') + '</span>',
                 handler: Ext.bind(function() {
-                    this.up('[name=dashboardManager]').hide();
+                    if (this.gridDashboardWidgets.isDirty()) {
+                        Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
+                            Ext.bind(function(btn) {
+                                if (btn == 'yes') {
+                                    this.gridDashboardWidgets.clearDirty();
+                                    this.up('[name=dashboardManager]').hide();
+                                    //this.down('[name=dashboardManagerBtn]').show();
+                                }
+                            }, this));
+                    } else {
+                        this.up('[name=dashboardManager]').hide();
+                        //this.down('[name=dashboardManagerBtn]').show();
+                    }
                 }, this)
             }, {
                 xtype: 'button',
+                scale: 'medium',
                 cls: 'material-button',
-                text: '<i class="material-icons" style="color: green;">save</i> <span>' +  i18n._('Save') + '</span>',
+                text: '<i class="material-icons" style="color: green;">save</i> <span>' +  i18n._('Apply') + '</span>',
                 handler: Ext.bind(function() {
                     this.save();
                 }, this)
@@ -134,11 +166,22 @@ Ext.define('Webui.config.dashboardManager', {
                 name: "refreshIntervalSec"
             }],
             columns: [{
-                xtype:'checkcolumn',
-                header: i18n._("Enabled"),
+                xtype: 'actioncolumn',
+                width: 30,
+                handler: function() {},
+                renderer: function() {
+                    return '<i class="material-icons" style="color: #999;">drag_handle</i>';
+                }
+            }, {
+                xtype: 'checkcolumn',
+                width: 30,
                 dataIndex: 'enabled',
-                resizable: false,
-                width: 40
+                renderer: function(value) {
+                    if (value) {
+                        return '<i class="material-icons" style="color: rgba(103,189,74,.9);">visibility</i>';
+                    }
+                    return '<i class="material-icons" style="color: #777;">visibility_off</i>';
+                }
             }, {
                 header: i18n._("Details"),
                 dataIndex: "type",
@@ -149,18 +192,53 @@ Ext.define('Webui.config.dashboardManager', {
                         var entryId = record.get("entryId");
                         var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
                         if(entry) {
-                            return "<b>"+entry.category+"</b> "+entry.title;
+                            return entry.category + " / " + entry.title;
                         }
                     }
                     if (value == "ReportEntry" || value == "EventEntry") {
-                        return "<b>"+((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id"))+":</b> " + record.get("entryId");
+                        return ((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id")) + " - " + record.get("entryId");
                     }
                     if (value != "ReportEntry" || value != "EventEntry") {
-                        return "<b>" + value + "</b>";
+                        return value;
                     }
                     return "";
                 }, this)
+            }, {
+                xtype: 'actioncolumn',
+                width: 30,
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.gridDashboardWidgets.stopEditing();
+                    this.gridDashboardWidgets.rowEditor.populate(record);
+                    this.gridDashboardWidgets.rowEditor.show();
+                }, this),
+                renderer: function() {
+                    return '<i class="material-icons action-edit">mode_edit</i>';
+                }
+            }, {
+                xtype: 'actioncolumn',
+                width: 30,
+                //cls: 'action-delete',
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.gridDashboardWidgets.stopEditing();
+                    this.gridDashboardWidgets.updateChangedData(record, "deleted");
+                }, this),
+
+                renderer: function() {
+                    return '<i class="material-icons">delete</i>';
+                }
             }]
+            /*
+            listeners: {
+                itemmouseenter: function(view, record, item, index, e, options)
+                {
+                    console.log('Enter: ' + index);
+                },
+                itemmouseleave: function(view, record, item, index, e, options)
+                {
+                    console.log('Leave: ' + index);
+                }
+            }
+            */
         });
         this.entrySelector = {
                 xtype: 'container',
@@ -503,7 +581,6 @@ Ext.define('Webui.config.dashboardManager', {
 
         this.panelDashboardWidgets = Ext.create('Ext.panel.Panel',{
             name: 'panelDashboardWidgets',
-            title: i18n._('Dashboard Widgets'),
             helpSource: 'dashboard_manager_dashboard_widgets',
             cls: 'ung-panel',
             padding: '0 0 0 0',
@@ -526,7 +603,7 @@ Ext.define('Webui.config.dashboardManager', {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             if (!isApply) {
-                this.up('[name=dashboardManager]').hide();
+                //this.up('[name=dashboardManager]').hide();
                 Ung.dashboard.loadDashboard();
                 this.gridDashboardWidgets.clearDirty();
                 //this.closeWindow();

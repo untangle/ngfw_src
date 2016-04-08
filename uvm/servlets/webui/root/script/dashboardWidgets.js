@@ -400,7 +400,7 @@ Ext.define('Ung.dashboard.Information', {
                 '</div>' +
             '</div>' +
          '</div>' +
-         '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Information") + '</p></div>',
+         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Information") + '</p></div>',
     updateStats: function (stats) {
         var numdays = Math.floor((stats.uptime % 31536000) / 86400),
             numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
@@ -480,7 +480,7 @@ Ext.define('Ung.dashboard.Resources', {
         '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> free <em>({percentFreeDisk}%)</em></div>' +
         '</div>' +
         '</div>' +
-        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Resources") + '</p></div>',
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Resources") + '</p></div>',
     data: {},
     listeners: {
         /*
@@ -592,7 +592,7 @@ Ext.define('Ung.dashboard.CPULoad', {
             '<div class="cpu-gauge-chart" style="height: 135px; width:100%; margin: 0 auto;"></div>' +
             '<div class="cpuLoadVal"></div>' +
         '</div>' +
-        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
     data: {},
     lineChart: null,
     gaugeChart: null,
@@ -692,7 +692,7 @@ Ext.define('Ung.dashboard.NetworkInformation', {
                 '</div>' +
             '</div>' +
         '</div>' +
-        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Information") + '</p></div>',
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Information") + '</p></div>',
     data: {
         hosts: {},
         sessions: {}
@@ -765,7 +765,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '</div>' +
         '</div>' +
         '</div>' +
-        '<div class="init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
     updateStats: function (stats) {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
