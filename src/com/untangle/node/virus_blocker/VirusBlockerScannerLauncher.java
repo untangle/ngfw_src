@@ -368,14 +368,19 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         String[] tokens = message.split(" ");
         int retcode = 0;
         String bdResult = null;
-        
+
         try {
             retcode = Integer.valueOf(tokens[0]);
-            bdResult = tokens[2];
         } catch (Exception exn) {
             logger.warn("Exception parsing result code: " + message, exn);
         }
 
+        try {
+            bdResult = tokens[2];
+        } catch (Exception e) {
+            // ignore exception, there aren't always 3 tokens
+        }
+        
         if (cloudScanner != null) {
             try {
                 synchronized (cloudScanner) {
@@ -416,10 +421,10 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.CLEAN);
             break;
         case 222: // known infection
-            setResult(new VirusScannerResult(false, tokens[2]));
+            setResult(new VirusScannerResult(false, bdResult));
             break;
         case 223: // likely infection
-            setResult(new VirusScannerResult(false, tokens[2]));
+            setResult(new VirusScannerResult(false, bdResult));
             break;
         case 225: // password protected file
             setResult(VirusScannerResult.CLEAN);
