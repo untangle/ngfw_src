@@ -102,8 +102,9 @@ public class GoogleAuthenticator
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-2.png");
             nextButtonElements.get(0).click();
-            waitForElementName(driver, wait, "Passwd");
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
+            waitForElementNameEither(driver, wait, "Passwd","Email");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
 
             logger.debug("[" + username + "] Sending password...");
             List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
@@ -118,10 +119,10 @@ public class GoogleAuthenticator
             }
             passwdElements.get(0).sendKeys(password);
 
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
-            signInButtonElements.get(0).click();
-            waitForLogin(driver, wait, "Email", "xb");
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
+            signInButtonElements.get(0).click();
+            waitForLogin(driver, wait, "Passwd", "xb");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-6.png");
 
             //printElements(driver);
         
@@ -218,6 +219,23 @@ public class GoogleAuthenticator
         });
     }
 
+    private static void waitForElementNameEither(final WebDriver driver, Wait<WebDriver> wait, final String elementName1, final String elementName2)
+    {
+        wait.until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                logger.debug("Searching for name:" + elementName1 + " or name:" + elementName2 + " ... ");
+
+                List<WebElement> one = driver.findElements(By.name(elementName1));
+                if ( one.size() > 0 )
+                    return true;
+                List<WebElement> two = driver.findElements(By.name(elementName2));
+                if ( two.size() > 0 )
+                    return true;
+                return false;
+            }
+        });
+    }
+    
     private static void printElements( WebDriver driver )
     {
         List<WebElement> elements = driver.findElements(By.cssSelector("*"));

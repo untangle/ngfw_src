@@ -64,7 +64,12 @@ def create_ad_settings(ldap_secure=False):
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings", 
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
+        },
+        "facebookSettings": {
+            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "authenticationEnabled": True
         }
     }
 
@@ -94,7 +99,12 @@ def create_radius_settings():
             "sharedSecret": "chakas"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings", 
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
+        },
+        "facebookSettings": {
+            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "authenticationEnabled": True
         }
     }
 
@@ -204,6 +214,13 @@ class DirectoryConnectorTests(unittest2.TestCase):
         AD_SECURE_RESULT = subprocess.call(["ping", "-c", "1", AD_SECURE_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+        # enable google & facebook
+        nodeSettings = node.getSettings()
+        nodeSettings.get('googleSettings')['authenticationEnabled'] = True
+        nodeSettings.get('facebookSettings')['authenticationEnabled'] = True
+        node.setSettings(nodeSettings)
+
+        
     def setUp(self):
         pass
 
@@ -412,7 +429,52 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'test_result_string %s attempts %s' % (test_result_string, attempts) # debug line
         assert ("success" in test_result_string)
 
+    def test_070_checkGoogleAuth(self):
+        """
+        Test google authentication
+        """
+        googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
+        print "username: %s\n " % str(googleUserName)
+        if googlePassword != None:
+            print "password: %s\n" % (len(googlePassword)*"*")
 
+        result = node.getGoogleManager().authenticate( googleUserName, googlePassword )
+        print result
+        assert ( result == True )
+
+    def test_071_checkGoogleAuthBad(self):
+        """
+        Test google authentication
+        """
+        googleUserName, googlePassword = ("badusername@untangle.com","xxxxxxxxx")
+
+        result = node.getGoogleManager().authenticate( googleUserName, googlePassword )
+        print result
+        assert ( result == False )
+
+    def test_080_checkFacebookAuth(self):
+        """
+        Test facebook authentication
+        """
+        facebookUserName, facebookPassword = global_functions.getLiveAccountInfo("Facebook")
+        print "username: %s\n " % str(facebookUserName)
+        if facebookPassword != None:
+            print "password: %s\n" % (len(facebookPassword)*"*")
+
+        result = node.getFacebookManager().authenticate( facebookUserName, facebookPassword )
+        print result
+        assert ( result == True )
+
+    def test_081_checkFacebookAuthBad(self):
+        """
+        Test facebook authentication
+        """
+        facebookUserName, facebookPassword = ("badusername@untangle.com","xxxxxxxxx")
+
+        result = node.getFacebookManager().authenticate( facebookUserName, facebookPassword )
+        print result
+        assert ( result == False )
+        
     @staticmethod
     def finalTearDown(self):
         """
