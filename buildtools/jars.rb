@@ -81,7 +81,6 @@ class Jars
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
 
     const_set(:Selenium, [ Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/selenium-java-2.53.0.jar'),
-                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/phantomjsdriver-1.2.1.jar'),
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/gson-2.3.1.jar'),
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/guava-19.0.jar'),
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-exec-1.3.jar'),
