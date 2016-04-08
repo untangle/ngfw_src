@@ -33,7 +33,10 @@ public class GoogleAuthenticator
 
     public synchronized static boolean authenticate(String username, String password)
     {
-        //  Xvfb :1 -screen 5 1024x768x8 &
+        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        if ( directoryConnector != null )
+            directoryConnector.startXvfbIfNecessary();
+
         logger.debug("Initializing WebDriver...");
 
         String port = ":1.5";
@@ -99,9 +102,8 @@ public class GoogleAuthenticator
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-2.png");
             nextButtonElements.get(0).click();
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
             waitForElementName(driver, wait, "Passwd");
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
 
             logger.debug("[" + username + "] Sending password...");
             List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
@@ -116,11 +118,10 @@ public class GoogleAuthenticator
             }
             passwdElements.get(0).sendKeys(password);
 
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
             signInButtonElements.get(0).click();
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-6.png");
             waitForLogin(driver, wait, "Email", "xb");
-            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-7.png");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
 
             //printElements(driver);
         

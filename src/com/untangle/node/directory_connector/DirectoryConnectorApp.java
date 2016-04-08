@@ -60,6 +60,11 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
      */
     private FacebookManagerImpl facebookManager = null;
 
+    /**
+     * is xvfb running? (used by selenium-based authenticators)
+     */
+    private static boolean xvfbLaunched = false;
+    
     public DirectoryConnectorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
     {
         super(nodeSettings, nodeProperties);
@@ -86,6 +91,8 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
 
+        stopXvfb();
+        
         super.postStop();
     }
 
@@ -336,6 +343,23 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         return getGoogleManager().isGoogleDriveConnected();
     }
 
+    public void startXvfbIfNecessary()
+    {
+        if ( ! xvfbLaunched ) {
+            UvmContextFactory.context().execManager().execOutput("nohup Xvfb :1 -screen 5 1024x768x8 >/dev/null 2>&1 &");
+            xvfbLaunched = true;
+            
+        }
+    }
+
+    public void stopXvfb()
+    {
+        // Kill any running Xvfb used by GoogleAuthenticator and FacebookAuthenticator
+        UvmContextFactory.context().execManager().exec("killall Xvfb");
+
+        xvfbLaunched = false;        
+    }
+    
     protected boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))

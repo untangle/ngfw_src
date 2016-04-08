@@ -21,8 +21,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -33,7 +31,10 @@ public class FacebookAuthenticator
 
     public static boolean authenticate(String username, String password)
     {
-        //  Xvfb :1 -screen 5 1024x768x8 &
+        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        if ( directoryConnector != null )
+            directoryConnector.startXvfbIfNecessary();
+
         logger.debug("Initializing WebDriver...");
 
         String port = ":1.5";
@@ -47,8 +48,6 @@ public class FacebookAuthenticator
             return false;
         }
         
-        // WebDriver driver = new PhantomJSDriver();
-            
         ChromeDriverService service = new ChromeDriverService.Builder()
             .usingDriverExecutable(new File("/usr/lib/chromium/chromedriver"))
             .usingAnyFreePort()
@@ -62,12 +61,7 @@ public class FacebookAuthenticator
         options.addArguments("--no-sandbox");
         options.addArguments("--user-data-dir=" + tmpDirName);
         WebDriver driver = new ChromeDriver(service, options);
-        // WebDriver driver = new ChromeDriver(service);
 
-        // System.setProperty("webdriver.firefox.bin", "/usr/bin/iceweasel");
-        // FirefoxBinary firefoxBinary = new FirefoxBinary();
-        // firefoxBinary.setEnvironmentProperty("DISPLAY", port);
-        // driver = new FirefoxDriver(firefoxBinary, null);
             
         logger.debug("Initializing WebDriver... done (" + port + "," + tmpDirName + ")");
 
@@ -79,6 +73,10 @@ public class FacebookAuthenticator
 
             logger.debug("[" + username + "] Loading page...");
             driver.get(baseUrl);
+
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-0.png");
+            waitForElementName(driver, wait, "email");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-1.png");
 
             logger.debug("[" + username + "] Sending email/password...");
             List<WebElement> emailElements = driver.findElements(By.name("email"));
@@ -98,9 +96,11 @@ public class FacebookAuthenticator
             }
             emailElements.get(0).sendKeys(username);
             passElements.get(0).sendKeys(password);
-            loginButtonElements.get(0).click();
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-2.png");
 
+            loginButtonElements.get(0).click();
             waitForElementId(driver, wait, "facebook");
+            if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
 
             //printElements(driver);
             //takeScreenshot(driver,"/tmp/screenshot1.png");
@@ -113,9 +113,14 @@ public class FacebookAuthenticator
                 logger.debug("[" + username + "] Login failed.");
 
             return succeeded;
-        }
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+            return false;
+        } 
         finally {
             driver.close();
+            if ( ! logger.isDebugEnabled() )
+                UvmContextFactory.context().execManager().exec("/bin/rm -rf " + tmpDirName);
         }
     }
 
