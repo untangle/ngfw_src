@@ -93,6 +93,7 @@ public class OpenVpnManager
         "status openvpn-status.log",
         "verb " + DEFAULT_VERBOSITY,
         "dev tun0",
+        "max-routes 500",
         "max-clients 2048",
         /* Only talk to clients with a client configuration file */
         "ccd-exclusive", 
@@ -123,6 +124,7 @@ public class OpenVpnManager
         "mute-replay-warnings",
         "ns-cert-type server",
         "comp-lzo",
+        "max-routes 500",
         "verb " + DEFAULT_VERBOSITY,
         /* Do not re-read key after SIGUSR1 */
         "persist-key",
