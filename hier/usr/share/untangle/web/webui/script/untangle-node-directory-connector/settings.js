@@ -866,7 +866,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Google Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Google Authentication Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
                 },{
                     xtype:'textfield',
                     style: {marginTop: '10px'},
@@ -886,7 +886,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     disabled: (!this.getGoogleSettings().authenticationEnabled)
                 },{
                     xtype: 'button',
-                    text: i18n._('Google Test'),
+                    text: i18n._('Google Authentication Test'),
                     iconCls: 'test-icon',
                     name: 'google_test',
                     disabled: (!this.getGoogleSettings().authenticationEnabled),
@@ -896,14 +896,18 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }]
             }],
             onGoogleTestClick: Ext.bind(function() {
-                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Google Test"));
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Google Authentication Test"));
                 var userCmp = this.panelGoogle.down('textfield[name=google_test_username]').getValue();
                 var passwordCmp = this.panelGoogle.down('textfield[name=google_test_password]').getValue();
 
                 var message = this.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    var message = i18n._(result);
-                    Ext.MessageBox.alert(i18n._("Google Test"), message);
+                    var message;
+                    if ( result == true ) 
+                        message = i18n._('Login successful.');
+                    else
+                        message = i18n._('Login failed.');
+                    Ext.MessageBox.alert(i18n._("Google Authentication Test"), message);
                 }, this), userCmp, passwordCmp);
             }, this)
         });
@@ -968,7 +972,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     style: {marginRight: '20px'}
                 },{
                     xtype: 'component',
-                    html: Ext.String.format(i18n._('The {0}Facebook Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
+                    html: Ext.String.format(i18n._('The {0}Facebook Authentication Test{1} verifies that the server can authenticate the provided username/password.'),'<b>','</b>')
                 },{
                     xtype:'textfield',
                     style: {marginTop: '10px'},
@@ -988,7 +992,7 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     disabled: (!this.getFacebookSettings().authenticationEnabled)
                 },{
                     xtype: 'button',
-                    text: i18n._('Facebook Test'),
+                    text: i18n._('Facebook Authentication Test'),
                     iconCls: 'test-icon',
                     name: 'facebook_test',
                     disabled: (!this.getFacebookSettings().authenticationEnabled),
@@ -998,14 +1002,18 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                 }]
             }],
             onFacebookTestClick: Ext.bind(function() {
-                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Facebook Test"));
+                Ext.MessageBox.wait(i18n._("Testing..."), i18n._("Facebook Authentication Test"));
                 var userCmp = this.panelFacebook.down('textfield[name=facebook_test_username]').getValue();
                 var passwordCmp = this.panelFacebook.down('textfield[name=facebook_test_password]').getValue();
 
                 var message = this.getFacebookManager().authenticate( Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    var message = i18n._(result);
-                    Ext.MessageBox.alert(i18n._("Facebook Test"), message);
+                    var message;
+                    if ( result == true ) 
+                        message = i18n._('Login successful.');
+                    else
+                        message = i18n._('Login failed.');
+                    Ext.MessageBox.alert(i18n._("Facebook Authentication Test"), message);
                 }, this), userCmp, passwordCmp);
             }, this)
         });
