@@ -848,6 +848,18 @@ public class AdminManagerImpl implements AdminManager
         // set version at 2 so we don't re-run conversion
         settings.setVersion( 2L );
         this.setSettings( settings );
+
+        // this is completely unrelated to admin manager, but we can't do this in the postinst
+        // because dnsmasq is often down and being upgraded so there is no DNS resolution
+        // if new spamassassin sigs do not exist, update them now
+        try {
+            if ( ! (new File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
+                String output = UvmContextFactory.context().execManager().execOutput("/etc/cron.daily/spamassassin");
+            }
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+
     }
 
     private void updateNodesFile(String oldName, String newName)
