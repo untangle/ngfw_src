@@ -65,6 +65,7 @@ public class VirusBlockerLiteApp extends VirusBlockerBaseApp
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-daemon" );
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-freshclam" );
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "clamd");
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-freshclam", 3600, "freshclam");
         super.preStart();
     }
 
