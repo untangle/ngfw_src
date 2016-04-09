@@ -118,7 +118,9 @@ public class FacebookAuthenticator
             return false;
         } 
         finally {
-            driver.close();
+            try { driver.close(); } catch (Exception e) {}
+            try { driver.quit(); } catch (Exception e) {}
+            driver.quit();
             if ( ! logger.isDebugEnabled() )
                 UvmContextFactory.context().execManager().exec("/bin/rm -rf " + tmpDirName);
         }

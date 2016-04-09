@@ -21,8 +21,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -50,8 +48,6 @@ public class GoogleAuthenticator
             return false;
         }
         
-        // WebDriver driver = new PhantomJSDriver();
-            
         ChromeDriverService service = new ChromeDriverService.Builder()
             .usingDriverExecutable(new File("/usr/lib/chromium/chromedriver"))
             .usingAnyFreePort()
@@ -66,11 +62,6 @@ public class GoogleAuthenticator
         options.addArguments("--user-data-dir=" + tmpDirName);
         WebDriver driver = new ChromeDriver(service, options);
         // WebDriver driver = new ChromeDriver(service);
-
-        // System.setProperty("webdriver.firefox.bin", "/usr/bin/iceweasel");
-        // FirefoxBinary firefoxBinary = new FirefoxBinary();
-        // firefoxBinary.setEnvironmentProperty("DISPLAY", port);
-        // driver = new FirefoxDriver(firefoxBinary, null);
             
         logger.debug("Initializing WebDriver... done (" + port + "," + tmpDirName + ")");
 
@@ -103,7 +94,8 @@ public class GoogleAuthenticator
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-2.png");
             nextButtonElements.get(0).click();
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
-            waitForElementNameEither(driver, wait, "Passwd","Email");
+
+            waitForPassword(driver, wait);
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
 
             List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
@@ -121,7 +113,7 @@ public class GoogleAuthenticator
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
             signInButtonElements.get(0).click();
-            waitForLogin(driver, wait, "Passwd", "xb");
+            waitForLogin(driver, wait);
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-6.png");
 
             //printElements(driver);
@@ -138,7 +130,8 @@ public class GoogleAuthenticator
             logger.warn("Exception",e);
             return false;
         } finally {
-            driver.close();
+            try { driver.close(); } catch (Exception e) {}
+            try { driver.quit(); } catch (Exception e) {}
             if ( ! logger.isDebugEnabled() )
                 UvmContextFactory.context().execManager().exec("/bin/rm -rf " + tmpDirName);
         }
@@ -182,23 +175,6 @@ public class GoogleAuthenticator
         return false;
     }
     
-    private static void waitForLogin(final WebDriver driver, Wait<WebDriver> wait, final String elementName1, final String elementId2)
-    {
-        wait.until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver webDriver) {
-                logger.debug("Searching for name:" + elementName1 + " or id:" + elementId2 + " ... ");
-                
-                List<WebElement> one = driver.findElements(By.name(elementName1));
-                if ( one.size() > 0 )
-                    return true;
-                List<WebElement> two = driver.findElements(By.id(elementId2));
-                if ( two.size() > 0 )
-                    return true;
-                return false;
-            }
-        });
-    }
-
     private static void waitForElementId(final WebDriver driver, Wait<WebDriver> wait, final String elementId)
     {
         wait.until(new ExpectedCondition<Boolean>() {
@@ -219,18 +195,47 @@ public class GoogleAuthenticator
         });
     }
 
-    private static void waitForElementNameEither(final WebDriver driver, Wait<WebDriver> wait, final String elementName1, final String elementName2)
+    private static void waitForLogin(final WebDriver driver, Wait<WebDriver> wait)
     {
+        final String elementName1 = "Passwd";
+        final String elementId2 = "xb";
+        
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver) {
-                logger.debug("Searching for name:" + elementName1 + " or name:" + elementName2 + " ... ");
-
+                logger.debug("Searching for name:" + elementName1 + " or id:" + elementId2 + " ... ");
+                
                 List<WebElement> one = driver.findElements(By.name(elementName1));
                 if ( one.size() > 0 )
                     return true;
-                List<WebElement> two = driver.findElements(By.name(elementName2));
+                List<WebElement> two = driver.findElements(By.id(elementId2));
                 if ( two.size() > 0 )
                     return true;
+                return false;
+            }
+        });
+    }
+
+    private static void waitForPassword(final WebDriver driver, Wait<WebDriver> wait)
+    {
+        final String elementName1 = "Passwd";
+        final String elementId2 = "errormsg_0_Email";
+
+        wait.until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                logger.debug("Searching for name:" + elementName1 + " or id:" + elementId2 + " ... ");
+
+                List<WebElement> one = driver.findElements(By.name(elementName1));
+                if ( one.size() > 0 && one.get(0).isDisplayed() ) {
+                    //logger.warn("Passwd field found");
+                    return true;
+                }
+                List<WebElement> two = driver.findElements(By.id(elementId2));
+                try {
+                    if ( two.size() > 0 && two.get(0).isDisplayed() ) {
+                        //logger.warn("Error message found");
+                        return true;
+                    }
+                } catch (Exception e) {}
                 return false;
             }
         });
