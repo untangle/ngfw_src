@@ -19,7 +19,7 @@ iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
 iperfServer = ""
 smtpServerHost = 'test.untangle.com'
 accountFileServer = "10.112.56.44"
-accountFile = "account_login.json"
+accountFile = "/tmp/account_login.json"
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -217,13 +217,13 @@ def getLiveAccountInfo(accounttype):
         return ("message",accountFileServer + " not available")
     # result_ping = subprocess.check_output("ping -c 1 " + accountFileServer, shell=True)
     # remove old file if it exist
-    if os.path.isfile(accountFile):
-        os.remove(accountFile)
-    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + accountFileServer + "/" + accountFile, shell=True)
+    subprocess.call("wget -q -4 -t 2 --timeout=5 http://" + accountFileServer + "/account_login.json -O " + accountFile, shell=True)
     if not os.path.isfile(accountFile):
         return ("message",accountFile + " file not available")
     with open(accountFile) as data_file:    
         accounts = json.load(data_file)    
+    if os.path.isfile(accountFile):
+        os.remove(accountFile)
     for account in accounts: #i is each student's name, class, and number
         if account[0] == accounttype:
             return (account[1], account[2])
