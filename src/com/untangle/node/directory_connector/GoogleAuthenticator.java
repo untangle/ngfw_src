@@ -29,7 +29,7 @@ public class GoogleAuthenticator
 {
     private static final Logger logger = Logger.getLogger(GoogleAuthenticator.class);
 
-    public synchronized static boolean authenticate(String username, String password)
+    public static boolean authenticate(String username, String password)
     {
         DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
         if ( directoryConnector != null )
