@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Comparator;
+import java.util.Collection;
+import java.util.Collections;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -18,8 +21,9 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
 
@@ -34,9 +38,16 @@ import com.untangle.uvm.node.QuotaEvent;
  */
 public class HostTableImpl implements HostTable
 {
+    private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
+    private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
+
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
-    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 30 * 60 * 1000; /* 30 minutes */
+    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
     
+    private static final String HOSTS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/hosts.js";
+
+    private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
@@ -48,12 +59,19 @@ public class HostTableImpl implements HostTable
 
     private volatile Thread reverseLookupThread;
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
+
+    private final Pulse saverPulse = new Pulse("device-table-saver", true, new HostTableSaver());
     
     private int maxActiveSize = 0;
+
+    private volatile long lastSaveTime = 0;
     
     protected HostTableImpl()
     {
-        this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
+        this.lastSaveTime = System.currentTimeMillis();
+        loadSavedHosts();
+        
+        saverPulse.start( PERIODIC_SAVE_DELAY );
 
         UvmContextFactory.context().newThread(this.cleaner).start();
         UvmContextFactory.context().newThread(this.reverseLookup).start();
@@ -538,6 +556,69 @@ public class HostTableImpl implements HostTable
             this.maxActiveSize = realSize;
     }
 
+    @SuppressWarnings("unchecked")
+    public void saveHosts()
+    {
+        lastSaveTime = System.currentTimeMillis();
+        
+        try {
+            Collection<HostTableEntry> entries = hostTable.values();
+            logger.info("Saving hosts to file... (" + entries.size() + " entries)");
+
+            LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>();
+            for ( HostTableEntry entry : entries ) { list.add(entry); }
+
+            if (list.size() > HIGH_WATER_SIZE) {
+                logger.info("Host list over max size, pruning oldest entries"); // remove entries with oldest (lowest) lastSeenTime
+                Collections.sort( list, new Comparator<HostTableEntry>() { public int compare(HostTableEntry o1, HostTableEntry o2) {
+                    if ( o1.getLastAccessTime() < o2.getLastAccessTime() ) return 1;
+                    if ( o1.getLastAccessTime() == o2.getLastAccessTime() ) return 0;
+                    return -1;
+                } });
+                while ( list.size() > LOW_WATER_SIZE ) {
+                    logger.info("Host list too large. Removing oldest entry: " + list.get(list.size()-1));
+                    list.removeLast();
+                }
+            }
+            
+            UvmContextFactory.context().settingsManager().save( HOSTS_SAVE_FILENAME, list, false, true );
+            logger.info("Saving hosts to file... done");
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadSavedHosts()
+    {
+        try {
+            this.hostTable = new ConcurrentHashMap<InetAddress,HostTableEntry>();
+
+            logger.info("Loading hosts from file...");
+            LinkedList<HostTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load( LinkedList.class, HOSTS_SAVE_FILENAME );
+            if ( savedEntries == null ) {
+                logger.info("Loaded  hosts from file.   (no hosts saved)");
+            } else {
+                for ( HostTableEntry entry : savedEntries ) {
+                    try {
+                        // if its invalid just ignore it
+                        if ( entry.getAddress() == null ) {
+                            logger.warn("Invalid entry: " + entry.toJSONString());
+                            continue;
+                        }
+
+                        hostTable.put( entry.getAddress(), entry );
+                    } catch ( Exception e ) {
+                        logger.warn( "Error loading host entry: " + entry.toJSONString(), e);
+                    }
+                }
+                logger.info("Loaded  hosts from file.   (" + savedEntries.size() + " entries)");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to load hosts",e);
+        }
+    }
+    
     /**
      * This thread periodically walks through the entries and removes expired entries
      * It also explicitly releases hosts from the penalty box and quotas after expiration
@@ -729,4 +810,13 @@ public class HostTableImpl implements HostTable
             }
         }
     }
+
+    private class HostTableSaver implements Runnable
+    {
+        public void run()
+        {
+            saveHosts();
+        }
+    }
+    
 }

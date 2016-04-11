@@ -887,6 +887,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // the will be removed again by the wrapper
         // this is just so traffic will pass while the untangle-vm shutsdown
         networkManager.removeRules();
+        hostTableImpl.saveHosts();
         deviceTableImpl.saveDevices();
 
         state = UvmState.DESTROYED;
