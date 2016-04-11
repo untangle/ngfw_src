@@ -511,18 +511,12 @@ public class RuleCondition implements JSONString, Serializable
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_TYPE);
             return globMatcher.isMatch( attachment );
             
+        case HTTP_USER_AGENT_OS:
         case HTTP_USER_AGENT:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (entry == null)
                 return false;
             attachment = entry.getHttpUserAgent();
-            return globMatcher.isMatch( attachment );
-            
-        case HTTP_USER_AGENT_OS:
-            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
-            if (entry == null)
-                return false;
-            attachment = entry.getHttpUserAgentOs();
             return globMatcher.isMatch( attachment );
 
         case HTTP_CONTENT_LENGTH:
@@ -882,6 +876,7 @@ public class RuleCondition implements JSONString, Serializable
             logger.debug("Checking if " + attachment + " is in group \"" + value + "\" : " + isMemberOf);
             return isMemberOf;
 
+        case HTTP_USER_AGENT_OS:
         case HTTP_USER_AGENT:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
@@ -889,13 +884,6 @@ public class RuleCondition implements JSONString, Serializable
             attachment = entry.getHttpUserAgent();
             return globMatcher.isMatch( attachment );
             
-        case HTTP_USER_AGENT_OS:
-            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
-            if (entry == null)
-                return false;
-            attachment = entry.getHttpUserAgentOs();
-            return globMatcher.isMatch( attachment );
-
         default:
             // this is commented out because some rules are run against sessions and attributes
             // so they will call this method with unsupported matcher types.

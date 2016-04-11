@@ -50,8 +50,6 @@ public class HostTableEntry implements Serializable, JSONString
     private long quotaExpirationTime = 0; /* the expiration time on the assigned quota */
 
     private String httpUserAgent = null; /* the user-agent header from HTTP */
-    private String httpUserAgentOs = null; /* the os part of the user-agent header from HTTP */
-    private long   httpUserAgentSetDate = 0; /* date the httpUserAgent was set */
 
     public HostTableEntry()
     {
@@ -83,8 +81,6 @@ public class HostTableEntry implements Serializable, JSONString
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
         this.setQuotaExpirationTime( other.getQuotaExpirationTime() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
-        this.setHttpUserAgentOs( other.getHttpUserAgentOs() );
-        this.setHttpUserAgentSetDate( other.getHttpUserAgentSetDate() );
     }
     
     public InetAddress getAddress() { return this.address; }
@@ -277,23 +273,6 @@ public class HostTableEntry implements Serializable, JSONString
     {
         updateEvent("httpUserAgent",String.valueOf(this.httpUserAgent),String.valueOf(newValue));
         this.httpUserAgent = newValue;
-        updateAccessTime();
-        this.httpUserAgentSetDate = System.currentTimeMillis();
-    }
-
-    public String getHttpUserAgentOs() { return this.httpUserAgentOs; }
-    public void setHttpUserAgentOs( String newValue )
-    {
-        updateEvent("httpUserAgentOs",String.valueOf(this.httpUserAgentOs),String.valueOf(newValue));
-        this.httpUserAgentOs = newValue;
-        updateAccessTime();
-        this.httpUserAgentSetDate = System.currentTimeMillis();
-    }
-
-    public long getHttpUserAgentSetDate() { return this.httpUserAgentSetDate; }
-    public void setHttpUserAgentSetDate( long newValue )
-    {
-        this.httpUserAgentSetDate = newValue;
         updateAccessTime();
     }
 

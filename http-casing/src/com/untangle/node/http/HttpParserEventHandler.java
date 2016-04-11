@@ -11,21 +11,23 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.ChunkToken;
-import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.node.http.HeaderToken;
-import com.untangle.uvm.vnet.Token;
-import com.untangle.uvm.vnet.TokenStreamer;
-import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.util.AsciiCharBuffer;
-import com.untangle.uvm.util.UserAgentString;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.DeviceTable;
+import com.untangle.uvm.DeviceTableEntry;
+import com.untangle.uvm.util.AsciiCharBuffer;
+import com.untangle.uvm.util.UserAgentString;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.EndMarkerToken;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.uvm.vnet.TokenStreamer;
+import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.node.http.HeaderToken;
 
 /**
  * An HTTP <code>Parser</code>.
@@ -615,21 +617,20 @@ public class HttpParserEventHandler extends AbstractEventHandler
                      */
                     InetAddress clientAddr = session.sessionEvent().getCClientAddr();
                     String agentString = state.header.getValue("user-agent");
-                    HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-                    if (clientAddr != null && agentString != null && entry != null ) {
+                    HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                    if (clientAddr != null && agentString != null && hostEntry != null ) {
                         UserAgentString uas = new UserAgentString(agentString);
-                        long setDate = entry.getHttpUserAgentSetDate();
 
                         /**
                          * If the current agent string is null
-                         * or if its not null it was set more than 60 seconds ago
                          * set the agent string and agent string information
+                         * also set in device table if its non-null
                          */
-                        if ( entry.getHttpUserAgent() == null || setDate == 0 ||
-                             ( System.currentTimeMillis() > setDate + (60*1000) ) ) {
-                            entry.setHttpUserAgent( agentString );
-                            entry.setHttpUserAgentOs( uas.getOsInfo() );
-                            entry.setHttpUserAgentSetDate( System.currentTimeMillis() );
+                        if ( hostEntry.getHttpUserAgent() == null  ) {
+                            hostEntry.setHttpUserAgent( agentString );
+                            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
+                            if ( deviceEntry != null )
+                                deviceEntry.setHttpUserAgent( agentString );
                         }
                     }
                 }

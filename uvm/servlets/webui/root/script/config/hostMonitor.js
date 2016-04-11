@@ -57,8 +57,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "quotaRemaining": ii * 5000,
                         "quotaIssueTime": 0,
                         "quotaExpirationTime": 0,
-                        "httpUserAgent": (ii%3)?("MOZFirefox"+i):null,
-                        "httpUserAgentOs": (ii%4)?("Win"+ii):null
+                        "httpUserAgent": (ii%3)?("MOZFirefox"+i):null
                     });
                 }
             }
@@ -210,10 +209,6 @@ Ext.define('Webui.config.hostMonitor', {
                 convert: dateConvertFn
             },{
                 name: "httpUserAgent",
-                type: 'string',
-                convert: Ung.Util.preventEmptyValueConverter
-            },{
-                name: "httpUserAgentOs",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
             }],
@@ -386,14 +381,6 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 header: "HTTP" + " - " + i18n._("User Agent"),
                 dataIndex: "httpUserAgent",
-                width: 200,
-                filter: {
-                    type: 'string'
-                }
-            },{
-                hidden: true,
-                header: "HTTP" + " - " + i18n._("User Agent OS"),
-                dataIndex: "httpUserAgentOs",
                 width: 200,
                 filter: {
                     type: 'string'
