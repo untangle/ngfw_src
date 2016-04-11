@@ -238,13 +238,13 @@ Ext.define('Webui.config.network', {
                 for (i = 0; i < this.settings.interfaces.list.length; i++) {
                     intf = this.settings.interfaces.list[i];
                     if (intf.v4Address) {
-                        portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
+                        portForwardWarningsHtml.push( Ext.String.format("<b>{0}:{1}</b> ",intf.v4Address, this.settings.httpsPort)+ i18n._("for HTTPS services.") + "<br/>");
                     }
                 }
                 for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
                     intf = this.settings.interfaces.list[i];
                     if (intf.v4Address && !intf.isWan) {
-                        portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
+                        portForwardWarningsHtml.push( Ext.String.format("<b>{0}:{1}</b> ",intf.v4Address, this.settings.httpPort)+i18n._("for HTTP services.")+"<br/>");
                     }
                 }
                 for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
@@ -253,7 +253,10 @@ Ext.define('Webui.config.network', {
                         for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
                             var sub_intf = this.settings.interfaces.list[j];
                             if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
-                                portForwardWarningsHtml.push( Ext.String.format(i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
+                                portForwardWarningsHtml.push( Ext.String.format("<b>{0}:{1}</b> ",intf.v4Address, this.settings.httpPort) +
+                                                              i18n._("on") +
+                                                              Ext.String.format(" {2} ",sub_intf.name) +
+                                                              i18n._("for HTTP services.")+"<br/>");
                             }
                         }
                     }
