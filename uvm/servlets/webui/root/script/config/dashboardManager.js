@@ -95,6 +95,15 @@ Ext.define('Webui.config.dashboardManager', {
     // Dashboard Widgets Panel
     buildPanelDashboardWidgets: function() {
         var me = this;
+        // map some extra icons
+        var icon_mappings = {
+            'network': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_network.png',
+            'device-table': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_devices.png',
+            'administration': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_admin.png',
+            'host-viewer': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_hosts.png',
+            'shield': '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-shield_17x17.png',
+            'system': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_system.png'
+        };
         this.gridDashboardWidgets = Ext.create('Ung.grid.Panel',{
             cls: 'dashboard-grid',
             settingsCmp: this,
@@ -109,7 +118,12 @@ Ext.define('Webui.config.dashboardManager', {
             padding: '0 0 0 0',
             flex: 1,
             scale: 'medium',
+            //rowLines: false,
             viewConfig: {
+                getRowClass: function(record, rowIndex, rowParams, store){
+                    console.log(record);
+                    return ((rowIndex % 2) == 0) ? "even-class" : "odd-class";
+                },
                 plugins: {
                     ptype: 'gridviewdragdrop',
                     dragText: 'Drag and drop to reorganize'
@@ -167,20 +181,48 @@ Ext.define('Webui.config.dashboardManager', {
             }],
             columns: [{
                 xtype: 'actioncolumn',
-                width: 30,
+                width: 40,
+                dataIndex: "type",
                 handler: function() {},
-                renderer: function() {
+                renderer: Ext.bind(function(value, metaData, record) {
+                    if (record.data.entryId) {
+                        var _app = record.data.entryId.substring(0, record.data.entryId.lastIndexOf('-')).toLowerCase();
+                        if (icon_mappings.hasOwnProperty(_app)) {
+                            return '<img src="' + icon_mappings[_app] + '"/>';
+                        } else {
+                            return '<img src="/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-' + _app + '_42x42.png"/>';
+                        }
+
+                    }
                     return '<i class="material-icons" style="color: #999;">drag_handle</i>';
-                }
+                }, this)
             }, {
                 xtype: 'checkcolumn',
                 width: 30,
                 dataIndex: 'enabled',
-                renderer: function(value) {
-                    if (value) {
-                        return '<i class="material-icons" style="color: rgba(103,189,74,.9);">visibility</i>';
+                renderer: function(value, metaData, record) {
+                    var _app = null, _isInstallable = null;
+                    if (record.data.entryId) {
+                        if (!rpc.reportsEnabled) {
+                            _isInstallable = true;
+                        } else {
+                            _app = record.data.entryId.split('-');
+                            _app.pop();
+                            Ext.each(rpc.rackView.installable.list, function (app) {
+                                if (!_isInstallable && _app.join(' ') === app.displayName.toLowerCase()) {
+                                    _isInstallable = true;
+                                }
+                            });
+                        }
                     }
-                    return '<i class="material-icons" style="color: #777;">visibility_off</i>';
+                    if (_isInstallable) {
+                        return '<i class="material-icons" style="color: #FFB300;">warning</i>';
+                    } else {
+                        if (value) {
+                            return '<i class="material-icons" style="color: rgba(103,189,74,.9);">visibility</i>';
+                        }
+                        return '<i class="material-icons" style="color: #777;">visibility_off</i>';
+                    }
                 }
             }, {
                 header: i18n._("Details"),
@@ -188,17 +230,26 @@ Ext.define('Webui.config.dashboardManager', {
                 width: 200,
                 flex: 1,
                 renderer: Ext.bind(function(value, metaData, record) {
-                    if((value == "ReportEntry" || value == "EventEntry") && rpc.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
-                        var entryId = record.get("entryId");
-                        var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
-                        if(entry) {
-                            return entry.category + " / " + entry.title;
+                    if (value === "ReportEntry" || value === "EventEntry") {
+                        var _isInstallable = false;
+                        var _app = record.get('entryId').split('-');
+                        _app.pop();
+                        Ext.each(rpc.rackView.installable.list, function (app) {
+                            if (!_isInstallable && _app.join(' ') === app.displayName.toLowerCase()) {
+                                _isInstallable = true;
+                            }
+                        });
+                        if (rpc.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
+                            var entryId = record.get("entryId");
+                            var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
+                            if (entry) {
+                                return '<span style="font-size: 10px; color: #999;">' + entry.category.toUpperCase() + (_isInstallable ? ' (install required)' : '') + '</span> <br/> ' + entry.title;
+                            }
+                        } else {
+                            return '<span style="font-size: 10px; color: #999;">' + _app.join(' ').toUpperCase() + ' (install required)</span><br/>' + (value === 'ReportEntry' ? 'Report' : 'Events');
                         }
                     }
-                    if (value == "ReportEntry" || value == "EventEntry") {
-                        return ((value == "ReportEntry")?i18n._("Report Id"):i18n._("Events Id")) + " - " + record.get("entryId");
-                    }
-                    if (value != "ReportEntry" || value != "EventEntry") {
+                    if (value !== "ReportEntry" || value !== "EventEntry") {
                         return value;
                     }
                     return "";
@@ -290,8 +341,8 @@ Ext.define('Webui.config.dashboardManager', {
         if(!rpc.reportsEnabled) {
             this.entrySelector.defaults = {
                 xtype:'displayfield',
-                labelWidth: 150,
-                width: 500
+                labelWidth: 100,
+                width: 300
             };
             this.entrySelector.items = [{
                 name: 'reportEntryId',
@@ -309,14 +360,10 @@ Ext.define('Webui.config.dashboardManager', {
                 valueField: "uniqueId",
                 displayField: "category_title",
                 queryMode: 'local',
-                labelWidth: 150,
-                width: 500,
-                listConfig: {
-                    minWidth: 500
-                },
+                width: 300,
                 tpl: Ext.create('Ext.XTemplate',
-                    '<ul class="x-list-plain"><tpl for=".">',
-                        '<li role="option" class="x-boundlist-item"><b>{category}</b> - {title}</li>',
+                    '<ul class="x-list-plain report-selector"><tpl for=".">',
+                        '<li role="option" class="x-boundlist-item"><span>{category}</span><br/>{title}</li>',
                     '</tpl></ul>'
                 ),
                 listeners: {
@@ -341,6 +388,7 @@ Ext.define('Webui.config.dashboardManager', {
             this.entrySelector.items = [{
                 name: 'reportEntryId',
                 fieldLabel: i18n._("Select Report"),
+                labelAlign: 'top',
                 emptyText: i18n._("[enter report]"),
                 store: Ext.create('Ext.data.JsonStore', {
                     fields: ["uniqueId", "category", "title", {name: 'category_title', calculate: function(data) {
@@ -352,6 +400,7 @@ Ext.define('Webui.config.dashboardManager', {
             }, {
                 name: 'eventEntryId',
                 fieldLabel: i18n._("Select Events"),
+                labelAlign: 'top',
                 emptyText: i18n._("[enter events]"),
                 store: Ext.create('Ext.data.JsonStore', {
                     fields: ["uniqueId", "category", "title", {name: 'category_title', calculate: function(data) {
@@ -373,8 +422,8 @@ Ext.define('Webui.config.dashboardManager', {
             valueField: "id",
             displayField: "name",
             queryMode: 'local',
-            labelWidth: 150,
-            width: 400,
+            //labelWidth: 150,
+            //width: 400,
             tpl: null,
             listConfig: null,
             store: Ext.create('Ext.data.ArrayStore', {
@@ -384,13 +433,13 @@ Ext.define('Webui.config.dashboardManager', {
         });
         
         this.gridDashboardWidgets.setRowEditor( Ext.create('Ung.RowEditorWindow',{
-            rowEditorLabelWidth: 150,
+            rowEditorLabelWidth: 100,
             inputLines: [{
                 xtype: "checkbox",
                 name: "Enabled",
                 dataIndex: "enabled",
-                fieldLabel: i18n._( "Enabled" ),
-                width: 360
+                fieldLabel: i18n._( "Enabled" )
+                //width: 360
             }, {
                 xtype: "combo",
                 dataIndex: "type",
@@ -415,9 +464,8 @@ Ext.define('Webui.config.dashboardManager', {
                 items: [{
                     xtype:'numberfield',
                     name: "refreshIntervalSec",
-                    labelWidth: 150,
                     minValue: 10,
-                    fieldLabel: i18n._( "Refresh Interval" )
+                    fieldLabel: i18n._( "Refresh Interval" ),
                 }, {
                     xtype: 'label',
                     html: i18n._( "(seconds)")+" - "+i18n._( "Leave blank for no Auto Refresh" ),
@@ -442,7 +490,6 @@ Ext.define('Webui.config.dashboardManager', {
                     name: "timeframe",
                     minValue: 1,
                     maxValue: 24,
-                    labelWidth: 150,
                     fieldLabel: i18n._( "Timeframe" )
                 }, {
                     xtype: 'label',
@@ -465,19 +512,21 @@ Ext.define('Webui.config.dashboardManager', {
                 layout: {type: "vbox"},
                 dataIndex: 'displayColumns',
                 items: [{
-                    xtype: 'container',
-                    margin: '10 0 10 0',
-                    html: i18n._('It is recomanded to select 4 or less Display Columns to prevent having to scroll horizontally.')
+                    xtype: 'label',
+                    html: i18n._('It is recomanded to select 4 or less Display Columns to prevent having to scroll horizontally.'),
+                    cls: 'boxlabel',
+                    width: 250
                 }, {
                     xtype: 'checkboxgroup',
                     name: 'columnsGroup',
-                    columns: 3,
+                    columns: 1,
                     vertical: true,
                     defaults: {
                         width: 250,
                         name: 'cbGroup'
                     },
-                    fieldLabel: i18n._("Display Columns")
+                    fieldLabel: i18n._("Display Columns"),
+                    labelAlign: 'top'
                 }],
                 setValue: function(value) {
                     this.columnsValue = value;

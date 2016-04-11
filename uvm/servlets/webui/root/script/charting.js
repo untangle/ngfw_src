@@ -263,6 +263,7 @@ Ext.define('Ung.charts', {
                 marginTop: !forDashboard ? 50 : 10,
                 padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
+                animation: false,
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
@@ -449,6 +450,7 @@ Ext.define('Ung.charts', {
                 },
                 series: {
                     //shadow: true,
+                    animation: false,
                     marker: {
                         enabled: false,
                         states: {
@@ -537,7 +539,7 @@ Ext.define('Ung.charts', {
                 _seriesOptions[i].data = _data;
                 //_seriesOptions[i].data = []; // test for no data
             } else {
-                chart.series[i].setData(_data, false, true);
+                chart.series[i].setData(_data, false, false);
             }
         }
 
@@ -727,6 +729,9 @@ Ext.define('Ung.charts', {
                         enabled: true,
                         align: 'center'
                     }
+                },
+                series: {
+                    animation: false
                 }
             },
             legend: {

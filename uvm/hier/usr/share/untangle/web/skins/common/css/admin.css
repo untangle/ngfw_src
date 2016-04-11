@@ -113,7 +113,7 @@ div.app-item {
     border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     background: #FFF;
-    overflow: visible;
+    overflow: hidden;
     transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 div.app-item:hover, div.app-item.progress {
@@ -236,6 +236,71 @@ div.app-item div.app-progress {
     width: 100%;
     height: 36px;
 }
+
+
+@media ( max-width: 550px ) {
+    div.app-item {
+        height: 60px;
+        width: 100%;
+        float: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0 0 1px 0;
+    }
+
+    div.app-item div.app-icon {
+        height: 60px;
+        text-align: left;
+        margin: 0;
+    }
+
+    div.app-item div.app-icon img {
+        height: 50px;
+        width: 50px;
+        position: relative;
+        top: 5px;
+        left: 5px;
+        float: left;
+    }
+
+    div.app-item:hover .app-icon, div.app-item.progress .app-icon {
+        transform: scale(1);
+    }
+
+    div.app-item div.app-name {
+        line-height: 60px;
+        margin-left: 20px;
+        font-size: 16px;
+        text-align: left;
+        float: left;
+    }
+
+    div.app-item .app-install, div.app-item .app-done {
+        left: auto;
+        top: 20px;
+        right: 10px;
+    }
+
+    div.app-item .app-loader {
+        position: absolute;
+        top: 10px;
+        right: 2px;
+    }
+
+    div.app-item div.app-icon.app-config-icon {
+        width: 50px;
+        height: 50px;
+        background-size: contain;
+        top: 5px;
+        left: 5px;
+        float: left;
+        margin: 1px;
+    }
+}
+
+
+
+
 .node-image img {
     width: 100%;
     height: 100%;
@@ -403,9 +468,9 @@ textarea.ua-test-output {
 }
 
 .boxlabel {
-    margin: 3px 0px 0px 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-style: italic;
+    padding: 5px 0;
+    font-size: 11px;
+    color: #999;
 }
 
 .diff-grid .x-grid-cell {
@@ -492,11 +557,7 @@ a.link,a.link:visited {
 }
 
 .user-menu, .hamburger-menu {
-    float: right;
-}
-
-.hamburger-menu {
-    display: none;
+    text-align: right;
 }
 
 .hamburger-menu .x-btn-arrow-right:after {
@@ -566,15 +627,6 @@ a.link,a.link:visited {
         display: none;
     }
 }
-@media ( max-width: 520px ) {
-    .hamburger-menu {
-        display: block;
-    }
-    .views-menu, .user-menu {
-        display: none;
-    }
-}
-
 
 
 .action-button.x-btn {
@@ -714,6 +766,14 @@ a.forgot-password:hover {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
 }
 
+.dashboard-manager hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(200, 200, 200, 0), rgba(200, 200, 200, 0.75), rgba(200, 200, 200, 0));
+    margin-top: 0;
+}
+
+
 .dashboard-grid * {
     color: #FFF;
     background: none;
@@ -724,12 +784,13 @@ a.forgot-password:hover {
 }
 
 .dashboard-grid .x-grid-with-row-lines .x-grid-item {
-    border-width: 0 0 1px 0;
-    border-color: #333;
+    border-bottom: 1px #333 solid;
+    border-top: 1px #777 solid;
+    height: 38px;
 }
 
 .dashboard-grid .x-grid-cell-inner-checkcolumn, .dashboard-grid .x-grid-cell-inner-action-col {
-    padding: 8px 0 !important;
+    padding: 0 !important;
     cursor: pointer;
     text-align: center !important;
 }
@@ -778,8 +839,15 @@ a.forgot-password:hover {
 .dashboard-grid .x-grid-cell-inner {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
     font-size: 14px;
-    padding: 8px 6px;
+    /*padding: 8px 6px;*/
+    padding: 2px 6px;
     /*cursor: default;*/
+}
+
+.dashboard-grid .x-grid-cell-inner img {
+    width: 32px;
+    height: 32px;
+    padding: 1px;
 }
 
 .dashboard-grid .x-panel-body {
@@ -815,6 +883,15 @@ a.forgot-password:hover {
 }
 
 
+.report-selector .x-boundlist-item {
+    line-height: 1.4;
+    padding: 1px 3px;
+}
+.report-selector span {
+    font-size: 10px;
+    color: #999;
+    text-transform: uppercase;
+}
 
 
 .widget {

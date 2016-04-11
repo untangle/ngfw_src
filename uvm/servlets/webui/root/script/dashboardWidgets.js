@@ -135,6 +135,7 @@ Ext.define('Ung.dashboard', {
             Ext.on('resize', this.debounce(this.onScrollChange, 500));
         }
 
+        /*
         var timer;
         Ext.on('resize', function () {
             clearTimeout(timer);
@@ -146,6 +147,7 @@ Ext.define('Ung.dashboard', {
                 });
             }, 100);
         });
+        */
     },
     resetReports: function () {
         this.reportEntries = null;
@@ -769,7 +771,9 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     updateStats: function (stats) {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
-        if (this.data.externalInterfaces) {
+
+        // TODO error when installing reports this.data = null
+        if (this.data && this.data.externalInterfaces) {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
                 if (interfaceEl) {

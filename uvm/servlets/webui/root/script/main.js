@@ -92,7 +92,7 @@ Ext.define("Ung.Main", {
                 xtype: 'container',
                 name: 'mainMenu',
                 cls: "main-menu",
-                layout: { type: 'hbox', align: 'middle'},
+                layout: { type: 'hbox', align: 'middle', pack: 'end'},
                 scrollable: 'y',
                 items: [{
                     xtype: 'component',
@@ -109,13 +109,26 @@ Ext.define("Ung.Main", {
                     defaults: {
                         scale: 'large'
                     },
-                    //width: '100%',
+                    hidden: false,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width <= 520': {
+                            hidden: true
+                        },
+                        'width > 520': {
+                            hidden: false
+                        }
+                    },
                     items: [{
                         xtype: 'button',
                         html: '<i class="material-icons">home</i> <span>' + i18n._('Dashboard') + '</span>',
                         cls: 'main-menu-btn',
                         pressed: rpc.isRegistered,
                         handler: function (btn) {
+                            if (!this.dashboardManager.isHidden()) {
+                                this.dashboardManager.hide();
+                            }
+                            this.dashboardManager.removeAll(true);
                             this.panelCenter.setActiveItem("dashboard");
                             this.viewsMenu.items.each(function (button) { button.setPressed(false); });
                             btn.setPressed(true);
@@ -157,10 +170,20 @@ Ext.define("Ung.Main", {
                     }]
                 }, {
                     xtype: 'container',
-                    align: 'right',
+                    //align: 'right',
                     cls: 'user-menu',
                     defaults: {
                         scale: 'large'
+                    },
+                    hidden: false,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width <= 520': {
+                            hidden: true
+                        },
+                        'width > 520': {
+                            hidden: false
+                        }
                     },
                     items: [{
                         xtype: 'button',
@@ -193,10 +216,20 @@ Ext.define("Ung.Main", {
                     }]
                 }, {
                     xtype: 'container',
-                    align: 'right',
                     cls: 'hamburger-menu',
+                    flex: 1,
                     defaults: {
                         scale: 'large'
+                    },
+                    hidden: true,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width <= 520': {
+                            hidden: false
+                        },
+                        'width > 520': {
+                            hidden: true
+                        }
                     },
                     items: [{
                         xtype: 'button',
@@ -213,7 +246,12 @@ Ext.define("Ung.Main", {
                             items: [{
                                 text: '<i class="material-icons">home</i> <span>' + i18n._('Dashboard') + '</span>',
                                 handler: function () {
+                                    if (!this.dashboardManager.isHidden()) {
+                                        this.dashboardManager.hide();
+                                    }
+                                    this.dashboardManager.removeAll(true);
                                     this.panelCenter.setActiveItem("dashboard");
+
                                     this.viewsMenu.items.each(function (button, idx) {
                                         button.setPressed(idx === 0);
                                     });
@@ -281,7 +319,7 @@ Ext.define("Ung.Main", {
                         region: 'west',
                         name: 'dashboardManager',
                         cls: 'dashboard-manager',
-                        width: 400,
+                        width: 350,
                         hidden: true,
                         border: false,
                         layout: {
@@ -320,7 +358,7 @@ Ext.define("Ung.Main", {
                                     if (this.dashboardManager.items.length === 0) {
                                         this.dashboardManager.add({
                                             xtype: 'container',
-                                            html: '<h3 style="margin: 0 0 15px 0;">' + i18n._('Manage Widgets') + '</h3><p>' + i18n._('Reports and Events wigets are displayed in the Dashboard if the Reports application is installed and enabled, and only if their associalted application is installed.') + '</p>',
+                                            html: '<h3 style="margin: 0 0 15px 0; font-weight: normal; font-size: 20px;">' + i18n._('Manage Widgets') + '</h3>',
                                             style: {
                                                 color: '#CCC'
                                             },
@@ -328,6 +366,24 @@ Ext.define("Ung.Main", {
                                             border: false
                                         });
                                         this.dashboardManager.add(Ext.create('Webui.config.dashboardManager', {}));
+                                        this.dashboardManager.add({
+                                            xtype: 'container',
+                                            html: '<hr/><table>' +
+                                                    '<tr><td style="width: 55px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #FFB300; font-size: 20px; vertical-align: middle;">warning</i></td><td>requires <em>Reports</em> App and any associated App</td></tr>' +
+                                                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: rgba(103,189,74,.9); font-size: 20px; vertical-align: middle;">visibility</i> | <i class="material-icons" style="color: #777; font-size: 20px; vertical-align: middle;">visibility_off</i></td><td>toggles widget visibility on or off</td></tr>' +
+                                                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 20px; vertical-align: middle;">format_line_spacing</i></td><td>drag items to sort them</td></tr>' +
+                                                  '</table>',
+                                            /*
+                                            html: '<hr/><p>' + '<i class="material-icons" style="color: #FFB300; font-size: 20px; vertical-align: middle;">warning</i> <span style="vertical-align: middle;">- Requires the Reports application and associated App to be installed and enabled, in order to see the widget in Dashboard.</span>' + '</p>' +
+                                                  '<p><i class="material-icons" style="color: rgba(103,189,74,.9); font-size: 20px; vertical-align: middle;">visibility</i> | <i class="material-icons" style="color: #777; font-size: 20px; vertical-align: middle;">visibility_off</i> - toggles widget visibility on or off</p>' +
+                                                  '<p><i class="material-icons" style="color: #999; font-size: 20px; vertical-align: middle;">format_line_spacing</i> - you can drag the items to sort them!</p>',
+                                                  */
+                                            style: {
+                                                color: '#CCC'
+                                            },
+                                            padding: '10 10 10 10',
+                                            border: false
+                                        });
                                     }
                                     //Ung.Main.showDashboardManager();
                                 },
@@ -339,7 +395,7 @@ Ext.define("Ung.Main", {
                             }, {
                                 xtype: "component",
                                 //cls: "alert-container",
-                                html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle;">warning</i>',
+                                html: '<span style="color: #CCC; font-size: 11px;">Upgrades are available</span> <i class="material-icons" style="color: #FFB300; vertical-align: middle; font-size: 20px;">warning</i>',
                                 margin: '0 10 0 0',
                                 itemId: "alertContainerDashboard",
                                 hidden: true
@@ -351,7 +407,21 @@ Ext.define("Ung.Main", {
                             items: [{
                                 xtype: 'container',
                                 itemId: 'dashboardItems',
-                                cls: 'dashboard'
+                                cls: 'dashboard',
+                                listeners: {
+                                    resize: function () {
+                                        if (timer !== 'undefined') {
+                                            clearTimeout(timer);
+                                        }
+                                        var timer = setTimeout(function () {
+                                            Highcharts.charts.forEach(function (chart) {
+                                                if (chart) {
+                                                    chart.reflow();
+                                                }
+                                            });
+                                        }, 250);
+                                    }
+                                }
                             }]
                         }]
                     }],
@@ -425,7 +495,7 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: "component",
                             //cls: "alert-container",
-                            html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle;">warning</i>',
+                            html: '<span style="color: #CCC; font-size: 11px;">Upgrades are available</span> <i class="material-icons" style="color: #FFB300; vertical-align: middle; font-size: 20px;">warning</i>',
                             margin: '0 10 0 0',
                             itemId: "alertContainerApps",
                             hidden: true
@@ -483,8 +553,18 @@ Ext.define("Ung.Main", {
                         xtype: 'container',
                         region: 'center',
                         scrollable: true,
-                        style: {
-                            padding: '10px'
+                        plugins: 'responsive',
+                        responsiveConfig: {
+                            'width <= 550': {
+                                style: {
+                                    padding: '0'
+                                }
+                            },
+                            'width > 550': {
+                                style: {
+                                    padding: '10px'
+                                }
+                            }
                         },
                         itemId: "appsContainer"
                     }]
@@ -502,8 +582,18 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: 'container',
                             itemId: 'configContainer',
-                            style: {
-                                padding: '10px'
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    style: {
+                                        padding: '0'
+                                    }
+                                },
+                                'width > 550': {
+                                    style: {
+                                        padding: '10px'
+                                    }
+                                }
                             }
                         }, {
                             xtype: 'component',
@@ -513,8 +603,18 @@ Ext.define("Ung.Main", {
                             xtype: 'container',
                             title: i18n._('Tools'),
                             itemId: "toolsContainer",
-                            style: {
-                                padding: '10px'
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    style: {
+                                        padding: '0'
+                                    }
+                                },
+                                'width > 550': {
+                                    style: {
+                                        padding: '10px'
+                                    }
+                                }
                             }
                         }]
                     }]
@@ -815,7 +915,6 @@ Ext.define("Ung.Main", {
         return rpc.nodeReports;
     },
     updateReportsDependencies: function() {
-        console.log(Ext.getCmp('reportsMenuItem'));
         Ext.getCmp('reportsMenuItem').setVisible(rpc.reportsEnabled);
         Ung.dashboard.loadDashboard();
     },
