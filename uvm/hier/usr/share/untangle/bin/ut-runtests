@@ -171,9 +171,9 @@ def runTestSuite(suite):
         try:
             suite.initialSetUp(suite)
         except Exception, e:
-            print "initialSetUp EXCEPTION: "
-            unittest2.skip("initialSetUp EXCEPTION: ")(suite)
+            print "initialSetUp exception: "
             traceback.print_exc( e )
+            unittest2.skip("initialSetUp exception: ")(suite)
     sys.stdout = orig_stdout
     sys.stderr = orig_stderr
 
@@ -227,7 +227,7 @@ def runTestSuite(suite):
         try:
             suite.finalTearDown(suite)
         except Exception, e:
-            print "finalTearDown EXCEPTION: "
+            print "finalTearDown exception: "
             traceback.print_exc( e )
 
     if (parser.timedTests):
