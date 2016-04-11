@@ -138,6 +138,15 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Settings file newer than interfaces files, Syncing...");
                 /* Do not run sanity checks on restored settings */
                 this.setNetworkSettings( this.networkSettings, false );
+
+                // 12.0 upgrade special - try to upgrade spamassassin sigs now that the server is hopefully online
+                try {
+                    if ( ! (new File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
+                        String output = UvmContextFactory.context().execManager().execOutput("/etc/cron.daily/spamassassin");
+                    }
+                } catch (Exception e) {
+                    logger.warn("Exception",e);
+                }
             }
         }
         
