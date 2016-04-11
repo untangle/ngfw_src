@@ -77,6 +77,34 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().newThread(this.reverseLookup).start();
     }
     
+    public synchronized void setHosts( LinkedList<HostTableEntry> newHosts )
+    {
+        ConcurrentHashMap<InetAddress, HostTableEntry> oldHostTable = this.hostTable;
+        this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
+        
+        /**
+         * For each entry, copy the value on top of the exitsing objects so references are maintained
+         * If there aren't in the table, create new entries
+         */
+        for ( HostTableEntry entry : newHosts ) {
+            InetAddress address = entry.getAddress();
+            if (address == null)
+                continue;
+
+            HostTableEntry existingEntry = oldHostTable.get( address );
+            if ( existingEntry != null ) {
+                existingEntry.copy( entry );
+                this.hostTable.put( existingEntry.getAddress(), existingEntry );
+            }
+            else {
+                this.hostTable.put( address, entry );
+                this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
+            }
+        }
+
+        saveHosts();
+    }
+
     public HostTableEntry getHostTableEntry( InetAddress addr )
     {
         return getHostTableEntry( addr, false );
@@ -518,13 +546,13 @@ public class HostTableImpl implements HostTable
             if ( deviceEntry == null )
                 deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
 
-            entry.setDevice( deviceEntry );
-
             /**
              * Restore known information from the device entry where able
              */
             if ( deviceEntry.getHostname() != null )
                 entry.setHostname( deviceEntry.getHostname() );
+            if ( deviceEntry.getDeviceUsername() != null )
+                entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
             if ( deviceEntry.getHttpUserAgent() != null )
                 entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         }
@@ -539,21 +567,6 @@ public class HostTableImpl implements HostTable
         }
         
         return entry;
-    }
-
-    private void adjustMaxSizeIfNecessary()
-    {
-        int realSize = 0;
-
-        for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
-            HostTableEntry entry = i.next();
-            /* Only count hosts that are "active" */
-            if ( entry.getActive() )
-                realSize++;
-        }
-        
-        if (realSize > this.maxActiveSize)
-            this.maxActiveSize = realSize;
     }
 
     @SuppressWarnings("unchecked")
@@ -586,6 +599,21 @@ public class HostTableImpl implements HostTable
         } catch (Exception e) {
             logger.warn("Exception",e);
         }
+    }
+
+    private void adjustMaxSizeIfNecessary()
+    {
+        int realSize = 0;
+
+        for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
+            HostTableEntry entry = i.next();
+            /* Only count hosts that are "active" */
+            if ( entry.getActive() )
+                realSize++;
+        }
+        
+        if (realSize > this.maxActiveSize)
+            this.maxActiveSize = realSize;
     }
 
     @SuppressWarnings("unchecked")

@@ -22,6 +22,7 @@ public class HostTableEntry implements Serializable, JSONString
 
     private InetAddress address = null;
     private String      macAddress = null;
+    private String      macVendor = null;
     private int         interfaceId = 0;
     private long        creationTime = 0;
     private long        lastAccessTime = 0;
@@ -52,12 +53,38 @@ public class HostTableEntry implements Serializable, JSONString
     private String httpUserAgentOs = null; /* the os part of the user-agent header from HTTP */
     private long   httpUserAgentSetDate = 0; /* date the httpUserAgent was set */
 
-    private DeviceTableEntry device = null; /* The associated device (if it exists) */
-    
     public HostTableEntry()
     {
         creationTime = System.currentTimeMillis();
         updateAccessTime();
+    }
+
+    public void copy( HostTableEntry other )
+    {
+        this.setAddress( other.getAddress() );
+        this.setMacAddress( other.getMacAddress() );
+        this.setInterfaceId( other.getInterfaceId() );
+        this.setCreationTime( other.getCreationTime() );
+        this.setLastAccessTime( other.getLastAccessTime() );
+        this.setLastSessionTime( other.getLastSessionTime() );
+        this.setLastCompletedTcpSessionTime( other.getLastCompletedTcpSessionTime() );
+        this.setEntitled( other.getEntitled() );
+        this.setHostname( other.getHostname() );
+        this.setUsernameAdConnector( other.getUsernameAdConnector() );
+        this.setUsernameCapture( other.getUsernameCapture() );
+        this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
+        this.setUsernameTunnel( other.getUsernameTunnel() );
+        this.setUsernameOpenvpn( other.getUsernameOpenvpn() );
+        this.setPenaltyBoxed( other.getPenaltyBoxed() );
+        this.setPenaltyBoxExitTime( other.getPenaltyBoxExitTime() );
+        this.setPenaltyBoxEntryTime( other.getPenaltyBoxEntryTime() );
+        this.setQuotaSize( other.getQuotaSize() );
+        this.setQuotaRemaining( other.getQuotaRemaining() );
+        this.setQuotaIssueTime( other.getQuotaIssueTime() );
+        this.setQuotaExpirationTime( other.getQuotaExpirationTime() );
+        this.setHttpUserAgent( other.getHttpUserAgent() );
+        this.setHttpUserAgentOs( other.getHttpUserAgentOs() );
+        this.setHttpUserAgentSetDate( other.getHttpUserAgentSetDate() );
     }
     
     public InetAddress getAddress() { return this.address; }
@@ -77,13 +104,19 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public String getMacVendor() { return this.macVendor; }
+    public void setMacVendor( String newValue )
+    {
+        updateEvent("macVendor",this.macVendor,newValue);
+        this.macVendor = newValue;
+        updateAccessTime();
+    }
+    
     public int getInterfaceId() { return this.interfaceId; }
     public void setInterfaceId( int newValue )
     {
         updateEvent("interfaceId",(new Integer(this.interfaceId)).toString(),new Integer(newValue).toString());
         this.interfaceId = newValue;
-        if ( this.device != null )
-            device.setLastSeenInterfaceId( newValue );
         updateAccessTime();
     }
     
@@ -106,8 +139,6 @@ public class HostTableEntry implements Serializable, JSONString
     public void setLastSessionTime( long newValue )
     {
         this.lastSessionTime = newValue;
-        if ( this.device != null )
-            device.updateLastSeenTime();
         updateAccessTime();
     }
 
@@ -131,8 +162,6 @@ public class HostTableEntry implements Serializable, JSONString
         updateEvent("hostname",this.hostname,newValue);
         this.hostname = newValue;
         updateAccessTime();
-
-        if (device != null) device.setHostname( newValue );
     }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
@@ -153,6 +182,15 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public String getUsernameDevice() { return this.usernameDevice; }
+    public void setUsernameDevice( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+        updateEvent("usernameDevice",this.usernameDevice,newValue);
+        this.usernameDevice = newValue;
+        updateAccessTime();
+    }
+    
     public boolean getCaptivePortalAuthenticated() { return this.captivePortalAuthenticated; }
     public void setCaptivePortalAuthenticated( boolean newValue )
     {
@@ -241,8 +279,6 @@ public class HostTableEntry implements Serializable, JSONString
         this.httpUserAgent = newValue;
         updateAccessTime();
         this.httpUserAgentSetDate = System.currentTimeMillis();
-
-        if (device != null) device.setHttpUserAgent( newValue );
     }
 
     public String getHttpUserAgentOs() { return this.httpUserAgentOs; }
@@ -261,28 +297,6 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public DeviceTableEntry getDevice() { return this.device; }
-    public void setDevice( DeviceTableEntry newValue )
-    {
-        this.device = newValue;
-    }
-
-    public String getMacVendor()
-    {
-        if ( this.device != null )
-            return this.device.getMacVendor();
-        else
-            return null;
-    }
-
-    public String getUsernameDevice()
-    {
-        if ( device != null )
-            return this.device.getDeviceUsername();
-        else
-            return null;
-    }
-    
     public String getUsername()
     {
         if (getUsernameCapture() != null)

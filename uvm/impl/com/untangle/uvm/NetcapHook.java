@@ -139,35 +139,57 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.serverSide().server().port());
 
             /* lookup the host table information */
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+            HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+            DeviceTableEntry deviceEntry = null;
             String username = null;
             String hostname = null;
 
-            if ( entry == null ) {
+            if ( hostEntry == null ) {
                 /* if its not in the host table and is a non-WAN client, create a host table entry */
                 InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId( netcapSession.clientSide().interfaceId() );
                 if ( intfSettings != null && ! intfSettings.getIsWan() ) {
-                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
+                    hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
                 /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
                 if ( netcapSession.clientSide().interfaceId() == 0xfa ||
                      netcapSession.clientSide().interfaceId() == 0xfb ||
                      netcapSession.clientSide().interfaceId() == 0xfc ||
                      netcapSession.clientSide().interfaceId() == 0xfd ) {
-                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
+                    hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
             } 
             
-            /* if entry is still not null */
-            if ( entry != null ) {
-                entry.setLastSessionTime( System.currentTimeMillis() );
-                if ( clientIntf != entry.getInterfaceId() )
-                    entry.setInterfaceId( clientIntf );
+            /* if hostEntry is still not null */
+            if ( hostEntry != null ) {
+                String macAddress = hostEntry.getMacAddress();
+                if ( macAddress != null )
+                    deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
                 
-                if ( ! entry.getEntitled() )
+                /* update last session & last seen time */
+                hostEntry.setLastSessionTime( System.currentTimeMillis() );
+                if ( deviceEntry != null )
+                    deviceEntry.updateLastSeenTime();
+
+                /* update client interface */
+                if ( clientIntf != hostEntry.getInterfaceId() )
+                    hostEntry.setInterfaceId( clientIntf );
+                if ( deviceEntry != null && clientIntf != deviceEntry.getLastSeenInterfaceId() )
+                    deviceEntry.setLastSeenInterfaceId( clientIntf );
+                
+                /* if host is not entitled, session is not entitled */
+                if ( ! hostEntry.getEntitled() )
                     entitled = false;
                 
-                username = entry.getUsername();
+                username = hostEntry.getUsername();
+                /* if we don't know the username from the host table, check the device table */
+                if (username == null && deviceEntry != null) {
+                    String deviceUsername = deviceEntry.getDeviceUsername();
+                    if ( deviceUsername != null ) {
+                        hostEntry.setUsernameDevice( deviceUsername );
+                        username = deviceUsername;
+                    }
+                }
+                /* if we know the username, set the username on the session */
                 if (username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
                     sessionGlobalState.setUser( username );
@@ -176,7 +198,7 @@ public abstract class NetcapHook implements Runnable
                 /* lookup the hostname information */
                 HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
                 HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-                hostname = entry.getHostname();
+                hostname = hostEntry.getHostname();
                 if ((hostname == null || hostname.length() == 0) && reports != null)
                     hostname = reports.lookupHostname( clientAddr );
                 if ((hostname == null || hostname.length() == 0) && router != null)
@@ -186,13 +208,15 @@ public abstract class NetcapHook implements Runnable
                 if (hostname != null && hostname.length() > 0 ) {
                     sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
                     /* If the hostname isn't known in the host table then set hostname */
-                    if ( !entry.isHostnameKnown()) {
-                        entry.setHostname( hostname );
+                    if ( !hostEntry.isHostnameKnown()) {
+                        hostEntry.setHostname( hostname );
+                        if ( deviceEntry != null )
+                            deviceEntry.setHostname( hostname );
                     }
                 }
             } else {
                 /**
-                 * no entry (probably an external host)
+                 * no host (probably an external host)
                  * still need to set hostname
                  */
                 if ((hostname == null || hostname.length() == 0))
@@ -303,9 +327,9 @@ public abstract class NetcapHook implements Runnable
             /* Only start vectoring if the session is alive */
             if ( alive() ) {
 
-                /* if entry is not null and this is a TCP session updated host entry */
-                if ( entry != null && sessionGlobalState.getProtocol() == 6 ) {
-                    entry.setLastCompletedTcpSessionTime( System.currentTimeMillis() );
+                /* if host is not null and this is a TCP session updated host host */
+                if ( hostEntry != null && sessionGlobalState.getProtocol() == 6 ) {
+                    hostEntry.setLastCompletedTcpSessionTime( System.currentTimeMillis() );
                 }
 
                 try {

@@ -161,5 +161,4 @@ public class DeviceTableEntry implements Serializable, JSONString
         DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue );
         UvmContextFactory.context().logEvent(event);
     }
-    
 }

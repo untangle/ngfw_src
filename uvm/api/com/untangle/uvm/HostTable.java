@@ -135,6 +135,16 @@ public interface HostTable
     int getCurrentSize();
     
     /**
+     * Set the host table to these entries
+     */
+    void setHosts( LinkedList<HostTableEntry> devices );
+
+    /**
+     * save the hosts to disk
+     */
+    void saveHosts();
+    
+    /**
      * A penalty box listener is a hook called when hosts enter or exit the penalty box
      */
     public interface HostTableListener
