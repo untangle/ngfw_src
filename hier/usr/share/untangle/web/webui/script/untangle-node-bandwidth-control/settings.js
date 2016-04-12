@@ -322,7 +322,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                                     this.subCmps.push(this.hostMonitorWin);
                                 }
                                 this.hostMonitorWin.show();
-                                this.hostMonitorWin.tabs.setActiveTab(3);
+                                this.hostMonitorWin.tabs.setActiveTab(2);
                                 Ext.MessageBox.hide();
                             },10, this);
                         }, this);
