@@ -250,7 +250,6 @@ Ext.define("Ung.Inbox", {
             features : [ this.filterFeature ],
             selModel : Ext.create('Ext.selection.CheckboxModel', {
                 listeners : {
-                    checkOnly: true,
                     "selectionchange" : {
                         fn : updateQuarantineActionItems,
                         scope : this
