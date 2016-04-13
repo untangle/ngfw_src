@@ -202,7 +202,7 @@ Ext.define("Ung.Main", {
                             plain: true,
                             padding: '15 0 10 0',
                             items: [{
-                                text: '<i class="material-icons">settings</i> <span>' + i18n._('Settings') + '</span>',
+                                text: '<i class="material-icons">settings</i> <span>' + i18n._('My Account') + '</span>',
                                 href: this.getMyAccountLink(),
                                 hrefTarget: '_blank',
                                 handler: function () {
@@ -501,17 +501,24 @@ Ext.define("Ung.Main", {
                             hidden: true
                         }]
                     }, {
-                        //xtype: 'component',
+                        xtype: 'container',
                         cls: 'apps-content',
                         scrollable: true,
+                        region: 'center',
+                        layout: {
+                            type: 'vbox',
+                            align: 'middle',
+                            pack: 'start'
+                        },
                         items: [{
                             xtype: 'container',
                             cls: 'apps-top',
+                            width: 785,
+                            height: 50,
                             items: [this.systemStats = Ext.create('Ung.SystemStats', {})]
                         }, {
                             xtype: 'container',
                             itemId: 'filterNodes'
-
                         }, {
                             xtype: 'component',
                             cls: 'apps-separator',
@@ -658,6 +665,8 @@ Ext.define("Ung.Main", {
         this.dashboardManager = this.viewport.down("[name=dashboardManager]");
         Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
         Ung.dashboard.dashboardContainer = this.viewport.down("#dashboard");
+
+        this.reportsMenu = this.viewport.down("#reportsMenu");
 
         Ung.dashboard.loadDashboard();
         this.buildConfig();
