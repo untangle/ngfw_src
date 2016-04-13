@@ -26,12 +26,12 @@ public class SslInspectorSettings implements Serializable
     private boolean enabled;
 
     private boolean client_SSLv2Hello = true;
-    private boolean client_SSLv3 = true;
+    private boolean client_SSLv3 = false;
     private boolean client_TLSv10 = true;
     private boolean client_TLSv11 = true;
     private boolean client_TLSv12 = true;
 
-    private boolean server_SSLv2Hello = false;
+    private boolean server_SSLv2Hello = true;
     private boolean server_SSLv3 = false;
     private boolean server_TLSv10 = true;
     private boolean server_TLSv11 = true;

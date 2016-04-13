@@ -301,7 +301,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.gridTrustList = Ext.create('Ung.grid.Panel',{
             title: i18n._("Trusted Certificates &nbsp;&nbsp; (click any cell to see details)"),
             autoGenerateId: true,
-            height: 160,
+            height: 400,
             hasDelete: false,
             hasEdit: false,
             hasAdd: false,
