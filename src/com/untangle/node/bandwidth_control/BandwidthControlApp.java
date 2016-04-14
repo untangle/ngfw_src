@@ -241,9 +241,9 @@ public class BandwidthControlApp extends NodeBase
      * This is useful when hosts have been added to the penalty box
      * or when quotas have expired
      */
-    public void reprioritizeHostSessions(InetAddress addr)
+    public void reprioritizeHostSessions(InetAddress addr, String reason)
     {
-        this.handler.reprioritizeHostSessions(addr);
+        this.handler.reprioritizeHostSessions(addr, reason);
     }
 
     @Override
@@ -309,11 +309,11 @@ public class BandwidthControlApp extends NodeBase
 
     private class ReprioritizeHandler implements HostTable.HostTableListener
     {
-        public void enteringPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address); }
-        public void exitingPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address); }
-        public void quotaGiven( InetAddress address ) { reprioritizeHostSessions(address); }
-        public void quotaExceeded( InetAddress address ) { reprioritizeHostSessions(address); }
-        public void quotaRemoved( InetAddress address ) { reprioritizeHostSessions(address); }
+        public void enteringPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address, "enter penalty box"); }
+        public void exitingPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address, "exit penalty box"); }
+        public void quotaGiven( InetAddress address ) { reprioritizeHostSessions(address, "quota given"); }
+        public void quotaExceeded( InetAddress address ) { reprioritizeHostSessions(address, "quota exceeded"); }
+        public void quotaRemoved( InetAddress address ) { reprioritizeHostSessions(address, "quota removed"); }
     }
 
 }

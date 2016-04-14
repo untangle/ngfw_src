@@ -96,13 +96,14 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         return;
     }
 
-    protected void reprioritizeHostSessions(InetAddress addr)
+    protected void reprioritizeHostSessions(InetAddress addr, String reason)
     {
-        List<NodeSession> sessions = this.node.liveNodeSessions();
-
-        logger.info("Reprioritizing Sessions for " + addr.getHostAddress());
+        if ( addr == null )
+            return;
         
-        for (NodeSession sess : sessions) {
+        logger.info("Reprioritizing Sessions for " + addr.getHostAddress() + " because \"" + reason + "\"");
+
+        for (NodeSession sess : this.node.liveNodeSessions()) {
             if (addr.equals(sess.getClientAddr()) || addr.equals(sess.getServerAddr())) {
                 logger.debug( "Reevaluating NodeSession : " + sess.getProtocol() + " " +
                               sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
@@ -145,11 +146,11 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
          */
         if (UvmContextFactory.context().hostTable().decrementQuota(sess.getClientAddr(),chunkSize)) {
             this.node.incrementMetric( BandwidthControlApp.STAT_QUOTA_EXCEEDED );
-            reprioritizeHostSessions(sess.getClientAddr());
+            reprioritizeHostSessions(sess.getClientAddr(),"quota exceeded");
         }
         if (UvmContextFactory.context().hostTable().decrementQuota(sess.getServerAddr(),chunkSize)) {
             this.node.incrementMetric( BandwidthControlApp.STAT_QUOTA_EXCEEDED );
-            reprioritizeHostSessions(sess.getServerAddr());
+            reprioritizeHostSessions(sess.getServerAddr(),"quota exceeded");
         }
     }
 
