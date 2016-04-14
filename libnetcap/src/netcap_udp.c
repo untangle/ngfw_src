@@ -263,7 +263,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
 
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TOS;
-    if ( IS_NEW_KERNEL() == 16 ) {
+    if ( IS_NEW_KERNEL() >= 316 ) {
         tos_len   = CMSG_LEN(sizeof(int));
         cmsg->cmsg_len   = tos_len;
         tos_val   = pkt->tos;
@@ -275,7 +275,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
 
     /* ttl ancillary */
-    if ( IS_NEW_KERNEL() == 16 ) {
+    if ( IS_NEW_KERNEL() >= 316 ) {
         ttl_len   = CMSG_LEN(sizeof(int));
         cmsg = my__cmsg_nxthdr(&msg, cmsg, sizeof(int));
     }
@@ -291,7 +291,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TTL;
 
-    if ( IS_NEW_KERNEL() == 16 ) {
+    if ( IS_NEW_KERNEL() >= 316 ) {
         ttl_val = pkt->ttl;
         memcpy( CMSG_DATA(cmsg), &ttl_val, sizeof(int) );
     }
@@ -338,7 +338,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     if ( ((char*)cmsg) > control + MAX_CONTROL_MSG)
         errlog(ERR_CRITICAL,"CMSG overrun");
 
-    if ( IS_NEW_KERNEL() == 16 ) 
+    if ( IS_NEW_KERNEL() >= 316 ) 
         msg.msg_controllen =
             CMSG_SPACE(sizeof(int)) +
             CMSG_SPACE(sizeof(int)) +

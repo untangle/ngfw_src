@@ -118,13 +118,19 @@ static int _netcap_init()
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
-        is_new_kernel = 10;
+        is_new_kernel = 310;
     }
     else if ( strstr(utsn.release,"3.16") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
-        is_new_kernel = 16;
+        is_new_kernel = 316;
+    }
+    else if ( strstr(utsn.release,"4.4.3") != NULL ) {
+        ip_transparent = 19;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
+        is_new_kernel = 443;
     }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
