@@ -51,7 +51,7 @@ int uthread_init (void)
             return perrlog("pthread_attr_setstacksize");
     }
     else {
-        errlog( ERR_WARNING, "Unknown architecture: %s\n", utsn.release );
+        errlog( ERR_WARNING, "Unknown architecture. Kernel release: \"%s\"\n", utsn.release );
         errlog( ERR_WARNING, "Using i386 stack size.\n" );
         if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
