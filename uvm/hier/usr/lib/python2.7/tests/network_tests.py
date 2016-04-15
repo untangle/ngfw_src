@@ -23,7 +23,8 @@ iperfServer = "10.111.56.84"
 ftp_server = "test.untangle.com"
 ftp_file_name = ""
 ftp_client_external = "10.111.56.84"
-dyn_hostname = "atstest.dnsalias.com"
+dyn_hostname = ""
+dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -33,6 +34,17 @@ run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
 
+def getUsableName(dyn_checkip):
+    selected_name = ""
+    for hostname in dyn_names:
+        result = subprocess.check_output("host -R3 -4 " + hostname + " resolver1.dyndnsinternetguide.com", shell=True)
+        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        hostname_ip = (match.group()).replace('address ','')
+        if dyn_checkip != hostname_ip:
+            selected_name = hostname
+            break
+    return selected_name
+    
 def createPortForwardTripleCondition( conditionType1, value1, conditionType2, value2, conditionType3, value3, destinationIP, destinationPort):
     return {
         "description": "port forward  -> " + str(destinationIP) + ":" + str(destinationPort) + " test",
@@ -384,14 +396,13 @@ def nukeDNSRules():
     netsettings['dnsSettings']['staticEntries']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def setDynDNS():
+def setDynDNS(login,password,hostname):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dynamicDnsServiceEnabled'] = True
-    # netsettings['dynamicDnsServiceHostnames'] = "testuntangle.dyndns-pics.com"
-    netsettings['dynamicDnsServiceHostnames'] = dyn_hostname
+    netsettings['dynamicDnsServiceHostnames'] = hostname
     netsettings['dynamicDnsServiceName'] = "dyndns"
-    netsettings['dynamicDnsServicePassword'] = "untangledyn"
-    netsettings['dynamicDnsServiceUsername'] = "testuntangle"
+    netsettings['dynamicDnsServiceUsername'] = login
+    netsettings['dynamicDnsServicePassword'] = password
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def verifySnmpWalk():
@@ -849,26 +860,47 @@ class NetworkTests(unittest2.TestCase):
 
     # Test dynamic hostname
     def test_100_DynamicDns(self):
-        raise unittest2.SkipTest('Broken test')
+        global dyn_hostname
+        # raise unittest2.SkipTest('Broken test')
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        # Set DynDNS info
-        setDynDNS()
-        time.sleep(60) # wait a max of 1 minute for dyndns to update.
+        
+        # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
+        # we need a name never used or name with cache IP different than in the cache
+        result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" checkip.dyndns.com", shell=True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        outsideIP = match.group()
+        dyn_hostname = getUsableName(outsideIP)
+        if dyn_hostname == "":
+            raise unittest2.SkipTest('Skipping since all dyndns names already used')
+        else:
+            print "Using name: %s" % dyn_hostname
+        dynDNSUserName, dynDNSPassword = global_functions.getLiveAccountInfo("Dyndns")
+        # account not found if message returned
+        if dynDNSUserName == "message":
+            raise unittest2.SkipTest(googlePassword)
 
-        outsideIP =  global_functions.getIpAddress(localcall=True)
-        outsideIP = outsideIP.rstrip()  # strip return character
+        # Clear the ddclient cache and set DynDNS info
+        os.remove('/var/cache/ddclient/ddclient.cache')
+        setDynDNS(dynDNSUserName, dynDNSPassword,dyn_hostname)
+        
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
         outsideIP2 = global_functions.getIpAddress(base_URL="10.112.56.44",localcall=True)
         outsideIP2 = outsideIP2.rstrip()  # strip return character
 
-        result = remote_control.runCommand("host " + dyn_hostname, stdout=True)
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        dynIP = (match.group()).replace('address ','')
-        print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
+        loopCounter = 60
         dynIpFound = False
-        if outsideIP == dynIP or outsideIP2 == dynIP:
-            dynIpFound = True
+        while loopCounter > 0 and not dynIpFound:
+            time.sleep(10)
+            loopCounter -= 1
+            result = remote_control.runCommand("host " + dyn_hostname + " resolver1.dyndnsinternetguide.com", stdout=True)
+            match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+            dynIP = (match.group()).replace('address ','')
+            print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
+            dynIpFound = False
+            if outsideIP == dynIP or outsideIP2 == dynIP:
+                dynIpFound = True
+
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert(dynIpFound)
 
