@@ -24,6 +24,7 @@ public class EventEntry implements Serializable, JSONString
     private String title;
     private String table;
     private String category;
+    private String description;
     private SqlCondition[] conditions;
     private String[] defaultColumns;
 
@@ -49,6 +50,9 @@ public class EventEntry implements Serializable, JSONString
 
     public String getCategory() { return this.category; }
     public void setCategory( String newValue ) { this.category = newValue; }
+
+    public String getDescription() { return this.description; }
+    public void setDescription( String newValue ) { this.description = newValue; }
     
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
