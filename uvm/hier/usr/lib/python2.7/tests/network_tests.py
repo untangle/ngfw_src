@@ -881,7 +881,9 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest(googlePassword)
 
         # Clear the ddclient cache and set DynDNS info
-        os.remove('/var/cache/ddclient/ddclient.cache')
+        ddclientCacheFile = "/var/cache/ddclient/ddclient.cache"
+        if os.path.isfile(ddclientCacheFile):
+            os.remove(ddclientCacheFile)        
         setDynDNS(dynDNSUserName, dynDNSPassword,dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
