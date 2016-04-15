@@ -85,6 +85,8 @@ Ext.define("Ung.Main", {
         Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
 
+        //this.reportsView = Ext.create("Ung._reports", {});
+
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout: 'border',
             items: [{
@@ -627,29 +629,22 @@ Ext.define("Ung.Main", {
                     }]
                 }, {
                     xtype: 'container',
+                    layout: "fit",
                     itemId: 'reports',
-                    layout: "border",
-                    items: [{
-                        xtype: 'container',
-                        region: "center",
-                        layout: "fit",
-                        itemId: 'reportsContainer',
-                        items: []
-                    }],
+                    items: [],
                     listeners: {
                         'activate': function(container) {
-                            this.viewport.down("#reportsContainer").removeAll();
-                            var reportsViewer = Ext.create("Ung.reportsViewer", {});
-                            this.viewport.down("#reportsContainer").add(reportsViewer);
+                            this.viewport.down("#reports").removeAll();
+                            this.viewport.down("#reports").add(Ext.create("Ung.panel.Reports", {}));
                         },
                         "deactivate": function(container) {
-                            this.viewport.down("#reportsContainer").removeAll();
+                            //this.viewport.down("#reportsContainer").removeAll();
                         },
                         scope: this
                     }
                 }]
-            }
-        ]});
+            }]
+        });
         Ext.QuickTips.init();
         this.mainMenu = this.viewport.down("[name=mainMenu]");
         this.viewsMenu = this.viewport.down("#viewsMenu");
@@ -666,7 +661,7 @@ Ext.define("Ung.Main", {
         Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
         Ung.dashboard.dashboardContainer = this.viewport.down("#dashboard");
 
-        this.reportsMenu = this.viewport.down("#reportsMenu");
+        //this.reportsMenu = this.viewport.down("#reportsMenu");
 
         Ung.dashboard.loadDashboard();
         this.buildConfig();
@@ -1437,7 +1432,7 @@ Ext.define("Ung.Main", {
     // build policies select box
     buildPolicies: function () {
         this.updatePolicySelector();
-        this.checkForAlerts();
+        //this.checkForAlerts();
         this.checkForIE();
 
         Ung.Main.loadRackView();

@@ -258,10 +258,10 @@ Ext.define('Ung.charts', {
             chart: {
                 type: chartType,
                 zoomType: 'x',
-                renderTo: !forDashboard ? container.getEl().dom : container.getEl().query('.chart')[0],
-                marginBottom: !forDashboard ? 40 : 50,
-                marginTop: !forDashboard ? 50 : 10,
-                padding: [0, 0, 0, 0],
+                renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
+                //marginBottom: !forDashboard ? 40 : 50,
+                //marginTop: !forDashboard ? 10,
+                //padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
                 animation: false,
                 style: {
@@ -276,18 +276,7 @@ Ext.define('Ung.charts', {
                 }
                 */
             },
-            title: !forDashboard ? {
-                text: entry.description,
-                align: 'center',
-                margin: 20,
-                y: 20,
-                style: {
-                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
-                    color: '#777',
-                    fontSize: '14px',
-                    fontWeight: 'bold'
-                }
-            } : null,
+            title: null,
             lang: {
                 noData: i18n._("No data available yet!")
             },
@@ -302,7 +291,7 @@ Ext.define('Ung.charts', {
                 enabled: false
             },
             rangeSelector : {
-                enabled: !forDashboard,
+                enabled: false,
                 inputEnabled: true,
                 buttons: this.setRangeButtons(data)
             },
@@ -335,18 +324,22 @@ Ext.define('Ung.charts', {
                     }
                 },
                 maxPadding: 0,
-                minPadding: 0,
+                minPadding: 0
+                /*
                 events: {
                     setExtremes: function (event) {
                         if (!forDashboard) {
+
                             var panelReports = container.up('panel[name=panelReports]');
                             panelReports.timeFrame = {
                                 start: new Date(event.min),
                                 end: new Date(event.max)
                             };
+
                         }
                     }
                 }
+                */
             },
             yAxis: {
                 allowDecimals: false,
@@ -451,6 +444,9 @@ Ext.define('Ung.charts', {
                 series: {
                     //shadow: true,
                     animation: false,
+                    dataGrouping: {
+                        approximation: 'sum'
+                    },
                     marker: {
                         enabled: false,
                         states: {
@@ -532,7 +528,7 @@ Ext.define('Ung.charts', {
             for (j = 0; j < data.length; j += 1) {
                 _data.push([
                     data[j].time_trunc.time,
-                    data[j][_seriesOptions[i].id] ? Math.floor(data[j][_seriesOptions[i].id]) : (this.generateRandomData ? Math.floor(Math.random() * 120) : 0)
+                    data[j][_seriesOptions[i].id] || (this.generateRandomData ? (Math.random() * 120) : 0)
                 ]);
             }
             if (!chart) {
@@ -584,7 +580,7 @@ Ext.define('Ung.charts', {
         return new Highcharts.Chart({
             chart: {
                 type: entry.chartType || 'pie',
-                renderTo: !forDashboard ? container.getEl().dom : container.getEl().query('.chart')[0],
+                renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 spacing: [10, 10, 10, 10],
                 backgroundColor: 'transparent',
@@ -622,18 +618,7 @@ Ext.define('Ung.charts', {
                     }
                 }
             },
-            title: !forDashboard ? {
-                text: entry.description,
-                align: 'center',
-                margin: 20,
-                y: 20,
-                style: {
-                    fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
-                    color: '#777',
-                    fontSize: '14px',
-                    fontWeight: 'bold'
-                }
-            } : null,
+            title: null,
             lang: {
                 noData: i18n._('No data available yet!'),
                 drillUpText: '< ' + i18n._('Back')
@@ -710,13 +695,14 @@ Ext.define('Ung.charts', {
                         padding: 0,
                         reserveSpace: false,
                         style: {
-                            fontSize: !forDashboard ? '14px' : '11px'
+                            fontSize: !forDashboard ? '12px' : '11px'
                         },
                         formatter: function () {
                             if (this.point.drilldown) {
-                                return '<b>' + this.point.y + '</b> (more)';
+                                return '<b>More</b>';
                             }
-                            return '<b>' + this.point.y + '</b>';
+                            //return seriesName + '<br/><b>' + this.point.name + '</b>';
+                            return '<b>' + this.point.name + '</b>';
                         },
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
                     }
@@ -748,7 +734,7 @@ Ext.define('Ung.charts', {
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'top',
-                y: !forDashboard ? 50 : 0,
+                //y: !forDashboard ? 50 : 0,
                 symbolHeight: 8,
                 symbolWidth: 8,
                 symbolRadius: 4
@@ -826,7 +812,7 @@ Ext.define('Ung.charts', {
         }
 
         // find drilldown breakpoint under 10% and more than 5 slices
-        if (data.length > 5) {
+        if (data.length > 10) {
             for (i = 0; i < data.length - 1; i += 1) {
                 if (data[i].percent < 10 && !entry.ddBreakPoint) {
                     entry.ddBreakPoint = i;

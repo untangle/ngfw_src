@@ -37,7 +37,7 @@
     word-wrap: normal;
     white-space: nowrap;
     direction: ltr;
-
+    vertical-align: middle;
     /* Support for all WebKit browsers. */
     -webkit-font-smoothing: antialiased;
     /* Support for Safari and Chrome. */
@@ -892,6 +892,64 @@ a.forgot-password:hover {
     color: #999;
     text-transform: uppercase;
 }
+
+.report-container .x-title-text {
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    padding: 5px;
+}
+.report-container .x-title-text .ttl {
+    font-size: 18px;
+    font-weight: bold;
+}
+.report-container .x-title-text .dsc {
+    color: #555;
+    font-size: 14px;
+}
+
+
+
+.x-grid-item-focused .x-grid-cell-inner:before {
+    border: 0;
+}
+
+
+.entry-btn {
+    background: #F5F5F5;
+    margin: 5px;
+    box-shadow: 0 0 1px rgba(0,0,0,0.7);
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.entry-btn.x-btn-over {
+    background: #FFF;
+}
+
+.entry-btn .x-btn-inner {
+    padding: 10px 5px 10px 30px;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    color: #555;
+    transition: color 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.entry-btn.x-btn-over .x-btn-inner {
+    color: #000;
+}
+
+.entry-btn .x-btn-inner i {
+    position: absolute;
+    left: 2px;
+    top: 7px;
+}
+.entry-btn .ttl {
+    font-size: 14px;
+    font-weight: bold;
+}
+.entry-btn .dsc {
+    font-size: 11px;
+    color: #555;
+}
+
 
 
 .widget {

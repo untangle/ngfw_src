@@ -3,159 +3,276 @@
  */
 
 Ext.define('Ung.panel.Reports', {
-    extend: 'Ext.panel.Panel',
-    name: 'panelReports',
-    autoRefreshInterval: 10, //In Seconds
-    layout: { type: 'border'},
-    border: false,
+    extend : 'Ext.Panel',
+    layout: "border",
+    border: 0,
+    autoRefreshEnabled: false,
+    autoRefreshInterval: 10, //seconds
     extraConditions: null,
-    reportsManager: null,
-    hasEntriesSection: true,
-    entry: null,
-    chart: null,
-    chartData: null,
-    timeFrame: {
-        start: null,
-        end: null
-    },
+    items: [{
+        region: 'north',
+        itemId: 'reportsNorth',
+        height: 44,
+        border: 0,
+        hidden: false,
+        bodyStyle: {
+            background: '#555'
+        },
+        layout: {
+            type: 'hbox',
+            align: 'middle'
+        },
+        items: []
+    }, {
+        region: 'west',
+        xtype: 'grid',
+        hideHeaders: true,
+        title: 'Select Report/Event',
+        width: 250,
+        border: 0,
+        itemId: 'entriesList',
+        collapsed: true,
+        collapsible: true,
+        animCollapse: false,
+        titleCollapse: true,
+        floatable: false,
+        split: true,
+        resizable: false,
+        //autoScroll: true,
+        plugins: 'responsive',
+        responsiveConfig: {
+            'width <= 1024': {
+                hidden: true
+            },
+            'width > 1024': {
+                hidden: false
+            }
+        },
+        store: Ext.create('Ext.data.Store', {
+            fields: ['title'],
+            data: []
+        }),
+        columns: [{
+            width: 25,
+            renderer: Ext.bind(function (value, metaData, record) {
+                var _icon;
+                if (!record.data.type) {
+                    _icon =  'format_list_bulleted';
+                }
+
+                if (record.data.type === 'TEXT') {
+                    _icon =  'subject';
+                }
+
+                if (record.data.type === 'PIE_GRAPH') {
+                    _icon =  'pie_chart_outlined';
+                }
+
+                if (record.data.type === 'TIME_GRAPH' || record.data.type === 'TIME_GRAPH_DYNAMIC') {
+                    if (record.data.timeStyle.indexOf('BAR') >= 0) {
+                        _icon = 'insert_chart';
+                    } else {
+                        _icon = 'show_chart';
+                    }
+                }
+                return '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i>';
+            }, this)
+        }, {
+            dataIndex: 'title',
+            flex: 1,
+            renderer: function (value, metaData, record, rowIdx, colIdx, store) {
+                /*
+                 var description = record.get("description");
+                 if (description) {
+                 metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(i18n._(description)) + '"';
+                 }
+                 */
+                return i18n._(value);
+            }
+        }]
+    }, {
+        xtype: 'container',
+        region: 'center',
+        layout: 'border',
+        border: 0,
+        itemId: 'reportsMain',
+        items: []
+    }],
+    selectedCategory: null,
     beforeDestroy: function () {
         Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     initComponent: function () {
-        var me = this;
         this.subCmps = [];
-        if (Ung.Main.webuiMode) {
-            if (this.category) {
-                this.helpSource = this.category.toLowerCase().replace(' ', '_') + '_reports';
-                if (!this.title) {
-                    this.title = i18n._('Reports');
-                }
-                if (!rpc.reportsEnabled) {
-                    this.items = [{
-                        region: 'center',
-                        xtype: 'panel',
-                        bodyPadding: 10,
-                        html: i18n._('Reports application is required for this feature. Please install and enable the Reports application.')
-                    }];
-                    this.callParent(arguments);
-                    return;
-                }
-            }
-            rpc.reportsManager = Ung.Main.getReportsManager();
-        }
+        this.callParent(arguments);
+
+        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('Start date and time'),
+            dateTimeEmptyText: i18n._('start date and time'),
+            buttonObj: this.down('button[name=startDateButton]')
+        });
+        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('End date and time'),
+            dateTimeEmptyText: i18n._('end date and time'),
+            buttonObj: this.down('button[name=endDateButton]')
+        });
+
+        this.subCmps.push(this.startDateWindow);
+        this.subCmps.push(this.endDateWindow);
 
         this.filterFeature = Ext.create('Ung.grid.feature.GlobalFilter', {});
-        this.items = [{
+        this.down('#reportsMain').add({
             region: 'center',
-            xtype: 'container',
-            layout: {type: 'border'},
+            layout: 'card',
+            border: 0,
+            itemId: 'centerContainer',
             items: [{
-                region: 'center',
+                xtype: 'container',
+                itemId: 'selectionContainer',
+                border: 0,
+                scrollable: true
+            }, {
                 xtype: 'panel',
-                name: 'cardsContainer',
-                layout: 'card',
+                itemId: 'reportContainer',
+                cls: 'report-container',
+                border: 0,
+                layout: 'border',
                 items: [{
-                    xtype: 'component',
-                    itemId: 'pleaseSelectEntryContrainer',
-                    name: 'pleaseSelectEntryContrainer',
-                    padding: '25 10 0 20',
-                    style: 'font-size: 16px;',
-                    html: i18n._('Please select an entry to view.')
-                }, {
-                    xtype: 'container',
-                    itemId: 'chartContainer',
-                    name: 'chartContainer',
+                    xtype: 'panel',
+                    region: 'center',
+                    itemId: 'reportChart',
                     layout: 'fit',
-                    items: [],
+                    border: 0,
                     listeners: {
-                        resize: function () {
-                            if (me.chart) {
-                                me.chart.reflow();
+                        resize: Ext.bind(function () {
+                            if (this.chart) {
+                                this.chart.reflow();
                             }
-                        }
+                        }, this)
                     }
                 }, {
-                    region: 'center',
                     xtype: 'grid',
-                    itemId: 'gridEvents',
-                    name: 'gridEvents',
-                    reserveScrollbar: true,
-                    title: ".",
-                    stateful: true,
-                    stateId: "eventGrid",
-                    viewConfig: {
-                        enableTextSelection: true
-                    },
+                    itemId: 'reportData',
+                    region: 'east',
+                    title: i18n._('Current Data'),
+                    width: 330,
+                    split: true,
+                    collapsible: true,
+                    collapsed: true,
+                    animCollapse: false,
+                    resizable: true,
+                    floatable: false,
+                    titleCollapse: true,
+                    border: 0,
                     store:  Ext.create('Ext.data.Store', {
                         fields: [],
-                        data: [],
-                        proxy: {
-                            type: 'memory',
-                            reader: {
-                                type: 'json'
-                            }
-                        }
+                        data: []
                     }),
                     columns: [{
                         flex: 1
                     }],
-                    plugins: ['gridfilters'],
-                    features: [this.filterFeature],
-                    dockedItems: [{
-                        xtype: 'toolbar',
-                        dock: 'top',
-                        items: [i18n._('Filter:'), {
-                            xtype: 'textfield',
-                            name: 'searchField',
-                            hideLabel: true,
-                            width: 130,
-                            listeners: {
-                                change: {
-                                    fn: function () {
-                                        this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
-                                    },
-                                    scope: this,
-                                    buffer: 600
-                                }
-                            }
-                        }, {
-                            xtype: 'checkbox',
-                            name: 'caseSensitive',
-                            hideLabel: true,
-                            margin: '0 4px 0 4px',
-                            boxLabel: i18n._('Case sensitive'),
-                            handler: function () {
-                                this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
-                            },
-                            scope: this
-                        }, {
-                            xtype: 'button',
-                            iconCls: 'icon-clear-filter',
-                            text: i18n._('Clear Filters'),
-                            tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
-                            handler: Ext.bind(function () {
-                                this.gridEvents.clearFilters();
-                                this.searchField.setValue("");
-                            }, this)
-                        }, '->', {
-                            xtype: 'button',
-                            text: i18n._('Export'),
-                            name: "Export",
-                            tooltip: i18n._('Export Events to File'),
-                            iconCls: 'icon-export',
-                            handler: Ext.bind(this.exportEventsHandler, this)
-                        }]
+                    tbar: ['->', {
+                        xtype: 'button',
+                        text: i18n._('Export'),
+                        name: "Export",
+                        tooltip: i18n._('Export Data to File'),
+                        iconCls: 'icon-export',
+                        handler: Ext.bind(this.exportReportDataHandler, this)
                     }]
                 }],
+                tools: [{
+                    xtype: 'button',
+                    text: i18n._('Add to Dashboard'),
+                    hidden: true
+                }, {
+                    xtype: 'button',
+                    text: i18n._('Customize'),
+                    hidden: !Ung.Main.webuiMode || this.hideCustomization,
+                    name: "edit",
+                    tooltip: i18n._('Advanced report customization'),
+                    iconCls: 'icon-edit',
+                    handler: Ext.bind(function () {
+                        this.customizeReport();
+                    }, this)
+                }]/* {
+                 xtype: 'button',
+                 text: i18n._('View Events'),
+                 name: "edit",
+                 tooltip: i18n._('View events for this report'),
+                 iconCls: 'icon-edit',
+                 handler: Ext.bind(this.viewEventsForReport, this)
+                 }, {
+                 xtype: 'button',
+                 iconCls: 'icon-export',
+                 text: i18n._("Download"),
+                 handler: Ext.bind(this.downloadChart, this)
+                 }*/
+            }, {
+                xtype: 'grid',
+                itemId: 'eventContainer',
+                //layout: 'fit',
+                stateful: true,
+                stateId: "eventGrid",
+                viewConfig: {
+                    enableTextSelection: true
+                },
+                store:  Ext.create('Ext.data.Store', {
+                    fields: [],
+                    data: [],
+                    proxy: {
+                        type: 'memory',
+                        reader: {
+                            type: 'json'
+                        }
+                    }
+                }),
+                columns: [{
+                    flex: 1
+                }],
+                plugins: ['gridfilters'],
+                features: [this.filterFeature],
                 dockedItems: [{
                     xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: [{
+                    dock: 'top',
+                    items: [i18n._('Filter:'), {
+                        xtype: 'textfield',
+                        name: 'searchField',
+                        hideLabel: true,
+                        width: 130,
+                        listeners: {
+                            change: {
+                                fn: function () {
+                                    this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                                },
+                                scope: this,
+                                buffer: 600
+                            }
+                        }
+                    }, {
+                        xtype: 'checkbox',
+                        name: 'caseSensitive',
+                        hideLabel: true,
+                        margin: '0 4px 0 4px',
+                        boxLabel: i18n._('Case sensitive'),
+                        handler: function () {
+                            this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'button',
+                        iconCls: 'icon-clear-filter',
+                        text: i18n._('Clear Filters'),
+                        tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                        handler: Ext.bind(function () {
+                            this.eventContainer.clearFilters();
+                            this.searchField.setValue("");
+                        }, this)
+                    }, '->', {
                         xtype: 'combo',
-                        width: 100,
+                        width: 120,
                         name: "limitSelector",
-                        hidden: true,
+                        hidden: false,
                         editable: false,
                         valueField: "value",
                         displayField: "name",
@@ -167,286 +284,467 @@ Ext.define('Ung.panel.Reports', {
                         })
                     }, {
                         xtype: 'button',
-                        name: 'startDateButton',
-                        text: i18n._('One day ago'),
-                        initialLabel:  i18n._('One day ago'),
-                        width: 132,
-                        tooltip: i18n._('Select Start date and time'),
-                        handler: Ext.bind(function (button) {
-                            this.startDateWindow.show();
-                        }, this)
-                    }, {
-                        xtype: 'tbtext',
-                        text: '-'
-                    }, {
-                        xtype: 'button',
-                        name: 'endDateButton',
-                        text: i18n._('Present'),
-                        initialLabel:  i18n._('Present'),
-                        width: 132,
-                        tooltip: i18n._('Select End date and time'),
-                        handler: Ext.bind(function (button) {
-                            this.endDateWindow.show();
-                        }, this)
-                    }, {
-                        xtype: 'button',
-                        text: i18n._('Refresh'),
-                        name: "refresh",
-                        tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: function () {
-                            this.refreshHandler();
-                        },
-                        scope: this
-                    }, {
-                        xtype: 'button',
-                        name: 'auto_refresh',
-                        text: i18n._('Auto Refresh'),
-                        enableToggle: true,
-                        pressed: false,
-                        tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'), this.autoRefreshInterval),
-                        iconCls: 'icon-autorefresh',
-                        handler: Ext.bind(function (button) {
-                            if (button.pressed) {
-                                this.startAutoRefresh();
-                            } else {
-                                this.stopAutoRefresh();
-                            }
-                        }, this)
-                    }, {
-                        text: i18n._('Reset View'),
-                        name: "resetView",
-                        hidden: true,
-                        tooltip: i18n._('Restore default columns positions, widths and visibility'),
-                        handler: Ext.bind(function () {
-                            if (!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
-                                return;
-                            }
-                            var gridEvents = this.down("grid[name=gridEvents]");
-                            Ext.state.Manager.clear(gridEvents.stateId);
-                            gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
-                        }, this)
+                        text: i18n._('Export'),
+                        name: "Export",
+                        tooltip: i18n._('Export Events to File'),
+                        iconCls: 'icon-export',
+                        handler: Ext.bind(this.exportEventsHandler, this)
                     }]
                 }]
-            }, {
-                region: 'south',
-                parentPanel: this,
-                layout: 'border',
-                height: 100,
-                split: true,
-                collapsible: true,
-                title: i18n._('Options'),
-                defaults: {
-                    collapsible: false,
-                    split: true,
-                    bodyStyle: 'padding:5px'
-                },
-                items: [this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
-                    region: 'center'
-                })]
+            }],
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'bottom',
+                items: [{
+                    xtype: 'button',
+                    name: 'startDateButton',
+                    text: i18n._('One day ago'),
+                    initialLabel:  i18n._('One day ago'),
+                    width: 132,
+                    tooltip: i18n._('Select Start date and time'),
+                    handler: Ext.bind(function (button) {
+                        this.startDateWindow.show();
+                    }, this)
+                }, {
+                    xtype: 'tbtext',
+                    text: '-'
+                }, {
+                    xtype: 'button',
+                    name: 'endDateButton',
+                    text: i18n._('Present'),
+                    initialLabel:  i18n._('Present'),
+                    width: 132,
+                    tooltip: i18n._('Select End date and time'),
+                    handler: Ext.bind(function (button) {
+                        this.endDateWindow.show();
+                    }, this)
+                }, {
+                    xtype: 'button',
+                    text: i18n._('Refresh'),
+                    name: "refresh",
+                    tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                    iconCls: 'icon-refresh',
+                    handler: Ext.bind(function () {
+                        this.refreshHandler();
+                    }, this)
+                }, {
+                    xtype: 'button',
+                    name: 'auto_refresh',
+                    text: i18n._('Auto Refresh'),
+                    enableToggle: true,
+                    pressed: false,
+                    tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'), this.autoRefreshInterval),
+                    iconCls: 'icon-autorefresh',
+                    handler: Ext.bind(function (button) {
+                        if (button.pressed) {
+                            this.startAutoRefresh();
+                        } else {
+                            this.stopAutoRefresh();
+                        }
+                    }, this)
+                }, {
+                    text: i18n._('Reset View'),
+                    name: "resetView",
+                    hidden: true,
+                    tooltip: i18n._('Restore default columns positions, widths and visibility'),
+                    handler: Ext.bind(function () {
+                        if (!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
+                            return;
+                        }
+                        var gridEvents = this.down("grid[name=gridEvents]");
+                        Ext.state.Manager.clear(gridEvents.stateId);
+                        gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
+                    }, this)
+                }]
             }]
-        }];
+        });
 
-        if (this.hasEntriesSection) {
-            this.items.push(this.buildEntriesSection());
-        }
 
-        this.callParent(arguments);
+        this.centerContainer = this.down('#centerContainer');
+        this.selectionContainer = this.down('#selectionContainer');
+        this.reportContainer = this.down('#reportContainer');
+        this.reportChart = this.down('#reportChart');
+        this.reportData = this.down('#reportData');
+        //this.summaryContainer = this.down('#summaryContainer');
+        //this.reportChart = this.down('#reportChart');
+        this.eventContainer = this.down('#eventContainer');
 
-        this.cardsContainer = this.down("container[name=cardsContainer]");
+        this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions");
+        this.extraConditionsPanel.parentPanel = this;
+        this.down('#reportsMain').add(this.extraConditionsPanel);
 
-        this.chartContainer = this.down("container[name=chartContainer]");
-        //this.reportDataGrid = this.down("grid[name=reportDataGrid]");
+        this.entriesList = this.down('#entriesList');
+        this.entriesList.addListener('select', Ext.bind(function (rowModel, record) {
+            if (record.getData().type) {
+                this.loadReportEntry(record.getData());
+            } else {
+                this.loadEventEntry(record.getData());
+            }
+            //this.down('#extraConditions').setHidden(false);
+        }, this));
 
-        this.gridEvents = this.down("grid[name=gridEvents]");
+
         this.searchField = this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.limitSelector = this.down("combo[name=limitSelector]");
-        this.resetView = this.down("button[name=resetView]");
 
-        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('Start date and time'),
-            dateTimeEmptyText: i18n._('start date and time'),
-            buttonObj: this.down("button[name=startDateButton]")
-        });
-        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('End date and time'),
-            dateTimeEmptyText: i18n._('end date and time'),
-            buttonObj: this.down("button[name=endDateButton]")
-        });
-        this.subCmps.push(this.startDateWindow);
-        this.subCmps.push(this.endDateWindow);
-
-        //this.pieLegendHint = "<br/>" + i18n._('Hint: Click this label on the legend to hide this slice');
-        //this.cartesianLegendHint = "<br/>" + i18n._('Hint: Click this label on the legend to hide this series');
-
-        if (this.category) {
-            this.loadEntries();
-        }
+        this.buildCategoriesMenu();
     },
-    buildEntriesSection: function () {
-        var entriesSection = {
-            region: 'west',
-            itemId: 'panelEntries',
-            layout: {type: 'vbox', align: 'stretch'},
-            width: 250,
-            split: true,
-            collapsible: true,
-            collapsed: Ung.Main.viewport.getWidth() < 800,
-            floatable: true,
-            items: [{
-                name: 'reportEntriesGrid',
-                title: i18n._("Select Report"),
-                xtype: 'grid',
-                border: false,
-                margin: '1 0 10 0',
-                flex: 5,
-                hideHeaders: true,
-                store:  Ext.create('Ext.data.Store', {
-                    fields: ["title"],
-                    data: []
-                }),
-                reserveScrollbar: true,
-                columns: [{
-                    dataIndex: 'title',
-                    flex: 1,
-                    renderer: function (value, metaData, record, rowIdx, colIdx, store) {
-                        var description = record.get("description");
-                        if (description) {
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(i18n._(description)) + '"';
-                        }
-                        return i18n._(value);
-                    }
-                }],
-                selModel: {
-                    selType: 'rowmodel',
-                    listeners: {
-                        select: Ext.bind(function (rowModel, record, rowIndex, eOpts) {
-                            this.loadReportEntry(Ext.clone(record.getData()));
-                            this.eventEntriesGrid.getSelectionModel().deselectAll();
-                        }, this)
+
+    buildCategoriesMenu: function () {
+        var _menuItems = [];
+
+        var staticItems = [{
+            text : i18n._('Summary'),
+            category : 'Summary',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/icons/icon_summary.png'
+        }, {
+            text : i18n._('Host Viewer'),
+            category : 'Hosts',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_hosts_16x16.png'
+        }, {
+            text : i18n._('Device List'),
+            category : 'Devices',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_devices_16x16.png'
+        }, '-', {
+            text : i18n._('Network'),
+            category : 'Network',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_network_16x16.png'
+        }, {
+            text : i18n._('Administration'),
+            category : 'Administration',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_admin_16x16.png'
+        }, {
+            text : i18n._('System'),
+            category : 'System',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_system_16x16.png'
+        }, {
+            text : i18n._('Shield'),
+            category : 'Shield',
+            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-shield_17x17.png'
+        }];
+
+        Ext.each(staticItems, function (item) {
+            _menuItems.push(item);
+        });
+
+        // add installed applications
+        Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (!this.getEl()) {
+                return;
+            }
+            _menuItems.push('-');
+
+            var currentApplications = result.list;
+            if (currentApplications) {
+                var i, app;
+                for (i = 0; i < currentApplications.length; i += 1) {
+                    app = currentApplications[i];
+                    if (app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support') {
+                        _menuItems.push({
+                            text: app.displayName,
+                            category: app.displayName,
+                            icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_17x17.png'
+                        });
                     }
                 }
+            }
+
+            this.down('#reportsNorth').add({
+                xtype: 'button',
+                name: 'northReportsBtn',
+                scale: 'medium',
+                textAlign: 'left',
+                text: _menuItems[0].text,
+                icon: _menuItems[0].icon,
+                width: 240,
+                margin: '0 5 0 5',
+                menu: Ext.create('Ext.menu.Menu', {
+                    name: 'northReportsBtnMenu',
+                    plain: true,
+                    items: _menuItems,
+                    width: 240,
+                    listeners: {
+                        click: Ext.bind(function (menu, item) {
+                            this.buildReportEntries(item.category);
+                            this.down('[name=northReportsBtn]').setText(item.text).setIcon(item.icon);
+                            this.down('[name=northEntriesBtn]').setText(i18n._('Select Report/Event'));
+                        }, this)
+                    }
+                })
             }, {
-                name: 'eventEntriesGrid',
-                xtype: 'grid',
-                title: i18n._("Select Events"),
-                border: false,
-                flex: 4,
-                hideHeaders: true,
-                store:  Ext.create('Ext.data.Store', {
-                    sorters: "displayOrder",
-                    fields: ["title", "displayOrder"],
-                    data: []
-                }),
-                reserveScrollbar: true,
-                columns: [{
-                    dataIndex: 'title',
-                    flex: 1,
-                    renderer: function (value, metaData, record, rowIdx, colIdx, store) {
-                        var description = record.get("description");
-                        if (description) {
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(i18n._(description)) + '"';
-                        }
-                        return i18n._(value);
+                xtype: 'button',
+                name: 'northEntriesBtn',
+                scale: 'medium',
+                textAlign: 'left',
+                text: i18n._('Select Report/Event'),
+                width: 240,
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'width <= 1024': {
+                        hidden: false
+                    },
+                    'width > 1024': {
+                        hidden: true
                     }
-                }],
-                selModel: {
-                    selType: 'rowmodel',
+                },
+                menu: Ext.create('Ext.menu.Menu', {
+                    name: 'northEntriesBtnMenu',
+                    plain: true,
+                    width: 240,
                     listeners: {
-                        select: Ext.bind(function (rowModel, record, rowIndex, eOpts) {
-                            this.loadEventEntry(Ext.clone(record.getData()));
-                            this.reportEntriesGrid.getSelectionModel().deselectAll();
+                        click: Ext.bind(function (menu, item) {
+                            this.entriesList.getView().select(item.idx);
                         }, this)
                     }
+                    //items: _entryItems
+                })
+            });
+
+            this.buildReportEntries(_menuItems[0].category);
+        }, this));
+
+    },
+
+    buildReportEntries: function (category) {
+        var _that = this,
+            _entries = [],
+            _icon,
+            _entryItems = [],
+            _selectionReportsBtns = [],
+            _selectionEventsBtns = [];
+
+
+        this.entry = null;
+        this.selectionContainer.removeAll(true);
+        //this.entriesList.setCollapsed(true);
+
+
+        _that.getCategoryReports(category).then(function (reports) {
+            _entries = _entries.concat(reports);
+
+            Ext.each(reports, function (entry, index) {
+                _icon = _that.setEntryIcon(entry);
+                _entryItems.push({
+                    text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i>  <span>' + entry.title + '</span>',
+                    entry: entry,
+                    idx: index
+                });
+
+                _selectionReportsBtns.push({
+                    xtype: 'button',
+                    text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + entry.title + '</span><br/><span class="dsc">' + entry.description + '</span>',
+                    cls: 'entry-btn',
+                    width: 300,
+                    border: 0,
+                    textAlign: 'left',
+                    handler: function () {
+                        _that.entriesList.getView().select(index);
+                    }
+                });
+
+            });
+            _that.getCategoryEvents(category).then(function (events) {
+                _entries = _entries.concat(events);
+
+                Ext.each(events, function (entry, index) {
+                    _icon = _that.setEntryIcon(entry);
+                    _entryItems.push({
+                        text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i>  <span>' + entry.title + '</span>',
+                        entry: entry,
+                        idx: reports.length + index
+                    });
+
+                    _selectionEventsBtns.push({
+                        xtype: 'button',
+                        text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + entry.title + '</span>',
+                        cls: 'entry-btn',
+                        width: 300,
+                        border: 0,
+                        textAlign: 'left',
+                        handler: function () {
+                            _that.entriesList.getView().select(reports.length + index);
+                        }
+                    });
+
+                });
+
+                _that.entriesList.getStore().loadData(_entries);
+
+                _that.down('[name=northEntriesBtnMenu]').removeAll(true);
+                _that.down('[name=northEntriesBtnMenu]').add(_entryItems);
+
+                if (_selectionReportsBtns.length > 0) {
+                    _that.selectionContainer.add({
+                        xtype: 'panel',
+                        title: 'Reports',
+                        layout: 'column',
+                        border: 0,
+                        bodyStyle: {
+                            padding: '5px'
+                        },
+                        items: _selectionReportsBtns
+                    });
                 }
-            }]
-        };
-        return entriesSection;
+
+                if (_selectionEventsBtns.length > 0) {
+                    _that.selectionContainer.add({
+                        xtype: 'panel',
+                        title: 'Events',
+                        layout: 'column',
+                        border: 0,
+                        bodyStyle: {
+                            padding: '5px'
+                        },
+                        items: _selectionEventsBtns
+                    });
+                }
+
+            });
+        });
+
+        this.centerContainer.setActiveItem('selectionContainer');
+        //this.down('#extraConditions').setHidden(true);
     },
-    //initialEntry obj: {type:["report"|"event"], entryId: uniqueId}
-    setCategory: function (category, initialEntry) {
-        this.category = category;
-        this.cardsContainer.setActiveItem("pleaseSelectEntryContrainer");
-        //this.reportDataGrid.hide();
-        this.loadEntries(initialEntry);
-    },
-    loadEntries: function (initialEntry) {
-        this.loadReportEntries(initialEntry && initialEntry.type == 'report' ? initialEntry.entryId : null);
-        this.loadEventEntries(initialEntry && initialEntry.type == 'event' ? initialEntry.entryId : null);
-    },
-    loadReportEntries: function (initialEntryId) {
-        if (!this.reportEntriesGrid) {
-            this.reportEntriesGrid = this.down("grid[name=reportEntriesGrid]");
+
+    setEntryIcon: function (entry) {
+        if (!entry.type) {
+            return 'format_list_bulleted';
         }
+
+        if (entry.type === 'TEXT') {
+            return 'subject';
+        }
+
+        if (entry.type === 'PIE_GRAPH') {
+            return 'pie_chart_outlined';
+        }
+
+        if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
+            if (entry.timeStyle.indexOf('BAR') >= 0) {
+                return 'insert_chart';
+            }
+            return 'show_chart';
+        }
+    },
+
+    getCategoryReports: function (category) {
+        var deferred = new Ext.Deferred(),
+            entries = [];
         rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
-            var i;
-            if (Ung.Util.handleException(exception)) {
-                return;
+            if (Ung.Util.handleException(exception) || !this.getEl()) {
+                deferred.resolve([]);
             }
-            if (!this.getEl()) {
-                return;
-            }
-            var reportEntries = [];
-            var entry;
-            for (i = 0; i < result.list.length; i += 1) {
-                entry = result.list[i];
+            Ext.each(result.list, function (entry) {
                 if (entry.enabled) {
-                    reportEntries.push(entry);
+                    entries.push(entry);
                 }
-            }
-            this.reportEntriesGrid.getStore().loadData(reportEntries);
-            this.reportEntriesGrid.setHidden(reportEntries.length == 0);
-            if (initialEntryId) {
-                var record = this.reportEntriesGrid.getStore().findRecord('uniqueId', initialEntryId);
-                if (record) {
-                    this.reportEntriesGrid.getSelectionModel().select(record);
-                }
-            }
-        }, this), this.category);
+            });
+            deferred.resolve(entries);
+        }, this), category);
+        return deferred.promise;
     },
-    loadEventEntries: function (initialEntryId) {
-        if (!this.eventEntriesGrid) {
-            this.eventEntriesGrid = this.down("grid[name=eventEntriesGrid]");
-        }
+
+    getCategoryEvents: function (category) {
+        var deferred = new Ext.Deferred();
         rpc.reportsManager.getEventEntries(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception) || !this.getEl()) {
+                deferred.resolve([]);
+            }
+            deferred.resolve(result.list);
+        }, this), category);
+        return deferred.promise;
+    },
+
+    loadReportEntry: function (entry) {
+        this.entry = entry;
+
+        if (this.chart) {
+            this.chart.destroy();
+        }
+
+        this.centerContainer.setActiveItem('reportContainer');
+        this.reportContainer.setTitle({
+            text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
+            border: 0,
+            padding: '5px'
+        });
+        this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
+
+
+        this.setLoading(i18n._('Loading report... '));
+
+        this.reportChart.removeAll(true);
+        //this.reportData.setCollapsed(true);
+        this.reportData.getStore().loadData([]);
+        //this.entriesList.setCollapsed(false);
+
+        rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
+            this.setLoading(false);
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            if (!this.getEl()) {
-                return;
+            //this.chartData = result.list;
+
+            switch (entry.type) {
+                case 'TEXT':
+                    break;
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                    this.reportChart.add({
+                        xtype: 'panel',
+                        name: 'chart',
+                        border: 0
+                    });
+                    this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('[name=chart]').body, false);
+                    break;
+                default:
+                    this.reportChart.add({
+                        xtype: 'panel',
+                        name: 'chart',
+                        border: 0
+                    });
+                    //entry.chartType = 'pie';
+                    this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('[name=chart]').body, false);
             }
-            this.eventEntriesGrid.getStore().loadData(result.list);
-            this.eventEntriesGrid.setHidden(result.list.length == 0);
-            if (initialEntryId) {
-                var record = this.eventEntriesGrid.getStore().findRecord('uniqueId', initialEntryId);
-                if (record) {
-                    this.eventEntriesGrid.getSelectionModel().select(record);
-                }
-            }
-        }, this), this.category);
+            this.loadReportData(result.list);
+        }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
+        Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
 
     loadReportData: function (data) {
-        var i, column, infos, reportData;
-        if (!this.entry) {
+        var i, column;
+        if (!this.entry || !this.reportChart) {
             return;
         }
 
-        if (this.entry.type == 'TEXT') {
-            infos = [];
-            reportData = [];
+        if (this.entry.type === 'TEXT') {
+            this.reportData.setColumns([{
+                dataIndex: 'data',
+                header: i18n._("data"),
+                width: 100,
+                flex: 1
+            }, {
+                dataIndex: 'value',
+                header: i18n._("value"),
+                width: 100
+            }]);
+
+            var infos = [], reportData = [], value;
             if (data.length > 0 && this.entry.textColumns != null) {
-                var value;
                 for (i = 0; i < this.entry.textColumns.length; i += 1) {
-                    column = this.entry.textColumns[i].split(' ').splice(-1)[0];
+                    column = this.entry.textColumns[i].split(" ").splice(-1)[0];
                     value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
                     infos.push(value);
                     reportData.push({data: column, value: value});
                 }
             }
 
-            this.chartContainer.add({
+            this.reportChart.removeAll(true);
+            this.reportChart.add({
                 xtype: 'component',
                 html: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)),
                 style: {
@@ -454,166 +752,98 @@ Ext.define('Ung.panel.Reports', {
                     padding: '10px'
                 }
             });
+            this.reportData.getStore().loadData(reportData);
         }
-        // set data for the datagrid
-        //this.reportDataGrid.getStore().loadData(reportData || data);
 
-    },
-    buildReportEntry: function (entry) {
-        this.entry = entry;
-        this.cardsContainer.setActiveItem("chartContainer");
-        this.cardsContainer.remove(this.down('toolbar[name=chart-options]'));
-
-        //this.reportDataGrid.show();
-        this.limitSelector.hide();
-        this.resetView.hide();
-
-        this.chartContainer.removeAll();
-
-        var i, column;
-        var timeStyleButtons = [], timeStyle, timeStyles;
-        var tbar = [{
-            xtype: 'button',
-            text: i18n._('Customize'),
-            hidden: !Ung.Main.webuiMode || this.hideCustomization,
-            name: "edit",
-            tooltip: i18n._('Advanced report customization'),
-            iconCls: 'icon-edit',
-            handler: function () {
-                this.customizeReport();
-            },
-            scope: this
-        }, '->', {
-            xtype: 'button',
-            text: i18n._('View Events'),
-            name: "edit",
-            tooltip: i18n._('View events for this report'),
-            iconCls: 'icon-edit',
-            handler: Ext.bind(this.viewEventsForReport, this)
-        }, {
-            xtype: 'button',
-            iconCls: 'icon-export',
-            text: i18n._("Download"),
-            handler: Ext.bind(this.downloadChart, this)
-        }];
-
-        //this.reportDataGrid.getStore().loadData([]);
-
-        if (entry.type == 'PIE_GRAPH') {
-            timeStyleButtons = [];
-            timeStyles = [
-                { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
-                { type: 'pie', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie") },
-                { type: 'pie', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut") },
-                { type: 'pie', isDonut: true, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Donut") },
-                { type: 'column', is3d: false, iconCls: 'icon-bar-chart', text: i18n._("Column") },
-                { type: 'column', is3d: true, iconCls: 'icon-bar-chart', text: i18n._("3D Column") }
-            ];
-
-            for (i = 0; i < timeStyles.length; i += 1) {
-                timeStyle = timeStyles[i];
-                timeStyleButtons.push({
-                    xtype: 'button',
-                    pressed: entry.chartType === timeStyle.type,
-                    iconCls: timeStyle.iconCls,
-                    text: timeStyle.text,
-                    chartType: timeStyle.type,
-                    isDonut: timeStyle.isDonut,
-                    is3d: timeStyle.is3d,
-                    handler: Ext.bind(function (button) {
-                        //button.setPressed(true);
-                        entry.chartType = button.chartType;
-                        entry.isDonut = button.isDonut;
-                        entry.is3d = button.is3d;
-                        this.chart.destroy();
-                        this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.chartContainer, false);
+        if (this.entry.type === 'PIE_GRAPH') {
+            this.reportData.setColumns([{
+                dataIndex: this.entry.pieGroupColumn,
+                header: this.entry.pieGroupColumn,
+                width: 100,
+                flex: 1
+            }, {
+                dataIndex: 'value',
+                header: i18n._("value"),
+                width: 100
+            }, {
+                xtype: 'actioncolumn',
+                menuDisabled: true,
+                width: 20,
+                items: [{
+                    iconCls: 'icon-row icon-filter',
+                    tooltip: i18n._('Add Condition'),
+                    handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
+                        this.buildWindowAddCondition();
+                        data = {
+                            column: this.entry.pieGroupColumn,
+                            operator: "=",
+                            value: record.get(this.entry.pieGroupColumn)
+                        };
+                        this.windowAddCondition.setCondition(data);
                     }, this)
+                }]
+            }]);
+            this.reportData.getStore().loadData(data);
+        }
+
+        if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+            var zeroFn = function (val) {
+                return (val == null) ? 0 : val;
+            };
+            var timeFn = function (val) {
+                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
+            };
+
+            var storeFields = [{name: 'time_trunc', convert: timeFn}];
+
+            var reportDataColumns = [{
+                dataIndex: 'time_trunc',
+                header: i18n._("Timestamp"),
+                width: 130,
+                flex: this.entry.timeDataColumns.length > 2 ? 0 : 1
+            }];
+            var seriesRenderer = null, title;
+            if (!Ext.isEmpty(this.entry.seriesRenderer)) {
+                seriesRenderer =  Ung.panel.Reports.getColumnRenderer(this.entry.seriesRenderer);
+            }
+
+            for (i = 0; i < this.entry.timeDataColumns.length; i += 1) {
+                column = this.entry.timeDataColumns[i].split(" ").splice(-1)[0];
+                title = seriesRenderer ? seriesRenderer(column) : column;
+                storeFields.push({name: column, convert: zeroFn, type: 'integer'});
+                reportDataColumns.push({
+                    dataIndex: column,
+                    header: title,
+                    width: this.entry.timeDataColumns.length > 2 ? 60 : 90
                 });
             }
-            timeStyleButtons.push("-");
-            tbar = timeStyleButtons.concat(tbar);
 
-        } else if (entry.type == 'TIME_GRAPH' || entry.type == 'TIME_GRAPH_DYNAMIC') {
-            timeStyleButtons = [];
-            timeStyles = [
-                { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
-                { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
-                { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
-                { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
-            ];
-
-            for (i = 0; i < timeStyles.length; i += 1) {
-                timeStyle = timeStyles[i];
-                timeStyleButtons.push({
-                    xtype: 'button',
-                    pressed: entry.chartType == timeStyle.type,
-                    iconCls: timeStyle.iconCls,
-                    text: timeStyle.text,
-                    chartType: timeStyle.type,
-                    columnOverlapped: timeStyle.overlapped,
-                    handler: Ext.bind(function (button) {
-                        //entry.chartType = button.chartType;
-                        entry.columnOverlapped = button.columnOverlapped;
-                        Ung.charts.updateSeriesType(entry, this.chart, button.chartType);
-                    }, this)
-                });
-            }
-            timeStyleButtons.push('-');
-            tbar = timeStyleButtons.concat(tbar);
+            this.reportData.setStore(Ext.create('Ext.data.Store', {
+                fields: storeFields,
+                data: []
+            }));
+            this.reportData.setColumns(reportDataColumns);
+            this.reportData.getStore().loadData(data);
         }
-        this.cardsContainer.addDocked({
-            xtype: 'toolbar',
-            dock: 'top',
-            name: 'chart-options',
-            items: tbar
-        });
     },
-    loadReportEntry: function (entry) {
-        this.setLoading(i18n._('Loading report... '));
-        if (this.autoRefreshEnabled) {
-            this.stopAutoRefresh(true);
-        }
-        this.buildReportEntry(entry);
-        rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
-            this.setLoading(false);
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            this.chartData = result.list;
 
-            switch (this.entry.type) {
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.chartContainer, false);
-                break;
-            default:
-                this.entry.chartType = 'pie';
-                this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.chartContainer, false);
-            }
-
-            this.loadReportData(result.list);
-        }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
-        Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
-    },
     loadEventEntry: function (entry) {
-        var i, col;
+        var store, tableConfig, state, i, col;
+
         this.entry = entry;
-        if (this.autoRefreshEnabled) {
-            this.stopAutoRefresh(true);
-        }
+        this.centerContainer.setActiveItem('eventContainer');
+
+        this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
+
         if (!entry.defaultColumns) {
             entry.defaultColumns = [];
         }
-        this.cardsContainer.setActiveItem('gridEvents');
-        //this.reportDataGrid.hide();
-        this.limitSelector.show();
-        this.resetView.show();
 
-        this.gridEvents.setTitle(entry.title);
-        this.gridEvents.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
+        this.eventContainer.setTitle(entry.title);
+        this.eventContainer.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
 
-        var tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
-        var state = Ext.state.Manager.get(this.gridEvents.stateId);
+        tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
+
         if (!tableConfig) {
             console.log('Warning: table "' + entry.table + '" is not defined');
             tableConfig = {
@@ -639,9 +869,15 @@ Ext.define('Ung.panel.Reports', {
                     console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
                 }
             }
-            this.gridEvents.defaultTableConfig = tableConfig;
+            /*
+             tableConfig.columns.push({
+             flex: 1
+             });
+             */
+            this.eventContainer.defaultTableConfig = tableConfig;
         }
-        var store = Ext.create('Ext.data.Store', {
+
+        store = Ext.create('Ext.data.Store', {
             fields: tableConfig.fields,
             data: [],
             proxy: {
@@ -651,17 +887,20 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
         });
-        this.gridEvents.reconfigure(store, tableConfig.columns);
-        state = Ext.state.Manager.get(this.gridEvents.stateId);
-        if (state != null && state.columns != undefined) {
+
+        this.eventContainer.reconfigure(store, tableConfig.columns);
+
+        state = Ext.state.Manager.get(this.eventContainer.stateId);
+        if (state && state.columns !== undefined) {
             // Performing a state restore to a dynamic grid is very picky.
             // If you decide to revisit, see the test procedures in
             // https://bugzilla.untangle.com/show_bug.cgi?id=12594
             Ext.suspendLayouts();
-            this.gridEvents.getView().getHeaderCt().purgeCache();
-            this.gridEvents.applyState(state);
-            this.gridEvents.updateLayout();
-            Ext.Array.each(this.gridEvents.getColumns(), function (column, index) {
+            this.eventContainer.getView().getHeaderCt().purgeCache();
+            this.eventContainer.applyState(state);
+            this.eventContainer.updateLayout();
+
+            Ext.each(this.eventContainer.getColumns(), function (column, index) {
                 if (column.hidden == true) {
                     column.setVisible(true);
                     column.setVisible(false);
@@ -673,23 +912,25 @@ Ext.define('Ung.panel.Reports', {
             Ext.resumeLayouts(true);
         }
 
-        this.gridEvents.getStore().addFilter(this.filterFeature.globalFilter);
+        this.eventContainer.getStore().addFilter(this.filterFeature.globalFilter);
         this.refreshHandler();
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
+
     refreshHandler: function () {
         if (this.autoRefreshEnabled) {
             return;
         }
-        this.refresheEntry();
+        this.refreshEntry();
     },
     autoRefresh: function () {
         if (!this.autoRefreshEnabled) {
             return;
         }
-        this.refresheEntry();
+        this.refreshEntry();
     },
-    refresheEntry: function () {
+
+    refreshEntry: function () {
         if (!this.entry) {
             return;
         }
@@ -699,6 +940,7 @@ Ext.define('Ung.panel.Reports', {
             this.refreshReportData();
         }
     },
+
     refreshReportData: function () {
         if (!this.entry) {
             return;
@@ -716,7 +958,7 @@ Ext.define('Ung.panel.Reports', {
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
             }
-            this.loadReportData(result.list);
+            //this.loadReportData(result.list);
             if (this != null && this.rendered && this.autoRefreshEnabled) {
                 Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval * 1000, this);
             }
@@ -736,7 +978,7 @@ Ext.define('Ung.panel.Reports', {
             this.loadResultSet(result);
         }, this), this.entry, this.extraConditions, limit, this.startDateWindow.serverDate, this.endDateWindow.serverDate);
     },
-    autoRefreshEnabled: false,
+
     startAutoRefresh: function (setButton) {
         if (!this.entry) {
             this.down('button[name=auto_refresh]').toggle(false);
@@ -754,21 +996,7 @@ Ext.define('Ung.panel.Reports', {
         }
         this.down('button[name=refresh]').enable();
     },
-    //Used to get dummy records in testing
-    getTestRecord: function (index, fields) {
-        var rec = {}, property, i;
-        for (i = 0; i < fields.length; i += 1) {
-            property = (fields[i].mapping != null) ? fields[i].mapping : fields[i].name;
-            rec[property] =
-                (property == 'id') ? index + 1 :
-                        (property == 'time_stamp') ? {javaClass: "java.util.Date", time: (new Date(Math.floor((Math.random() * index * 12345678)))).getTime()} :
-                                (property.indexOf('_addr') != -1) ? Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "." + Math.floor((Math.random() * 255)) + "/" + Math.floor((Math.random() * 32)) :
-                                        (property.indexOf('_port') != -1) ? Math.floor((Math.random() * 65000)) :
-                                                (property == "spam_blocker_action") ? 'P' :
-                                                        property + "_" + (i * index) + "_" + Math.floor((Math.random() * 10));
-        }
-        return rec;
-    },
+
     loadNextChunkCallback: function (result, exception) {
         if (Ung.Util.handleException(exception)) {
             return;
@@ -782,9 +1010,9 @@ Ext.define('Ung.panel.Reports', {
             return;
         }
         // If we got here, then we either reached the end of the resultSet or ran out of room display the results
-        if (this.gridEvents != null && this.gridEvents.getStore() != null) {
-            this.gridEvents.getStore().getProxy().setData(this.events);
-            this.gridEvents.getStore().load();
+        if (this.eventContainer != null && this.eventContainer.getStore() != null) {
+            this.eventContainer.getStore().getProxy().setData(this.events);
+            this.eventContainer.getStore().load();
         }
         this.setLoading(false);
 
@@ -792,7 +1020,7 @@ Ext.define('Ung.panel.Reports', {
             Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval * 1000, this);
         }
     },
-    // Refresh the events list
+
     loadResultSet: function (result) {
         var i;
         this.events = [];
@@ -800,7 +1028,7 @@ Ext.define('Ung.panel.Reports', {
         if (testMode) {
             //var emptyRec = {};
             var length = Math.floor((Math.random() * 5000));
-            var fields = this.gridEvents.getStore().getModel().getFields();
+            var fields = this.eventContainer.getStore().getModel().getFields();
             for (i = 0; i < length; i += 1) {
                 this.events.push(this.getTestRecord(i, fields));
             }
@@ -814,18 +1042,7 @@ Ext.define('Ung.panel.Reports', {
             this.loadNextChunkCallback(null);
         }
     },
-    getColumnList: function () {
-        var columns = this.gridEvents.getColumns(), columnList = '', i;
-        for (i = 0; i < columns.length; i += 1) {
-            if (i !== 0) {
-                columnList += ",";
-            }
-            if (columns[i].dataIndex != null) {
-                columnList += columns[i].dataIndex;
-            }
-        }
-        return columnList;
-    },
+
     exportReportDataHandler: function () {
         if (!this.entry) {
             return;
@@ -839,8 +1056,8 @@ Ext.define('Ung.panel.Reports', {
             return data.join(",") + '\r\n';
         };
 
-        //var records = this.reportDataGrid.getStore().getRange(), list = [], columns = [], headers = [], i, j, row;
-        //var gridColumns = this.reportDataGrid.getColumns();
+        var records = this.reportData.getStore().getRange(), list = [], columns = [], headers = [], i, j, row;
+        var gridColumns = this.reportData.getColumns();
         for (i = 0; i < gridColumns.length; i += 1) {
             if (gridColumns[i].initialConfig.dataIndex) {
                 columns.push(gridColumns[i].initialConfig.dataIndex);
@@ -859,47 +1076,7 @@ Ext.define('Ung.panel.Reports', {
         var fileName = this.entry.title.trim().replace(/ /g, '_') + '.csv';
         Ung.Util.download(content, fileName, 'text/csv');
     },
-    downloadChart: function () {
-        if (!this.entry) {
-            return;
-        }
-        var chart = this.chartContainer.down("[name=chart]");
-        if (!chart) {
-            return;
-        }
-        var fileName = this.entry.title.trim().replace(/ /g, '_') + '.png';
-        Ext.MessageBox.wait(i18n._("Downloading Chart..."), i18n._("Please wait"));
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value = "imageDownload";
-        downloadForm["arg1"].value = fileName;
-        downloadForm["arg2"].value = chart.getImage().data;
-        downloadForm["arg3"].value = "";
-        downloadForm["arg4"].value = "";
-        downloadForm["arg5"].value = "";
-        downloadForm["arg6"].value = "";
-        downloadForm.submit();
-        Ext.MessageBox.hide();
-    },
-    exportEventsHandler: function () {
-        if (!this.entry) {
-            return;
-        }
-        var startDate = this.startDateWindow.serverDate;
-        var endDate = this.endDateWindow.serverDate;
 
-        Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
-        var name = this.entry.title.trim().replace(/ /g, '_');
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value = "eventLogExport";
-        downloadForm["arg1"].value = name;
-        downloadForm["arg2"].value = Ext.encode(this.entry);
-        downloadForm["arg3"].value = Ext.encode(this.extraConditions);
-        downloadForm["arg4"].value = this.getColumnList();
-        downloadForm["arg5"].value = startDate ? startDate.getTime() : -1;
-        downloadForm["arg6"].value = endDate ? endDate.getTime() : -1;
-        downloadForm.submit();
-        Ext.MessageBox.hide();
-    },
     buildWindowAddCondition: function () {
         var me = this;
         if (!this.windowAddCondition) {
@@ -974,6 +1151,7 @@ Ext.define('Ung.panel.Reports', {
             this.subCmps.push(this.windowAddCondition);
         }
     },
+
     customizeReport: function () {
         if (!this.entry) {
             return;
@@ -981,12 +1159,12 @@ Ext.define('Ung.panel.Reports', {
         if (!this.winReportEditor) {
             var me = this;
             this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
-                sizeToComponent: this.chartContainer,
+                sizeToComponent: this.reportChart,
                 title: i18n._("Advanced report customization"),
                 forReportCustomization: true,
                 parentCmp: this,
                 grid: {
-                    reconfigure: function () {}
+                    //reconfigure: function () {}
                 },
                 isDirty: function () {
                     return false;
@@ -1003,61 +1181,10 @@ Ext.define('Ung.panel.Reports', {
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
     },
-    viewEventsForReport: function () {
-        if (!this.entry) {
-            return;
-        }
 
-        var entry = {
-            javaClass: "com.untangle.node.reports.EventEntry",
-            category: this.entry.category,
-            conditions: this.entry.conditions,
-            displayOrder: 1,
-            table: this.entry.table,
-            title: Ext.String.format(i18n._('Events for report: {0}'), this.entry.title)
-        };
-        this.loadEventEntry(entry);
-        if (this.reportEntriesGrid) {
-            this.reportEntriesGrid.getSelectionModel().deselectAll();
-        }
-    },
-    isDirty: function () {
-        return false;
-    },
-    listeners: {
-        "deactivate": {
-            fn: function () {
-                if (this.autoRefreshEnabled) {
-                    this.stopAutoRefresh(true);
-                }
-            }
-        }
-    },
     statics: {
         isEvent: function (entry) {
             return "com.untangle.node.reports.EventEntry" == entry.javaClass;
-        },
-        significantFigures: function (n, sig) {
-            if (isNaN(n)) {
-                return n;
-            }
-            if (n == 0) {
-                return 0;
-            }
-            var isNegative = n < 0;
-            if (isNegative) { n = -n; }
-            var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
-            var result =  Math.round(n * mult) / mult;
-            return isNegative ? -result : result;
-        },
-        renderValue: function (value, entry) {
-            var showValue;
-            if (entry.units == "bytes" || entry.units == "bytes/s") {
-                showValue = Ung.Util.bytesRenderer(value, entry.units == "bytes/s");
-            } else {
-                showValue = value + (Ext.isEmpty(entry.units) ? "" : " " + i18n._(entry.units));
-            }
-            return showValue;
         },
         getColumnRenderer: function (columnName) {
             if (!this.columnRenderers) {
@@ -1240,18 +1367,116 @@ Ext.define('Ung.panel.Reports', {
     }
 });
 
+Ext.define("Ung.grid.feature.GlobalFilter", {
+    extend: "Ext.grid.feature.Feature",
+    useVisibleColumns: true,
+    useFields: null,
+    init: function (grid) {
+        this.grid = grid;
+
+        this.globalFilter = Ext.create('Ext.util.Filter', {
+            regExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
+            disabled: true,
+            regExpMode: false,
+            caseSensitive: false,
+            regExp: null,
+            stateId: 'globalFilter',
+            searchFields: {},
+            filterFn: function (record) {
+                if (!this.regExp) {
+                    return true;
+                }
+                var datas = record.getData(), key, val;
+                for (key in this.searchFields) {
+                    if (datas[key] !== undefined) {
+                        val = datas[key];
+                        if (val == null) {
+                            continue;
+                        }
+                        if (typeof val == 'boolean' || typeof val == 'number') {
+                            val = val.toString();
+                        } else if (typeof val == 'object') {
+                            if (val.time != null) {
+                                val = i18n.timestampFormat(val);
+                            }
+                        }
+                        if (typeof val == 'string') {
+                            if (this.regExp.test(val)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            },
+            getSearchValue: function (value) {
+                if (value === '' || value === '^' || value === '$') {
+                    return null;
+                }
+                if (!this.regExpMode) {
+                    value = value.replace(this.regExpProtect, function (m) {
+                        return '\\' + m;
+                    });
+                } else {
+                    try {
+                        new RegExp(value);
+                    } catch (error) {
+                        return null;
+                    }
+                }
+                return value;
+            },
+            buildSearch: function (value, caseSensitive, searchFields) {
+                this.searchFields = searchFields;
+                this.setCaseSensitive(caseSensitive);
+                var searchValue = this.getSearchValue(value);
+                this.regExp = searchValue == null ? null : new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
+                this.setDisabled(this.regExp == null);
+            }
+        });
+
+        this.grid.on("afterrender", Ext.bind(function () {
+            this.grid.getStore().addFilter(this.globalFilter);
+        }, this));
+        this.grid.on("beforedestroy", Ext.bind(function () {
+            this.grid.getStore().removeFilter(this.globalFilter);
+            Ext.destroy(this.globalFilter);
+        }, this));
+        this.callParent(arguments);
+    },
+    updateGlobalFilter: function (value, caseSensitive) {
+        var searchFields = {}, i, col;
+        if (this.useVisibleColumns) {
+            var visibleColumns = this.grid.getVisibleColumns();
+            for (i = 0; i < visibleColumns.length; i += 1) {
+                col = visibleColumns[i];
+                if (col.dataIndex) {
+                    searchFields[col.dataIndex] = true;
+                }
+            }
+        } else if (this.searchFields != null) {
+            for (i = 0; i < this.searchFields.length; i += 1) {
+                searchFields[this.searchFields[i]] = true;
+            }
+        }
+        this.globalFilter.buildSearch(value, caseSensitive, searchFields);
+        this.grid.getStore().getFilters().notify('endupdate');
+    }
+});
+
 Ext.define("Ung.panel.ExtraConditions", {
     extend: "Ext.panel.Panel",
     collapsible: true,
     collapsed: false,
     floatable: false,
     split: true,
+    region: 'south',
     defaultCount: 1,
     autoScroll: true,
     layout: { type: 'vbox'},
     initComponent: function () {
         var i;
-        //this.title = Ext.String.format( i18n._("Conditions: {0}"), i18n._("None"));
+        this.title = Ext.String.format(i18n._("Conditions: {0}"), i18n._("None"));
         this.collapsed = Ung.Main.viewport.getHeight() < 500;
         this.columnsStore = Ext.create('Ext.data.Store', {
             sorters: "header",
@@ -1352,15 +1577,15 @@ Ext.define("Ung.panel.ExtraConditions", {
                 },
                 tpl: Ext.create('Ext.XTemplate',
                     '<ul class="x-list-plain"><tpl for=".">',
-                        '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
+                    '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
                     '</tpl></ul>'
-                    ),
+                ),
                 // template for the content inside text field
                 displayTpl: Ext.create('Ext.XTemplate',
                     '<tpl for=".">',
-                        '{header} [{dataIndex}]',
+                    '{header} [{dataIndex}]',
                     '</tpl>'
-                    ),
+                ),
                 listeners: {
                     change: {
                         fn: function (combo, newValue, oldValue, opts) {
@@ -1526,103 +1751,6 @@ Ext.define("Ung.panel.ExtraConditions", {
         this.bulkOperation = false;
     }
 
-});
-
-Ext.define("Ung.grid.feature.GlobalFilter", {
-    extend: "Ext.grid.feature.Feature",
-    useVisibleColumns: true,
-    useFields: null,
-    init: function (grid) {
-        this.grid = grid;
-
-        this.globalFilter = Ext.create('Ext.util.Filter', {
-            regExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
-            disabled: true,
-            regExpMode: false,
-            caseSensitive: false,
-            regExp: null,
-            stateId: 'globalFilter',
-            searchFields: {},
-            filterFn: function (record) {
-                if (!this.regExp) {
-                    return true;
-                }
-                var datas = record.getData(), key, val;
-                for (key in this.searchFields) {
-                    if (datas[key] !== undefined) {
-                        val = datas[key];
-                        if (val == null) {
-                            continue;
-                        }
-                        if (typeof val == 'boolean' || typeof val == 'number') {
-                            val = val.toString();
-                        } else if (typeof val == 'object') {
-                            if (val.time != null) {
-                                val = i18n.timestampFormat(val);
-                            }
-                        }
-                        if (typeof val == 'string') {
-                            if (this.regExp.test(val)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            },
-            getSearchValue: function (value) {
-                if (value === '' || value === '^' || value === '$') {
-                    return null;
-                }
-                if (!this.regExpMode) {
-                    value = value.replace(this.regExpProtect, function(m) {
-                        return '\\' + m;
-                    });
-                } else {
-                    try {
-                        new RegExp(value);
-                    } catch (error) {
-                        return null;
-                    }
-                }
-                return value;
-            },
-            buildSearch: function (value, caseSensitive, searchFields) {
-                this.searchFields = searchFields;
-                this.setCaseSensitive(caseSensitive);
-                var searchValue = this.getSearchValue(value);
-                this.regExp = searchValue == null ? null : new RegExp(searchValue, 'g' + (caseSensitive ? '' : 'i'));
-                this.setDisabled(this.regExp == null);
-            }
-        });
-
-        this.grid.on("afterrender", Ext.bind(function () {
-            this.grid.getStore().addFilter(this.globalFilter);
-        }, this));
-        this.grid.on("beforedestroy", Ext.bind(function () {
-            this.grid.getStore().removeFilter(this.globalFilter);
-            Ext.destroy(this.globalFilter);
-        }, this));
-        this.callParent(arguments);
-    },
-    updateGlobalFilter: function (value, caseSensitive) {
-        var searchFields = {}, i, col;
-        if (this.useVisibleColumns) {
-            var visibleColumns = this.grid.getVisibleColumns();
-            for (i = 0; i < visibleColumns.length; i += 1) {
-                col = visibleColumns[i];
-                if (col.dataIndex) {
-                    searchFields[col.dataIndex] = true;
-                }
-            }
-        } else if (this.searchFields != null) {
-            for (i = 0; i < this.searchFields.length; i += 1) {
-                searchFields[this.searchFields[i]] = true;
-            }
-        }
-        this.globalFilter.buildSearch(value, caseSensitive, searchFields);
-        this.grid.getStore().getFilters().notify('endupdate');
-    }
 });
 
 Ext.define("Ung.window.SelectDateTime", {
