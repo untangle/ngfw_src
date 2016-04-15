@@ -59,3 +59,11 @@ class Languages:
             if language["id"] == id:
                 return language
         return None
+
+    def get_by_ids(self,ids):
+        enabled = []
+        for language in self.languages:
+            if language["id"] in ids:
+                enabled.append(language)
+        return enabled
+        return None
