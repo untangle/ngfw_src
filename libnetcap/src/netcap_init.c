@@ -80,9 +80,6 @@ int netcap_init()
     
 }
 
-/*! \brief must be called before netcap is used 
- *  XXX how can this be done automatically? _init doesnt work
- */
 static int _netcap_init()
 {
     struct utsname utsn;

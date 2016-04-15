@@ -86,7 +86,6 @@ case "$1" in
         fi
 
         # clear console.log
-        
         echo >| $UVM_CONSOLE_LOG;
 
         updateStatus "[" "Starting"
