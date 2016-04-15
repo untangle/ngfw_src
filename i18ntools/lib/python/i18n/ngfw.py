@@ -23,7 +23,18 @@ class Ngfw:
         Initialize
         """
         if base_path == None:
-            self.base_path = Utility.get_base_path(self.path)
+          ## Try to find based on this existing under work/i18ntools
+            found = False
+            directories = Utility.get_base_path().split("/")
+            while found == False and len(directories) > 0:
+                check_path = "/".join(directories)
+                if os.path.isdir(check_path + "/work") and os.path.isdir(check_path + "/hades"):
+                    found = True
+                    self.base_path = check_path
+                del directories[len(directories)-1]
+
+            if found == False:
+                self.base_path = Utility.get_base_path(self.path)
         else:
             self.base_path = base_path
         self.load()
