@@ -25,74 +25,39 @@ public class PolicyRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<PolicyRuleCondition> matchers;
+    private List<PolicyRuleCondition> conditions;
 
     private Integer id;
     private Boolean enabled;
     private String description;
-    private Long targetPolicy;
+    private Integer targetPolicy;
     
     public PolicyRule()
     {
     }
 
-    public PolicyRule(boolean enabled, List<PolicyRuleCondition> matchers, Long targetPolicy, String description)
+    public PolicyRule(boolean enabled, List<PolicyRuleCondition> conditions, Integer targetPolicy, String description)
     {
-        this.setConditions(matchers);
+        this.setConditions(conditions);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setTargetPolicy(targetPolicy);
         this.setDescription(description);
     }
     
-    public List<PolicyRuleCondition> getConditions()
-    {
-        return this.matchers;
-    }
+    public List<PolicyRuleCondition> getConditions() { return this.conditions; }
+    public void setConditions( List<PolicyRuleCondition> conditions ) { this.conditions = conditions; }
 
-    public void setConditions( List<PolicyRuleCondition> matchers )
-    {
-        this.matchers = matchers;
-    }
-
-    public Integer getId()
-    {
-        return this.id;
-    }
-
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
+    public Integer getId() { return this.id; }
+    public void setId(Integer id) { this.id = id; }
     
-    public Boolean getEnabled()
-    {
-        return enabled;
-    }
+    public Boolean getEnabled() { return enabled; }
+    public void setEnabled( Boolean enabled ) { this.enabled = enabled; }
 
-    public void setEnabled( Boolean enabled )
-    {
-        this.enabled = enabled;
-    }
+    public Integer getTargetPolicy() { return targetPolicy; }
+    public void setTargetPolicy( Integer targetPolicy ) { this.targetPolicy = targetPolicy; }
 
-    public Long getTargetPolicy()
-    {
-        return targetPolicy;
-    }
-
-    public void setTargetPolicy( Long targetPolicy )
-    {
-        this.targetPolicy = targetPolicy;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription( String description )
-    {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription( String description ) { this.description = description; }
     
     public String toJSONString()
     {
@@ -109,17 +74,17 @@ public class PolicyRule implements JSONString, Serializable
             return false;
 
         /**
-         * If no matchers return true
+         * If no conditions return true
          */
-        if (this.matchers == null) {
-            logger.warn("Null matchers - assuming true");
+        if (this.conditions == null) {
+            logger.warn("Null conditions - assuming true");
             return true;
         }
 
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( PolicyRuleCondition matcher : matchers ) {
+        for ( PolicyRuleCondition matcher : conditions ) {
             if (!matcher.matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
                 return false;
         }

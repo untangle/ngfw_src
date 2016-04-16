@@ -15,6 +15,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.PolicyManager.PolicyManagerResult;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.vnet.NodeBase;
@@ -47,7 +48,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         this._setSettings(settings);
     }
 
-    public String getPolicyName( Long policyId )
+    public String getPolicyName( Integer policyId )
     {
         if ( policyId == null)
             return "Policy-" + policyId;
@@ -60,7 +61,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         
     }
 
-    public Long getParentPolicyId( Long policyId )
+    public Integer getParentPolicyId( Integer policyId )
     {
         PolicySettings pSettings = getPolicySettings( policyId );
 
@@ -70,23 +71,23 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         return null;
     }
 
-    public Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
+    public PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
         if ( !isLicenseValid() )
-            return 1L;
+            return new PolicyManagerResult(1,0);
 
         for (PolicyRule rule : this.settings.getRules()) {
             if (rule.isMatch(protocol,
                              clientIntf, serverIntf,
                              clientAddr, serverAddr,
                              clientPort, serverPort)) {
-                return rule.getTargetPolicy();
+                return new PolicyManagerResult(rule.getTargetPolicy(),rule.getId());
             }
 
         }
-        /* if none matched - return default policy (1) */
-        return 1L;
 
+        /* if none matched - return default policy (1) */
+        return new PolicyManagerResult(1,0);
     }
 
     public ArrayList<JSONObject> getPoliciesInfo()
@@ -111,11 +112,11 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     {
         logger.info("Initializing Settings...");
         PolicyManagerSettings settings = new PolicyManagerSettings();
-        settings.getPolicies().add(new PolicySettings(1L, "Default Policy", "The Default Policy", null));
+        settings.getPolicies().add(new PolicySettings(1, "Default Policy", "The Default Policy", null));
         this.setSettings(settings);
     }
 
-    public int getPolicyGenerationDiff(Long childId, Long parentId)
+    public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
         if (null == childId) {
             return 0;
@@ -219,12 +220,12 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         return false;
     }
     
-    private PolicySettings getPolicySettings( Long policyId )
+    private PolicySettings getPolicySettings( Integer policyId )
     {
         return getPolicySettings( policyId, this.settings );
     }
 
-    private PolicySettings getPolicySettings( Long policyId, PolicyManagerSettings settings )
+    private PolicySettings getPolicySettings( Integer policyId, PolicyManagerSettings settings )
     {
         for (PolicySettings policy : settings.getPolicies()) {
             if (policy.getPolicyId().equals(policyId))
@@ -289,7 +290,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
             throw new RuntimeException("NULL rule list invalid");
 
         boolean found = false;        
-        HashSet<Long> policyIds = new HashSet<Long>();
+        HashSet<Integer> policyIds = new HashSet<Integer>();
         for ( PolicySettings policy : settings.getPolicies() ) {
             if (policy.getPolicyId() == null)
                 throw new RuntimeException("NULL policy ID");
@@ -297,7 +298,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
                 throw new RuntimeException("NULL policy Name");
             if (policy.getPolicyId().equals(policy.getParentId()))
                 throw new RuntimeException("Policy can not have itself as a parent.");
-            if (policy.getPolicyId().equals(1L))
+            if (policy.getPolicyId().equals(1))
                 found = true;
             policyIds.add(policy.getPolicyId());
         }
@@ -364,15 +365,17 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     {
         private static final Logger logger = Logger.getLogger(ExpiredPolicyMatcher.class);
 
-        public boolean isMatch( Long oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+        public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
         {
             PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
-            Long newPolicyId = null;
+            Integer newPolicyId = null;
             if (policyManager != null) {
-                newPolicyId  = policyManager.findPolicyId( protocol,
-                                                           clientIntf, serverIntf,
-                                                           clientAddr, serverAddr,
-                                                           clientPort, serverPort );
+                PolicyManagerResult result = policyManager.findPolicyId( protocol,
+                                                                         clientIntf, serverIntf,
+                                                                         clientAddr, serverAddr,
+                                                                         clientPort, serverPort );
+                if ( result != null )
+                    newPolicyId = result.policyId;
             }
 
             if (logger.isDebugEnabled())
@@ -404,7 +407,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
      */
     private void updateNextPolicyIDIfNecessary( PolicyManagerSettings settings )
     {
-        long biggestPolicyId = 1;
+        int biggestPolicyId = 1;
         for (PolicySettings policy : settings.getPolicies()) {
             if (policy.getPolicyId() > biggestPolicyId)
                 biggestPolicyId = policy.getPolicyId();

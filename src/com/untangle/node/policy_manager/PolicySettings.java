@@ -11,14 +11,14 @@ import java.util.LinkedList;
  */
 public class PolicySettings 
 {
-    private Long policyId;
+    private Integer policyId;
     private String name;
     private String description;
-    private Long parentId;
+    private Integer parentId;
 
     public PolicySettings() {}
 
-    public PolicySettings(Long policyId, String name, String description, Long parentId)
+    public PolicySettings(Integer policyId, String name, String description, Integer parentId)
     {
         this.policyId = policyId;
         this.name = name;
@@ -26,8 +26,8 @@ public class PolicySettings
         this.parentId = parentId;
     }
     
-    public Long getPolicyId() { return this.policyId; }
-    public void setPolicyId( Long policyId ) { this.policyId = policyId; }
+    public Integer getPolicyId() { return this.policyId; }
+    public void setPolicyId( Integer policyId ) { this.policyId = policyId; }
 
     public String getName() { return this.name; }
     public void setName( String name ) { this.name = name; }
@@ -35,6 +35,6 @@ public class PolicySettings
     public String getDescription() { return this.description; }
     public void setDescription( String description ) { this.description = description; }
 
-    public Long getParentId() { return this.parentId; }
-    public void setParentId( Long parentId ) { this.parentId = parentId; }
+    public Integer getParentId() { return this.parentId; }
+    public void setParentId( Integer parentId ) { this.parentId = parentId; }
 }

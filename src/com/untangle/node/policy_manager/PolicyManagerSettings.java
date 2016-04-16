@@ -18,7 +18,7 @@ public class PolicyManagerSettings implements Serializable, JSONString
 {
     private List<PolicyRule> rules = new LinkedList<PolicyRule>(); 
     private List<PolicySettings> policies  = new LinkedList<PolicySettings>();
-    private long nextPolicyId = 2;
+    private int nextPolicyId = 2;
     
     public PolicyManagerSettings() {}
 
@@ -28,10 +28,10 @@ public class PolicyManagerSettings implements Serializable, JSONString
     public List<PolicySettings> getPolicies() { return this.policies; }
     public void setPolicies( List<PolicySettings> policies ) { this.policies = policies; }
 
-    public synchronized Long getNextPolicyId() { return this.nextPolicyId; }
-    public synchronized void setNextPolicyId( Long nextPolicyId ) { this.nextPolicyId = nextPolicyId; }
+    public synchronized Integer getNextPolicyId() { return this.nextPolicyId; }
+    public synchronized void setNextPolicyId( Integer nextPolicyId ) { this.nextPolicyId = nextPolicyId; }
 
-    public synchronized Long nextAvailablePolicyId()
+    public synchronized Integer nextAvailablePolicyId()
     {
         return nextPolicyId++;
     }
