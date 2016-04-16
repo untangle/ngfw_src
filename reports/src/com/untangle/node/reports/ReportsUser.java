@@ -13,25 +13,33 @@ import com.untangle.uvm.PasswordUtil;
 public class ReportsUser implements Serializable
 {
     private String emailAddress;
-    private boolean emailSummaries;
+    private boolean emailAlerts = false;
+    private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
 
     public ReportsUser() {}
 
     public String getEmailAddress() { return this.emailAddress; }
-    public void setEmailAddress( String emailAddress ) { this.emailAddress = emailAddress; }
+    public void setEmailAddress( String newValue ) { this.emailAddress = newValue; }
+
+    public boolean getEmailAlerts() { return this.emailAlerts; }
+    public void setEmailAlerts( boolean newValue ) { this.emailAlerts = newValue; }
 
     public boolean getEmailSummaries() { return this.emailSummaries; }
-    public void setEmailSummaries( boolean emailSummaries ) { this.emailSummaries = emailSummaries; }
+    public void setEmailSummaries( boolean newValue ) { this.emailSummaries = newValue; }
 
     public boolean getOnlineAccess() { return this.onlineAccess; }
-    public void setOnlineAccess( boolean onlineAccess ) { this.onlineAccess = onlineAccess; }
+    public void setOnlineAccess( boolean newValue ) { this.onlineAccess = newValue; }
 
     public byte[] trans_getPasswordHash() { return this.passwordHash; }
-    public void setPasswordHash( byte[] passwordHash ) { this.passwordHash = passwordHash; }
+    public void setPasswordHash( byte[] newValue ) { this.passwordHash = newValue; }
 
-    public String getPassword() { return null; }
+    public String getPassword()
+    {
+        return null;
+    }
+
     public void setPassword( String password )
     {
         if ( password == null )
@@ -48,6 +56,7 @@ public class ReportsUser implements Serializable
         else
             return new String(Base64.encodeBase64(passwordHash));
     }
+
     public void setPasswordHashBase64( String passwordHashBase64 )
     {
         if ( passwordHashBase64 == null )
@@ -56,8 +65,4 @@ public class ReportsUser implements Serializable
             return;
         this.passwordHash = Base64.decodeBase64(passwordHashBase64.getBytes());
     }
-
-
 }
-
-    

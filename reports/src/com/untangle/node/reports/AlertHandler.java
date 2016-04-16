@@ -23,14 +23,14 @@ public class AlertHandler
 {
     private static final Logger logger = Logger.getLogger( AlertHandler.class );
 
-    public static void runAlertRules( LinkedList<AlertRule> alertRules, LinkedList<LogEvent> events )
+    public static void runAlertRules( LinkedList<AlertRule> alertRules, LinkedList<LogEvent> events, ReportsApp reports )
     {
         for ( LogEvent event : events ) {
-            runAlertRules( alertRules, event );
+            runAlertRules( alertRules, event, reports );
         }
     }
     
-    public static void runAlertRules( LinkedList<AlertRule> alertRules, LogEvent event )
+    public static void runAlertRules( LinkedList<AlertRule> alertRules, LogEvent event, ReportsApp reports )
     {
             try {
                 JSONObject jsonObject = event.toJSONObject();
@@ -45,7 +45,7 @@ public class AlertHandler
                             if ( rule.getLog() )
                                 UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
                             if ( rule.getAlert() ) 
-                                sendAlertForEvent( rule, event );
+                                sendAlertForEvent( rule, event, reports );
                         } 
                     }
                 }
@@ -54,7 +54,7 @@ public class AlertHandler
             }
     }
 
-    private static void sendAlertForEvent( AlertRule rule, LogEvent event )
+    private static void sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
     {
         if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
@@ -99,17 +99,34 @@ public class AlertHandler
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
-        for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
-            if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
-                continue;
-
-            try {
-                String[] recipients = new String[]{ admin.getEmailAddress() };
-                logger.warn("Sending alert to " + admin.getEmailAddress());
-                
-                UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
-            } catch ( Exception e) {
-                logger.warn("Failed to send mail.",e);
+        if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ) {
+            for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
+                if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
+                    continue;
+                if ( ! admin.getEmailAlerts() )
+                    continue;
+                try {
+                    String[] recipients = new String[]{ admin.getEmailAddress() };
+                    logger.warn("Sending alert to " + admin.getEmailAddress());
+                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+                } catch ( Exception e) {
+                    logger.warn("Failed to send mail.",e);
+                }
+            }
+        }
+        if ( reports.getSettings().getReportsUsers() != null ) {
+            for ( ReportsUser user : reports.getSettings().getReportsUsers() ) {
+                if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) )
+                    continue;
+                if ( ! user.getEmailAlerts() )
+                    continue;
+                try {
+                    String[] recipients = new String[]{ user.getEmailAddress() };
+                    logger.warn("Sending alert to " + user.getEmailAddress());
+                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+                } catch ( Exception e) {
+                    logger.warn("Failed to send mail.",e);
+                }
             }
         }
     }

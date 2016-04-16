@@ -180,7 +180,7 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Run alert rules
                      */
-                    AlertHandler.runAlertRules( node.getSettings().getAlertRules(), logQueue );
+                    AlertHandler.runAlertRules( node.getSettings().getAlertRules(), logQueue, node );
                     
                     /**
                      * If there is anything to log, log it to the database

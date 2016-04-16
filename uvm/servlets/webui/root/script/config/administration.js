@@ -196,6 +196,8 @@ Ext.define('Webui.config.administration', {
                 "username": "",
                 "description": "",
                 "emailAddress": "",
+                "emailAlerts": true,
+                "emailSummaries": true,
                 "password": null,
                 "passwordHashBase64": null
             },
@@ -207,6 +209,10 @@ Ext.define('Webui.config.administration', {
                 name: 'description'
             }, {
                 name: 'emailAddress'
+            },{
+                name: "emailAlerts"
+            },{
+                name: "emailSummaries"
             }, {
                 name: 'password'
             }, {
@@ -232,7 +238,7 @@ Ext.define('Webui.config.administration', {
                     emptyText: i18n._("[no description]")
                 }
             },{
-                header: i18n._("Email"),
+                header: i18n._("Email Address"),
                 width: 200,
                 dataIndex: 'emailAddress',
                 editor: {
@@ -240,6 +246,18 @@ Ext.define('Webui.config.administration', {
                     emptyText: i18n._("[no email]"),
                     vtype: 'email'
                 }
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Email Alerts"),
+                dataIndex: "emailAlerts",
+                width: 150,
+                resizable: false
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Email Summaries"),
+                dataIndex: "emailSummaries",
+                width: 150,
+                resizable: false
             }, changePasswordColumn],
             rowEditorInputLines: [{
                 xtype: "textfield",
@@ -261,10 +279,20 @@ Ext.define('Webui.config.administration', {
                 xtype: "textfield",
                 name: "Email",
                 dataIndex: "emailAddress",
-                fieldLabel: i18n._("Email"),
-                emptyText: i18n._("[no email]"),
+                fieldLabel: i18n._("Email Address"),
+                emptyText: i18n._("[no email address]"),
                 vtype: 'email',
                 width: 400
+            },{
+                xtype:'checkbox',
+                dataIndex: "emailAlerts",
+                fieldLabel: i18n._("Email Alerts"),
+                width: 300
+            },{
+                xtype:'checkbox',
+                dataIndex: "emailSummaries",
+                fieldLabel: i18n._("Email Summaries"),
+                width: 300
             },{
                 xtype: "textfield",
                 inputType: 'password',

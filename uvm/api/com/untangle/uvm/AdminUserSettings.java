@@ -16,6 +16,8 @@ public class AdminUserSettings implements Serializable, JSONString
 {
     private String username;
     private String emailAddress;
+    private boolean emailAlerts = true;
+    private boolean emailSummaries = true;
     private String description;
     private String password;
     private byte[] passwordHash = null;
@@ -35,6 +37,12 @@ public class AdminUserSettings implements Serializable, JSONString
 
     public String getEmailAddress() { return this.emailAddress; }
     public void setEmailAddress( String emailAddress ) { this.emailAddress = emailAddress; }
+
+    public boolean getEmailAlerts() { return this.emailAlerts; }
+    public void setEmailAlerts( boolean newValue ) { this.emailAlerts = newValue; }
+
+    public boolean getEmailSummaries() { return this.emailSummaries; }
+    public void setEmailSummaries( boolean newValue ) { this.emailSummaries = newValue; }
     
     public String getDescription() { return this.description; }
     public void setDescription( String description ) { this.description = description; }

@@ -1,7 +1,7 @@
 
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
-    panelEmail: null,
+    panelUsers: null,
     panelSyslog: null,
     panelData: null,
     gridReportsUsers: null,
@@ -13,14 +13,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     initComponent: function(container, position) {
         this.buildPasswordValidator();
-        this.buildEmail();
+        this.buildUsers();
         this.buildSyslog();
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildAlertRules();
         this.buildData();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmail, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -91,8 +91,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }]
         });
     },
-    // Email panel
-    buildEmail: function() {
+    // Users panel
+    buildUsers: function() {
         var fieldID = "" + Math.round( Math.random() * 1000000 );
 
         var emailTime=new Date();
@@ -112,21 +112,24 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }
         });
 
-        this.panelEmail = Ext.create('Ext.panel.Panel',{
-            name: 'Email',
-            helpSource: 'reports_email',
-            title: i18n._('Email'),
+        this.panelUsers = Ext.create('Ext.panel.Panel',{
+            name: 'Users',
+            helpSource: 'reports_users',
+            title: i18n._('Users'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
-                title: i18n._('Emails and Users'),
-                flex: 1,
-                layout: 'fit',
-                items: [ this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
+                title: i18n._('Reports Users'),
+                items: [{
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: i18n._('Reports Users are users that can view reports and receive email summaries but do not have administration privileges.')
+                }, this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
                     title: i18n._("Reports Users"),
+                    height: 350,
                     hasEdit: false,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
@@ -134,6 +137,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     recordJavaClass: "com.untangle.node.reports.ReportsUser",
                     emptyRow: {
                         emailAddress: "",
+                        emailAlerts: true,
                         emailSummaries: true,
                         onlineAccess: false,
                         password: null,
@@ -142,6 +146,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     sortField: "emailAddress",
                     fields: [{
                         name: "emailAddress"
+                    },{
+                        name: "emailAlerts"
                     },{
                         name: "emailSummaries"
                     },{
@@ -165,6 +171,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         flex:1
                     }, {
                         xtype:'checkcolumn',
+                        header: i18n._("Email Alerts"),
+                        dataIndex: "emailAlerts",
+                        width: 150,
+                        resizable: false
+                    }, {
+                        xtype:'checkcolumn',
                         header: i18n._("Email Summaries"),
                         dataIndex: "emailSummaries",
                         width: 150,
@@ -184,6 +196,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emptyText: i18n._("[enter email address]"),
                         allowBlank: false,
                         blankText: i18n._("The email address name cannot be blank."),
+                        width: 300
+                    },{
+                        xtype:'checkbox',
+                        dataIndex: "emailAlerts",
+                        fieldLabel: i18n._("Email Alerts"),
                         width: 300
                     },{
                         xtype:'checkbox',
@@ -282,6 +299,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     xtype: 'component',
                     margin: '0 0 10 0',
                     html: i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
+                }, {
+                    xtype: 'component',
+                    html: i18n._('Warning: Syslog logging can be computationally expensive for servers processing millions of events. Caution is advised.'),
+                    cls: 'warning',
+                    margin: '0 0 10 10'
                 }, {
                     xtype: 'radio',
                     boxLabel: Ext.String.format(i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),

@@ -167,28 +167,36 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             ArrayList<String> fixedReportAddressesWithoutUrl = new ArrayList<String>();
             if ( settings.getReportsUsers() != null) {
                 for ( ReportsUser user : settings.getReportsUsers() ) {
-                    if(user.getEmailSummaries()){
-                        if(user.getOnlineAccess()){
-                            fixedReportAddressesWithUrl.add(user.getEmailAddress());
-                        }else{
-                            fixedReportAddressesWithoutUrl.add(user.getEmailAddress());
-                        }
+                    if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) )
+                        continue;
+                    if ( ! user.getEmailSummaries() )
+                        continue;
+
+                    if (user.getOnlineAccess()) {
+                        fixedReportAddressesWithUrl.add(user.getEmailAddress());
+                    } else {
+                        fixedReportAddressesWithoutUrl.add(user.getEmailAddress());
                     }
                 }
             }
-            for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
-                if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
-                    continue;
-                fixedReportAddressesWithUrl.add(admin.getEmailAddress());
+            if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ) {
+                for ( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
+                    if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
+                        continue;
+                    if ( ! admin.getEmailSummaries() )
+                        continue;
+                    if ( admin.getEmailSummaries() )
+                        fixedReportAddressesWithUrl.add(admin.getEmailAddress());
+                }
             }
             
             FixedReports fixedReports = new FixedReports();
-            if(fixedReportAddressesWithoutUrl.size() > 0){
+            if (fixedReportAddressesWithoutUrl.size() > 0) {
                 for ( String address : fixedReportAddressesWithoutUrl )
                     logger.info("Sending Summary Reports: (no link)" + address);
                 fixedReports.send(fixedReportAddressesWithoutUrl, "");
             }
-            if(fixedReportAddressesWithUrl.size() > 0){
+            if (fixedReportAddressesWithUrl.size() > 0) {
                 for ( String address : fixedReportAddressesWithUrl )
                     logger.info("Sending Summary Reports (with link): " + address);
                 fixedReports.send(fixedReportAddressesWithUrl, "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/");
