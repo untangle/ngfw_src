@@ -389,7 +389,7 @@ public class ApplicationControlApp extends NodeBase
             List<ApplicationControlProtoRule> protoList = settings.getProtoRules();
 
             // look at every active session and apply the current proto rules
-            public boolean isMatch(Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
                 // find the application and if missing leave the session alone
                 String application = (String) attachments.get(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION);
