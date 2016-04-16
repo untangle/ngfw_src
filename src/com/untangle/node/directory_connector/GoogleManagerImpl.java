@@ -71,6 +71,15 @@ public class GoogleManagerImpl
             } catch (Exception ex) {
                 logger.warn("Error writing credentials.json.", ex);
             }
+        } else {
+            try {
+                File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
+                if ( creds.exists() )
+                    creds.delete();
+            } catch (Exception ex) {
+                logger.warn("Error deleting credentials.json.", ex);
+            }
+            
         }
     }
 
@@ -205,6 +214,13 @@ public class GoogleManagerImpl
         return null;
     }
 
+    public void disconnectGoogleDrive()
+    {
+        DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
+        directoryConnectorSettings.getGoogleSettings().setDriveRefreshToken( null );
+        directoryConnector.setSettings( directoryConnectorSettings );
+    }
+    
     private void startAuthorizationProcess( String dir )
     {
         if (driveProcIn != null || driveProcOut != null || driveProc != null) {

@@ -65,6 +65,8 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     var googleDriveStatus = this.panelGoogle.down('component[name=googleDriveStatus]');
                     googleDriveStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
                     googleDriveStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
+                    var disableButton = this.panelGoogle.down('button[name=disconnect_google_drive_button]');
+                    disableButton.setDisabled( !this.googleDriveConnected );
 
                     if ( this.googleDriveConnected ) {
                         this.refreshGoogleTask.stop();
@@ -805,13 +807,30 @@ Ext.define('Webui.untangle-node-directory-connector.settings', {
                     cls: (this.googleDriveConnected ? null : 'warning')
                 }, {
                     xtype: "button",
-                    margin: '10 0 0 0',
-                    name: 'configure_google_drive',
+                    margin: '10 10 0 0',
+                    name: 'configure_google_drive_button',
                     text: (this.googleDriveConnected ? i18n._("Reconfigure Google Drive") : i18n._("Configure Google Drive")),
                     iconCls: "action-icon",
                     handler: Ext.bind(function() {
                         this.refreshGoogleTask.start();
                         window.open(this.authorizationUrl);
+                    }, this)
+                }, {
+                    xtype: "button",
+                    margin: '10 0 0 0',
+                    name: 'disconnect_google_drive_button',
+                    text: i18n._("Disconnect Google Drive"),
+                    disabled: !this.googleDriveConnected,
+                    iconCls: "action-icon",
+                    handler: Ext.bind(function() {
+                        this.getGoogleManager().disconnectGoogleDrive();
+                        this.googleDriveConnected = false;
+
+                        var googleDriveStatus = this.panelGoogle.down('component[name=googleDriveStatus]');
+                        googleDriveStatus.setHtml((this.googleDriveConnected ? i18n._("The Google Connector is configured.") : i18n._("The Google Connector is unconfigured.")));
+                        googleDriveStatus.setStyle((this.googleDriveConnected ? {color:'green'} : {color:'red'}));
+                        var disableButton = this.panelGoogle.down('button[name=disconnect_google_drive_button]');
+                        disableButton.setDisabled( !this.googleDriveConnected );
                     }, this)
                 }]
             },{
