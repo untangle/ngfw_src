@@ -24,7 +24,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
         hitCount = missCount = bypassCount = systemCount = hitBytes = missBytes = policyId = 0;
     }
 
-    public WebCacheEvent(Long policyId,long hitCount,long missCount,long bypassCount,long systemCount,long hitBytes,long missBytes)
+    public WebCacheEvent(Integer policyId,long hitCount,long missCount,long bypassCount,long systemCount,long hitBytes,long missBytes)
     {
         this.hitCount = hitCount;
         this.missCount = missCount;
@@ -54,7 +54,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
     public void setMissBytes( long missBytes ) { this.missBytes = missBytes; }
 
     public Long getPolicyId() { return(policyId); }
-    public void setPolicyId( Long policyId ) { this.policyId = policyId; }
+    public void setPolicyId( Integer policyId ) { this.policyId = policyId; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
