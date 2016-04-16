@@ -13,7 +13,7 @@ public interface PolicyManager
     /**
      * Find the correct policy ID based on the Policy Manager rules for a provided session parameters
      */
-    Long findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort );
+    PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort );
     
     /**
      * @param child: The node to test if this is a child.
@@ -24,16 +24,28 @@ public interface PolicyManager
      *   The null rack is a child of every parent.
      *   The null rack is never the parent of any child.
      */
-    int getPolicyGenerationDiff( Long childId, Long parentId );
+    int getPolicyGenerationDiff( Integer childId, Integer parentId );
 
     /**
      * Returns the policy ID of the parent for the provided policy ID
      * Or null if the provided policy ID has no parent
      */
-    Long getParentPolicyId( Long policyId );
+    Integer getParentPolicyId( Integer policyId );
 
     /**
      * Return a list of all current policies Ids and names
      */
     ArrayList<JSONObject> getPoliciesInfo();
+
+    public class PolicyManagerResult
+    {
+        public PolicyManagerResult( Integer policyId, Integer policyRuleId )
+        {
+            this.policyId = policyId;
+            this.policyRuleId = policyRuleId;
+        }
+        
+        public Integer policyId;
+        public Integer policyRuleId;
+    }
 }

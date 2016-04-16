@@ -15,7 +15,7 @@ import org.json.JSONString;
 public class NodeSettings implements Serializable, JSONString, Comparable<NodeSettings>
 {
     private Long id = null;
-    private Long policyId = null;
+    private Integer policyId = null;
     private String nodeName = null;
     private NodeState targetState = NodeState.INITIALIZED;
     
@@ -28,7 +28,7 @@ public class NodeSettings implements Serializable, JSONString, Comparable<NodeSe
     
     public NodeSettings() {}
 
-    public NodeSettings(Long id, Long policyId, String nodeName)
+    public NodeSettings(Long id, Integer policyId, String nodeName)
     {
         this.id = id;
         this.policyId = policyId;
@@ -38,8 +38,8 @@ public class NodeSettings implements Serializable, JSONString, Comparable<NodeSe
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getPolicyId() { return policyId; }
-    public void setPolicyId(Long policyId) { this.policyId = policyId; }
+    public Integer getPolicyId() { return policyId; }
+    public void setPolicyId(Integer policyId) { this.policyId = policyId; }
 
     public String getNodeName() { return nodeName; }
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }

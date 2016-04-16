@@ -56,6 +56,7 @@ CREATE TABLE reports.sessions (
         hostname text,
         username text,
         policy_id int2,
+        policy_rule_id int2,
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
@@ -107,33 +108,10 @@ CREATE TABLE reports.sessions (
                                  "application_control_blocked",
                                  "application_control_flagged"])
 
-        sql_helper.drop_column('sessions','event_id') # 11.2 - drop unused column
-        sql_helper.drop_column('sessions','ips_blocked') # 11.2 - drop unused column
-        sql_helper.drop_column('sessions','ips_ruleid') # 11.2 - drop unused column
-        sql_helper.drop_column('sessions','ips_description') # 11.2 - drop unused column
-
-        sql_helper.add_column('sessions','protocol','int2') # 11.2
-        sql_helper.add_column('sessions','icmp_type','int2') # 11.2
-        sql_helper.add_column('sessions','bypassed','boolean') # 11.2
-        sql_helper.add_column('sessions','filter_prefix','text') #11.2
-
         sql_helper.add_column('sessions','application_control_category','text') #12.0
         sql_helper.add_column('sessions','entitled','boolean') #12.0
 
-        sql_helper.rename_column('sessions','capture_blocked','captive_portal_blocked') # 11.2
-        sql_helper.rename_column('sessions','capture_rule_index','captive_portal_rule_index') # 11.2
-        sql_helper.rename_column('sessions','classd_application','application_control_application') # 11.2
-        sql_helper.rename_column('sessions','classd_protochain','application_control_protochain') # 11.2
-        sql_helper.rename_column('sessions','classd_blocked','application_control_blocked') # 11.2
-        sql_helper.rename_column('sessions','classd_flagged','application_control_flagged') # 11.2
-        sql_helper.rename_column('sessions','classd_confidence','application_control_confidence') # 11.2
-        sql_helper.rename_column('sessions','classd_ruleid','application_control_ruleid') # 11.2
-        sql_helper.rename_column('sessions','classd_detail','application_control_detail') # 11.2
-        sql_helper.rename_column('sessions','bandwidth_priority','bandwidth_control_priority') # 11.2
-        sql_helper.rename_column('sessions','bandwidth_rule','bandwidth_control_rule') # 11.2
-        sql_helper.rename_column('sessions','https_ruleid','ssl_inspector_ruleid') # 11.2
-        sql_helper.rename_column('sessions','https_status','ssl_inspector_status') # 11.2
-        sql_helper.rename_column('sessions','https_detail','ssl_inspector_detail') # 11.2
+        sql_helper.add_column('sessions','policy_rule_id','int2') # 12.1
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):

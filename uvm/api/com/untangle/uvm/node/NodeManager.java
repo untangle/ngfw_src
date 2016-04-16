@@ -42,8 +42,8 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<Node> nodeInstances( Long policyId );
-    List<Long> nodeInstancesIds( Long policyId );
+    List<Node> nodeInstances( Integer policyId );
+    List<Long> nodeInstancesIds( Integer policyId );
 
     /**
      * Node instances by name policy, this gets the nodes in the parents to.
@@ -52,7 +52,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<Node> nodeInstances( String name, Long policyId );
+    List<Node> nodeInstances( String name, Integer policyId );
 
     /**
      * Node instances by name policy.
@@ -62,7 +62,7 @@ public interface NodeManager
      * @param parents true to fetch the nodes in the parents as well.
      * @return tids of corresponding nodes.
      */
-    List<Node> nodeInstances( String name, Long policyId, boolean parents );
+    List<Node> nodeInstances( String name, Integer policyId, boolean parents );
 
     /**
      * Get the <code>Node</code> for this nodeId
@@ -92,7 +92,7 @@ public interface NodeManager
      * @return the Node of the instance
      * @exception Exception if the instance cannot be created.
      */
-    Node instantiate( String name, Long policyId ) throws Exception;
+    Node instantiate( String name, Integer policyId ) throws Exception;
 
     /**
      * Create a new node instance under the default policy, or in

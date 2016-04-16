@@ -55,7 +55,8 @@ public abstract class NetcapHook implements Runnable
      * List of all of the nodes( PipelineConnectorImpls )
      */
     protected List<PipelineConnectorImpl> pipelineConnectors;
-    protected Long policyId = null;
+    protected Integer policyId = null;
+    protected Integer policyRuleId = null;
 
     protected List<NodeSessionImpl> sessionList = new ArrayList<NodeSessionImpl>();
     protected List<NodeSessionImpl> releasedSessionList = new ArrayList<NodeSessionImpl>();
@@ -225,13 +226,18 @@ public abstract class NetcapHook implements Runnable
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             if ( policyManager != null && entitled ) {
-                this.policyId  = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
-                                                             netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
-                                                             netcapSession.clientSide().client().host(), netcapSession.serverSide().server().host(),
-                                                             netcapSession.clientSide().client().port(), netcapSession.serverSide().server().port());
-            } else {
-                this.policyId = 1L; /* Default Policy */
+                PolicyManager.PolicyManagerResult result = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
+                                                                                       netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
+                                                                                       netcapSession.clientSide().client().host(), netcapSession.serverSide().server().host(),
+                                                                                       netcapSession.clientSide().client().port(), netcapSession.serverSide().server().port());
+                this.policyId  = result.policyId;
+                this.policyRuleId  = result.policyRuleId;
             }
+
+            if ( this.policyId == null )
+                this.policyId = 1; /* Default Policy */
+            if ( this.policyRuleId == null )
+                this.policyRuleId = 0; /* No rule */
 
             pipelineConnectors = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId, entitled );
             sessionGlobalState.setPipelineConnectorImpls(pipelineConnectors);
@@ -247,6 +253,7 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setUsername( username );
             sessionEvent.setHostname( hostname );
             sessionEvent.setPolicyId( policyId );
+            sessionEvent.setPolicyRuleId( policyRuleId );
             sessionEvent.setCClientAddr( clientSide.getClientAddr() );
             sessionEvent.setCClientPort( clientSide.getClientPort() );
             sessionEvent.setCServerAddr( clientSide.getServerAddr() );
@@ -463,7 +470,7 @@ public abstract class NetcapHook implements Runnable
         return this.serverSide;
     }
 
-    public Long getPolicyId()
+    public Integer getPolicyId()
     {
         return this.policyId;
     }

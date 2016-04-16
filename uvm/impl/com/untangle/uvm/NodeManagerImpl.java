@@ -126,12 +126,12 @@ public class NodeManagerImpl implements NodeManager
         return list;
     }
 
-    public List<Node> nodeInstances( String name, Long policyId )
+    public List<Node> nodeInstances( String name, Integer policyId )
     {
         return nodeInstances( name, policyId, true);
     }
 
-    public List<Node> nodeInstances( String name, Long policyId, boolean parents )
+    public List<Node> nodeInstances( String name, Integer policyId, boolean parents )
     {
         List<Node> list = new ArrayList<Node>(loadedNodesMap.size());
 
@@ -146,17 +146,17 @@ public class NodeManagerImpl implements NodeManager
         return list;
     }
 
-    public List<Node> nodeInstances( Long policyId )
+    public List<Node> nodeInstances( Integer policyId )
     {
         return getNodesForPolicy( policyId );
     }
 
-    public List<Long> nodeInstancesIds( Long policyId )
+    public List<Long> nodeInstancesIds( Integer policyId )
     {
         return nodeToIdList( nodeInstances( policyId ) );
     }
 
-    protected List<Node> visibleNodes( Long policyId )
+    protected List<Node> visibleNodes( Integer policyId )
     {
         List<Node> loadedNodes = nodeInstances();
         List<Node> list = new ArrayList<Node>(loadedNodes.size());
@@ -192,10 +192,10 @@ public class NodeManagerImpl implements NodeManager
 
     public Node instantiate( String nodeName ) throws Exception
     {
-        return instantiate( nodeName, 1L /* Default Policy ID */ );
+        return instantiate( nodeName, 1 /* Default Policy ID */ );
     }
 
-    public Node instantiate( String nodeName, Long policyId ) throws Exception
+    public Node instantiate( String nodeName, Integer policyId ) throws Exception
     {
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
@@ -229,8 +229,8 @@ public class NodeManagerImpl implements NodeManager
             for ( NodeSettings n2 : getSettings().getNodes() ) {
                 String nodeName1 = nodeName;
                 String nodeName2 = n2.getNodeName();
-                Long policyId1 = policyId;
-                Long policyId2 = n2.getPolicyId();
+                Integer policyId1 = policyId;
+                Integer policyId2 = n2.getPolicyId();
                 /**
                  * If the node name and policies are equal, they are dupes
                  */
@@ -704,7 +704,7 @@ public class NodeManagerImpl implements NodeManager
         return nodeProperties;
     }
 
-    private NodeSettings createNewNodeSettings( Long policyId, String nodeName )
+    private NodeSettings createNewNodeSettings( Integer policyId, String nodeName )
     {
         long newNodeId = settings.getNextNodeId();
 
@@ -724,33 +724,33 @@ public class NodeManagerImpl implements NodeManager
         return;
     }
 
-    private List<Long> getParentPolicies( Long policyId )
+    private List<Integer> getParentPolicies( Integer policyId )
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
-        List<Long> parentList = new ArrayList<Long>();
+        List<Integer> parentList = new ArrayList<Integer>();
         if (policyManager == null)
             return parentList;
 
-        for ( Long parentId = policyManager.getParentPolicyId(policyId) ; parentId != null ; parentId = policyManager.getParentPolicyId(parentId) ) {
+        for ( Integer parentId = policyManager.getParentPolicyId(policyId) ; parentId != null ; parentId = policyManager.getParentPolicyId(parentId) ) {
             parentList.add(parentId);
         }
 
         return parentList;
     }
 
-    private List<Node> getNodesForPolicy( Long policyId )
+    private List<Node> getNodesForPolicy( Integer policyId )
     {
         return getNodesForPolicy( policyId, true );
     }
 
-    private List<Node> getNodesForPolicy( Long policyId, boolean parents )
+    private List<Node> getNodesForPolicy( Integer policyId, boolean parents )
     {
-        List<Long> parentPolicies = null;
+        List<Integer> parentPolicies = null;
 
         if (parents && policyId != null)
             parentPolicies = getParentPolicies(policyId);
         else
-            parentPolicies = new ArrayList<Long>();
+            parentPolicies = new ArrayList<Integer>();
 
         /*
          * This is a list of loadedNodesMap.  Each index of the first list corresponds to its
@@ -773,7 +773,7 @@ public class NodeManagerImpl implements NodeManager
          * nodes in the policy.
          */
         for (Node node : loadedNodesMap.values()) {
-            Long nodePolicyId = node.getNodeSettings().getPolicyId();
+            Integer nodePolicyId = node.getNodeSettings().getPolicyId();
 
             /**
              * If its in the parent policy list - add it
@@ -851,7 +851,7 @@ public class NodeManagerImpl implements NodeManager
         return idList;
     }
 
-    private boolean policyEquals( Long policyId1, Long policyId2 )
+    private boolean policyEquals( Integer policyId1, Integer policyId2 )
     {
         return ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) );
     }

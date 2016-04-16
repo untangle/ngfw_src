@@ -88,7 +88,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all FTP, HTTP, SMTP, sessions */
-            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+            public boolean isMatch( Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
             {
                 /* Only look at TCP sessions */
                 if (protocol != 6 /* TCP */) {

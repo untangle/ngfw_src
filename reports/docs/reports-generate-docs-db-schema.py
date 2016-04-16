@@ -20,6 +20,7 @@ human_names = {
     'c_server_port' : 'Client-side Server Port',
     's_server_port' : 'Server-side Server Port',
     'policy_id' : 'Policy ID',
+    'policy_rule_id' : 'Policy Rule ID',
     'username' : 'Username',
     'hostname' : 'Hostname',
     'filter_prefix' : 'Filter Block',
@@ -480,6 +481,7 @@ dict['sessions'] = copy.deepcopy(generic)
 dict['sessions'].update({
     'table_description' : 'This table stores all scanned TCP/UDP sessions.',
     'protocol' : 'The IP protocol of session',
+    'policy_rule_id' : 'The ID of the matching policy rule (0 means none)',
     'icmp_type' : 'The ICMP type of session if ICMP',
     'end_time' : 'The time the session ended',
     'bypassed' : 'True if the session was bypassed, false otherwise',

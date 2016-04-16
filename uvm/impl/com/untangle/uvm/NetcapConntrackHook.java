@@ -128,7 +128,7 @@ public class NetcapConntrackHook implements NetcapCallback
             sessionEvent.setServerIntf( dstIntf ); 
             sessionEvent.setUsername( username ); 
             sessionEvent.setHostname( hostname ); 
-            sessionEvent.setPolicyId( 0l ); 
+            sessionEvent.setPolicyId( 0 ); 
             sessionEvent.setCClientAddr( cClientAddr ); 
             sessionEvent.setCClientPort( c_client_port ); 
             sessionEvent.setCServerAddr( cServerAddr ); 

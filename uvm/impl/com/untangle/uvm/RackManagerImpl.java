@@ -83,7 +83,7 @@ public class RackManagerImpl implements RackManager
         return RACK_MANAGER;
     }
 
-    public RackView getRackView( Long policyId )
+    public RackView getRackView( Integer policyId )
     {
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
@@ -123,7 +123,7 @@ public class RackManagerImpl implements RackManager
         Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(visibleNodes.size());
         for (Node visibleNode : visibleNodes) {
             Long nodeId = visibleNode.getNodeSettings().getId();
-            Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
+            Integer nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
             nodeMetrics.put( nodeId , visibleNode.getMetrics());
 
             if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
@@ -179,7 +179,7 @@ public class RackManagerImpl implements RackManager
         return new RackView(installableNodes, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
     }
 
-    public void instantiate(final String name, final Long policyId) throws Exception
+    public void instantiate(final String name, final Integer policyId) throws Exception
     {
         logger.info("instantiate( " + name + ")");
 

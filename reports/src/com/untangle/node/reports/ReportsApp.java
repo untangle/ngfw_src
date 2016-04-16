@@ -651,7 +651,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 testEvent.setSClientPort(1234);
                 testEvent.setCServerPort(80);
                 testEvent.setSServerPort(80);
-                testEvent.setPolicyId((long)1);
+                testEvent.setPolicyId(1);
                 testEvent.setUsername("test_username");
                 testEvent.setHostname("test_hostname");
                 logEvent(testEvent);

@@ -32,7 +32,8 @@ public class SessionEvent extends LogEvent
     private Integer sClientPort;
     private Integer cServerPort;
     private Integer sServerPort;
-    private Long policyId;
+    private Integer policyId;
+    private Integer policyRuleId;
     private String username;
     private String hostname;
     private String filterPrefix;
@@ -135,9 +136,15 @@ public class SessionEvent extends LogEvent
     /**
      * Policy that was applied for this pipeline.
      */
-    public Long getPolicyId() { return policyId; }
-    public void setPolicyId(Long policyId) { this.policyId = policyId; }
+    public Integer getPolicyId() { return policyId; }
+    public void setPolicyId(Integer policyId) { this.policyId = policyId; }
 
+    /**
+     * Policy rule ID that matched and set the policy (if any).
+     */
+    public Integer getPolicyRuleId() { return policyRuleId; }
+    public void setPolicyRuleId(Integer newValue) { this.policyRuleId = newValue; }
+    
     /**
      * The username associated with this session
      */
@@ -169,9 +176,9 @@ public class SessionEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
@@ -186,7 +193,8 @@ public class SessionEvent extends LogEvent
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getUsername());
         pstmt.setString(++i, getFilterPrefix());
-        pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));
+        pstmt.setInt(++i, (getPolicyId() == null ? 1 : getPolicyId() ));
+        pstmt.setInt(++i, (getPolicyRuleId() == null ? 0 : getPolicyRuleId() ));
         pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getCClientPort());
         pstmt.setObject(++i, getCServerAddr().getHostAddress(), java.sql.Types.OTHER);

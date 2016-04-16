@@ -102,7 +102,7 @@ public class Dispatcher
     public void killAllSessions()
     {
         UvmContextFactory.context().netcapManager().shutdownMatches( new SessionMatcher() {
-                public boolean isMatch( Long policyId,
+                public boolean isMatch( Integer policyId,
                                         short protocol,
                                         int clientIntf, int serverIntf,
                                         InetAddress clientAddr, InetAddress serverAddr,

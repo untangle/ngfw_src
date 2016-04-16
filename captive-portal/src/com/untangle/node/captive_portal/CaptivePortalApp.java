@@ -48,7 +48,7 @@ public class CaptivePortalApp extends NodeBase
 
     private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
-    private final Long policyId = getNodeSettings().getPolicyId();
+    private final Integer policyId = getNodeSettings().getPolicyId();
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
@@ -280,7 +280,7 @@ public class CaptivePortalApp extends NodeBase
 
             // for every session we have to check all the rules to make
             // sure we don't kill anything that shouldn't be captured
-            public boolean isMatch(Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
                 // if userAddress is not null and this session is for someone
                 // other than userAddress then we just leave it alone

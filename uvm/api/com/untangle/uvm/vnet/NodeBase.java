@@ -512,7 +512,7 @@ public abstract class NodeBase implements Node
     public void killAllSessions()
     {
         killMatchingSessions(new SessionMatcher() {
-                public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments ) { return true; }
+                public boolean isMatch( Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments ) { return true; }
             });
     }
 
@@ -704,7 +704,7 @@ public abstract class NodeBase implements Node
         stop( false );
     }
     
-    private final static Node startParent( String parent, Long policyId ) throws Exception
+    private final static Node startParent( String parent, Integer policyId ) throws Exception
     {
         if (null == parent) {
             return null;
@@ -727,10 +727,10 @@ public abstract class NodeBase implements Node
         }
     }
 
-    private final static Node getParentNode( String parent, Long childPolicyId )
+    private final static Node getParentNode( String parent, Integer childPolicyId )
     {
         for (Node node : UvmContextFactory.context().nodeManager().nodeInstances(parent)) {
-            Long policyId = node.getNodeSettings().getPolicyId();
+            Integer policyId = node.getNodeSettings().getPolicyId();
             if ( policyId == null || policyId.equals( childPolicyId ) )
                 return node;
         }

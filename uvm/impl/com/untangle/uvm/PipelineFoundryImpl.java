@@ -65,8 +65,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
      */
-    private static final Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnectorImpl>>>();
-    private static final Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> pipelineNonPremiumFoundryCache = new HashMap<Long, Map<Fitting, List<PipelineConnectorImpl>>>();
+    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<Integer, Map<Fitting, List<PipelineConnectorImpl>>>();
+    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineNonPremiumFoundryCache = new HashMap<Integer, Map<Fitting, List<PipelineConnectorImpl>>>();
     
     /**
      * Private constructor to ensure singleton
@@ -85,7 +85,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * "weld" is builds a list of all the interested pipelineAgents for a given session
      * It does so based on the given policyId and all the nodes/apps given subscriptions.
      */
-    public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Long policyId, boolean includePremium )
+    public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Integer policyId, boolean includePremium )
     {
         Long t0 = System.nanoTime();
         List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
@@ -232,10 +232,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
      */
-    private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Long policyId, Fitting fitting, boolean includePremium )
+    private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Integer policyId, Fitting fitting, boolean includePremium )
     {
         List<PipelineConnectorImpl> pipelineConnectorList = null;
-        Map<Long, Map<Fitting, List<PipelineConnectorImpl>>> cache;
+        Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> cache;
 
         if (includePremium)
             cache = pipelineFoundryCache;
@@ -297,7 +297,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private void addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
                                         List<PipelineConnectorImpl> availableConnectors,
-                                        Fitting fitting, Long policyId )
+                                        Fitting fitting, Integer policyId )
     {
         PipelineConnectorImpl connectorToAdd = null;
         
@@ -380,7 +380,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Remove "duplicate" nodes from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
      */
-    private void removeUnnecessaryPipelineConnectors( Long policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
+    private void removeUnnecessaryPipelineConnectors( Integer policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
     {
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
@@ -409,7 +409,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
             if (nodePolicyId == null) {
                 continue;
@@ -462,7 +462,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Long nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
 
             /* Keep items in the NULL Racks */
             if (nodePolicyId == null) {
@@ -502,7 +502,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * 2 if childId is the grandchild of parentId
      * etc
      */
-    public int getPolicyGenerationDiff(Long childId, Long parentId)
+    public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
 
@@ -526,7 +526,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This is true if policyId == nodePolicy (its a filtering app and lives in the policyId rack)
      * or if one of policyId's parents' policyId == nodePolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
      */
-    private boolean policyMatch( Long nodePolicy, Long policyId )
+    private boolean policyMatch( Integer nodePolicy, Integer policyId )
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
 
@@ -559,7 +559,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Recursively check the parent rack of the nodePolicy
          */
-        for ( Long parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
+        for ( Integer parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
             /**
              * does this node live in the parent of the session's policy?
              * if so then this node should process this session

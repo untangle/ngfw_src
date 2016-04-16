@@ -43,7 +43,7 @@ public class FirewallApp extends NodeBase
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch( Long policyId, short protocol,
+            public boolean isMatch( Integer policyId, short protocol,
                                     int clientIntf, int serverIntf,
                                     InetAddress clientAddr, InetAddress serverAddr,
                                     int clientPort, int serverPort,

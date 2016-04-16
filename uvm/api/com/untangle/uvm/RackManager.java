@@ -15,7 +15,7 @@ public interface RackManager
      * @param p policy.
      * @return visible nodes for this policy.
      */
-    RackView getRackView( Long policyId );
+    RackView getRackView( Integer policyId );
 
     /**
      * Install a Package in the Toolbox and instantiate in the Rack.
@@ -25,5 +25,5 @@ public interface RackManager
      * @exception Exception when <code>name</code> cannot
      *     be installed.
      */
-    void instantiate(String name, Long policyId) throws Exception;
+    void instantiate(String name, Integer policyId) throws Exception;
 }

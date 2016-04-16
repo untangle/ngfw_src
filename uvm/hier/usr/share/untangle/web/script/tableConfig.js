@@ -199,6 +199,8 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'policy_id'
                 }, {
+                    name: 'policy_rule_id'
+                }, {
                     name: 'c_client_addr',
                     sortType: 'asIp'
                 }, {
@@ -344,6 +346,11 @@ Ext.define('Ung.TableConfig', {
                     sortable: true,
                     dataIndex: 'policy_id',
                     renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                }, {
+                    header: i18n._('Policy Rule Id'),
+                    width: 60,
+                    sortable: true,
+                    dataIndex: 'policy_rule_id'
                 }, {
                     header: i18n._("Client Interface") ,
                     width: Ung.TableConfig.portFieldWidth,

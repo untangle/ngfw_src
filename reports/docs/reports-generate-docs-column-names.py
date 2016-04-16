@@ -29,6 +29,7 @@ dict = {
     'c_server_port' : i18n._('Client-side Server Port'),
     's_server_port' : i18n._('Server-side Server Port'),
     'policy_id' : i18n._('Policy ID'),
+    'policy_rule_id' : i18n._('Policy Rule ID'),
     'username' : i18n._('Username'),
     'hostname' : i18n._('Hostname'),
     'filter_prefix' : i18n._('Filter Block'),

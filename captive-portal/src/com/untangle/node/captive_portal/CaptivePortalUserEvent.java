@@ -21,13 +21,13 @@ public class CaptivePortalUserEvent extends LogEvent
     private String loginName;
     private String authenticationTypeValue;
     private String eventValue;
-    private Long policyId;
+    private Integer policyId;
 
     public CaptivePortalUserEvent()
     {
     }
 
-    public CaptivePortalUserEvent(Long policyId, InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
+    public CaptivePortalUserEvent(Integer policyId, InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
     {
         setPolicyId(policyId);
         setClientAddr(clientAddr);
@@ -48,8 +48,8 @@ public class CaptivePortalUserEvent extends LogEvent
     public EventType getEvent() { return EventType.valueOf(this.eventValue); }
     public void setEvent(EventType newEvent) { this.eventValue = newEvent.toString(); }
 
-    public Long getPolicyId() { return policyId; }
-    public void setPolicyId(Long policyId) { this.policyId = policyId; }
+    public Integer getPolicyId() { return policyId; }
+    public void setPolicyId(Integer policyId) { this.policyId = policyId; }
 
     public String getAuthenticationTypeValue() { return authenticationTypeValue; }
     public void setAuthenticationTypeValue(String newValue) { this.authenticationTypeValue = newValue; }
@@ -68,7 +68,7 @@ public class CaptivePortalUserEvent extends LogEvent
 
         int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
-        pstmt.setLong(++i, getPolicyId().longValue());
+        pstmt.setInt(++i, getPolicyId());
         pstmt.setString(++i, getLoginName());
         pstmt.setString(++i, getEvent().toString());
         pstmt.setString(++i, getAuthenticationTypeValue());

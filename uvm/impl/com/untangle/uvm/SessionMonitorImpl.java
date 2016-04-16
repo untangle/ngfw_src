@@ -150,7 +150,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     if (hook == null)
                         continue;
                         
-                    Long policyId = hook.getPolicyId();
+                    Integer policyId = hook.getPolicyId();
                     if (policyId == null)
                         session.setPolicy("");
                     else
