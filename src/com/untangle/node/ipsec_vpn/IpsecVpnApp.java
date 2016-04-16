@@ -46,7 +46,7 @@ public class IpsecVpnApp extends NodeBase
 
     private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
-    private final Long policyId = getNodeSettings().getPolicyId();
+    private final Integer policyId = getNodeSettings().getPolicyId();
     private final PipelineConnector[] connectors = new PipelineConnector[0];
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
