@@ -15,13 +15,13 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class SettingsChangesEvent extends LogEvent
 {
-    private String settings_file;
+    private String settingsFile;
     private String username = "localadmin";
     private String hostname = "127.0.0.1";
 
-    public SettingsChangesEvent( String settings_file, String username, String hostname )
+    public SettingsChangesEvent( String settingsFile, String username, String hostname )
     {
-        this.settings_file = settings_file;
+        this.settingsFile = settingsFile;
         if( username != null ){
             this.username = username;
         }
@@ -30,6 +30,15 @@ public class SettingsChangesEvent extends LogEvent
         }
     }
 
+    public String getSettingsFile() { return this.settingsFile; }
+    public void setSettingsFile( String newValue ) { this.settingsFile = newValue; }
+
+    public String getUsername() { return this.username; }
+    public void setUsername( String newValue ) { this.username = newValue; }
+
+    public String getHostname() { return this.hostname; }
+    public void setHostname( String newValue ) { this.hostname = newValue; }
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
@@ -42,7 +51,7 @@ public class SettingsChangesEvent extends LogEvent
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
-        pstmt.setString(++i, this.settings_file);
+        pstmt.setString(++i, this.settingsFile);
         pstmt.setString(++i, this.username);
         pstmt.setString(++i, this.hostname);
 
@@ -53,7 +62,7 @@ public class SettingsChangesEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        String summary = "SettingsChangesEvent" + " " + this.settings_file;
+        String summary = "SettingsChangesEvent" + " " + this.settingsFile;
         return summary;
     }
     
