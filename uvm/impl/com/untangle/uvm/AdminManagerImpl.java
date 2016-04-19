@@ -617,7 +617,8 @@ public class AdminManagerImpl implements AdminManager
                                  "com.untangle.node.reporting.SqlCondition",
                                  "com.untangle.node.reporting.AlertRule",
                                  "com.untangle.node.reporting.AlertRuleMatcher",
-                                 "com.untangle.node.reporting"
+                                 "com.untangle.node.reporting",
+                                 "reportingUsers"
         };
         newNames = new String[] {"com.untangle.node.reports.ReportsApp",
                                  "com.untangle.node.reports.ReportsSettings",
@@ -628,7 +629,8 @@ public class AdminManagerImpl implements AdminManager
                                  "com.untangle.node.reports.SqlCondition",
                                  "com.untangle.node.reports.AlertRule",
                                  "com.untangle.node.reports.AlertRuleCondition",
-                                 "com.untangle.node.reports"
+                                 "com.untangle.node.reports",
+                                 "reportsUsers"
         };
         dirName = System.getProperty("uvm.settings.dir") + "/" + oldName;
         dir = new File(dirName);
