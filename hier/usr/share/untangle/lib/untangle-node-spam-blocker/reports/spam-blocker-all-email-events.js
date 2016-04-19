@@ -1,5 +1,6 @@
 {
     "category": "Spam Blocker",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "addr_kind",
@@ -8,17 +9,17 @@
             "value": "B"
         },
         {
-            "column": "spam_blocker_is_spam",
+            "column": "spam_blocker_action",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
-            "value": "TRUE"
+            "value": "NOT NULL"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_is_spam","spam_blocker_action","spam_blocker_score","spam_blocker_tests_string"],
-    "description": "All emails marked as Spam.",
-    "displayOrder": 20,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "description": "All emails scanned by Spam Blocker.",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "mail_addrs",
-    "title": "All Spam Events",
-    "uniqueId": "spam-blocker-IAYT0HUPVW"
+    "title": "All Email Events",
+    "uniqueId": "spam-blocker-30UKJZEGWZ"
 }

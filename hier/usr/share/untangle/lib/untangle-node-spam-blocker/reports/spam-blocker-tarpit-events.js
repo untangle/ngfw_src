@@ -1,5 +1,6 @@
 {
     "category": "Spam Blocker",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "vendor_name",
@@ -10,8 +11,8 @@
     ],
     "defaultColumns": ["time_stamp","hostname","ipaddr"],
     "description": "All email sessions that were tarpitted.",
-    "displayOrder": 40,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "displayOrder": 1040,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "smtp_tarpit_events",
     "title": "Tarpit Events",
     "uniqueId": "spam-blocker-N4LAAV3BP7"
