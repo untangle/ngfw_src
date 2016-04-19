@@ -53,8 +53,8 @@ public class DashboardManagerImpl implements DashboardManager
                 DashboardWidgetSettings widget = iterator.next();
 
                 // change Events widgets to Report widgets
-                if ( "Events".equals(widget.getType()) )
-                    widget.setType("Report");
+                if ( "EventEntry".equals(widget.getType()) )
+                    widget.setType("ReportEntry");
 
                 // Hardware widget is gone, replace with Resources
                 if ( "Hardware".equals(widget.getType()) ) {
@@ -131,7 +131,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setEntryId("network-2nx8FA4VCB"); // Network - Interface Usage
         widgets.add( widgetSettings);
 
-        widgetSettings = new DashboardWidgetSettings("EventEntry");
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600*24);
         widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
