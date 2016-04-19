@@ -304,6 +304,14 @@ Ext.define('Webui.config.localDirectory', {
                 );
                 return false;
             }
+            if (user.password !=null && user.password.indexOf("\"") != -1) {
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._('The password must not contain any quotation marks.') + ' ' + i18n._('row') + ':' + (i+1),
+                    Ext.bind(function () {
+                        this.tabs.setActiveTab(this.gridUsers);
+                    }, this)
+                );
+                return false;
+            }
         }
         return true;
     },

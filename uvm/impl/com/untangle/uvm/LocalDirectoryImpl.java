@@ -243,7 +243,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 String userPassword = new String(rawPassword);
                 chap.write(user.getUsername() + "\t\t");
                 chap.write("untangle-l2tp\t\t");
-                chap.write(userPassword + "\t\t");
+                chap.write("\"" + userPassword + "\"\t\t");
                 chap.write("*\n");
             }
 
