@@ -6,10 +6,9 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
-        "count(*) as detected",
-        "sum(blocked::int) as blocked"
+        "count(*) as detected"
     ],
-    "textString": "Intrusion Prevention detected {0} attacks of which {1} were blocked.", 
+    "textString": "Intrusion Prevention detected {0} attacks.", 
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Intrusion Prevention Summary",
