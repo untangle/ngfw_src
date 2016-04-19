@@ -1,5 +1,6 @@
 {
     "category": "Policy Manager",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "policy_id",
@@ -10,8 +11,8 @@
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","policy_id","s_server_addr","s_server_port"],
     "description": "Lists all sessions with the policy manager rack that handled the session.",
-    "displayOrder": 10,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "sessions",
     "title": "All Events",
     "uniqueId": "policy-manager-AXJ7OLAG76"
