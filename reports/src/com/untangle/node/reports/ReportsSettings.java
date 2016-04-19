@@ -40,7 +40,6 @@ public class ReportsSettings implements Serializable, JSONString
     private String syslogProtocol = "UDP";
 
     private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
-    private LinkedList<EventEntry> eventEntries  = new LinkedList<EventEntry>();
 
     private boolean googleDriveUploadData = false;
     private boolean googleDriveUploadCsv = false;
@@ -74,9 +73,6 @@ public class ReportsSettings implements Serializable, JSONString
 
     public LinkedList<ReportEntry> getReportEntries() { return reportEntries; }
     public void setReportEntries( LinkedList<ReportEntry> newValue ) { this.reportEntries = newValue; }
-
-    public LinkedList<EventEntry> getEventEntries() { return eventEntries; }
-    public void setEventEntries( LinkedList<EventEntry> newValue ) { this.eventEntries = newValue; }
 
     /**
      * Syslog destination hostname.

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
-import com.untangle.node.reports.EventEntry;
 import com.untangle.node.reports.ReportEntry;
 import com.untangle.node.reports.ReportsManager;
 import com.untangle.node.reports.ReportsApp;
@@ -91,7 +90,6 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     public class ReportsManagerImpl extends com.untangle.node.reports.ReportsManagerImpl
     {
         public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
-        public void setEventEntries( List<EventEntry> newEntries ) { throw new RuntimeException("Unable to set the event entries."); }
         public void saveReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to set the event entries."); }
     }
 }

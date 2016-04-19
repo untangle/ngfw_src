@@ -15,24 +15,26 @@ import org.json.JSONObject;
  */
 public interface ReportsManager
 {
+    /**
+     * Get all report entries
+     */
     List<ReportEntry> getReportEntries();
 
+    /**
+     * Get all report entries of the specified category
+     */
     List<ReportEntry> getReportEntries( String category );
     
+    /**
+     * Set all report entries
+     */
     void setReportEntries( List<ReportEntry> newEntries );
 
-    List<EventEntry> getEventEntries();
-
     /**
-     * Get the event entries for a category 
-     */
-    List<EventEntry> getEventEntries( String category );
-
-    /**
-     * Get the event entry in the specified category with the specified title
+     * Get the report entry in the specified category with the specified title
      * This is used in the ATS tests
      */
-    EventEntry getEventEntry( String category, String title );
+    ReportEntry getReportEntry( String category, String title );
     
     /**
      * Save an individual report entry
@@ -50,6 +52,7 @@ public interface ReportsManager
      * Get the data for a specific report entry with the specified parameters  in the last timeframeSec seconds
      */
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final int timeframeSec, final int limit );
+
     /**
      * Get the data for a specific report entry with the specified parameters
      */
@@ -58,22 +61,22 @@ public interface ReportsManager
     /**
      * Query events in the reports database
      */
-    ArrayList<org.json.JSONObject> getEvents( final EventEntry entry, final SqlCondition[] extraConditions, final int limit );
+    ArrayList<org.json.JSONObject> getEvents( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database
      */
-    ResultSetReader getEventsResultSet( final EventEntry entry, final SqlCondition[] extraConditions, final int limit );
+    ResultSetReader getEventsResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database in the last timeframeSec seconds
      */
-    ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit);
+    ResultSetReader getEventsForTimeframeResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit );
     
     /**
      * Query events in the reports database, within a given date range
      */
-    ResultSetReader getEventsForDateRangeResultSet( final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
+    ResultSetReader getEventsForDateRangeResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 
     /**
      * Get a list of all tables in the database
@@ -98,16 +101,16 @@ public interface ReportsManager
     /**
      * Get the map of unavailable Applications
      */
-    public Map<String, String> getUnavailableApplicationsMap();
+    Map<String, String> getUnavailableApplicationsMap();
     
     /**
      * Get the metadata hints for the condition quick add function
      */
-    org.json.JSONObject getConditionQuickAddHints();
+    JSONObject getConditionQuickAddHints();
     
     /**
-     * Tests if reports is enabled, that is if reports will be
-     * generated nightly.  Currently this is the same thing as "is the
+     * Tests if reports is enabled.
+     * Currently this is the same thing as "is the
      * reports node installed and turned on."
      *
      * @return true if reports is enabled, false otherwise.

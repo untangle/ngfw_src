@@ -30,7 +30,8 @@ public class ReportEntry implements Serializable, JSONString
         TEXT, /* A text entry */
         PIE_GRAPH, /* A top X pie chart graph */
         TIME_GRAPH, /* A graph with time (minutes) on the x-axis */
-        TIME_GRAPH_DYNAMIC /* A graph with time (minutes) on the x-axis with dynamic columns */
+        TIME_GRAPH_DYNAMIC, /* A graph with time (minutes) on the x-axis with dynamic columns */
+        EVENT_LIST /* A list of events (event log) */
     };
 
     public static enum TimeDataInterval {
@@ -90,6 +91,8 @@ public class ReportEntry implements Serializable, JSONString
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
 
+    private String[] defaultColumns; /* The default columns for an event list report entry */
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -192,6 +195,9 @@ public class ReportEntry implements Serializable, JSONString
     public String[] getColors() { return this.colors; }
     public void setColors( String[] newValue ) { this.colors = newValue; }
     
+    public String[] getDefaultColumns() { return this.defaultColumns; }
+    public void setDefaultColumns( String[] newValue ) { this.defaultColumns = newValue; }
+
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
         return toSql( conn, startDate, endDate, null );
@@ -227,6 +233,9 @@ public class ReportEntry implements Serializable, JSONString
             
         case TEXT:
             return toSqlText( conn, startDate, endDate, allConditions );
+
+        case EVENT_LIST:
+            return toSqlEventList( conn, startDate, endDate, allConditions );
         }
 
         throw new RuntimeException("Unknown Graph type: " + this.type);
@@ -253,6 +262,17 @@ public class ReportEntry implements Serializable, JSONString
         //     return TimeDataInterval.TENMINUTE;
         // else
         //     return TimeDataInterval.MINUTE;
+    }
+
+    private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    {
+        String query = ""; 
+        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        query +=  "SELECT * FROM reports." + this.table + " WHERE " + dateCondition;
+        query += conditionsToString( allConditions );
+        query += " ORDER BY time_stamp DESC";
+
+        return sqlToStatement( conn, query, allConditions );
     }
 
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )

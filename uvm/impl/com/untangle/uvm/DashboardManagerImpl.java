@@ -52,6 +52,10 @@ public class DashboardManagerImpl implements DashboardManager
             for ( ListIterator<DashboardWidgetSettings> iterator = widgets.listIterator() ; iterator.hasNext() ; ) {
                 DashboardWidgetSettings widget = iterator.next();
 
+                // change Events widgets to Report widgets
+                if ( "Events".equals(widget.getType()) )
+                    widget.setType("Report");
+
                 // Hardware widget is gone, replace with Resources
                 if ( "Hardware".equals(widget.getType()) ) {
                     iterator.remove();

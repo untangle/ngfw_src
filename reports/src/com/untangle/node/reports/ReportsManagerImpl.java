@@ -198,50 +198,19 @@ public class ReportsManagerImpl implements ReportsManager
         node.setSettings( settings );
     }
 
-    public List<EventEntry> getEventEntries()
+    public ReportEntry getReportEntry( String category, String title )
     {
-        return node.getSettings().getEventEntries();
-    }
-
-    public List<EventEntry> getEventEntries( String category )
-    {
-        List<EventEntry> allEventEntries = node.getSettings().getEventEntries();
-        LinkedList<EventEntry> entries = new LinkedList<EventEntry>();
-
-        for ( EventEntry entry: allEventEntries ) {
-            if ( category == null || category.equals( entry.getCategory() ) )
-                 entries.add( entry );
-        }
-        return entries;
-    }
-
-    public EventEntry getEventEntry( String category, String title )
-    {
-        LinkedList<EventEntry> entries = node.getSettings().getEventEntries();
+        LinkedList<ReportEntry> entries = node.getSettings().getReportEntries();
 
         if ( category == null || title == null )
             return null;
         
-        for ( EventEntry entry : entries ) {
+        for ( ReportEntry entry : entries ) {
             if ( category.equals(entry.getCategory()) && title.equals(entry.getTitle()) )
                 return entry;
         }
 
         return null;
-    }
-    
-    public void setEventEntries( List<EventEntry> newEntries )
-    {
-        if ( node == null ) {
-            throw new RuntimeException("Reports node not found");
-        }
-
-        LinkedList<EventEntry> newEventEntries = new LinkedList<EventEntry>(newEntries);
-        updateSystemEventEntries( newEventEntries, false );
-
-        ReportsSettings settings = node.getSettings();
-        settings.setEventEntries( newEventEntries );
-        node.setSettings( settings );
     }
     
     public void saveReportEntry( ReportEntry entry )
@@ -408,31 +377,30 @@ public class ReportsManagerImpl implements ReportsManager
         return array;
     }
 
-    public ArrayList<org.json.JSONObject> getEvents(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
+    public ArrayList<org.json.JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
             return null;
         }
+        if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
+            throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
+        if ( node != null ) {
+            // only flush if there are less than 10k events pending
+            // if there are more than 10k then events are currently being flushed and the queue can be quite long
+            // as such, just return the results for the events already in the DB instead of waiting up to several minutes
+            if (node.getEventsPendingCount() < 10000)
+                node.flushEvents();
+        }
 
-        int extraConditionsLen = 0;
-        if ( extraConditions != null )
-            extraConditionsLen = extraConditions.length;
-        int conditionsLen = 0;
-        if ( entry.getConditions() != null )
-            conditionsLen = entry.getConditions().length;
-        
-        SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
-        if ( entry.getConditions() != null )
-            System.arraycopy( entry.getConditions(), 0, conditions, 0, conditionsLen );
-        if ( extraConditions != null )
-            System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
+        Connection conn = node.getDbConnection();
+        PreparedStatement statement = entry.toSql( conn, null, null, extraConditions );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
-        logger.info("Statement          : " + entry.toSqlQuery( extraConditions ));
+        logger.info("Statement          : " + statement);
 
         long t0 = System.currentTimeMillis();
-        ArrayList<org.json.JSONObject> results =  ReportsApp.eventReader.getEvents( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, null, null );
+        ArrayList<org.json.JSONObject> results =  ReportsApp.eventReader.getEvents( conn, statement, entry.getTable(), limit );
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
@@ -440,7 +408,7 @@ public class ReportsManagerImpl implements ReportsManager
         return results;
     }
 
-    public ResultSetReader getEventsResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit)
+    public ResultSetReader getEventsResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments"); 
@@ -449,7 +417,7 @@ public class ReportsManagerImpl implements ReportsManager
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
     }
 
-    public ResultSetReader getEventsForTimeframeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit)
+    public ResultSetReader getEventsForTimeframeResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit)
     {
         if (entry == null) {
             logger.warn("Invalid arguments"); 
@@ -464,12 +432,14 @@ public class ReportsManagerImpl implements ReportsManager
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, startDate, null );
     }
 
-    public ResultSetReader getEventsForDateRangeResultSet(final EventEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)
+    public ResultSetReader getEventsForDateRangeResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)
     {
         if (entry == null) {
             logger.warn("Invalid arguments");
             return null;
         }
+        if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
+            throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
         if ( node != null ) {
             // only flush if there are less than 10k events pending
             // if there are more than 10k then events are currently being flushed and the queue can be quite long
@@ -478,34 +448,20 @@ public class ReportsManagerImpl implements ReportsManager
                 node.flushEvents();
         }
 
-        logger.debug( "getEvents(): " + entry.toSqlQuery( extraConditions ) );
-
         Date startDate = start;
-        
         if ( startDate == null ) {
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
             logger.info("startDate not specified, using 1 day ago: " + startDate);
         }
-
-        int extraConditionsLen = 0;
-        if ( extraConditions != null )
-            extraConditionsLen = extraConditions.length;
-        int conditionsLen = 0;
-        if ( entry.getConditions() != null )
-            conditionsLen = entry.getConditions().length;
         
-        SqlCondition[] conditions = new SqlCondition[ conditionsLen + extraConditionsLen ];
-        if ( entry.getConditions() != null )
-            System.arraycopy( entry.getConditions(), 0, conditions, 0, conditionsLen );
-        if ( extraConditions != null )
-            System.arraycopy( extraConditions, 0, conditions, conditionsLen, extraConditionsLen );
-
+        Connection conn = node.getDbConnection();
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
-        logger.info("Statement          : " + entry.toSqlQuery( extraConditions ));
+        logger.info("Statement          : " + statement);
 
         long t0 = System.currentTimeMillis();
-        ResultSetReader result = ReportsApp.eventReader.getEventsResultSet( entry.toSqlQuery( extraConditions ), entry.getTable(), conditions, limit, startDate, endDate );
+        ResultSetReader result = ReportsApp.eventReader.getEventsResultSet( conn, statement, limit);
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
@@ -624,64 +580,6 @@ public class ReportsManagerImpl implements ReportsManager
         return;
     }
 
-    protected void updateSystemEventEntries( List<EventEntry> existingEntries, boolean saveIfChanged )
-    {
-        boolean updates = false;
-        if ( existingEntries == null )
-            existingEntries = new LinkedList<EventEntry>();
-        
-        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/events/*.js' -print";
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
-        if (result.getResult() != 0) {
-            logger.warn("Failed to find event entries: \"" + cmd + "\" -> "  + result.getResult());
-            return;
-        }
-        try {
-            List<String> seenUniqueIds = new LinkedList<String>();
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("Creating Schema: ");
-            for ( String line : lines ) {
-                logger.debug("Reading file: " + line);
-                try {
-                    EventEntry newEntry = UvmContextFactory.context().settingsManager().load( EventEntry.class, line );
-
-                    /* do some error checking around unique ID */
-                    if ( newEntry.getUniqueId() == null ) {
-                        logger.error("System Event Entry missing uniqueId: " + line);
-                    }
-                    if ( seenUniqueIds.contains( newEntry.getUniqueId() ) ) {
-                        logger.error("System Event Entry duplicate uniqueId: " + line);
-                    } else {
-                        seenUniqueIds.add( newEntry.getUniqueId() );
-                    }
-                    
-                    EventEntry oldEntry = findEventEntry( existingEntries, newEntry.getUniqueId() );
-                    if ( oldEntry == null ) {
-                        logger.info( "Event Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
-                        existingEntries.add( newEntry );
-                        updates = true;
-                    } else {
-                        boolean changed = updateEventEntry( existingEntries, newEntry, oldEntry );
-                        if ( changed ) {
-                            updates = true;
-                            logger.info( "event Entries Update: Updated \"" + newEntry.getTitle() + "\"");
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.warn( "Failed to read event entry from: " + line, e );
-                }
-            }
-        } catch (Exception e) {
-            logger.warn( "Failed to check for new entries.", e );
-        }
-
-        if ( updates && saveIfChanged ) {
-            setEventEntries( existingEntries );
-        }
-        
-        return;
-    }
-
     private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
@@ -696,20 +594,6 @@ public class ReportsManagerImpl implements ReportsManager
         return null;
     }
 
-    private EventEntry findEventEntry( List<EventEntry> entries, String uniqueId )
-    {
-        if ( entries == null || uniqueId == null ) {
-            logger.warn("Invalid arguments: " + uniqueId, new Exception());
-            return null;
-        }
-        
-        for ( EventEntry entry : entries ) {
-            if (uniqueId.equals( entry.getUniqueId() ) )
-                return entry;
-        }
-        return null;
-    }
-    
     private boolean updateReportEntry( List<ReportEntry> entries, ReportEntry newEntry, ReportEntry oldEntry )
     {
         String newEntryStr = newEntry.toJSONString();
@@ -732,28 +616,6 @@ public class ReportsManagerImpl implements ReportsManager
         return true;
     }
 
-    private boolean updateEventEntry( List<EventEntry> entries, EventEntry newEntry, EventEntry oldEntry )
-    {
-        String newEntryStr = newEntry.toJSONString();
-        String oldEntryStr = oldEntry.toJSONString();
-
-        // no changed are needed if two are identical
-        if ( oldEntryStr.equals( newEntryStr ) )
-            return false;
-
-        // remove old entry
-        if ( ! entries.remove( oldEntry ) ) {
-            logger.warn("Failed to update event entry: " + newEntry.getUniqueId());
-            return false;
-        }
-
-        // copy "changeable" attributes from old settings, replace old entry with new
-        //newEntry.setEnabled( oldEntry.getEnabled() );
-        entries.add( newEntry );
-
-        return true;
-    }
-    
     private ResultSet getColumnMetaData( String tableName )
     {
         Connection conn = node.getDbConnection();

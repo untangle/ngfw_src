@@ -465,7 +465,7 @@ Ext.define('Webui.config.dashboardManager', {
                     xtype:'numberfield',
                     name: "refreshIntervalSec",
                     minValue: 10,
-                    fieldLabel: i18n._( "Refresh Interval" ),
+                    fieldLabel: i18n._( "Refresh Interval" )
                 }, {
                     xtype: 'label',
                     html: i18n._( "(seconds)")+" - "+i18n._( "Leave blank for no Auto Refresh" ),
@@ -513,7 +513,7 @@ Ext.define('Webui.config.dashboardManager', {
                 dataIndex: 'displayColumns',
                 items: [{
                     xtype: 'label',
-                    html: i18n._('It is recomanded to select 4 or less Display Columns to prevent having to scroll horizontally.'),
+                    html: i18n._('It is recommended to select 4 or less Display Columns to prevent having to scroll horizontally.'),
                     cls: 'boxlabel',
                     width: 250
                 }, {

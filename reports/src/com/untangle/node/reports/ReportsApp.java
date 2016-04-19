@@ -332,7 +332,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
          * Report updates
          */
         ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
-        ReportsManagerImpl.getInstance().updateSystemEventEntries( settings.getEventEntries(), true );
         
         /* intialize schema (if necessary) */
         this.createSchemas();
@@ -747,7 +746,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     throw new RuntimeException("Invalid arguments");
 
                 String name = arg1;
-                EventEntry query = (EventEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
+                ReportEntry query = (ReportEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
                 SqlCondition[] conditions;
                 String columnListStr = arg4;
                 Date startDate = getDate(arg5);
