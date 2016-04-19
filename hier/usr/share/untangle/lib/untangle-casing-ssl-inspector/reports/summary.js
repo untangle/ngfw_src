@@ -1,7 +1,7 @@
 {
     "uniqueId": "ssl-inspector-ggDy9pSApA",
-    "category": "HTTPS Inspector",
-    "description": "A summary of HTTPS Inspector actions.",
+    "category": "SSL Inspector",
+    "description": "A summary of SSL Inspector actions.",
     "displayOrder": 10,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
@@ -17,9 +17,9 @@
             "value": "not null"
         }
     ],
-    "textString": "HTTPS Inspector scanned {0} sessions and inspected {1} sessions.", 
+    "textString": "SSL Inspector scanned {0} sessions and inspected {1} sessions.", 
     "readOnly": true,
     "table": "sessions",
-    "title": "HTTPS Inspector Summary",
+    "title": "SSL Inspector Summary",
     "type": "TEXT"
 }

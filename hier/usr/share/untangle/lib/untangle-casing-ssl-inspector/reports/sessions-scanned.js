@@ -1,6 +1,6 @@
 {
     "uniqueId": "ssl-inspector-F10QTQJPXF",
-    "category": "HTTPS Inspector",
+    "category": "SSL Inspector",
     "description": "The amount of SSL sessions over time.",
     "displayOrder": 100,
     "enabled": true,

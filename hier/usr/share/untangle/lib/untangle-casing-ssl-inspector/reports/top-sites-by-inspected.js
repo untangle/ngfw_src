@@ -1,6 +1,6 @@
 {
     "uniqueId": "ssl-inspector-pqIdaeonC2",
-    "category": "HTTPS Inspector",
+    "category": "SSL Inspector",
     "description": "The number of inspected sessions grouped by site.",
     "displayOrder": 200,
     "enabled": true,

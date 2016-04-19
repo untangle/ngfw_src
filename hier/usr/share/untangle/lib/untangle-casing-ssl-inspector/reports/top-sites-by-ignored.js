@@ -1,6 +1,6 @@
 {
     "uniqueId": "ssl-inspector-UCVS4IhqjG",
-    "category": "HTTPS Inspector",
+    "category": "SSL Inspector",
     "description": "The number of ignored sessions grouped by site.",
     "displayOrder": 201,
     "enabled": true,
