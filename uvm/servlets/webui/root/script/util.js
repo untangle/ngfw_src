@@ -90,8 +90,8 @@ Ext.define('Ung.Util', {
             setSizeToRack: function () {
                 if(Ung.Main && Ung.Main.viewport) {
                     var objSize = Ung.Main.viewport.getSize();
-                    objSize.width = objSize.width - Ung.Main.menuWidth;
-                    this.setPosition(Ung.Main.menuWidth, 0);
+                    objSize.height = objSize.height - 66;
+                    this.setPosition(0, 66);
                     this.setSize(objSize);
                 } else {
                     this.maximize();

@@ -190,7 +190,9 @@ Ext.define("Ung.Main", {
                     items: [{
                         xtype: 'button',
                         html: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
-                        cls: 'main-menu-btn'
+                        cls: 'main-menu-btn',
+                        href: this.getHelpLink(null),
+                        hrefTarget: '_blank'
                     }, {
                         xtype: 'button',
                         html: '<i class="material-icons">account_circle</i> <span>' + i18n._('Account') + '</span>',
@@ -1323,7 +1325,6 @@ Ext.define("Ung.Main", {
                         iconCls: 'icon-help',
                         text: i18n._('Help with Administration Alerts'),
                         handler: function() {
-                            //helpSource: 'admin_alerts'
                             Ung.Main.openHelp('admin_alerts');
                         }
                     }]
@@ -1432,7 +1433,7 @@ Ext.define("Ung.Main", {
     // build policies select box
     buildPolicies: function () {
         this.updatePolicySelector();
-        //this.checkForAlerts();
+        this.checkForAlerts();
         this.checkForIE();
 
         Ung.Main.loadRackView();

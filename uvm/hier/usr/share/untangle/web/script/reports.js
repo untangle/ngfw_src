@@ -4,11 +4,14 @@
 
 Ext.define('Ung.panel.Reports', {
     extend : 'Ext.Panel',
-    layout: "border",
+    layout: 'border',
+    name: 'panelReports',
+    //title: i18n._('Reports'),
     border: 0,
     autoRefreshEnabled: false,
     autoRefreshInterval: 10, //seconds
     extraConditions: null,
+    reportsManager: null,
     //allReports: null,
     items: [{
         region: 'north',

@@ -873,9 +873,9 @@ Ext.define('Ung.charts', {
                 type: newType
             };
             if (entry.columnOverlapped) {
-                //_newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
+                _newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
             } else {
-                //_newOptions.color = chart.options.colors[i];
+                _newOptions.color = chart.options.colors[i];
             }
             _newOptions.color = chart.options.colors[i];
             chart.series[i].update(_newOptions, false);
