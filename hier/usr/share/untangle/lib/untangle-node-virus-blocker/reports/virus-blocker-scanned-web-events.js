@@ -1,18 +1,19 @@
 {
     "category": "Virus Blocker",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "virus_blocker_clean",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
-            "value": "TRUE"
+            "value": "NOT NULL"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
-    "description": "Scanned HTTP sessions marked clean.",
-    "displayOrder": 12,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "description": "All HTTP sessions scanned by Virus Blocker.",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "http_events",
-    "title": "Clean Web Events",
-    "uniqueId": "virus-blocker-KT063UBCR6"
+    "title": "Scanned Web Events",
+    "uniqueId": "virus-blocker-CLE9XCOTQ3"
 }

@@ -1,18 +1,19 @@
 {
     "category": "Virus Blocker",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "virus_blocker_clean",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
-            "value": "TRUE"
+            "value": "NOT NULL"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","username","uri","virus_blocker_clean","virus_blocker_name","s_server_addr"],
-    "description": "Scanned FTP sessions marked clean.",
-    "displayOrder": 32,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "description": "All FTP sessions scanned by Virus Blocker.",
+    "displayOrder": 1030,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "ftp_events",
-    "title": "Clean Ftp Events",
-    "uniqueId": "virus-blocker-YJ85M0V1KK"
+    "title": "Scanned Ftp Events",
+    "uniqueId": "virus-blocker-FV61X33RXZ"
 }

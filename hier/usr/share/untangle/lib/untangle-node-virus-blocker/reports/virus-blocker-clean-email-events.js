@@ -1,5 +1,6 @@
 {
     "category": "Virus Blocker",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "addr_kind",
@@ -11,14 +12,14 @@
             "column": "virus_blocker_clean",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "is",
-            "value": "FALSE"
+            "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
-    "description": "Infected email sessions blocked by Virus Blocker.",
-    "displayOrder": 21,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+        "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
+    "description": "Scanned email sessions marked clean.",
+    "displayOrder": 1022,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "mail_addrs",
-    "title": "Infected Email Events",
-    "uniqueId": "virus-blocker-P6WT1M7P80"
+    "title": "Clean Email Events",
+    "uniqueId": "virus-blocker-M3HILGQBQJ"
 }
