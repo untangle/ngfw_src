@@ -1,5 +1,6 @@
 {
     "category": "Application Control",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "application_control_application",
@@ -10,8 +11,8 @@
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","application_control_application","application_control_protochain","application_control_blocked","application_control_flagged","application_control_confidence","application_control_detail"],
     "description": "All sessions scanned by Application Control.",
-    "displayOrder": 40,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "displayOrder": 1040,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "sessions",
     "title": "All Sessions",
     "uniqueId": "application-control-RF1TG8CCTZ"
