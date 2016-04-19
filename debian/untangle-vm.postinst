@@ -24,6 +24,16 @@ fi
 
 # 12.1 upgrade
 sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
+
+# remove references to old distros
+sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\spicanto/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\sseagull/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\selectra/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\sthunder/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\shayate/d'  -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\scrypton/d' -i /etc/apt/sources.list.d/untangle.list
+
 rm -f /var/log/restart-uvm.log
 
 exit 0
