@@ -1,18 +1,19 @@
 {
     "category": "WAN Failover",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "success",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
-            "value": "false"
+            "value": "true"
         }
     ],
     "defaultColumns": ["time_stamp","interface_id","name","description","success"],
-    "description": "All tests that resulted in failure.",
-    "displayOrder": 21,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "description": "All tests that resulted in success.",
+    "displayOrder": 1022,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "wan_failover_test_events",
-    "title": "Failed Test Events",
-    "uniqueId": "wan-failover-DXFBPITOOV"
+    "title": "Success Test Events",
+    "uniqueId": "wan-failover-Y40VX375IH"
 }
