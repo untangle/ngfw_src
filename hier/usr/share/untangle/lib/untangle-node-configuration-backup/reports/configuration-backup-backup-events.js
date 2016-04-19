@@ -1,10 +1,11 @@
 {
     "category": "Configuration Backup",
+    "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","success","destination","description"],
     "description": "All Configuration Backup events.",
-    "displayOrder": 10,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "configuration_backup_events",
     "title": "Backup Events",
     "uniqueId": "configuration-backup-62GNQHLSA4"
