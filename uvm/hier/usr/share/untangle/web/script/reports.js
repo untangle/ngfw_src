@@ -110,7 +110,7 @@ Ext.define('Ung.panel.Reports', {
                 }],
                 listeners: {
                     select: {
-                        fn: function(el, record) {
+                        fn: function (el, record) {
                             this.buildReportEntries(record);
                         },
                         scope: this
@@ -214,6 +214,11 @@ Ext.define('Ung.panel.Reports', {
                                     itemId: 'reportChart',
                                     layout: 'fit',
                                     border: 0,
+                                    items: [{
+                                        xtype: 'panel',
+                                        itemId: 'highchart',
+                                        border: 0
+                                    }],
                                     listeners: {
                                         resize: Ext.bind(function () {
                                             if (this.chart) {
@@ -265,7 +270,8 @@ Ext.define('Ung.panel.Reports', {
                                     handler: Ext.bind(function () {
                                         this.customizeReport();
                                     }, this)
-                                }]}, {
+                                }]
+                            }, {
                                 xtype: 'grid',
                                 itemId: 'eventContainer',
                                 //layout: 'fit',
@@ -580,14 +586,14 @@ Ext.define('Ung.panel.Reports', {
             }
             //_categoryMenuItems.push('-');
 
-            var currentApplications = result.list;
+            var currentApplications = result.list, _item;
             if (currentApplications) {
                 var app;
                 for (i = 0; i < currentApplications.length; i += 1) {
                     app = currentApplications[i];
                     if (app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support') {
 
-                        var _item = Ext.create('Ung.grid.Category', {
+                        _item = Ext.create('Ung.grid.Category', {
                             text: app.displayName,
                             category: app.displayName,
                             icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_17x17.png'
@@ -894,10 +900,13 @@ Ext.define('Ung.panel.Reports', {
 
     loadReportEntry: function (entry) {
         this.entry = entry;
+        /*
         if (this.chart) {
             this.chart.destroy();
             this.chart = null;
+            Highcharts.charts = Highcharts.charts.filter(function (n) { return n != undefined; });
         }
+        */
 
         this.centerContainer.setActiveItem('reportContainer');
         this.reportContainer.setTitle({
@@ -910,7 +919,7 @@ Ext.define('Ung.panel.Reports', {
 
         this.reportContainer.setLoading(i18n._('Loading report... '));
 
-        this.reportChart.removeAll(true);
+        //this.reportChart.removeAll(true);
         //this.reportData.setCollapsed(true);
         this.reportData.getStore().loadData([]);
         //this.entriesList.setCollapsed(false);
@@ -928,23 +937,14 @@ Ext.define('Ung.panel.Reports', {
                 break;
             case 'TIME_GRAPH':
             case 'TIME_GRAPH_DYNAMIC':
-                this.reportChart.add({
-                    xtype: 'panel',
-                    name: 'chart',
-                    border: 0
-                });
-                this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('[name=chart]').body, false);
+                this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false);
                 break;
             default:
-                this.reportChart.add({
-                    xtype: 'panel',
-                    name: 'chart',
-                    border: 0
-                });
                 //entry.chartType = 'pie';
-                this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('[name=chart]').body, false);
+                this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
             }
             this.loadReportData(result.list);
+            //console.log(Highcharts.charts);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
@@ -1043,7 +1043,7 @@ Ext.define('Ung.panel.Reports', {
 
             for (i = 0; i < this.entry.timeDataColumns.length; i += 1) {
                 column = this.entry.timeDataColumns[i].split(" ").splice(-1)[0];
-                title = seriesRenderer ? seriesRenderer(column) : column;
+                title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
                 storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
@@ -1109,11 +1109,7 @@ Ext.define('Ung.panel.Reports', {
                     console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
                 }
             }
-            /*
-             tableConfig.columns.push({
-             flex: 1
-             });
-             */
+            console.log(tableConfig.columns);
             this.eventContainer.defaultTableConfig = tableConfig;
         }
 

@@ -260,7 +260,7 @@ Ext.define('Ung.charts', {
                 zoomType: 'x',
                 renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
                 //marginBottom: !forDashboard ? 40 : 50,
-                //marginTop: !forDashboard ? 10,
+                marginTop: !forDashboard ? 20 : 10,
                 //padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
                 animation: false,
@@ -445,7 +445,7 @@ Ext.define('Ung.charts', {
                     //shadow: true,
                     animation: false,
                     dataGrouping: {
-                        approximation: 'sum'
+                        //approximation: 'sum'
                     },
                     marker: {
                         enabled: false,
@@ -481,11 +481,11 @@ Ext.define('Ung.charts', {
      * @returns {Array}      - the series array
      */
     setTimeSeries: function (entry, data, chart) {
-        var i, j, _data, _seriesOptions = [];
+        var i, j, _data, _seriesOptions = [], _seriesRenderer, _column;
 
         if (entry.type === 'TIME_GRAPH_DYNAMIC') {
             entry.timeDataColumns = [];
-            var _column, _iterator = 1;
+            var _iterator = 1;
             while (entry.timeDataColumns.length === 0) {
                 for (_column in data[data.length - _iterator]) {
                     if (data[data.length - _iterator].hasOwnProperty(_column)) {
@@ -505,24 +505,16 @@ Ext.define('Ung.charts', {
         }
 
         for (i = 0; i < entry.timeDataColumns.length; i += 1) {
-            // special case series naming for interface usage
-            // adding 'id' to refeer to the actual data properties
-            // TODO: check other special cases
-            if (entry.seriesRenderer === 'interface') {
-                _seriesOptions[i] = {
-                    id: entry.timeDataColumns[i],
-                    name: entry.seriesRenderer + ' [' + entry.timeDataColumns[i] + '] ',
-                    grouping: entry.columnOverlapped ? false : true,
-                    pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
-                };
-            } else {
-                _seriesOptions[i] = {
-                    id: entry.timeDataColumns[i].split(' ').splice(-1)[0],
-                    name: entry.timeDataColumns[i].split(' ').splice(-1)[0],
-                    grouping: entry.columnOverlapped ? false : true,
-                    pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
-                };
+            if (!Ext.isEmpty(entry.seriesRenderer)) {
+                _seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
             }
+            _column = entry.timeDataColumns[i].split(" ").splice(-1)[0];
+            _seriesOptions[i] = {
+                id: _column,
+                name: _seriesRenderer ? _seriesRenderer(_column) + ' [' + _column + ']' : _column,
+                grouping: entry.columnOverlapped ? false : true,
+                pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
+            };
 
             _data = [];
             for (j = 0; j < data.length; j += 1) {
@@ -881,10 +873,11 @@ Ext.define('Ung.charts', {
                 type: newType
             };
             if (entry.columnOverlapped) {
-                _newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
+                //_newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
             } else {
-                _newOptions.color = chart.options.colors[i];
+                //_newOptions.color = chart.options.colors[i];
             }
+            _newOptions.color = chart.options.colors[i];
             chart.series[i].update(_newOptions, false);
         }
         chart.redraw();
