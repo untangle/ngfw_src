@@ -1,18 +1,19 @@
 {
     "category": "SSL Inspector",
+    "type": "EVENT_LIST",
     "conditions": [
         {
             "column": "ssl_inspector_status",
             "javaClass": "com.untangle.node.reports.SqlCondition",
             "operator": "=",
-            "value": "BLOCKED"
+            "value": "IGNORED"
         }
     ],
     "defaultColumns": ["time_stamp","hostname","username","s_server_addr","s_server_port","s_server_port","ssl_inspector_status","ssl_inspector_ruleid","ssl_inspector_detail"],
-    "description": "Events where traffic was blocked because it did not contain a valid SSL request, and the Block Invalid Traffic option was enabled.",
-    "displayOrder": 40,
-    "javaClass": "com.untangle.node.reports.EventEntry",
+    "description": "Events where traffic was not or could not be inspected, so the traffic was completely ignored and not analyzed by any applications or services.",
+    "displayOrder": 1030,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "sessions",
-    "title": "Blocked Sessions",
-    "uniqueId": "ssl-inspector-VUH391EPRT"
+    "title": "Ignored Sessions",
+    "uniqueId": "ssl-inspector-4U15DL2DZM"
 }
