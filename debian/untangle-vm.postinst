@@ -64,6 +64,12 @@ sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
 # in 12.0 we rewrite stable-120 to stable-120x
 sed -e 's/stable-120\s/stable-120x /g' -i /etc/apt/sources.list.d/untangle.list
 
+# 12.0.1 reportingUsers conversion fix
+# We missed this in 12.0
+if [ -d /usr/share/untangle/settings/untangle-node-reports ] ; then
+    sed -e 's/"reportingUsers"/"reportsUsers"/' -i /usr/share/untangle/settings/untangle-node-reports/*
+fi
+
 ourInit apache2 reload
 
 exit 0
