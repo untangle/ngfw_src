@@ -45,10 +45,24 @@ if [ -z "$2" ]; then
     fi
 fi
 
-# 12.0 upgrade, change sources.list
-sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
 # remove old directory
 rm -rf /usr/share/untangle/work
+
+# remove references to old distros
+sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\spicanto/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\sseagull/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\selectra/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\sthunder/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\shayate/d'  -i /etc/apt/sources.list.d/untangle.list
+sed -e '/\scrypton/d' -i /etc/apt/sources.list.d/untangle.list
+
+# 12.0 upgrade, change sources.list
+sed -e 's/stable-112\s/stable-120 /g' -i /etc/apt/sources.list.d/untangle.list
+
+# in order to differentiate stable-120 11.2 boxes and stable-120 12.0 boxes
+# in 12.0 we rewrite stable-120 to stable-120x
+sed -e 's/stable-120\s/stable-120x /g' -i /etc/apt/sources.list.d/untangle.list
 
 ourInit apache2 reload
 
