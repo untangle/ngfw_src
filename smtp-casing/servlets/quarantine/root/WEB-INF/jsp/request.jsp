@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
 <head>
@@ -19,7 +20,7 @@
     <script type="text/javascript">
         Ext.onReady(function() {
             Ung.Request.init({
-                companyName: '${companyName}',
+                companyName: "${fn:replace(companyName,'"','')}",
             })
         });
     </script>

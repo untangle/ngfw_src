@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html xmlns:uvm="http://java.untangle.com/jsp/uvm">
 <head>
     <meta charset="UTF-8"/>
@@ -21,12 +22,12 @@
     <script type="text/javascript">
         Ext.onReady(function() {
             Ung.Inbox.init({
-                token : '${currentAuthToken}',
-                address : '${currentAddress}',
-                forwardAddress : '${forwardAddress}',
-                companyName: '${companyName}',
-                currentAddress: '${currentAddress}',
-                quarantineDays : '${quarantineDays}',
+                token : "${currentAuthToken}",
+                address : "${currentAddress}",
+                forwardAddress : "${forwardAddress}",
+                companyName: "${fn:replace(companyName,'"','')}",
+                currentAddress: "${fn:replace(currentAddress,'"','')}",
+                quarantineDays : ${quarantineDays},
                 safelistData : ${safelistData},
                 remapsData : ${remapsData}
             })
