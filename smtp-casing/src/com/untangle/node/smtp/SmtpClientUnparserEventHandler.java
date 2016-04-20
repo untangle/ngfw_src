@@ -29,6 +29,15 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.sendDataToServer(data);
+            session.release();
+            return;
+        }
+
         logger.warn("Received data when expect object");
         throw new RuntimeException("Received data when expect object");
     }
@@ -36,6 +45,15 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.sendDataToClient(data);
+            session.release();
+            return;
+        }
+
         logger.warn("Received data when expect object");
         throw new RuntimeException("Received data when expect object");
     }
@@ -43,6 +61,14 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.release();
+            return;
+        }
+
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
@@ -50,6 +76,14 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.release();
+            return;
+        }
+
         unparse( session, obj, true );
     }
 

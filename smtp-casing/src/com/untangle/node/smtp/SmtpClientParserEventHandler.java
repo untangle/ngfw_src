@@ -11,8 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.InternetHeaders;
 
+import javax.mail.internet.InternetHeaders;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.mime.HeaderNames;
@@ -23,7 +23,6 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.util.AsciiUtil;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -66,12 +65,30 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.sendDataToServer(data);
+            session.release();
+            return;
+        }
+
         parse( session, data, false, false );
     }
 
     @Override
     public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.sendDataToClient(data);
+            session.release();
+            return;
+        }
+
         logger.warn("Received data when expect object");
         throw new RuntimeException("Received data when expect object");
     }
@@ -79,6 +96,14 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.release();
+            return;
+        }
+
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
@@ -86,6 +111,14 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
+        // grab the SSL Inspector status attachment and release if set to false
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
+        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
+            session.release();
+            return;
+        }
+
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
@@ -296,7 +329,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
                     }
 
                     if (cmd.getType() == CommandType.STARTTLS) {
-                        if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER) != null) {
+                        if (session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT) != null) {
                             logger.debug("Skipping STARTTLS passthru because the SSL Inspector is active");
                         }
                         else {
