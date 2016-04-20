@@ -25,30 +25,42 @@ public class SslInspectorSettings implements Serializable
     private boolean javaxDebug;
     private boolean enabled;
 
-    private boolean client_SSLv2Hello = true;
-    private boolean client_SSLv3 = false;
-    private boolean client_TLSv10 = true;
-    private boolean client_TLSv11 = true;
-    private boolean client_TLSv12 = true;
+    private boolean client_SSLv2Hello;
+    private boolean client_SSLv3;
+    private boolean client_TLSv10;
+    private boolean client_TLSv11;
+    private boolean client_TLSv12;
 
-    private boolean server_SSLv2Hello = true;
-    private boolean server_SSLv3 = false;
-    private boolean server_TLSv10 = true;
-    private boolean server_TLSv11 = true;
-    private boolean server_TLSv12 = true;
+    private boolean server_SSLv2Hello;
+    private boolean server_SSLv3;
+    private boolean server_TLSv10;
+    private boolean server_TLSv11;
+    private boolean server_TLSv12;
 
     // constructors -----------------------------------------------------------
 
     public SslInspectorSettings()
     {
         ignoreList = new LinkedList<SslInspectorRule>();
-        processEncryptedMailTraffic = true;
+        processEncryptedMailTraffic = false;
         processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
         serverFakeHostname = true;
         serverBlindTrust = false;
         javaxDebug = false;
         enabled = true;
+
+        client_SSLv2Hello = true;
+        client_SSLv3 = false;
+        client_TLSv10 = true;
+        client_TLSv11 = true;
+        client_TLSv12 = true;
+
+        server_SSLv2Hello = true;
+        server_SSLv3 = false;
+        server_TLSv10 = true;
+        server_TLSv11 = true;
+        server_TLSv12 = true;
     }
 
     // accessors --------------------------------------------------------------
