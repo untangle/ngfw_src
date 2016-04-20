@@ -856,7 +856,7 @@ public class AdminManagerImpl implements AdminManager
         // if new spamassassin sigs do not exist, update them now
         try {
             if ( ! (new File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
-                String output = UvmContextFactory.context().execManager().execOutput("/etc/cron.daily/spamassassin");
+                UvmContextFactory.context().execManager().exec("nohup /etc/cron.daily/spamassassin >/dev/null 2>&1 &");
             }
         } catch (Exception e) {
             logger.warn("Exception",e);
