@@ -20,7 +20,25 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
         super( nodeSettings, nodeProperties, new SpamAssassinScanner() );
     }
 
-    private void readNodeSettings()
+    @Override
+    public void setSettings(SpamSettings newSettings)
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
+
+        try {
+            settingsManager.save( settingsFile, newSettings);
+        } catch (Exception exn) {
+            logger.error("Could not save node settings", exn);
+            return;
+        }
+
+        super.setSettings(newSettings);
+    }
+    
+    @Override
+    protected void preInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
@@ -50,31 +68,17 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
         } catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
-    }
 
-    @Override
-    public void setSettings(SpamSettings newSettings)
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
-
+        // 12.1 special - try to download spamassassin sigs if they do not exist
         try {
-            settingsManager.save( settingsFile, newSettings);
-        } catch (Exception exn) {
-            logger.error("Could not save node settings", exn);
-            return;
+            if ( ! (new java.io.File("/var/lib/spamassassin/3.004000/updates_spamassassin_org.cf")).exists() ) {
+                UvmContextFactory.context().execManager().exec("nohup sleep 120 && /etc/cron.daily/spamassassin >/dev/null 2>&1 &");
+            }
+        } catch (Exception e) {
+            logger.warn("Exception",e);
         }
-
-        super.setSettings(newSettings);
-    }
-    
-    @Override
-    protected void preInit()
-    {
-        readNodeSettings();
-        SpamSettings ps = getSettings();
-        initSpamDnsblList(ps);
+        
+        initSpamDnsblList(getSettings());
     }
 
     @Override
