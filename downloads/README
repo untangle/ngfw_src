@@ -1,5 +1,6 @@
 apache-ant: used to build other things in download
 apache-tomcat: used in the untangle-vm (servlets)
+geoip2: MaxMind GeoIP stuff used in the untangle-vm GeographyManager
 logging-log4j: used in the untangle-vm (logging)
 velocity: used in templates for quarantine email
 httpcomponents-client: httpclient for settings manager (uvm), license manager, other HTTP requests

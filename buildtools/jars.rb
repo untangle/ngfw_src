@@ -89,12 +89,18 @@ class Jars
     const_set(:Jstl, [ Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/jstl.jar'),
                        Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/standard.jar') ])
 
+    const_set(:GeoIP, [ Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-annotations-2.7.0.jar'),
+                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-databind-2.7.0.jar'),
+                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-core-2.7.0.jar'),
+                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/maxmind-db-1.2.0.jar'),
+                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/geoip2-2.6.0.jar')])
+
     ## Groups used for compiling
     # This is available to everything?
     const_set(:Base, Jars.makeGroup(Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
-                                   Slf4j, DnsJava, Selenium))
+                                   Slf4j, DnsJava, Selenium, GeoIP))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end

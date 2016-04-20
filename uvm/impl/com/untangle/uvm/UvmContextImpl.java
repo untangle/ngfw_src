@@ -78,6 +78,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private RackManagerImpl rackManager;
     private NodeManagerImpl nodeManager;
     private CertificateManagerImpl certificateManager;
+    private GeographyManagerImpl geographyManager;
     private DaemonManagerImpl daemonManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -155,6 +156,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public CertificateManager certificateManager()
     {
         return this.certificateManager;
+    }
+
+    public GeographyManager geographyManager()
+    {
+        return this.geographyManager;
     }
 
     public DaemonManager daemonManager()
@@ -841,6 +847,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
         this.certificateManager = new CertificateManagerImpl();
+
+        this.geographyManager = new GeographyManagerImpl();
 
         this.daemonManager = new DaemonManagerImpl();
 

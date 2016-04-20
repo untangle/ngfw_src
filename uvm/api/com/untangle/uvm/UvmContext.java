@@ -83,6 +83,13 @@ public interface UvmContext
     CertificateManager certificateManager();
 
     /**
+     * Get the GeographyManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    GeographyManager geographyManager();
+
+    /**
      * Get the DaemonManager singleton for this instance
      *
      * @return the singleton
