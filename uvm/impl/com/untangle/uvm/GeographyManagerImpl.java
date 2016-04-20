@@ -30,9 +30,10 @@ public class GeographyManagerImpl implements GeographyManager
     {
         try {
             chmCache = new CHMCache();
-            databaseFile = new File("GeoLite2-City.mmdb");
+            databaseFile = new File("/var/cache/untangle-geoip/GeoLite2-City.mmdb");
             databaseReader = new DatabaseReader.Builder(databaseFile).withCache(chmCache).build();
             initFlag = true;
+            logger.info("Initialized GeographyManager");
         } catch (Exception exn) {
             logger.warn("Exception initializing geography manager", exn);
         }
