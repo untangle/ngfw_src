@@ -90,6 +90,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
                     margin: '0 5 0 5',
                     minWidth: 200,
                     text: i18n._("Download Root Certificate"),
+                    iconCls: 'action-icon',
                     handler: Ext.bind(function() {
                         var downloadForm = document.getElementById('downloadForm');
                         downloadForm["type"].value = "root_certificate_download";
