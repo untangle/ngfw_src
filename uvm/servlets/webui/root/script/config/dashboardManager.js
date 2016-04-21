@@ -1,3 +1,7 @@
+/*global
+ Ext, Ung, i18n, rpc, setTimeout, clearTimeout, console, window, document, Highcharts
+ */
+
 Ext.define('Webui.config.dashboardManager', {
     extend: 'Ext.panel.Panel',
     name: 'dashboardManager',
@@ -7,7 +11,7 @@ Ext.define('Webui.config.dashboardManager', {
     padding: '0 0 0 0',
     layout: 'fit',
     border: false,
-    initComponent: function() {
+    initComponent: function () {
         this.breadcrumbs = [{
             title: i18n._('Dashboard Manager')
         }];
@@ -16,22 +20,22 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Information'),
             description: i18n._('Information'),
             singleInstance: true
-        },{
+        }, {
             name: 'Resources',
             title: i18n._('Resources'),
             description: i18n._('Resources'),
             singleInstance: true
-        },{
+        }, {
             name: 'CPULoad',
             title: i18n._('CPU Load'),
             description: i18n._('CPU Load'),
             singleInstance: true
-        },{
+        }, {
             name: 'NetworkInformation',
             title: i18n._('Network Information'),
             description: i18n._('Network Information'),
             singleInstance: true
-        },{
+        }, {
             name: 'NetworkLayout',
             title: i18n._('Network Layout'),
             description: i18n._('Network Layout'),
@@ -41,11 +45,6 @@ Ext.define('Webui.config.dashboardManager', {
             title: i18n._('Report'),
             displayMode: 'big',
             hasRefreshInterval: true
-        },{
-            name: 'EventEntry',
-            title: i18n._('Events'),
-            displayMode: 'big',
-            hasRefreshInterval: true
         }];
         this.widgetsMap = Ung.Util.createRecordsMap(this.widgetsConfig, "name");
         this.items = this.buildPanelDashboardWidgets();
@@ -53,7 +52,7 @@ Ext.define('Webui.config.dashboardManager', {
         this.callParent(arguments);
     },
     needDashboardReload: false,
-    closeWindow: function() {
+    closeWindow: function () {
         if(this.needDashboardReload) {
             Ung.dashboard.loadDashboard();
         }
@@ -64,36 +63,37 @@ Ext.define('Webui.config.dashboardManager', {
         if (!this.isVisible()) {
             return;
         }
-        rpc.dashboardManager.getSettings(Ext.bind(function(result, exception) {
+        rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
             var widgets = [];
-            if(result && result.widgets && result.widgets.list) {
+            if (result && result.widgets && result.widgets.list) {
                 widgets = result.widgets.list;
             }
             this.dashboardSettings = result;
-            handler({javaClass:"java.util.LinkedList", list: widgets}, exception);
+            handler({javaClass: "java.util.LinkedList", list: widgets}, exception);
         }, this));
     },
-    resetSettingsToDefault: function() {
+    resetSettingsToDefault: function () {
         Ext.MessageBox.confirm(i18n._("Warning"),
                 i18n._("This will overwrite the current dashboard settings with the defaults.") + "<br/><br/>" +
                 i18n._("Do you want to continue?"),
-                Ext.bind(function(btn, text) {
-                    if (btn == 'yes') {
-                        rpc.dashboardManager.resetSettingsToDefault(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            this.needDashboardReload = true;
-                            this.gridDashboardWidgets.reload();
-                            var me = this;
-                            Ext.Function.defer(function() {
-                                me.save();
-                            }, 300);
-                        }, this));
-                    }
-                }, this));
-        
+                Ext.bind(function (btn, text) {
+                if (btn == 'yes') {
+                    rpc.dashboardManager.resetSettingsToDefault(Ext.bind(function (result, exception) {
+                        if (Ung.Util.handleException(exception)) {
+                            return;
+                        }
+                        this.needDashboardReload = true;
+                        this.gridDashboardWidgets.reload();
+                        var me = this;
+                        Ext.Function.defer(function() {
+                            me.save();
+                        }, 300);
+                    }, this));
+                }
+            }, this));
     },
     // Dashboard Widgets Panel
-    buildPanelDashboardWidgets: function() {
+    buildPanelDashboardWidgets: function () {
         var me = this;
         // map some extra icons
         var icon_mappings = {
@@ -104,7 +104,7 @@ Ext.define('Webui.config.dashboardManager', {
             'shield': '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-shield_17x17.png',
             'system': '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_system.png'
         };
-        this.gridDashboardWidgets = Ext.create('Ung.grid.Panel',{
+        this.gridDashboardWidgets = Ext.create('Ung.grid.Panel', {
             cls: 'dashboard-grid',
             settingsCmp: this,
             //hasReorder: true,
@@ -120,7 +120,7 @@ Ext.define('Webui.config.dashboardManager', {
             scale: 'medium',
             //rowLines: false,
             viewConfig: {
-                getRowClass: function(record, rowIndex, rowParams, store){
+                getRowClass: function (record, rowIndex, rowParams, store){
                     console.log(record);
                     return ((rowIndex % 2) == 0) ? "even-class" : "odd-class";
                 },
@@ -143,10 +143,10 @@ Ext.define('Webui.config.dashboardManager', {
                 scale: 'medium',
                 cls: 'material-button',
                 text: '<i class="material-icons">close</i> <span>' +  i18n._('Close') + '</span>',
-                handler: Ext.bind(function() {
+                handler: Ext.bind(function () {
                     if (this.gridDashboardWidgets.isDirty()) {
                         Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-                            Ext.bind(function(btn) {
+                            Ext.bind(function (btn) {
                                 if (btn == 'yes') {
                                     this.gridDashboardWidgets.clearDirty();
                                     this.up('[name=dashboardManager]').hide();
@@ -163,7 +163,7 @@ Ext.define('Webui.config.dashboardManager', {
                 scale: 'medium',
                 cls: 'material-button',
                 text: '<i class="material-icons" style="color: green;">save</i> <span>' +  i18n._('Apply') + '</span>',
-                handler: Ext.bind(function() {
+                handler: Ext.bind(function () {
                     this.save();
                 }, this)
             }],
@@ -176,23 +176,21 @@ Ext.define('Webui.config.dashboardManager', {
             fields: [{
                 name: "type",
                 type: 'string'
-            },{
+            }, {
                 name: "refreshIntervalSec"
             }],
             columns: [{
                 xtype: 'actioncolumn',
                 width: 40,
                 dataIndex: "type",
-                handler: function() {},
-                renderer: Ext.bind(function(value, metaData, record) {
+                handler: function () {},
+                renderer: Ext.bind(function (value, metaData, record) {
                     if (record.data.entryId) {
                         var _app = record.data.entryId.substring(0, record.data.entryId.lastIndexOf('-')).toLowerCase();
                         if (icon_mappings.hasOwnProperty(_app)) {
                             return '<img src="' + icon_mappings[_app] + '"/>';
-                        } else {
-                            return '<img src="/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-' + _app + '_42x42.png"/>';
                         }
-
+                        return '<img src="/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-' + _app + '_42x42.png"/>';
                     }
                     return '<i class="material-icons" style="color: #999;">drag_handle</i>';
                 }, this)
@@ -200,7 +198,7 @@ Ext.define('Webui.config.dashboardManager', {
                 xtype: 'checkcolumn',
                 width: 30,
                 dataIndex: 'enabled',
-                renderer: function(value, metaData, record) {
+                renderer: function (value, metaData, record) {
                     var _app = null, _isInstallable = null;
                     if (record.data.entryId) {
                         if (!rpc.reportsEnabled) {
@@ -217,20 +215,19 @@ Ext.define('Webui.config.dashboardManager', {
                     }
                     if (_isInstallable) {
                         return '<i class="material-icons" style="color: #FFB300;">warning</i>';
-                    } else {
-                        if (value) {
-                            return '<i class="material-icons" style="color: rgba(103,189,74,.9);">visibility</i>';
-                        }
-                        return '<i class="material-icons" style="color: #777;">visibility_off</i>';
                     }
+                    if (value) {
+                        return '<i class="material-icons" style="color: rgba(103,189,74,.9);">visibility</i>';
+                    }
+                    return '<i class="material-icons" style="color: #777;">visibility_off</i>';
                 }
             }, {
                 header: i18n._("Details"),
                 dataIndex: "type",
                 width: 200,
                 flex: 1,
-                renderer: Ext.bind(function(value, metaData, record) {
-                    if (value === "ReportEntry" || value === "EventEntry") {
+                renderer: Ext.bind(function (value, metaData, record) {
+                    if (value === "ReportEntry") {
                         var _isInstallable = false;
                         var _app = record.get('entryId').split('-');
                         _app.pop();
@@ -239,17 +236,17 @@ Ext.define('Webui.config.dashboardManager', {
                                 _isInstallable = true;
                             }
                         });
-                        if (rpc.reportsEnabled && Ung.dashboard.reportsMap && Ung.dashboard.eventsMap) {
+                        if (rpc.reportsEnabled && Ung.dashboard.reportsMap) {
                             var entryId = record.get("entryId");
-                            var entry = (value == "ReportEntry") ? Ung.dashboard.reportsMap[entryId] : Ung.dashboard.eventsMap[entryId];
+                            var entry = Ung.dashboard.reportsMap[entryId];
                             if (entry) {
                                 return '<span style="font-size: 10px; color: #999;">' + entry.category.toUpperCase() + (_isInstallable ? ' (install required)' : '') + '</span> <br/> ' + entry.title;
                             }
                         } else {
-                            return '<span style="font-size: 10px; color: #999;">' + _app.join(' ').toUpperCase() + ' (install required)</span><br/>' + (value === 'ReportEntry' ? 'Report' : 'Events');
+                            return '<span style="font-size: 10px; color: #999;">' + _app.join(' ').toUpperCase() + ' (install required)</span><br/> Report';
                         }
                     }
-                    if (value !== "ReportEntry" || value !== "EventEntry") {
+                    if (value !== "ReportEntry") {
                         return value;
                     }
                     return "";
@@ -564,12 +561,13 @@ Ext.define('Webui.config.dashboardManager', {
                     record.set("refreshIntervalSec", "120");
                     record.set("timeframe", "3600");
                 }
-                for(var i=0; i < me.widgetsConfig.length; i++) {
+
+                for (var i=0; i < me.widgetsConfig.length; i++) {
                     widget = me.widgetsConfig[i];
-                    if(!rpc.reportsEnabled && (widget.name == "ReportEntry" || widget.name == "EventEntry") && currentType!=widget.name) {
+                    if (!rpc.reportsEnabled && widget.name == "ReportEntry" && currentType != widget.name) {
                         continue;
                     }
-                    if(currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
+                    if (currentType == widget.name || !(widget.singleInstance && existingTypesMap[widget.name])) {
                         availableTypes.push([widget.name, widget.title]);
                     }
                 }

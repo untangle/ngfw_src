@@ -3,7 +3,7 @@
  */
 
 Ext.define('Ung.panel.Reports', {
-    extend : 'Ext.Panel',
+    extend : 'Ext.container.Container',
     layout: 'border',
     name: 'panelReports',
     //title: i18n._('Reports'),
@@ -12,7 +12,6 @@ Ext.define('Ung.panel.Reports', {
     autoRefreshInterval: 10, //seconds
     extraConditions: null,
     reportsManager: null,
-    //allReports: null,
     items: [{
         region: 'north',
         itemId: 'reportsNorth',
@@ -37,12 +36,115 @@ Ext.define('Ung.panel.Reports', {
             }
         }
     }, {
-        xtype: 'container',
+        xtype: 'grid',
+        region: 'west',
+        itemId: 'categoryList',
+        title: i18n._('Select Category'),
+        width: 200,
+        hideHeaders: true,
+        collapsed: false,
+        collapsible: true,
+        animCollapse: false,
+        titleCollapse: true,
+        floatable: false,
+        split: true,
+        resizable: false,
+        border: 0,
+        store: Ext.create('Ext.data.Store', {
+            fields: ['text'],
+            data: []
+        }),
+        columns: [{
+            width: 30,
+            renderer: Ext.bind(function (value, metaData, record) {
+                return '<img src="' + record.getData().icon + '"/>';
+            }, this)
+        }, {
+            flex: 1,
+            dataIndex: 'text'
+        }],
+        viewConfig: {
+            getRowClass: function () {
+                return 'category-item';
+            }
+        },
+        plugins: 'responsive',
+        responsiveConfig: {
+            'width <= 1280': {
+                hidden: true
+            },
+            'width > 1280': {
+                hidden: false
+            }
+        }
+    }, {
         region: 'center',
+        itemId: 'reportsMain',
         layout: 'card',
         border: 0,
-        itemId: 'reportsMain',
-        items: []
+        items: [{
+            xtype: 'container',
+            layout: 'column',
+            itemId: 'categorySelector',
+            userCls: 'category-selector',
+            scrollable: true
+        }, {
+            xtype: 'container',
+            layout: 'border',
+            border: 0,
+            items: [{
+                xtype: 'grid',
+                region: 'west',
+                itemId: 'entryList',
+                title: i18n._('Select Report'),
+                hideHeaders: true,
+                width: 200,
+                collapsed: false,
+                collapsible: true,
+                animCollapse: false,
+                titleCollapse: true,
+                floatable: false,
+                split: true,
+                resizable: false,
+                border: 0,
+                store: Ext.create('Ext.data.Store', {
+                    fields: ['text'],
+                    data: []
+                }),
+                columns: [],
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'width <= 1024': {
+                        hidden: true
+                    },
+                    'width > 1024': {
+                        hidden: false
+                    }
+                }
+            }, {
+                region: 'center',
+                layout: 'card',
+                itemId: 'entryView',
+                border: 0,
+                items: [{
+                    xtype: 'container',
+                    itemId: 'entrySelector',
+                    //layout: 'column',
+                    padding: '0',
+                    scrollable: true
+                }, {
+                    itemId: 'reportView',
+                    layout: 'border',
+                    border: 0,
+                    items: [{
+                        region: 'center',
+                        itemId: 'reportPanel',
+                        layout: 'card',
+                        border: 0
+                    }]
+                }]
+            }]
+        }]
     }],
     selectedCategory: null,
     beforeDestroy: function () {
@@ -50,6 +152,7 @@ Ext.define('Ung.panel.Reports', {
         this.callParent(arguments);
     },
     initComponent: function () {
+        var me = this;
         this.subCmps = [];
         this.callParent(arguments);
 
@@ -69,514 +172,395 @@ Ext.define('Ung.panel.Reports', {
 
         this.filterFeature = Ext.create('Ung.grid.feature.GlobalFilter', {});
 
-        this.down('#reportsMain').add({
-            xtype: 'panel',
-            layout: 'column',
-            itemId: 'categorySelector',
-            header: false,
-            bodyStyle: {
-                padding: '5px'
-            },
-            items: []
+
+        this.reportsMain = this.down('#reportsMain');
+        this.categoryList = this.down('#categoryList');
+        this.categorySelector = this.down('#categorySelector');
+        this.entryList = this.down('#entryList');
+        this.entrySelector = this.down('#entrySelector');
+        this.entryView = this.down('#entryView');
+
+        this.reportView = this.down('#reportView');
+        this.reportPanel = this.down('#reportPanel');
+
+        this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions");
+
+
+        this.down('#reportsNorth').add({
+            xtype: 'button',
+            itemId: 'categoriesMenuBtn',
+            cls: 'categories-menu-btn',
+            scale: 'medium',
+            textAlign: 'left',
+            text: i18n._('All Categories'),
+            //icon: _categoryMenuItems[0].icon,
+            width: 195,
+            margin: '0 0 0 5',
+            plugins: 'responsive',
+            responsiveConfig: {
+                'width <= 1280': {
+                    hidden: false
+                },
+                'width > 1280': {
+                    hidden: true
+                }
+            }
         }, {
-            xtype: 'container',
-            layout: 'border',
-            itemId: 'sideCategorySelector',
+            xtype: 'button',
+            itemId: 'entriesMenuBtn',
+            scale: 'medium',
+            textAlign: 'left',
+            text: i18n._('Select a Category first'),
+            width: 200,
+            margin: '0 0 0 5',
+            //hidden: true,
+            plugins: 'responsive',
+            responsiveConfig: {
+                'width <= 1024': {
+                    hidden: false
+                },
+                'width > 1024': {
+                    hidden: true
+                }
+            }
+        });
+
+        this.reportView.add(this.extraConditionsPanel);
+        this.reportPanel.add({
+            xtype: 'panel',
+            itemId: 'reportContainer',
+            cls: 'report-container',
             border: 0,
+            layout: 'border',
             items: [{
+                xtype: 'panel',
+                region: 'center',
+                itemId: 'reportChart',
+                layout: 'card',
+                border: 0,
+                items: [{
+                    xtype: 'panel',
+                    itemId: 'highchart',
+                    border: 0
+                }, {
+                    xtype: 'panel',
+                    itemId: 'textentry',
+                    border: 0,
+                    textAlign: 'center',
+                    bodyStyle: {
+                        fontSize: '16px',
+                        padding: '10px'
+                    }
+                }],
+                listeners: {
+                    resize: Ext.bind(function () {
+                        if (this.chart) {
+                            this.chart.reflow();
+                        }
+                    }, this)
+                }
+            }, {
                 xtype: 'grid',
-                region: 'west',
-                itemId: 'categoryList',
-                title: 'Select Category',
-                hideHeaders: true,
-                width: 200,
-                collapsed: false,
-                collapsible: true,
-                animCollapse: false,
-                titleCollapse: true,
-                floatable: false,
+                itemId: 'reportData',
+                region: 'east',
+                title: i18n._('Current Data'),
+                width: 330,
                 split: true,
-                resizable: false,
+                collapsible: true,
+                collapsed: true,
+                animCollapse: false,
+                resizable: true,
+                floatable: false,
+                titleCollapse: true,
                 border: 0,
                 store:  Ext.create('Ext.data.Store', {
-                    fields: ['text'],
+                    fields: [],
                     data: []
                 }),
                 columns: [{
-                    width: 25,
-                    renderer: Ext.bind(function (value, metaData, record) {
-                        return '<img src="' + record.getData().icon + '"/>';
-                    }, this)
-                }, {
-                    flex: 1,
-                    dataIndex: 'text'
+                    flex: 1
                 }],
-                listeners: {
-                    select: {
-                        fn: function (el, record) {
-                            this.buildReportEntries(record);
-                        },
-                        scope: this
-                    }
-                },
-                plugins: 'responsive',
-                responsiveConfig: {
-                    'width <= 1280': {
-                        hidden: true
-                    },
-                    'width > 1280': {
-                        hidden: false
+                tbar: ['->', {
+                    xtype: 'button',
+                    text: i18n._('Export'),
+                    name: "Export",
+                    tooltip: i18n._('Export Data to File'),
+                    iconCls: 'icon-export',
+                    handler: Ext.bind(this.exportReportDataHandler, this)
+                }]
+            }],
+            tools: [{
+                xtype: 'button',
+                text: i18n._('Add to Dashboard'),
+                hidden: true
+            }, {
+                xtype: 'button',
+                text: i18n._('Customize'),
+                hidden: !Ung.Main.webuiMode || this.hideCustomization,
+                name: "edit",
+                tooltip: i18n._('Advanced report customization'),
+                iconCls: 'icon-edit',
+                handler: Ext.bind(function () {
+                    this.customizeReport();
+                }, this)
+            }]
+        }, {
+            xtype: 'grid',
+            itemId: 'eventContainer',
+            cls: 'event-container',
+            stateful: true,
+            stateId: "eventGrid",
+            border: 0,
+            viewConfig: {
+                enableTextSelection: true
+            },
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                data: [],
+                proxy: {
+                    type: 'memory',
+                    reader: {
+                        type: 'json'
                     }
                 }
-            }, {
-                xtype: 'container',
-                region: 'center',
-                layout: 'card',
-                border: 0,
-                itemId: 'sideEntrySelector',
-                items: [{
-                    xtype: 'panel',
-                    itemId: 'entrySelector',
-                    scrollable: true,
-                    header: false
-                }, {
-                    xtype: 'container',
-                    layout: 'border',
-                    itemId: 'reportDisplay',
-                    border: 0,
-                    items: [{
-                        xtype: 'grid',
-                        region: 'west',
-                        itemId: 'entryList',
-                        title: 'Select Report / Event',
-                        hideHeaders: true,
-                        width: 200,
-                        collapsed: false,
-                        collapsible: true,
-                        animCollapse: false,
-                        titleCollapse: true,
-                        floatable: false,
-                        split: true,
-                        resizable: false,
-                        border: 0,
-                        store: Ext.create('Ext.data.Store', {
-                            fields: ['text'],
-                            data: []
-                        }),
-                        columns: [{
-                            width: 25,
-                            renderer: Ext.bind(function (value, metaData, record) {
-                                return '<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(record.getData().entry) + '</i>';
-                            }, this)
-                        }, {
-                            flex: 1,
-                            dataIndex: 'text'
-                        }],
-                        listeners: {
-                            select: {
-                                fn: function (el, record) {
-                                    var _entry = record.getData().entry;
-                                    if (_entry.type) {
-                                        this.loadReportEntry(_entry);
-                                    } else {
-                                        this.loadEventEntry(_entry);
-                                    }
-                                },
-                                scope: this
-                            }
-                        },
-                        plugins: 'responsive',
-                        responsiveConfig: {
-                            'width <= 1024': {
-                                hidden: true
+            }),
+            columns: [{
+                flex: 1
+            }],
+            plugins: ['gridfilters'],
+            features: [this.filterFeature],
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'top',
+                items: [i18n._('Filter:'), {
+                    xtype: 'textfield',
+                    name: 'searchField',
+                    hideLabel: true,
+                    width: 130,
+                    listeners: {
+                        change: {
+                            fn: function () {
+                                this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
                             },
-                            'width > 1024': {
-                                hidden: false
-                            }
+                            scope: this,
+                            buffer: 600
                         }
-                    }, {
-                        region: 'center',
-                        layout: 'border',
-                        itemId: 'test',
-                        border: 0,
-                        items: [{
-                            //xtype: 'container',
-                            region: 'center',
-                            layout: 'card',
-                            border: 0,
-                            itemId: 'centerContainer',
-                            items: [{
-                                xtype: 'panel',
-                                itemId: 'reportContainer',
-                                cls: 'report-container',
-                                border: 0,
-                                layout: 'border',
-                                items: [{
-                                    xtype: 'panel',
-                                    region: 'center',
-                                    itemId: 'reportChart',
-                                    layout: 'fit',
-                                    border: 0,
-                                    items: [{
-                                        xtype: 'panel',
-                                        itemId: 'highchart',
-                                        border: 0
-                                    }],
-                                    listeners: {
-                                        resize: Ext.bind(function () {
-                                            if (this.chart) {
-                                                this.chart.reflow();
-                                            }
-                                        }, this)
-                                    }
-                                }, {
-                                    xtype: 'grid',
-                                    itemId: 'reportData',
-                                    region: 'east',
-                                    title: i18n._('Current Data'),
-                                    width: 330,
-                                    split: true,
-                                    collapsible: true,
-                                    collapsed: true,
-                                    animCollapse: false,
-                                    resizable: true,
-                                    floatable: false,
-                                    titleCollapse: true,
-                                    border: 0,
-                                    store:  Ext.create('Ext.data.Store', {
-                                        fields: [],
-                                        data: []
-                                    }),
-                                    columns: [{
-                                        flex: 1
-                                    }],
-                                    tbar: ['->', {
-                                        xtype: 'button',
-                                        text: i18n._('Export'),
-                                        name: "Export",
-                                        tooltip: i18n._('Export Data to File'),
-                                        iconCls: 'icon-export',
-                                        handler: Ext.bind(this.exportReportDataHandler, this)
-                                    }]
-                                }],
-                                tools: [{
-                                    xtype: 'button',
-                                    text: i18n._('Add to Dashboard'),
-                                    hidden: true
-                                }, {
-                                    xtype: 'button',
-                                    text: i18n._('Customize'),
-                                    hidden: !Ung.Main.webuiMode || this.hideCustomization,
-                                    name: "edit",
-                                    tooltip: i18n._('Advanced report customization'),
-                                    iconCls: 'icon-edit',
-                                    handler: Ext.bind(function () {
-                                        this.customizeReport();
-                                    }, this)
-                                }]
-                            }, {
-                                xtype: 'grid',
-                                itemId: 'eventContainer',
-                                //layout: 'fit',
-                                stateful: true,
-                                stateId: "eventGrid",
-                                viewConfig: {
-                                    enableTextSelection: true
-                                },
-                                store: Ext.create('Ext.data.Store', {
-                                    fields: [],
-                                    data: [],
-                                    proxy: {
-                                        type: 'memory',
-                                        reader: {
-                                            type: 'json'
-                                        }
-                                    }
-                                }),
-                                columns: [{
-                                    flex: 1
-                                }],
-                                plugins: ['gridfilters'],
-                                features: [this.filterFeature],
-                                dockedItems: [{
-                                    xtype: 'toolbar',
-                                    dock: 'top',
-                                    items: [i18n._('Filter:'), {
-                                        xtype: 'textfield',
-                                        name: 'searchField',
-                                        hideLabel: true,
-                                        width: 130,
-                                        listeners: {
-                                            change: {
-                                                fn: function () {
-                                                    this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
-                                                },
-                                                scope: this,
-                                                buffer: 600
-                                            }
-                                        }
-                                    }, {
-                                        xtype: 'checkbox',
-                                        name: 'caseSensitive',
-                                        hideLabel: true,
-                                        margin: '0 4px 0 4px',
-                                        boxLabel: i18n._('Case sensitive'),
-                                        handler: function () {
-                                            this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
-                                        },
-                                        scope: this
-                                    }, {
-                                        xtype: 'button',
-                                        iconCls: 'icon-clear-filter',
-                                        text: i18n._('Clear Filters'),
-                                        tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
-                                        handler: Ext.bind(function () {
-                                            this.eventContainer.clearFilters();
-                                            this.searchField.setValue("");
-                                        }, this)
-                                    }, '->', {
-                                        xtype: 'combo',
-                                        width: 120,
-                                        name: "limitSelector",
-                                        hidden: false,
-                                        editable: false,
-                                        valueField: "value",
-                                        displayField: "name",
-                                        queryMode: 'local',
-                                        value: 1000,
-                                        store: Ext.create('Ext.data.Store', {
-                                            fields: ["value", "name"],
-                                            data: [{value: 1000, name: "1000 " + i18n._('Events')}, {
-                                                value: 10000,
-                                                name: "10000 " + i18n._('Events')
-                                            }, {value: 50000, name: "50000 " + i18n._('Events')}]
-                                        })
-                                    }, {
-                                        xtype: 'button',
-                                        text: i18n._('Export'),
-                                        name: "Export",
-                                        tooltip: i18n._('Export Events to File'),
-                                        iconCls: 'icon-export',
-                                        handler: Ext.bind(this.exportEventsHandler, this)
-                                    }]
-                                }]
-                            }],
-                            dockedItems: [{
-                                xtype: 'toolbar',
-                                dock: 'bottom',
-                                items: [{
-                                    xtype: 'button',
-                                    name: 'startDateButton',
-                                    text: i18n._('One day ago'),
-                                    initialLabel:  i18n._('One day ago'),
-                                    width: 132,
-                                    tooltip: i18n._('Select Start date and time'),
-                                    handler: Ext.bind(function (button) {
-                                        this.startDateWindow.show();
-                                    }, this)
-                                }, {
-                                    xtype: 'tbtext',
-                                    text: '-'
-                                }, {
-                                    xtype: 'button',
-                                    name: 'endDateButton',
-                                    text: i18n._('Present'),
-                                    initialLabel:  i18n._('Present'),
-                                    width: 132,
-                                    tooltip: i18n._('Select End date and time'),
-                                    handler: Ext.bind(function (button) {
-                                        this.endDateWindow.show();
-                                    }, this)
-                                }, {
-                                    xtype: 'button',
-                                    text: i18n._('Refresh'),
-                                    name: "refresh",
-                                    tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-                                    iconCls: 'icon-refresh',
-                                    handler: Ext.bind(function () {
-                                        this.refreshHandler();
-                                    }, this)
-                                }, {
-                                    xtype: 'button',
-                                    name: 'auto_refresh',
-                                    text: i18n._('Auto Refresh'),
-                                    enableToggle: true,
-                                    pressed: false,
-                                    tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'), this.autoRefreshInterval),
-                                    iconCls: 'icon-autorefresh',
-                                    handler: Ext.bind(function (button) {
-                                        if (button.pressed) {
-                                            this.startAutoRefresh();
-                                        } else {
-                                            this.stopAutoRefresh();
-                                        }
-                                    }, this)
-                                }, {
-                                    text: i18n._('Reset View'),
-                                    name: "resetView",
-                                    hidden: true,
-                                    tooltip: i18n._('Restore default columns positions, widths and visibility'),
-                                    handler: Ext.bind(function () {
-                                        if (!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
-                                            return;
-                                        }
-                                        var gridEvents = this.down("grid[name=gridEvents]");
-                                        Ext.state.Manager.clear(gridEvents.stateId);
-                                        gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
-                                    }, this)
-                                }]
-                            }]
-                        }]
-                    }]
+                    }
+                }, {
+                    xtype: 'checkbox',
+                    name: 'caseSensitive',
+                    hideLabel: true,
+                    margin: '0 4px 0 4px',
+                    boxLabel: i18n._('Case sensitive'),
+                    handler: function () {
+                        this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                    },
+                    scope: this
+                }, {
+                    xtype: 'button',
+                    iconCls: 'icon-clear-filter',
+                    text: i18n._('Clear Filters'),
+                    tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                    handler: Ext.bind(function () {
+                        this.eventContainer.clearFilters();
+                        this.searchField.setValue("");
+                    }, this)
+                }, '->', {
+                    xtype: 'combo',
+                    width: 120,
+                    name: "limitSelector",
+                    hidden: false,
+                    editable: false,
+                    valueField: "value",
+                    displayField: "name",
+                    queryMode: 'local',
+                    value: 1000,
+                    store: Ext.create('Ext.data.Store', {
+                        fields: ["value", "name"],
+                        data: [{value: 1000, name: "1000 " + i18n._('Events')}, {
+                            value: 10000,
+                            name: "10000 " + i18n._('Events')
+                        }, {value: 50000, name: "50000 " + i18n._('Events')}]
+                    })
+                }, {
+                    xtype: 'button',
+                    text: i18n._('Export'),
+                    name: "Export",
+                    tooltip: i18n._('Export Events to File'),
+                    iconCls: 'icon-export',
+                    handler: Ext.bind(this.exportEventsHandler, this)
                 }]
             }]
         });
 
-        this.reportsMain = this.down('#reportsMain');
-        this.categorySelector = this.down('#categorySelector');
-        this.categoryList = this.down('#categoryList');
+        this.reportPanel.addDocked({
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [{
+                xtype: 'button',
+                name: 'startDateButton',
+                text: i18n._('One day ago'),
+                initialLabel:  i18n._('One day ago'),
+                width: 132,
+                tooltip: i18n._('Select Start date and time'),
+                handler: Ext.bind(function (button) {
+                    this.startDateWindow.show();
+                }, this)
+            }, {
+                xtype: 'tbtext',
+                text: '-'
+            }, {
+                xtype: 'button',
+                name: 'endDateButton',
+                text: i18n._('Present'),
+                initialLabel:  i18n._('Present'),
+                width: 132,
+                tooltip: i18n._('Select End date and time'),
+                handler: Ext.bind(function (button) {
+                    this.endDateWindow.show();
+                }, this)
+            }, {
+                xtype: 'button',
+                text: i18n._('Refresh'),
+                name: "refresh",
+                tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                iconCls: 'icon-refresh',
+                handler: Ext.bind(function () {
+                    this.refreshHandler();
+                }, this)
+            }, {
+                xtype: 'button',
+                name: 'auto_refresh',
+                text: i18n._('Auto Refresh'),
+                enableToggle: true,
+                pressed: false,
+                tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'), this.autoRefreshInterval),
+                iconCls: 'icon-autorefresh',
+                handler: Ext.bind(function (button) {
+                    if (button.pressed) {
+                        this.startAutoRefresh();
+                    } else {
+                        this.stopAutoRefresh();
+                    }
+                }, this)
+            }, {
+                text: i18n._('Reset View'),
+                name: "resetView",
+                hidden: true,
+                tooltip: i18n._('Restore default columns positions, widths and visibility'),
+                handler: Ext.bind(function () {
+                    if (!this.entry || !Ung.panel.Reports.isEvent(this.entry)) {
+                        return;
+                    }
+                    var gridEvents = this.down("grid[name=gridEvents]");
+                    Ext.state.Manager.clear(gridEvents.stateId);
+                    gridEvents.reconfigure(undefined, gridEvents.defaultTableConfig.columns);
+                }, this)
+            }]
+        });
 
-
-        this.entrySelector = this.down('#entrySelector');
-        this.sideEntrySelector = this.down('#sideEntrySelector');
-        this.entryList = this.down('#entryList');
-
-
-
-        this.centerContainer = this.down('#centerContainer');
-        this.selectionContainer = this.down('#selectionContainer');
         this.reportContainer = this.down('#reportContainer');
-        this.reportChart = this.down('#reportChart');
         this.reportData = this.down('#reportData');
-        //this.summaryContainer = this.down('#summaryContainer');
-        //this.reportChart = this.down('#reportChart');
+        this.reportChart = this.down('#reportChart');
         this.eventContainer = this.down('#eventContainer');
-
-        this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions");
-        this.extraConditionsPanel.parentPanel = this;
-        this.down('#test').add(this.extraConditionsPanel);
-
-        this.entriesList = this.down('#entriesList');
-        /*
-        this.entriesList.addListener('select', Ext.bind(function (rowModel, record) {
-            if (record.getData().type) {
-                this.loadReportEntry(record.getData());
-            } else {
-                this.loadEventEntry(record.getData());
-            }
-            //this.down('#extraConditions').setHidden(false);
-        }, this));
-        */
 
         this.searchField = this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
         this.limitSelector = this.down("combo[name=limitSelector]");
 
-
-        //this.loadFirstScreen();
-        this.buildCategoriesMenu();
-    },
-
-    loadFirstScreen: function () {
-        var allReports = {}, i, entry, _that = this;
-        _that.getCategoryReports().then(function (resp) {
-            for (i = 0; i < resp.length; i += 1) {
-                entry = resp[i];
-                if (!allReports.hasOwnProperty(entry.category)) {
-                    allReports[entry.category] = {
-                        reports: [entry],
-                        events: []
-                    };
-                } else {
-                    allReports[entry.category].reports.push(entry);
-                }
+        this.categoryList = this.down('#categoryList');
+        this.categoryList.addListener('select', Ext.bind(function (rowModel, record) {
+            if (record.getData().category === 'All') {
+                this.reportsMain.setActiveItem(0);
+                this.entryView.setActiveItem(0);
+                this.down('#entriesMenuBtn').setText(i18n._('Select a Category first'));
+            } else {
+                this.reportsMain.setActiveItem(1);
+                this.entryView.setActiveItem(0);
+                this.selectedCategory = record.getData();
+                this.loadReportEntries();
+                this.down('#entriesMenuBtn').setText(i18n._('Select Report'));
             }
+            this.down('#categoriesMenuBtn').setText(record.getData().text).setIcon(record.getData().icon);
+            //this.down('#extraConditions').setHidden(false);
+        }, this));
 
-            _that.getCategoryEvents().then(function (resp) {
-                for (i = 0; i < resp.length; i += 1) {
-                    entry = resp[i];
-                    if (!allReports.hasOwnProperty(entry.category)) {
-                        allReports[entry.category] = {
-                            events: [entry]
-                        };
-                    } else {
-                        allReports[entry.category].events.push(entry);
-                    }
-                }
-                _that.allReports = allReports;
-                _that.buildCategoriesMenu();
-            });
+        this.entryList = this.down('#entryList');
+        this.entryList.reconfigure([{
+            width: 30,
+            renderer: Ext.bind(function (value, metaData, record) {
+                return '<i class="material-icons">' + this.setEntryIcon(record.getData().entry) + '</i>';
+            }, this)
+        }, {
+            flex: 1,
+            dataIndex: 'text'
+        }]);
+        this.entryList.addListener('select', Ext.bind(function (rowModel, record) {
+            this.entryView.setActiveItem(1);
+            this.entry = record.getData().entry;
+            if (this.entry.type === 'EVENT_LIST') {
+                this.loadEventEntry(this.entry);
+            } else {
+                this.loadReportEntry(this.entry);
+            }
+            this.down('#entriesMenuBtn').setText('<i class="material-icons">' + record.getData().icon  + '</i> <span style="vertical-align: middle;">' + record.getData().text + '</span>');
+        }, this));
+
+        this.loadAllReports().then(function (reports) {
+            me.allReports = reports;
+            me.buildCategoryList();
         });
     },
 
-    buildCategoriesMenu: function () {
-        var _categoryMenuItems = [], _categorySelectionItems = [], _categorySideItems = [],  _that = this;
+    loadAllReports: function () {
+        var deferred = new Ext.Deferred();
+        var allReports = {}, i, entry;
 
-        //this.down('[name=northEntriesBtnMenu]').removeAll(true);
-        //this.down('[name=northEntriesBtn]').setHidden(true);
+        rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception) || !this.getEl()) {
+                deferred.resolve(exception);
+            }
+            //console.log(result.list);
+            for (i = 0; i < result.list.length; i += 1) {
+                entry = result.list[i];
+                entry.selModel = Ext.create('Ung.grid.ReportItemModel', {
+                    text : entry.title,
+                    type: entry.type
+                });
+                if (!allReports.hasOwnProperty(entry.category)) {
+                    allReports[entry.category] = [entry];
+                } else {
+                    allReports[entry.category].push(entry);
+                }
+            }
+            deferred.resolve(allReports);
+        }, this));
 
+        return deferred.promise;
+    },
 
-        var staticItems = [{
-            text : i18n._('Summary'),
-            category : 'Summary',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/icons/icon_summary.png'
-        }, {
-            text : i18n._('Host Viewer'),
-            category : 'Hosts',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_hosts_16x16.png'
-        }, {
-            text : i18n._('Device List'),
-            category : 'Devices',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_devices_16x16.png'
-        }, {
-            text : i18n._('Network'),
-            category : 'Network',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_network_16x16.png'
-        }, {
-            text : i18n._('Administration'),
-            category : 'Administration',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_admin_16x16.png'
-        }, {
-            text : i18n._('System'),
-            category : 'System',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/config/icon_config_system_16x16.png'
-        }, {
-            text : i18n._('Shield'),
-            category : 'Shield',
-            icon : '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-shield_17x17.png'
-        }];
+    buildCategoryList: function () {
+        var _categoryMenuItems = [], _categorySideItems = [], _item, i,
+            _skinPath = '/skins/' + rpc.skinSettings.skinName + '/images/admin/',
+            staticItems = [
+                { text : i18n._('All Categories'), category : 'All'},
+                { text : i18n._('Host Viewer'), category : 'Hosts', icon : _skinPath + 'config/icon_config_hosts.png' },
+                { text : i18n._('Device List'), category : 'Devices', icon : _skinPath + 'config/icon_config_devices.png'},
+                { text : i18n._('Network'), category : 'Network', icon : _skinPath + 'config/icon_config_network.png' },
+                { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_admin.png' },
+                { text : i18n._('System'), category : 'System', icon : _skinPath + 'config/icon_config_system.png' },
+                { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'apps/untangle-node-shield_17x17.png' }
+            ];
 
-        var i, _item;
         for (i = 0; i < staticItems.length; i += 1) {
-            _item = Ext.create('Ung.grid.Category', {
+            _item = Ext.create('Ung.grid.ReportItemModel', {
                 text : staticItems[i].text,
                 category : staticItems[i].category,
                 icon : staticItems[i].icon
             });
             staticItems[i].model = _item;
             _categoryMenuItems.push(staticItems[i]);
-
-            _categorySelectionItems.push({
-                xtype: 'button',
-                text: '<img src="' + staticItems[i].icon + '" style="vertical-align: middle;"/> ' + staticItems[i].text,
-                //cls: 'entry-btn',
-                scale: 'large',
-                width: 200,
-                margin: '5',
-                textAlign: 'left',
-                item: _item,
-                handler: function () {
-                    //_that.buildReportEntries(_item);
-                    _that.categoryList.setSelection(this.item);
-                }
-            });
-
             _categorySideItems.push(_item);
-            /*
-            if (staticItems[i].category !== 'Summary') {
-                _categorySelectionItems.push(_that.createSelectionPanel(staticItems[i]));
-            }
-            */
         }
 
         // add installed applications
@@ -587,322 +571,160 @@ Ext.define('Ung.panel.Reports', {
             if (!this.getEl()) {
                 return;
             }
-            //_categoryMenuItems.push('-');
-
-            var currentApplications = result.list, _item;
+            var currentApplications = result.list;
             if (currentApplications) {
                 var app;
                 for (i = 0; i < currentApplications.length; i += 1) {
                     app = currentApplications[i];
                     if (app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support') {
 
-                        _item = Ext.create('Ung.grid.Category', {
-                            text: app.displayName,
+                        _item = Ext.create('Ung.grid.ReportItemModel', {
+                            text: i18n._(app.displayName),
                             category: app.displayName,
-                            icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_17x17.png'
+                            icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_80x80.png'
                         });
 
                         _categoryMenuItems.push({
-                            text: app.displayName,
+                            text: i18n._(app.displayName),
                             category: app.displayName,
-                            icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_17x17.png',
+                            icon: '/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/' + app.name + '_80x80.png',
                             model: _item
                         });
 
-                        _categorySelectionItems.push({
-                            xtype: 'button',
-                            text: '<img src="' + _item.getData().icon + '" style="vertical-align: middle;"/> ' + app.displayName,
-                            width: 200,
-                            scale: 'large',
-                            margin: '5',
-                            textAlign: 'left',
-                            item: _item,
-                            handler: function () {
-                                //_that.buildReportEntries(_item);
-                                _that.categoryList.setSelection(this.item);
-                            }
-                        });
                         _categorySideItems.push(_item);
                     }
                 }
             }
 
-            this.categorySelector.add(_categorySelectionItems);
             this.categoryList.getStore().loadData(_categorySideItems);
+            this.categoryList.setSelection(_categorySideItems[0]);
+            this.buildCategorySelector(_categorySideItems);
 
-            this.down('#reportsNorth').add({
-                xtype: 'button',
-                name: 'northReportsBtn',
-                scale: 'medium',
-                textAlign: 'left',
-                text: i18n._('Select Category'),
-                //icon: _categoryMenuItems[0].icon,
-                width: 200,
-                margin: '0 0 0 5',
-                plugins: 'responsive',
-                responsiveConfig: {
-                    'width <= 1280': {
-                        hidden: false
-                    },
-                    'width > 1280': {
-                        hidden: true
-                    }
-                },
-                menu: Ext.create('Ext.menu.Menu', {
-                    name: 'northReportsBtnMenu',
-                    plain: true,
-                    items: _categoryMenuItems,
-                    width: 200,
-                    listeners: {
-                        click: Ext.bind(function (menu, item) {
-                            this.categoryList.getSelectionModel().select(item.model);
-                            this.down('[name=northEntriesBtn]').setText(i18n._('Select Report/Event'));
-                        }, this)
-                    }
-                })
-            }, {
-                xtype: 'button',
-                name: 'northEntriesBtn',
-                scale: 'medium',
-                textAlign: 'left',
-                text: i18n._('Select Report/Event'),
-                width: 200,
-                margin: '0 0 0 5',
-                hidden: true,
-                plugins: 'responsive',
-                responsiveConfig: {
-                    'width <= 1024': {
-                        hidden: false
-                    },
-                    'width > 1024': {
-                        hidden: true
-                    }
-                },
-                menu: Ext.create('Ext.menu.Menu', {
-                    name: 'northEntriesBtnMenu',
-                    plain: true,
-                    width: 200,
-                    listeners: {
-                        click: Ext.bind(function (menu, item) {
-                            this.entryList.getSelectionModel().select(item.model);
-                        }, this)
-                    }
-                    //items: _entryItems
-                })
-            });
-
-            //this.buildReportEntries(_categoryMenuItems[0].category);
+            this.down('#categoriesMenuBtn').setMenu(Ext.create('Ext.menu.Menu', {
+                //itemId: 'categoriesMenu',
+                cls: 'categories-menu',
+                plain: true,
+                items: _categoryMenuItems,
+                width: 195,
+                shadow: false,
+                listeners: {
+                    click: Ext.bind(function (menu, item) {
+                        this.categoryList.getSelectionModel().select(item.model);
+                        //this.down('[name=northEntriesBtn]').setText(i18n._('Select Report/Event'));
+                    }, this)
+                }
+            }));
         }, this));
-
     },
 
-    /*
-    createSelectionPanel: function (item) {
-        var i, _btns = [], _icon, category = item.category, _that = this;
-        for (i = 0; i < this.allReports[category].reports.length; i += 1) {
-            _icon = this.setEntryIcon(this.allReports[category].reports[i]);
-            _btns.push({
+    buildCategorySelector: function (categories) {
+        var i, j, panels = [], reports, me = this;
+        for (i = 1; i < categories.length; i += 1) {
+            reports = this.allReports[categories[i].getData().category];
+            for (j = 0; j < reports.length; j += 1) {
+                reports[j].icon = this.setEntryIcon(reports[j]);
+            }
+            panels.push(Ext.create('Ung.panel.ReportCategorySelector', {
+                parentCt: me,
+                category: categories[i],
+                reports: reports
+            }));
+        }
+        this.down('#categorySelector').add(panels);
+    },
+
+    loadReportEntries: function () {
+        var entries, entry, listEntries = [], menuEntries = [], selectionEntries = [], i, _icon, _that = this;
+
+        entries = this.allReports[this.selectedCategory.category];
+
+        for (i = 0; i < entries.length; i += 1) {
+            _icon = this.setEntryIcon(entries[i]);
+            entry = Ext.create('Ung.grid.ReportItemModel', {
+                text : entries[i].title,
+                entry: entries[i],
+                icon: _icon
+            });
+            listEntries.push(entry);
+
+            menuEntries.push({
+                text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i> <span>' + entries[i].title + '</span>',
+                model: entry
+            });
+
+            selectionEntries.push({
                 xtype: 'button',
+                text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + entries[i].title + '</span><br/><span class="dsc">' + entries[i].description + '</span>',
+                cls: 'entry-btn',
+                width: 250,
+                border: 0,
                 textAlign: 'left',
-                margin: '0 5 5 5',
-                text: '<i class="material-icons" style="font-size: 20px;">' + _icon  + '</i>' + this.allReports[category].reports[i].title,
-                //item: this.allReports[category].reports[i],
+                item: entry,
                 handler: function () {
-                    _that.categoryList.setSelection(item.model);
-                    _that.sideEntrySelector.setActiveItem('reportDisplay');
+                    _that.entryList.getSelectionModel().select(this.item);
                 }
             });
         }
-        console.log(_btns);
-        return {
-            xtype: 'panel',
-            title: '<img src="' + item.icon + '" style="vertical-align: middle;"/> ' + category,
+        this.entryList.getStore().loadData(listEntries);
+        this.down('#entriesMenuBtn').setMenu(Ext.create('Ext.menu.Menu', {
+            plain: true,
+            items: menuEntries,
             width: 200,
-            height: 200,
-            margin: '5',
-            bodyStyle: {
-                paddingTop: '5px'
-            },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: _btns
-        };
-    },
-    */
-    buildReportEntries: function (item) {
-        var _that = this,
-            _entries = [],
-            _icon,
-            _entryItems = [],
-            _selectionReportsBtns = [],
-            _selectionEventsBtns = [],
-            _entryList = [];
-
-        this.entry = null;
-
-        this.sideEntrySelector.setActiveItem('entrySelector');
-
-        this.down('[name=northReportsBtn]').setText(item.getData().text).setIcon(item.getData().icon);
-        this.down('[name=northEntriesBtn]').setHidden(false);
-        this.reportsMain.setActiveItem('sideCategorySelector');
-
-        this.entrySelector.removeAll(true);
-
-        _that.getCategoryReports(item.getData().category).then(function (reports) {
-            _entries = _entries.concat(reports);
-            var i, _item;
-            for (i = 0; i < reports.length; i += 1) {
-                _item = Ext.create('Ung.grid.Category', {
-                    text : reports[i].title,
-                    entry: reports[i]
-                });
-                _entryList.push(_item);
-                _icon = _that.setEntryIcon(reports[i]);
-                _entryItems.push({
-                    text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i>  <span>' + reports[i].title + '</span>',
-                    model: _item
-                });
-
-                _selectionReportsBtns.push({
-                    xtype: 'button',
-                    text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + reports[i].title + '</span><br/><span class="dsc">' + reports[i].description + '</span>',
-                    cls: 'entry-btn',
-                    width: 300,
-                    border: 0,
-                    textAlign: 'left',
-                    item: _item,
-                    handler: function () {
-                        _that.sideEntrySelector.setActiveItem('reportDisplay');
-                        _that.entryList.getStore().loadData(_entryList);
-                        _that.entryList.getSelectionModel().select(this.item);
-                    }
-                });
+            shadow: false,
+            listeners: {
+                click: Ext.bind(function (menu, item) {
+                    console.log(item);
+                    this.entryList.getSelectionModel().select(item.model);
+                }, this)
             }
-
-
-            _that.getCategoryEvents(item.getData().category).then(function (events) {
-                _entries = _entries.concat(events);
-
-                for (i = 0; i < events.length; i += 1) {
-                    _item = Ext.create('Ung.grid.Category', {
-                        text : events[i].title,
-                        entry: events[i]
-                    });
-
-                    _entryList.push(_item);
-                    _icon = _that.setEntryIcon(events[i]);
-                    _entryItems.push({
-                        text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i>  <span>' + events[i].title + '</span>',
-                        entry: events[i],
-                        model: _item
-                    });
-
-                    _selectionEventsBtns.push({
-                        xtype: 'button',
-                        text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + events[i].title + '</span><br/><span class="dsc">' + events[i].description + '</span>',
-                        cls: 'entry-btn',
-                        width: 300,
-                        border: 0,
-                        textAlign: 'left',
-                        item: _item,
-                        handler: function () {
-                            _that.sideEntrySelector.setActiveItem('reportDisplay');
-                            _that.entryList.getStore().loadData(_entryList);
-                            _that.entryList.getSelectionModel().select(this.item);
-                        }
-                    });
-                }
-
-                _that.down('[name=northEntriesBtnMenu]').removeAll(true);
-                _that.down('[name=northEntriesBtnMenu]').add(_entryItems);
-
-                if (_selectionReportsBtns.length > 0) {
-                    _that.entrySelector.add({
-                        xtype: 'panel',
-                        title: 'Reports',
-                        layout: 'column',
-                        border: 0,
-                        bodyStyle: {
-                            padding: '5px'
-                        },
-                        items: _selectionReportsBtns
-                    });
-                }
-
-                if (_selectionEventsBtns.length > 0) {
-                    _that.entrySelector.add({
-                        xtype: 'panel',
-                        title: 'Events',
-                        layout: 'column',
-                        border: 0,
-                        bodyStyle: {
-                            padding: '5px'
-                        },
-                        items: _selectionEventsBtns
-                    });
-                }
-
-            });
+        }));
+        this.entrySelector.removeAll(true);
+        this.entrySelector.add({
+            xtype: 'container',
+            cls: 'entry-selector-header',
+            html: '<img src="' + this.selectedCategory.icon + '"/>' + '<span>' + this.selectedCategory.text + '</span>'
         });
-
-        //this.centerContainer.setActiveItem('selectionContainer');
-        //this.down('#extraConditions').setHidden(true);
+        this.entrySelector.add(selectionEntries);
     },
 
     setEntryIcon: function (entry) {
-        if (!entry.type) {
-            return 'format_list_bulleted';
-        }
-
-        if (entry.type === 'TEXT') {
-            return 'subject';
-        }
-
-        if (entry.type === 'PIE_GRAPH') {
-            return 'pie_chart_outlined';
-        }
-
-        if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
+        var icon;
+        switch (entry.type) {
+        case 'TEXT':
+            icon = 'subject';
+            break;
+        case 'EVENT_LIST':
+            icon = 'format_list_bulleted';
+            break;
+        case 'PIE_GRAPH':
+            icon = 'pie_chart_outlined';
+            break;
+        case 'TIME_GRAPH':
+        case 'TIME_GRAPH_DYNAMIC':
             if (entry.timeStyle.indexOf('BAR') >= 0) {
-                return 'insert_chart';
+                icon = 'insert_chart';
+            } else {
+                icon = 'show_chart';
             }
-            return 'show_chart';
+            break;
+        default:
+            console.log('def');
+            icon = 'subject';
         }
-    },
-
-    getCategoryReports: function (category) {
-        var deferred = new Ext.Deferred(),
-            entries = [],
-            i;
-        rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception) || !this.getEl()) {
-                deferred.resolve([]);
-            }
-            for (i = 0; i < result.list.length; i += 1) {
-                if (result.list[i].enabled) {
-                    entries.push(result.list[i]);
-                }
-            }
-            deferred.resolve(entries);
-        }, this), category);
-        return deferred.promise;
-    },
-
-    getCategoryEvents: function (category) {
-        var deferred = new Ext.Deferred();
-        rpc.reportsManager.getEventEntries(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception) || !this.getEl()) {
-                deferred.resolve([]);
-            }
-            deferred.resolve(result.list);
-        }, this), category);
-        return deferred.promise;
+        return icon;
     },
 
     loadReportEntry: function (entry) {
         this.entry = entry;
+
+        if (this.entry.type === 'TEXT') {
+            this.reportChart.down('#textentry').update('');
+            this.reportChart.setActiveItem('textentry');
+        } else {
+            this.down('#highchart').body.dom.innerHTML = '';
+            this.reportChart.setActiveItem('highchart');
+        }
+
         /*
         if (this.chart) {
             this.chart.destroy();
@@ -911,13 +733,13 @@ Ext.define('Ung.panel.Reports', {
         }
         */
 
-        this.centerContainer.setActiveItem('reportContainer');
+        this.reportPanel.setActiveItem('reportContainer');
         this.reportContainer.setTitle({
             text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
             border: 0,
             padding: '5px'
         });
-        this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
+        //this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
 
 
         this.reportContainer.setLoading(i18n._('Loading report... '));
@@ -943,7 +765,6 @@ Ext.define('Ung.panel.Reports', {
                 this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false);
                 break;
             default:
-                //entry.chartType = 'pie';
                 this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
             }
             this.loadReportData(result.list);
@@ -954,7 +775,7 @@ Ext.define('Ung.panel.Reports', {
 
     loadReportData: function (data) {
         var i, column;
-        if (!this.entry || !this.reportChart) {
+        if (!this.entry) {
             return;
         }
 
@@ -980,15 +801,15 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
 
-            this.reportChart.removeAll(true);
+            this.reportChart.down('#textentry').update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
+            /*
             this.reportChart.add({
                 xtype: 'component',
+                itemId: 'text-entry',
                 html: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)),
-                style: {
-                    fontSize: '16px',
-                    padding: '10px'
-                }
+
             });
+            */
             this.reportData.getStore().loadData(reportData);
         }
 
@@ -1069,20 +890,26 @@ Ext.define('Ung.panel.Reports', {
 
         this.entry = entry;
 
+        /*
         if (this.chart) {
             this.chart.destroy();
             this.chart = null;
         }
+        */
 
-        this.centerContainer.setActiveItem('eventContainer');
+        this.reportPanel.setActiveItem('eventContainer');
 
-        this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
+        //this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
 
         if (!entry.defaultColumns) {
             entry.defaultColumns = [];
         }
 
-        this.eventContainer.setTitle(entry.title);
+        this.eventContainer.setTitle({
+            text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
+            border: 0,
+            padding: '5px'
+        });
         this.eventContainer.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
 
         tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
@@ -1112,7 +939,6 @@ Ext.define('Ung.panel.Reports', {
                     console.log('Warning: column "' + col + '" is not defined in the tableConfig for ' + entry.table);
                 }
             }
-            console.log(tableConfig.columns);
             this.eventContainer.defaultTableConfig = tableConfig;
         }
 
@@ -1168,18 +994,16 @@ Ext.define('Ung.panel.Reports', {
         }
         this.refreshEntry();
     },
-
     refreshEntry: function () {
         if (!this.entry) {
             return;
         }
-        if (Ung.panel.Reports.isEvent(this.entry)) {
+        if (this.entry.type === 'EVENT_LIST') {
             this.refreshEvents();
         } else {
             this.refreshReportData();
         }
     },
-
     refreshReportData: function () {
         if (!this.entry) {
             return;
@@ -1217,7 +1041,6 @@ Ext.define('Ung.panel.Reports', {
             this.loadResultSet(result);
         }, this), this.entry, this.extraConditions, limit, this.startDateWindow.serverDate, this.endDateWindow.serverDate);
     },
-
     startAutoRefresh: function (setButton) {
         if (!this.entry) {
             this.down('button[name=auto_refresh]').toggle(false);
@@ -1398,7 +1221,7 @@ Ext.define('Ung.panel.Reports', {
         if (!this.winReportEditor) {
             var me = this;
             this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
-                sizeToComponent: this.reportChart,
+                sizeToComponent: this.reportContainer,
                 title: i18n._("Advanced report customization"),
                 forReportCustomization: true,
                 parentCmp: this,
@@ -1606,15 +1429,83 @@ Ext.define('Ung.panel.Reports', {
     }
 });
 
-Ext.define('Ung.grid.Category', {
+Ext.define('Ung.grid.ReportItemModel', {
     extend: 'Ext.data.Model',
     fields: [
         {name: 'text',  type: 'string'},
-        {name: 'category',   type: 'string'},
         {name: 'icon', type: 'string'}
     ]
 });
 
+Ext.define('Ung.panel.ReportCategorySelector', {
+    extend: 'Ext.panel.Panel',
+    cls: 'report-category',
+    margin: '5',
+    padding: '5',
+    height: 250,
+    border: 0,
+    bodyStyle: {
+        background: 'transparent'
+    },
+    initComponent: function () {
+        this.callParent(arguments);
+
+        var me = this, limit = this.reports.length > 5 ? 5 : this.reports.length, i;
+
+        this.add({
+            xtype: 'component',
+            autoEl: {
+                tag: 'h3',
+                html: '<img src="' + this.category.getData().icon + '"/> ' + this.category.getData().text
+            }
+        });
+
+        for (i = 0; i < limit; i += 1) {
+            this.add({
+                xtype: 'component',
+                idx: i,
+                autoEl: {
+                    tag: 'a',
+                    href: '',
+                    html: '<i class="material-icons">' + this.reports[i].icon + '</i><span>' + this.reports[i].title + '</span>',
+                    'data-index': i
+                },
+                listeners: {
+                    click: {
+                        element: 'el',
+                        fn: function (e) {
+                            e.preventDefault();
+                            me.parentCt.categoryList.getSelectionModel().select(me.category);
+                            me.parentCt.entryList.getSelectionModel().select(this.component.idx);
+                        }
+                    }
+                }
+            });
+        }
+
+        if (this.reports.length > 5) {
+            this.add({
+                xtype: 'component',
+                cls: 'view-all',
+                //category: this.category,
+                autoEl: {
+                    tag: 'a',
+                    href: '',
+                    html: (this.reports.length - 5) + ' more ...'
+                },
+                listeners: {
+                    click: {
+                        element: 'el',
+                        fn: function (e) {
+                            e.preventDefault();
+                            me.parentCt.categoryList.getSelectionModel().select(me.category);
+                        }
+                    }
+                }
+            });
+        }
+    }
+});
 
 Ext.define("Ung.grid.feature.GlobalFilter", {
     extend: "Ext.grid.feature.Feature",
@@ -1828,13 +1719,13 @@ Ext.define("Ung.panel.ExtraConditions", {
                     '<ul class="x-list-plain"><tpl for=".">',
                     '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
                     '</tpl></ul>'
-                ),
+                    ),
                 // template for the content inside text field
                 displayTpl: Ext.create('Ext.XTemplate',
                     '<tpl for=".">',
                     '{header} [{dataIndex}]',
                     '</tpl>'
-                ),
+                    ),
                 listeners: {
                     change: {
                         fn: function (combo, newValue, oldValue, opts) {

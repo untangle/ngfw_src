@@ -8,7 +8,7 @@ Ext.define('Ung.dashboard', {
     reportEntriesModified: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
-        var loadSemaphore = rpc.reportsEnabled ? 4 : 1;
+        var loadSemaphore = rpc.reportsEnabled ? 3 : 1;
         var callback = Ext.bind(function () {
             loadSemaphore -= 1;
             if (loadSemaphore === 0) {
@@ -30,7 +30,6 @@ Ext.define('Ung.dashboard', {
         }, this));
         if (rpc.reportsEnabled) {
             this.loadReportEntries(callback);
-            this.loadEventEntries(callback);
             Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
                     return;
@@ -81,7 +80,7 @@ Ext.define('Ung.dashboard', {
         for (i = 0; i < this.allWidgets.length; i += 1) {
             widget = this.allWidgets[i];
             type = widget.type;
-            if (type !== "ReportEntry" && type !== "EventEntry") {
+            if (type !== "ReportEntry") {
                 this.widgetsList.push(Ext.create('Ung.dashboard.' + type, {
                     widgetType: type,
                     entryId: widget.entryId
@@ -163,20 +162,6 @@ Ext.define('Ung.dashboard', {
                 }
                 this.reportEntries = result.list;
                 this.reportsMap = Ung.Util.createRecordsMap(this.reportEntries, "uniqueId");
-                handler.call(this);
-            }, this));
-        } else {
-            handler.call(this);
-        }
-    },
-    loadEventEntries: function (handler) {
-        if (!this.eventEntries) {
-            Ung.Main.getReportsManager().getEventEntries(Ext.bind(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    return;
-                }
-                this.eventEntries = result.list;
-                this.eventsMap = Ung.Util.createRecordsMap(this.eventEntries, "uniqueId");
                 handler.call(this);
             }, this));
         } else {
@@ -864,21 +849,29 @@ Ext.define('Ung.dashboard.ReportEntry', {
     chart: null,
     chartData: null,
     initComponent: function () {
-        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
-        switch (this.entry.timeStyle) {
-        case 'LINE':
-            this.chartType = 'spline';
-            break;
-        case 'AREA':
-            this.chartType = 'areaspline';
-            break;
-        case 'BAR_3D_OVERLAPPED':
-            this.chartType = 'column';
-            break;
-        default:
-            this.chartType = 'areaspline';
+        if (this.entry.type === 'EVENT_LIST') {
+            this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3>';
+            this.items = [this.buildGrid()];
+            this.callParent(arguments);
+            this.gridEvents = this.down("grid[name=gridEvents]");
+        } else {
+            this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
+            switch (this.entry.timeStyle) {
+            case 'LINE':
+                this.chartType = 'spline';
+                break;
+            case 'AREA':
+                this.chartType = 'areaspline';
+                break;
+            case 'BAR_3D_OVERLAPPED':
+                this.chartType = 'column';
+                break;
+            default:
+                this.chartType = 'areaspline';
+            }
+            this.tpl = new Ext.XTemplate(this.tpl);
+            this.callParent(arguments);
         }
-        this.callParent(arguments);
     },
 
     listeners: {
@@ -920,6 +913,13 @@ Ext.define('Ung.dashboard.ReportEntry', {
     },
 
     loadData: function (handler) {
+        if (this.entry.type === 'EVENT_LIST') {
+            this.renderEventData(handler);
+        } else {
+            this.renderReportData(handler);
+        }
+    },
+    renderReportData: function (handler) {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             handler.call(this);
 
@@ -949,31 +949,39 @@ Ext.define('Ung.dashboard.ReportEntry', {
             //console.log(this.chart.series[0].data);
 
             /*
-            if (this.chart.series[0].data.length === 0) {
-                this.addCls('nodata');
-                return false;
-            }
-            */
+             if (this.chart.series[0].data.length === 0) {
+             this.addCls('nodata');
+             return false;
+             }
+             */
         }, this), this.entry, this.timeframe, -1);
-    }
-});
-
-/* EventEntry Widget */
-Ext.define('Ung.dashboard.EventEntry', {
-    extend: 'Ung.dashboard.Widget',
-    cls: 'widget',
-    layout: 'fit',
-    border: false,
-    entry: null,
-    displayColumns: null,
-    items: null,
-    hasRefresh: true,
-    initComponent: function () {
-        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3>';
-        this.items = [this.buildGrid()];
-        this.callParent(arguments);
-        this.gridEvents = this.down("grid[name=gridEvents]");
     },
+
+    renderEventData: function (handler) {
+        var me = this;
+        Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
+            handler.call(this);
+
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            if (this === null || !this.rendered) {
+                return;
+            }
+            result.getNextChunk(function (result2, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
+                var store = me.gridEvents.getStore();
+                if (me === null || !me.rendered) {
+                    return;
+                }
+                store.getProxy().setData(result2.list);
+                store.load();
+            }, 1000);
+        }, this), this.entry, null, this.timeframe, 14);
+    },
+
     buildGrid: function () {
         var tableConfig = Ext.clone(Ung.TableConfig.getConfig(this.entry.table)), i;
         if (!tableConfig) {
@@ -1017,30 +1025,6 @@ Ext.define('Ung.dashboard.EventEntry', {
             }),
             columns: tableConfig.columns
         };
-    },
-    loadData: function (handler) {
-        var me = this;
-        Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
-            handler.call(this);
-
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            if (this === null || !this.rendered) {
-                return;
-            }
-            result.getNextChunk(function (result2, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    return;
-                }
-                var store = me.gridEvents.getStore();
-                if (me === null || !me.rendered) {
-                    return;
-                }
-                store.getProxy().setData(result2.list);
-                store.load();
-            }, 1000);
-        }, this), this.entry, null, this.timeframe, 14);
     }
 });
 
