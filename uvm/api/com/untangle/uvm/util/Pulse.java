@@ -248,6 +248,12 @@ public class Pulse
             }
 
             while ( PulseState.RUNNING == getState()) {
+                try {
+                    waitForNextBlip();
+                } catch ( Exception e ) {
+                    logger.info( "Exception waiting for next blip: ", e );
+                }
+
                 /* run the blip */
                 try {
                     blip.run();
@@ -261,12 +267,6 @@ public class Pulse
 
                     /* Notify anyone waiting */
                     notifyAll();
-                }
-
-                try {
-                    waitForNextBlip();
-                } catch ( Exception e ) {
-                    logger.info( "Exception waiting for next blip: ", e );
                 }
             }
 
