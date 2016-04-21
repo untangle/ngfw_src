@@ -237,6 +237,8 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
+        # Make sure SSL Inspector is off
+        nodeSSL.stop()
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         # print "TLS 1 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult != 0)
