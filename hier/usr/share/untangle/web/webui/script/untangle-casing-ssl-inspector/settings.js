@@ -382,6 +382,7 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
         this.uploadCertificateWin = Ext.create('Ext.Window', {
             title: i18n._("Upload Trusted Certificate"),
             layout: 'fit',
+            modal: true,
             width: 600,
             height: 200,
             autoScroll: true,

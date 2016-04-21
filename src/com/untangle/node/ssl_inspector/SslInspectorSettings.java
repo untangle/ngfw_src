@@ -50,13 +50,13 @@ public class SslInspectorSettings implements Serializable
         javaxDebug = false;
         enabled = true;
 
-        client_SSLv2Hello = true;
+        client_SSLv2Hello = false;
         client_SSLv3 = false;
         client_TLSv10 = true;
         client_TLSv11 = true;
         client_TLSv12 = true;
 
-        server_SSLv2Hello = true;
+        server_SSLv2Hello = false;
         server_SSLv3 = false;
         server_TLSv10 = true;
         server_TLSv11 = true;
