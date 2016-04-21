@@ -41,20 +41,51 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
     @SuppressWarnings("serial")
     protected class CloudResult implements Serializable, JSONString
-    { 
+    {
         String itemCategory = null;
         String itemClass = null;
         String itemConfidence = null;
         String itemHash = null;
 
-        public String getItemCategory() { return itemCategory; }
-        public void   setItemCategory(String newValue) { this.itemCategory = newValue; }
-        public String getItemClass() { return itemClass; }
-        public void   setItemClass(String newValue) { this.itemClass = newValue; }
-        public String getItemConfidence() { return itemConfidence; }
-        public void   setItemConfidence(String newValue) { this.itemConfidence = newValue; }
-        public String getItemHash() { return itemHash; }
-        public void   setItemHash(String newValue) { this.itemHash = newValue; }
+        public String getItemCategory()
+        {
+            return itemCategory;
+        }
+
+        public void setItemCategory(String newValue)
+        {
+            this.itemCategory = newValue;
+        }
+
+        public String getItemClass()
+        {
+            return itemClass;
+        }
+
+        public void setItemClass(String newValue)
+        {
+            this.itemClass = newValue;
+        }
+
+        public String getItemConfidence()
+        {
+            return itemConfidence;
+        }
+
+        public void setItemConfidence(String newValue)
+        {
+            this.itemConfidence = newValue;
+        }
+
+        public String getItemHash()
+        {
+            return itemHash;
+        }
+
+        public void setItemHash(String newValue)
+        {
+            this.itemHash = newValue;
+        }
 
         public String toJSONString()
         {
@@ -113,55 +144,48 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
                 DataInputStream input = new DataInputStream(mycon.getInputStream());
 
-                // build a string from the cloud response skipping brackets and parenthesis
+                // build a string from the cloud response ignoring the brackets 
                 for (int c = input.read(); c != -1; c = input.read()) {
-                    if ((char) c == '[') continue;
-                    if ((char) c == ']') continue;
-                    if ((char) c == '{') continue;
-                    if ((char) c == '}') continue;
+                    if ((char) c == '[')
+                        continue;
+                    if ((char) c == ']')
+                        continue;
                     builder.append((char) c);
                 }
 
                 input.close();
-
                 mycon.disconnect();
-
-                logger.debug("CloudScanner CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA:" + builder.toString());
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
                 /*
-                 * This is an example of the message we get back from the cloud server. The insane
-                 * code below is my solution for parsing the response into a result we can use.
-                 * This WILL break if there are : " , characters within any item or value field.
+                 * This is an example of the message we get back from the cloud server.
                  *   
                  * [{"Category":"The EICAR Test String!16","Class":"m","Confidence":100,"Item":"44d88612fea8a8f36de82e1278abb02f"}]
                  * 
-                 * Also worth noting... for a negative result the cloud server seems to return this:
+                 * Also worth noting... for a negative result the cloud server returns just the empty brackets:
                  * []
                  * 
                  */
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-                // split the string on commas to find all of the item and value pairs
-                String[] tokens = builder.toString().split(",");
+                String cloudString = builder.toString();
+                logger.debug("CloudScanner CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA:" + cloudString);
 
-                for (int x = 0; x < tokens.length; x++) {
-                    // split the pair on the colon to get the item and value
-                    String[] list = tokens[x].split(":");
-                    if (list.length != 2) continue;
+                // if no json object in response create empty object to prevent exception 
+                if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0))
+                    cloudString = "{}";
 
-                    // seems like a good time to remove quotation marks
-                    String item = list[0].replace("\"", "");
-                    String value = list[1].replace("\"", "");
-
-                    // look for the stuff we know about and store in result object when found
-                    if (item.compareTo("Category") == 0) cloudResult.itemCategory = value;
-                    if (item.compareTo("Class") == 0) cloudResult.itemClass = value;
-                    if (item.compareTo("Confidence") == 0) cloudResult.itemConfidence = value;
-                    if (item.compareTo("Item") == 0) cloudResult.itemHash = value;
-                }
+                JSONObject cloudObject = new JSONObject(cloudString);
+                if (cloudObject.has("Confidence"))
+                    cloudResult.itemConfidence = cloudObject.getString("Confidence");
+                if (cloudObject.has("Category"))
+                    cloudResult.itemCategory = cloudObject.getString("Category");
+                if (cloudObject.has("Class"))
+                    cloudResult.itemClass = cloudObject.getString("Class");
+                if (cloudObject.has("Item"))
+                    cloudResult.itemHash = cloudObject.getString("Item");
             }
 
             catch (Exception exn) {
@@ -183,7 +207,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         NodeSession session = null;
         String bitdefenderResult = null;
         CloudResult cloudResult = null;
-        
+
         public CloudFeedback(VirusBlockerState virusState, String bitdefenderResult, long fileLength, NodeSession session, CloudResult cloudResult)
         {
             this.virusState = virusState;
@@ -203,27 +227,27 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 json.put("length", fileLength);
                 json.put("bitdefenderResult", bitdefenderResult);
                 json.put("cloudResult", cloudResult);
-                if ( session != null ) {
-                    if ( session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ) != null )
-                        json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment( NodeSession.KEY_HTTP_HOSTNAME ));
-                    if ( session.globalAttachment( NodeSession.KEY_HTTP_URI ) != null )
-                        json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment( NodeSession.KEY_HTTP_URI ));
-                    if ( session.globalAttachment( NodeSession.KEY_HTTP_URL ) != null )
-                        json.put(NodeSession.KEY_HTTP_URL, session.globalAttachment( NodeSession.KEY_HTTP_URL ));
-                    if ( session.globalAttachment( NodeSession.KEY_HTTP_REFERER ) != null )
-                        json.put(NodeSession.KEY_HTTP_REFERER, session.globalAttachment( NodeSession.KEY_HTTP_REFERER ));
-                    if ( session.globalAttachment( NodeSession.KEY_FTP_FILE_NAME ) != null )
-                        json.put(NodeSession.KEY_FTP_FILE_NAME, session.globalAttachment( NodeSession.KEY_FTP_FILE_NAME ));
-                    if ( session.getOrigClientAddr() != null )
-                        json.put("clientAddr", session.getOrigClientAddr().getHostAddress() );
-                    if ( session.getNewServerAddr() != null )
-                        json.put("serverAddr", session.getNewServerAddr().getHostAddress() );
-                    json.put("clientPort", session.getOrigClientPort() );
-                    json.put("serverPort", session.getNewServerPort() );
-                    if ( session.getAttachments() != null )
-                        json.put("attachments", session.getAttachments() );
+                if (session != null) {
+                    if (session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME) != null)
+                        json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME));
+                    if (session.globalAttachment(NodeSession.KEY_HTTP_URI) != null)
+                        json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment(NodeSession.KEY_HTTP_URI));
+                    if (session.globalAttachment(NodeSession.KEY_HTTP_URL) != null)
+                        json.put(NodeSession.KEY_HTTP_URL, session.globalAttachment(NodeSession.KEY_HTTP_URL));
+                    if (session.globalAttachment(NodeSession.KEY_HTTP_REFERER) != null)
+                        json.put(NodeSession.KEY_HTTP_REFERER, session.globalAttachment(NodeSession.KEY_HTTP_REFERER));
+                    if (session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME) != null)
+                        json.put(NodeSession.KEY_FTP_FILE_NAME, session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME));
+                    if (session.getOrigClientAddr() != null)
+                        json.put("clientAddr", session.getOrigClientAddr().getHostAddress());
+                    if (session.getNewServerAddr() != null)
+                        json.put("serverAddr", session.getNewServerAddr().getHostAddress());
+                    json.put("clientPort", session.getOrigClientPort());
+                    json.put("serverPort", session.getNewServerPort());
+                    if (session.getAttachments() != null)
+                        json.put("attachments", session.getAttachments());
                 }
-                
+
             } catch (Exception exn) {
                 logger.warn("Exception building CloudFeedback JSON object.", exn);
             }
@@ -349,9 +373,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // close the streams and socket ignoring exceptions
         try {
-            if (txstream != null) txstream.close();
-            if (rxstream != null) rxstream.close();
-            if (socket != null) socket.close();
+            if (txstream != null)
+                txstream.close();
+            if (rxstream != null)
+                rxstream.close();
+            if (socket != null)
+                socket.close();
         } catch (Exception exn) {
         }
 
@@ -380,7 +407,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         } catch (Exception e) {
             // ignore exception, there aren't always 3 tokens
         }
-        
+
         if (cloudScanner != null) {
             try {
                 synchronized (cloudScanner) {
@@ -395,8 +422,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         CloudFeedback feedback = null;
 
         /**
-         * If BD returned positive result - send feedback
-         * If cloud return positive result - send feedback
+         * If BD returned positive result - send feedback If cloud return
+         * positive result - send feedback
          */
         if (retcode == 222 || retcode == 223) {
             feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
@@ -404,11 +431,11 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         if (feedback == null && (cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
             feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
         }
-        
+
         // if we have a feedback object start it up now
         if (feedback != null)
             feedback.run();
-        
+
         // if the cloud says it is infected we set the result and return now
         if ((cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
             setResult(new VirusScannerResult(false, cloudResult.itemCategory));
