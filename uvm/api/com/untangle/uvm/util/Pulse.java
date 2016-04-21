@@ -233,8 +233,7 @@ public class Pulse
         /* This is the next time that you should wake up */
         private long nextTrigger = Long.MIN_VALUE;
 
-        private Ticker()
-        {}      
+        private Ticker() {}      
 
         public void run()
         {
@@ -256,9 +255,11 @@ public class Pulse
 
                 /* run the blip */
                 try {
+                    logger.debug("Running pulse[" + blip.getClass().getSimpleName() + "] ...");
                     blip.run();
+                    logger.debug("Running pulse[" + blip.getClass().getSimpleName() + "] ... done");
                 } catch ( Exception e ) {
-                    logger.warn( "error running blip", e );
+                    logger.warn( "Exception running blip", e );
                 }
 
                 synchronized ( this ) {

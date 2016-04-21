@@ -108,13 +108,15 @@ public class TomcatManagerImpl implements TomcatManager
         baseHost.setErrorReportValveClass("com.untangle.uvm.UvmErrorReportValve");
         baseHost.setStartStopThreads(Runtime.getRuntime().availableProcessors());
 
-
-        loadServlet("/blockpage", "blockpage");
-        ServletContext ctx = loadServlet("/webui", "webui", true );
+        ServletContext ctx;
+        
+        ctx = loadServlet("/webui", "webui", true );
         ctx.setAttribute("threadRequest", threadRequest);
 
         ctx = loadServlet("/setup", "setup", true );
         ctx.setAttribute("threadRequest", threadRequest);
+
+        ctx = loadServlet("/blockpage", "blockpage");
     }
 
     public ServletContext loadServlet(String urlBase, String rootDir)

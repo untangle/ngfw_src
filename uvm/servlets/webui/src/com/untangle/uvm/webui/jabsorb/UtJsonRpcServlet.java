@@ -32,8 +32,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     private JSONRPCBridge bridge;
     private UtCallbackController callback;
     
-    // HttpServlet methods ----------------------------------------------------
-
     @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
