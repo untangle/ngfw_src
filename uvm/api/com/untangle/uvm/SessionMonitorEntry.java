@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is an object that represents a conntrack session
- * It is used for JSON serialization of the ut-conntrack script
+ * This class represents a conntrack entry
  */
 public class SessionMonitorEntry
 {

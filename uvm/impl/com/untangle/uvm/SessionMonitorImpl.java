@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMonitor;
@@ -398,16 +399,7 @@ public class SessionMonitorImpl implements SessionMonitor
     @SuppressWarnings("unchecked") //JSON
     private List<SessionMonitorEntry> _getConntrackSessionMonitorEntrys()
     {
-        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
-
-        try {
-            String output = SessionMonitorImpl.execManager.execOutput(execStr);
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
-            return entryList;
-        } catch (org.jabsorb.serializer.UnmarshallException exc) {
-            logger.error("Unable to read conntrack - invalid JSON",exc);
-            return null;
-        }
+        return parseProcNetIpConntrack();
     }
 
     private Tuple _makeTuple( String protocolStr, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
@@ -494,9 +486,110 @@ public class SessionMonitorImpl implements SessionMonitor
                 this.clientPort + " -> " +
                 ( this.serverAddr == null ? "null" : this.serverAddr.getHostAddress() ) + ":" +
                 this.serverPort;
-                
-                
         }
+    }
+
+    private List<SessionMonitorEntry> parseProcNetIpConntrack()
+    {
+        BufferedReader br = null;
+        String line;
+        LinkedList<SessionMonitorEntry> list = new LinkedList<SessionMonitorEntry>();
+        
+        try {
+            br = new BufferedReader(new FileReader("/proc/net/ip_conntrack"));
+            while ((line = br.readLine()) != null) {
+                try {
+                    if ( logger.isDebugEnabled() )
+                        logger.debug("parseProcNetIpConntrack line: " + line);
+                    String[] parts = line.split("\\s+");
+                    SessionMonitorEntry newEntry = new SessionMonitorEntry();
+
+                    if ( parts.length < 10 ) {
+                        logger.warn("Too few parts: " + line);
+                        continue;
+                    }
+
+                    // part[0] is either "udp" or "tcp"
+                    if ( !"udp".equals(parts[0]) && !"tcp".equals(parts[0]) ) {
+                        if ( logger.isDebugEnabled() )
+                            logger.debug("parseProcNetIpConntrack skip line: " + line);
+                        continue;
+                    }
+                    newEntry.setProtocol(parts[0].toUpperCase());
+
+                    int src_count = 0;
+                    int dst_count = 0;
+                    int sport_count = 0;
+                    int dport_count = 0;
+                    for ( int i = 0 ; i < parts.length ; i++ ) {
+                        String part = parts[i];
+                        String[] subparts = part.split("=");
+                        if ( subparts.length != 2 )
+                            continue;
+
+                        if ( logger.isDebugEnabled() )
+                            logger.debug("parseProcNetIpConntrack part: " + part);
+                        String varname = subparts[0];
+                        String varval = subparts[1];
+
+                        switch ( varname ) {
+                        case "src":
+                            if ( src_count == 0 )
+                                newEntry.setPreNatClient( InetAddress.getByName( varval ) ); // request src is pre nat client 
+                            else 
+                                newEntry.setPostNatServer( InetAddress.getByName( varval ) ); // reply src is post nat server
+                            src_count++;
+                            break;
+                        case "dst":
+                            if ( dst_count == 0 )
+                                newEntry.setPreNatServer( InetAddress.getByName( varval ) ); // request dst is pre nat server
+                            else 
+                                newEntry.setPostNatClient( InetAddress.getByName( varval ) ); // reply dst is pre nat client
+                            dst_count++;
+                            break;
+                        case "sport":
+                            if ( sport_count == 0 )
+                                newEntry.setPreNatClientPort( Integer.parseInt( varval ) ); // request sport is pre nat client port
+                            else 
+                                newEntry.setPostNatServerPort( Integer.parseInt( varval ) ); // reply sport is post nat server port
+                            sport_count++;
+                            break;
+                        case "dport":
+                            if ( dport_count == 0 )
+                                newEntry.setPreNatServerPort( Integer.parseInt( varval ) ); // request dport is pre nat server port
+                            else 
+                                newEntry.setPostNatClientPort( Integer.parseInt( varval ) ); // reply dport is post nat client port
+                            dport_count++;
+                            break;
+                        case "mark":
+                            int mark = Integer.parseInt( varval );
+                            newEntry.setMark( mark ); 
+                            newEntry.setBypassed( ((mark & 0x01000000) != 0) );
+                            newEntry.setPriority( (mark & 0x000F0000) >> 16 );
+                            newEntry.setClientIntf( (mark & 0x000000FF) >> 0 );
+                            newEntry.setServerIntf( (mark & 0x0000FF00) >> 8 );
+                            break;
+                        default:
+                            if ( logger.isDebugEnabled() )
+                                logger.debug("parseProcNetIpConntrack skip part: " + part);
+                        break;
+                        }
+
+                        list.add(newEntry);
+                    }
+                } catch ( Exception lineException ) {
+                    logger.warn("Failed to parse /proc/net/ip_conntrack line: " + line, lineException);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to parse /proc/net/ip_conntrack",e);
+        } finally {
+            if ( br != null ) {
+                try {br.close();} catch(Exception ex) {}
+            }
+        }
+
+        return list;
     }
                             
 }
