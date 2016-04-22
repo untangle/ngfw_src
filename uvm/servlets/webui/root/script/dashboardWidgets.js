@@ -430,21 +430,6 @@ Ext.define('Ung.dashboard.Resources', {
         this.callParent(arguments);
     },
     tpl:
-        /*
-        '<div class="wg-wrapper flex resources" style="padding: 0 30px;">' +
-        '<div class="info-box" style="padding: 0;">' +
-            '<p>Memory<br/><span style="font-size: 20px; font-weight: 400;">{totalMemory} Mb</span></p>' +
-            '<div class="donut"><div class="chart res1"></div><span>50</span></div>' +
-        '</div>' +
-        '<div class="info-box" style="padding: 0;">' +
-            '<p>Swap<br/><span style="font-size: 20px; font-weight: 400;">23456 Mb</span></p>' +
-            '<div class="donut"><div class="chart res2"></div><span>50</span></div>' +
-        '</div>' +
-        '<div class="info-box" style="padding: 0;">' +
-            '<p>Disk<br/><span style="font-size: 20px; font-weight: 400;">23456 Mb</span></p>' +
-            '<div class="donut"><div class="chart res3"></div><span>50</span></div>' +
-        '</div>' +
-        */
         '<div class="wg-wrapper flex" style="padding: 0 30px; align-items: initial;">' +
         '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Memory') + '</p>' +
         '<div>' +
@@ -452,7 +437,7 @@ Ext.define('Ung.dashboard.Resources', {
             '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedMemory} MB</span> used <em>({percentUsedMemory}%)</em></div>' +
             '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> free <em>({percentFreeMemory}%)</em></div>' +
         '</div>' +
-        '<div style="border-top: 1px #EEE solid; border-bottom: 1px #EEE solid; margin: 5px 0; padding: 0 0 10px 0;">' +
+        '<div class="swap-usage" style="border-top: 1px #EEE solid; border-bottom: 1px #EEE solid; margin: 5px 0; padding: 0 0 10px 0;">' +
             '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Swap') + '</p>' +
             '<div>' +
                 '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
@@ -469,76 +454,7 @@ Ext.define('Ung.dashboard.Resources', {
         '</div>' +
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Resources") + '</p></div>',
     data: {},
-    listeners: {
-        /*
-        'afterrender': function (widget) {
-            for (var i=1; i<=3; i++) {
-                new Highcharts.Chart({
-                    chart: {
-                        type: 'solidgauge',
-                        renderTo: widget.getEl().query('.chart.res' + i)[0],
-                        margin: [0,0,0,0],
-                        padding: 0,
-                        backgroundColor: 'transparent'
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-                    title: null,
-
-                    tooltip: {
-                        enabled: false
-                    },
-
-                    pane: {
-                        startAngle: 0,
-                        endAngle: 360,
-                        background: [{
-                            outerRadius: '100%',
-                            innerRadius: '90%',
-                            backgroundColor: '#EEE',
-                            borderWidth: 0
-                        }]
-                    },
-
-                    yAxis: {
-                        min: 0,
-                        max: 100,
-                        lineWidth: 0,
-                        tickPositions: []
-                    },
-
-                    plotOptions: {
-                        solidgauge: {
-                            //borderWidth: '8px',
-                            dataLabels: {
-                                enabled: false
-                            },
-                            //linecap: 'round',
-                            stickyTracking: false
-                        }
-                    },
-
-
-                    series: [{
-                        name: 'Move',
-                        data: [{
-                            color: 'coral',
-                            radius: '100%',
-                            innerRadius: '90%',
-                            y: 60
-                        }]
-                    }]
-                });       
-            }
-        }
-        */
-    },
     updateStats: function (stats) {
-        //if (!this.loaded) {
         this.update({
             totalMemory: Ung.Util.bytesToMBs(stats.MemTotal),
             usedMemory: Ung.Util.bytesToMBs(stats.MemTotal - stats.MemFree),
@@ -559,8 +475,10 @@ Ext.define('Ung.dashboard.Resources', {
             percentFreeDisk: parseFloat(stats.freeDiskSpace / stats.totalDiskSpace * 100).toFixed(1)
         });
         this.removeCls('init');
-            //this.loaded = true;
-        //}
+        // assuming total swap = 0 // e.g. ARM based
+        if (!stats.SwapTotal) {
+            this.getEl().query('.swap-usage')[0].remove();
+        }
     }
 });
 
