@@ -104,7 +104,7 @@ Architecture: all
 Conflicts: untangle-node-idps, untangle-node-ips
 Replaces: untangle-node-idps, untangle-node-ips
 Provides: untangle-node-idps, untangle-node-ips
-Depends: untangle-vm, untangle-snort-config, snort
+Depends: untangle-vm, untangle-snort-config, snort (>= 2.9.8.2), libdaq0 (>= 2.0.6)
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
