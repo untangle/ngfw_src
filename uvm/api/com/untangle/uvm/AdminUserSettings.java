@@ -21,6 +21,7 @@ public class AdminUserSettings implements Serializable, JSONString
     private String description;
     private String password;
     private byte[] passwordHash = null;
+    private String passwordHashShadow = null;
     
     public AdminUserSettings() {}
 
@@ -33,10 +34,10 @@ public class AdminUserSettings implements Serializable, JSONString
     }
     
     public String getUsername() { return this.username; }
-    public void setUsername( String username ) { this.username = username; }
+    public void setUsername( String newValue ) { this.username = newValue; }
 
     public String getEmailAddress() { return this.emailAddress; }
-    public void setEmailAddress( String emailAddress ) { this.emailAddress = emailAddress; }
+    public void setEmailAddress( String newValue ) { this.emailAddress = newValue; }
 
     public boolean getEmailAlerts() { return this.emailAlerts; }
     public void setEmailAlerts( boolean newValue ) { this.emailAlerts = newValue; }
@@ -45,7 +46,10 @@ public class AdminUserSettings implements Serializable, JSONString
     public void setEmailSummaries( boolean newValue ) { this.emailSummaries = newValue; }
     
     public String getDescription() { return this.description; }
-    public void setDescription( String description ) { this.description = description; }
+    public void setDescription( String newValue ) { this.description = newValue; }
+
+    public String getPasswordHashShadow() { return this.passwordHashShadow; }
+    public void setPasswordHashShadow( String newValue ) { this.passwordHashShadow = newValue; }
     
     public byte[] trans_getPasswordHash()
     {

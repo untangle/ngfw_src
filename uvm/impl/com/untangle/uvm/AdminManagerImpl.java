@@ -71,7 +71,6 @@ public class AdminManagerImpl implements AdminManager
             logger.debug("Loading Settings...");
 
             this.settings = readSettings;
-            this.applyToSystem();
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -82,7 +81,7 @@ public class AdminManagerImpl implements AdminManager
             File settingsFile = new File( settingsFileName );
             File shadowFile = new File("/etc/shadow");
             if (settingsFile.lastModified() > shadowFile.lastModified() ) {
-                applyToSystem();
+                setRootPasswordAndShadowHash( this.settings );
             }
         }
 
@@ -98,6 +97,11 @@ public class AdminManagerImpl implements AdminManager
     }
 
     public void setSettings( final AdminSettings newSettings )
+    {
+        this.setSettings( newSettings, true );
+    }
+
+    private void setSettings( final AdminSettings newSettings, boolean setRootPassword )
     {
         /**
          * Save the settings
@@ -116,9 +120,10 @@ public class AdminManagerImpl implements AdminManager
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
-        this.applyToSystem();
+        if ( setRootPassword )
+            setRootPasswordAndShadowHash( this.settings );
     }
-
+    
     public String getFullVersionAndRevision()
     {
         try {
@@ -210,37 +215,72 @@ public class AdminManagerImpl implements AdminManager
         return null;
     }
     
-    private void applyToSystem() 
+    /**
+     * This sets the root password in /etc/shadow
+     * and also sets the 'passwordHashShadow' value in the settings to the same hash
+     */
+    private void setRootPasswordAndShadowHash( AdminSettings settings )
     {
-        setRootPasswordToAdminPassword();
-    }
+        AdminUserSettings admin = null;
 
-    private void setRootPasswordToAdminPassword()
-    {
-        // Set root password to "admin" password
-        for ( AdminUserSettings user : this.settings.getUsers() ) {
+        for ( AdminUserSettings user : settings.getUsers() ) {
             if ( "admin".equals( user.getUsername() ) ) {
-                String pass = user.trans_getPassword();
-                if ( pass != null ) {
-                    logger.info("Setting root password");
-                    String cmd = "echo 'root:" + pass + "' | sudo chpasswd";
-                    
-                    // turn down logging so we dont log password
-                    UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
-
-                    ExecManagerResult result = UvmContextImpl.context().execManager().exec( cmd );
-
-                    // turn logging back up
-                    UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.INFO );
-                    
-                    int exitCode = result.getResult();
-                    if ( exitCode != 0 ) {
-                        logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
-                    }
-                }
+                admin = user;
+                break;
             }
         }
+
+        if ( admin == null ) {
+            logger.warn("No \"admin\" account - not setting root password");
+        }
+ 
+            
+        String pass = admin.trans_getPassword();
+        String passwordHashShadow = admin.getPasswordHashShadow();
+        if ( pass != null ) {
+            logger.info("Setting root password.");
+            String cmd = "echo 'root:" + pass + "' | sudo chpasswd";
+                    
+            // turn down logging so we dont log password
+            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
+            ExecManagerResult result = UvmContextImpl.context().execManager().exec( cmd );
+            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.INFO );
+                    
+            int exitCode = result.getResult();
+            if ( exitCode != 0 ) {
+                logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
+            }
+
+            String shadowHash = UvmContextImpl.context().execManager().execOutput("sudo awk -F: '/root/ {print $2}' /etc/shadow");
+
+            /**
+             * If the shadowHash is different than the value in settings
+             * Change the settings and resave them, but this time without setting
+             * the root password because we just did that
+             *
+             * We have to save twice because we dont know the hash until
+             * after we apply the first save to the system
+             */
+            if ( shadowHash != null ) {
+                shadowHash = shadowHash.trim();
+                if ( !shadowHash.equals( admin.getPasswordHashShadow() )) { 
+                    logger.info("Re-saving admin settings with root password hash included.");
+                    admin.setPasswordHashShadow( shadowHash );
+                    setSettings( settings, false ); // save settings but do not set root password again
+                }
+            }
+                    
+        } else if ( passwordHashShadow != null ) {
+            ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
+            int exitCode = result.getResult();
+            if ( exitCode != 0 ) {
+                logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
+            }
+        } else {
+            logger.warn("Unable to set root password. No known password or password hash");
+        }
     }
+
 
     /* 12.0 conversion */
     private void convertToNewNames()
