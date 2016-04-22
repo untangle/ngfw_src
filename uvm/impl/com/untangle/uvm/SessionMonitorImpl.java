@@ -574,9 +574,10 @@ public class SessionMonitorImpl implements SessionMonitor
                                 logger.debug("parseProcNetIpConntrack skip part: " + part);
                         break;
                         }
-
-                        list.add(newEntry);
                     }
+
+                    list.add(newEntry);
+                    
                 } catch ( Exception lineException ) {
                     logger.warn("Failed to parse /proc/net/ip_conntrack line: " + line, lineException);
                 }

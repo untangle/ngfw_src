@@ -1,14 +1,19 @@
 
 package com.untangle.uvm;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 /**
  * This class represents a conntrack entry
  */
-public class SessionMonitorEntry
+@SuppressWarnings("serial")
+public class SessionMonitorEntry implements Serializable, JSONString
 {
     private String protocol;
     private String state;
@@ -141,4 +146,11 @@ public class SessionMonitorEntry
     {
         return getProtocol() + "| " + getPreNatClient().getHostAddress() + ":" + getPreNatClientPort() + " -> " + getPostNatServer().getHostAddress() + ":" + getPostNatServerPort();
     }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+    
 }
