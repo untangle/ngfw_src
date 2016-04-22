@@ -156,9 +156,15 @@ Ext.define("Ung.SettingsWin", {
     buildTabPanel: function(itemsArray) {
         if(this.hasReports) {
             var reportCategory = this.reportCategory;
-            if ( reportCategory == null ) reportCategory = this.displayName; 
+            if ( reportCategory == null ) reportCategory = this.displayName;
             itemsArray.push(Ext.create('Ung.panel.Reports',{
-                category: reportCategory
+                category: i18n._(reportCategory),
+                title: i18n._('Reports'),
+                responsiveFormulas: {
+                    insideSettingsWin: function(context) {
+                        return true;
+                    }
+                }
             }));
         }
         

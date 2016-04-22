@@ -6,12 +6,22 @@ Ext.define('Ung.panel.Reports', {
     extend : 'Ext.container.Container',
     layout: 'border',
     name: 'panelReports',
-    //title: i18n._('Reports'),
     border: 0,
     autoRefreshEnabled: false,
     autoRefreshInterval: 10, //seconds
     extraConditions: null,
     reportsManager: null,
+    mixins: [
+        'Ext.mixin.Responsive'
+    ],
+    responsiveFormulas: {
+        large: 'width >= 1280',
+        medium: 'width >= 1024 && width < 1280',
+        small: 'width <= 1024',
+        insideSettingsWin: function () {
+            return false;
+        }
+    },
     items: [{
         region: 'north',
         itemId: 'reportsNorth',
@@ -28,10 +38,16 @@ Ext.define('Ung.panel.Reports', {
         items: [],
         plugins: 'responsive',
         responsiveConfig: {
-            'width <= 1280': {
+            'small || medium': {
                 hidden: false
             },
-            'width > 1280': {
+            'large': {
+                hidden: true
+            },
+            'insideSettingsWin && small': {
+                hidden: false
+            },
+            'insideSettingsWin && !small': {
                 hidden: true
             }
         }
@@ -70,11 +86,14 @@ Ext.define('Ung.panel.Reports', {
         },
         plugins: 'responsive',
         responsiveConfig: {
-            'width <= 1280': {
+            'small || medium': {
                 hidden: true
             },
-            'width > 1280': {
+            'large': {
                 hidden: false
+            },
+            'insideSettingsWin': {
+                hidden: true
             }
         }
     }, {
@@ -114,10 +133,10 @@ Ext.define('Ung.panel.Reports', {
                 columns: [],
                 plugins: 'responsive',
                 responsiveConfig: {
-                    'width <= 1024': {
+                    'small': {
                         hidden: true
                     },
-                    'width > 1024': {
+                    'medium || large': {
                         hidden: false
                     }
                 }
@@ -152,6 +171,20 @@ Ext.define('Ung.panel.Reports', {
         this.callParent(arguments);
     },
     initComponent: function () {
+
+        if (!rpc.reportsEnabled) {
+            this.items = [{
+                region: 'center',
+                xtype: 'panel',
+                bodyStyle: {
+                    padding: '10px'
+                },
+                html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
+            }];
+            this.callParent(arguments);
+            return;
+        }
+
         var me = this;
         this.subCmps = [];
         this.callParent(arguments);
@@ -198,10 +231,13 @@ Ext.define('Ung.panel.Reports', {
             margin: '0 0 0 5',
             plugins: 'responsive',
             responsiveConfig: {
-                'width <= 1280': {
+                'small || medium': {
                     hidden: false
                 },
-                'width > 1280': {
+                'large': {
+                    hidden: true
+                },
+                'insideSettingsWin': {
                     hidden: true
                 }
             }
@@ -216,10 +252,10 @@ Ext.define('Ung.panel.Reports', {
             //hidden: true,
             plugins: 'responsive',
             responsiveConfig: {
-                'width <= 1024': {
+                'small': {
                     hidden: false
                 },
-                'width > 1024': {
+                'medium || large': {
                     hidden: true
                 }
             }
@@ -459,6 +495,7 @@ Ext.define('Ung.panel.Reports', {
             }]
         });
 
+
         this.reportContainer = this.down('#reportContainer');
         this.reportData = this.down('#reportData');
         this.reportChart = this.down('#reportChart');
@@ -597,8 +634,15 @@ Ext.define('Ung.panel.Reports', {
             }
 
             this.categoryList.getStore().loadData(_categorySideItems);
-            this.categoryList.setSelection(_categorySideItems[0]);
             this.buildCategorySelector(_categorySideItems);
+
+            // reports opened within app settings, having an initial category set
+            if (this.category) {
+                this.categoryList.getSelectionModel().select(this.categoryList.getStore().findRecord('text', this.category));
+            } else {
+                this.categoryList.setSelection(_categorySideItems[0]);
+            }
+
 
             this.down('#categoriesMenuBtn').setMenu(Ext.create('Ext.menu.Menu', {
                 //itemId: 'categoriesMenu',
@@ -673,17 +717,20 @@ Ext.define('Ung.panel.Reports', {
             shadow: false,
             listeners: {
                 click: Ext.bind(function (menu, item) {
-                    console.log(item);
                     this.entryList.getSelectionModel().select(item.model);
                 }, this)
             }
         }));
         this.entrySelector.removeAll(true);
-        this.entrySelector.add({
-            xtype: 'container',
-            cls: 'entry-selector-header',
-            html: '<img src="' + this.selectedCategory.icon + '"/>' + '<span>' + this.selectedCategory.text + '</span>'
-        });
+
+        // not adding header when in App Settings Win
+        if (!this.category) {
+            this.entrySelector.add({
+                xtype: 'container',
+                cls: 'entry-selector-header',
+                html: '<img src="' + this.selectedCategory.icon + '"/>' + '<span>' + this.selectedCategory.text + '</span>'
+            });
+        }
         this.entrySelector.add(selectionEntries);
     },
 
@@ -708,7 +755,6 @@ Ext.define('Ung.panel.Reports', {
             }
             break;
         default:
-            console.log('def');
             icon = 'subject';
         }
         return icon;
