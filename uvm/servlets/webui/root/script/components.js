@@ -902,7 +902,7 @@ Ext.define("Ung.SystemStats", {
             '<div class="hosts" onclick="Ung.Main.showHosts()"></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
-            '<div class="disk"><div name="disk_value"></div></div>'
+            '<div class="disk"><svg viewBox="0 0 32 32"><circle name="disk_value" r="16" cx="16" cy="16"/></svg></div>'
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
 
@@ -1043,8 +1043,7 @@ Ext.define("Ung.SystemStats", {
         Ung.Main.totalMemoryMb = Ung.Util.bytesToMBs(stats.MemTotal);
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
         this.getEl().down("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
-        var diskPercent=Math.round((1-stats.freeDiskSpace/stats.totalDiskSpace)*20 )*5;
-        this.getEl().down("div[name=disk_value]").setStyle("backgroundImage", "url('/skins/"+rpc.skinSettings.skinName+"/images/admin/disk/icon_disk"+diskPercent+".png')");
+        this.getEl().down("[name=disk_value]").setStyle("stroke-dasharray", (stats.totalDiskSpace > 0 ? (1-stats.freeDiskSpace/stats.totalDiskSpace) * 100 : 0) + ' 100');
         if(this.networkToolTip.rendered) {
             toolTipEl=this.networkToolTip.getEl();
             toolTipEl.down("span[name=tx_speed]").dom.innerHTML=txSpeed.value+" "+txSpeed.unit;
