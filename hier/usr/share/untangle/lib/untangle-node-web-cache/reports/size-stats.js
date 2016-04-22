@@ -10,8 +10,8 @@
     "readOnly": true,
     "table": "web_cache_stats",
      "timeDataColumns": [
-        "sum(hit_bytes::int) as cached",
-        "sum(miss_bytes::int) as uncached"
+        "sum(hit_bytes::bigint) as cached",
+        "sum(miss_bytes::bigint) as uncached"
     ],
     "colors": [
         "#396c2b",
