@@ -33,7 +33,6 @@ def main(argv):
     Main entry for generate
     """
     global pot
-#    language_ids = languages.get_enabled_ids()
     pootle_directory = "untangleserver"
 
     try:
@@ -54,7 +53,10 @@ def main(argv):
 
     pot.load()
 
-    print "Synchronizing pootle languages..."
+    ##
+    ## Update with templates
+    ##
+    print "Synchronizing pootle languages with templates..."
     total_character_count = 0
     total_word_count = 0
     for path in glob.glob(pootle_directory + "/*"):
@@ -99,6 +101,41 @@ def main(argv):
             print " total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100))
 
             po.save()
+
+    ##
+    ## Synchronize with official translations
+    ##
+    print "Synchronzing pootle languages with official translations..."
+    language_ids = languages.get_enabled_ids()
+    for language in languages.get_enabled():
+        if language["id"] == "en" or language["id"] == "xx":
+            continue
+
+        official_po = i18n.PoFile(language=language["id"])
+        official_po.load()
+
+        diff = { "add": [], "remove": [] }
+        print language["id"]
+        pootle_po_file_names = glob.glob(pootle_directory + "/"+language["id"]+"/*.po")
+        pootle_file_name = pootle_po_file_names[0]
+        pootle_po = i18n.PoFile(language["id"], pootle_file_name )
+        pootle_po.load()
+        for o_record in official_po.records:
+            if len("".join(o_record.msg_str)) == 0:
+               continue
+            p_record = pootle_po.get_record_by_msgid(o_record.msg_id)
+            if p_record != None and len("".join(p_record.msg_str)) != 0 and p_record.arguments_match() == True:
+               continue
+            diff["add"].append(o_record)
+        print "  Synchronizing: %s, %s," % (language["name"], pootle_file_name),
+
+        ## Add non-empty 
+        for a_record in diff["add"]:
+            pootle_po.add_record(a_record, replace_comments=True)
+
+        print "%d added/modified" % (len(diff["add"]))
+        
+        pootle_po.save()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
