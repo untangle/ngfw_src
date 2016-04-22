@@ -456,7 +456,9 @@ public class SessionMonitorImpl implements SessionMonitor
 
         public int hashCode()
         {
-            return protocol + clientAddr.hashCode() + serverAddr.hashCode() * clientPort * serverPort;
+            return protocol +
+                (clientAddr == null ? 0 : clientAddr.hashCode()) +
+                (serverAddr == null ? 0 : serverAddr.hashCode()) * clientPort * serverPort;
         }
         
         public boolean equals( Object o2 )
@@ -515,6 +517,12 @@ public class SessionMonitorImpl implements SessionMonitor
                             logger.debug("parseProcNetIpConntrack skip line: " + line);
                         continue;
                     }
+                    if ( line.contains("127.0.0.1") ) {
+                        if ( logger.isDebugEnabled() )
+                            logger.debug("parseProcNetIpConntrack ignore line: " + line);
+                        continue;
+                    }
+                        
                     newEntry.setProtocol(parts[0].toUpperCase());
 
                     int src_count = 0;
