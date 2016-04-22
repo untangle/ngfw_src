@@ -573,6 +573,7 @@ Ext.define('Ung.dashboard.CPULoad', {
 Ext.define('Ung.dashboard.NetworkInformation', {
     extend: 'Ung.dashboard.Widget',
     displayMode: 'small',
+    refreshIntervalSec: 3,
     hasStats: true,
     initComponent: function () {
         this.title = '<h3 style="padding: 5px 0;">' + i18n._("Network Information") + '</h3>';
