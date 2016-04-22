@@ -216,7 +216,9 @@ Ext.define('Ung.panel.Reports', {
         this.reportView = this.down('#reportView');
         this.reportPanel = this.down('#reportPanel');
 
-        this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions");
+        this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
+            parentPanel: this
+        });
 
 
         this.down('#reportsNorth').add({
@@ -1908,6 +1910,7 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
         });
+        skipReload = true;
         if (!skipReload) {
             var encodedConditions = Ext.encode(conditions);
             if (this.currentConditions != encodedConditions) {
