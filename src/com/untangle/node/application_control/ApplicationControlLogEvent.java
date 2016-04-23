@@ -36,7 +36,11 @@ public class ApplicationControlLogEvent extends LogEvent
         this.state = status.state;
         this.ruleid = null;
         this.flagged = rule.getFlag();
-        this.blocked = rule.getBlock();
+        if (rule.getBlock() || rule.getTarpit())
+            this.blocked = true;
+        else
+            this.blocked = false;
+
     }
 
     public ApplicationControlLogEvent(SessionEvent sessionEvent, ApplicationControlStatus status, String category, Integer ruleid, boolean flagged, boolean blocked)
@@ -53,89 +57,147 @@ public class ApplicationControlLogEvent extends LogEvent
         this.blocked = blocked;
     }
 
-    public String getApplication() { return application; }
-    public void setApplication(String application) { this.application = application; }
+    public String getApplication()
+    {
+        return application;
+    }
 
-    public String getProtochain() { return protochain; }
-    public void setProtochain(String protochain) { this.protochain = protochain; }
+    public void setApplication(String application)
+    {
+        this.application = application;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getProtochain()
+    {
+        return protochain;
+    }
 
-    public String getDetail() { return detail; }
-    public void setDetail(String detail) { this.detail = detail; }
+    public void setProtochain(String protochain)
+    {
+        this.protochain = protochain;
+    }
 
-    public Integer getConfidence() { return confidence; }
-    public void setConfidence(Integer confidence) { this.confidence = confidence; }
+    public String getCategory()
+    {
+        return category;
+    }
 
-    public Integer getState() { return state; }
-    public void setState(Integer state) { this.state = state; }
+    public void setCategory(String category)
+    {
+        this.category = category;
+    }
 
-    public Integer getRuleId() { return ruleid; }
-    public void setRuleId(Integer ruleid) { this.ruleid = ruleid; }
+    public String getDetail()
+    {
+        return detail;
+    }
 
-    public boolean getFlagged() { return flagged; }
-    public void setFlagged(boolean flagged) { this.flagged = flagged; }
+    public void setDetail(String detail)
+    {
+        this.detail = detail;
+    }
 
-    public boolean getBlocked() { return blocked; }
-    public void setBlocked(boolean blocked) { this.blocked = blocked; }
+    public Integer getConfidence()
+    {
+        return confidence;
+    }
 
-    public SessionEvent getSessionEvent() { return sessionEvent; }
-    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
+    public void setConfidence(Integer confidence)
+    {
+        this.confidence = confidence;
+    }
+
+    public Integer getState()
+    {
+        return state;
+    }
+
+    public void setState(Integer state)
+    {
+        this.state = state;
+    }
+
+    public Integer getRuleId()
+    {
+        return ruleid;
+    }
+
+    public void setRuleId(Integer ruleid)
+    {
+        this.ruleid = ruleid;
+    }
+
+    public boolean getFlagged()
+    {
+        return flagged;
+    }
+
+    public void setFlagged(boolean flagged)
+    {
+        this.flagged = flagged;
+    }
+
+    public boolean getBlocked()
+    {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked)
+    {
+        this.blocked = blocked;
+    }
+
+    public SessionEvent getSessionEvent()
+    {
+        return sessionEvent;
+    }
+
+    public void setSessionEvent(SessionEvent sessionEvent)
+    {
+        this.sessionEvent = sessionEvent;
+    }
 
     @Override
-    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
+    public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " + "SET ";
         String app = null;
         String pc = null;
-        if ( application != null ) {
+        if (application != null) {
             app = application;
             app = app.replaceAll("[^\\x01-\\x7F]", "");
-            if ( ! app.equals( application ) ) {
+            if (!app.equals(application)) {
                 logger.warn("Application contained non-ascii characters: " + application + " using: " + app);
             }
         }
-        if ( protochain != null ) {
+        if (protochain != null) {
             pc = protochain;
             pc = pc.replaceAll("[^\\x01-\\x7F]", "");
-            if ( ! pc.equals( protochain ) ) {
+            if (!pc.equals(protochain)) {
                 logger.warn("Protochain contained non-ascii characters: " + protochain + " using: " + pc);
             }
         }
 
-        if (app != null)
-            sql += " application_control_application = ?, ";
-        if (detail != null)
-            sql += " application_control_detail = ?, ";
-        if (pc != null)
-            sql += " application_control_protochain = ?, ";
-        if (category != null)
-            sql += " application_control_category = ?, ";
-        if (confidence != null)
-            sql += " application_control_confidence = ?, ";
-        if (ruleid != null)
-            sql += " application_control_ruleid = ?, ";
+        if (app != null) sql += " application_control_application = ?, ";
+        if (detail != null) sql += " application_control_detail = ?, ";
+        if (pc != null) sql += " application_control_protochain = ?, ";
+        if (category != null) sql += " application_control_category = ?, ";
+        if (confidence != null) sql += " application_control_confidence = ?, ";
+        if (ruleid != null) sql += " application_control_ruleid = ?, ";
         sql += " application_control_flagged = ?, ";
         sql += " application_control_blocked = ? ";
         sql += " WHERE session_id = ? ";
 
-        java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
+        java.sql.PreparedStatement pstmt = getStatementFromCache(sql, statementCache, conn);
 
         int i = 0;
 
-        if ( app != null )
-            pstmt.setString(++i, app);
-        if ( detail != null )
-            pstmt.setString(++i, detail);
-        if ( pc != null )
-            pstmt.setString(++i, pc);
-        if ( category != null )
-            pstmt.setString(++i, category);
-        if ( confidence != null )
-            pstmt.setInt(++i, confidence);
-        if ( ruleid != null )
-            pstmt.setInt(++i, ruleid);
+        if (app != null) pstmt.setString(++i, app);
+        if (detail != null) pstmt.setString(++i, detail);
+        if (pc != null) pstmt.setString(++i, pc);
+        if (category != null) pstmt.setString(++i, category);
+        if (confidence != null) pstmt.setInt(++i, confidence);
+        if (ruleid != null) pstmt.setInt(++i, ruleid);
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setLong(++i, sessionEvent.getSessionId());

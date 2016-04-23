@@ -60,7 +60,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
     public enum TrafficAction
     {
-        ALLOW, BLOCK, RELEASE
+        ALLOW, BLOCK, RELEASE, TARPIT
     }
 
     public ApplicationControlEventHandler(ApplicationControlApp node, int networkPort)
@@ -102,14 +102,23 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // before we do anything else see if this session is already set
-        // for discard and if so drop the traffic on the floor
-        if (status.discard == true) return;
+        // for tarpit and if so drop the traffic on the floor
+        if (status.tarpit == true)
+            return;
 
         TrafficAction action = processTraffic(true, status, sess, data);
 
-        // set the discard flag and block the traffic
+        // set the tarpit flag and block the traffic
+        if (action == TrafficAction.TARPIT) {
+            status.tarpit = true;
+            return;
+        }
+
+        // block traffic and clean up the session
         if (action == TrafficAction.BLOCK) {
-            status.discard = true;
+            sess.resetClient();
+            sess.resetServer();
+            cleanupActiveSession(sess, false);
             return;
         }
 
@@ -127,14 +136,23 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // before we do anything else see if this session is already set
-        // for discard and if so drop the traffic on the floor
-        if (status.discard == true) return;
+        // for tarpit and if so drop the traffic on the floor
+        if (status.tarpit == true)
+            return;
 
         TrafficAction action = processTraffic(false, status, sess, data);
 
-        // set the discard flag and block the traffic
+        // set the tarpit flag and block the traffic
+        if (action == TrafficAction.TARPIT) {
+            status.tarpit = true;
+            return;
+        }
+
+        // block traffic and clean up the session
         if (action == TrafficAction.BLOCK) {
-            status.discard = true;
+            sess.resetClient();
+            sess.resetServer();
+            cleanupActiveSession(sess, false);
             return;
         }
 
@@ -169,14 +187,23 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // before we do anything else see if this session is already set
-        // for discard and if so drop the traffic on the floor
-        if (status.discard == true) return;
+        // for tarpit and if so drop the traffic on the floor
+        if (status.tarpit == true)
+            return;
 
         TrafficAction action = processTraffic(true, status, sess, data);
 
-        // set the discard flag and block the traffic
+        // set the tarpit flag and block the traffic
+        if (action == TrafficAction.TARPIT) {
+            status.tarpit = true;
+            return;
+        }
+
+        // expire both sides and clean up the session
         if (action == TrafficAction.BLOCK) {
-            status.discard = true;
+            sess.expireClient();
+            sess.expireServer();
+            cleanupActiveSession(sess, false);
             return;
         }
 
@@ -194,14 +221,23 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // before we do anything else see if this session is already set
-        // for discard and if so drop the traffic on the floor
-        if (status.discard == true) return;
+        // for tarpit and if so drop the traffic on the floor
+        if (status.tarpit == true)
+            return;
 
         TrafficAction action = processTraffic(false, status, sess, data);
 
-        // set the discard flag and block the traffic
+        // set the tarpit flag and block the traffic
+        if (action == TrafficAction.TARPIT) {
+            status.tarpit = true;
+            return;
+        }
+
+        // expire both sides and clean up the session
         if (action == TrafficAction.BLOCK) {
-            status.discard = true;
+            sess.expireClient();
+            sess.expireServer();
+            cleanupActiveSession(sess, false);
             return;
         }
 
@@ -227,8 +263,10 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // string format = CMD:ID:PROTOCOL:C_ADDR:C_PORT:S_ADDR:S_PORT
         // string sample = CREATE:123456789:TCP:192.168.1.1:55555:4.3.2.1:80
         String sessionInfo = getIdString(ipr.id());
-        if (ipr instanceof TCPNewSessionRequest) sessionInfo = (sessionInfo + ":TCP");
-        if (ipr instanceof UDPNewSessionRequest) sessionInfo = (sessionInfo + ":UDP");
+        if (ipr instanceof TCPNewSessionRequest)
+            sessionInfo = (sessionInfo + ":TCP");
+        if (ipr instanceof UDPNewSessionRequest)
+            sessionInfo = (sessionInfo + ":UDP");
         sessionInfo = (sessionInfo + ":" + ipr.getOrigClientAddr().getHostAddress() + ":" + ipr.getOrigClientPort());
         sessionInfo = (sessionInfo + ":" + ipr.getNewServerAddr().getHostAddress() + ":" + ipr.getNewServerPort());
 
@@ -255,14 +293,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // pass the session data to the daemon and get the status in return
         // null response means the daemon is still scanning so we must allow
         String traffic = daemonCommand(message, data.duplicate());
-        if (traffic == null) return (TrafficAction.ALLOW);
+        if (traffic == null)
+            return (TrafficAction.ALLOW);
 
         // update the status object with the daemon result
         ApplicationControlStatus.StatusCode check = status.updateStatus(traffic);
 
         // this call gets and clears the number of status members that were
         // just updated which we use to make the debug log less noisy
-        if (status.getChangeCount() != 0) logger.debug("STATUS = " + status.toString());
+        if (status.getChangeCount() != 0)
+            logger.debug("STATUS = " + status.toString());
 
         // if we detect a failure parsing the daemon response then
         // something is really screwed up so log an event and release
@@ -308,6 +348,20 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
                 return (TrafficAction.BLOCK);
             }
 
+            // next we handle protocols set for tarpit
+            if (protoRule.getTarpit() == true) {
+                this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+                node.statistics.IncrementBlockedCount();
+                if (protoRule.getFlag() == true) {
+                    this.node.incrementMetric(ApplicationControlApp.STAT_FLAG);
+                    node.statistics.IncrementFlaggedCount();
+                }
+                logger.debug("TARPIT ProtoRule " + status.toString());
+                ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, protoRule);
+                node.logStatusEvent(evt, "ProtoTarpit");
+                return (TrafficAction.TARPIT);
+            }
+
             // if only flag is set we assume they want to know about the
             // traffic but not interfere so we log the event and release
             if (protoRule.getFlag() == true) {
@@ -351,6 +405,9 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             case BLOCK:
                 action = TrafficAction.BLOCK;
                 break;
+            case TARPIT:
+                action = TrafficAction.TARPIT;
+                break;
             default:
                 logger.warn("Unknown action: " + logicRule.getAction().getActionType());
                 action = TrafficAction.RELEASE;
@@ -361,7 +418,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // use the application to grab the category from the protocol rules
         String category = null;
         ApplicationControlProtoRule categoryRule = node.settings.searchProtoRules(status.application);
-        if (categoryRule != null) category = categoryRule.getCategory();
+        if (categoryRule != null)
+            category = categoryRule.getCategory();
 
         switch (action)
         {
@@ -377,6 +435,12 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, true);
             node.logStatusEvent(evt, "RuleBlock");
             return (TrafficAction.BLOCK);
+        case TARPIT:
+            this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+            node.statistics.IncrementBlockedCount();
+            evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, true);
+            node.logStatusEvent(evt, "RuleTarpit");
+            return (TrafficAction.TARPIT);
         default:
             logger.warn("Unknown action: " + action);
             this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
@@ -392,7 +456,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // if status object is empty we can bail out now
-        if (status == null) return;
+        if (status == null)
+            return;
 
         // status object is valid so we have to do cleanup
         sess.attach(null);
@@ -408,12 +473,12 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // If the isFinalized flag is true then we are being called from one
         // of the handleXXXFinalized functions. This normally indicates
-        // a session that was not flagged and never reached the fully
-        // classified state, so we count and log those here. However, since
-        // we block by simply ignoring session traffic, we also get called
-        // when blocked sessions finally go away. Since they have already
-        // been logged and counted, we check so we don't do it twice.        
-        if ((isFinalized == true) && (status.discard == false)) {
+        // a session that was never flagged or blocked and never reached
+        // the fully classified state, so we count and log those here.
+        // However, sessions we tarpit will also show up this way since we
+        // never release them, but they were already logged and counted so
+        // we have to look at the tarpit flag also.
+        if ((isFinalized == true) && (status.tarpit == false)) {
             this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
             node.statistics.IncrementAllowedCount();
             ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, null, false, false);
@@ -427,7 +492,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         if (node.settings.getDaemonDebug()) {
             logger.debug("DAEMON COMMAND = " + message);
-            if (buffer != null) logger.debug("DAEMON BUFFER = " + buffer.toString());
+            if (buffer != null)
+                logger.debug("DAEMON BUFFER = " + buffer.toString());
         }
 
         /*
@@ -444,10 +510,12 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
              * a previous call to socketStartup, and it should never happen but
              * we check and handle just in case.
              */
-            if (node.daemonSocket == null) node.socketStartup();
+            if (node.daemonSocket == null)
+                node.socketStartup();
 
             // if we have a good daemon socket object we handle the command
-            if (node.daemonSocket != null) result = privateCommand(message, buffer);
+            if (node.daemonSocket != null)
+                result = privateCommand(message, buffer);
         }
 
         return (result);
@@ -558,12 +626,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         logger.debug("Checking Rules against NodeSession : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
 
-        if (logicList == null) return null;
+        if (logicList == null)
+            return null;
 
         for (ApplicationControlLogicRule logicRule : logicList) {
             Boolean result;
 
-            if (!logicRule.isLive()) continue;
+            if (!logicRule.isLive())
+                continue;
             result = logicRule.matches(sess);
 
             if (result == true) {
@@ -584,7 +654,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         long marker = 2222200000000000000L;
 
         // if not targeting a specific port then use session id as is
-        if (networkPort == 0) return (Long.toString(argValue));
+        if (networkPort == 0)
+            return (Long.toString(argValue));
 
         // specific port is set which means we're likely scanning another
         // stream of session traffic such as HTTP that has been decrypted
@@ -600,16 +671,23 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         int x;
 
         for (x = 0; x < buffer.position(); x++) {
-            if (rawdata[x + 0] != '\r') continue;
+            if (rawdata[x + 0] != '\r')
+                continue;
 
-            if ((x + 1) >= max) return (false);
-            if (rawdata[x + 1] != '\n') continue;
+            if ((x + 1) >= max)
+                return (false);
+            if (rawdata[x + 1] != '\n')
+                continue;
 
-            if ((x + 2) >= max) return (false);
-            if (rawdata[x + 2] != '\r') continue;
+            if ((x + 2) >= max)
+                return (false);
+            if (rawdata[x + 2] != '\r')
+                continue;
 
-            if ((x + 3) >= max) return (false);
-            if (rawdata[x + 3] != '\n') continue;
+            if ((x + 3) >= max)
+                return (false);
+            if (rawdata[x + 3] != '\n')
+                continue;
             return (true);
         }
 
@@ -619,7 +697,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     private void socketRecycle(String message, boolean force)
     {
         // if connection is already pending we just return
-        if ((node.daemonSocket.isConnectionPending() == true) && (force == false)) return;
+        if ((node.daemonSocket.isConnectionPending() == true) && (force == false))
+            return;
 
         // not connecting so destroy the socket and start it back up
         logger.warn("Recycling daemon socket connection: " + message);

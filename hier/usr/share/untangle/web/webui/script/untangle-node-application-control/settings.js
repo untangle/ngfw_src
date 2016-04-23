@@ -124,6 +124,10 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                     fieldLabel: i18n._('Blocked Applications'),
                     name: 'protoBlockCount',
                     value: this.statFormat(this.nodeStats.protoBlockCount)
+                },{
+                    fieldLabel: i18n._('Tarpitted Applications'),
+                    name: 'protoTarpitCount',
+                    value: this.statFormat(this.nodeStats.protoTarpitCount)
                 }]
             },{
                 title: i18n._('Rule Statistics'),
@@ -164,6 +168,8 @@ Ext.define('Webui.untangle-node-application-control.settings', {
             },{
                 name: 'block'
             },{
+                name: 'tarpit'
+            },{
                 name: 'flag'
             },{
                 name: 'name'
@@ -186,7 +192,52 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                 dataIndex: "block",
                 name: "block",
                 width: 50,
-                resizable: false
+                resizable: false,
+                listeners: {
+                    checkchange: Ext.bind(function(elem, rowIndex, checked) {
+                        if(checked) {
+                            var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                            record.set('tarpit', false);
+                        }
+                    }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set('block', checked);
+                            if(checked) {
+                                records[i].set('tarpit', false);
+                            }
+                        }
+                    }
+                }
+            }, {
+                xtype:'checkcolumn',
+                header: "<b>"+i18n._("Tarpit")+"</b>",
+                dataIndex: "tarpit",
+                name: "tarpit",
+                width: 50,
+                resizable: false,
+                listeners: {
+                    checkchange: Ext.bind(function(elem, rowIndex, checked) {
+                        if(checked) {
+                            var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                            record.set('block', false);
+                        }
+                    }, this)
+                },
+                checkAll: {
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set('tarpit', checked);
+                            if(checked) {
+                                records[i].set('block', false);
+                            }
+                        }
+                    }
+                }
             }, {
                 xtype:'checkcolumn',
                 header: "<b>"+i18n._("Flag")+"</b>",
@@ -281,6 +332,7 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                     switch(value.actionType) {
                         case 'ALLOW': return i18n._("Allow");
                         case 'BLOCK': return i18n._("Block");
+                        case 'TARPIT': return i18n._("Tarpit");
                         default: return "Unknown Action: " + value;
                     }
                 }, this)
@@ -324,8 +376,8 @@ Ext.define('Webui.untangle-node-application-control.settings', {
                         fieldLabel: i18n._("Action"),
                         editable: false,
                         store: [['ALLOW', i18n._('Allow')],
-                                ['BLOCK', i18n._('Block')]
-                               ],
+                                ['BLOCK', i18n._('Block')],
+                                ['TARPIT', i18n._('Tarpit')]],
                         valueField: "value",
                         displayField: "displayName",
                         queryMode: "local"
