@@ -260,6 +260,8 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 30
         node.setSettings(nodeData)
         # Turn on SSL Inspector
+        nodeSSLData['processEncryptedMailTraffic'] = True
+        nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
         # print "TLS 090 : " + str(tlsSMTPResult)
