@@ -334,6 +334,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # Turn on SSL Inspector
+        nodeSSLData['processEncryptedMailTraffic'] = True
+        nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         # email the file
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (tlsSmtpServerHost, fname),nowait=False)
