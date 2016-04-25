@@ -56,7 +56,7 @@ Ext.define("Ung.window.ReportEditor", {
                         Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.closeWindow();
-                            this.parentCmp.buildReportEntries(entry.category);
+                            this.parentCmp.reloadReports();
                             Ung.dashboard.reportEntriesModified = true;
                         }, this), entry);
                     }

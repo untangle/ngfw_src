@@ -11,6 +11,7 @@ Ext.define('Ung.panel.Reports', {
     autoRefreshInterval: 10, //seconds
     extraConditions: null,
     reportsManager: null,
+    dashboardWidgets: null,
     mixins: [
         'Ext.mixin.Responsive'
     ],
@@ -55,6 +56,7 @@ Ext.define('Ung.panel.Reports', {
         xtype: 'grid',
         region: 'west',
         itemId: 'categoryList',
+        cls: 'category-list',
         title: i18n._('Select Category'),
         width: 200,
         hideHeaders: true,
@@ -115,9 +117,10 @@ Ext.define('Ung.panel.Reports', {
                 xtype: 'grid',
                 region: 'west',
                 itemId: 'entryList',
+                cls: 'entry-list',
                 title: i18n._('Select Report'),
                 hideHeaders: true,
-                width: 200,
+                width: 250,
                 collapsed: false,
                 collapsible: true,
                 animCollapse: false,
@@ -127,10 +130,18 @@ Ext.define('Ung.panel.Reports', {
                 resizable: false,
                 border: 0,
                 store: Ext.create('Ext.data.Store', {
-                    fields: ['text'],
+                    fields: ['text', 'inDashboard'],
                     data: []
                 }),
                 columns: [],
+                viewConfig: {
+                    getRowClass: function (record) {
+                        var entry = record.getData().entry;
+                        if (!entry.readOnly && entry.type !== 'EVENT_LIST') {
+                            return 'custom';
+                        }
+                    }
+                },
                 plugins: 'responsive',
                 responsiveConfig: {
                     'small': {
@@ -330,10 +341,18 @@ Ext.define('Ung.panel.Reports', {
             tools: [{
                 xtype: 'button',
                 text: i18n._('Add to Dashboard'),
-                hidden: true
+                itemId: 'dashboardReportBtn',
+                iconCls: 'icon-add-row',
+                margin: '0 3',
+                scale: 'medium',
+                handler: Ext.bind(function (btn) {
+                    this.dashboardAction(btn);
+                }, this)
             }, {
                 xtype: 'button',
                 text: i18n._('Customize'),
+                margin: '0 3',
+                scale: 'medium',
                 hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 name: "edit",
                 tooltip: i18n._('Advanced report customization'),
@@ -364,6 +383,17 @@ Ext.define('Ung.panel.Reports', {
             }),
             columns: [{
                 flex: 1
+            }],
+            tools: [{
+                xtype: 'button',
+                text: i18n._('Add to Dashboard'),
+                itemId: 'dashboardEventBtn',
+                iconCls: 'icon-add-row',
+                margin: '0 3',
+                scale: 'medium',
+                handler: Ext.bind(function (btn) {
+                    this.dashboardAction(btn);
+                }, this)
             }],
             plugins: ['gridfilters'],
             features: [this.filterFeature],
@@ -509,6 +539,7 @@ Ext.define('Ung.panel.Reports', {
 
         this.categoryList = this.down('#categoryList');
         this.categoryList.addListener('select', Ext.bind(function (rowModel, record) {
+            this.selectedCategory = record;
             if (record.getData().category === 'All') {
                 this.reportsMain.setActiveItem(0);
                 this.entryView.setActiveItem(0);
@@ -516,7 +547,6 @@ Ext.define('Ung.panel.Reports', {
             } else {
                 this.reportsMain.setActiveItem(1);
                 this.entryView.setActiveItem(0);
-                this.selectedCategory = record.getData();
                 this.loadReportEntries();
                 this.down('#entriesMenuBtn').setText(i18n._('Select Report'));
             }
@@ -533,6 +563,21 @@ Ext.define('Ung.panel.Reports', {
         }, {
             flex: 1,
             dataIndex: 'text'
+        }, {
+            width: 24,
+            dataIndex: 'inDashboard',
+            renderer: Ext.bind(function (value, metaData, record) {
+                if (record.getData().inDashboard) {
+                    return '<i class="material-icons" style="font-size: 16px; color: #999;">home</i>';
+                }
+            }, this)
+        }, {
+            width: 24,
+            renderer: Ext.bind(function (value, metaData, record) {
+                if (!record.getData().entry.readOnly) {
+                    return '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>';
+                }
+            }, this)
         }]);
         this.entryList.addListener('select', Ext.bind(function (rowModel, record) {
             this.entryView.setActiveItem(1);
@@ -543,12 +588,91 @@ Ext.define('Ung.panel.Reports', {
                 this.loadReportEntry(this.entry);
             }
             this.down('#entriesMenuBtn').setText('<i class="material-icons">' + record.getData().icon  + '</i> <span style="vertical-align: middle;">' + record.getData().text + '</span>');
+            this.setDashboardButton();
         }, this));
 
-        this.loadAllReports().then(function (reports) {
-            me.allReports = reports;
-            me.buildCategoryList();
+
+        this.getDashboardWidgets().then(function (result) {
+            me.dashboardSettings = result;
+            me.dashboardWidgets = result.widgets.list;
+
+            me.loadAllReports().then(function (reports) {
+                me.allReports = reports;
+                me.buildCategoryList();
+                Ung.Main.viewport.down('#panelCenter').setLoading(false);
+            });
         });
+    },
+
+    getDashboardWidgets: function () {
+        var deferred = new Ext.Deferred();
+        rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception) || !this.getEl()) {
+                deferred.resolve(exception);
+            }
+            deferred.resolve(result);
+        }, this));
+        return deferred.promise;
+    },
+
+    setDashboardButton: function () {
+        if (!this.entry) {
+            return;
+        }
+        var i, addedToDashboard = false, btn;
+        if (this.entry.type !== 'EVENT_LIST') {
+            btn = this.down('#dashboardReportBtn');
+        } else {
+            btn = this.down('#dashboardEventBtn');
+        }
+
+        for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+            if (!addedToDashboard && this.dashboardWidgets[i].entryId === this.entry.uniqueId) {
+                addedToDashboard = true;
+            }
+        }
+        btn.addAction = !addedToDashboard;
+        btn.setText(addedToDashboard ? 'Remove from Dashboard' : 'Add to Dashboard');
+        btn.setIconCls(addedToDashboard ? 'icon-delete-row' : 'icon-add-row');
+    },
+
+    dashboardAction: function (btn) {
+        Ung.dashboard.reportEntriesModified = true;
+        var i;
+        if (btn.addAction) {
+            this.dashboardWidgets.push({
+                displayColumns: this.entry.displayColumns,
+                enabled: true,
+                entryId: this.entry.uniqueId,
+                javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+                refreshIntervalSec: 60,
+                timeframe: 3600,
+                type: 'ReportEntry'
+            });
+        } else {
+            for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+                if (this.dashboardWidgets[i].entryId === this.entry.uniqueId) {
+                    this.dashboardWidgets.splice(i, 1);
+                }
+            }
+        }
+        this.dashboardSettings.widgets = {
+            javaClass: 'java.util.LinkedList',
+            list: this.dashboardWidgets
+        };
+        rpc.dashboardManager.setSettings(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            btn.setText(btn.addAction ? 'Remove from Dashboard' : 'Add to Dashboard');
+            btn.setIconCls(btn.addAction ? 'icon-delete-row' : 'icon-add-row');
+
+            var rec = this.entryList.getSelectionModel().getSelected();
+            rec.items[0].set('inDashboard', btn.addAction, {commit: true});
+
+            btn.addAction = !btn.addAction;
+            this.entry.inDashboard = btn.addAction;
+        }, this), this.dashboardSettings);
     },
 
     loadAllReports: function () {
@@ -576,6 +700,30 @@ Ext.define('Ung.panel.Reports', {
         }, this));
 
         return deferred.promise;
+    },
+
+    loadCategoryReports: function (category) {
+        var deferred = new Ext.Deferred();
+        rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception) || !this.getEl()) {
+                deferred.resolve(exception);
+            }
+            deferred.resolve(result.list);
+        }, this), category);
+        return deferred.promise;
+    },
+
+    reloadReports: function () {
+        var category = this.selectedCategory.getData().category, me = this;
+        this.loadCategoryReports(category).then(function (reports) {
+            if (!me.allReports.hasOwnProperty(category)) {
+                console.log('here');
+                return;
+            }
+            me.allReports[category] = reports;
+            me.categoryList.getSelectionModel().deselectAll();
+            me.categoryList.getSelectionModel().select(me.selectedCategory);
+        });
     },
 
     buildCategoryList: function () {
@@ -680,16 +828,17 @@ Ext.define('Ung.panel.Reports', {
     },
 
     loadReportEntries: function () {
-        var entries, entry, listEntries = [], menuEntries = [], selectionEntries = [], i, _icon, _that = this;
+        var entries, entry, listEntries = [], menuEntries = [], selectionEntries = [], i, _icon, _that = this, btnHtml;
 
-        entries = this.allReports[this.selectedCategory.category];
+        entries = this.allReports[this.selectedCategory.getData().category];
 
         for (i = 0; i < entries.length; i += 1) {
             _icon = this.setEntryIcon(entries[i]);
             entry = Ext.create('Ung.grid.ReportItemModel', {
                 text : entries[i].title,
                 entry: entries[i],
-                icon: _icon
+                icon: _icon,
+                inDashboard: this.inDashboard(entries[i])
             });
             listEntries.push(entry);
 
@@ -698,11 +847,22 @@ Ext.define('Ung.panel.Reports', {
                 model: entry
             });
 
+            btnHtml = '<i class="material-icons">' + _icon + '</i>';
+
+            btnHtml += '<span class="ttl">' + entries[i].title + '</span><br/><span class="dsc">' + entries[i].description + '</span></br>';
+
+            if (this.inDashboard(entries[i])) {
+                btnHtml += '<i class="material-icons in-dashboard">home</i> <span class="icon-label">in Dashboard</span>';
+            }
+            if (!entries[i].readOnly) {
+                btnHtml += '<i class="material-icons not-read-only">brush</i> <span class="icon-label">Custom</span>';
+            }
+
             selectionEntries.push({
                 xtype: 'button',
-                text: '<i class="material-icons">' + _icon + '</i>  <span class="ttl">' + entries[i].title + '</span><br/><span class="dsc">' + entries[i].description + '</span>',
-                cls: 'entry-btn',
-                width: 250,
+                html: btnHtml,
+                cls: (!entries[i].readOnly && entries[i].type !== 'EVENT_LIST') ? 'entry-btn custom' : 'entry-btn',
+                width: 300,
                 border: 0,
                 textAlign: 'left',
                 item: entry,
@@ -730,7 +890,7 @@ Ext.define('Ung.panel.Reports', {
             this.entrySelector.add({
                 xtype: 'container',
                 cls: 'entry-selector-header',
-                html: '<img src="' + this.selectedCategory.icon + '"/>' + '<span>' + this.selectedCategory.text + '</span>'
+                html: '<img src="' + this.selectedCategory.getData().icon + '"/>' + '<span>' + this.selectedCategory.getData().text + '</span>'
             });
         }
         this.entrySelector.add(selectionEntries);
@@ -760,6 +920,16 @@ Ext.define('Ung.panel.Reports', {
             icon = 'subject';
         }
         return icon;
+    },
+
+    inDashboard: function (entry) {
+        var addedToDashboard = false, i;
+        for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+            if (!addedToDashboard && this.dashboardWidgets[i].entryId === entry.uniqueId) {
+                addedToDashboard = true;
+            }
+        }
+        return addedToDashboard;
     },
 
     loadReportEntry: function (entry) {

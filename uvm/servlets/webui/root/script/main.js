@@ -164,6 +164,7 @@ Ext.define("Ung.Main", {
                         hidden: !rpc.reportsEnabled,
                         handler: function (btn) {
                             this.panelCenter.setActiveItem("reports");
+                            this.panelCenter.setLoading('Loading ....');
                             this.viewsMenu.items.each(function (button) { button.setPressed(false); });
                             btn.setPressed(true);
                         },

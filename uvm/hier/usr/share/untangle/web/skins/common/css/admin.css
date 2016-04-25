@@ -943,7 +943,7 @@ a.forgot-password:hover {
     background: none;
     margin: 5px;
     /*box-shadow: 0 0 1px rgba(0,0,0,0.7);*/
-    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
 
 }
 .entry-btn .x-btn-button {
@@ -951,14 +951,14 @@ a.forgot-password:hover {
 }
 
 .entry-btn.x-btn-over, .entry-btn.x-btn-focus {
-    background: none;
+    background: #EEE;
     background-image: none !important;
 }
 
 .entry-btn .x-btn-inner {
     padding: 10px 5px 10px 30px;
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    color: #555;
+    /*color: #555;*/
     transition: color 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -970,18 +970,66 @@ a.forgot-password:hover {
     position: absolute;
     left: 2px;
     top: 7px;
+    color: #777;
 }
+
+.entry-btn .x-btn-inner i.in-dashboard {
+    position: static;
+    color: #67BD4A;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.entry-btn .x-btn-inner i.not-read-only {
+    position: static;
+    color: #67BD4A;
+    font-size: 16px;
+    vertical-align: middle;
+}
+.entry-btn .x-btn-inner .icon-label {
+    vertical-align: middle;
+    padding-right: 10px;
+    color: #999;
+}
+
+/*
+.entry-btn.custom i {
+    color: chocolate;
+}
+*/
 .entry-btn .ttl {
     font-size: 14px;
     font-weight: bold;
+    line-height: 1.2;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
 .entry-btn .dsc {
-    font-size: 11px;
+    font-size: 12px;
     color: #555;
     display: inline-block;
     line-height: 1.2;
+    margin-bottom: 3px;
 }
 
+.category-list .x-grid-item, .entry-list .x-grid-item {
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.entry-list i {
+    color: #777;
+}
+
+/*
+.entry-list tr.custom i, .entry-list tr.custom .x-grid-item-focused i {
+    color: chocolate;
+}
+*/
 
 .categories-menu-btn .x-btn-icon-el, .categories-menu .x-menu-item-icon {
     background-size: contain;
@@ -1116,6 +1164,12 @@ a.forgot-password:hover {
 }
 
 
+.widget .chart .text-report {
+    text-align: center;
+    font-size: 16px;
+    text-shadow: 0 1px 1px #CCC;
+    padding: 20px;
+}
 
 .widget.init .init-mask {
     display: block;

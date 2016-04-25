@@ -768,13 +768,14 @@ Ext.define('Ung.dashboard.ReportEntry', {
     chart: null,
     chartData: null,
     initComponent: function () {
+        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
         if (this.entry.type === 'EVENT_LIST') {
-            this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3>';
             this.items = [this.buildGrid()];
             this.callParent(arguments);
             this.gridEvents = this.down("grid[name=gridEvents]");
+        } else if (this.entry.type === 'TEXT') {
+            this.callParent(arguments);
         } else {
-            this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
             switch (this.entry.timeStyle) {
             case 'LINE':
                 this.chartType = 'spline';
@@ -798,35 +799,37 @@ Ext.define('Ung.dashboard.ReportEntry', {
             var chartButtons = widget.getEl().query('.chart-types')[0], i;
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
 
-            if (widget.entry.type === 'TIME_GRAPH' || widget.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                chartButtons.innerHTML =
-                    '<button data-type="spline" class="selected">' + i18n._('Line') + '</button>' +
-                    '<button data-type="areaspline">' + i18n._('Area') + '</button>' +
-                    '<button data-type="column">' + i18n._('Grouped Columns') + '</button>' +
-                    '<button data-type="column" data-overlapped>' + i18n._('Overlapped Columns') + '</button>';
-                chartButtons.addEventListener('click', function (evt) {
-                    for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
-                        chartButtons.querySelectorAll('button')[i].removeAttribute('class');
-                    }
-                    evt.target.className = 'selected';
-                    widget.entry.columnOverlapped = evt.target.dataset.overlapped !== undefined;
-                    Ung.charts.updateSeriesType(widget.entry, widget.chart, evt.target.dataset.type);
-                });
-            } else {
-                chartButtons.innerHTML =
-                    '<button data-type="pie" class="selected">' + i18n._('Pie') + '</button>' +
-                    '<button data-type="pie" data-donut>' + i18n._('Donut') + '</button>' +
-                    '<button data-type="column">' + i18n._('Column') + '</button>';
-                chartButtons.addEventListener('click', function (evt) {
-                    for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
-                        chartButtons.querySelectorAll('button')[i].removeAttribute('class');
-                    }
-                    evt.target.className = 'selected';
-                    widget.entry.chartType = evt.target.dataset.type;
-                    widget.entry.isDonut = evt.target.dataset.donut !== undefined;
-                    widget.chart.destroy();
-                    widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget, true);
-                });
+            if (widget.entry.type !== 'EVENT_LIST' && widget.entry.type !== 'TEXT') {
+                if (widget.entry.type === 'TIME_GRAPH' || widget.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                    chartButtons.innerHTML =
+                        '<button data-type="spline" class="selected">' + i18n._('Line') + '</button>' +
+                        '<button data-type="areaspline">' + i18n._('Area') + '</button>' +
+                        '<button data-type="column">' + i18n._('Grouped Columns') + '</button>' +
+                        '<button data-type="column" data-overlapped>' + i18n._('Overlapped Columns') + '</button>';
+                    chartButtons.addEventListener('click', function (evt) {
+                        for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
+                            chartButtons.querySelectorAll('button')[i].removeAttribute('class');
+                        }
+                        evt.target.className = 'selected';
+                        widget.entry.columnOverlapped = evt.target.dataset.overlapped !== undefined;
+                        Ung.charts.updateSeriesType(widget.entry, widget.chart, evt.target.dataset.type);
+                    });
+                } else {
+                    chartButtons.innerHTML =
+                        '<button data-type="pie" class="selected">' + i18n._('Pie') + '</button>' +
+                        '<button data-type="pie" data-donut>' + i18n._('Donut') + '</button>' +
+                        '<button data-type="column">' + i18n._('Column') + '</button>';
+                    chartButtons.addEventListener('click', function (evt) {
+                        for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
+                            chartButtons.querySelectorAll('button')[i].removeAttribute('class');
+                        }
+                        evt.target.className = 'selected';
+                        widget.entry.chartType = evt.target.dataset.type;
+                        widget.entry.isDonut = evt.target.dataset.donut !== undefined;
+                        widget.chart.destroy();
+                        widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget, true);
+                    });
+                }
             }
         }
     },
@@ -849,30 +852,34 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 return;
             }
 
-            this.chartData = result.list;
-
-            if (!this.chart || this.chart.series.length === 0) {
-                if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                    this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this, true);
-                } else {
-                    this.chart = Ung.charts.categoriesChart(this.entry, result.list, this, true);
+            if (this.entry.type === 'TEXT') {
+                var infos = [], column, value, data = result.list, i;
+                if (data.length > 0 && this.entry.textColumns != null) {
+                    for (i = 0; i < this.entry.textColumns.length; i += 1) {
+                        column = this.entry.textColumns[i].split(" ").splice(-1)[0];
+                        value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
+                        infos.push(value);
+                    }
                 }
+                this.getEl().query('.chart')[0].innerHTML = '<p class="text-report">' + Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)) + '</p>';
+
             } else {
-                if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                    Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+                this.chartData = result.list;
+
+                if (!this.chart || this.chart.series.length === 0) {
+                    if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                        this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this, true);
+                    } else {
+                        this.chart = Ung.charts.categoriesChart(this.entry, result.list, this, true);
+                    }
                 } else {
-                    Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+                    if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                        Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+                    } else {
+                        Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+                    }
                 }
             }
-
-            //console.log(this.chart.series[0].data);
-
-            /*
-             if (this.chart.series[0].data.length === 0) {
-             this.addCls('nodata');
-             return false;
-             }
-             */
         }, this), this.entry, this.timeframe, -1);
     },
 
@@ -899,6 +906,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 store.load();
             }, 1000);
         }, this), this.entry, null, this.timeframe, 14);
+    },
+
+    renderTextData: function (handler) {
+        handler.call(this);
     },
 
     buildGrid: function () {
