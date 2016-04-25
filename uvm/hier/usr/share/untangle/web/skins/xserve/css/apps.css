@@ -329,15 +329,24 @@ div.system-stats div.disk {
     background: transparent url(../images/admin/background_disk.png) no-repeat;
     width: 30px;
     height: 30px;
+    padding: 5px;
 }
 
-div.system-stats div.disk div {
-    width: 30px;
-    height: 30px;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: center center;
+div.system-stats div.disk svg {
+    width: 20px; height: 20px;
+    transform: rotate(-90deg);
+    border-radius: 50%;
+    padding: 1px;
+    background: transparent url(../images/admin/icon_disk.png) no-repeat;
 }
+
+div.system-stats div.disk circle {
+    fill: transparent;
+    stroke: #C22E2E;
+    stroke-width: 30;
+    stroke-dasharray: 55 100;
+}
+
 /* system stats tooltip text */
 div.extended-stats {
     font-size: 11px;
