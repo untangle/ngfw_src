@@ -253,7 +253,7 @@ public class SslInspectorApp extends NodeBase
 
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*gotomeeting.com", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*citrix*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect All Traffic", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, false));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*youtube.com", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
