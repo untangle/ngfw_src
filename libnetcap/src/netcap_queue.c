@@ -612,7 +612,7 @@ int nfq_get_ct_info(struct nfq_data *nfad, unsigned char **data)
         if (*data)
                 return NFA_PAYLOAD(nfad->data[NFQA_CT-1]);
 
-        errlog( ERR_CRITICAL, "nfnl_get_pointer_to_data() returned NULL");
+        errlog( ERR_CRITICAL, "nfnl_get_pointer_to_data() returned NULL\n");
         return -1;
 }
 
