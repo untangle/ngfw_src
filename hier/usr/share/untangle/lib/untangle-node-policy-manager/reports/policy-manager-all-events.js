@@ -1,5 +1,6 @@
 {
     "category": "Policy Manager",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
