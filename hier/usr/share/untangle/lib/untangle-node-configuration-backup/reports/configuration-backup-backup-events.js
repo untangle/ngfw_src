@@ -1,5 +1,6 @@
 {
     "category": "Configuration Backup",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","success","destination","description"],
