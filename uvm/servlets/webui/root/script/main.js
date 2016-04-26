@@ -171,6 +171,20 @@ Ext.define("Ung.Main", {
                         scope: this
                     }]
                 }, {
+                    xtype: "container",
+                    cls: 'alert-container',
+                    flex: 1,
+                    items: [{
+                        xtype: "button",
+                        cls: 'main-menu-btn alert-button',
+                        scale: 'large',
+                        arrowVisible: false,
+                        html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle; font-size: 20px;">warning</i>',
+                        itemId: "alertButton",
+                        hidden: true,
+                        menuAlign: 'tr-br'
+                    }]
+                }, {
                     xtype: 'container',
                     //align: 'right',
                     cls: 'user-menu',
@@ -198,6 +212,7 @@ Ext.define("Ung.Main", {
                         html: '<i class="material-icons">account_circle</i> <span>' + i18n._('Account') + '</span>',
                         cls: 'main-menu-btn',
                         margin: '0, 10, 0, 0',
+                        arrowVisible: false,
                         menuAlign: 'tr-br',
                         menu: Ext.create('Ext.menu.Menu', {
                             cls: 'user-menu-dd',
@@ -221,7 +236,6 @@ Ext.define("Ung.Main", {
                 }, {
                     xtype: 'container',
                     cls: 'hamburger-menu',
-                    flex: 1,
                     defaults: {
                         scale: 'large'
                     },
@@ -240,6 +254,7 @@ Ext.define("Ung.Main", {
                         html: '<i class="material-icons">menu</i>',
                         cls: 'main-menu-btn',
                         margin: '0, 10, 0, 0',
+                        arrowVisible: false,
                         menuAlign: 'tr-br',
                         menu: Ext.create('Ext.menu.Menu', {
                             cls: 'user-menu-dd',
@@ -1302,46 +1317,44 @@ Ext.define("Ung.Main", {
     checkForAlerts: function (handler) {
         //check for upgrades
         rpc.alertManager.getAlerts(Ext.bind(function (result, exception, opt, handler) {
-            var alertContainers = [
-                this.viewport.down("#alertContainerDashboard"),
-                this.viewport.down("#alertContainerApps")
-            ];
+            var alertButton = this.viewport.down("#alertButton");
+            var alertArr = '', i;
 
-            Ext.each(alertContainers, function (alertContainer) {
-                var alertArr = [], i;
-                if (result != null && result.list.length > 0) {
-                    alertContainer.show();
-                    alertArr.push('<div class="title">' + i18n._("Alerts:") + '</div>');
-                    for (i = 0; i < result.list.length; i += 1) {
-                        alertArr.push('<div class="values">&middot;&nbsp;' + i18n._(result.list[i]) + '</div>');
-                    }
-                } else {
-                    alertContainer.hide();
+            if (result != null && result.list.length > 0) {
+                alertButton.show();
+                alertArr += '<h3>' + i18n._('Alerts:') + '</h3><ul>';
+                for (i = 0; i < result.list.length; i += 1) {
+                    alertArr += '<li>' + i18n._(result.list[i]) + '</li>';
                 }
+                alertArr += '</ul>';
+            } else {
+                alertButton.hide();
+            }
 
-                this.alertToolTip = Ext.create('Ext.tip.ToolTip', {
-                    target: alertContainer.getEl(),
-                    dismissDelay: 0,
-                    hideDelay: 1500,
-                    width: 500,
-                    cls: 'extended-stats',
-                    items: [{
-                        xtype: 'container',
-                        html: alertArr.join('')
-                    }, {
-                        xtype: 'container',
-                        html: '<br/>' + '<b>' + i18n._('Press Help for more information') + "</b>"
-                    }, {
-                        xtype: 'button',
-                        name: 'Help',
-                        iconCls: 'icon-help',
-                        text: i18n._('Help with Administration Alerts'),
-                        handler: function () {
-                            Ung.Main.openHelp('admin_alerts');
-                        }
-                    }]
-                });
-            });
+            alertButton.setMenu(Ext.create('Ext.menu.Menu', {
+                cls: 'alert-dd',
+                plain: true,
+                shadow: false,
+                width: 250,
+                items: [{
+                    xtype: 'component',
+                    padding: '10',
+                    style: {
+                        color: '#CCC'
+                    },
+                    autoEl: {
+                        html: alertArr
+                    }
+                }, {
+                    xtype: 'button',
+                    text: '<i class="material-icons" style="font-size: 16px;">help</i> ' + i18n._('Help with Administration Alerts'),
+                    margin: '0 10 10 10',
+                    textAlign: 'left',
+                    handler: function () {
+                        Ung.Main.openHelp('admin_alerts');
+                    }
+                }]
+            }));
         }, this, [handler], true));
     },
     openConfig: function (configItem) {
