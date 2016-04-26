@@ -1,5 +1,6 @@
 {
     "category": "Bandwidth Control",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

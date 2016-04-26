@@ -1,5 +1,6 @@
 {
     "category": "Bandwidth Control",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","bandwidth_control_priority","bandwidth_control_rule","s2p_bytes","p2s_bytes"],
