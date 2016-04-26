@@ -612,6 +612,7 @@ int nfq_get_ct_info(struct nfq_data *nfad, unsigned char **data)
         if (*data)
                 return NFA_PAYLOAD(nfad->data[NFQA_CT-1]);
 
+        errlog( ERR_CRITICAL, "nfnl_get_pointer_to_data() returned NULL");
         return -1;
 }
 
@@ -631,14 +632,14 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
 
     ct_len = nfq_get_ct_info(nfad, &ct_data);
     if ( ct_len <= 0 ) {
-        errlog( ERR_WARNING, "nfq_get_ct_info returned error: %s\n", strerror(errno) );
+        errlog( ERR_WARNING, "nfq_get_ct_info returned error.\n" );
         nfct_destroy( ct );
         return -1;
     }
 
 
     if (nfct_payload_parse((void *)ct_data, ct_len, l3num, ct ) < 0) {
-        errlog( ERR_WARNING, "nfq_payload_parse returned error: %s\n", strerror(errno) );
+        errlog( ERR_WARNING, "nfq_payload_parse returned error.\n" );
         nfct_destroy( ct );
         return -1;
     }
