@@ -606,14 +606,14 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 /*Helper function to get conntrack related info in kernel version >= 3.10*/
 int nfq_get_ct_info(struct nfq_data *nfad, unsigned char **data)
 {
-        *data = (unsigned char *)
-                nfnl_get_pointer_to_data(nfad->data, NFQA_CT, struct nf_conntrack );
+    *data = (unsigned char *)
+        nfnl_get_pointer_to_data(nfad->data, NFQA_CT, struct nf_conntrack );
 
-        if (*data)
-                return NFA_PAYLOAD(nfad->data[NFQA_CT-1]);
+    if (*data)
+        return NFA_PAYLOAD(nfad->data[NFQA_CT-1]);
 
-        errlog( ERR_CRITICAL, "nfnl_get_pointer_to_data() returned NULL\n");
-        return -1;
+
+    return errlog( ERR_CRITICAL, "nfnl_get_pointer_to_data(NFQA_CT) returned NULL\n" );
 }
 
 /*This function is used to get conntrack info in kernel version >= 3.10*/
@@ -623,25 +623,19 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
     int ct_len =0;
     unsigned char *ct_data;
     
-    ct = nfct_new();
-    if ( !ct ) {
-        errlog( ERR_WARNING, "nfct_new failed\n" );
-        nfct_destroy( ct );
-        return -1;
-    }
-
     ct_len = nfq_get_ct_info(nfad, &ct_data);
     if ( ct_len <= 0 ) {
-        errlog( ERR_WARNING, "nfq_get_ct_info returned error.\n" );
-        nfct_destroy( ct );
-        return -1;
+        return errlog( ERR_WARNING, "nfq_get_ct_info returned error.\n" );
     }
 
+    ct = nfct_new();
+    if ( !ct ) {
+        return errlog( ERR_WARNING, "nfct_new failed\n" );
+    }
 
     if (nfct_payload_parse((void *)ct_data, ct_len, l3num, ct ) < 0) {
-        errlog( ERR_WARNING, "nfq_payload_parse returned error.\n" );
         nfct_destroy( ct );
-        return -1;
+        return errlog( ERR_WARNING, "nfq_payload_parse returned error.\n" );
     }
 
     /* using the union from the nfqueue structure, doesn't matter if
