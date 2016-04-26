@@ -1,5 +1,6 @@
 {
     "category": "IPsec VPN",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","tunnel_name","in_bytes","out_bytes"],
