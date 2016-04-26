@@ -27,6 +27,4 @@ CREATE TABLE reports.configuration_backup_events (
     destination text,
     event_id bigserial)""",["event_id"],["time_stamp"])
 
-        sql_helper.add_column('configuration_backup_events','destination','text') #12.0
-        
 reports.engine.register_node(ConfigurationBackup())
