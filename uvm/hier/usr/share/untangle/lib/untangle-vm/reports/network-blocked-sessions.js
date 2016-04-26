@@ -1,5 +1,6 @@
 {
     "category": "Network",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

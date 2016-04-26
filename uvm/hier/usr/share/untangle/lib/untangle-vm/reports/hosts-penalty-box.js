@@ -1,5 +1,6 @@
 {
     "category": "Hosts",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","address","reason","start_time","end_time"],

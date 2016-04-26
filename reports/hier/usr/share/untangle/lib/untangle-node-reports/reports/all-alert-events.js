@@ -1,5 +1,6 @@
 {
     "category": "Reports",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","description","summary_text","json"],

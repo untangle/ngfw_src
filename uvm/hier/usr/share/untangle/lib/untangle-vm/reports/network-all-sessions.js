@@ -1,5 +1,6 @@
 {
     "category": "Network",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","s_server_addr","s_server_port"],
     "description": "All sessions handled by Untangle.",

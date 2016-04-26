@@ -1,6 +1,7 @@
 {
     "uniqueId": "system-TIxQ4tziAd",
     "category": "System",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","load_1","mem_free","disk_free"],

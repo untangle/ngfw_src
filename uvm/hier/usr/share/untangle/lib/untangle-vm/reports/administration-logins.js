@@ -1,5 +1,6 @@
 {
     "category": "Administration",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","login","local","client_addr","succeeded","reason"],

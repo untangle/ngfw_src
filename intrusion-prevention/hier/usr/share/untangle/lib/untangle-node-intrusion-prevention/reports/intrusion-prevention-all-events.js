@@ -1,5 +1,6 @@
 {
     "category": "Intrusion Prevention",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","sig_id","gen_id","class_id","source_addr","source_port","dest_addr","dest_port","protocol","blocked","category","classtype","msg"],

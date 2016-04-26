@@ -1,5 +1,6 @@
 {
     "category": "Intrusion Prevention",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

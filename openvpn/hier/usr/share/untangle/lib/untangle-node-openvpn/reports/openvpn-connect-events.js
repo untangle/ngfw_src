@@ -1,5 +1,6 @@
 {
     "category": "OpenVPN",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","type","client_name","remote_address","pool_address"],

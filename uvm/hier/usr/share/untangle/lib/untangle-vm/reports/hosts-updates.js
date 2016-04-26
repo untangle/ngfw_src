@@ -1,5 +1,6 @@
 {
     "uniqueId": "host-viewer-NIFFCexFv3",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "category": "Hosts",
     "conditions": [],

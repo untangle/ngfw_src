@@ -1,5 +1,6 @@
 {
     "category": "Captive Portal",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],

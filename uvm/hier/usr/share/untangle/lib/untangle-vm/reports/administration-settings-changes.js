@@ -1,5 +1,6 @@
 {
     "category": "Administration",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","hostname","username","settings_file"],

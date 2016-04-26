@@ -1,5 +1,6 @@
 {
     "category": "Captive Portal",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

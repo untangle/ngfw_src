@@ -1,5 +1,6 @@
 {
     "category": "Shield",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

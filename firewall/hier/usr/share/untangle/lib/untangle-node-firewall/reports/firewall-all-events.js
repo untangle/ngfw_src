@@ -1,5 +1,6 @@
 {
     "category": "Firewall",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

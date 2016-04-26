@@ -1,5 +1,6 @@
 {
     "category": "Spam Blocker Lite",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {

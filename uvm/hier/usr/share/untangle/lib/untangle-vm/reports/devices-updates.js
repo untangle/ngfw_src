@@ -1,5 +1,6 @@
 {
     "uniqueId": "device-table-TnFmRkmyuv",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "category": "Devices",
     "conditions": [],

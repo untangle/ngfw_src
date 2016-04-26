@@ -1,5 +1,6 @@
 {
     "category": "Phish Blocker",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
