@@ -245,20 +245,11 @@ Ext.define('Ung.dashboard.Widget', {
     height: 320,
     initComponent: function () {
         if (this.hasRefresh) {
-            this.loadingMask = new Ext.LoadMask({
-                cls: 'widget-loader',
-                msg: '<div class="loader">' +
-                    '<svg class="circular" viewBox="25 25 50 50">' +
-                    '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>' +
-                    '</svg>' +
-                    '</div>',
-                target: this
-            });
             this.tools = [];
-            if (this.widgetType === 'EventEntry' || this.widgetType === 'ReportEntry') {
+            if (this.widgetType === 'ReportEntry') {
                 this.tools.push({
                     type: 'plus',
-                    tooltip: i18n._('Open in Reports'),
+                    //tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
                         var entry = panel.entry;
                         Ung.Main.target = "reports." + entry.category + (panel.widgetType === "ReportEntry" ? ".report." : ".event.") + panel.entry.uniqueId;
@@ -268,36 +259,16 @@ Ext.define('Ung.dashboard.Widget', {
             }
             this.tools.push({
                 type: 'refresh',
-                tooltip: i18n._('Refresh'),
+                //tooltip: i18n._('Refresh'),
                 margin: '0 5 0 5',
                 callback: function (panel) {
                     if (panel.timeoutId) {
                         clearTimeout(panel.timeoutId);
                     }
                     panel.dataFirstLoaded = false; // to force loading data when manual refresh
-                    panel.loadingMask.show();
                     Ung.dashboard.Queue.addFirst(panel);
                 }
             });
-            /*
-            this.tools.push({
-                type: 'refresh',
-                tooltip: i18n._('Refresh'),
-                margin: '0 5 0 5',
-                callback: function (panel) {
-                    var dimm = document.createElement('div');
-                    dimm.className = 'dimm';
-                    document.body.appendChild(dimm);
-
-                    panel.addCls('enlarged');
-                    console.log(panel.chart);
-                    setTimeout(function () {
-                        panel.chart.reflow();
-                    }, 500);
-
-                }
-            });
-            */
         }
         this.callParent(arguments);
     },
@@ -309,16 +280,11 @@ Ext.define('Ung.dashboard.Widget', {
     },
 
     afterLoad: function () {
-        if (this.hasRefresh) {
-            this.loadingMask.hide();
-        }
-        //console.log(this.getHeader());
         this.header = true;
         try {
             this.removeCls('init');
             this.removeCls('loading');
         } catch (ignore) {
-            //console.log('null widget conf');
         }
 
         Ung.dashboard.Queue.next();

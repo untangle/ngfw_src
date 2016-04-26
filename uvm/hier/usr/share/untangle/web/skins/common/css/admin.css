@@ -58,9 +58,6 @@
     vertical-align: middle;
     font-size: 20px;
 }
-.material-button span {
-    vertical-align: middle;
-}
 
 .logo {
     background-size: 80%;
@@ -625,6 +622,14 @@ a.link,a.link:visited {
     color: #FFF;
 }
 
+.policy-menu-dd {
+    background: #555;
+    border: 0;
+    box-shadow: none;
+}
+
+
+
 .views-menu div, .user-menu div {
     white-space: nowrap;
 }
@@ -646,6 +651,7 @@ a.link,a.link:visited {
     background-color: transparent;
     border: 0;
     background-image: none !important;
+    /*height: 30px;*/
 }
 
 .action-button.x-btn:hover {
@@ -660,6 +666,11 @@ a.link,a.link:visited {
 .action-button.x-btn .x-btn-inner {
     color: #FFF;
     font-size: 13px;
+    padding: 0 10px;
+}
+
+.action-button.x-btn.x-btn-disabled {
+    background-color: transparent;
 }
 
 
@@ -728,16 +739,6 @@ a.forgot-password:hover {
     vertical-align: middle;
 }
 
-
-.policy-selector .x-btn-text {
-    text-align: left;
-    justify-content: initial;
-}
-
-.policy-selector .x-btn-inner {
-    font-size: 14px;
-    color: #1b1e26;
-}
 
 /* Dashboard section */
 .dashboard {
@@ -905,22 +906,26 @@ a.forgot-password:hover {
     text-transform: uppercase;
 }
 
-.event-container .x-panel-header {
-    padding: 0;
+.report-container > .x-panel-header {
+    padding: 7px;
+    background: #555;
+    box-shadow: none;
 }
 
-.report-container .x-title-text, .event-container .x-title-text {
+.report-container > .x-panel-header .x-title-text {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
     font-weight: normal;
-    padding: 5px;
+    color: #FFF;
+    line-height: 1.2;
 }
-.report-container .x-title-text .ttl, .event-container .x-title-text .ttl {
+
+.report-container .x-title-text .ttl {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: normal;
 }
-.report-container .x-title-text .dsc, .event-container .x-title-text .dsc {
-    color: #555;
-    font-size: 14px;
+.report-container .x-title-text .dsc {
+    color: #CCC;
+    font-size: 12px;
 }
 
 
@@ -930,24 +935,23 @@ a.forgot-password:hover {
 }
 
 
-
 .entry-selector-header {
-    background: #DDD;
+    background: #555;
     padding: 5px;
 }
 
 .entry-selector-header img {
-    vertical-align: bottom;
-    margin-right: 10px;
-    width: 48px;
-    height: 48px;
+    vertical-align: middle;
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
 }
 
 .entry-selector-header span {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
     vertical-align: middle;
-    font-size: 24px;
-    color: #777;
+    font-size: 18px;
+    color: #FFF;
 }
 
 
@@ -1133,6 +1137,7 @@ a.forgot-password:hover {
 .category-item img {
     width: 22px;
     height: 22px;
+    border-radius: 3px;
 }
 
 

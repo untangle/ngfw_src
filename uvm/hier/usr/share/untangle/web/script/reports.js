@@ -108,7 +108,8 @@ Ext.define('Ung.panel.Reports', {
             layout: 'column',
             itemId: 'categorySelector',
             userCls: 'category-selector',
-            scrollable: true
+            scrollable: true,
+            border: 0
         }, {
             xtype: 'container',
             layout: 'border',
@@ -344,7 +345,7 @@ Ext.define('Ung.panel.Reports', {
                 itemId: 'dashboardReportBtn',
                 iconCls: 'icon-add-row',
                 margin: '0 3',
-                scale: 'medium',
+                //scale: 'medium',
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
@@ -352,7 +353,7 @@ Ext.define('Ung.panel.Reports', {
                 xtype: 'button',
                 text: i18n._('Customize'),
                 margin: '0 3',
-                scale: 'medium',
+                //scale: 'medium',
                 hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 name: "edit",
                 tooltip: i18n._('Advanced report customization'),
@@ -364,7 +365,7 @@ Ext.define('Ung.panel.Reports', {
         }, {
             xtype: 'grid',
             itemId: 'eventContainer',
-            cls: 'event-container',
+            cls: 'report-container',
             stateful: true,
             stateId: "eventGrid",
             border: 0,
