@@ -440,7 +440,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         if ( _nfq_get_conntrack_info( nfa, pkt, l3num ) < 0 ) {
             netcap_set_verdict( pkt->nfq_qh, pkt->packet_id, NF_DROP, NULL, 0 );
             pkt->packet_id = 0;
-            return errlog( ERR_WARNING, "3.10 DROPPING PACKET because it has no conntrack info.\n" );
+            return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
         }
     }
     else { 
@@ -624,21 +624,21 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
     
     ct = nfct_new();
     if ( !ct ) {
-        errlog( ERR_WARNING, "nfq_get_conntrack could not alloc conntrack info\n" );
+        errlog( ERR_WARNING, "nfct_new failed\n" );
         nfct_destroy( ct );
         return -1;
     }
 
     ct_len = nfq_get_ct_info(nfad, &ct_data);
     if ( ct_len <= 0 ) {
-        errlog( ERR_WARNING, "nfq_get_conntrack could not get conntrack data\n" );
+        errlog( ERR_WARNING, "nfq_get_ct_info returned error: %s\n", strerror(errno) );
         nfct_destroy( ct );
         return -1;
     }
 
 
     if (nfct_payload_parse((void *)ct_data, ct_len, l3num, ct ) < 0) {
-        errlog( ERR_WARNING, "nfq_get_conntrack could not parse conntrack data\n" );
+        errlog( ERR_WARNING, "nfq_payload_parse returned error: %s\n", strerror(errno) );
         nfct_destroy( ct );
         return -1;
     }
