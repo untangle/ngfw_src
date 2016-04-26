@@ -34,6 +34,4 @@ CREATE TABLE reports.web_cache_stats (
     miss_bytes bigint,
     event_id bigserial)""",["event_id"],["time_stamp"])
 
-        sql_helper.rename_table("webcache_stats","web_cache_stats") # 12.0
-
 reports.engine.register_node(WebCache())
