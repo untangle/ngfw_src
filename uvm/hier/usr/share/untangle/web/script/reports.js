@@ -941,7 +941,87 @@ Ext.define('Ung.panel.Reports', {
             this.reportChart.setActiveItem('textentry');
         } else {
             this.down('#highchart').body.dom.innerHTML = '';
+            var tbar = this.down('#highchart').getDockedItems('toolbar[dock="top"]');
+            if (tbar.length > 0) {
+                tbar[0].destroy();
+            }
             this.reportChart.setActiveItem('highchart');
+
+            if (this.entry.type === 'PIE_GRAPH') {
+                var chartTypeToolbar = [], button, i;
+                var chartTypeButtons = [
+                    { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
+                    { type: 'pie', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie") },
+                    { type: 'pie', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut") },
+                    { type: 'pie', isDonut: true, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Donut") },
+                    { type: 'column', is3d: false, iconCls: 'icon-bar-chart', text: i18n._("Column") },
+                    { type: 'column', is3d: true, iconCls: 'icon-bar-chart', text: i18n._("3D Column") }
+                ];
+
+                for (i = 0; i < chartTypeButtons.length; i += 1) {
+                    button = chartTypeButtons[i];
+                    chartTypeToolbar.push({
+                        xtype: 'button',
+                        pressed: this.entry.chartType === button.type,
+                        iconCls: button.iconCls,
+                        text: button.text,
+                        chartType: button.type,
+                        isDonut: button.isDonut,
+                        is3d: button.is3d,
+                        handler: Ext.bind(function (btn) {
+                            //button.setPressed(true);
+                            entry.chartType = btn.chartType;
+                            entry.isDonut = btn.isDonut;
+                            entry.is3d = btn.is3d;
+                            //this.chart.destroy();
+                            this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                        }, this)
+                    });
+                }
+                this.down('#highchart').addDocked({
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    border: 0,
+                    items: chartTypeToolbar
+                });
+            }
+            /*
+            if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_DYNAMIC') {
+                timeStyleButtons = [];
+                timeStyles = [
+                    { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
+                    { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
+                    { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
+                    { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
+                ];
+
+                for (i = 0; i < timeStyles.length; i += 1) {
+                    timeStyle = timeStyles[i];
+                    timeStyleButtons.push({
+                        xtype: 'button',
+                        pressed: entry.chartType == timeStyle.type,
+                        iconCls: timeStyle.iconCls,
+                        text: timeStyle.text,
+                        chartType: timeStyle.type,
+                        columnOverlapped: timeStyle.overlapped,
+                        handler: Ext.bind(function (button) {
+                            entry.chartType = button.chartType;
+                            entry.columnOverlapped = button.columnOverlapped;
+                            //console.log(this.chart);
+                            //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
+                            //this.chart.destroy();
+                            console.log(entry);
+                            this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                        }, this)
+                    });
+                }
+                this.down('#highchart').addDocked({
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: timeStyleButtons
+                });
+            }
+            */
         }
 
         /*
@@ -958,15 +1038,9 @@ Ext.define('Ung.panel.Reports', {
             border: 0,
             padding: '5px'
         });
-        //this.down('[name=northEntriesBtn]').setText('<i class="material-icons" style="font-size: 20px;">' + this.setEntryIcon(entry) + '</i> <span>' + entry.title + '</span>');
-
 
         this.reportContainer.setLoading(i18n._('Loading report... '));
-
-        //this.reportChart.removeAll(true);
-        //this.reportData.setCollapsed(true);
         this.reportData.getStore().loadData([]);
-        //this.entriesList.setCollapsed(false);
 
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
             this.reportContainer.setLoading(false);
@@ -974,7 +1048,7 @@ Ext.define('Ung.panel.Reports', {
                 console.log(exception);
                 return;
             }
-            //this.chartData = result.list;
+            this.chartData = result.list;
 
             switch (entry.type) {
             case 'TEXT':
@@ -987,7 +1061,6 @@ Ext.define('Ung.panel.Reports', {
                 this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
             }
             this.loadReportData(result.list);
-            //console.log(Highcharts.charts);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },

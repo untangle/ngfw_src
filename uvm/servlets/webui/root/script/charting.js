@@ -677,10 +677,12 @@ Ext.define('Ung.charts', {
                 pie: {
                     allowPointSelect: true,
                     cursor: 'pointer',
+                    center: ['50%', '50%'],
                     showInLegend: true,
                     colorByPoint: true,
                     innerSize: entry.isDonut ? '50%' : 0,
                     depth: 45,
+                    minSize: 150,
                     dataLabels: {
                         enabled: true,
                         distance: !forDashboard ? 15 : 5,
@@ -713,7 +715,7 @@ Ext.define('Ung.charts', {
                 }
             },
             legend: {
-                enabled: entry.chartType !== 'column',
+                enabled: entry.chartType !== 'column' && !forDashboard,
                 title: {
                     text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
                     style: {
@@ -721,7 +723,7 @@ Ext.define('Ung.charts', {
                     }
                 },
                 itemStyle: {
-                    fontSize: !forDashboard ? '14px' : '11px'
+                    fontSize: !forDashboard ? '12px' : '11px'
                 },
                 layout: 'vertical',
                 align: 'right',
@@ -729,7 +731,8 @@ Ext.define('Ung.charts', {
                 //y: !forDashboard ? 50 : 0,
                 symbolHeight: 8,
                 symbolWidth: 8,
-                symbolRadius: 4
+                symbolRadius: 4,
+                width: 200
             },
             series: this.setCategoriesSeries(entry, data, null),
             drilldown: {
@@ -812,6 +815,8 @@ Ext.define('Ung.charts', {
             }
         }
 
+        entry.ddBreakPoint = 0; // removes drilldown
+
         if (entry.ddBreakPoint > 0) {
             for (i = 0; i < data.length; i += 1) {
                 if (i < entry.ddBreakPoint) {
@@ -836,7 +841,11 @@ Ext.define('Ung.charts', {
                 drilldown: true
             });
         } else {
-            for (i = 0; i < data.length; i += 1) {
+            var cnt = data.length;
+            if (data.length > entry.pieNumSlices) {
+                cnt = entry.pieNumSlices;
+            }
+            for (i = 0; i < cnt; i += 1) {
                 _mainData.push({
                     name: data[i][entry.pieGroupColumn],
                     percent: data[i].percent,
@@ -872,12 +881,14 @@ Ext.define('Ung.charts', {
                 pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1,
                 type: newType
             };
+            /*
             if (entry.columnOverlapped) {
                 _newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
             } else {
                 _newOptions.color = chart.options.colors[i];
             }
             _newOptions.color = chart.options.colors[i];
+            */
             chart.series[i].update(_newOptions, false);
         }
         chart.redraw();
