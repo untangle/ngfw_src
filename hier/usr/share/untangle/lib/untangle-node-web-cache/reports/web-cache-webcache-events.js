@@ -1,5 +1,6 @@
 {
     "category": "Web Cache",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "description": "All HTTP events processed by Web Cache.",
