@@ -817,7 +817,7 @@ public class NodeManagerImpl implements NodeManager
         return finalList;
     }
 
-    private void _setSettings( NodeManagerSettings newSettings )
+    private synchronized void _setSettings( NodeManagerSettings newSettings )
     {
         /**
          * Save the settings

@@ -35,8 +35,6 @@ CREATE TABLE reports.server_events (
     swap_total 	INT8,
     swap_free 	INT8,
     active_hosts 	INT4)""")
-
-        sql_helper.add_column('server_events','active_hosts','int4') # 12.0
         
     @sql_helper.print_timing
     def __create_interface_stat_events(self):

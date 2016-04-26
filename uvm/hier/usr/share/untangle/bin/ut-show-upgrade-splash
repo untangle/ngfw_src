@@ -30,7 +30,6 @@ case "$1" in
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
     fi
-    rm -f /var/www/uvm-upgrade.log # remove old location - 12.0
     rm -f $CONSOLIDATED_UPGRADE_LOG 
 esac
 

@@ -108,9 +108,6 @@ CREATE TABLE reports.sessions (
                                  "application_control_blocked",
                                  "application_control_flagged"])
 
-        sql_helper.add_column('sessions','application_control_category','text') #12.0
-        sql_helper.add_column('sessions','entitled','boolean') #12.0
-
         sql_helper.add_column('sessions','policy_rule_id','int2') # 12.1
 
     @sql_helper.print_timing

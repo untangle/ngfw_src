@@ -24,6 +24,7 @@ fi
 
 # 12.1 upgrade
 sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/stable-120x\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
 
 # remove references to old distros
 sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list

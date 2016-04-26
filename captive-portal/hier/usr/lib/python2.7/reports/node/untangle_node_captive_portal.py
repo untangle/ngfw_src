@@ -33,6 +33,4 @@ CREATE TABLE reports.captive_portal_user_events (
     auth_type text,
     client_addr text)""",["event_id"],["time_stamp"])
 
-        sql_helper.rename_table("capture_user_events","captive_portal_user_events") #12.0
-
 reports.engine.register_node(CaptivePortal())
