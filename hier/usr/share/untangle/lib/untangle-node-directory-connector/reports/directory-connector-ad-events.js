@@ -1,5 +1,6 @@
 {
     "category": "Directory Connector",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","login_name","domain","type","client_addr"],
