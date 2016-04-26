@@ -140,19 +140,6 @@ public class MailSenderImpl implements MailSender
         }
         else {
             this.settings = readSettings;
-
-            Boolean mxChecker = settings.getUseMxRecords();
-            if (mxChecker != null) {
-                // if useMxRecords was previously true we configure for DIRECT
-                if (mxChecker.booleanValue() == true) settings.setSendMethod(MailSettings.SendMethod.DIRECT);
-                // otherwise we configure for CUSTOM
-                else settings.setSendMethod(MailSettings.SendMethod.CUSTOM);
-                
-                // clear the imported Boolean so it goes away and save
-                settings.setUseMxRecords(null);
-                this.setSettings(settings);
-            }
-            
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
