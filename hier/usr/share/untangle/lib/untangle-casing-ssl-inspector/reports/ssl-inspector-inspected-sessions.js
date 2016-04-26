@@ -1,5 +1,6 @@
 {
     "category": "SSL Inspector",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
