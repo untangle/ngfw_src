@@ -26,13 +26,13 @@ vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
 vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
-vpnSite2SiteHostname = "untangle-4845"
+vpnSite2SiteHostname = "untangle-268"
 
 # special box with testshell in the sudoer group  - used to connect to as client
 vpnServerVpnIP = "10.111.56.96"
 
 # special box within vpnServerVpnIP's network
-vpnServerVpnLanIP = "192.168.235.57"
+vpnServerVpnLanIP = "192.168.235.96"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 vpnClientVpnIP = "10.111.56.84"  
