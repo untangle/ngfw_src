@@ -1,5 +1,6 @@
 {
     "category": "Web Filter",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category","s_server_addr","s_server_port"],

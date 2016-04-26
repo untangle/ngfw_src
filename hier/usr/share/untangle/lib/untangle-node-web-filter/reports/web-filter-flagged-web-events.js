@@ -1,5 +1,6 @@
 {
     "category": "Web Filter",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
