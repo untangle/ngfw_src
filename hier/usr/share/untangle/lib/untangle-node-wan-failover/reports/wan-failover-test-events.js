@@ -1,5 +1,6 @@
 {
     "category": "WAN Failover",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","interface_id","name","description","success"],
