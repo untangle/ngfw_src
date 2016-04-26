@@ -1,5 +1,6 @@
 {
     "category": "Application Control",
+    "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
