@@ -120,11 +120,6 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
         } else {
             logger.info("Loading Settings...");
 
-            /* 12.0 - new google settings */
-            if (readSettings.getGoogleSettings() == null) {
-                readSettings.setGoogleSettings( new GoogleSettings() );
-                setSettings( readSettings );
-            }
             /* 12.1 - new facebook settings */
             if (readSettings.getFacebookSettings() == null) {
                 readSettings.setFacebookSettings( new FacebookSettings() );
