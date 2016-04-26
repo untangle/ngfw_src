@@ -44,8 +44,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     {
         String itemCategory = null;
         String itemClass = null;
-        String itemConfidence = null;
         String itemHash = null;
+        int itemConfidence = 0;
 
         public String getItemCategory()
         {
@@ -67,12 +67,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             this.itemClass = newValue;
         }
 
-        public String getItemConfidence()
+        public int getItemConfidence()
         {
             return itemConfidence;
         }
 
-        public void setItemConfidence(String newValue)
+        public void setItemConfidence(int newValue)
         {
             this.itemConfidence = newValue;
         }
@@ -179,13 +179,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
                 JSONObject cloudObject = new JSONObject(cloudString);
                 if (cloudObject.has("Confidence"))
-                    cloudResult.itemConfidence = cloudObject.getString("Confidence");
+                    cloudResult.setItemConfidence(cloudObject.getInt("Confidence"));
                 if (cloudObject.has("Category"))
-                    cloudResult.itemCategory = cloudObject.getString("Category");
+                    cloudResult.setItemCategory(cloudObject.getString("Category"));
                 if (cloudObject.has("Class"))
-                    cloudResult.itemClass = cloudObject.getString("Class");
+                    cloudResult.setItemClass(cloudObject.getString("Class"));
                 if (cloudObject.has("Item"))
-                    cloudResult.itemHash = cloudObject.getString("Item");
+                    cloudResult.setItemHash(cloudObject.getString("Item"));
             }
 
             catch (Exception exn) {
@@ -421,14 +421,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         CloudFeedback feedback = null;
 
-        /**
-         * If BD returned positive result - send feedback If cloud return
-         * positive result - send feedback
-         */
-        if (retcode == 222 || retcode == 223) {
+        // if BD returned positive result we send the feedback
+        if ( (retcode == 222) || (retcode == 223) ) {
             feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
         }
-        if (feedback == null && (cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
+        
+        // if no BD feedback and cloud returned positive result we also send feedback
+        if ( (feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100 ) ) {
             feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
         }
 
@@ -437,11 +436,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             feedback.run();
 
         // if the cloud says it is infected we set the result and return now
-        if ((cloudResult != null) && (cloudResult.itemCategory != null) && (cloudResult.itemConfidence != null) && (cloudResult.itemConfidence.equals("100"))) {
-            setResult(new VirusScannerResult(false, cloudResult.itemCategory));
+        if ( (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100) ) {
+            setResult(new VirusScannerResult(false, cloudResult.getItemCategory()));
             return;
         }
 
+        // no action on the cloud feedback so we use whatever BD gave us
         switch (retcode)
         {
         case 227: // clean
