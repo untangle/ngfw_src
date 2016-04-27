@@ -557,8 +557,9 @@ a.link,a.link:visited {
     background: #1b1e26;
     color: #CCC;
     border: 0;
-    box-shadow: none;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+    border-radius: 0 0 5px 5px;
 }
 
 .alert-dd ul {
@@ -582,9 +583,10 @@ a.link,a.link:visited {
 .user-menu-dd {
     background: #1b1e26;
     border: 0;
-    box-shadow: none;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.8);
     right: 0 !important;
     left: auto !important;
+    border-bottom-left-radius: 5px;
     /*transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);*/
 }
 .user-menu-dd i {

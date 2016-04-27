@@ -503,22 +503,6 @@ Ext.define("Ung.Main", {
                             xtype: 'button',
                             margin: '0 0 0 10',
                             scale: 'medium',
-                            id: 'policyManagerButton',
-                            cls: 'action-button material-button',
-                            plugins: 'responsive',
-                            responsiveConfig: {
-                                'width <= 520': {
-                                    text: '<i class="material-icons">settings_applications</i>'
-                                },
-                                'width > 520': {
-                                    text: '<i class="material-icons">settings_applications</i> <span>' + i18n._("Manage Policies") + '</span>',
-                                }
-                            },
-                            handler: Ung.Main.showPolicyManager
-                        }, {
-                            xtype: 'button',
-                            margin: '0 0 0 10',
-                            //scale: 'medium',
                             width: 150,
                             text: '',
                             textAlign: 'left',
@@ -542,35 +526,8 @@ Ext.define("Ung.Main", {
                                 lineHeight: '22px'
                             }
                         }, {
-                            xtype: 'component',
-                            name: 'noPolicyManager',
-                            hidden: true,
-                            html: 'Install <img src="/skins/' + rpc.skinSettings.skinName + '/images/admin/apps/untangle-node-policy-manager_17x17.png" style="vertical-align: text-bottom;"/> <a href="#" style="color: #FFF;">Policy Manager</a> to control multiple policies',
-                            style: {
-                                color: '#FFF',
-                                lineHeight: '22px'
-                            },
-                            padding: '0 10',
-                            listeners: {
-                                click: {
-                                    element: 'el',
-                                    fn: function (e) {
-                                        e.preventDefault();
-                                        if (e.target.tagName === 'A') {
-                                            Ung.Main.buildApps();
-                                            Ung.Main.openInstallApps();
-                                        }
-                                    }
-                                },
-                                scope: this
-                            }
-                        }, {
-                            xtype: 'component',
-                            html: '',
-                            flex: 1
-                        }, {
                             xtype: 'button',
-                            margin: '0 10 0 0',
+                            margin: '0 0 0 10',
                             scale: 'medium',
                             cls: 'action-button material-button',
                             plugins: 'responsive',
@@ -592,6 +549,10 @@ Ext.define("Ung.Main", {
                             margin: '0 0 0 10',
                             itemId: "noIeContainer",
                             hidden: true
+                        }, {
+                            xtype: 'component',
+                            html: '',
+                            flex: 1
                         }]
                     }, {
                         xtype: 'container',
@@ -742,7 +703,6 @@ Ext.define("Ung.Main", {
         this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.policySelector =  this.viewport.down("button[name=policySelector]");
-        this.noPolicyManager =  this.viewport.down("[name=noPolicyManager]");
         this.filterNodes = this.viewport.down("#filterNodes");
         this.serviceNodes = this.viewport.down("#serviceNodes");
         this.parentPolicy = this.viewport.down("#parentPolicy");
@@ -1075,7 +1035,7 @@ Ext.define("Ung.Main", {
     buildNodes: function () {
         //build nodes
         Ung.MetricManager.stop();
-        Ext.getCmp('policyManagerButton').disable();
+        this.policySelector.hide();
         Ext.getCmp('policyManagerToolItem').hide();
 
         var nodePreviews = Ext.clone(this.nodePreviews);
@@ -1475,9 +1435,8 @@ Ext.define("Ung.Main", {
                 if (Ung.Util.handleException(exception)) {
                     return;
                 }
-                Ext.getCmp('policyManagerButton').enable();
+                this.policySelector.show();
                 Ext.getCmp('policyManagerToolItem').show();
-                this.noPolicyManager.hide();
                 rpc.policyManager = result;
             }, this), "untangle-node-policy-manager");
         }
@@ -1522,10 +1481,14 @@ Ext.define("Ung.Main", {
             }
         }
 
+        items.push('-');
+        items.push({text: i18n._('Show Policy Manager'), value: 'SHOW_POLICY_MANAGER', handler: Ung.Main.showPolicyManager, id: 'policyManagerMenuItem', hideDelay: 0});
+
+        /*
         if (!rpc.nodeManager.node("untangle-node-policy-manager")) {
             this.noPolicyManager.show();
         }
-
+        */
         this.policySelector.setText(items[selVirtualRackIndex].text);
         var menu = this.policySelector.down("menu");
         menu.removeAll();
