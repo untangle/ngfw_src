@@ -29,7 +29,7 @@ l2tpLocalPassword = "passwd"
 l2tpRadiusUser = "normal"
 l2tpRadiusPassword = "passwd"
 ipsecHost = "10.111.56.96"
-ipsecHostLANIP = "192.168.235.57"
+ipsecHostLANIP = "192.168.235.96"
 ipsecHostLAN = "192.168.235.0/24"
 configuredHostIPs = [('10.112.11.53','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
