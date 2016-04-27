@@ -404,7 +404,7 @@ Ext.define("Ung.Main", {
                                             xtype: 'container',
                                             html: '<hr/><table>' +
                                                     '<tr><td style="width: 55px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #FFB300; font-size: 20px; vertical-align: middle;">warning</i></td><td>requires <em>Reports</em> App and any associated App</td></tr>' +
-                                                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: rgba(103,189,74,.9); font-size: 20px; vertical-align: middle;">visibility</i> | <i class="material-icons" style="color: #777; font-size: 20px; vertical-align: middle;">visibility_off</i></td><td>toggles widget visibility on or off</td></tr>' +
+                                                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: rgba(103,189,74,.9); font-size: 20px; vertical-align: middle;">visibility</i> | <i class="material-icons" style="color: #777; font-size: 20px; vertical-align: middle;">visibility_off</i></td><td>enables or disables the widget</td></tr>' +
                                                     '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 20px; vertical-align: middle;">format_line_spacing</i></td><td>drag items to sort them</td></tr>' +
                                                   '</table>',
                                             /*

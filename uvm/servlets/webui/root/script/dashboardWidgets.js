@@ -92,8 +92,6 @@ Ext.define('Ung.dashboard', {
                         if (entry && !entry.enabled) {
                             entry = null;
                         }
-                    } else {
-                        entry = this.eventsMap[widget.entryId];
                     }
                     if (entry && !this.unavailableApplicationsMap[entry.category]) {
                         this.widgetsList.push(Ext.create('Ung.dashboard.' + widget.type, {
@@ -151,8 +149,6 @@ Ext.define('Ung.dashboard', {
     resetReports: function () {
         this.reportEntries = null;
         this.reportsMap = null;
-        this.eventEntries = null;
-        this.eventsMap = null;
     },
     loadReportEntries: function (handler) {
         if (!this.reportEntries) {
@@ -252,7 +248,7 @@ Ext.define('Ung.dashboard.Widget', {
                     //tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
                         var entry = panel.entry;
-                        Ung.Main.target = "reports." + entry.category + (panel.widgetType === "ReportEntry" ? ".report." : ".event.") + panel.entry.uniqueId;
+                        Ung.Main.target = "reports." + entry.category + '.report.' + panel.entry.uniqueId;
                         Ung.Main.openReports();
                     }
                 });
