@@ -69,7 +69,7 @@ Ext.define('Ung.panel.Reports', {
         resizable: false,
         border: 0,
         store: Ext.create('Ext.data.Store', {
-            fields: ['text'],
+            fields: ['text', 'category'],
             data: []
         }),
         columns: [{
@@ -183,7 +183,6 @@ Ext.define('Ung.panel.Reports', {
         this.callParent(arguments);
     },
     initComponent: function () {
-
         if (!rpc.reportsEnabled) {
             this.items = [{
                 region: 'center',
@@ -356,11 +355,19 @@ Ext.define('Ung.panel.Reports', {
                 //scale: 'medium',
                 hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 name: "edit",
-                tooltip: i18n._('Advanced report customization'),
+                //tooltip: i18n._('Advanced report customization'),
                 iconCls: 'icon-edit',
                 handler: Ext.bind(function () {
                     this.customizeReport();
                 }, this)
+            }, {
+                xtype: 'button',
+                text: i18n._('View Events'),
+                name: "edit",
+                hidden: true,
+                //tooltip: i18n._('View events for this report'),
+                iconCls: 'icon-edit',
+                handler: Ext.bind(this.viewEventsForReport, this)
             }]
         }, {
             xtype: 'grid',
@@ -548,8 +555,8 @@ Ext.define('Ung.panel.Reports', {
             } else {
                 this.reportsMain.setActiveItem(1);
                 this.entryView.setActiveItem(0);
-                this.loadReportEntries();
                 this.down('#entriesMenuBtn').setText(i18n._('Select Report'));
+                this.loadReportEntries();
             }
             this.down('#categoriesMenuBtn').setText(record.getData().text).setIcon(record.getData().icon);
             //this.down('#extraConditions').setHidden(false);
@@ -566,17 +573,17 @@ Ext.define('Ung.panel.Reports', {
             dataIndex: 'text'
         }, {
             width: 24,
-            dataIndex: 'inDashboard',
             renderer: Ext.bind(function (value, metaData, record) {
-                if (record.getData().inDashboard) {
-                    return '<i class="material-icons" style="font-size: 16px; color: #999;">home</i>';
+                if (!record.getData().entry.readOnly) {
+                    return '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>';
                 }
             }, this)
         }, {
             width: 24,
+            dataIndex: 'inDashboard',
             renderer: Ext.bind(function (value, metaData, record) {
-                if (!record.getData().entry.readOnly) {
-                    return '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>';
+                if (record.getData().inDashboard) {
+                    return '<i class="material-icons" style="font-size: 16px; color: #999;">home</i>';
                 }
             }, this)
         }]);
@@ -785,6 +792,8 @@ Ext.define('Ung.panel.Reports', {
             }
 
             this.categoryList.getStore().loadData(_categorySideItems);
+
+
             this.buildCategorySelector(_categorySideItems);
 
             // reports opened within app settings, having an initial category set
@@ -794,6 +803,11 @@ Ext.define('Ung.panel.Reports', {
                 this.categoryList.setSelection(_categorySideItems[0]);
             }
 
+            if (this.initEntry) {
+                //var cat = this.categoryList.getStore().findRecord('category', this.initEntry.category);
+                //console.log(cat);
+                this.categoryList.getSelectionModel().select(this.categoryList.getStore().findRecord('category', this.initEntry.category));
+            }
 
             this.down('#categoriesMenuBtn').setMenu(Ext.create('Ext.menu.Menu', {
                 //itemId: 'categoriesMenu',
@@ -838,6 +852,7 @@ Ext.define('Ung.panel.Reports', {
             entry = Ext.create('Ung.grid.ReportItemModel', {
                 text : entries[i].title,
                 entry: entries[i],
+                entryId: entries[i].uniqueId,
                 icon: _icon,
                 inDashboard: this.inDashboard(entries[i])
             });
@@ -895,6 +910,10 @@ Ext.define('Ung.panel.Reports', {
             });
         }
         this.entrySelector.add(selectionEntries);
+
+        if (this.initEntry) {
+            this.entryList.getSelectionModel().select(this.entryList.getStore().findRecord('entryId', this.initEntry.uniqueId));
+        }
     },
 
     setEntryIcon: function (entry) {
@@ -934,8 +953,6 @@ Ext.define('Ung.panel.Reports', {
     },
 
     loadReportEntry: function (entry) {
-        this.entry = entry;
-
         if (this.entry.type === 'TEXT') {
             this.reportChart.down('#textentry').update('');
             this.reportChart.setActiveItem('textentry');
@@ -1179,8 +1196,6 @@ Ext.define('Ung.panel.Reports', {
 
     loadEventEntry: function (entry) {
         var store, tableConfig, state, i, col;
-
-        this.entry = entry;
 
         /*
         if (this.chart) {
@@ -1534,6 +1549,15 @@ Ext.define('Ung.panel.Reports', {
         var record = Ext.create('Ext.data.Model', this.entry);
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
+    },
+
+    viewEventsForReport: function () {
+        if (!this.entry) {
+            return;
+        }
+        this.entry = Ext.clone(this.entry);
+        this.entry.type = 'EVENT_LIST';
+        this.loadEventEntry(this.entry);
     },
 
     statics: {

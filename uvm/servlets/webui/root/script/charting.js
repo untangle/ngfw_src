@@ -283,6 +283,7 @@ Ext.define('Ung.charts', {
             noData: {
                 style: {
                     fontSize: '16px',
+                    fontWeight: 'normal',
                     color: '#999'
                 }
             },
@@ -344,7 +345,7 @@ Ext.define('Ung.charts', {
             yAxis: {
                 allowDecimals: false,
                 min: 0,
-                minRange: 2,
+                minRange: 1,
                 lineColor: "#C0D0E0",
                 lineWidth: 1,
                 gridLineWidth: 1,
@@ -553,25 +554,11 @@ Ext.define('Ung.charts', {
             that = this,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
-        // apply gradient colors for the Pie chart
-
-        var gradientColors = colors.map(function (color) {
-            return {
-                radialGradient: {
-                    cx: 0.5,
-                    cy: 0.3,
-                    r: 0.7
-                },
-                stops: [
-                    [0, color],
-                    [1, Highcharts.Color(color).brighten(-0.2).get('rgb')] // darken
-                ]
-            };
-        });
+        entry.chartType = entry.chartType || 'pie';
 
         return new Highcharts.Chart({
             chart: {
-                type: entry.chartType || 'pie',
+                type: entry.chartType,
                 renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 spacing: [10, 10, 10, 10],
@@ -618,10 +605,11 @@ Ext.define('Ung.charts', {
             noData: {
                 style: {
                     fontSize: '16px',
+                    fontWeight: 'normal',
                     color: '#999'
                 }
             },
-            colors: entry.chartType !== 'column' ? gradientColors : colors,
+            colors: colors,
             credits: {
                 enabled: false
             },
@@ -666,12 +654,14 @@ Ext.define('Ung.charts', {
                 }
             },
             tooltip: {
-                headerFormat: '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ': {point.key}</span><br/>',
-                //pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percent}%)' : '')
+                headerFormat: '<span style="font-size: 14px; font-weight: bold;">' + seriesName + ': {point.key}</span><br/>',
+                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percentage:.1f}%)' : '')
+                /*
                 formatter: function () {
-                    return '<span style="font-size: 16px; font-weight: bold;">' + seriesName + ': ' + this.point.name + '</span><br/>' +
-                           '<span style="font-weight: bold;">' + this.point.y + ' sessions </span>(' + this.point.percent + '%)';
+                    return '<span style="font-size: 14px; font-weight: bold;">' + seriesName + ': ' + this.point.name + '</span><br/>' +
+                        '<span style="font-weight: bold;">' + this.point.y + ' sessions </span>(' + this.point.percent + '%)';
                 }
+                */
             },
             plotOptions: {
                 pie: {
@@ -734,30 +724,7 @@ Ext.define('Ung.charts', {
                 symbolRadius: 4,
                 width: 200
             },
-            series: this.setCategoriesSeries(entry, data, null),
-            drilldown: {
-                drillUpButton: {
-                    position: {
-                        align: entry.chartType !== 'column' ? 'left' : 'right',
-                        x: entry.chartType !== 'column' ? 3 : -3,
-                        y: 3
-                    },
-                    relativeTo: 'plotBox',
-                    theme: {
-                        fill: '#EEE',
-                        strokeWidth: 0,
-                        stroke: 'silver',
-                        fontSize: '10px',
-                        r: 3,
-                        states: {
-                            hover: {
-                                fill: '#DDD'
-                            }
-                        }
-                    }
-                }
-            }
-
+            series: this.setCategoriesSeries(entry, data, null)
         });
     },
 
@@ -771,87 +738,29 @@ Ext.define('Ung.charts', {
     setCategoriesSeries: function (entry, data, chart) {
         // TODO: Pie percentage not correct inside DrillDown
 
-        var i, _otherCumulateVal = 0, _mainData = [], _drillDownData = [], _total = 0;
-        var _mainSeries = [{
-            name: entry.units
-        }];
+        var _mainData = [], _otherCumulateVal = 0, i,
+            _mainSeries = [{
+                name: entry.units
+            }];
 
-        // store data inside entry for drilldown usage
-        entry.data = data;
-        entry.ddBreakPoint = null;
+        //entry.data = data;
 
-        /*
-        if (this.generateRandomData) {
-            data = [];
-            for (i = 0; i < Math.floor(Math.random() * 12) + 5; i += 1) {
-                data.push({
-                    name: 'random',
-                    value: Math.floor(Math.random() * 100) + 1
-                });
-            }
-            // sort descending by value
-            data.sort(function (d1, d2) {
-                return d2.value - d1.value;
-            });
-        }
-        */
-
-        // calculate total
         for (i = 0; i < data.length; i += 1) {
-            _total += data[i].value;
-        }
-
-        // calculate percentages to use in drilldown
-        for (i = 0; i < data.length; i += 1) {
-            data[i].percent = parseFloat((data[i].value * 100 / _total).toFixed(2));
-        }
-
-        // find drilldown breakpoint under 10% and more than 5 slices
-        if (data.length > 10) {
-            for (i = 0; i < data.length - 1; i += 1) {
-                if (data[i].percent < 10 && !entry.ddBreakPoint) {
-                    entry.ddBreakPoint = i;
-                }
-            }
-        }
-
-        entry.ddBreakPoint = 0; // removes drilldown
-
-        if (entry.ddBreakPoint > 0) {
-            for (i = 0; i < data.length; i += 1) {
-                if (i < entry.ddBreakPoint) {
-                    _mainData.push({
-                        name: data[i][entry.pieGroupColumn],
-                        percent: data[i].percent,
-                        y: data[i].value
-                    });
-                } else {
-                    _otherCumulateVal += data[i].value;
-                    _drillDownData.push({
-                        name: data[i][entry.pieGroupColumn],
-                        percent: data[i].percent,
-                        y: data[i].value
-                    });
-                }
-            }
-            _mainData.push({
-                name: 'other',
-                y: _otherCumulateVal,
-                percent: parseFloat((_otherCumulateVal * 100 / _total).toFixed(2)),
-                drilldown: true
-            });
-        } else {
-            var cnt = data.length;
-            if (data.length > entry.pieNumSlices) {
-                cnt = entry.pieNumSlices;
-            }
-            for (i = 0; i < cnt; i += 1) {
+            if (i < entry.pieNumSlices) {
                 _mainData.push({
                     name: data[i][entry.pieGroupColumn],
-                    percent: data[i].percent,
                     y: data[i].value
                 });
+            } else {
+                _otherCumulateVal += data[i].value;
             }
+        }
+
+        if (_otherCumulateVal > 0) {
+            _mainData.push({
+                name: 'Other',
+                y: _otherCumulateVal
+            });
         }
 
         if (!chart) {
@@ -859,11 +768,7 @@ Ext.define('Ung.charts', {
             return _mainSeries;
         }
 
-        if (!chart.isDrillDown) {
-            chart.series[0].setData(_mainData, true, true);
-        } else {
-            chart.series[0].setData(_drillDownData, true, true);
-        }
+        chart.series[0].setData(_mainData, true, true);
     },
 
 

@@ -247,9 +247,8 @@ Ext.define('Ung.dashboard.Widget', {
                     type: 'plus',
                     //tooltip: i18n._('Open in Reports'),
                     callback: function (panel) {
-                        var entry = panel.entry;
-                        Ung.Main.target = "reports." + entry.category + '.report.' + panel.entry.uniqueId;
-                        Ung.Main.openReports();
+                        //Ung.Main.target = "reports." + entry.category + '.report.' + panel.entry.uniqueId;
+                        Ung.Main.openReports(panel.entry);
                     }
                 });
             }

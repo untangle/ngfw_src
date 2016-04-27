@@ -164,7 +164,7 @@ Ext.define("Ung.Main", {
                         hidden: !rpc.reportsEnabled,
                         handler: function (btn) {
                             this.panelCenter.setActiveItem("reports");
-                            this.panelCenter.setLoading('Loading ....');
+                            this.panelCenter.setLoading('Loading ...');
                             this.viewsMenu.items.each(function (button) { button.setPressed(false); });
                             btn.setPressed(true);
                         },
@@ -306,6 +306,7 @@ Ext.define("Ung.Main", {
                                 text: '<i class="material-icons">show_chart</i> <span>' + i18n._('Reports') + '</span>',
                                 handler: function () {
                                     this.panelCenter.setActiveItem("reports");
+                                    this.panelCenter.setLoading('Loading ...');
                                     this.viewsMenu.items.each(function (button, idx) {
                                         button.setPressed(idx === 3);
                                     });
@@ -687,10 +688,13 @@ Ext.define("Ung.Main", {
                     listeners: {
                         'activate': function (container) {
                             this.viewport.down("#reports").removeAll();
-                            this.viewport.down("#reports").add(Ext.create("Ung.panel.Reports", {}));
+                            this.viewport.down("#reports").add(Ext.create("Ung.panel.Reports", {
+                                initEntry: this.reportsInitEntry
+                            }));
                         },
                         "deactivate": function (container) {
-                            //this.viewport.down("#reportsContainer").removeAll();
+                            this.reportsInitEntry = null;
+                            this.viewport.down("#reports").removeAll();
                         },
                         scope: this
                     }
@@ -783,11 +787,14 @@ Ext.define("Ung.Main", {
         var url = "/setup";
         window.open(url);
     },
-    openReports: function () {
+    openReports: function (entry) {
+        this.reportsInitEntry = entry;
         if (rpc.reportsEnabled) {
-            var reportsMenuItem = Ext.getCmp('reportsMenuItem');
-            reportsMenuItem.setPressed(true);
             Ung.Main.panelCenter.setActiveItem("reports");
+            Ung.Main.panelCenter.setLoading('Loading ...');
+            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
+            Ext.getCmp('reportsMenuItem').setPressed(true);
+            Ung.panel.Reports.entry = 'aaa';
         }
     },
     upgrade: function () {
@@ -1133,7 +1140,7 @@ Ext.define("Ung.Main", {
                     }
 
                 } else if (firstToken == "reports") {
-                    Ung.Main.openReports();
+                    Ung.Main.openReports(null);
                 } else {
                     this.target = null;
                 }
