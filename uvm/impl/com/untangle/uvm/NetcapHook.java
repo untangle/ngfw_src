@@ -386,6 +386,8 @@ public abstract class NetcapHook implements Runnable
             }
         }
 
+        sessionGlobalState.setEndTime( System.currentTimeMillis() );
+        
         try {
             /* Must raze sessions all sessions in the session list */
             razeSessions();
@@ -422,16 +424,16 @@ public abstract class NetcapHook implements Runnable
                     p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * UDP_HEADER_SIZE);
                 }
                     
-                statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
-                statEvent.setP2cBytes(sessionGlobalState.clientSideListener().txBytes);
-                statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
-                statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
-
-                statEvent.setS2pBytes(sessionGlobalState.serverSideListener().rxBytes);
-                statEvent.setP2sBytes(sessionGlobalState.serverSideListener().txBytes);
-                statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
-                statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
-
+                statEvent.setC2pBytes(c2pBytes);
+                statEvent.setP2cBytes(p2cBytes);
+                //statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
+                //statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
+                statEvent.setS2pBytes(s2pBytes);
+                statEvent.setP2sBytes(p2sBytes);
+                //statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
+                //statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+                statEvent.setEndTime(sessionGlobalState.getEndTime());
+                
                 UvmContextFactory.context().logEvent( statEvent );
             }
 

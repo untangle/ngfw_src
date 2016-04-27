@@ -32,9 +32,7 @@ public class SessionStatsEvent extends LogEvent
     private long s2pChunks = 0;
     private long p2cChunks = 0;
 
-    private String uid;
-
-    // constructors -----------------------------------------------------------
+    private long endTime = 0;
 
     public SessionStatsEvent() { }
 
@@ -49,8 +47,6 @@ public class SessionStatsEvent extends LogEvent
         this.sessionId = sessionEvent.getSessionId();
     }
     
-    // accessors --------------------------------------------------------------
-
     /**
      * Total bytes send from client to pipeline
      */
@@ -76,53 +72,38 @@ public class SessionStatsEvent extends LogEvent
     public void setP2sBytes( long p2sBytes ) { this.p2sBytes = p2sBytes; }
 
     /**
-     * Total chunks send from client to pipeline
+     * Time the session ended ( 0 means no value )
      */
-    public long getC2pChunks() { return c2pChunks; }
-    public void setC2pChunks( long c2pChunks ) { this.c2pChunks = c2pChunks; }
+    public long getEndTime() { return this.endTime; }
+    public void setEndTime( long newValue ) { this.endTime = newValue; }
 
     /**
-     * Total chunks send from server to pipeline
+     * The Session ID
      */
-    public long getS2pChunks() { return s2pChunks; }
-    public void setS2pChunks( long s2pChunks ) { this.s2pChunks = s2pChunks; }
-
-    /**
-     * Total chunks send from pipeline to client
-     */
-    public long getP2cChunks() { return p2cChunks; }
-    public void setP2cChunks( long p2cChunks ) { this.p2cChunks = p2cChunks; }
-
-    /**
-     * Total chunks send from pipeline to server
-     */
-    public long getP2sChunks() { return p2sChunks; }
-    public void setP2sChunks( long p2sChunks ) { this.p2sChunks = p2sChunks; }
-
     public Long getSessionId() { return sessionId; }
     public void setSessionId( Long sessionId ) { this.sessionId = sessionId; }
-
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "UPDATE reports.sessions" + getPostfix() + " " +
             "SET " +
+            ( endTime != 0 ? " end_time = ?, " : "" ) +
             " c2p_bytes = ?, " +
             " s2p_bytes = ?, " +
             " p2c_bytes = ?, " + 
-            " p2s_bytes = ?, " + 
-            " end_time = ? " + 
+            " p2s_bytes = ? " + 
             " WHERE " + 
             " session_id = ?";
         
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
         int i = 0;
+        if ( endTime != 0 ) pstmt.setTimestamp(++i,new Timestamp(getEndTime()));
         pstmt.setLong(++i,getC2pBytes());
         pstmt.setLong(++i,getS2pBytes());
         pstmt.setLong(++i,getP2cBytes());
         pstmt.setLong(++i,getP2sBytes());
-        pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setLong(++i,getSessionId());
         
         pstmt.addBatch();

@@ -150,12 +150,12 @@ public class NetcapConntrackHook implements NetcapCallback
             SessionStatsEvent statEvent = new SessionStatsEvent( session_id );
             statEvent.setC2pBytes( c2s_bytes ); 
             statEvent.setP2cBytes( s2c_bytes );
-            statEvent.setC2pChunks( c2s_packets );
-            statEvent.setP2cChunks( s2c_packets );
+            //statEvent.setC2pChunks( c2s_packets );
+            //statEvent.setP2cChunks( s2c_packets );
             statEvent.setS2pBytes( s2c_bytes );
             statEvent.setP2sBytes( c2s_bytes );
-            statEvent.setS2pChunks( s2c_packets );
-            statEvent.setP2sChunks( c2s_packets );
+            //statEvent.setS2pChunks( s2c_packets );
+            //statEvent.setP2sChunks( c2s_packets );
             UvmContextFactory.context().logEvent( statEvent );
         }
     }

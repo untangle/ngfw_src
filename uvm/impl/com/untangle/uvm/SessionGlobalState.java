@@ -34,6 +34,8 @@ public class SessionGlobalState
 
     protected String user; 
     protected SessionEvent sessionEvent = null;
+    protected long endTime = 0;
+    protected long lastUpdateBytes = 0;
 
     /**
      * This is the global list of attachments for this session
@@ -79,6 +81,12 @@ public class SessionGlobalState
     {
         return this.creationTime;
     }
+
+    public long getEndTime() { return this.endTime; }
+    public void setEndTime( long newValue ) { this.endTime = newValue; }
+
+    public long getLastUpdateBytes() { return this.lastUpdateBytes; }
+    public void setLastUpdateBytes( long newValue ) { this.lastUpdateBytes = newValue; }
     
     public String user() { return this.user; }
     public void setUser( String newValue ) { this.user = newValue; }

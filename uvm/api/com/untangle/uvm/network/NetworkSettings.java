@@ -55,6 +55,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean logLocalOutboundSessions = true;
     private boolean logLocalInboundSessions = false;
     private boolean logBlockedSessions = false;
+    private boolean logSessionUpdates = true;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -158,6 +159,9 @@ public class NetworkSettings implements Serializable, JSONString
     
     public boolean getLogBlockedSessions() { return this.logBlockedSessions; }
     public void setLogBlockedSessions( boolean newValue ) { this.logBlockedSessions = newValue; }
+
+    public boolean getLogSessionUpdates() { return this.logSessionUpdates; }
+    public void setLogSessionUpdates( boolean newValue ) { this.logSessionUpdates = newValue; }
     
     public QosSettings getQosSettings() { return this.qosSettings; }
     public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }

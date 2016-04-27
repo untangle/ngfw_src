@@ -56,7 +56,7 @@ public class Pulse
      */
     public Pulse( boolean isDaemon, Runnable blip )
     {
-        this( null, isDaemon, blip );
+        this( null, isDaemon, blip, Thread.MIN_PRIORITY );
     }
 
     /**
@@ -64,7 +64,7 @@ public class Pulse
      */
     public Pulse( String name, Runnable blip )
     {
-        this( name, null, blip );
+        this( name, null, blip, Thread.MIN_PRIORITY );
     }
 
     /**
@@ -72,6 +72,15 @@ public class Pulse
      * setting.
      */
     public Pulse( String name, Boolean isDaemon, Runnable blip )
+    {
+        this( name, isDaemon, blip, Thread.MIN_PRIORITY );
+    }
+
+    /**
+     * Create a new pulse, optionally setting the name and isDaemon
+     * setting.
+     */
+    public Pulse( String name, Boolean isDaemon, Runnable blip, int threadPriority )
     {
         this.blip = blip;
         this.ticker = new Ticker();
@@ -84,7 +93,8 @@ public class Pulse
             this.thread = new Thread( this.ticker, name );
         }
 
-        if ( null != isDaemon ) this.thread.setDaemon( isDaemon );
+        if ( isDaemon != null ) this.thread.setDaemon( isDaemon );
+        this.thread.setPriority( threadPriority );
     }
 
     /**

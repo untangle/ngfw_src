@@ -4042,6 +4042,19 @@ Ext.define('Webui.config.network', {
                         }, this)
                     }
                 }
+            },{
+                xtype: "checkbox",
+                name: "logSessionUpdates",
+                fieldLabel: i18n._("Log intermediate session updates"),
+                labelWidth: 190,
+                checked: this.settings.logSessionUpdates,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.logSessionUpdates = newValue;
+                        }, this)
+                    }
+                }
             }]
         });
     },
