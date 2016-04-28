@@ -65,6 +65,7 @@ public class GoogleManagerImpl
             credentialsJson += "\"}";
 
             try {
+                UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
                 BufferedWriter bw = new BufferedWriter(new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json")));            
                 bw.write(credentialsJson);
                 bw.close();
