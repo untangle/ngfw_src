@@ -605,21 +605,54 @@ Ext.define("Ung.Main", {
                     }, {
                         xtype: 'container',
                         region: 'center',
+                        layout: {type: 'vbox', align: 'stretch'},
                         scrollable: true,
-                        plugins: 'responsive',
-                        responsiveConfig: {
-                            'width <= 550': {
-                                style: {
-                                    padding: '0'
+                        items: [{
+                            xtype: 'container',
+                            items: [{
+                                xtype: 'component',
+                                cls: 'config-separator top-title',
+                                html: '<i class="material-icons">apps</i> <span>' + i18n._("Apps") + '</span>'
+                            }, {
+                                xtype: 'container',
+                                itemId: 'appsContainer',
+                                plugins: 'responsive',
+                                baseCls: 'install',
+                                responsiveConfig: {
+                                    'width <= 550': {
+                                        style: {
+                                            padding: '0'
+                                        }
+                                    },
+                                    'width > 550': {
+                                        style: {
+                                            padding: '10px'
+                                        }
+                                    }
                                 }
-                            },
-                            'width > 550': {
-                                style: {
-                                    padding: '10px'
+                            }, {
+                                xtype: 'component',
+                                cls: 'config-separator top-title',
+                                html: '<i class="material-icons">build</i> <span>' + i18n._("Services") + '</span>'
+                            }, {
+                                xtype: 'container',
+                                itemId: 'servicesContainer',
+                                plugins: 'responsive',
+                                baseCls: 'install',
+                                responsiveConfig: {
+                                    'width <= 550': {
+                                        style: {
+                                            padding: '0'
+                                        }
+                                    },
+                                    'width > 550': {
+                                        style: {
+                                            padding: '10px'
+                                        }
+                                    }
                                 }
-                            }
-                        },
-                        itemId: "appsContainer"
+                            }]
+                        }]
                     }]
                 }, {
                     xtype: 'container',
@@ -635,6 +668,7 @@ Ext.define("Ung.Main", {
                         }, {
                             xtype: 'container',
                             itemId: 'configContainer',
+                            baseCls: 'install',
                             plugins: 'responsive',
                             responsiveConfig: {
                                 'width <= 550': {
@@ -656,6 +690,7 @@ Ext.define("Ung.Main", {
                             xtype: 'container',
                             title: i18n._('Tools'),
                             itemId: "toolsContainer",
+                            baseCls: 'install',
                             plugins: 'responsive',
                             responsiveConfig: {
                                 'width <= 550': {
@@ -704,6 +739,7 @@ Ext.define("Ung.Main", {
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
         this.appsContainer = this.viewport.down("#appsContainer");
+        this.servicesContainer = this.viewport.down("#servicesContainer");
         this.dashboardManager = this.viewport.down("[name=dashboardManager]");
         Ung.dashboard.dashboardPanel = this.viewport.down("#dashboardItems");
         Ung.dashboard.dashboardContainer = this.viewport.down("#dashboard");
@@ -1023,12 +1059,18 @@ Ext.define("Ung.Main", {
         return node;
     },
     buildApps: function () {
-        var i;
+        var i, instance;
         //destroy Apps
         Ung.Main.appsContainer.removeAll();
+        Ung.Main.servicesContainer.removeAll();
         //build Apps
         for (i = 0; i < rpc.rackView.installable.list.length; i += 1) {
-            Ung.Main.appsContainer.add(Ext.create("Ung.AppItem", {nodeProperties: rpc.rackView.installable.list[i]}));
+            instance = rpc.rackView.installable.list[i];
+            if (instance.type === 'FILTER') {
+                Ung.Main.appsContainer.add(Ext.create("Ung.AppItem", {nodeProperties: instance}));
+            } else {
+                Ung.Main.servicesContainer.add(Ext.create("Ung.AppItem", {nodeProperties: instance}));
+            }
         }
     },
     buildNodes: function () {

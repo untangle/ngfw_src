@@ -738,21 +738,26 @@ a.forgot-password:hover {
 }
 
 .config-separator {
-    background-color: #555;
+    background-color: #CCCDCD;
     width: 100%;
     line-height: 40px;
-    height: 44px;
+    padding-top: 20px;
     padding-left: 10px;
     border-bottom: 1px solid #CCC;
+    font-weight: bold;
 }
 
 .top-title {
     font-size: 16px;
-    color: #CCC;
+    color: #333;
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
 }
 .top-title * {
     vertical-align: middle;
+}
+
+.install {
+    background: #9E9E9E;
 }
 
 
