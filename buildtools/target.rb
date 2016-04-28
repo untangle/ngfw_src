@@ -232,7 +232,7 @@ task '' # XXX hack attack
 class CopyFiles < Target
   include Rake::DSL if defined?(Rake::DSL)
   
-  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll|woff)$/
+  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll|woff|woff2|eot|svg)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
     @package = package
