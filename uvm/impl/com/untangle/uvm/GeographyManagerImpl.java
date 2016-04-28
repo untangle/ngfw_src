@@ -5,6 +5,7 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.GeographyManager;
+import com.untangle.uvm.UvmContextFactory;
 import com.maxmind.geoip2.record.Subdivision;
 import com.maxmind.geoip2.record.Location;
 import com.maxmind.geoip2.record.Country;
@@ -14,6 +15,7 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
 import org.apache.log4j.Logger;
+import java.util.Date;
 import java.net.InetAddress;
 import java.io.File;
 
@@ -21,22 +23,18 @@ public class GeographyManagerImpl implements GeographyManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private DatabaseReader databaseReader;
-    private File databaseFile;
-    private CHMCache chmCache;
+    private final String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
+    private final String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
+    private final String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
+
+    private DatabaseReader databaseReader = null;
+    private File databaseFile = null;
+    private CHMCache chmCache = null;
     private boolean initFlag = false;
 
     protected GeographyManagerImpl()
     {
-        try {
-            chmCache = new CHMCache();
-            databaseFile = new File("/var/cache/untangle-geoip/GeoLite2-City.mmdb");
-            databaseReader = new DatabaseReader.Builder(databaseFile).withCache(chmCache).build();
-            initFlag = true;
-            logger.info("Initialized GeographyManager");
-        } catch (Exception exn) {
-            logger.warn("Exception initializing geography manager", exn);
-        }
+        openDatabaseInstance();
     }
 
     public String getCountryName(String netAddress)
@@ -129,5 +127,50 @@ public class GeographyManagerImpl implements GeographyManager
             logger.debug("Exception getting database object for " + netAddress, exn);
         }
         return (null);
+    }
+
+    private void openDatabaseInstance()
+    {
+        try {
+            chmCache = new CHMCache();
+            databaseFile = new File(GEOIP_DATABASE_FILE);
+            databaseReader = new DatabaseReader.Builder(databaseFile).withCache(chmCache).build();
+            String databaseType = databaseReader.getMetadata().getDatabaseType();
+            Date databaseDate = databaseReader.getMetadata().getBuildDate();
+            initFlag = true;
+            logger.info("Successfully loaded " + databaseType + " database created " + databaseDate.toString());
+        } catch (Exception exn) {
+            logger.warn("Exception initializing geography manager database", exn);
+        }
+    }
+
+    public boolean checkForDatabaseUpdate()
+    {
+        // check for update file and return false if not found
+        File updateFile = new File(GEOIP_UPDATE_FILE);
+        if (!updateFile.exists()) return (false);
+
+        // we have an update file so clear the init flag and close existing
+        if (initFlag) {
+            initFlag = false;
+            try {
+                databaseReader.close();
+            } catch (Exception exn) {
+                logger.warn("Exception closing geography manager database", exn);
+            }
+        }
+
+        // remove the previous backup file
+        UvmContextFactory.context().execManager().exec("/bin/rm " + GEOIP_PREVIOUS_FILE);
+
+        // move the existing database file to the backup file
+        UvmContextFactory.context().execManager().exec("/bin/mv " + GEOIP_DATABASE_FILE + " " + GEOIP_PREVIOUS_FILE);
+
+        // move the update database file to the active database file
+        UvmContextFactory.context().execManager().exec("/bin/mv " + GEOIP_UPDATE_FILE + " " + GEOIP_DATABASE_FILE);
+
+        // open the new database
+        openDatabaseInstance();
+        return (true);
     }
 }
