@@ -58,7 +58,7 @@ Ext.define('Ung.panel.Reports', {
         itemId: 'categoryList',
         cls: 'category-list',
         title: i18n._('Select Category'),
-        width: 200,
+        width: 180,
         hideHeaders: true,
         collapsed: false,
         collapsible: true,
@@ -121,7 +121,7 @@ Ext.define('Ung.panel.Reports', {
                 cls: 'entry-list',
                 title: i18n._('Select Report'),
                 hideHeaders: true,
-                width: 250,
+                width: 280,
                 collapsed: false,
                 collapsible: true,
                 animCollapse: false,
@@ -340,34 +340,50 @@ Ext.define('Ung.panel.Reports', {
             }],
             tools: [{
                 xtype: 'button',
-                text: i18n._('Add to Dashboard'),
+                text: '<span style="vertical-align: middle;">' + i18n._("Add to Dashboard") + '</span>',
+                cls: 'action-button material-button',
                 itemId: 'dashboardReportBtn',
-                iconCls: 'icon-add-row',
+                //iconCls: 'icon-add-row',
                 margin: '0 3',
-                //scale: 'medium',
+                scale: 'medium',
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
             }, {
                 xtype: 'button',
-                text: i18n._('Customize'),
+                text: '<i class="material-icons">edit</i> <span style="vertical-align: middle;">' + i18n._("Customize") + '</span>',
+                cls: 'action-button material-button',
                 margin: '0 3',
-                //scale: 'medium',
+                scale: 'medium',
                 hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 name: "edit",
                 //tooltip: i18n._('Advanced report customization'),
-                iconCls: 'icon-edit',
-                handler: Ext.bind(function () {
-                    this.customizeReport();
-                }, this)
+                //iconCls: 'icon-edit',
+                handler: Ext.bind(this.customizeReport, this)
             }, {
                 xtype: 'button',
-                text: i18n._('View Events'),
-                name: "edit",
-                hidden: true,
+                text: '<i class="material-icons" style="color: #FF8686;">delete</i> <span style="vertical-align: middle;">' + i18n._("Delete") + '</span>',
+                cls: 'action-button material-button',
+                name: "remove",
+                itemId: "removeEntryBtn",
+                scale: 'medium',
                 //tooltip: i18n._('View events for this report'),
-                iconCls: 'icon-edit',
-                handler: Ext.bind(this.viewEventsForReport, this)
+                //iconCls: 'icon-edit',
+                handler: Ext.bind(function () {
+                    var record = this.entryList.getSelectionModel().getSelection()[0];
+                    if (record.getData().inDashboard) {
+                        Ext.MessageBox.confirm(i18n._('Warning'),
+                            i18n._('Deleting this report will remove also the Widget from Dashboard!') + '<br/><br/>' +
+                            i18n._('Do you want to continue?'),
+                            Ext.bind(function (btn) {
+                                if (btn == 'yes') {
+                                    this.removeReport(record);
+                                }
+                            }, this));
+                    } else {
+                        this.removeReport(record);
+                    }
+                }, this)
             }]
         }, {
             xtype: 'grid',
@@ -590,6 +606,9 @@ Ext.define('Ung.panel.Reports', {
         this.entryList.addListener('select', Ext.bind(function (rowModel, record) {
             this.entryView.setActiveItem(1);
             this.entry = record.getData().entry;
+
+            this.down('#removeEntryBtn').setHidden(this.entry.readOnly);
+
             if (this.entry.type === 'EVENT_LIST') {
                 this.loadEventEntry(this.entry);
             } else {
@@ -640,8 +659,8 @@ Ext.define('Ung.panel.Reports', {
             }
         }
         btn.addAction = !addedToDashboard;
-        btn.setText(addedToDashboard ? 'Remove from Dashboard' : 'Add to Dashboard');
-        btn.setIconCls(addedToDashboard ? 'icon-delete-row' : 'icon-add-row');
+        btn.setText(addedToDashboard ? i18n._("Remove from Dashboard") : i18n._("Add to Dashboard"));
+        //btn.setIconCls(addedToDashboard ? 'icon-delete-row' : 'icon-add-row');
     },
 
     dashboardAction: function (btn) {
@@ -672,8 +691,8 @@ Ext.define('Ung.panel.Reports', {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            btn.setText(btn.addAction ? 'Remove from Dashboard' : 'Add to Dashboard');
-            btn.setIconCls(btn.addAction ? 'icon-delete-row' : 'icon-add-row');
+            btn.setText(btn.addAction ? i18n._("Remove from Dashboard") : i18n._("Add to Dashboard"));
+            //btn.setIconCls(btn.addAction ? 'icon-delete-row' : 'icon-add-row');
 
             var rec = this.entryList.getSelectionModel().getSelected();
             rec.items[0].set('inDashboard', btn.addAction, {commit: true});
@@ -913,31 +932,32 @@ Ext.define('Ung.panel.Reports', {
 
         if (this.initEntry) {
             this.entryList.getSelectionModel().select(this.entryList.getStore().findRecord('entryId', this.initEntry.uniqueId));
+            this.initEntry = null;
         }
     },
 
     setEntryIcon: function (entry) {
         var icon;
         switch (entry.type) {
-        case 'TEXT':
-            icon = 'subject';
-            break;
-        case 'EVENT_LIST':
-            icon = 'format_list_bulleted';
-            break;
-        case 'PIE_GRAPH':
-            icon = 'pie_chart_outlined';
-            break;
-        case 'TIME_GRAPH':
-        case 'TIME_GRAPH_DYNAMIC':
-            if (entry.timeStyle.indexOf('BAR') >= 0) {
-                icon = 'insert_chart';
-            } else {
-                icon = 'show_chart';
-            }
-            break;
-        default:
-            icon = 'subject';
+            case 'TEXT':
+                icon = 'subject';
+                break;
+            case 'EVENT_LIST':
+                icon = 'format_list_bulleted';
+                break;
+            case 'PIE_GRAPH':
+                icon = 'pie_chart_outlined';
+                break;
+            case 'TIME_GRAPH':
+            case 'TIME_GRAPH_DYNAMIC':
+                if (entry.timeStyle.indexOf('BAR') >= 0) {
+                    icon = 'insert_chart';
+                } else {
+                    icon = 'show_chart';
+                }
+                break;
+            default:
+                icon = 'subject';
         }
         return icon;
     },
@@ -1003,51 +1023,51 @@ Ext.define('Ung.panel.Reports', {
                 });
             }
             /*
-            if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_DYNAMIC') {
-                timeStyleButtons = [];
-                timeStyles = [
-                    { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
-                    { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
-                    { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
-                    { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
-                ];
+             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_DYNAMIC') {
+             timeStyleButtons = [];
+             timeStyles = [
+             { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
+             { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
+             { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
+             { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
+             ];
 
-                for (i = 0; i < timeStyles.length; i += 1) {
-                    timeStyle = timeStyles[i];
-                    timeStyleButtons.push({
-                        xtype: 'button',
-                        pressed: entry.chartType == timeStyle.type,
-                        iconCls: timeStyle.iconCls,
-                        text: timeStyle.text,
-                        chartType: timeStyle.type,
-                        columnOverlapped: timeStyle.overlapped,
-                        handler: Ext.bind(function (button) {
-                            entry.chartType = button.chartType;
-                            entry.columnOverlapped = button.columnOverlapped;
-                            //console.log(this.chart);
-                            //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
-                            //this.chart.destroy();
-                            console.log(entry);
-                            this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
-                        }, this)
-                    });
-                }
-                this.down('#highchart').addDocked({
-                    xtype: 'toolbar',
-                    dock: 'top',
-                    items: timeStyleButtons
-                });
-            }
-            */
+             for (i = 0; i < timeStyles.length; i += 1) {
+             timeStyle = timeStyles[i];
+             timeStyleButtons.push({
+             xtype: 'button',
+             pressed: entry.chartType == timeStyle.type,
+             iconCls: timeStyle.iconCls,
+             text: timeStyle.text,
+             chartType: timeStyle.type,
+             columnOverlapped: timeStyle.overlapped,
+             handler: Ext.bind(function (button) {
+             entry.chartType = button.chartType;
+             entry.columnOverlapped = button.columnOverlapped;
+             //console.log(this.chart);
+             //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
+             //this.chart.destroy();
+             console.log(entry);
+             this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+             }, this)
+             });
+             }
+             this.down('#highchart').addDocked({
+             xtype: 'toolbar',
+             dock: 'top',
+             items: timeStyleButtons
+             });
+             }
+             */
         }
 
         /*
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = null;
-            Highcharts.charts = Highcharts.charts.filter(function (n) { return n != undefined; });
-        }
-        */
+         if (this.chart) {
+         this.chart.destroy();
+         this.chart = null;
+         Highcharts.charts = Highcharts.charts.filter(function (n) { return n != undefined; });
+         }
+         */
 
         this.reportPanel.setActiveItem('reportContainer');
         this.reportContainer.setTitle({
@@ -1068,14 +1088,14 @@ Ext.define('Ung.panel.Reports', {
             this.chartData = result.list;
 
             switch (entry.type) {
-            case 'TEXT':
-                break;
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false);
-                break;
-            default:
-                this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
+                case 'TEXT':
+                    break;
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                    this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false);
+                    break;
+                default:
+                    this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
             }
             this.loadReportData(result.list);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
@@ -1112,13 +1132,13 @@ Ext.define('Ung.panel.Reports', {
 
             this.reportChart.down('#textentry').update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
             /*
-            this.reportChart.add({
-                xtype: 'component',
-                itemId: 'text-entry',
-                html: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)),
+             this.reportChart.add({
+             xtype: 'component',
+             itemId: 'text-entry',
+             html: Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)),
 
-            });
-            */
+             });
+             */
             this.reportData.getStore().loadData(reportData);
         }
 
@@ -1198,11 +1218,11 @@ Ext.define('Ung.panel.Reports', {
         var store, tableConfig, state, i, col;
 
         /*
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = null;
-        }
-        */
+         if (this.chart) {
+         this.chart.destroy();
+         this.chart = null;
+         }
+         */
 
         this.reportPanel.setActiveItem('eventContainer');
 
@@ -1530,8 +1550,8 @@ Ext.define('Ung.panel.Reports', {
             this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
                 sizeToComponent: this.reportContainer,
                 title: i18n._("Advanced report customization"),
-                forReportCustomization: true,
                 parentCmp: this,
+                entry: this.entry,
                 grid: {
                     //reconfigure: function () {}
                 },
@@ -1549,6 +1569,42 @@ Ext.define('Ung.panel.Reports', {
         var record = Ext.create('Ext.data.Model', this.entry);
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
+    },
+
+    removeReport: function (record) {
+        if (!this.entry) {
+            return;
+        }
+        var i;
+        // remove widget from dashboard if exists
+        if (record.getData().inDashboard) {
+            for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+                if (this.dashboardWidgets[i].entryId === this.entry.uniqueId) {
+                    this.dashboardWidgets.splice(i, 1);
+                }
+            }
+            this.dashboardSettings.widgets = {
+                javaClass: 'java.util.LinkedList',
+                list: this.dashboardWidgets
+            };
+            rpc.dashboardManager.setSettings(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    return;
+                }
+                Ung.dashboard.reportEntriesModified = true;
+            }, this), this.dashboardSettings);
+        }
+
+
+        Ung.Main.getReportsManager().removeReportEntry(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            Ung.dashboard.reportEntriesModified = true;
+            this.initEntry = null;
+            this.reloadReports();
+        }, this), this.entry);
+
     },
 
     viewEventsForReport: function () {
@@ -2035,13 +2091,13 @@ Ext.define("Ung.panel.ExtraConditions", {
                     '<ul class="x-list-plain"><tpl for=".">',
                     '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
                     '</tpl></ul>'
-                    ),
+                ),
                 // template for the content inside text field
                 displayTpl: Ext.create('Ext.XTemplate',
                     '<tpl for=".">',
                     '{header} [{dataIndex}]',
                     '</tpl>'
-                    ),
+                ),
                 listeners: {
                     change: {
                         fn: function (combo, newValue, oldValue, opts) {

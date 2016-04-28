@@ -239,7 +239,44 @@ public class ReportsManagerImpl implements ReportsManager
         setReportEntries( reportEntries );
         return;
     }
-    
+
+    public void removeReportEntry( ReportEntry entry )
+    {
+        String uniqueId = entry.getUniqueId();
+        List<ReportEntry> reportEntries = getReportEntries();
+        boolean found = false;
+        int i = 0;
+
+        if ( uniqueId == null ) {
+            throw new RuntimeException("Invalid Entry unique ID: " + uniqueId );
+        }
+
+        if ( entry.getReadOnly() ) {
+            throw new RuntimeException("Readonly entries cannot be removed!");
+        }
+
+        for ( ReportEntry e : reportEntries ) {
+            if ( uniqueId.equals( e.getUniqueId() ) ) {
+                found = true;
+                reportEntries.set( i, entry );
+                break;
+            }
+            i++;
+        }
+
+        if ( !found ) {
+            throw new RuntimeException("Report entry: " + uniqueId + " not found!");
+        }
+
+        // remove entry
+        if ( !reportEntries.remove( entry ) ) {
+            throw new RuntimeException("Failed to remove report entry: " + uniqueId);
+        }
+
+        setReportEntries( reportEntries );
+        return;
+    }
+
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
         Connection conn = node.getDbConnection();

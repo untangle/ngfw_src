@@ -36,7 +36,7 @@
     <script type="text/javascript" src="script/matcherWindow.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/monitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/tableConfig.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/charting.js?s=${buildStamp}"></script>

@@ -1,5 +1,5 @@
 /*global
- Ext, Ung, Webui, rpc:true, i18n:true, setTimeout, clearTimeout, console, window, document, JSONRpcClient
+ Ext, Ung, Webui, rpc:true, i18n:true, setTimeout, clearTimeout, console, window, document, JSONRpcClient, Highcharts
  */
 Ext.Loader.setConfig({
     enabled: true,
@@ -93,8 +93,7 @@ Ext.define("Ung.Main", {
                 xtype: 'container',
                 name: 'mainMenu',
                 cls: "main-menu",
-                layout: { type: 'hbox', align: 'middle', pack: 'end'},
-                scrollable: 'y',
+                layout: { type: 'hbox', align: 'middle' },
                 items: [{
                     xtype: 'component',
                     margin: '3 10 3 10',
@@ -106,7 +105,6 @@ Ext.define("Ung.Main", {
                     xtype: 'container',
                     cls: 'views-menu',
                     itemId: 'viewsMenu',
-                    flex: 1,
                     defaults: {
                         scale: 'large'
                     },
@@ -171,6 +169,9 @@ Ext.define("Ung.Main", {
                         scope: this
                     }]
                 }, {
+                    xtype: 'container',
+                    flex: 1
+                }, {
                     xtype: "container",
                     cls: 'alert-container',
                     items: [{
@@ -182,19 +183,9 @@ Ext.define("Ung.Main", {
                         itemId: "alertButton",
                         hidden: true,
                         menuAlign: 'tr-br'
-                    }],
-                    plugins: 'responsive',
-                    responsiveConfig: {
-                        'width <= 520': {
-                            flex: 1
-                        },
-                        'width > 520': {
-                            flex: 0
-                        }
-                    }
+                    }]
                 }, {
                     xtype: 'container',
-                    //align: 'right',
                     cls: 'user-menu',
                     defaults: {
                         scale: 'large'
@@ -217,7 +208,7 @@ Ext.define("Ung.Main", {
                         hrefTarget: '_blank'
                     }, {
                         xtype: 'button',
-                        html: '<i class="material-icons">account_circle</i> <span>' + i18n._('Account') + '</span>',
+                        html: '<i class="material-icons">&#xE853;</i> <span><span>' + i18n._('Account') + '</span><i class="material-icons">arrow_drop_down</i></span>',
                         cls: 'main-menu-btn',
                         margin: '0, 10, 0, 0',
                         arrowVisible: false,
@@ -768,7 +759,7 @@ Ext.define("Ung.Main", {
         }, this);
     },
     openRegistrationScreen: function () {
-        Ext.require(['Webui.config.accountRegistration'], function() {
+        Ext.require(['Webui.config.accountRegistration'], function () {
             Webui.config.accountRegistrationWin = Ext.create('Webui.config.accountRegistration', {});
             Webui.config.accountRegistrationWin.show();
         }, this);
@@ -839,7 +830,8 @@ Ext.define("Ung.Main", {
                             "<strong>" + i18n._("DO NOT REBOOT AT THIS TIME.") + "</strong>" + "<br/>" +
                             i18n._("Please be patient this process will take a few minutes.") + "<br/>" +
                             i18n._("After the upgrade is complete you will be able to log in again."),
-                        Ung.Util.goToStartPage);
+                        Ung.Util.goToStartPage
+                    );
                 }
             });
         }, this));
@@ -1050,11 +1042,11 @@ Ext.define("Ung.Main", {
         this.serviceNodes.removeAll();
 
         this.nodes = [];
-        var i, node, nodeName;
-        var hasService = false;
+        var i, node, nodeName,
+            hasService = false, nodeSettings, nodeProperties;
         for (i = 0; i < rpc.rackView.instances.list.length; i += 1) {
-            var nodeSettings = rpc.rackView.instances.list[i];
-            var nodeProperties = rpc.rackView.nodeProperties.list[i];
+            nodeSettings = rpc.rackView.instances.list[i];
+            nodeProperties = rpc.rackView.nodeProperties.list[i];
 
             node = this.createNode(nodeProperties,
                      nodeSettings,
@@ -1116,7 +1108,7 @@ Ext.define("Ung.Main", {
             if (targetTokens.length >= 2) {
                 var firstToken = targetTokens[0].toLowerCase();
                 if (firstToken == "config") {
-                    var configItem =this.configMap[targetTokens[1]];
+                    var configItem = this.configMap[targetTokens[1]];
                     if (configItem) {
                         Ung.Main.openConfig(configItem);
                     }
@@ -1154,7 +1146,7 @@ Ext.define("Ung.Main", {
         }
     },
     // load the rack view for current policy
-    loadRackView: function() {
+    loadRackView: function () {
         var callback = Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1202,7 +1194,7 @@ Ext.define("Ung.Main", {
                 }
             }, this);
 
-            Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+            Ung.Util.RetryHandler.retry(rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
         }, this), true);
     },
 
@@ -1401,7 +1393,7 @@ Ext.define("Ung.Main", {
     },
     openConfig: function (configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-        var createWinFn = function(config) {
+        var createWinFn = function (config) {
             Ung.Main.configWin = Ext.create(config.className, config);
             Ung.Main.configWin.show();
             Ext.MessageBox.hide();
@@ -1468,7 +1460,7 @@ Ext.define("Ung.Main", {
     },
 
     updatePolicySelector: function () {
-        var items = [], i, policy, me = this;
+        var items = [], i, policy;
         var selVirtualRackIndex = 0;
         rpc.policyNamesMap = {};
         rpc.policyNamesMap[0] = i18n._("None");
@@ -1491,11 +1483,6 @@ Ext.define("Ung.Main", {
         items.push('-');
         items.push({text: i18n._('Show Policy Manager'), value: 'SHOW_POLICY_MANAGER', handler: Ung.Main.showPolicyManager, id: 'policyManagerMenuItem', hideDelay: 0});
 
-        /*
-        if (!rpc.nodeManager.node("untangle-node-policy-manager")) {
-            this.noPolicyManager.show();
-        }
-        */
         this.policySelector.setText(items[selVirtualRackIndex].text);
         var menu = this.policySelector.down("menu");
         menu.removeAll();
@@ -1533,7 +1520,7 @@ Ext.define("Ung.Main", {
         }, this);
     },
     showDevices: function () {
-        Ext.require(['Webui.config.deviceMonitor'], function() {
+        Ext.require(['Webui.config.deviceMonitor'], function () {
             Ung.Main.deviceMonitorWin = Ext.create('Webui.config.deviceMonitor', {});
             Ung.Main.deviceMonitorWin.show();
         }, this);
@@ -1542,7 +1529,7 @@ Ext.define("Ung.Main", {
         Ung.Main.showNodeSessions(0);
     },
     showNodeSessions: function (nodeIdArg) {
-        Ext.require(['Webui.config.sessionMonitor'], function() {
+        Ext.require(['Webui.config.sessionMonitor'], function () {
             if (Ung.Main.sessionMonitorWin == null) {
                 Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {});
             }
@@ -1564,7 +1551,7 @@ Ext.define("Ung.Main", {
         }
     },
     showDashboardManager: function () {
-        Ext.require(['Webui.config.dashboardManager'], function() {
+        Ext.require(['Webui.config.dashboardManager'], function () {
             Ung.Main.dashboardManagerWin = Ext.create('Webui.config.dashboardManager', {});
             Ung.Main.dashboardManagerWin.show();
         }, this);

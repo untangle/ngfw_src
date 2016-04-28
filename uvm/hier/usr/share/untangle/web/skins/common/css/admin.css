@@ -62,7 +62,7 @@
 .logo {
     background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: left center;
 }
 
 
@@ -500,7 +500,8 @@ a.link,a.link:visited {
     font-family: 'PT Sans', sans-serif;
     color: #B2B6C0;
     text-align: center;
-    padding: 0 10px;
+    padding: 0 5px;
+    text-transform: uppercase;
 }
 
 .main-menu-btn.x-btn-over {
@@ -572,6 +573,17 @@ a.link,a.link:visited {
     font-weight: normal;
 }
 
+.tooltip-dd {
+    color: #CCC;
+    border: 0;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+}
+
+.tooltip-dd .tip {
+    background: #555;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
 
 .user-menu-dd .x-menu-item.x-menu-item-separator {
     background-color: #999;
@@ -597,7 +609,9 @@ a.link,a.link:visited {
     vertical-align: middle;
 }
 
-.user-menu-dd .x-menu-body-default, .alert-dd .x-menu-body-default {
+.user-menu-dd .x-menu-body-default,
+.alert-dd .x-menu-body-default,
+.tooltip-dd .x-menu-body-default {
     background: none;
     padding: 0;
 }
@@ -637,12 +651,12 @@ a.link,a.link:visited {
 }
 
 @media ( max-width: 1024px ) {
-    .main-menu-btn .x-btn-inner span {
+    .main-menu-btn .x-btn-inner > span {
         display: block;
     }
 }
 @media ( max-width: 800px ) {
-    .main-menu-btn .x-btn-inner span {
+    .main-menu-btn .x-btn-inner > span {
         display: none;
     }
 }
@@ -668,7 +682,7 @@ a.link,a.link:visited {
 .action-button.x-btn .x-btn-inner {
     color: #FFF;
     font-size: 13px;
-    padding: 0 10px;
+    padding: 0 5px;
 }
 
 .action-button.x-btn.x-btn-disabled {
@@ -911,7 +925,7 @@ a.forgot-password:hover {
 .report-container > .x-panel-header {
     padding: 7px;
     background: #555;
-    box-shadow: none;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3) inset;
 }
 
 .report-container > .x-panel-header .x-title-text {
@@ -940,6 +954,7 @@ a.forgot-password:hover {
 .entry-selector-header {
     background: #555;
     padding: 5px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3) inset;
 }
 
 .entry-selector-header img {

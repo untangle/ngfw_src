@@ -44,6 +44,12 @@ public interface ReportsManager
     void saveReportEntry( ReportEntry entry );
 
     /**
+     * Removes a report entry
+     * Only if report entry is custom (not ReadOnly).
+     */
+    void removeReportEntry( ReportEntry entry );
+
+    /**
      * Get the data for a specific report entry with the specified parameters
      */
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );

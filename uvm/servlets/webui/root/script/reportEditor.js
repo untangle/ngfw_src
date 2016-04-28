@@ -1,97 +1,86 @@
+/*global
+ Ext, Ung, i18n, rpc
+ */
+
 Ext.define("Ung.window.ReportEditor", {
     extend: "Ung.RowEditorWindow",
     rowEditorLabelWidth: 150,
     parentCmp: null,
-    initComponent: function() {
-        if(!this.forReportCustomization) {
-            this.tbar = [{
-                xtype: 'button',
-                text: i18n._('View Report'),
-                iconCls: 'icon-play',
-                handler: function() {
-                    if (this.validate()!==true) {
+    initComponent: function () {
+        this.bbar = ['->', {
+            name: "Update",
+            itemId: 'updateReportBtn',
+            iconCls: 'apply-icon',
+            text: i18n._('Update'),
+            handler: function () {
+                var data = {};
+                this.updateActionRecursive(this.items, data, 0);
+                this.record.set(data);
+                var entry = this.record.getData();
+                Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function (result, exception) {
+                    if (Ung.Util.handleException(exception)) {
                         return;
                     }
-                    if (this.record !== null) {
-                        var data = Ext.clone(this.record.getData());
-                        this.updateActionRecursive(this.items, data, 0);
-                        this.parentCmp.viewReport(data);
-                    }
-                },
-                scope: this
-            }, {
-                xtype: 'button',
-                text: i18n._('Copy Report'),
-                iconCls: 'action-icon',
-                handler: function() {
-                    var data = Ext.clone(this.grid.emptyRow);
-                    this.updateActionRecursive(this.items, data, 0);
-                    Ext.apply(data, {
-                        uniqueId: this.getUniqueId(),
-                        title: Ext.String.format("Copy of {0}", data.title)
-                    });
                     this.closeWindow();
-                    this.grid.addHandler(null, null, data);
-                    Ext.MessageBox.alert(i18n._("Copy Report"), Ext.String.format(i18n._("You are now editing the copied report: '{0}'"), data.title));
-                },
-                scope: this
-            }];
-        } else {
-            this.bbar = ['->', {
-                xtype: 'button',
-                text: i18n._('Save as New Report'),
-                iconCls: 'save-icon',
-                handler: function() {
-                    if (this.validate()!==true) {
-                        return false;
-                    }
-                    if (this.record !== null) {
-                        var data = {};
-                        this.updateActionRecursive(this.items, data, 0);
-                        this.record.set(data);
-                        this.record.set("readOnly", false);
-                        this.record.set("uniqueId", this.getUniqueId());
-                        var entry = this.record.getData();
+                    this.parentCmp.initEntry = entry;
+                    this.parentCmp.reloadReports();
+                    Ung.dashboard.reportEntriesModified = true;
+                }, this), entry);
+            },
+            scope: this
+        }, '-', {
+            xtype: 'button',
+            itemId: 'saveReportBtn',
+            text: i18n._('Save as New Report'),
+            iconCls: 'save-icon',
+            handler: function () {
+                if (this.validate() !== true) {
+                    return false;
+                }
+                if (this.record !== null) {
+                    var data = {};
+                    this.updateActionRecursive(this.items, data, 0);
+                    this.record.set(data);
+                    this.record.set("readOnly", false);
+                    this.record.set("uniqueId", this.getUniqueId());
+                    var entry = this.record.getData();
 
-                        Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            this.closeWindow();
-                            this.parentCmp.reloadReports();
-                            Ung.dashboard.reportEntriesModified = true;
-                        }, this), entry);
-                    }
-                },
-                scope: this
-            },'-',{
-                name: "Cancel",
-                id: this.getId() + "_cancelBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._('Cancel'),
-                handler: Ext.bind(function() {
-                    this.cancelAction();
-                }, this)
-            },'-',{
-                name: "View Report",
-                id: this.getId() + "_doneBtn",
-                iconCls: 'apply-icon',
-                text: i18n._('View Report'),
-                handler: Ext.bind(function() {
-                    Ext.defer(this.updateAction,1, this);
-                }, this)
-            },'-'];
-        }
+                    Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function (result, exception) {
+                        if (Ung.Util.handleException(exception)) {
+                            return;
+                        }
+                        this.closeWindow();
+                        this.parentCmp.initEntry = entry;
+                        this.parentCmp.reloadReports();
+                        Ung.dashboard.reportEntriesModified = true;
+                    }, this), entry);
+                }
+            },
+            scope: this
+        }, '-', {
+            name: "Cancel",
+            id: this.getId() + "_cancelBtn",
+            iconCls: 'cancel-icon',
+            text: i18n._('Cancel'),
+            handler: Ext.bind(function () {
+                this.cancelAction();
+            }, this)
+        }];
 
         var categoryStore = Ext.create('Ext.data.Store', {
             sorters: "displayName",
             fields: ["displayName"],
             data: []
         });
-        rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            var data=[{displayName: 'System'}];
-            var nodeProperties = result.list;
-            for (var i=0; i< nodeProperties.length; i++) {
-                if(!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {
+        rpc.nodeManager.getAllNodeProperties(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            var data = [{displayName: 'System'}],
+                nodeProperties = result.list,
+                i;
+            for (i = 0; i < nodeProperties.length; i += 1) {
+                if (!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {
                     data.push(nodeProperties[i]);
                 }
             }
@@ -103,10 +92,12 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["name"],
             data: []
         });
-        Ung.Main.getReportsManager().getTables(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            var tables = [];
-            for (var i=0; i< result.length; i++) {
+        Ung.Main.getReportsManager().getTables(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            var tables = [], i;
+            for (i = 0; i < result.length;  i += 1) {
                 tables.push({ name: result[i]});
             }
             tablesStore.loadData(tables);
@@ -117,9 +108,9 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["dataIndex", "header"],
             data: []
         });
-        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
+        var chartTypes = [["TEXT", i18n._("Text")], ["PIE_GRAPH", i18n._("Pie Graph")], ["TIME_GRAPH", i18n._("Time Graph")], ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
 
-        var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
+        var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel', {
             name: 'Sql Conditions',
             height: 180,
             width: '100%',
@@ -159,7 +150,7 @@ Ext.define("Ung.window.ReportEditor", {
                     emptyText: i18n._("[enter column]"),
                     dataIndex: "column",
                     fieldLabel: i18n._("Column"),
-                    typeAhead:true,
+                    typeAhead: true,
                     allowBlank: false,
                     valueField: "dataIndex",
                     queryMode: 'local',
@@ -168,13 +159,13 @@ Ext.define("Ung.window.ReportEditor", {
                         '<ul class="x-list-plain"><tpl for=".">',
                             '<li role="option" class="x-boundlist-item"><b>{header}</b> <span style="float: right;">[{dataIndex}]</span></li>',
                         '</tpl></ul>'
-                    ),
+                        ),
                     // template for the content inside text field
                     displayTpl: Ext.create('Ext.XTemplate',
                         '<tpl for=".">',
                             '{header} [{dataIndex}]',
                         '</tpl>'
-                    ),
+                        ),
                     store: this.columnsStore
                 }, {
                     xtype: 'label',
@@ -201,11 +192,11 @@ Ext.define("Ung.window.ReportEditor", {
             }],
             setValue: function (val) {
                 var data = val || [];
-                this.reload({data:data});
+                this.reload({data: data});
             },
             getValue: function () {
                 var val = this.getList();
-                return val.length == 0 ? null: val;
+                return val.length == 0 ? null : val;
             }
         });
 
@@ -221,10 +212,10 @@ Ext.define("Ung.window.ReportEditor", {
             emptyText: i18n._("[select category]"),
             queryMode: 'local',
             width: 500,
-            readOnly: this.forReportCustomization,
+            disabled: true,
             store: categoryStore
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "Title",
             dataIndex: "title",
             allowBlank: false,
@@ -232,7 +223,7 @@ Ext.define("Ung.window.ReportEditor", {
             emptyText: i18n._("[enter title]"),
             width: '100%'
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "Description",
             dataIndex: "description",
             fieldLabel: i18n._("Description"),
@@ -243,7 +234,7 @@ Ext.define("Ung.window.ReportEditor", {
             layout: 'column',
             margin: '5 0 5 0',
             items: [{
-                xtype:'checkbox',
+                xtype: 'checkbox',
                 name: "Enabled",
                 dataIndex: "enabled",
                 fieldLabel: i18n._("Enabled"),
@@ -261,7 +252,7 @@ Ext.define("Ung.window.ReportEditor", {
                 style: { marginLeft: '50px'}
             }]
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "Units",
             dataIndex: "units",
             fieldLabel: i18n._("Units"),
@@ -281,7 +272,7 @@ Ext.define("Ung.window.ReportEditor", {
             store: tablesStore,
             listeners: {
                 "change": {
-                    fn: Ext.bind(function(elem, newValue) {
+                    fn: Ext.bind(function (elem, newValue) {
                         Ung.TableConfig.getColumnsForTable(newValue, this.columnsStore);
                     }, this),
                     buffer: 600
@@ -300,7 +291,7 @@ Ext.define("Ung.window.ReportEditor", {
             store: chartTypes,
             listeners: {
                 "select": {
-                    fn: Ext.bind(function(combo, records, eOpts) {
+                    fn: Ext.bind(function (combo, records, eOpts) {
                         this.syncComponents();
                     }, this)
                 }
@@ -311,7 +302,7 @@ Ext.define("Ung.window.ReportEditor", {
             layout: 'column',
             margin: '0 0 5 0',
             items: [{
-                xtype:'textareafield',
+                xtype: 'textareafield',
                 name: "textColumns",
                 grow: true,
                 labelWidth: 150,
@@ -322,44 +313,44 @@ Ext.define("Ung.window.ReportEditor", {
                 html: i18n._("(enter one column per row)"),
                 cls: 'boxlabel'
             }],
-            setValue: function(value) {
+            setValue: function (value) {
                 var textColumns  = this.down('textfield[name="textColumns"]');
-                textColumns.setValue((value||[]).join("\n"));
+                textColumns.setValue((value || []).join("\n"));
             },
-            getValue: function() {
+            getValue: function () {
                 var textColumns = [];
-                var val  = this.down('textfield[name="textColumns"]').getValue();
-                if(!Ext.isEmpty(val)) {
+                var val  = this.down('textfield[name="textColumns"]').getValue(), i;
+                if (!Ext.isEmpty(val)) {
                     var valArr = val.split("\n");
                     var colVal;
-                    for(var i = 0; i< valArr.length; i++) {
+                    for (i = 0; i < valArr.length; i += 1) {
                         colVal = valArr[i].trim();
-                        if(!Ext.isEmpty(colVal)) {
+                        if (!Ext.isEmpty(colVal)) {
                             textColumns.push(colVal);
                         }
                     }
                 }
 
-                return textColumns.length==0 ? null : textColumns;
+                return textColumns.length == 0 ? null : textColumns;
             },
-            setReadOnly: function(val) {
+            setReadOnly: function (val) {
                 this.down('textfield[name="textColumns"]').setReadOnly(val);
             }
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "textString",
             dataIndex: "textString",
             alowBlank: false,
             fieldLabel: i18n._("Text String"),
             width: '100%'
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "pieGroupColumn",
             dataIndex: "pieGroupColumn",
             fieldLabel: i18n._("Pie Group Column"),
             width: 500
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "pieSumColumn",
             dataIndex: "pieSumColumn",
             fieldLabel: i18n._("Pie Sum Column"),
@@ -416,7 +407,7 @@ Ext.define("Ung.window.ReportEditor", {
             layout: 'column',
             margin: '0 0 5 0',
             items: [{
-                xtype:'textareafield',
+                xtype: 'textareafield',
                 name: "timeDataColumns",
                 grow: true,
                 labelWidth: 150,
@@ -427,37 +418,36 @@ Ext.define("Ung.window.ReportEditor", {
                 html: i18n._("(enter one column per row)"),
                 cls: 'boxlabel'
             }],
-            setValue: function(value) {
+            setValue: function (value) {
                 var timeDataColumns  = this.down('textfield[name="timeDataColumns"]');
-                timeDataColumns.setValue((value||[]).join("\n"));
+                timeDataColumns.setValue((value || []).join("\n"));
             },
-            getValue: function() {
+            getValue: function () {
                 var timeDataColumns = [];
                 var val  = this.down('textfield[name="timeDataColumns"]').getValue();
-                if(!Ext.isEmpty(val)) {
-                    var valArr = val.split("\n");
-                    var colVal;
-                    for(var i = 0; i< valArr.length; i++) {
+                if (!Ext.isEmpty(val)) {
+                    var valArr = val.split("\n"), colVal, i;
+                    for (i = 0; i < valArr.length; i += 1) {
                         colVal = valArr[i].trim();
-                        if(!Ext.isEmpty(colVal)) {
+                        if (!Ext.isEmpty(colVal)) {
                             timeDataColumns.push(colVal);
                         }
                     }
                 }
 
-                return timeDataColumns.length==0 ? null : timeDataColumns;
+                return timeDataColumns.length == 0 ? null : timeDataColumns;
             },
-            setReadOnly: function(val) {
+            setReadOnly: function (val) {
                 this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
             }
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "timeDataDynamicValue",
             dataIndex: "timeDataDynamicValue",
             fieldLabel: i18n._("Time Data Dynamic Value"),
             width: 500
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "timeDataDynamicColumn",
             dataIndex: "timeDataDynamicColumn",
             fieldLabel: i18n._("Time Data Dynamic Column"),
@@ -472,13 +462,13 @@ Ext.define("Ung.window.ReportEditor", {
             maxValue: 100000,
             width: 350
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "timeDataDynamicAggregationFunction",
             dataIndex: "timeDataDynamicAggregationFunction",
             fieldLabel: i18n._("Time Data Aggregation Function"),
             width: 500
         }, {
-            xtype:'textfield',
+            xtype: 'textfield',
             name: "seriesRenderer",
             dataIndex: "seriesRenderer",
             fieldLabel: i18n._("Series Renderer"),
@@ -489,7 +479,7 @@ Ext.define("Ung.window.ReportEditor", {
             layout: 'column',
             margin: '0 0 5 0',
             items: [{
-                xtype:'textareafield',
+                xtype: 'textareafield',
                 name: "colors",
                 grow: true,
                 labelWidth: 150,
@@ -500,27 +490,26 @@ Ext.define("Ung.window.ReportEditor", {
                 html: i18n._("(enter one color per row)"),
                 cls: 'boxlabel'
             }],
-            setValue: function(value) {
+            setValue: function (value) {
                 var timeDataColumns = this.down('textfield[name="colors"]');
-                timeDataColumns.setValue((value||[]).join("\n"));
+                timeDataColumns.setValue((value || []).join("\n"));
             },
-            getValue: function() {
+            getValue: function () {
                 var colors = [];
                 var val  = this.down('textfield[name="colors"]').getValue();
-                if(!Ext.isEmpty(val)) {
-                    var valArr = val.split("\n");
-                    var colVal;
-                    for(var i = 0; i< valArr.length; i++) {
+                if (!Ext.isEmpty(val)) {
+                    var valArr = val.split("\n"), colVal, i;
+                    for (i = 0; i < valArr.length; i += 1) {
                         colVal = valArr[i].trim();
-                        if(!Ext.isEmpty(colVal)) {
+                        if (!Ext.isEmpty(colVal)) {
                             colors.push(colVal);
                         }
                     }
                 }
 
-                return colors.length==0 ? null : colors;
+                return colors.length == 0 ? null : colors;
             },
-            setReadOnly: function(val) {
+            setReadOnly: function (val) {
                 this.down('textfield[name="colors"]').setReadOnly(val);
             }
         }, {
@@ -528,13 +517,13 @@ Ext.define("Ung.window.ReportEditor", {
             layout: 'column',
             margin: '10 0 10 0',
             items: [{
-                xtype:'textfield',
+                xtype: 'textfield',
                 name: "orderByColumn",
                 dataIndex: "orderByColumn",
                 fieldLabel: i18n._("Order By Column"),
                 labelWidth: 150,
                 width: 350
-            },{
+            }, {
                 xtype: 'combo',
                 name: 'orderDesc',
                 dataIndex: "orderDesc",
@@ -546,27 +535,30 @@ Ext.define("Ung.window.ReportEditor", {
                 store: [[null, ""], [false, i18n._("Ascending")], [true, i18n._("Descending")]]
             }]
         }, {
-            xtype:'fieldset',
+            xtype: 'fieldset',
             title: i18n._("Sql Conditions:"),
-            items:[gridSqlConditionsEditor]
+            items: [gridSqlConditionsEditor]
         }];
         this.callParent(arguments);
     },
-    getUniqueId: function() {
-        return "report-"+Math.random().toString(36).substr(2);
+    getUniqueId: function () {
+        return "report-" + Math.random().toString(36).substr(2);
     },
-    populate: function(record, addMode) {
+    populate: function (record, addMode) {
+        this.down('#updateReportBtn').setHidden(record.getData().readOnly);
         Ung.TableConfig.getColumnsForTable(record.get("table"), this.columnsStore);
-        if(!record.get("uniqueId")) {
+        if (!record.get("uniqueId")) {
             record.set("uniqueId", this.getUniqueId());
         }
+        /*
         if(this.forReportCustomization && record.get("title").indexOf(i18n._("Custom")) == -1) {
             record.set("title", record.get("title") + " - " + i18n._("Custom"));
         }
+        */
         this.callParent(arguments);
     },
     syncComponents: function () {
-        if(!this.cmps) {
+        if (!this.cmps) {
             this.cmps = {
                 typeCmp: this.down('combo[dataIndex=type]'),
                 textColumns: this.down('[dataIndex=textColumns]'),
@@ -587,46 +579,46 @@ Ext.define("Ung.window.ReportEditor", {
         }
         var type = this.cmps.typeCmp.getValue();
 
-        this.cmps.textColumns.setVisible(type=="TEXT");
-        this.cmps.textColumns.setDisabled(type!="TEXT");
+        this.cmps.textColumns.setVisible(type == "TEXT");
+        this.cmps.textColumns.setDisabled(type != "TEXT");
 
-        this.cmps.textString.setVisible(type=="TEXT");
-        this.cmps.textString.setDisabled(type!="TEXT");
+        this.cmps.textString.setVisible(type == "TEXT");
+        this.cmps.textString.setDisabled(type != "TEXT");
 
-        this.cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
-        this.cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
+        this.cmps.pieGroupColumn.setVisible(type == "PIE_GRAPH");
+        this.cmps.pieGroupColumn.setDisabled(type != "PIE_GRAPH");
 
-        this.cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
-        this.cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
+        this.cmps.pieSumColumn.setVisible(type == "PIE_GRAPH");
+        this.cmps.pieSumColumn.setDisabled(type != "PIE_GRAPH");
 
-        this.cmps.pieNumSlices.setVisible(type=="PIE_GRAPH");
-        this.cmps.pieNumSlices.setDisabled(type!="PIE_GRAPH");
+        this.cmps.pieNumSlices.setVisible(type == "PIE_GRAPH");
+        this.cmps.pieNumSlices.setDisabled(type != "PIE_GRAPH");
 
-        this.cmps.timeStyle.setVisible(type=="TIME_GRAPH");
-        this.cmps.timeStyle.setDisabled(type!="TIME_GRAPH");
+        this.cmps.timeStyle.setVisible(type == "TIME_GRAPH");
+        this.cmps.timeStyle.setDisabled(type != "TIME_GRAPH");
 
-        this.cmps.timeDataInterval.setVisible(type=="TIME_GRAPH" || type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH" && type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataInterval.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataInterval.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
-        this.cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
+        this.cmps.timeDataColumns.setVisible(type == "TIME_GRAPH");
+        this.cmps.timeDataColumns.setDisabled(type != "TIME_GRAPH");
 
-        this.cmps.timeDataDynamicValue.setVisible(type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.timeDataDynamicValue.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicValue.setVisible(type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicValue.setDisabled(type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.timeDataDynamicColumn.setVisible(type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.timeDataDynamicColumn.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicColumn.setVisible(type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicColumn.setDisabled(type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.timeDataDynamicLimit.setVisible(type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.timeDataDynamicLimit.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicLimit.setVisible(type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicLimit.setDisabled(type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.timeDataDynamicAggregationFunction.setVisible(type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.timeDataDynamicAggregationFunction.setDisabled(type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicAggregationFunction.setVisible(type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicAggregationFunction.setDisabled(type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.seriesRenderer.setVisible(type=="TIME_GRAPH" || type=="TIME_GRAPH_DYNAMIC");
-        this.cmps.seriesRenderer.setDisabled(type!="TIME_GRAPH" && type!="TIME_GRAPH_DYNAMIC");
+        this.cmps.seriesRenderer.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.seriesRenderer.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.colors.setVisible(type!="TEXT");
-        this.cmps.colors.setDisabled(type=="TEXT");
+        this.cmps.colors.setVisible(type != "TEXT");
+        this.cmps.colors.setDisabled(type == "TEXT");
     }
 });
