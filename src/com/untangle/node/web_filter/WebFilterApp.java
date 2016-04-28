@@ -150,6 +150,8 @@ public class WebFilterApp extends WebFilterBase
             throw new RuntimeException( "invalid license" );
         }
 
+        engine.getDiaKey();
+        
         super.preStart();
     }
 

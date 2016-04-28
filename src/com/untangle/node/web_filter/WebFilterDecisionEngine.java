@@ -24,6 +24,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
@@ -258,7 +259,7 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     // private methods --------------------------------------------------------
 
-    private String getDiaKey()
+    protected String getDiaKey()
     {
         if (WebFilterDecisionEngine.diaKey != null)
             return WebFilterDecisionEngine.diaKey;
