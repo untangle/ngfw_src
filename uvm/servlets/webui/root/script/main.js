@@ -569,7 +569,7 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             cls: 'apps-separator',
                             itemId: 'servicesSeparator',
-                            html: i18n._("Services")
+                            html: i18n._("Service Apps")
                         }, {
                             xtype: 'container',
                             itemId: 'serviceNodes'
@@ -633,7 +633,7 @@ Ext.define("Ung.Main", {
                             }, {
                                 xtype: 'component',
                                 cls: 'config-separator top-title',
-                                html: '<i class="material-icons">build</i> <span>' + i18n._("Services") + '</span>'
+                                html: '<i class="material-icons">build</i> <span>' + i18n._("Service Apps") + '</span>'
                             }, {
                                 xtype: 'container',
                                 itemId: 'servicesContainer',
@@ -1541,7 +1541,7 @@ Ext.define("Ung.Main", {
     },
     getPolicyName: function (policyId) {
         if (Ext.isEmpty(policyId)) {
-            return i18n._("Services");
+            return i18n._("Service Apps");
         }
         if (rpc.policyNamesMap[policyId] !== undefined) {
             return rpc.policyNamesMap[policyId];

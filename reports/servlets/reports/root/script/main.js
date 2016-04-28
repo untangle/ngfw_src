@@ -96,7 +96,7 @@ Ext.define("Ung.Main", {
     },
     getPolicyName: function(policyId) {
         if (Ext.isEmpty(policyId)){
-            return i18n._( "Services" );
+            return i18n._( "Service App" );
         }
         if (rpc.policyNamesMap[policyId] !== undefined) {
             return rpc.policyNamesMap[policyId];
