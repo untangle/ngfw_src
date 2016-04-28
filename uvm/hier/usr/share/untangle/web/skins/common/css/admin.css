@@ -1,15 +1,31 @@
-/*
-@import url(https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700);
-@import url(https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
-*/
+/* pt-sans-regular - latin */
 @font-face {
     font-family: 'PT Sans';
     font-style: normal;
     font-weight: 400;
-    src: local('PT Sans'), local('PTSans-Regular'), url(../fonts/PTSans.woff) format('woff');
+    src: url('../fonts/pt-sans-v8-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local('PT Sans'), local('PTSans-Regular'),
+    url('../fonts/pt-sans-v8-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/pt-sans-v8-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/pt-sans-v8-latin-regular.woff') format('woff'), /* Modern Browsers */
+    url('../fonts/pt-sans-v8-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/pt-sans-v8-latin-regular.svg#PTSans') format('svg'); /* Legacy iOS */
 }
+/* pt-sans-700 - latin */
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: url('../fonts/pt-sans-v8-latin-700.eot'); /* IE9 Compat Modes */
+    src: local('PT Sans Bold'), local('PTSans-Bold'),
+    url('../fonts/pt-sans-v8-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/pt-sans-v8-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/pt-sans-v8-latin-700.woff') format('woff'), /* Modern Browsers */
+    url('../fonts/pt-sans-v8-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/pt-sans-v8-latin-700.svg#PTSans') format('svg'); /* Legacy iOS */
+}
+
+
 
 @font-face {
     font-family: 'Material Icons';
@@ -1007,8 +1023,8 @@ a.forgot-password:hover {
 .entry-btn .x-btn-inner i {
     position: absolute;
     left: 2px;
-    top: 7px;
-    color: #777;
+    top: 9px;
+    color: #333;
 }
 
 .entry-btn .x-btn-inner i.in-dashboard {
@@ -1036,7 +1052,8 @@ a.forgot-password:hover {
 }
 */
 .entry-btn .ttl {
-    font-size: 14px;
+    font-size: 18px;
+    color: #333;
     font-weight: bold;
     line-height: 1.2;
     display: inline-block;
@@ -1055,12 +1072,20 @@ a.forgot-password:hover {
 
 .category-list .x-grid-item, .entry-list .x-grid-item {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
-    font-size: 12px;
+    font-size: 14px;
+}
+
+.category-list .x-grid-item-selected, .entry-list .x-grid-item-selected {
     font-weight: bold;
+    color: #000;
 }
 
 .entry-list i {
     color: #777;
+}
+
+.entry-list .x-grid-item-selected i {
+    color: #000;
 }
 
 /*
@@ -1124,8 +1149,7 @@ a.forgot-password:hover {
     font-family: 'PT Sans', Arial, Helvetica, sans-serif;
     color: #333;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 14px;
     transition: color .25s cubic-bezier(0.23, 1, 0.32, 1);
     display: table;
     margin-left: 28px;
