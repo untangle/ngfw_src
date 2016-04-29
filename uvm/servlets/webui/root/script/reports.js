@@ -200,17 +200,6 @@ Ext.define('Ung.panel.Reports', {
         this.subCmps = [];
         this.callParent(arguments);
 
-        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('Start date and time'),
-            dateTimeEmptyText: i18n._('start date and time'),
-            buttonObj: this.down('button[name=startDateButton]')
-        });
-        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
-            title: i18n._('End date and time'),
-            dateTimeEmptyText: i18n._('end date and time'),
-            buttonObj: this.down('button[name=endDateButton]')
-        });
-
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
 
@@ -551,6 +540,16 @@ Ext.define('Ung.panel.Reports', {
             }]
         });
 
+        this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('Start date and time'),
+            dateTimeEmptyText: i18n._('start date and time'),
+            buttonObj: this.down('button[name=startDateButton]')
+        });
+        this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
+            title: i18n._('End date and time'),
+            dateTimeEmptyText: i18n._('end date and time'),
+            buttonObj: this.down('button[name=endDateButton]')
+        });
 
         this.reportContainer = this.down('#reportContainer');
         this.reportData = this.down('#reportData');
