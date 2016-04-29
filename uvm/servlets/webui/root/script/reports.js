@@ -2101,14 +2101,14 @@ Ext.define("Ung.panel.ExtraConditions", {
                 listeners: {
                     change: {
                         fn: function (combo, newValue, oldValue, opts) {
-                            this.setConditions(true);
+                            this.setConditions();
                         },
                         scope: this
                     },
                     blur: {
                         fn: function (field, e) {
-                            var skipReload = Ext.isEmpty(field.next("[dataIndex=value]").getValue());
-                            this.setConditions(skipReload);
+                            //var skipReload = Ext.isEmpty(field.next("[dataIndex=value]").getValue());
+                            this.setConditions();
                         },
                         scope: this
                     },
@@ -2210,10 +2210,10 @@ Ext.define("Ung.panel.ExtraConditions", {
             }
         });
         this.bulkOperation = false;
-        var skipReload = !this.parentPanel.extraConditions || this.parentPanel.extraConditions.length == 0;
-        this.setConditions(skipReload);
+        //var skipReload = !this.parentPanel.extraConditions || this.parentPanel.extraConditions.length == 0;
+        this.setConditions();
     },
-    setConditions: function (skipReload) {
+    setConditions: function () {
         if (this.bulkOperation) {
             return;
         }
@@ -2234,17 +2234,12 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
         });
-        skipReload = true;
-        if (!skipReload) {
-            var encodedConditions = Ext.encode(conditions);
-            if (this.currentConditions != encodedConditions) {
-                this.currentConditions = encodedConditions;
-                this.parentPanel.extraConditions = (conditions.length > 0) ? conditions : null;
-                this.setTitle(Ext.String.format(i18n._("Conditions: {0}"), (conditions.length > 0) ? conditions.length : i18n._("None")));
-                this.parentPanel.refreshHandler();
-            }
+        var encodedConditions = Ext.encode(conditions);
+        if (this.currentConditions != encodedConditions) {
+            this.currentConditions = encodedConditions;
+            this.parentPanel.extraConditions = (conditions.length > 0) ? conditions : null;
+            this.setTitle(Ext.String.format(i18n._("Conditions: {0}"), (conditions.length > 0) ? conditions.length : i18n._("None")));
         }
-
     },
     setValue: function (extraConditions) {
         var me = this, i;
