@@ -665,8 +665,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
                 for (i = 0; i < me.data.internalInterfaces.length; i += 1) {
                     interfaceEl = document.querySelector('#interface_' + me.data.internalInterfaces[i].id);
                     if (interfaceEl) {
-                        interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
-                        interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+                        interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+                        interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
                         interfaceEl.querySelector('.devs').innerHTML = interfaceDevicesMap[me.data.internalInterfaces[i].id] || 0;
                     }
                 }
