@@ -46,4 +46,10 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = os.system("touch /tmp/bdamtest ; bdamclient -p 127.0.0.1:1344 /tmp/bdamtest >/dev/null 2>&1")
         assert (result == 0)
 
+    # test the cloud scanner using our special test virus
+    def test_010_httpCloudBlocked(self):
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleVirus.exe 2>&1 | grep -q blocked")
+        assert (result == 0)
+
 test_registry.registerNode("virus-blocker", VirusBlockTests)
+
