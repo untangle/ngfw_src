@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "ipsec_tunnel_stats",
     "title": "Top Tunnel Traffic",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

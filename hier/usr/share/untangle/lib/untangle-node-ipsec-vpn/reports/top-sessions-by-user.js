@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Active Users",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

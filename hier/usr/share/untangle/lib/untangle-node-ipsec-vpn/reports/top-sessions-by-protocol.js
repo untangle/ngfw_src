@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Protocols",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

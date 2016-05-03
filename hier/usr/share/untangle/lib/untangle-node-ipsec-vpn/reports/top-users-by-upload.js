@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Upload Users",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

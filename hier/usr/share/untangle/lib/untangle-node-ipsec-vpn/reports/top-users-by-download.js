@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Download Users",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 
