@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Traffic By Policy",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 
