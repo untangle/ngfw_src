@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Top Domains (by size)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 
