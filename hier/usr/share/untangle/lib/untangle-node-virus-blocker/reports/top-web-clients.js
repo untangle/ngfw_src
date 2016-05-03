@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Web Top Blocked Clients",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
