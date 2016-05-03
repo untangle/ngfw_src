@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Ignored Sites",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

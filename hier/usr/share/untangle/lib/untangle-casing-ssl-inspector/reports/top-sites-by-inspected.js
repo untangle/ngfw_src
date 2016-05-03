@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Inspected Sites",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
