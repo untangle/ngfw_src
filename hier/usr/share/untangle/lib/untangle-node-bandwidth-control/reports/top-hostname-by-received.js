@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Hostnames (by received bytes)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

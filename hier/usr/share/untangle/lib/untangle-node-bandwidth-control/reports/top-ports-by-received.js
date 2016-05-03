@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Ports (by sent bytes)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

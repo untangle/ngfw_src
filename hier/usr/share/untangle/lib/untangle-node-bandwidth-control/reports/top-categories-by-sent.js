@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Category (by sent bytes)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
