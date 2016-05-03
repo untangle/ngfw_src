@@ -27,5 +27,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Top Spam Sender Addresses",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

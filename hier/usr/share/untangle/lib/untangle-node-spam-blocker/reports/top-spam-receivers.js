@@ -27,5 +27,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Top Spam Recipients",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

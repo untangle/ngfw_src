@@ -31,5 +31,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Spam Ratio",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
