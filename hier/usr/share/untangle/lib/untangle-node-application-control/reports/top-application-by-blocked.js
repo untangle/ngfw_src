@@ -21,5 +21,6 @@
         }
     ],
     "title": "Top Blocked Applications",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

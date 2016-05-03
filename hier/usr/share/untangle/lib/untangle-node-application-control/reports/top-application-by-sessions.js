@@ -21,5 +21,6 @@
         }
     ],
     "title": "Top Applications (by sessions)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

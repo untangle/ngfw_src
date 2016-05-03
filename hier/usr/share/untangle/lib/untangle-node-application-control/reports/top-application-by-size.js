@@ -21,5 +21,6 @@
         }
     ],
     "title": "Top Applications (by size)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

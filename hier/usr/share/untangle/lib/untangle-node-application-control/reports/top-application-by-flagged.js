@@ -21,5 +21,6 @@
         }
     ],
     "title": "Top Flagged Applications",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -21,5 +21,6 @@
         }
     ],
     "title": "Top Categories (by sessions)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
