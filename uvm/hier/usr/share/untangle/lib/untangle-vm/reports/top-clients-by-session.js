@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Client Addresses",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

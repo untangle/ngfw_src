@@ -53,6 +53,15 @@ public class ReportEntry implements Serializable, JSONString
         LINE,
         AREA
     };
+
+    public static enum PieStyle {
+        PIE,
+        PIE_3D,
+        DONUT,
+        DONUT_3D,
+        COLUMN,
+        COLUMN_3D
+    };
     
     private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
@@ -75,7 +84,8 @@ public class ReportEntry implements Serializable, JSONString
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
     private Integer pieNumSlices; /* the default number of pie slices shown (the excess will be groupde into "others") */
-
+    private PieStyle pieStyle;
+    
     private String textString; /* The string representation of the text */
     private String[] textColumns; /* The data to graph by time */
     
@@ -158,6 +168,9 @@ public class ReportEntry implements Serializable, JSONString
 
     public Integer getPieNumSlices() { return this.pieNumSlices; }
     public void setPieNumSlices( Integer newValue ) { this.pieNumSlices = newValue; }
+
+    public PieStyle getPieStyle() { return this.pieStyle; }
+    public void setPieStyle( PieStyle newValue ) { this.pieStyle = newValue; }
     
     public String getTextString() { return this.textString; }
     public void setTextString( String newValue ) { this.textString = newValue; }

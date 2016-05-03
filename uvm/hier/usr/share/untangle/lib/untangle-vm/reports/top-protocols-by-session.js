@@ -14,5 +14,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top IP Protocols",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
