@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Top Hostnames (by size)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

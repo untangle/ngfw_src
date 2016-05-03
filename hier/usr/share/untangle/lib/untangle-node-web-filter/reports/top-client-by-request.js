@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Top Clients (by requests)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
