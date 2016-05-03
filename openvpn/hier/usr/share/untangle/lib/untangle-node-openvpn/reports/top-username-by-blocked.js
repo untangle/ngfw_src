@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "openvpn_stats",
     "title": "Top Clients (by usage)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

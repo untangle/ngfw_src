@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Hostnames",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "ftp_events",
     "title": "FTP Top Blocked Viruses",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

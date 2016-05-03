@@ -27,6 +27,7 @@
         }
     ],
     "title": "Top Logged Protocols",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

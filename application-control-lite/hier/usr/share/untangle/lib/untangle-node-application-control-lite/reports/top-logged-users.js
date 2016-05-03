@@ -27,6 +27,7 @@
         }
     ],
     "title": "Top Logged Users",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Flagged Usernames",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

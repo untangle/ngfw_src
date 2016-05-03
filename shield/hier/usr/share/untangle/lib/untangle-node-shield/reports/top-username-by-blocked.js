@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Usernames",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

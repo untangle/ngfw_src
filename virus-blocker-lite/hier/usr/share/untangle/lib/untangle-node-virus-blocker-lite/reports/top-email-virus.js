@@ -27,5 +27,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Email Top Blocked Viruses",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

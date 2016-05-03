@@ -21,5 +21,6 @@
    "readOnly": true,
    "table": "http_events",
    "title": "Top Blocked Ad Sites",
+    "pieStyle": "PIE",
    "type": "PIE_GRAPH"
 }

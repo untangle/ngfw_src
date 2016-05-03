@@ -27,5 +27,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Top Phish Sender Addresses",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

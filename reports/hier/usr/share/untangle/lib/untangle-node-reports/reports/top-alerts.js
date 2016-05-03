@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "alerts",
     "title": "Top Alerts",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

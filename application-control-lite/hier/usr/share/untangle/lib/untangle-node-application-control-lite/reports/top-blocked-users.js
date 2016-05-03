@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Blocked Users",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

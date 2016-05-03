@@ -14,5 +14,6 @@
     "table": "sessions",
     "title": "Top Client Addresses",
     "pieStyle": "PIE",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Web Top Blocked Sites",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

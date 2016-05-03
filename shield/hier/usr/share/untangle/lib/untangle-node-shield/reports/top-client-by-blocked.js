@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Clients",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

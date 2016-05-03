@@ -15,5 +15,6 @@
     "table": "sessions",
     "title": "Top Server Ports",
     "pieStyle": "PIE",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

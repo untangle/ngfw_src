@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Flagged Server Ports",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Blocked Protocols",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

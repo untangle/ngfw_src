@@ -19,5 +19,6 @@
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Classtypes (blocked)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

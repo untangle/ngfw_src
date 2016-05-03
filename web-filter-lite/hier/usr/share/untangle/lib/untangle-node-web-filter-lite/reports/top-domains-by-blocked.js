@@ -21,5 +21,6 @@
    "readOnly": true,
    "table": "http_events",
    "title": "Top Blocked Domains",
+    "pieStyle": "PIE",
    "type": "PIE_GRAPH"
 }

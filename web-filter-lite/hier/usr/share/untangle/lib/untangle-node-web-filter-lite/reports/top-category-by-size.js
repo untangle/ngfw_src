@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Top Categories (by size)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

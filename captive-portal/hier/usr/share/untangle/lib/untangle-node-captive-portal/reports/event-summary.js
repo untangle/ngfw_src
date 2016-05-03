@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "captive_portal_user_events",
     "title": "Activity Summary",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

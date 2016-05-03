@@ -21,5 +21,6 @@
    "readOnly": true,
    "table": "http_events",
    "title": "Top Flagged Sites",
+    "pieStyle": "PIE",
    "type": "PIE_GRAPH"
 }

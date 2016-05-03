@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "intrusion_prevention_events",
     "title": "Top Source IP Addresses (logged)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

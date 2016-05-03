@@ -27,6 +27,7 @@
         }
     ],
     "title": "Top Logged Hosts",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

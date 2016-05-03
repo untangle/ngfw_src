@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Scanned Clients",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

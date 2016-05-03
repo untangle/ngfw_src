@@ -21,6 +21,7 @@
         }
     ],
     "title": "Top Blocked Hosts",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Scanned Hostnames",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

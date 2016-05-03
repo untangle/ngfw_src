@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Scanned Server Ports",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

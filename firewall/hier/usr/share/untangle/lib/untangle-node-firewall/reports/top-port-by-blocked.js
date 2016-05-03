@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Server Ports",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

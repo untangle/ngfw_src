@@ -21,5 +21,6 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Top Scanned Usernames",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

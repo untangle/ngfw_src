@@ -13,5 +13,6 @@
     "readOnly": true,
     "table": "http_events",
     "title": "Top Sites (by request)",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

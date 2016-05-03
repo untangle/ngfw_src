@@ -31,5 +31,6 @@
     "readOnly": true,
     "table": "mail_addrs",
     "title": "Phish Ratio",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

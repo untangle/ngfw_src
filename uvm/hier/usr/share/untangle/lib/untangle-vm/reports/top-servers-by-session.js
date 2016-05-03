@@ -14,5 +14,6 @@
     "table": "sessions",
     "title": "Top Server Addresses",
     "pieStyle": "PIE",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
