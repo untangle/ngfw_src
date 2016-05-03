@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Sessions By Interface",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 

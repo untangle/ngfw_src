@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Bytes By Interface",
+    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
 
