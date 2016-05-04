@@ -154,6 +154,10 @@ public class IntrusionPreventionApp extends NodeBase
     protected void postStart()
     {
         iptablesRules();
+
+        setScanCount(0);
+        setDetectCount(0);
+        setBlockCount(0);
     }
 
     public void reconfigure()

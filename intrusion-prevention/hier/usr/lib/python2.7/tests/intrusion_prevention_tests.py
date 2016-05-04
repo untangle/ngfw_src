@@ -636,14 +636,14 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
-        pre_events_detect = global_functions.getStatusValue(node,"detect")
-        
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
+        pre_events_detect = global_functions.getStatusValue(node,"detect")
+        
         result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
         
         event = self.intrusion_prevention_interface.get_log_event(rule)
@@ -651,6 +651,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         # Check to see if the faceplate counters have incremented. 
         post_events_detect = global_functions.getStatusValue(node,"detect")
+        print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
         assert(pre_events_detect < post_events_detect)
 
     @staticmethod
