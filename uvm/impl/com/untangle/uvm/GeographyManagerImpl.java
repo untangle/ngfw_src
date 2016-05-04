@@ -6,6 +6,8 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Pulse;
+
 import com.maxmind.geoip2.record.Subdivision;
 import com.maxmind.geoip2.record.Location;
 import com.maxmind.geoip2.record.Country;
@@ -23,11 +25,15 @@ public class GeographyManagerImpl implements GeographyManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
-    private final String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
-    private final String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
+    private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
+    private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
+    private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
+
+    // we check for the update file once per hour which is more than enough
+    private final static long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
 
     private DatabaseReader databaseReader = null;
+    private Pulse databaseChecker = null;
     private File databaseFile = null;
     private CHMCache chmCache = null;
     private boolean initFlag = false;
@@ -35,6 +41,8 @@ public class GeographyManagerImpl implements GeographyManager
     protected GeographyManagerImpl()
     {
         openDatabaseInstance();
+        databaseChecker = new Pulse("GeographyManagerUpdater", true, new DatabaseUpdateChecker(this));
+        databaseChecker.start(DATABASE_CHECK_FREQUENCY);
     }
 
     public String getCountryName(String netAddress)
@@ -150,6 +158,8 @@ public class GeographyManagerImpl implements GeographyManager
         File updateFile = new File(GEOIP_UPDATE_FILE);
         if (!updateFile.exists()) return (false);
 
+        logger.info("Database update file detected.");
+
         // we have an update file so clear the init flag and close existing
         if (initFlag) {
             initFlag = false;
@@ -172,5 +182,20 @@ public class GeographyManagerImpl implements GeographyManager
         // open the new database
         openDatabaseInstance();
         return (true);
+    }
+
+    private static class DatabaseUpdateChecker implements Runnable
+    {
+        GeographyManagerImpl owner;
+
+        public DatabaseUpdateChecker(GeographyManagerImpl owner)
+        {
+            this.owner = owner;
+        }
+
+        public void run()
+        {
+            owner.checkForDatabaseUpdate();
+        }
     }
 }
