@@ -129,21 +129,18 @@ Ext.define('Webui.config.dashboardManager', {
                 width: 35,
                 dataIndex: 'enabled',
                 renderer: function (value, metaData, record) {
-                    var _app = null, _isInstallable = null;
+                    var entry = null, isInstallable = false;
                     if (record.data.entryId) {
                         if (!rpc.reportsEnabled) {
-                            _isInstallable = true;
+                            isInstallable = true;
                         } else {
-                            _app = record.data.entryId.split('-');
-                            _app.pop();
-                            Ext.each(rpc.rackView.installable.list, function (app) {
-                                if (!_isInstallable && _app.join(' ') === app.displayName.toLowerCase()) {
-                                    _isInstallable = true;
-                                }
-                            });
+                            entry = Ung.dashboard.reportsMap[record.data.entryId];
+                            if (Ung.dashboard.unavailableApplicationsMap[entry.category]) {
+                                isInstallable = true;
+                            }
                         }
                     }
-                    if (_isInstallable) {
+                    if (isInstallable) {
                         return '<i class="material-icons" style="color: #FFB300;">warning</i>';
                     }
                     if (value) {
