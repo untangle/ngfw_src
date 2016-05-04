@@ -736,19 +736,15 @@ Ext.define('Ung.charts', {
      * @returns {Array}      - the series array
      */
     setCategoriesSeries: function (entry, data, chart) {
-        // TODO: Pie percentage not correct inside DrillDown
-
         var _mainData = [], _otherCumulateVal = 0, i,
             _mainSeries = [{
                 name: entry.units
             }];
 
-        //entry.data = data;
-
         for (i = 0; i < data.length; i += 1) {
             if (i < entry.pieNumSlices) {
                 _mainData.push({
-                    name: data[i][entry.pieGroupColumn],
+                    name: data[i][entry.pieGroupColumn] || i18n._('None'),
                     y: data[i].value
                 });
             } else {
