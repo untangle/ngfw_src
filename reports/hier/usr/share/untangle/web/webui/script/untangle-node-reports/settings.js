@@ -681,7 +681,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     // Manage Reports Panel
     buildReportEntries: function() {
-    "pieStyle": "PIE",
         var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
         var chartTypeMap = Ung.Util.createStoreMap(chartTypes);
         var chartTypeRenderer = function(value) {
@@ -704,7 +703,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     "enabled": true,
                     "readOnly": false,
                     "displayOrder": 500,
-    "pieStyle": "PIE",
+                    "pieStyle": "PIE",
                     "type": "PIE_GRAPH"
                 },
                 dataProperty: "reportEntries",
