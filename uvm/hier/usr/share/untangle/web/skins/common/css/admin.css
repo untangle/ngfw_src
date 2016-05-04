@@ -420,12 +420,17 @@ body.wizard #container {
 }
 
 .wizard-title {
-    margin-bottom: 0.8em;
-    padding-top: 5px;
+    margin: 0;
+    padding: 10px;
     color: #333;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-family: 'PT Sans', sans-serif;
+    background: #EEE;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.wizard h3 {
+    margin: 0 0 20px 0;
 }
 
 .wizard-network-img {
