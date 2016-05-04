@@ -96,6 +96,9 @@ public class DeviceTableImpl implements DeviceTable
     
     public DeviceTableEntry getDevice( String macAddress )
     {
+        if ( macAddress == null )
+            return null;
+        
         return deviceTable.get( macAddress );
     }
 
