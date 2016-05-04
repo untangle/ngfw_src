@@ -71,9 +71,9 @@ public class DeviceTableEvent extends LogEvent
         String maker = ( device == null ? "" : "(" + device.getMacVendor() + ")");
         switch (key) {
         case "add":
-            return I18nUtil.marktr("Device Table Update: ") + " " + key + " " + macAddress + " " + maker;
+            return I18nUtil.marktr("Device Table Update:") + " " + key + " " + macAddress + " " + maker;
         default:
-            return I18nUtil.marktr("Device Table Update: ") + " " + key + " -> \"" + value + "\" " + macAddress + " " + maker;
+            return I18nUtil.marktr("Device Table Update:") + " " + key + " -> \"" + value + "\" " + macAddress + " " + maker;
         }
     }
     

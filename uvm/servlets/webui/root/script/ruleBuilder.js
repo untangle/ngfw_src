@@ -333,7 +333,7 @@ Ext.define('Ung.RuleBuilder', {
                     var testvalue = value.replace(",","");
                     // testvalues should "" for valid rules
                     if ( testvalue != "" ) {
-                        return i18n._("Can not specify a port condition on port-less protocols: ") + value.split(",").join(" ");
+                        return i18n._("Can not specify a port condition on port-less protocols:") + " " + value.split(",").join(" ");
                     }
                 }
             }

@@ -710,7 +710,7 @@ Ext.define('Webui.config.system', {
                                     if(Ung.Util.handleException(exception)) return;
                                     if(result !== 0) {
                                         Ext.MessageBox.hide();
-                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Time synchronization failed. Return code: ") + result);
+                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Time synchronization failed. Return code:") + " " + result);
                                     } else {
                                         Ext.MessageBox.hide();
                                     }
@@ -1014,9 +1014,9 @@ Ext.define('Webui.config.system', {
                             if(msg === "Invalid Language Pack") {
                                 errorMsg = i18n._("Invalid language pack; not a zip file");
                             } else if((/.*MO file.*/).test(msg)) {
-                                errorMsg = i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
+                                errorMsg = i18n._("Couldn't compile MO file for entry") + " " + msg.split(" ").pop();
                             } else if((/.*bundle file.*/).test(msg)) {
-                                errorMsg = i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
+                                errorMsg = i18n._("Couldn't compile resource bundle for entry") + " " + msg.split(" ").pop();
                             }
                         }
                         Ext.MessageBox.alert(i18n._("Failed"), errorMsg);

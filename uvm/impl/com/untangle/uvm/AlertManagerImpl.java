@@ -136,7 +136,7 @@ public class AlertManagerImpl implements AlertManager
         }
 
         if (nonWorkingDns.size() > 0) {
-            String alertText = i18nUtil.tr("DNS connectivity failed: ");
+            String alertText = i18nUtil.tr("DNS connectivity failed:") + " ";
             for (InetAddress ia : nonWorkingDns) {
                 alertText += ia.getHostAddress() + " ";
             }
@@ -208,7 +208,7 @@ public class AlertManagerImpl implements AlertManager
         try {
             int percentUsed = Integer.parseInt(result);
             if (percentUsed > 75)
-                alertList.add( i18nUtil.tr("Free Disk space is low." +  " [ " + (100 - percentUsed) + "% free ]") );
+                alertList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
         } catch (Exception e) {
             logger.warn("Unable to determine free disk space",e);
         }
@@ -430,7 +430,7 @@ public class AlertManagerImpl implements AlertManager
                 alertText += " (";
                 alertText += gateway.getHostAddress();
                 alertText += ") ";
-                alertText += i18nUtil.tr("is on ");
+                alertText += i18nUtil.tr("is on") + " ";
                 alertText += " ";
                 alertText += gatewayIntf.getName();
                 alertText += ".";
@@ -670,7 +670,7 @@ public class AlertManagerImpl implements AlertManager
                     alertText += intf.getName();
                     alertText += ", ";
                     alertText += dnsServer + ")";
-                    alertText += i18nUtil.tr(" fails to resolve categorization queries.");
+                    alertText += " " + i18nUtil.tr("fails to resolve categorization queries.");
 
                     logger.warn("DNS Lookup failed [" + dnsServer + ",TXT]: " + query);
                     alertList.add(alertText);

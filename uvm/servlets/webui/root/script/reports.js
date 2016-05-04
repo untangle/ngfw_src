@@ -1075,7 +1075,7 @@ Ext.define('Ung.panel.Reports', {
             padding: '5px'
         });
 
-        this.reportContainer.setLoading(i18n._('Loading report... '));
+        this.reportContainer.setLoading(i18n._('Loading report...'));
         this.reportData.getStore().loadData([]);
 
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
@@ -1334,7 +1334,7 @@ Ext.define('Ung.panel.Reports', {
         if (!this.entry) {
             return;
         }
-        if (!this.autoRefreshEnabled) { this.reportContainer.setLoading(i18n._('Refreshing report... ')); }
+        if (!this.autoRefreshEnabled) { this.reportContainer.setLoading(i18n._('Refreshing report...')); }
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
             this.reportContainer.setLoading(false);
             if (Ung.Util.handleException(exception)) {

@@ -766,7 +766,7 @@ Ext.define('Webui.config.administration', {
                     allowBlank: false
                 },{
                     xtype: 'textfield',
-                    fieldLabel: i18n._('Organizational Unit ') + " (OU)",
+                    fieldLabel: i18n._('Organizational Unit') + " (OU)",
                     name: "OrganizationalUnit",
                     helptip: i18n._("Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."),
                     allowBlank: true

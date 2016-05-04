@@ -487,12 +487,12 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 flex: 0,
                 margin: '0 20',
                 html: "<font color=\"red\"><b>" + i18n._('Important:') + "</b></font>" +
-                    i18n._(" This step identifies the external, internal, and other network cards. ") + "<br/><br/>" +
-                    "<b>" + i18n._("Step 1: ") + "</b>" +
+                    " " + i18n._("This step identifies the external, internal, and other network cards.") + " <br/><br/>" +
+                    "<b>" + i18n._("Step 1:") + " </b>" +
                     i18n._("Plug an active cable into one network card to determine which network card it is.") + "<br/>" +
-                    "<b>" + i18n._("Step 2: ") + "</b>" +
-                    "<b>" + i18n._("Drag and drop") + "</b>" + i18n._(" the network card to map it to the desired interface.") + "<br/>" +
-                    "<b>" + i18n._("Step 3: ") + "</b>" +
+                    "<b>" + i18n._("Step 2:") + " </b>" +
+                    "<b>" + i18n._("Drag and drop") + "</b> " + i18n._("the network card to map it to the desired interface.") + "<br/>" +
+                    "<b>" + i18n._("Step 3:") + " </b>" +
                     i18n._("Repeat steps 1 and 2 for each network card and then click <i>Next</i>.") + "<br/>"
             }, this.interfaceGrid]
         });
@@ -1515,7 +1515,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 0 20',
-                    html: Ext.String.format( i18n._('Automatically install new versions of {0} software. '), rpc.oemName) + '<br/>' +
+                    html: Ext.String.format( i18n._('Automatically install new versions of {0} software.'), rpc.oemName) + ' <br/>' +
                          i18n._('This is the recommended for most sites.')
                 }]
             }, {

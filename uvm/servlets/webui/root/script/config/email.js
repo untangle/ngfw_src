@@ -546,7 +546,7 @@ Ext.define('Webui.config.email', {
                         settingsCmp: this,
                         showForCurrentAccount: function(emailAddress) {
                             this.account = emailAddress;
-                            var newTitle = i18n._('Safe List Details for: ') + emailAddress;
+                            var newTitle = i18n._('Safe List Details for:') + " " + emailAddress;
                             this.setTitle(newTitle);
 
                             this.show();
@@ -830,7 +830,7 @@ Ext.define('Webui.config.email', {
                             settingsCmp: this,
                             showForCurrentAccount: function(emailAddress) {
                                 this.account = emailAddress;
-                                var newTitle = i18n._('Email Quarantine Details for: ') + emailAddress;
+                                var newTitle = i18n._('Email Quarantine Details for:') + " " + emailAddress;
                                 this.setTitle(newTitle);
                                 this.show();
                                 //load Quarantines Details

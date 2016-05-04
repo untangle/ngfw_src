@@ -2059,7 +2059,7 @@ Ext.define('Webui.config.network', {
                     },{
                         xtype: 'label',
                         name: "v6RouterAdvertisementWarning",
-                        html: "<font color=\"red\">" + i18n._("Warning: ") + "</font>" + i18n._("SLAAC only works with /64 subnets."),
+                        html: "<font color=\"red\">" + i18n._("Warning:") + " </font>" + i18n._("SLAAC only works with /64 subnets."),
                         cls: 'boxlabel'
                     }]
                 }]
@@ -3588,7 +3588,7 @@ Ext.define('Webui.config.network', {
         });
 
         this.routeButton = Ext.create('Ext.button.Button',{
-            text: i18n._(" Refresh Routes "),
+            text: " " + i18n._("Refresh Routes") + " ",
             handler: function(b,e) {
                 Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
