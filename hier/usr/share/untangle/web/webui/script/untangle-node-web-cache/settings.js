@@ -64,9 +64,9 @@ Ext.define('Webui.untangle-node-web-cache.settings', {
                 title: i18n._('Clear Cache'),
                 items: [{
                     xtype: 'component',
-                    html: i18n._('If content stored in the cache somehow becomes stale or corrupt, the cache can be cleared with the ') + "<b>" +
-                          i18n._('Clear Cache') + "</b>" + i18n._(" button.") + "<br><br>" + "<b>" +
-                          i18n._("Caution") + ":  </b>" + i18n._("Clearing the cache requires restarting the caching engine. ") +
+                    html: i18n._('If content stored in the cache somehow becomes stale or corrupt, the cache can be cleared with the') + " <b>" +
+                          i18n._('Clear Cache') + "</b> " + i18n._("button.") + "<br><br>" + "<b>" +
+                          i18n._("Caution") + ":  </b>" + i18n._("Clearing the cache requires restarting the caching engine.") + " " +
                           i18n._("This will cause active web sessions to be dropped and may disrupt web traffic for several seconds.")
                 }, {
                     xtype: 'container',
@@ -87,7 +87,7 @@ Ext.define('Webui.untangle-node-web-cache.settings', {
                         handler: Ext.bind(function(callback) {
                             var understandRisks = this.panelStatus.down('checkbox[name="understandRisks"]');
                             if (!understandRisks.getValue()) {
-                                Ext.MessageBox.alert(i18n._("Error"), i18n._("You must check: ") + i18n._("I understand the risks"));
+                                Ext.MessageBox.alert(i18n._("Error"), i18n._("You must check:") + " " + i18n._("I understand the risks"));
                             }
                             else {
                                 Ext.MessageBox.wait(i18n._("Clearing Cache..."), i18n._("Please wait"));
