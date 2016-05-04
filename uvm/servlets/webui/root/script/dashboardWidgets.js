@@ -602,14 +602,16 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         this.callParent(arguments);
     },
     tpl: '<div class="wg-wrapper network-intf">' +
+        '<div class="wrap">' +
         '<div class="external">' +
+        '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin: 5px auto; height: 30px; display: block;"/>' +
         '<tpl for="externalInterfaces">' +
         '<div class="iface" id="interface_{id}">' +
-        '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin-bottom: 5px; height: 30px;"/>' +
         '<p class="name">{name}</p>' +
         '<div class="speeds" style="display: inline-block; text-align: left;">' +
         '<span class="up">{tx} kb/s</span>' +
         '<span class="down">{rx} kb/s</span>' +
+        '</div>' +
         '</div>' +
         '</tpl>' +
         '<br/><span class="connection ext"></span>' +
@@ -637,11 +639,10 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
 
-        // TODO error when installing reports this.data = null
         if (this.data && this.data.externalInterfaces) {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
-                if (interfaceEl) {
+                if (interfaceEl && stats['interface_' + this.data.externalInterfaces[i].id + '_txBps']) {
                     interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
                     interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
                 }
@@ -687,7 +688,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
 
             Ext.each(result.interfaces.list, function (iface) {
                 if (!iface.disabled) {
-                    if (iface.name === 'External') {
+                    if (iface.isWan) {
                         me.data.externalInterfaces.push({
                             id: iface.interfaceId,
                             name: iface.name,
