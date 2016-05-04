@@ -92,7 +92,7 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
 
 def findEmailContent(searchTerm1,searchTerm2):
     ifFound = False
-    timeout = 120
+    timeout = 60
     print "Looking at email " + testEmailAddress
     while not ifFound and timeout > 0:
         timeout -= 1
@@ -289,7 +289,7 @@ class ReportsTests(unittest2.TestCase):
         node.setSettings(newSyslogSettings)
 
         # create some traffic (blocked by firewall and thus create a syslog event)
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
         # flush out events
         node.flushEvents()
 
@@ -309,10 +309,10 @@ class ReportsTests(unittest2.TestCase):
         strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
         while (timeout > 0 and found_count < 2):
             # get syslog results on server
-            rsyslogResult = remote_control.runCommand("sudo tail -n 50 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            rsyslogResult = remote_control.runCommand("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            timeout -= 1
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
-                timeout -= 1
                 for string in strings_to_find:
                     if not string in line:
                         print "missing: %s" % string
@@ -321,7 +321,8 @@ class ReportsTests(unittest2.TestCase):
                         found_count += 1
                         print "found: %s" % string
                 break
-
+            time.sleep(2)
+            
         assert(found_count == len(strings_to_find))
 
     def test_070_basic_alert(self):
@@ -332,7 +333,7 @@ class ReportsTests(unittest2.TestCase):
         print settings["alertRules"]["list"]
         node.setSettings(settings)
 
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
         node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
 
@@ -348,7 +349,7 @@ class ReportsTests(unittest2.TestCase):
         print settings["alertRules"]["list"]
         node.setSettings(settings)
 
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
         node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
 
@@ -364,7 +365,7 @@ class ReportsTests(unittest2.TestCase):
         print settings["alertRules"]["list"]
         node.setSettings(settings)
 
-        for x in range(0,20): remote_control.isOnline()
+        for x in range(0,20): remote_control.isOnline(tries=1)
         node.flushEvents() # flush events so the rules are evaluated
         events = global_functions.get_events('Reports','Alert Events',None,5)
 
@@ -455,7 +456,7 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(adminsettings)
 
         # trigger alert
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
 
         # look for alert email
         emailFound, emailContext, emailContext2 = findEmailContent('alert',fname)
