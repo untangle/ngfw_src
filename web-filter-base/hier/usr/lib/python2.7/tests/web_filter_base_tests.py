@@ -101,17 +101,17 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify porn site is blocked in default config
     def test_012_defaultPornIsBlockedWithSubdomain(self):
-        result = remote_control.runCommand("wget -q -O - http://www.penthouse.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://www.playboy.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_013_defaultPornIsBlockedWithUrl(self):
-        result = remote_control.runCommand("wget -q -O - http://penthouse.com/index.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://playboy.com/index.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_014_defaultPornIsBlockedWithUrlAndSubdomain(self):
-        result = remote_control.runCommand("wget -q -O - http://www.penthouse.com/index.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://www.playboy.com/index.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify test site is not blocked in default config
