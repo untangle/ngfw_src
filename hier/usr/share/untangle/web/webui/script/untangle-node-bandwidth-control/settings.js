@@ -801,7 +801,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                     if (Ext.isEmpty(value)) {
                         return i18n._("Not set");
                     } else {
-                        return value + i18n._( " kbps" );
+                        return value + " " + i18n._( "kbps" );
                     }
                 }, this )
             }, {
@@ -818,7 +818,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
                     if (Ext.isEmpty(value)) {
                         return i18n._("Not set");
                     } else {
-                        return value + i18n._( " kbps" );
+                        return value + " " + i18n._( "kbps" );
                     }
                 }, this )
             }],
@@ -1257,7 +1257,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                 hidden: true,
                 items: [{
                     xtype: 'component',
-                    html: "<i>" + i18n._("Quota Clients") + "</i>" + i18n._(' controls which hosts will be given quotas.') + i18n._(" (Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"),
+                    html: "<i>" + i18n._("Quota Clients") + "</i> " + i18n._('controls which hosts will be given quotas.') + " " + i18n._("(Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "textfield",
@@ -1269,7 +1269,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     value: ""
                 }, {
                     xtype: 'component',
-                    html: "<i>" + i18n._("Quota Expiration") + "</i>" + i18n._(' controls how long a quota lasts (hourly, daily, weekly). The default is Daily.'),
+                    html: "<i>" + i18n._("Quota Expiration") + "</i> " + i18n._('controls how long a quota lasts (hourly, daily, weekly). The default is Daily.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "combo",
@@ -1285,7 +1285,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     value: -2
                 }, {
                     xtype: 'component',
-                    html: "<i>" + i18n._("Quota Size") + "</i>" + i18n._(' configures the size of the quota given to each host. The default is 1 Gb.'),
+                    html: "<i>" + i18n._("Quota Size") + "</i> " + i18n._('configures the size of the quota given to each host. The default is 1 Gb.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: 'container',
@@ -1310,7 +1310,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                     }]
                 }, {
                     xtype: 'component',
-                    html: "<i>" + i18n._("Quota Exceeded Priority") + "</i>" + i18n._(' configures the priority given to hosts that have exceeded their quota.'),
+                    html: "<i>" + i18n._("Quota Exceeded Priority") + "</i> " + i18n._('configures the priority given to hosts that have exceeded their quota.'),
                     margin: '15 0 5 0'
                 }, {
                     xtype: "combo",
