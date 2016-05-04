@@ -1431,7 +1431,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageStateInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_state',
             title: i18n._("IPsec State"),
-            text: i18n._(" Refresh Log Information "),
+            text: " " + i18n._("Refresh Log Information") + " ",
             dataFn: this.getRpcNode().getStateInfo
         });
     },
@@ -1439,7 +1439,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pagePolicyInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_policy',
             title: i18n._("IPsec Policy"),
-            text: i18n._(" Refresh Policy Information "),
+            text: " " + i18n._("Refresh Policy Information") + " ",
             dataFn: this.getRpcNode().getPolicyInfo
         });
     },
@@ -1447,7 +1447,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageLogFile = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_log',
             title: i18n._("IPsec Log"),
-            text: i18n._(" Refresh State Information "),
+            text: " " + i18n._("Refresh State Information") + " ",
             dataFn: this.getRpcNode().getLogFile
         });
     },
@@ -1455,7 +1455,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageVirtualLog = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_l2tp_log',
             title: i18n._("L2TP Log"),
-            text: i18n._(" Refresh Log Information "),
+            text: " " + i18n._("Refresh Log Information") + " ",
             dataFn: this.getRpcNode().getVirtualLogFile
         });
     },

@@ -71,7 +71,7 @@ public class TunnelStatusEvent extends LogEvent implements Serializable
     @Override
     public String toSummaryString()
     {
-        String summary = "IPse Tunnel " + getTunnelName() + I18nUtil.marktr(" sent ") + getOutBytes() + I18nUtil.marktr(" bytes and received ") + getInBytes() + I18nUtil.marktr(" bytes");
+        String summary = "IPse Tunnel " + getTunnelName() + " " + I18nUtil.marktr("sent") + " " + getOutBytes() + " " + I18nUtil.marktr("bytes and received") + " " + getInBytes() + " " + I18nUtil.marktr("bytes");
         return summary;
     }
 }
