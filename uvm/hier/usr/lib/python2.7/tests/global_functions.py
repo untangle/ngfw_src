@@ -119,7 +119,6 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
     reportsManager = reports.getReportsManager()
 
     reportEntry = reportsManager.getReportEntry( eventEntryCategory, eventEntryTitle )
-    print reportEntry
     if reportEntry == None:
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
