@@ -407,7 +407,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
 
                     this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        genericLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc). ') + '</a>');
+                        genericLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc).') + '</a>');
                         untangleLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.') + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "zip" );

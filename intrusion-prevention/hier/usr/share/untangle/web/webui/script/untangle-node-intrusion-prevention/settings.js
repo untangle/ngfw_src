@@ -386,7 +386,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 title: i18n._("Setup Wizard"),
                 items: [{
                     xtype: 'component',
-                    html: i18n._(" Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."),
+                    html: i18n._("Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."),
                     cls: 'warning',
                     hidden: this.getSettings().configured
                 }, {
