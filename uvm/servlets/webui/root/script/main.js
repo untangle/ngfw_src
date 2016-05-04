@@ -551,11 +551,17 @@ Ext.define("Ung.Main", {
                         cls: 'apps-content',
                         scrollable: true,
                         region: 'center',
-                        layout: {
-                            type: 'vbox',
-                            align: 'middle',
-                            pack: 'start'
-                        },
+                        // IIFE hack for material skin
+                        layout: (function () {
+                            if (rpc.skinSettings.skinName !== 'material') {
+                                return {
+                                    type: 'vbox',
+                                    align: 'middle',
+                                    pack: 'start'
+                                };
+                            }
+                            return {};
+                        }()),
                         items: [{
                             xtype: 'container',
                             cls: 'apps-top',
