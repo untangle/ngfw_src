@@ -25,8 +25,8 @@ ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
 pot = i18n.PotFile(language="en", file_name="generated.pot")
+# pot = i18n.PotFile(language="en", file_name="pot/en/untangle-en.pot")
 pot_file_name = "pot/en/untangle-en.pot"
-#pot = i18n.PotFile(language="en", file_name=pot_file_name)
 
 def get_keys(module):
     """
@@ -131,9 +131,18 @@ def main(argv):
     # Change comments to not have path leading to "ngfw"
     print "Converting comments..."
     pot.load()
+    invalid_msg_id_count = 0
     for record in pot.records:
+        if record.is_valid_msg_id() == False:
+            invalid_msg_id_count = invalid_msg_id_count + 1
+            print "Invalid string found:"
+            print record
+            print 
+
         for (comment_index, comment) in enumerate(record.comment):
             record.comment[comment_index] = re.sub(ngfw.regex_comment_prefix, "/" + ngfw.path, comment)
+    if invalid_msg_id_count > 0:
+        print "Invalid string count: %d" % invalid_msg_id_count
     pot.save()
 
     if os.path.isfile(pot_file_name):

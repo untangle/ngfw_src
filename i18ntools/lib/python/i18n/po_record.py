@@ -11,6 +11,9 @@ class PoRecord:
     """
     regex_arguments = re.compile(r'({\d+})')
 
+    regex_starts_with_whitespace = re.compile(r'^\s+');
+    regex_ends_with_whitespace = re.compile(r'\s+$');
+
     unverified = ": Status: UNVERIFIED"
 
     regex_last_revision_date = re.compile(r'PO-Revision-Date:\s+(.+)\\n')
@@ -71,6 +74,15 @@ class PoRecord:
         Add to comment
         """
         self.comment.append(comment)
+
+    def is_valid_msg_id(self):
+        valid = True
+        if re.search(PoRecord.regex_starts_with_whitespace, self.msg_id):
+            valid = False
+        if re.search(PoRecord.regex_ends_with_whitespace, self.msg_id):
+            valid = False
+
+        return valid
 
     def set_verified(self):
         """
