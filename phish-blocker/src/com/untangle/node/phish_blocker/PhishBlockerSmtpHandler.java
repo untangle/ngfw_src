@@ -39,7 +39,7 @@ public class PhishBlockerSmtpHandler extends com.untangle.node.spam_blocker.Spam
         String bodyTemplate = i18nUtil.tr("The attached message from")
                               + " $MIMEMessage:FROM$\r\n"
                               + i18nUtil
-                                  .tr("was determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  ")
+                                  .tr("was determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).") + "  " +
                               + "\n\r" + i18nUtil.tr("The kind of phish that was found was") + " $SPAMReport:FULL$";
         return bodyTemplate;
     }

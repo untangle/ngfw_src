@@ -803,7 +803,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype: 'fieldset',
                 title: i18n._('Note'),
                 flex: 0,
-                html: i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
+                html: " " + i18n._("<b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
             },  this.gridAlertRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Alert Rules',

@@ -828,7 +828,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 if ( ret == 0 ) {
                     return I18nUtil.marktr("Successfully restored data");
                 } else {
-                    return I18nUtil.marktr("Error restoring data: " + ret);
+                    return I18nUtil.marktr("Error restoring data:") + " " + ret;
                 }
                     
             } catch ( Exception e ) {
