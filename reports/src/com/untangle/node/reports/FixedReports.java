@@ -458,7 +458,7 @@ public class FixedReports
                                 break;
 
                             case CYCLE_NEXT:
-                                if(parseContext.buildLoopBuffer == false){
+                                if(parseContext.buildLoopBuffer == false && parseContext.allowOutput){
                                     parseContext.ignoreLine = true;
                                     nextVariableCycle(tag);
                                 }
