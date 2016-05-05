@@ -554,11 +554,9 @@ Ext.define('Ung.charts', {
             that = this,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
-        entry.chartType = entry.chartType || 'pie';
-
         return new Highcharts.Chart({
             chart: {
-                type: entry.chartType,
+                type: entry.pieStyle.indexOf('COLUMN') >= 0 ? 'column' : 'pie',
                 renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
                 spacing: [10, 10, 10, 10],
@@ -568,10 +566,10 @@ Ext.define('Ung.charts', {
                     fontSize: '12px'
                 },
                 options3d: {
-                    enabled: entry.is3d,
-                    alpha: entry.chartType === 'pie' ? 45 : 20,
-                    beta: 0,
-                    depth: entry.chartType === 'pie' ? 0 : 50
+                    enabled: entry.pieStyle.indexOf('3D') >= 0,
+                    alpha: (entry.pieStyle === 'PIE_3D' || entry.pieStyle === 'DONUT_3D') ? 45 : 20,
+                    beta: entry.pieStyle === 'COLUMN_3D' ? 15 : 0
+                    //depth: 20
                 },
                 events: {
                     drilldown: function (e) {
@@ -655,13 +653,7 @@ Ext.define('Ung.charts', {
             },
             tooltip: {
                 headerFormat: '<span style="font-size: 14px; font-weight: bold;">' + seriesName + ': {point.key}</span><br/>',
-                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.chartType === 'pie' ? ' ({point.percentage:.1f}%)' : '')
-                /*
-                formatter: function () {
-                    return '<span style="font-size: 14px; font-weight: bold;">' + seriesName + ': ' + this.point.name + '</span><br/>' +
-                        '<span style="font-weight: bold;">' + this.point.y + ' sessions </span>(' + this.point.percent + '%)';
-                }
-                */
+                pointFormat: '{series.name}: <b>{point.y}</b>' + (entry.pieStyle.indexOf('COLUMN') < 0 ? ' ({point.percentage:.1f}%)' : '')
             },
             plotOptions: {
                 pie: {
@@ -670,9 +662,11 @@ Ext.define('Ung.charts', {
                     center: ['50%', '50%'],
                     showInLegend: true,
                     colorByPoint: true,
-                    innerSize: entry.isDonut ? '50%' : 0,
-                    depth: 45,
+                    innerSize: entry.pieStyle.indexOf('DONUT') >= 0 ? '50%' : 0,
+                    depth: !forDashboard ? 50 : 25,
                     minSize: 150,
+                    borderWidth: 1,
+                    borderColor: '#EEE',
                     dataLabels: {
                         enabled: true,
                         distance: !forDashboard ? 15 : 5,
@@ -682,11 +676,10 @@ Ext.define('Ung.charts', {
                             fontSize: !forDashboard ? '12px' : '11px'
                         },
                         formatter: function () {
-                            if (this.point.drilldown) {
-                                return '<b>More</b>';
+                            if (this.point.name.length > 20) {
+                                return this.point.name.substring(0, 20) + '...';
                             }
-                            //return seriesName + '<br/><b>' + this.point.name + '</b>';
-                            return '<b>' + this.point.name + '</b>';
+                            return this.point.name;
                         },
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#555'
                     }
@@ -694,9 +687,9 @@ Ext.define('Ung.charts', {
                 column: {
                     borderWidth: 0,
                     colorByPoint: true,
-                    depth: 50,
+                    depth: !forDashboard ? 50 : 25,
                     dataLabels: {
-                        enabled: true,
+                        enabled: false,
                         align: 'center'
                     }
                 },
@@ -705,24 +698,34 @@ Ext.define('Ung.charts', {
                 }
             },
             legend: {
-                enabled: entry.chartType !== 'column' && !forDashboard,
+                enabled: entry.pieStyle.indexOf('COLUMN') < 0 && !forDashboard,
+                backgroundColor: '#EEE',
+                borderRadius: 3,
+                padding: 15,
+                style: {
+                    overflow: 'hidden'
+                },
                 title: {
-                    text: seriesName + '<br/><span style="font-size: 9px; color: #555; font-weight: normal">(Click to hide)</span>',
+                    text: seriesName,
                     style: {
-                        fontStyle: 'italic'
+                        fontSize: '14px'
                     }
                 },
                 itemStyle: {
-                    fontSize: !forDashboard ? '12px' : '11px'
+                    fontSize: !forDashboard ? '12px' : '11px',
+                    width: '120px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                 },
+                //itemWidth: 120,
+                useHTML: true,
                 layout: 'vertical',
-                align: 'right',
+                align: 'left',
                 verticalAlign: 'top',
-                //y: !forDashboard ? 50 : 0,
                 symbolHeight: 8,
                 symbolWidth: 8,
-                symbolRadius: 4,
-                width: 200
+                symbolRadius: 4
             },
             series: this.setCategoriesSeries(entry, data, null)
         });
@@ -744,7 +747,7 @@ Ext.define('Ung.charts', {
         for (i = 0; i < data.length; i += 1) {
             if (i < entry.pieNumSlices) {
                 _mainData.push({
-                    name: data[i][entry.pieGroupColumn] || i18n._('None'),
+                    name: data[i][entry.pieGroupColumn] !== undefined ? data[i][entry.pieGroupColumn] : i18n._('None'),
                     y: data[i].value
                 });
             } else {

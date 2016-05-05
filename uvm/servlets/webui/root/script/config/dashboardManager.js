@@ -204,7 +204,7 @@ Ext.define('Webui.config.dashboardManager', {
 
                 renderer: function (value) {
                     if (value === 'ReportEntry') {
-                        return '<i class="material-icons">delete</i>';
+                        return '<i class="material-icons">clear</i>';
                     }
                 }
             }]

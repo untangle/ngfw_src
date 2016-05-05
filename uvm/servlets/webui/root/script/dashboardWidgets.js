@@ -719,9 +719,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
     hasRefresh: true,
 
     tpl: '<div class="wg-wrapper no-padding">' +
-        '<div class="chart-types" style="height: 20px;">' +
+        //'<div class="chart-types" style="height: 20px;">' +
         '</div>' +
-        '<div class="chart" style="height: 240px; position: absolute; left: 0; bottom: 0; right: 0;">' +
+        '<div class="chart" style="height: 260px; position: absolute; left: 0; bottom: 0; right: 0;">' +
         '</div>' +
         '</div>' +
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>Loading ...</p></div>' +
@@ -756,6 +756,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
         }
     },
 
+    /*
     listeners: {
         'afterrender': function (widget) {
             var chartButtons = widget.getEl().query('.chart-types')[0], i;
@@ -795,7 +796,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
             }
         }
     },
-
+    */
     loadData: function (handler) {
         if (this.entry.type === 'EVENT_LIST') {
             this.renderEventData(handler);

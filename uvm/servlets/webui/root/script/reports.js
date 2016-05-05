@@ -938,25 +938,25 @@ Ext.define('Ung.panel.Reports', {
     setEntryIcon: function (entry) {
         var icon;
         switch (entry.type) {
-            case 'TEXT':
-                icon = 'subject';
-                break;
-            case 'EVENT_LIST':
-                icon = 'format_list_bulleted';
-                break;
-            case 'PIE_GRAPH':
-                icon = 'pie_chart_outlined';
-                break;
-            case 'TIME_GRAPH':
-            case 'TIME_GRAPH_DYNAMIC':
-                if (entry.timeStyle.indexOf('BAR') >= 0) {
-                    icon = 'insert_chart';
-                } else {
-                    icon = 'show_chart';
-                }
-                break;
-            default:
-                icon = 'subject';
+        case 'TEXT':
+            icon = 'subject';
+            break;
+        case 'EVENT_LIST':
+            icon = 'format_list_bulleted';
+            break;
+        case 'PIE_GRAPH':
+            icon = entry.pieStyle.indexOf('COLUMN') < 0 ? 'pie_chart_outlined' : 'insert_chart';
+            break;
+        case 'TIME_GRAPH':
+        case 'TIME_GRAPH_DYNAMIC':
+            if (entry.timeStyle.indexOf('BAR') >= 0) {
+                icon = 'insert_chart';
+            } else {
+                icon = 'show_chart';
+            }
+            break;
+        default:
+            icon = 'subject';
         }
         return icon;
     },
@@ -983,33 +983,32 @@ Ext.define('Ung.panel.Reports', {
             }
             this.reportChart.setActiveItem('highchart');
 
-            if (this.entry.type === 'PIE_GRAPH') {
+            if (entry.type === 'PIE_GRAPH') {
                 var chartTypeToolbar = [], button, i;
-                var chartTypeButtons = [
-                    { type: 'pie', isDonut: false, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Pie") },
-                    { type: 'pie', isDonut: false, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Pie") },
-                    { type: 'pie', isDonut: true, is3d: false, iconCls: 'icon-line-chart', text: i18n._("Donut") },
-                    { type: 'pie', isDonut: true, is3d: true, iconCls: 'icon-area-chart', text: i18n._("3D Donut") },
-                    { type: 'column', is3d: false, iconCls: 'icon-bar-chart', text: i18n._("Column") },
-                    { type: 'column', is3d: true, iconCls: 'icon-bar-chart', text: i18n._("3D Column") }
+                var pieStyleButtons = [
+                    { pieStyle: 'PIE', icon: 'pie_chart_outlined', text: i18n._("Pie") },
+                    { pieStyle: 'PIE_3D', icon: 'pie_chart_outlined', text: i18n._("3D Pie") },
+                    { pieStyle: 'DONUT', icon: 'pie_chart_outlined', text: i18n._("Donut") },
+                    { pieStyle: 'DONUT_3D', icon: 'pie_chart_outlined', text: i18n._("3D Donut") },
+                    { pieStyle: 'COLUMN', icon: 'insert_chart', text: i18n._("Column") },
+                    { pieStyle: 'COLUMN_3D', icon: 'insert_chart', text: i18n._("3D Column") }
                 ];
 
-                for (i = 0; i < chartTypeButtons.length; i += 1) {
-                    button = chartTypeButtons[i];
+                for (i = 0; i < pieStyleButtons.length; i += 1) {
+                    button = pieStyleButtons[i];
                     chartTypeToolbar.push({
                         xtype: 'button',
-                        pressed: this.entry.chartType === button.type,
-                        iconCls: button.iconCls,
-                        text: button.text,
-                        chartType: button.type,
-                        isDonut: button.isDonut,
-                        is3d: button.is3d,
+                        pressed: entry.pieStyle === button.pieStyle,
+                        //iconCls: button.iconCls,
+                        text: '<i class="material-icons">' + button.icon + '</i> ' + button.text,
+                        pieStyle: button.pieStyle,
                         handler: Ext.bind(function (btn) {
-                            //button.setPressed(true);
-                            entry.chartType = btn.chartType;
-                            entry.isDonut = btn.isDonut;
-                            entry.is3d = btn.is3d;
+                            Ext.Array.each(this.down('#highchart').getDockedItems('toolbar[dock="top"]')[0].query('button'), function (_button) {
+                                _button.setPressed(false);
+                            });
+                            btn.setPressed(true);
                             //this.chart.destroy();
+                            entry.pieStyle = btn.pieStyle;
                             this.chart = Ung.charts.categoriesChart(entry, this.chartData, this.down('#highchart').body, false);
                         }, this)
                     });
@@ -1021,43 +1020,44 @@ Ext.define('Ung.panel.Reports', {
                     items: chartTypeToolbar
                 });
             }
-            /*
-             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_DYNAMIC') {
-             timeStyleButtons = [];
-             timeStyles = [
-             { type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line") },
-             { type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area") },
-             { type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns") },
-             { type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns") }
-             ];
 
-             for (i = 0; i < timeStyles.length; i += 1) {
-             timeStyle = timeStyles[i];
-             timeStyleButtons.push({
-             xtype: 'button',
-             pressed: entry.chartType == timeStyle.type,
-             iconCls: timeStyle.iconCls,
-             text: timeStyle.text,
-             chartType: timeStyle.type,
-             columnOverlapped: timeStyle.overlapped,
-             handler: Ext.bind(function (button) {
-             entry.chartType = button.chartType;
-             entry.columnOverlapped = button.columnOverlapped;
-             //console.log(this.chart);
-             //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
-             //this.chart.destroy();
-             console.log(entry);
-             this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
-             }, this)
-             });
-             }
-             this.down('#highchart').addDocked({
-             xtype: 'toolbar',
-             dock: 'top',
-             items: timeStyleButtons
-             });
-             }
-             */
+            /*
+            if (entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                var timeStyleButtons = [], timeStyle, i;
+                var timeStyles = [
+                    {type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line")},
+                    {type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area")},
+                    {type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns")},
+                    {type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns")}
+                ];
+
+                for (i = 0; i < timeStyles.length; i += 1) {
+                    timeStyle = timeStyles[i];
+                    timeStyleButtons.push({
+                        xtype: 'button',
+                        pressed: entry.chartType == timeStyle.type,
+                        iconCls: timeStyle.iconCls,
+                        text: timeStyle.text,
+                        chartType: timeStyle.type,
+                        columnOverlapped: timeStyle.overlapped,
+                        handler: Ext.bind(function (button) {
+                            entry.chartType = button.chartType;
+                            entry.columnOverlapped = button.columnOverlapped;
+                            //console.log(this.chart);
+                            //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
+                            //this.chart.destroy();
+                            console.log(entry);
+                            this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                        }, this)
+                    });
+                }
+                this.down('#highchart').addDocked({
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: timeStyleButtons
+                });
+            }
+            */
         }
 
         /*

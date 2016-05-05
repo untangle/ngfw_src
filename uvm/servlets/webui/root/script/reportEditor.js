@@ -109,6 +109,7 @@ Ext.define("Ung.window.ReportEditor", {
             data: []
         });
         var chartTypes = [["TEXT", i18n._("Text")], ["PIE_GRAPH", i18n._("Pie Graph")], ["TIME_GRAPH", i18n._("Time Graph")], ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
+        var styleTypes = [["PIE", i18n._("Pie")], ["PIE_3D", i18n._("Pie 3D")], ["DONUT", i18n._("Donut")], ["DONUT_3D", i18n._("Donut 3D")], ["COLUMN", i18n._("Column")], ["COLUMN_3D", i18n._("Column 3D")]];
 
         var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel', {
             name: 'Sql Conditions',
@@ -289,6 +290,24 @@ Ext.define("Ung.window.ReportEditor", {
             queryMode: 'local',
             width: 350,
             store: chartTypes,
+            listeners: {
+                "select": {
+                    fn: Ext.bind(function (combo, records, eOpts) {
+                        this.syncComponents();
+                    }, this)
+                }
+            }
+        }, {
+            xtype: 'combo',
+            name: 'Style',
+            margin: '10 0 10 0',
+            dataIndex: "pieStyle",
+            allowBlank: false,
+            editable: false,
+            fieldLabel: i18n._('Style'),
+            queryMode: 'local',
+            width: 350,
+            store: styleTypes,
             listeners: {
                 "select": {
                     fn: Ext.bind(function (combo, records, eOpts) {
