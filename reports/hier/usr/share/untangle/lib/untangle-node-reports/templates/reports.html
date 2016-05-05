@@ -87,15 +87,24 @@ table {
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
 <td>
-{% trans "Version" %}
+{% trans "Current WAN IP Addresses" %}
 </td>
 <td>
-{{ getFullVersion }} 
-{% if systemManager.upgradesAvailable == true %}
-{%trans "Upgrades available" %}
-{% endif%}
+{% for interface in networkManager.getEnabledInterfaces %}
+{% if interface.getDisabled == false %}
+{% if interface.getIsWan == true %}
+{% with interfaceId=interface.getInterfaceId %}
+{% with status=networkManager.getInterfaceStatus,interface.getInterfaceId %}
+{{ status.getV4Address.getHostAddress }}
+{% endwith %}
+{% endwith %}
+{% endif %}
+{% endif %}
+{% endfor %}
 </td>
 </tr>
+
+<!-- upgrades here -->
 
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">

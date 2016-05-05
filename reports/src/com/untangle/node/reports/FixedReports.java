@@ -437,7 +437,7 @@ public class FixedReports
                                 break;
 
                             case WITH:
-                                if( parseContext.buildLoopBuffer == false){
+                                if( parseContext.buildLoopBuffer == false && parseContext.allowOutput){
                                     parseContext.addVariable(Tag.WITH, tag.group(1), getVariable(new selector(tag.group(2))));
                                     parseContext.ignoreLine = true;
                                 }
@@ -731,6 +731,7 @@ public class FixedReports
                         /*
                          * Otherwise process variable as-is and try to coerse to match the type.
                          */
+                        // argumentValue = variableSelector.arguments.get(argumentIndex);
                         argumentValue = variableSelector.arguments.get(argumentIndex);
                         if(argumentValue.equals("null")){
                             argumentValues[argumentIndex] = null;
