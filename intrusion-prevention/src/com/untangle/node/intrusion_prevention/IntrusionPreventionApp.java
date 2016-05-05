@@ -100,7 +100,7 @@ public class IntrusionPreventionApp extends NodeBase
         File snortConf = new File(SNORT_CONF);
         File snortDebianConf = new File(SNORT_DEBIAN_CONF);
         if (settingsFile.lastModified() > snortDebianConf.lastModified() ||
-            snortConf.lastModified() > settingsFile.lastModified() ) {
+            snortConf.lastModified() > snortDebianConf.lastModified() ) {
             logger.warn("Settings file newer than snort debian configuration, Syncing...");
             reconfigure();
         }
