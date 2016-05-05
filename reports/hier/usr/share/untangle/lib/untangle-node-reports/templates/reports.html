@@ -104,7 +104,18 @@ table {
 </td>
 </tr>
 
-<!-- upgrades here -->
+{% cycle rowColors %}
+<tr style="background-color:{{ rowColors }};">
+<td>
+{% trans "Version" %}
+</td>
+<td>
+{{ getFullVersion }} 
+{% if systemManager.upgradesAvailable == true %}
+{%trans "Upgrades available" %}
+{% endif%}
+</td>
+</tr>
 
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
