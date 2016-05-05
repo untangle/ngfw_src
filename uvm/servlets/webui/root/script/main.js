@@ -32,7 +32,7 @@ Ext.define("Ung.Main", {
         Ext.apply(this, config);
         if (Ext.isGecko) {
             document.onkeypress = function (e) {
-                return e.keyCode == 27;
+                return e.keyCode !== 27;
             };
         }
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
