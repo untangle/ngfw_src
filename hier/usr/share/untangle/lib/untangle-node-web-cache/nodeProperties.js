@@ -11,6 +11,10 @@
             "list": [
                 "untangle-node-license"
             ]
+        },
+        "supportedArchitectures" : {
+            "javaClass": "java.util.LinkedList",
+            "list": ["i386","amd64"]
         }
 }
 
