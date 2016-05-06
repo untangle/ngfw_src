@@ -66,13 +66,10 @@ div.node-cap {
 /* node display name text*/
 div.node div.node-label {
     display: block;
-    height: 32px;
-    width: 100%;
     padding: 0 3px;
     text-align: center;
     color: #4E4C4C;
     font-weight: bold;
-    font-size: 12px;
     font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
 }
 /* node trial info text */
@@ -112,4 +109,40 @@ div.node div.node-metrics {
 /* rack top system stats container */
 div.system-stats {
     display: none;
+}
+
+@media ( max-width: 550px ) {
+    div.apps-nodes {
+        padding: 0;
+    }
+    div.node {
+        height: 60px;
+        width: 100%;
+        float: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0 0 1px 0;
+    }
+    div.node-image {
+        width: 50px;
+        height: 50px;
+        background-size: contain;
+        top: 5px;
+        left: 5px;
+        float: left;
+        margin: 1px;
+    }
+    div.node-label {
+        line-height: 60px;
+        margin-left: 10px;
+        font-size: 16px;
+        text-align: left;
+        float: left;
+    }
+
+    div.node div.node-state {
+        top: 50%;
+        margin-top: -8px;
+        right: 16px;
+    }
 }
