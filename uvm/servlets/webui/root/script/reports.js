@@ -447,23 +447,6 @@ Ext.define('Ung.panel.Reports', {
                         this.searchField.setValue("");
                     }, this)
                 }, '->', {
-                    xtype: 'combo',
-                    width: 120,
-                    name: "limitSelector",
-                    hidden: false,
-                    editable: false,
-                    valueField: "value",
-                    displayField: "name",
-                    queryMode: 'local',
-                    value: 1000,
-                    store: Ext.create('Ext.data.Store', {
-                        fields: ["value", "name"],
-                        data: [{value: 1000, name: "1000 " + i18n._('Events')}, {
-                            value: 10000,
-                            name: "10000 " + i18n._('Events')
-                        }, {value: 50000, name: "50000 " + i18n._('Events')}]
-                    })
-                }, {
                     xtype: 'button',
                     text: i18n._('Export'),
                     name: "Export",
@@ -478,6 +461,29 @@ Ext.define('Ung.panel.Reports', {
             xtype: 'toolbar',
             dock: 'bottom',
             items: [{
+                xtype: 'combo',
+                width: 120,
+                name: "limitSelector",
+                hidden: true,
+                editable: false,
+                valueField: "value",
+                displayField: "name",
+                queryMode: 'local',
+                value: 1000,
+                store: Ext.create('Ext.data.Store', {
+                    fields: ["value", "name"],
+                    data: [{
+                        value: 1000,
+                        name: "1000 " + i18n._('Events')
+                    }, {
+                        value: 10000,
+                        name: "10000 " + i18n._('Events')
+                    }, {
+                        value: 50000,
+                        name: "50000 " + i18n._('Events')
+                    }]
+                })
+            }, {
                 xtype: 'button',
                 name: 'startDateButton',
                 text: i18n._('One day ago'),
@@ -609,8 +615,10 @@ Ext.define('Ung.panel.Reports', {
             this.down('#removeEntryBtn').setHidden(this.entry.readOnly);
 
             if (this.entry.type === 'EVENT_LIST') {
+                this.limitSelector.show();
                 this.loadEventEntry(this.entry);
             } else {
+                this.limitSelector.hide();
                 this.loadReportEntry(this.entry);
             }
             this.down('#entriesMenuBtn').setText('<i class="material-icons">' + record.getData().icon  + '</i> <span style="vertical-align: middle;">' + record.getData().text + '</span>');
@@ -1445,6 +1453,19 @@ Ext.define('Ung.panel.Reports', {
         }
     },
 
+    getColumnList: function () {
+        var columns = this.eventContainer.getColumns(), columnList = '', i;
+        for (i = 0; i < columns.length; i += 1) {
+            if (i !== 0) {
+                columnList += ",";
+            }
+            if (columns[i].dataIndex != null) {
+                columnList += columns[i].dataIndex;
+            }
+        }
+        return columnList;
+    },
+
     exportReportDataHandler: function () {
         if (!this.entry) {
             return;
@@ -1477,6 +1498,27 @@ Ext.define('Ung.panel.Reports', {
         var content = list.join('');
         var fileName = this.entry.title.trim().replace(/ /g, '_') + '.csv';
         Ung.Util.download(content, fileName, 'text/csv');
+    },
+
+    exportEventsHandler: function () {
+        if (!this.entry) {
+            return;
+        }
+        var startDate = this.startDateWindow.serverDate;
+        var endDate = this.endDateWindow.serverDate;
+
+        Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
+        var name = this.entry.title.trim().replace(/ /g, '_');
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm['type'].value = "eventLogExport";
+        downloadForm['arg1'].value = name;
+        downloadForm['arg2'].value = Ext.encode(this.entry);
+        downloadForm['arg3'].value = Ext.encode(this.extraConditions);
+        downloadForm['arg4'].value = this.getColumnList();
+        downloadForm['arg5'].value = startDate ? startDate.getTime() : -1;
+        downloadForm['arg6'].value = endDate ? endDate.getTime() : -1;
+        downloadForm.submit();
+        Ext.MessageBox.hide();
     },
 
     buildWindowAddCondition: function () {
