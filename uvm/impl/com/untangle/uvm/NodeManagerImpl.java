@@ -224,6 +224,10 @@ public class NodeManagerImpl implements NodeManager
                 throw new Exception("Missing node properties for " + nodeName);
             }
 
+            if ( ! checkArchitecture( nodeProperties.getSupportedArchitectures() ) ) {
+                throw new Exception("Unspported Architecture " + System.getProperty("os.arch"));
+            }
+            
             if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
                 policyId = null;
 
@@ -386,23 +390,8 @@ public class NodeManagerImpl implements NodeManager
             if ( nodeProps.getInvisible() )
                 continue;
 
-            String arch = System.getProperty("os.arch");
-            List<String> supportedArchitectures = nodeProps.getSupportedArchitectures();
-            boolean foundArch = false;
-            if ( supportedArchitectures == null )
-                foundArch = true;
-            else {
-                for ( String supportedArchitecture : supportedArchitectures ) {
-                    if ( "any".equals(supportedArchitecture) ) {
-                        foundArch = true; break;
-                    }
-                    if ( arch.equals(supportedArchitecture) ) {
-                        foundArch = true; break;
-                    }
-                }
-            }
-            if ( !foundArch ) {
-                logger.debug("Hiding " + nodeProps.getDisplayName() + ". " + arch + " is not a supported architecture.");
+            if ( ! checkArchitecture( nodeProps.getSupportedArchitectures() ) ) {
+                logger.debug("Hiding " + nodeProps.getDisplayName() + ". " + System.getProperty("os.arch") + " is not a supported architecture.");
                 continue;
             }
 
@@ -970,5 +959,24 @@ public class NodeManagerImpl implements NodeManager
     private boolean policyEquals( Integer policyId1, Integer policyId2 )
     {
         return ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) );
+    }
+
+    private boolean checkArchitecture( List<String> supportedArchitectures )
+    {
+        boolean foundArch = false;
+        String arch = System.getProperty("os.arch");
+        
+        if ( supportedArchitectures == null )
+            return true;
+
+        for ( String supportedArchitecture : supportedArchitectures ) {
+            if ( "any".equals(supportedArchitecture) ) {
+                return true;
+            }
+            if ( arch.equals(supportedArchitecture) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }
