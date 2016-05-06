@@ -6,6 +6,7 @@ package com.untangle.uvm.node;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -36,6 +37,7 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     private boolean invisible = false;
 
     private List<String> parents = new LinkedList<String>();
+    private List<String> supportedArchitectures = Arrays.asList("any");
 
     private int viewPosition = -1;
 
@@ -45,38 +47,44 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
      * Internal name of the node.
      */
     public String getName() { return name; }
-    public void setName( String name ) { this.name = name; }
+    public void setName( String newValue ) { this.name = newValue; }
 
     /**
      * Name of the main node Class.
      */
     public String getClassName() { return className; }
-    public void setClassName( String className ) { this.className = className; }
+    public void setClassName( String newValue ) { this.className = newValue; }
 
     /**
      * The parent node, usually a casing.
      */
     public List<String> getParents() { return parents; }
-    public void setParents( List<String> parents ) { this.parents = parents; }
+    public void setParents( List<String> newValue ) { this.parents = newValue; }
+
+    /**
+     * Get supported architectures
+     */
+    public List<String> getSupportedArchitectures() { return supportedArchitectures; }
+    public void setSupportedArchitectures( List<String> newValue ) { this.supportedArchitectures = newValue; }
 
     /**
      * The name of the node, for display purposes.
      */
     public String getDisplayName() { return displayName; }
-    public void setDisplayName( String displayName ) { this.displayName = displayName; }
+    public void setDisplayName( String newValue ) { this.displayName = newValue; }
     
     /**
      * The nodeBase is the name of the base node. For example
      * clam-node's nodeBase is untangle-base-virus-blocker.
      */
     public String getNodeBase() { return nodeBase; }
-    public void setNodeBase( String nodeBase ) { this.nodeBase = nodeBase; }
+    public void setNodeBase( String newValue ) { this.nodeBase = newValue; }
 
     /**
      * The type is the type of node
      */
     public Type getType() { return type; }
-    public void setType( Type type ) { this.type = type; }
+    public void setType( Type newValue ) { this.type = newValue; }
 
     /**
      * The view position in the rack

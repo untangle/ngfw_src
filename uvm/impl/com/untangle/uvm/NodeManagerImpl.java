@@ -383,9 +383,30 @@ public class NodeManagerImpl implements NodeManager
          * Iterate through nodes
          */
         for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
-            if ( ! nodeProps.getInvisible() ) {
-                installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
+            if ( nodeProps.getInvisible() )
+                continue;
+
+            String arch = System.getProperty("os.arch");
+            List<String> supportedArchitectures = nodeProps.getSupportedArchitectures();
+            boolean foundArch = false;
+            if ( supportedArchitectures == null )
+                foundArch = true;
+            else {
+                for ( String supportedArchitecture : supportedArchitectures ) {
+                    if ( "any".equals(supportedArchitecture) ) {
+                        foundArch = true; break;
+                    }
+                    if ( arch.equals(supportedArchitecture) ) {
+                        foundArch = true; break;
+                    }
+                }
             }
+            if ( !foundArch ) {
+                logger.debug("Hiding " + nodeProps.getDisplayName() + ". " + arch + " is not a supported architecture.");
+                continue;
+            }
+
+            installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
         }
 
         /**

@@ -5,6 +5,11 @@
         "displayName" : "Intrusion Prevention",
         "type" : "SERVICE",
         "viewPosition" : 1090,
-        "autoStart" : "false"
+        "autoStart" : "false",
+        "supportedArchitectures" : {
+            "javaClass": "java.util.LinkedList",
+            "list": ["i386","amd64"]
+        }
+
 }
 
