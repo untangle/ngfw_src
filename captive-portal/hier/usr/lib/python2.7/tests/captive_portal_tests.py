@@ -8,6 +8,7 @@ import socket
 import subprocess
 import base64
 import copy
+import platform
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -429,6 +430,8 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)        
 
     def test_032_loginGoogle(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         global node, nodeData
         googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
         print "username: %s\n " % str(googleUserName)
@@ -475,6 +478,8 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)        
 
     def test_033_loginFacebook(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         global node, nodeData
         facebookUserName, facebookPassword = global_functions.getLiveAccountInfo("Facebook")
         print "username: %s\n " % str(facebookUserName)
