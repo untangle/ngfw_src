@@ -911,9 +911,6 @@ class NetworkTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        # skip the test if interface named External is disabled since it is probably a buffalo
-        if netsettings['interfaces']['list'][remote_control.interfaceExternal]['disabled']:
-            raise unittest2.SkipTest("External is disabled")
         # Find a static interface
         i=0
         interfaceNotFound = True
