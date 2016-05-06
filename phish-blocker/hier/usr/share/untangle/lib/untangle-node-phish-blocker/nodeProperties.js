@@ -12,6 +12,10 @@
                 "untangle-casing-http",
                 "untangle-casing-smtp"
             ]
+        },
+        "supportedArchitectures" : {
+            "javaClass": "java.util.LinkedList",
+            "list": ["i386","amd64"]
         }
 }
 
