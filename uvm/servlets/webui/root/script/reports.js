@@ -6,7 +6,7 @@ Ext.define('Ung.panel.Reports', {
     extend : 'Ext.container.Container',
     layout: 'border',
     name: 'panelReports',
-    border: 0,
+    border: false,
     autoRefreshEnabled: false,
     autoRefreshInterval: 10, //seconds
     extraConditions: null,
@@ -27,7 +27,7 @@ Ext.define('Ung.panel.Reports', {
         region: 'north',
         itemId: 'reportsNorth',
         height: 44,
-        border: 0,
+        border: false,
         hidden: false,
         bodyStyle: {
             background: '#555'
@@ -67,7 +67,7 @@ Ext.define('Ung.panel.Reports', {
         floatable: false,
         split: true,
         resizable: false,
-        border: 0,
+        border: false,
         store: Ext.create('Ext.data.Store', {
             fields: ['text', 'category'],
             data: []
@@ -102,18 +102,18 @@ Ext.define('Ung.panel.Reports', {
         region: 'center',
         itemId: 'reportsMain',
         layout: 'card',
-        border: 0,
+        border: false,
         items: [{
             xtype: 'container',
             layout: 'column',
             itemId: 'categorySelector',
             userCls: 'category-selector',
             scrollable: true,
-            border: 0
+            border: false
         }, {
             xtype: 'container',
             layout: 'border',
-            border: 0,
+            border: false,
             items: [{
                 xtype: 'grid',
                 region: 'west',
@@ -129,7 +129,7 @@ Ext.define('Ung.panel.Reports', {
                 floatable: false,
                 split: true,
                 resizable: false,
-                border: 0,
+                border: false,
                 store: Ext.create('Ext.data.Store', {
                     fields: ['text', 'inDashboard'],
                     data: []
@@ -156,7 +156,7 @@ Ext.define('Ung.panel.Reports', {
                 region: 'center',
                 layout: 'card',
                 itemId: 'entryView',
-                border: 0,
+                border: false,
                 items: [{
                     xtype: 'container',
                     itemId: 'entrySelector',
@@ -166,12 +166,12 @@ Ext.define('Ung.panel.Reports', {
                 }, {
                     itemId: 'reportView',
                     layout: 'border',
-                    border: 0,
+                    border: false,
                     items: [{
                         region: 'center',
                         itemId: 'reportPanel',
                         layout: 'card',
-                        border: 0
+                        border: false
                     }]
                 }]
             }]
@@ -268,22 +268,22 @@ Ext.define('Ung.panel.Reports', {
             xtype: 'panel',
             itemId: 'reportContainer',
             cls: 'report-container',
-            border: 0,
+            border: false,
             layout: 'border',
             items: [{
                 xtype: 'panel',
                 region: 'center',
                 itemId: 'reportChart',
                 layout: 'card',
-                border: 0,
+                border: false,
                 items: [{
                     xtype: 'panel',
                     itemId: 'highchart',
-                    border: 0
+                    border: false
                 }, {
                     xtype: 'panel',
                     itemId: 'textentry',
-                    border: 0,
+                    border: false,
                     textAlign: 'center',
                     bodyStyle: {
                         fontSize: '16px',
@@ -310,7 +310,7 @@ Ext.define('Ung.panel.Reports', {
                 resizable: true,
                 floatable: false,
                 titleCollapse: true,
-                border: 0,
+                border: false,
                 store:  Ext.create('Ext.data.Store', {
                     fields: [],
                     data: []
@@ -380,7 +380,7 @@ Ext.define('Ung.panel.Reports', {
             cls: 'report-container',
             stateful: true,
             stateId: "eventGrid",
-            border: 0,
+            border: false,
             viewConfig: {
                 enableTextSelection: true
             },
@@ -905,7 +905,7 @@ Ext.define('Ung.panel.Reports', {
                 html: btnHtml,
                 cls: (!entries[i].readOnly && entries[i].type !== 'EVENT_LIST') ? 'entry-btn custom' : 'entry-btn',
                 width: 300,
-                border: 0,
+                border: false,
                 textAlign: 'left',
                 item: entry,
                 handler: function () {
@@ -1025,7 +1025,7 @@ Ext.define('Ung.panel.Reports', {
                 this.down('#highchart').addDocked({
                     xtype: 'toolbar',
                     dock: 'top',
-                    border: 0,
+                    border: false,
                     items: chartTypeToolbar
                 });
             }
@@ -1060,7 +1060,7 @@ Ext.define('Ung.panel.Reports', {
                 this.down('#highchart').addDocked({
                     xtype: 'toolbar',
                     dock: 'top',
-                    border: 0,
+                    border: false,
                     items: chartTypeToolbar
                 });
             }
@@ -1077,7 +1077,7 @@ Ext.define('Ung.panel.Reports', {
         this.reportPanel.setActiveItem('reportContainer');
         this.reportContainer.setTitle({
             text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
-            border: 0,
+            border: false,
             padding: '5px'
         });
 
@@ -1251,7 +1251,7 @@ Ext.define('Ung.panel.Reports', {
 
         this.eventContainer.setTitle({
             text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
-            border: 0,
+            border: false,
             padding: '5px'
         });
         this.eventContainer.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
@@ -1874,7 +1874,7 @@ Ext.define('Ung.panel.ReportCategorySelector', {
     margin: '5',
     padding: '5',
     height: 250,
-    border: 0,
+    border: false,
     bodyStyle: {
         background: 'transparent'
     },
