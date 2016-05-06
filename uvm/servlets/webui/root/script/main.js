@@ -570,15 +570,17 @@ Ext.define("Ung.Main", {
                             items: [this.systemStats = Ext.create('Ung.SystemStats', {})]
                         }, {
                             xtype: 'container',
-                            itemId: 'filterNodes'
+                            itemId: 'filterNodes',
+                            cls: 'apps-nodes'
                         }, {
                             xtype: 'component',
-                            cls: 'apps-separator',
+                            cls: 'apps-separator top-title',
                             itemId: 'servicesSeparator',
                             html: i18n._("Service Apps")
                         }, {
                             xtype: 'container',
-                            itemId: 'serviceNodes'
+                            itemId: 'serviceNodes',
+                            cls: 'apps-nodes'
                         }]
                     }]
                 }, {

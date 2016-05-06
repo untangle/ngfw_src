@@ -3,14 +3,28 @@
 }
 
 .apps-separator {
-    background-color: white;
+    background-color: #CCCDCD;
     width: 100%;
-    height: 40px;
     line-height: 40px;
-    padding-left: 20px;
-    font-size: 18px;
-    color: #AAACAE;
-    border-bottom: 1px solid #D8DBE0;
+    padding-top: 20px;
+    padding-left: 10px;
+    border-bottom: 1px solid #CCC;
+    font-weight: bold;
+}
+
+.top-title {
+    font-size: 16px;
+    color: #333;
+    font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+}
+.top-title * {
+    vertical-align: middle;
+}
+
+
+div.apps-nodes {
+    background: #9E9E9E;
+    padding: 10px;
 }
 
 /* node background */
@@ -20,10 +34,16 @@ div.node {
     float: left;
     height: 140px;
     width: 140px;
-    margin: 15px;
-    border: solid 1px #d8dbe0;
-    background-color: white;
-    overflow: visible;
+    margin: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    background: #FFF;
+    overflow: hidden;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+div.node:hover {
+    background: #EEE;
 }
 
 div.node-cap {
@@ -71,8 +91,8 @@ div.node div.node-faceplate-info {
 /* node state container */
 div.node div.node-state {
     position: absolute;
-    right: -8px;
-    top: -8px;
+    right: 24px;
+    top: 15px;
     width: 16px;
     height: 16px;
 }
