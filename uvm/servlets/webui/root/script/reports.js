@@ -1200,7 +1200,11 @@ Ext.define('Ung.panel.Reports', {
                 dataIndex: 'time_trunc',
                 header: i18n._("Timestamp"),
                 width: 130,
-                flex: this.entry.timeDataColumns.length > 2 ? 0 : 1
+                flex: this.entry.timeDataColumns.length > 2 ? 0 : 1,
+                sorter: function (rec1, rec2) {
+                    var t1 = rec1.getData().time, t2 = rec2.getData().time;
+                    return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
+                }
             }];
             var seriesRenderer = null, title;
             if (!Ext.isEmpty(this.entry.seriesRenderer)) {
