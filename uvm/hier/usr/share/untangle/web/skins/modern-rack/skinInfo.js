@@ -1,7 +1,7 @@
 {
   "javaClass": "com.untangle.uvm.SkinInfo",
-  "name": "xserve",
-  "displayName": "Xserve - by Drewster727",
+  "name": "modern-rack",
+  "displayName": "Modern Rack",
   "adminSkin": true,
   "adminSkinVersion": 3,
   "extjsTheme": "gray",

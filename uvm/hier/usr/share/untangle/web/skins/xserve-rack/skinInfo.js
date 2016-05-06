@@ -1,9 +1,9 @@
 {
   "javaClass": "com.untangle.uvm.SkinInfo",
-  "name": "material",
-  "displayName": "Material",
+  "name": "xserve-rack",
+  "displayName": "Xserve Rack - by Drewster727",
   "adminSkin": true,
   "adminSkinVersion": 3,
   "extjsTheme": "gray",
-  "appsViewType": "list"
+  "appsViewType": "rack"
 }

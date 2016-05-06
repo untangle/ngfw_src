@@ -14,7 +14,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class SkinSettings implements Serializable, JSONString
 {
-    private String skinName = "default";
+    private String skinName = "material";
 
     public SkinSettings() { }
 

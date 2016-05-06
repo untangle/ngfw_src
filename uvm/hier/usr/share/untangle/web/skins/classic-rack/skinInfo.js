@@ -1,7 +1,7 @@
 {
   "javaClass": "com.untangle.uvm.SkinInfo",
-  "name": "classic",
-  "displayName": "Classic",
+  "name": "classic-rack",
+  "displayName": "Classic Rack",
   "adminSkin": true,
   "adminSkinVersion": 3,
   "extjsTheme": "gray",

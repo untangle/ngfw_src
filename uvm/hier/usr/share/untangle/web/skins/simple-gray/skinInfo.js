@@ -1,9 +1,9 @@
 {
   "javaClass": "com.untangle.uvm.SkinInfo",
-  "name": "cammo",
-  "displayName": "Black Cammo - by gabrielr",
+  "name": "simple-gray",
+  "displayName": "Simple Gray",
   "adminSkin": true,
   "adminSkinVersion": 3,
   "extjsTheme": "gray",
-  "appsViewType": "rack"
+  "appsViewType": "list"
 }

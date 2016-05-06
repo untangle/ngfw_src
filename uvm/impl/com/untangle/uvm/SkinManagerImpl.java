@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,8 +31,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 public class SkinManagerImpl implements SkinManager
 {
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
-    private static final String DEFAULT_SKIN = "default";
-    private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
+    private static final String DEFAULT_ADMIN_SKIN = "modern-rack";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -61,6 +63,21 @@ public class SkinManagerImpl implements SkinManager
         }
         else {
             this.settings = readSettings;
+
+            /**
+             * 12.1 conversion
+             * The "default" skin was renamed to "modern-rack"
+             * The "classic" skin was rename to "classic-rack"
+             */
+            if ( "default".equals(this.settings.getSkinName()) ) {
+                this.settings.setSkinName( "modern-rack" );
+                this.setSettings( this.settings );
+            }
+            if ( "classic".equals(this.settings.getSkinName()) ) {
+                this.settings.setSkinName( "classic-rack" );
+                this.setSettings( this.settings );
+            }
+
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
@@ -107,7 +124,7 @@ public class SkinManagerImpl implements SkinManager
         try {
             BufferedOutputStream dest = null;
             ZipEntry entry = null;
-            File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_SKIN);
+            File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_ADMIN_SKIN);
             File skinDir = new File(SKINS_DIR);
             List<File> processedSkinFolders = new ArrayList<File>();
             
@@ -205,7 +222,13 @@ public class SkinManagerImpl implements SkinManager
                     }
                 }
             }
-        }        
+        }
+        Collections.sort( skins, new Comparator<SkinInfo>() { public int compare(SkinInfo o1, SkinInfo o2) {
+            if ( o1 != null && o2 != null && o1.getDisplayName() != null && o2.getDisplayName() != null )
+                return o1.getDisplayName().compareTo(o2.getDisplayName());
+            return 0;
+        } });
+        
         return skins;
     }
 
