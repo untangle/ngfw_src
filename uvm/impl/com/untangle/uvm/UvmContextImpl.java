@@ -75,7 +75,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetworkManagerImpl networkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private RackManagerImpl rackManager;
     private NodeManagerImpl nodeManager;
     private CertificateManagerImpl certificateManager;
     private GeographyManagerImpl geographyManager;
@@ -167,11 +166,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public DaemonManager daemonManager()
     {
         return this.daemonManager;
-    }
-
-    public RackManagerImpl rackManager()
-    {
-        return this.rackManager;
     }
 
     public NodeManager nodeManager()
@@ -657,7 +651,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("languageManager", this.languageManager());
             json.put("skinManager", this.skinManager());
             json.put("nodeManager", this.nodeManager());
-            json.put("rackManager", this.rackManager());
             json.put("alertManager", this.alertManager());
             json.put("adminManager", this.adminManager());
             json.put("systemManager", this.systemManager());
@@ -764,7 +757,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("adminManager", this.adminManager());
             json.put("networkManager", this.networkManager());
             json.put("connectivityTester", this.getConnectivityTester());
-            json.put("rackManager", this.rackManager());
             json.put("systemManager", this.systemManager());
             json.put("mailSender", this.mailSender());
         } catch (Exception e) {
@@ -823,8 +815,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
         this.mailSender = MailSenderImpl.mailSender();
-
-        this.rackManager = RackManagerImpl.rackManager();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 

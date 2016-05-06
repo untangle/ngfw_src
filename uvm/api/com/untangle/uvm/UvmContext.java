@@ -20,13 +20,6 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 public interface UvmContext
 {
     /**
-     * Get the <code>RackManager</code> singleton.
-     *
-     * @return the RackManager.
-     */
-    RackManager rackManager();
-
-    /**
      * Get the <code>NodeManager</code> singleton.
      *
      * @return the NodeManager.

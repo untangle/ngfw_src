@@ -870,7 +870,7 @@ Ext.define('Ung.charts', {
     },
 
     /**
-     * Set the chart display for the node in RackView
+     * Set the chart display for the node in AppsView
      * @param {Object} container - the DOM element where the chart is rendered
      * @param {Object} data      - the series data
      * @returns {Object}         - the HighCharts chart object

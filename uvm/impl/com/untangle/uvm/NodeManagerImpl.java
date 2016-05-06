@@ -36,6 +36,9 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.LicenseManager;
+import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.vnet.NodeBase;
 
 /**
@@ -352,34 +355,102 @@ public class NodeManagerImpl implements NodeManager
         return nodeProps;
     }
 
-    private void findAllNodeProperties( List<NodeProperties> nodeProps, File searchDir )
+    public AppsView getAppsView( Integer policyId )
     {
-        if ( ! searchDir.exists() )
-            return;
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
 
-        File[] fileList = searchDir.listFiles();
-        if ( fileList == null )
-            return;
+        /* This stores a list of installable nodes. (for this rack) */
+        Map<String, NodeProperties> installableNodesMap =  new HashMap<String, NodeProperties>();
+        /* This stores a list of all licenses */
+        Map<String, License> licenseMap = new HashMap<String, License>();
 
-        for ( File f : fileList ) {
-            if ( f.isDirectory() ) {
-                findAllNodeProperties( nodeProps, f );
-            } else {
-                if ( "nodeProperties.js".equals( f.getName() ) ) {
-                    try {
-                        NodeProperties np = initNodePropertiesFilename( f.getAbsolutePath() );
-                        nodeProps.add( np );
-                    } catch (Exception e) {
-                        logger.warn("Ignoring bad node properties: " + f.getAbsolutePath(), e);
-                    }
-                }
-            }
-
+        /**
+         * Build the license map
+         */
+        List<Node> visibleNodes = nm.visibleNodes( policyId );
+        for (Node node : visibleNodes) {
+            String n = node.getNodeProperties().getName();
+            licenseMap.put(n, lm.getLicense(n));
         }
+
+        /**
+         * Build the rack state
+         */
+        Map<Long, NodeSettings.NodeState> runStates = nm.allNodeStates();
+
+        /**
+         * Iterate through nodes
+         */
+        for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
+            if ( ! nodeProps.getInvisible() ) {
+                installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
+            }
+        }
+
+        /**
+         * Build the nodeMetrics (stats in the UI)
+         * Remove visible installableNodes from installableNodes
+         */
+        Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(visibleNodes.size());
+        for (Node visibleNode : visibleNodes) {
+            Long nodeId = visibleNode.getNodeSettings().getId();
+            Integer nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
+            nodeMetrics.put( nodeId , visibleNode.getMetrics());
+
+            if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
+                installableNodesMap.remove( visibleNode.getNodeProperties().getDisplayName() );
+            }
+        }
+
+        /**
+         * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
+         */
+        List<Node> webFilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-web-filter", policyId );
+        if (webFilterNodes != null && webFilterNodes.size() > 0) {
+            installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+        }
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            License webFilterLicense = lm.getLicense(License.WEB_FILTER);
+            if ( webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial() ) {
+                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+            }
+        }
+
+        /**
+         * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
+         */
+        List<Node> spamBlockerNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-spam-blocker", policyId);
+        if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
+            installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+        }
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
+            if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
+                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+            }
+        }
+
+
+        /**
+         * Build the list of apps to show on the left hand nav
+         */
+        logger.debug("Building apps panel:");
+        List<NodeProperties> installableNodes = new ArrayList<NodeProperties>(installableNodesMap.values());
+        Collections.sort( installableNodes );
+
+        List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
+        for (Node node : visibleNodes) {
+            nodeProperties.add(node.getNodeProperties());
+        }
+        List<NodeSettings> nodeSettings  = new LinkedList<NodeSettings>();
+        for (Node node : visibleNodes) {
+            nodeSettings.add(node.getNodeSettings());
+        }
+
+        return new AppsView(installableNodes, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
     }
-
-    // Manager lifetime -------------------------------------------------------
-
+    
     protected void init()
     {
         loadSettings();
@@ -461,7 +532,31 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
-    // private methods --------------------------------------------------------
+    private void findAllNodeProperties( List<NodeProperties> nodeProps, File searchDir )
+    {
+        if ( ! searchDir.exists() )
+            return;
+
+        File[] fileList = searchDir.listFiles();
+        if ( fileList == null )
+            return;
+
+        for ( File f : fileList ) {
+            if ( f.isDirectory() ) {
+                findAllNodeProperties( nodeProps, f );
+            } else {
+                if ( "nodeProperties.js".equals( f.getName() ) ) {
+                    try {
+                        NodeProperties np = initNodePropertiesFilename( f.getAbsolutePath() );
+                        nodeProps.add( np );
+                    } catch (Exception e) {
+                        logger.warn("Ignoring bad node properties: " + f.getAbsolutePath(), e);
+                    }
+                }
+            }
+
+        }
+    }
 
     private void restartUnloaded()
     {

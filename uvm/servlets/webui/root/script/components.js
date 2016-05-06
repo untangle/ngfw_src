@@ -668,7 +668,7 @@ Ext.define("Ung.Node", {
             if(nodeName == "untangle-node-policy-manager") {
                 Ung.Main.loadPolicies();
             } else {
-                Ung.Main.updateRackView();
+                Ung.Main.updateAppsView();
             }
             
         }, this), this.nodeId);

@@ -1196,7 +1196,7 @@ Ext.define("Ung.Main", {
         }
     },
     // load the rack view for current policy
-    loadRackView: function () {
+    loadAppsView: function () {
         var callback = Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1209,9 +1209,9 @@ Ext.define("Ung.Main", {
             Ung.Main.buildApps();
             Ung.Main.buildNodes();
         }, this);
-        Ung.Util.RetryHandler.retry(rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+        Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
-    updateRackView: function () {
+    updateAppsView: function () {
         var callback = Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) {
                 return;
@@ -1220,7 +1220,7 @@ Ext.define("Ung.Main", {
             //Ung.Main.buildApps(); - disable app removal from 'Install' view, when install finishes
             Ung.Main.buildNodes();
         }, this);
-        Ung.Util.RetryHandler.retry(rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+        Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
     reloadLicenses: function () {
         Ung.Main.getLicenseManager().reloadLicenses(Ext.bind(function (result, exception) {
@@ -1244,7 +1244,7 @@ Ext.define("Ung.Main", {
                 }
             }, this);
 
-            Ung.Util.RetryHandler.retry(rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+            Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
         }, this), true);
     },
 
@@ -1268,7 +1268,7 @@ Ext.define("Ung.Main", {
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
                 Ung.AppItem.setLoading(nodeProperties.name, false);
-                Ung.Main.updateRackView();
+                Ung.Main.updateAppsView();
                 Ung.Util.handleException(exception);
                 return;
             }
@@ -1277,7 +1277,7 @@ Ext.define("Ung.Main", {
                 // apply disabled state for the installed app
                 app.setDisabled(true);
             }
-            Ung.Main.updateRackView();
+            Ung.Main.updateAppsView();
             if (completeFn) {
                 completeFn();
             }
@@ -1545,7 +1545,7 @@ Ext.define("Ung.Main", {
         this.checkForAlerts();
         this.checkForIE();
 
-        Ung.Main.loadRackView();
+        Ung.Main.loadAppsView();
     },
     getPolicyName: function (policyId) {
         if (Ext.isEmpty(policyId)) {
@@ -1610,7 +1610,7 @@ Ext.define("Ung.Main", {
     changeRack: function () {
         Ung.Main.policySelector.setText(this.text);
         rpc.currentPolicy = rpc.policies[this.index];
-        Ung.Main.loadRackView();
+        Ung.Main.loadAppsView();
     },
     getParentName: function (parentId) {
         if (parentId == null || rpc.policies === null) {

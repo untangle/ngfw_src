@@ -13,8 +13,16 @@ import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 
+/**
+ * The AppsView is an object that represents the current "view" of the apps tab
+ *
+ * This includes things like:
+ * Apps currently installed (in this policy)
+ * Apps that can be installed
+ * Names, and license state.
+ */
 @SuppressWarnings("serial")
-public class RackView implements Serializable
+public class AppsView implements Serializable
 {
     private List<NodeProperties> installable;
     private List<NodeSettings> instances;
@@ -23,7 +31,7 @@ public class RackView implements Serializable
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public RackView(List<NodeProperties> installable, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
+    public AppsView(List<NodeProperties> installable, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
         this.installable = installable;
         this.instances = instances;
@@ -65,7 +73,7 @@ public class RackView implements Serializable
     @Override
     public String toString()
     {
-        return "RackView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
+        return "AppsView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
     }
 
 }

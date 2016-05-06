@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.untangle.uvm.node.NodeManagerSettings;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.AppsView;
 
 /**
  * Local interface for managing Node instances.
@@ -153,4 +154,13 @@ public interface NodeManager
      * @return a <code>List</code> of NodeProperties for all nodes
      */
     List<NodeProperties> getAllNodeProperties();
+
+    /**
+     * Get the view of the rack when the specified rack is the current rack
+     *
+     * @param p policy.
+     * @return visible nodes for this policy.
+     */
+    AppsView getAppsView( Integer policyId );
+
 }
