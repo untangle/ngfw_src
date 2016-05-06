@@ -518,8 +518,14 @@ Ext.define('Webui.config.sessionMonitor', {
             interfaceMap[intfList[i][0]]=intfList[i][1];
         }
         this.fieldConvertInterface = function( value, record){
-            var interfaceName=interfaceMap[value];
-            return (interfaceName == null)?( value==null || value<0 )?" ":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
+            if (value == null || value < 0) {
+                return '';
+            }
+            if (!interfaceMap[value]) {
+                return Ext.String.format(i18n._('Interface [{0}]'), value);
+            }
+            return interfaceMap[value] + ' [' + value + ']';
+
         };
         this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
             name: this.name+"Grid",

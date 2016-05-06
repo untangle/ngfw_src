@@ -79,6 +79,21 @@ Ext.define('Webui.config.hostMonitor', {
     },
     // Current Hosts Grid
     buildGridCurrentHosts: function(columns, groupField) {
+        var intfList = Ung.Util.getInterfaceList(false, false);
+        var interfaceMap = {};
+        for(var i=0; i<intfList.length; i++) {
+            interfaceMap[intfList[i][0]]=intfList[i][1];
+        }
+        this.fieldConvertInterface = function( value, record){
+            if (value == null || value < 0) {
+                return '';
+            }
+            if (!interfaceMap[value]) {
+                return Ext.String.format(i18n._('Interface [{0}]'), value);
+            }
+            return interfaceMap[value] + ' [' + value + ']';
+
+        };
         var dateConvertFn = function(value) {
             if( value == 0 || value == "") {
                 return " ";
@@ -115,7 +130,8 @@ Ext.define('Webui.config.hostMonitor', {
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
-                name: "interfaceId"
+                name: "interfaceId",
+                convert: this.fieldConvertInterface
             },{
                 name: "hostname",
                 type: 'string',
