@@ -815,8 +815,9 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 return;
             }
 
+            var i;
             if (this.entry.type === 'TEXT') {
-                var infos = [], column, value, data = result.list, i;
+                var infos = [], column, value, data = result.list;
                 if (data.length > 0 && this.entry.textColumns != null) {
                     for (i = 0; i < this.entry.textColumns.length; i += 1) {
                         column = this.entry.textColumns[i].split(" ").splice(-1)[0];
@@ -828,18 +829,24 @@ Ext.define('Ung.dashboard.ReportEntry', {
 
             } else {
                 this.chartData = result.list;
+                // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+                for (i = 0; i < this.chartData.length; i += 1) {
+                    if (this.chartData[i].time_trunc) {
+                        this.chartData[i].time = this.chartData[i].time_trunc.time;
+                    }
+                }
 
                 if (!this.chart || this.chart.series.length === 0) {
                     if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this, true);
+                        this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this, true);
                     } else {
-                        this.chart = Ung.charts.categoriesChart(this.entry, result.list, this, true);
+                        this.chart = Ung.charts.categoriesChart(this.entry, this.chartData, this, true);
                     }
                 } else {
                     if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+                        Ung.charts.setTimeSeries(this.entry, this.chartData, this.chart, this.entry.timeStyle.indexOf('OVERLAPPED') >= 0);
                     } else {
-                        Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+                        Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
                     }
                 }
             }

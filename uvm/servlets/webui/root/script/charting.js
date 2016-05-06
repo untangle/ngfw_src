@@ -218,24 +218,8 @@ Ext.define('Ung.charts', {
      * @returns {Object}             - the HighStock chart object
      */
     timeSeriesChart: function (entry, data, container, forDashboard) {
-        /*
-        if (!Ext.isEmpty(widget.entry.seriesRenderer)) {
-            seriesRenderer = Ung.panel.Reports.getColumnRenderer(widget.entry.seriesRenderer);
-        } else {
-            console.log(widget.entry);
-            seriesRenderer = widget.entry.seriesRenderer;
-        }
-        */
-
-        var chartType,
+        var chartType, columnOverlapped = false,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
-
-        // add transparency to colors
-        if (entry.columnOverlapped) {
-            colors = colors.map(function (color) {
-                Highcharts.Color(color).setOpacity(0.5).get('rgba');
-            });
-        }
 
         switch (entry.timeStyle) {
         case 'LINE':
@@ -246,9 +230,12 @@ Ext.define('Ung.charts', {
             break;
         case 'BAR':
         case 'BAR_3D':
+            chartType = 'column';
+            break;
         case 'BAR_OVERLAPPED':
         case 'BAR_3D_OVERLAPPED':
             chartType = 'column';
+            columnOverlapped = true;
             break;
         default:
             chartType = 'areaspline';
@@ -268,13 +255,6 @@ Ext.define('Ung.charts', {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
                     fontSize: '12px'
                 }
-                /*
-                events: {
-                    selection: function (evt) {
-                        console.log(evt);
-                    }
-                }
-                */
             },
             title: null,
             lang: {
@@ -470,7 +450,7 @@ Ext.define('Ung.charts', {
                     }
                 }
             },
-            series: this.setTimeSeries(entry, data, null)
+            series: this.setTimeSeries(entry, data, null, columnOverlapped)
         });
     },
 
@@ -481,7 +461,7 @@ Ext.define('Ung.charts', {
      * @param {Object} chart - the chart for which data is updated; is null when creating the chart
      * @returns {Array}      - the series array
      */
-    setTimeSeries: function (entry, data, chart) {
+    setTimeSeries: function (entry, data, chart, columnOverlapped) {
         var i, j, _data, _seriesOptions = [], _seriesRenderer, _column;
 
         if (entry.type === 'TIME_GRAPH_DYNAMIC') {
@@ -490,7 +470,7 @@ Ext.define('Ung.charts', {
             while (entry.timeDataColumns.length === 0) {
                 for (_column in data[data.length - _iterator]) {
                     if (data[data.length - _iterator].hasOwnProperty(_column)) {
-                        if (_column !== 'time_trunc') {
+                        if (_column !== 'time_trunc' && _column !== 'time') {
                             entry.timeDataColumns.push(_column);
                         }
                     }
@@ -513,14 +493,14 @@ Ext.define('Ung.charts', {
             _seriesOptions[i] = {
                 id: _column,
                 name: _seriesRenderer ? _seriesRenderer(_column) + ' [' + _column + ']' : _column,
-                grouping: entry.columnOverlapped ? false : true,
-                pointPadding: entry.columnOverlapped ? 0.2 * i : 0.1
+                grouping: columnOverlapped ? false : true,
+                pointPadding: columnOverlapped ? 0.2 * i : 0.1
             };
 
             _data = [];
             for (j = 0; j < data.length; j += 1) {
                 _data.push([
-                    data[j].time_trunc.time,
+                    data[j].time,
                     data[j][_seriesOptions[i].id] || (this.generateRandomData ? (Math.random() * 120) : 0)
                 ]);
             }
@@ -775,24 +755,42 @@ Ext.define('Ung.charts', {
      * Updates the Series type for the TimeSeries charts
      * @param {Object} entry   - the Report entry object
      * @param {Object} chart   - the chart for which series are updated
-     * @param {string} newType - the new type of the Series: 'spline', 'areaspline' or 'column'
      */
-    updateSeriesType: function (entry, chart, newType) {
-        var i, _newOptions;
+    updateSeriesType: function (entry, chart) {
+        var i, _newOptions, chartType, columnOverlapped = false;
+
+        switch (entry.timeStyle) {
+        case 'LINE':
+            chartType = 'spline';
+            break;
+        case 'AREA':
+            chartType = 'areaspline';
+            break;
+        case 'BAR':
+        case 'BAR_3D':
+            chartType = 'column';
+            break;
+        case 'BAR_OVERLAPPED':
+        case 'BAR_3D_OVERLAPPED':
+            columnOverlapped = true;
+            chartType = 'column';
+            break;
+        default:
+            chartType = 'areaspline';
+        }
+
         for (i = 0; i < chart.series.length; i += 1) {
             _newOptions = {
-                grouping: entry.columnOverlapped ? false : true,
-                pointPadding: entry.columnOverlapped ? 0.15 * i : 0.1,
-                type: newType
+                grouping: !columnOverlapped,
+                pointPadding: columnOverlapped ? 0.15 * i : 0.1,
+                type: chartType
             };
-            /*
-            if (entry.columnOverlapped) {
-                _newOptions.color = Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
+
+            if (columnOverlapped) {
+                _newOptions.color = new Highcharts.Color(chart.options.colors[i]).setOpacity(0.75).get('rgba');
             } else {
                 _newOptions.color = chart.options.colors[i];
             }
-            _newOptions.color = chart.options.colors[i];
-            */
             chart.series[i].update(_newOptions, false);
         }
         chart.redraw();

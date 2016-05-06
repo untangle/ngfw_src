@@ -298,24 +298,6 @@ Ext.define("Ung.window.ReportEditor", {
                 }
             }
         }, {
-            xtype: 'combo',
-            name: 'Style',
-            margin: '10 0 10 0',
-            dataIndex: "pieStyle",
-            allowBlank: false,
-            editable: false,
-            fieldLabel: i18n._('Style'),
-            queryMode: 'local',
-            width: 350,
-            store: styleTypes,
-            listeners: {
-                "select": {
-                    fn: Ext.bind(function (combo, records, eOpts) {
-                        this.syncComponents();
-                    }, this)
-                }
-            }
-        }, {
             xtype: "container",
             dataIndex: "textColumns",
             layout: 'column',
@@ -384,6 +366,25 @@ Ext.define("Ung.window.ReportEditor", {
             maxValue: 1000,
             allowBlank: false,
             width: 350
+        }, {
+            xtype: 'combo',
+            name: 'pieStyle',
+            margin: '10 0 10 0',
+            dataIndex: "pieStyle",
+            allowBlank: false,
+            editable: false,
+            fieldLabel: i18n._('Style'),
+            queryMode: 'local',
+            width: 350,
+            store: [
+                ["PIE", i18n._("Pie")],
+                ["PIE_3D", i18n._("Pie 3D")],
+                ["DONUT", i18n._("Donut")],
+                ["DONUT_3D", i18n._("Donut 3D")],
+                ["COLUMN", i18n._("Column")],
+                ["COLUMN_3D", i18n._("Column 3D")]
+            ]
+            //store: styleTypes,
         }, {
             xtype: 'combo',
             name: 'timeStyle',
@@ -585,6 +586,7 @@ Ext.define("Ung.window.ReportEditor", {
                 pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
                 pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
                 pieNumSlices: this.down('[dataIndex=pieNumSlices]'),
+                pieStyle: this.down('[dataIndex=pieStyle]'),
                 timeStyle: this.down('[dataIndex=timeStyle]'),
                 timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
                 timeDataColumns: this.down('[dataIndex=timeDataColumns]'),
@@ -612,6 +614,9 @@ Ext.define("Ung.window.ReportEditor", {
 
         this.cmps.pieNumSlices.setVisible(type == "PIE_GRAPH");
         this.cmps.pieNumSlices.setDisabled(type != "PIE_GRAPH");
+
+        this.cmps.pieStyle.setVisible(type == "PIE_GRAPH");
+        this.cmps.pieStyle.setDisabled(type != "PIE_GRAPH");
 
         this.cmps.timeStyle.setVisible(type == "TIME_GRAPH");
         this.cmps.timeStyle.setDisabled(type != "TIME_GRAPH");

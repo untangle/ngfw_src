@@ -983,8 +983,9 @@ Ext.define('Ung.panel.Reports', {
             }
             this.reportChart.setActiveItem('highchart');
 
+            var chartTypeToolbar = [], button, i;
+
             if (entry.type === 'PIE_GRAPH') {
-                var chartTypeToolbar = [], button, i;
                 var pieStyleButtons = [
                     { pieStyle: 'PIE', icon: 'pie_chart_outlined', text: i18n._("Pie") },
                     { pieStyle: 'PIE_3D', icon: 'pie_chart_outlined', text: i18n._("3D Pie") },
@@ -1021,43 +1022,40 @@ Ext.define('Ung.panel.Reports', {
                 });
             }
 
-            /*
             if (entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                var timeStyleButtons = [], timeStyle, i;
-                var timeStyles = [
-                    {type: 'spline', iconCls: 'icon-line-chart', text: i18n._("Line")},
-                    {type: 'areaspline', iconCls: 'icon-area-chart', text: i18n._("Area")},
-                    {type: 'column', overlapped: false, iconCls: 'icon-bar-chart', text: i18n._("Grouped Columns")},
-                    {type: 'column', overlapped: true, iconCls: 'icon-bar-chart', text: i18n._("Overlapped Columns")}
+                var timeStyleButtons = [
+                    {timeStyle: 'LINE', icon: 'show_chart', text: i18n._('Line')},
+                    {timeStyle: 'AREA', icon: 'show_chart', text: i18n._('Area')},
+                    {timeStyle: 'BAR', icon: 'insert_chart', text: i18n._('Grouped Columns')},
+                    {timeStyle: 'BAR_OVERLAPPED', icon: 'insert_chart', text: i18n._('Overlapped Columns')}
                 ];
 
-                for (i = 0; i < timeStyles.length; i += 1) {
-                    timeStyle = timeStyles[i];
-                    timeStyleButtons.push({
+                for (i = 0; i < timeStyleButtons.length; i += 1) {
+                    button = timeStyleButtons[i];
+                    chartTypeToolbar.push({
                         xtype: 'button',
-                        pressed: entry.chartType == timeStyle.type,
-                        iconCls: timeStyle.iconCls,
-                        text: timeStyle.text,
-                        chartType: timeStyle.type,
-                        columnOverlapped: timeStyle.overlapped,
-                        handler: Ext.bind(function (button) {
-                            entry.chartType = button.chartType;
-                            entry.columnOverlapped = button.columnOverlapped;
-                            //console.log(this.chart);
-                            //Ung.charts.updateSeriesType(this.entry, this.chart, button.chartType);
-                            //this.chart.destroy();
-                            console.log(entry);
-                            this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                        pressed: entry.timeStyle === button.timeStyle,
+                        //iconCls: timeStyle.iconCls,
+                        text: '<i class="material-icons">' + button.icon + '</i> ' + button.text,
+                        timeStyle: button.timeStyle,
+                        handler: Ext.bind(function (btn) {
+                            Ext.Array.each(this.down('#highchart').getDockedItems('toolbar[dock="top"]')[0].query('button'), function (_button) {
+                                _button.setPressed(false);
+                            });
+                            btn.setPressed(true);
+                            entry.timeStyle = btn.timeStyle;
+                            //this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                            Ung.charts.updateSeriesType(entry, this.chart);
                         }, this)
                     });
                 }
                 this.down('#highchart').addDocked({
                     xtype: 'toolbar',
                     dock: 'top',
-                    items: timeStyleButtons
+                    border: 0,
+                    items: chartTypeToolbar
                 });
             }
-            */
         }
 
         /*
@@ -1079,12 +1077,20 @@ Ext.define('Ung.panel.Reports', {
         this.reportData.getStore().loadData([]);
 
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
+            var i;
             this.reportContainer.setLoading(false);
             if (Ung.Util.handleException(exception)) {
                 console.log(exception);
                 return;
             }
             this.chartData = result.list;
+
+            // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+            for (i = 0; i < this.chartData.length; i += 1) {
+                if (this.chartData[i].time_trunc) {
+                    this.chartData[i].time = this.chartData[i].time_trunc.time;
+                }
+            }
 
             switch (entry.type) {
                 case 'TEXT':
@@ -1096,7 +1102,7 @@ Ext.define('Ung.panel.Reports', {
                 default:
                     this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
             }
-            this.loadReportData(result.list);
+            this.loadReportData(this.chartData);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
         Ung.TableConfig.getColumnsForTable(entry.table, this.extraConditionsPanel.columnsStore);
     },
@@ -1340,12 +1346,20 @@ Ext.define('Ung.panel.Reports', {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
+            var i;
             this.chartData = result.list;
 
+            // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+            for (i = 0; i < this.chartData.length; i += 1) {
+                if (this.chartData[i].time_trunc) {
+                    this.chartData[i].time = this.chartData[i].time_trunc.time;
+                }
+            }
+
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                Ung.charts.setTimeSeries(this.entry, result.list, this.chart);
+                Ung.charts.setTimeSeries(this.entry, this.chartData, this.chart, this.entry.timeStyle.indexOf('OVERLAPPED') >= 0);
             } else {
-                Ung.charts.setCategoriesSeries(this.entry, result.list, this.chart);
+                Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
             }
             //this.loadReportData(result.list);
             if (this != null && this.rendered && this.autoRefreshEnabled) {
