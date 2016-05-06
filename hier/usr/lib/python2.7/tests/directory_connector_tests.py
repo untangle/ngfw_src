@@ -11,6 +11,7 @@ import remote_control
 import system_properties
 import test_registry
 import global_functions
+import platform
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -433,6 +434,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test google authentication
         """
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
         print "username: %s\n " % str(googleUserName)
         if googlePassword != None:
@@ -446,6 +449,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test google authentication
         """
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         googleUserName, googlePassword = ("badusername@untangle.com","xxxxxxxxx")
 
         result = node.getGoogleManager().authenticate( googleUserName, googlePassword )
@@ -456,6 +461,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test facebook authentication
         """
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         facebookUserName, facebookPassword = global_functions.getLiveAccountInfo("Facebook")
         print "username: %s\n " % str(facebookUserName)
         if facebookPassword != None:
@@ -469,6 +476,8 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test facebook authentication
         """
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('Not supported on ARM')
         facebookUserName, facebookPassword = ("badusername@untangle.com","xxxxxxxxx")
 
         result = node.getFacebookManager().authenticate( facebookUserName, facebookPassword )
