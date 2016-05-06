@@ -366,9 +366,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             txcount = txstream.size();
             rxcount = rxstream.read(buffer);
         } catch (Exception exn) {
-            logger.warn("Exception scanning file: ", exn);
-            setResult(VirusScannerResult.ERROR);
-            return;
+            // instead of bailing out on exceptions we craft an error result
+            // and continue so we can get the result from the cloud scanner
+            logger.warn("Exception scanning file: " + exn.getMessage());
+            String errorText = ("221 E " + exn.getClass().getName());
+            buffer = errorText.getBytes();
+            rxcount = errorText.length();
         }
 
         // close the streams and socket ignoring exceptions
