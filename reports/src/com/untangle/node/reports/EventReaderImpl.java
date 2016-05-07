@@ -192,13 +192,13 @@ public class EventReaderImpl
 
     public ArrayList<JSONObject> getEvents( final String sql, final String table, final int limit )
     {
-        ResultSetReader resultSetReader = getEventsResultSet( sql, table, null, -1 );
+        ResultSetReader resultSetReader = getEventsResultSet( sql, table, null, limit );
         return resultSetReader.getAllEvents();
     }
 
     public ArrayList<JSONObject> getEvents( final Connection dbConnection, final PreparedStatement statement, final String table, final int limit )
     {
-        ResultSetReader resultSetReader = getEventsResultSet( dbConnection, statement, table, null, -1 );
+        ResultSetReader resultSetReader = getEventsResultSet( dbConnection, statement, table, null, limit );
         return resultSetReader.getAllEvents();
     }
     
