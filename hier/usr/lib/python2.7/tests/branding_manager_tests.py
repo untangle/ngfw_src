@@ -22,7 +22,7 @@ newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
 newContactName = "Skynet"
 newContactEmail = "skynet@untangle.com"
 
-uvmContext = Uvm().getUvmContext()
+uvmContext = Uvm().getUvmContext(timeout=300)
 defaultRackId = 1
 
 def setDefaultBrandingManagerSettings():
