@@ -109,7 +109,7 @@ def getDownloadSpeed():
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
-    reports = Uvm().getUvmContext().nodeManager().node("untangle-node-reports")
+    reports = Uvm().getUvmContext(timeout=300).nodeManager().node("untangle-node-reports")
     if reports == None:
         print "WARNING: reports app not found"
         return None
@@ -228,3 +228,4 @@ def getLiveAccountInfo(accounttype):
         if account[0] == accounttype:
             return (account[1], account[2])
     return ("message",accounttype + " account not found")
+
