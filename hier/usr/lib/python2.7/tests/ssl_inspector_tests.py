@@ -107,7 +107,7 @@ class SslInspectorTests(unittest2.TestCase):
 
     def test_015_checkWebFilterBlockInspected(self):
         addBlockedUrl(testedServerName)
-        remote_control.runCommand('curl -s -4 --connect-timeout 2 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
+        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
         nukeBlockedUrls()
         result = remote_control.runCommand('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
@@ -133,7 +133,7 @@ class SslInspectorTests(unittest2.TestCase):
 
     def test_040_checkWebFilterEventLog(self):
         addBlockedUrl(testedServerName)
-        remote_control.runCommand('curl -s -4 --connect-timeout 2 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
+        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
         nukeBlockedUrls()
 
         events = global_functions.get_events('Web Filter','Blocked Web Events',None,1)
