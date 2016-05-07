@@ -405,9 +405,13 @@ public class SettingsManagerImpl implements SettingsManager
     {
         File link = new File( fileName );
 
+        logger.info("Wrote new settings: " + outputFileName);
+        
         if ( prettyFormat ) {
             String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
+            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
             UvmContextImpl.context().execManager().execResult(formatCmd);
+            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
         }
         
         if ( saveVersion ) {
