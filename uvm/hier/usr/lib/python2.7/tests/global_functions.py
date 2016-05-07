@@ -21,6 +21,9 @@ smtpServerHost = 'test.untangle.com'
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
 
+uvmContext = Uvm().getUvmContext(timeout=120)
+uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
     result = ""
@@ -109,7 +112,7 @@ def getDownloadSpeed():
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
-    reports = Uvm().getUvmContext(timeout=300).nodeManager().node("untangle-node-reports")
+    reports = uvmContextLongTimeout.nodeManager().node("untangle-node-reports")
     if reports == None:
         print "WARNING: reports app not found"
         return None

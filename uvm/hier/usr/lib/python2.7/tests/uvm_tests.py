@@ -16,6 +16,7 @@ import time
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import test_registry
@@ -25,7 +26,6 @@ import system_properties
 node = None
 nodeFW = None
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")

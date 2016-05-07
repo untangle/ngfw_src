@@ -22,7 +22,7 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
-
+        
     def make_request(self, url, postdata, content_type = "text/plain; charset=utf-8" ):
         response = StringIO()
 
@@ -55,12 +55,15 @@ class CurlRequestHandler(object):
     ## Change the timeout for receiving a response
     def set_timeout( self, timeout ):
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
-    
 
 class Uvm:
     def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=120 ):
         handler = CurlRequestHandler( timeout )
 
+        print "XXX"
+        print timeout
+        print "XXX"
+        
         try:
             if ( username != None and password != None ):
                 handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))

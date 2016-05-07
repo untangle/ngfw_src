@@ -6,12 +6,12 @@ import re
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import remote_control
 import global_functions
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 

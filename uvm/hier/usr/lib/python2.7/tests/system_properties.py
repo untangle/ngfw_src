@@ -14,7 +14,6 @@ from uvm import Uvm
 import remote_control
 
 prefix = "@PREFIX@"
-uvmContext = Uvm().getUvmContext()
 network_settings_file = '/usr/share/untangle/settings/untangle-vm/network.js'
 
 def getPrefix():
@@ -30,13 +29,13 @@ def getInterface(name):
 
 def getHttpAdminUrl():
     internalAdmin = findInterfaceIPbyIP(remote_control.clientIP)
-    httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
+    httpPort = str(global_functions.uvmContext.networkManager().getNetworkSettings().get('httpPort'))
     httpAdminUrl = "http://" + internalAdmin + ":" + httpPort + "/"
     return httpAdminUrl
 
 def getHttpsAdminUrl():
     internalAdmin = self.findInterfaceIPbyIP(remote_control.clientIP)
-    httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
+    httpsPort = str(global_functions.uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
     httpsAdminUrl = "https://" + internalAdmin + ":" + httpsPort + "/"
     return httpsAdminUrl
 

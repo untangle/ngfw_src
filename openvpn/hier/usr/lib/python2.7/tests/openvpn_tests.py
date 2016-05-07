@@ -8,6 +8,7 @@ import subprocess
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import remote_control
@@ -15,7 +16,6 @@ import test_registry
 import system_properties
 import global_functions
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 nodeData = None
 node = None

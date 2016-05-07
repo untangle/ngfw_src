@@ -4,8 +4,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-
-uvmContext = Uvm().getUvmContext()
+from global_functions import uvmContext
 
 class TestEnvironmentTests(unittest2.TestCase):
 

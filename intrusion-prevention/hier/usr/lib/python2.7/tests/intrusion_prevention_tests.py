@@ -11,6 +11,7 @@ import urllib
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Uvm
 import remote_control
 import global_functions
@@ -20,7 +21,6 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "", sys.version_info[0], sys.version
 if ( "" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
-uvmContext = Uvm().getUvmContext()
 default_rack_id = 1
 node = None
 

@@ -6,6 +6,7 @@ import datetime
 import re
 from uvm import Manager
 from uvm import Uvm
+from global_functions import uvmContext
 
 # exteral global variables
 clientIP = None
@@ -24,7 +25,6 @@ __orig_stderr = None
 # set the key file permissions correctly just in case
 os.system("chmod 600 %s" % hostKeyFile)
 
-uvmContext = Uvm().getUvmContext()
 netsettings = uvmContext.networkManager().getNetworkSettings()
 i = 0
 for interface in netsettings['interfaces']['list']:

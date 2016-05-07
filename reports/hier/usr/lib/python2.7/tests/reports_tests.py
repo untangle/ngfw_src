@@ -16,8 +16,8 @@ from uvm import Uvm
 import remote_control
 import test_registry
 import global_functions
+from global_functions import uvmContext
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 canRelay = None

@@ -12,6 +12,7 @@ import time
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import test_registry
@@ -26,7 +27,6 @@ ftp_client_external = "10.111.56.84"
 dyn_hostname = ""
 dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")

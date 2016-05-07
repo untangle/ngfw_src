@@ -21,6 +21,7 @@ from   tests import *
 orig_stdout = sys.stdout
 orig_stderr = sys.stderr
 exit_flag = False
+interrupt_count = 0
 
 class ArgumentParser(object):
     def __init__(self):
@@ -136,10 +137,14 @@ def printUsage():
 """ % sys.argv[0] )
 
 def signal_handler(signal, frame):
-    global orig_stdout, exit_flag
+    global orig_stdout, exit_flag, interrupt_count
+    interrupt_count = interrupt_count + 1
     orig_stdout.write("Interrupt...\n")
     orig_stdout.flush()
-    exit_flag = True;
+    if interrupt_count > 4:
+        sys.exit(1)
+    else:
+        exit_flag = True;
 
 def exit(code):
     global parser
