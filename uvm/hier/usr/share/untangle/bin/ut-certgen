@@ -5,7 +5,7 @@ OPENSSL_TOOL="/usr/bin/openssl"
 CERT_PATH="/var/cache/untangle-ssl"
 TEMP="/dev/shm"
 
-UT_ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
+UT_ROOT_PATH="@PREFIX@/usr/share/untangle/settings/untangle-certificates"
 
 # Since we call this script to generate mitm certificates on the fly we must
 # use a random source that will not block.  All the security articles I found
