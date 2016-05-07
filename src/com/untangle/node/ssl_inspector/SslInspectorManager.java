@@ -89,7 +89,7 @@ class SslInspectorManager
     private boolean clientSide;
     private boolean dataMode;
 
-    public static final String CERTIFICATE_GENERATOR_SCRIPT = "/usr/share/untangle/bin/ut-certgen";
+    public static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     public static final byte IPC_RELEASE_MESSAGE[] = "SSL_INSPECTOR_IPC_RELEASE".getBytes();
     public static final byte IPC_DESTROY_MESSAGE[] = "SSL_INSPECTOR_IPC_DESTROY".getBytes();
     public static final byte IPC_WAKEUP_MESSAGE[] = "SSL_INSPECTOR_IPC_WAKEUP".getBytes();
