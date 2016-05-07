@@ -431,7 +431,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = node.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, null, null, extraConditions );
+        PreparedStatement statement = entry.toSql( conn, null, null, extraConditions, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);

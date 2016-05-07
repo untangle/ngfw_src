@@ -126,7 +126,7 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
 
-    return reportsManager.getEvents( reportEntry, conditions, limit)
+    return reportsManager.getEvents( reportEntry, conditions, limit )
 
 def check_events( events, num_events, *args, **kwargs):
     if events == None:

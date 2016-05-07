@@ -176,8 +176,12 @@ public class EventReaderImpl
 
             queryStr += queryPart2;
         }
-        if (limit > 0)
-            queryStr += " LIMIT " + limit + " ";
+        if (limit > 0) {
+            String tmpStr = queryStr.toLowerCase();
+            int limitIndex   = tmpStr.indexOf("limit");
+            if ( limit < 0 ) 
+                queryStr += " LIMIT " + limit + " ";
+        }
 
         logger.debug("getEventsResultSet( query: " + query + " limit: " + limit + " )");
 
@@ -187,12 +191,6 @@ public class EventReaderImpl
     public ArrayList<JSONObject> getEvents( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate)
     {
         ResultSetReader resultSetReader = getEventsResultSet( query, table, conditions, limit, startDate, endDate);
-        return resultSetReader.getAllEvents();
-    }
-
-    public ArrayList<JSONObject> getEvents( final String sql, final String table, final int limit )
-    {
-        ResultSetReader resultSetReader = getEventsResultSet( sql, table, null, limit );
         return resultSetReader.getAllEvents();
     }
 

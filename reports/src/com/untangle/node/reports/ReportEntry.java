@@ -213,10 +213,15 @@ public class ReportEntry implements Serializable, JSONString
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
-        return toSql( conn, startDate, endDate, null );
+        return toSql( conn, startDate, endDate, null, null );
     }
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
+    {
+        return toSql( conn, startDate, endDate, null, null );
+    }
+
+    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions, Integer limit )
     {
         if ( endDate == null ) {
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
@@ -248,7 +253,7 @@ public class ReportEntry implements Serializable, JSONString
             return toSqlText( conn, startDate, endDate, allConditions );
 
         case EVENT_LIST:
-            return toSqlEventList( conn, startDate, endDate, allConditions );
+            return toSqlEventList( conn, startDate, endDate, allConditions, limit );
         }
 
         throw new RuntimeException("Unknown Graph type: " + this.type);
@@ -277,14 +282,16 @@ public class ReportEntry implements Serializable, JSONString
         //     return TimeDataInterval.MINUTE;
     }
 
-    private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions, Integer limit )
     {
         String query = ""; 
         String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
         query +=  "SELECT * FROM reports." + this.table + " WHERE " + dateCondition;
         query += conditionsToString( allConditions );
         query += " ORDER BY time_stamp DESC";
-
+        if ( limit != null && limit > 0 )
+        query += " LIMIT " + limit;
+        
         return sqlToStatement( conn, query, allConditions );
     }
 
