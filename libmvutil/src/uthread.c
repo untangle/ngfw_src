@@ -12,6 +12,7 @@
 
 #define AMD64_STACK_SIZE 256*1024
 #define I386_STACK_SIZE 96*1024
+#define ARM_STACK_SIZE 256*1024
 
 uthread_attr_t uthread_attr;
 
@@ -48,6 +49,18 @@ int uthread_init (void)
     }
     else if ( strstr(utsn.release,"686") != NULL) {
         if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
+    else if ( strstr(utsn.machine,"x86_64") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, AMD64_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
+    else if ( strstr(utsn.machine,"686") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
+    else if ( strstr(utsn.machine,"arm") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, ARM_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
     }
     else {
