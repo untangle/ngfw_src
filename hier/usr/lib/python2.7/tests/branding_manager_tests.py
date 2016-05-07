@@ -129,18 +129,6 @@ class BrandingManagerTests(unittest2.TestCase):
         print "in :\"%s\""%matchText
         assert(newCompanyName in matchText)
 
-        # Check quarantine page
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + "\"" + httpAdmin + "quarantine/\"",stdout=True)
-        # print "page is <%s>" % result
-        # Verify Title of blockpage as company name
-        myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
-        matchText = myRegex.search(result).group(1)
-        matchText = matchText.split("|")[0]
-        matchText = matchText.strip()
-        print "looking for: \"%s\""%newCompanyName
-        print "in :\"%s\""%matchText
-        assert(newCompanyName in matchText)
-
     def test_021_changeBranding_bannerMessage_added(self):
         global node, nodeWeb, nodeData
         nodeData['companyName'] = newCompanyName;
