@@ -17,7 +17,6 @@ import pdb
 
 node = None
 nodeWeb = None
-nodeSpam = None
 newCompanyName = "Some new long name"
 newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
 newContactName = "Skynet"
@@ -49,16 +48,12 @@ class BrandingManagerTests(unittest2.TestCase):
         return "untangle-node-web-filter"
 
     @staticmethod
-    def nodeNameSpam():
-        return "untangle-node-spam-blocker-lite"
-
-    @staticmethod
     def vendorName():
         return "Untangle"
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node, nodeWeb, nodeSpam
+        global nodeData, node, nodeWeb
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             print "ERROR: Node %s already installed" % self.nodeName()
             raise Exception('node %s already instantiated' % self.nodeName())
@@ -68,10 +63,6 @@ class BrandingManagerTests(unittest2.TestCase):
             print "ERROR: Node %s already installed" % self.nodeNameWeb()
             raise Exception('node %s already instantiated' % self.nodeNameWeb())
         nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpam())):
-            print "ERROR: Node %s already installed" % self.nodeNameSpam()
-            raise Exception('node %s already instantiated' % self.nodeNameSpam())
-        nodeSpam = uvmContext.nodeManager().instantiate(self.nodeNameSpam(), defaultRackId)
 
     def setUp(self):
         pass
@@ -188,7 +179,7 @@ class BrandingManagerTests(unittest2.TestCase):
         
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWeb, nodeSpam
+        global node, nodeWeb
         if node != None:
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings()
@@ -197,9 +188,5 @@ class BrandingManagerTests(unittest2.TestCase):
         if nodeWeb != None:
             uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
             nodeWeb = None
-        if nodeSpam != None:
-            uvmContext.nodeManager().destroy( nodeSpam.getNodeSettings()["id"] )
-            nodeSpam = None
-
 
 test_registry.registerNode("branding-manager", BrandingManagerTests)
