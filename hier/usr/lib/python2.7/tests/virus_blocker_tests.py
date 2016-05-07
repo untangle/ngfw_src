@@ -2,6 +2,7 @@ import unittest2
 import time
 import sys
 import os
+import platform
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
