@@ -41,7 +41,7 @@ public class DeviceTableImpl implements DeviceTable
     
     protected DeviceTableImpl()
     {
-        initializeMacVendorTable();
+        //initializeMacVendorTable();
         
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
