@@ -49,7 +49,7 @@ elif [ $MEM -gt 900000 ] ; then
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
     REPORTS_MAX_QUEUE_LEN=500000
-else
+elif [ $MEM -gt 600000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=320m
     else
@@ -58,6 +58,15 @@ else
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
     REPORTS_MAX_QUEUE_LEN=100000
+else
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=256m
+    else
+        MAX_HEAP_SIZE=256m
+    fi
+    GC_SAFETY_FACTOR=90
+    GC_MIN_CYCLE=10
+    REPORTS_MAX_QUEUE_LEN=50000
 fi
 
 if [ $ARCH = 'x86_64' ]; then
