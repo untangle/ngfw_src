@@ -8,6 +8,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import test_registry
@@ -18,7 +19,6 @@ import urllib2
 import global_functions
 
 node = None
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 
 class ConfigurationBackupTests(unittest2.TestCase):
