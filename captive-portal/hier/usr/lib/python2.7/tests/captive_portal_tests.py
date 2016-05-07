@@ -337,7 +337,7 @@ class CaptivePortalTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = remote_control.runCommand("curl -s --connect-timeout 2 -L -o /tmp/capture_test_025.out --insecure https://test.untangle.com/")
+        result = remote_control.runCommand("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025.out --insecure https://test.untangle.com/")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Captive Portal' /tmp/capture_test_025.out")
         assert (search == 0)
@@ -345,7 +345,7 @@ class CaptivePortalTests(unittest2.TestCase):
         # Verify anonymous works
         appid = str(node.getNodeSettings()["id"])
         print 'appid is %s' % appid  # debug line
-        result = remote_control.runCommand("curl -s --connect-timeout 2 -L -o /tmp/capture_test_025a.out --insecure  \'https://" + captureIP + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
+        result = remote_control.runCommand("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025a.out --insecure  \'https://" + captureIP + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_025a.out")
         assert (search == 0)
