@@ -29,6 +29,9 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # verify daemon is running
     def test_009_bdamserverIsRunning(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest('bdam not supported on ARM')
+
         # check that server is running
         time.sleep(1) 
         result = os.system("pidof bdamserver >/dev/null 2>&1")
