@@ -12,8 +12,8 @@ import system_properties
 import test_registry
 import global_functions
 import platform
+from global_functions import uvmContext
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
 AD_NOT_SECURE_HOST = "10.111.56.48"
