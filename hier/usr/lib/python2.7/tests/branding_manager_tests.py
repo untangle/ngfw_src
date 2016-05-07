@@ -23,17 +23,18 @@ newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
 newContactName = "Skynet"
 newContactEmail = "skynet@untangle.com"
 
-
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 
-def nukeBrandingManagerSettings():
+def setDefaultBrandingManagerSettings():
     nodeData = {
-        "companyName": "Untangle", 
-        "companyUrl": "http://untangle.com/", 
-        "contactName": "your network administrator", 
-        "defaultLogo": True, 
-        "javaClass": "com.untangle.node.branding_manager.BrandingManagerSettings"
+        "javaClass": "com.untangle.node.branding_manager.BrandingManagerSettings",
+        "companyName": "Untangle",
+        "companyUrl": "http://untangle.com/",
+        "contactName": "your network administrator",
+        "contactEmail": None,
+        "bannerMessage": None,
+        "defaultLogo": True
     }
     node.setSettings(nodeData)
     
@@ -188,9 +189,9 @@ class BrandingManagerTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         global node, nodeWeb, nodeSpam
-        # Restore original settings to return to initial settings
-        nukeBrandingManagerSettings()
         if node != None:
+            # Restore original settings to return to initial settings
+            setDefaultBrandingManagerSettings()
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
         if nodeWeb != None:
