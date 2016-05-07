@@ -22,6 +22,7 @@ orig_stdout = sys.stdout
 orig_stderr = sys.stderr
 exit_flag = False
 interrupt_count = 0
+uvmContext = uvm.Uvm().getUvmContext()
 
 class ArgumentParser(object):
     def __init__(self):
@@ -281,9 +282,9 @@ remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;
-if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-reports')):
+if (not uvmContext.nodeManager().isInstantiated('untangle-node-reports')):
     print "== Installing untangle-node-reports =="
-    reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiate('untangle-node-reports', None)
+    reportsNode = uvmContext.nodeManager().instantiate('untangle-node-reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -329,7 +330,7 @@ elapsedTime = time.time() - startTime
 # if reports was added earlier, revert to original settings
 if reportsNode != None:
     print "== UnInstalling untangle-node-reports =="
-    uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
+    uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime

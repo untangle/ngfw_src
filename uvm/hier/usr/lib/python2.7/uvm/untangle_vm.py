@@ -60,10 +60,6 @@ class Uvm:
     def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=120 ):
         handler = CurlRequestHandler( timeout )
 
-        print "XXX"
-        print timeout
-        print "XXX"
-        
         try:
             if ( username != None and password != None ):
                 handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))
