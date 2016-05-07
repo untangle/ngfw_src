@@ -70,10 +70,12 @@ public class SkinManagerImpl implements SkinManager
              * The "classic" skin was rename to "classic-rack"
              */
             if ( "default".equals(this.settings.getSkinName()) ) {
+                logger.info("Switching \"default\" to \"modern-rack\"");
                 this.settings.setSkinName( "modern-rack" );
                 this.setSettings( this.settings );
             }
             if ( "classic".equals(this.settings.getSkinName()) ) {
+                logger.info("Switching \"classic\" to \"classic-rack\"");
                 this.settings.setSkinName( "classic-rack" );
                 this.setSettings( this.settings );
             }
@@ -85,18 +87,12 @@ public class SkinManagerImpl implements SkinManager
         /**
          * If the skin is out of date, revert to default
          */
-        String skin = this.settings.getSkinName();
-        String skinInfoFile = SKINS_DIR + File.separator + skin + File.separator + "skinInfo.js";
-        this.skinInfo = null;
-        try {
-            skinInfo = settingsManager.load( SkinInfo.class, skinInfoFile );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load skin:",e);
-        }
-        if ( skinInfo == null || skinInfo.isAdminSkinOutOfDate() ) {
+        this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
+        if ( this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate() ) {
+            logger.warn("Unable to find skin \"" + this.settings.getSkinName() + "\" - reverting to default skin: " + DEFAULT_ADMIN_SKIN);
             this.settings.setSkinName( DEFAULT_ADMIN_SKIN );
             this.setSettings( this.settings );
-            this.skinInfo = getSkinInfo( DEFAULT_ADMIN_SKIN );
+            this.skinInfo = getSkinInfo( SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.js" );
         }
 
         this.reconfigure();
