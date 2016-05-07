@@ -404,8 +404,7 @@ public class SettingsManagerImpl implements SettingsManager
     private void _saveCommit( String fileName, String outputFileName, boolean saveVersion, boolean prettyFormat )
     {
         File link = new File( fileName );
-
-        logger.info("Wrote new settings: " + outputFileName);
+        logger.info("Wrote: " + outputFileName);
         
         if ( prettyFormat ) {
             String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
