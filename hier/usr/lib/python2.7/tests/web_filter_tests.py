@@ -96,7 +96,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     # check for block page with HTTPS request
     def test_530_httpsPornIsBlocked(self):
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://penthouse.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://penthouse.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)        
 
     # Check google safe search
