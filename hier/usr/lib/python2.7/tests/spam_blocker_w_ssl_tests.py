@@ -9,7 +9,7 @@ from uvm import Uvm
 import remote_control
 from tests.spam_blocker_base_tests import SpamBlockerBaseTests
 import test_registry
-uvmContext = Uvm().getUvmContext()
+from global_functions import uvmContext
 
 #
 # Just extends the spam base tests to include SSL Inspector with default settings
