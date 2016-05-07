@@ -203,8 +203,8 @@ class PolicyManagerTests(unittest2.TestCase):
         
         events = global_functions.get_events('Policy Manager','All Events',None,100)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 20, 
-                                            "c_server_addr", str(test_untangle_com_ip),
+        found = global_functions.check_events( events.get('list'), 100, 
+                                            "s_server_addr", str(test_untangle_com_ip),
                                             "policy_id", 1,
                                             "c_client_addr", remote_control.clientIP)
         assert( found )
@@ -235,7 +235,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global thirdRackId
         appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, thirdRackId))
         # client should be offline
-        result = remote_control.isOnline()
+        result = remote_control.isOnline(tries=1)
         assert (result != 0)
 
     # add firewall to third rack - this should override the second rack's firewall with the block rule
