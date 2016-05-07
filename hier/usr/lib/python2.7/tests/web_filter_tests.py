@@ -6,6 +6,7 @@ import datetime
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 from tests.web_filter_base_tests import WebFilterBaseTests
@@ -13,7 +14,6 @@ import remote_control
 import test_registry
 import global_functions
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 
 def addBlockedUrl(node, url, blocked=True, flagged=True, description="description"):
