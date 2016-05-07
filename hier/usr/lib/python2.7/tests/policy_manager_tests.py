@@ -9,17 +9,16 @@ import base64
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
 import global_functions
 
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 nodeData = None
 node = None
-
 secondRackId = None
 secondRackFirewall = None
 secondRackWebfilter = None
