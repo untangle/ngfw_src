@@ -9,6 +9,7 @@ sys.setdefaultencoding("utf-8")
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from global_functions import uvmContext
 from uvm import Manager
 from uvm import Uvm
 import test_registry
@@ -20,8 +21,6 @@ import system_properties
 node = None
 orig_netsettings = None
 indexOfWans = []
-
-uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 
 def foundWans():
