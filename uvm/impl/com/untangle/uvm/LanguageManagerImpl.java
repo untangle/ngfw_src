@@ -117,6 +117,8 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         this.languageSettings = newSettings;
+        translations = new HashMap<String, Map<String, String>>();
+        translationsLastAccessed = new HashMap<String, Long>();
     }
 
     public boolean uploadLanguagePack(FileItem item) throws UvmException
