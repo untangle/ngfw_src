@@ -72,8 +72,8 @@ public class LanguageManagerImpl implements LanguageManager
     private ArrayList<String> blacklist;
     private Map<String, String> allCountries;
 
-    private final Map<String, Map<String, String>> translations;
-    private final Map<String, Long> translationsLastAccessed;
+    private Map<String, Map<String, String>> translations;
+    private Map<String, Long> translationsLastAccessed;
 
     private volatile Thread cleanerThread;
     private translationsCleaner cleaner = new translationsCleaner();
@@ -117,8 +117,10 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         this.languageSettings = newSettings;
-        translations = new HashMap<String, Map<String, String>>();
-        translationsLastAccessed = new HashMap<String, Long>();
+        synchronized( this ) {
+            translations = new HashMap<String, Map<String, String>>();
+            translationsLastAccessed = new HashMap<String, Long>();
+        }
     }
 
     public boolean uploadLanguagePack(FileItem item) throws UvmException
@@ -341,7 +343,7 @@ public class LanguageManagerImpl implements LanguageManager
 
         String translationKey = i18nModule + "_" + locale.getLanguage();
         
-        synchronized(translations){
+        synchronized( this ) {
             map = translations.get(translationKey);
 
             if(map == null){
@@ -566,7 +568,7 @@ public class LanguageManagerImpl implements LanguageManager
                     /**
                      * Remove old entries from map
                      */
-                    synchronized(translations){
+                    synchronized( this ) {
                         Long lastAccessed;
                         for( String translationKey : translationsLastAccessed.keySet() ){
                             lastAccessed = translationsLastAccessed.get(translationKey);
