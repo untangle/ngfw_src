@@ -92,6 +92,7 @@ public class MailSenderImpl implements MailSender
         "dc_relay_domains=''\n" + 
         "dc_minimaldns='false'\n" + 
         "dc_relay_nets=''\n" + 
+        "dc_ignore_target_hosts='0.0.0.0 : 255.255.255.255 : 169.254.0.0/16'\n" + 
         "CFILEMODE='644'\n" + 
         "dc_use_split_config='false'\n" + 
         "dc_hide_mailname='true'\n" + 
