@@ -111,7 +111,11 @@ Ext.define('Ung.dashboard', {
             }
             if (this.widgetsList[j].entry) {
                 if (this.widgetsList[j].entry.type === 'PIE_GRAPH') {
-                    this.widgetsList[j].cls = 'medium';
+                    if (this.widgetsList[j].entry.pieStyle.indexOf('COLUMN') >= 0) {
+                        this.widgetsList[j].cls = 'large';
+                    } else {
+                        this.widgetsList[j].cls = 'medium';
+                    }
                 } else {
                     this.widgetsList[j].cls = 'large';
                 }

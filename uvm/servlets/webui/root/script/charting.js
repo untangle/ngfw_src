@@ -532,7 +532,6 @@ Ext.define('Ung.charts', {
      */
     categoriesChart: function (entry, data, container, forDashboard) {
         var seriesName = entry.seriesRenderer || entry.pieGroupColumn,
-            that = this,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
         return new Highcharts.Chart({
@@ -549,31 +548,7 @@ Ext.define('Ung.charts', {
                 options3d: {
                     enabled: entry.pieStyle.indexOf('3D') >= 0,
                     alpha: (entry.pieStyle === 'PIE_3D' || entry.pieStyle === 'DONUT_3D') ? 45 : 20,
-                    beta: entry.pieStyle === 'COLUMN_3D' ? 15 : 0
-                    //depth: 20
-                },
-                events: {
-                    drilldown: function (e) {
-                        this.isDrillDown = true;
-
-                        var i, _ddData = [];
-                        for (i = entry.ddBreakPoint; i < entry.data.length; i += 1) {
-                            _ddData.push({
-                                name: entry.data[i][entry.pieGroupColumn],
-                                percent: entry.data[i].percent,
-                                y: entry.data[i].value
-                            });
-                        }
-                        this.addSeriesAsDrilldown(e.point, {name: 'sessions', data: _ddData});
-                        //that.setCategoriesSeries(entry, data, this);
-                    },
-                    drillup: function () {
-                        this.isDrillDown = false;
-                        var _chart = this;
-                        window.setTimeout(function () {
-                            that.setCategoriesSeries(entry, data, _chart);
-                        }, 1000);
-                    }
+                    beta: entry.pieStyle === 'COLUMN_3D' ? 5 : 0
                 }
             },
             title: null,
@@ -657,8 +632,11 @@ Ext.define('Ung.charts', {
                             fontSize: !forDashboard ? '12px' : '11px'
                         },
                         formatter: function () {
-                            if (this.point.name.length > 20) {
-                                return this.point.name.substring(0, 20) + '...';
+                            if (this.point.percentage < 9) {
+                                return null;
+                            }
+                            if (this.point.name.length > 25) {
+                                return this.point.name.substring(0, 25) + '...';
                             }
                             return this.point.name;
                         },
@@ -801,7 +779,6 @@ Ext.define('Ung.charts', {
      * Set the zooming range buttons for Time Series based on datetime extremes
      * @param {Object} data - the series data
      * @returns {Object}    - the range buttons definition
-     * TODO: WIP on setting correct range buttons
      */
     setRangeButtons: function (data) {
         if (!data || !data[data.length - 1].time_trunc) {
