@@ -61,6 +61,13 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
     remote_control.runCommand("sudo pkill -INT python",host=smtpHost)
     return relaySuccess
 
+def createDomainDNSentries(domain,dnsServer):
+    return {
+        "domain": domain,
+        "javaClass": "com.untangle.uvm.network.DnsLocalServer",
+        "localServer": dnsServer
+    }
+    
 def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     global orig_mailsettings
     orig_mailsettings = uvmContext.mailSender().getSettings()
@@ -70,19 +77,8 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
 
     # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
     netsettings = uvmContext.networkManager().getNetworkSettings()
-    # Change DNS to point at special DNS server with entry for fake domain untangletest.com
-    # Only run test if WAN IP is static or DHCP
-    for i in range(len(netsettings['interfaces']['list'])):
-        if not netsettings['interfaces']['list'][i]['disabled'] and  netsettings['interfaces']['list'][i]['isWan']:
-        # if netsettings['interfaces']['list'][i]['v4StaticAddress'] == wan_IP:
-            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
-                netsettings['interfaces']['list'][i]['v4StaticDns1'] = specialDnsServer
-            elif netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "AUTO":
-                netsettings['interfaces']['list'][i]['v4AutoDns1Override'] = specialDnsServer
-            else:
-                # only use if interface is addressed
-                raise unittest2.SkipTest('Unable to use Interface ' + netsettings['interfaces']['list'][i]['name'])
-
+    # Add Domain DNS Server for special test domains of untangletestvm.com and untangletest.com
+    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(testdomain,specialDnsServer))
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
     # Remove old email and log files.
