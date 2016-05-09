@@ -792,6 +792,8 @@ Ung.MetricManager = {
         this.currentFrequency = timeMs;
         if (this.intervalId !== null) {
             window.clearInterval(this.intervalId);
+        } else {
+            Ung.MetricManager.run();
         }
         this.intervalId = window.setInterval(function() {Ung.MetricManager.run();}, timeMs);
     },
@@ -837,8 +839,9 @@ Ung.MetricManager = {
             this.cycleCompleted = true;
 
             // update system stats
+            Ung.Main.stats = result.systemStats;
             Ung.Main.systemStats.update(result.systemStats);
-            Ung.dashboard.updateStats(result.systemStats);
+            Ung.dashboard.updateStats();
 
             var i;
             for (i = 0; i < Ung.Main.nodes.length; i++) {

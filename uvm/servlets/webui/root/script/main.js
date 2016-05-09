@@ -27,6 +27,7 @@ Ext.define("Ung.Main", {
     // the Ext.Viewport object for the application
     viewport: null,
     menuWidth: null,
+    stats: null,
     init: function (config) {
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ext.apply(this, config);

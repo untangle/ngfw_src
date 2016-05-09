@@ -4,7 +4,6 @@
 Ext.define('Ung.dashboard', {
     singleton: true,
     widgetsList: [],
-    widgetsGrid: [],
     reportEntriesModified: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
@@ -72,7 +71,6 @@ Ext.define('Ung.dashboard', {
         };
     },
     setWidgets: function () {
-        this.widgetsGrid = [];
         this.widgetsList = [];
         this.dashboardPanel.removeAll();
         var i, j, type, entry, widget;
@@ -164,12 +162,12 @@ Ext.define('Ung.dashboard', {
             handler.call(this);
         }
     },
-    updateStats: function (stats) {
+    updateStats: function () {
         var i, widget;
         for (i = 0; i < this.widgetsList.length; i += 1) {
             widget = this.widgetsList[i];
             if (widget.hasStats) {
-                widget.updateStats(stats);
+                widget.updateStats(Ung.Main.stats);
             }
         }
     }
@@ -236,10 +234,18 @@ Ext.define('Ung.dashboard.Queue', {
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
-    cls: 'widget init',
+    cls: 'widget',
     refreshIntervalSec: 0,
     height: 320,
     initComponent: function () {
+        if (this.hasStats && Ung.Main.stats) {
+            this.updateStats(Ung.Main.stats);
+        }
+
+        if (this.entry) {
+            this.addCls('init');
+        }
+
         if (this.hasRefresh) {
             this.tools = [];
             if (this.widgetType === 'ReportEntry') {
@@ -466,6 +472,9 @@ Ext.define('Ung.dashboard.CPULoad', {
         'afterrender': function (widget) {
             widget.lineChart = Ung.charts.cpuLineChart(widget.getEl().query('.cpu-line-chart')[0]);
             widget.gaugeChart = Ung.charts.cpuGaugeChart(widget.getEl().query('.cpu-gauge-chart')[0]);
+            if (Ung.Main.stats) {
+                widget.updateStats(Ung.Main.stats);
+            }
         }
     },
     updateStats: function (stats) {
@@ -473,7 +482,7 @@ Ext.define('Ung.dashboard.CPULoad', {
         var highLimit = stats.numCpus + 4;
         var loadLabel = 'low';
 
-        if (!this.loaded && this.lineChart !== null && this.gaugeChart !== null) {
+        if (this.lineChart !== null && this.gaugeChart !== null) {
             this.lineChart.yAxis[0].update({
                 minRange: stats.numCpus
             });
@@ -508,7 +517,7 @@ Ext.define('Ung.dashboard.CPULoad', {
                 me.lineChart.reflow();
                 me.gaugeChart.reflow();
             }, 100);
-            this.loaded = true;
+            //this.loaded = true;
         }
 
 
@@ -756,11 +765,16 @@ Ext.define('Ung.dashboard.ReportEntry', {
         }
     },
 
+    listeners: {
+        afterrender: function (widget) {
+            widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
+        }
+    },
+
     /*
     listeners: {
         'afterrender': function (widget) {
             var chartButtons = widget.getEl().query('.chart-types')[0], i;
-            widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
 
             if (widget.entry.type !== 'EVENT_LIST' && widget.entry.type !== 'TEXT') {
                 if (widget.entry.type === 'TIME_GRAPH' || widget.entry.type === 'TIME_GRAPH_DYNAMIC') {

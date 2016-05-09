@@ -68,7 +68,8 @@ Ext.define('Ung.charts', {
             plotOptions: {
                 areaspline: {
                     fillOpacity: 0.25,
-                    lineWidth: 1
+                    lineWidth: 1,
+                    animation: false
                 },
                 series: {
                     marker: {
