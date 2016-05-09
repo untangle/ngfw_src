@@ -6,7 +6,6 @@
     background-color: #CCCDCD;
     width: 100%;
     line-height: 40px;
-    padding-top: 20px;
     padding-left: 10px;
     border-bottom: 1px solid #CCC;
     font-weight: bold;
@@ -23,7 +22,6 @@
 
 
 div.apps-nodes {
-    background: #9E9E9E;
     padding: 10px;
 }
 

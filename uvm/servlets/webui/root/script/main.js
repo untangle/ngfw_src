@@ -553,7 +553,7 @@ Ext.define("Ung.Main", {
                         region: 'center',
                         // IIFE hack for material skin
                         layout: (function () {
-                            if (rpc.skinSettings.skinName !== 'material') {
+                            if (rpc.skinSettings.skinName !== 'simple-gray' && rpc.skinSettings.skinName !== 'simple-triton') {
                                 return {
                                     type: 'vbox',
                                     align: 'middle',

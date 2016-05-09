@@ -497,13 +497,6 @@ a.link,a.link:visited {
     font-family: Tahoma, Geneva, sans-serif;
 }
 
-.main-panel {
-    /*background: #EEF1F5;*/
-    /*background: #FFF;*/
-    background: rgba(27, 30, 38, 0.1);
-    /*background: url(/images/texture2.jpg);*/
-}
-
 .main-menu-btn.x-btn {
     border-radius: 3px;
     margin: 0 5px;
@@ -762,7 +755,6 @@ a.forgot-password:hover {
     background-color: #CCCDCD;
     width: 100%;
     line-height: 40px;
-    padding-top: 20px;
     padding-left: 10px;
     border-bottom: 1px solid #CCC;
     font-weight: bold;
@@ -775,10 +767,6 @@ a.forgot-password:hover {
 }
 .top-title * {
     vertical-align: middle;
-}
-
-.install {
-    background: #9E9E9E;
 }
 
 
