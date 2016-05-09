@@ -30,7 +30,7 @@ public class MimeType implements Serializable
     {
         int i = mimeType.indexOf(';');
         String mt = ( i < 0 ? mimeType : mimeType.substring(0, i).trim());
-        if ( mt != null ) mt = ret.toLowerCase();
+        if ( mt != null ) mt = mt.toLowerCase();
         return mt;
     }
 
