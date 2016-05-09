@@ -593,7 +593,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 if (!clientSide) {
                     String contentType = state.header.getValue("content-type");
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
-
+                    
                     RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
 
                     if (null != rl) {

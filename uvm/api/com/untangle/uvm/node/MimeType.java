@@ -12,7 +12,6 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class MimeType implements Serializable
 {
-
     private final String mimeType;
 
     private String mimeTypeNoWildcard;
@@ -24,19 +23,16 @@ public class MimeType implements Serializable
      */
     public MimeType(String mimeType)
     {
-        // XXX should validate & parse into components.
         this.mimeType = mimeType;
     }
-
-    // static methods ---------------------------------------------------------
 
     public static String getType(String mimeType)
     {
         int i = mimeType.indexOf(';');
-        return 0 > i ? mimeType : mimeType.substring(0, i).trim();
+        String mt = ( i < 0 ? mimeType : mimeType.substring(0, i).trim());
+        if ( mt != null ) mt = ret.toLowerCase();
+        return mt;
     }
-
-    // Business methods -------------------------------------------------------
 
     public String getType()
     {
@@ -87,8 +83,6 @@ public class MimeType implements Serializable
 
         return (mimeTypeNoWildcard == mimeType) ? false : true;
     }
-
-    // Object methods ---------------------------------------------------------
 
     public boolean equals(Object o)
     {
