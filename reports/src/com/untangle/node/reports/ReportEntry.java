@@ -218,7 +218,7 @@ public class ReportEntry implements Serializable, JSONString
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
     {
-        return toSql( conn, startDate, endDate, null, null );
+        return toSql( conn, startDate, endDate, extraConditions, null );
     }
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions, Integer limit )
