@@ -127,19 +127,6 @@ table {
 </td>
 </tr>
 
-{% if licenseManager.getSeatLimit != -1 %}
-{% cycle rowColors %}
-<tr style="background-color:{{ rowColors }};">
-<td>
-{% trans "Licensed Devices" %}
-</td>
-<td>
-{{ licenseManager.getSeatLimit,false }} 
-</td>
-</tr>
-{% endif%}
-
-
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 {% for name in ["Network" "Administration" "Hosts" "Devices"] %}
 	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
