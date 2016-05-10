@@ -26,7 +26,7 @@ fi
 sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/stable-120x\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
 
-# remove references to old distros
+# 12.1 remove references to old distros
 sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list
 sed -e '/\spicanto/d' -i /etc/apt/sources.list.d/untangle.list
 sed -e '/\sseagull/d' -i /etc/apt/sources.list.d/untangle.list
@@ -35,6 +35,9 @@ sed -e '/\sthunder/d' -i /etc/apt/sources.list.d/untangle.list
 sed -e '/\shayate/d'  -i /etc/apt/sources.list.d/untangle.list
 sed -e '/\scrypton/d' -i /etc/apt/sources.list.d/untangle.list
 
+# 12.1 remove old log files
 rm -f /var/log/restart-uvm.log
+rm -f /var/log/uvm/kernel-modules.log
+find /var/log/uvm -name '*crash*' -mtime +30 2>/dev/null | xargs rm -f
 
 exit 0
