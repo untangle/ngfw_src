@@ -7,37 +7,58 @@ Ext.define('Ung.dashboard', {
     reportEntriesModified: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
-        var loadSemaphore = rpc.reportsEnabled ? 3 : 1;
-        var callback = Ext.bind(function () {
-            loadSemaphore -= 1;
-            if (loadSemaphore === 0) {
-                this.setWidgets();
-            }
-        }, this);
-        rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
-            var i;
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            this.allWidgets = [];
-            for (i = 0; i < result.widgets.list.length; i += 1) {
-                if (result.widgets.list[i].enabled) {
-                    this.allWidgets.push(result.widgets.list[i]);
-                }
-            }
-            callback();
+
+        Ext.Deferred.pipeline([
+            this.getSettings,
+            this.getReportEntries,
+            this.getApps
+        ]).then(Ext.bind(function () {
+            this.setWidgets();
         }, this));
-        if (rpc.reportsEnabled) {
-            this.loadReportEntries(callback);
-            Ung.Main.getReportsManager().getUnavailableApplicationsMap(Ext.bind(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    return;
-                }
-                this.unavailableApplicationsMap = result.map;
-                callback();
-            }, this));
-        }
     },
+    getSettings: function () {
+        var deferred = new Ext.Deferred();
+        rpc.dashboardManager.getSettings(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                deferred.reject(exception);
+            }
+            Ung.dashboard.allWidgets = result.widgets.list.filter(function (widget) { return widget.enabled; });
+            deferred.resolve();
+        });
+        return deferred.promise;
+    },
+    getReportEntries: function () {
+        var deferred = new Ext.Deferred();
+        if (rpc.reportsEnabled && !Ung.dashboard.reportEntries) {
+            Ung.Main.getReportsManager().getReportEntries(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    deferred.reject(exception);
+                }
+                Ung.dashboard.reportEntries = result.list;
+                Ung.dashboard.reportsMap = Ung.Util.createRecordsMap(result.list, 'uniqueId');
+                deferred.resolve();
+            });
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    },
+    getApps: function () {
+        var deferred = new Ext.Deferred();
+        if (rpc.reportsEnabled) {
+            Ung.Main.getReportsManager().getUnavailableApplicationsMap(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    deferred.reject(exception);
+                }
+                Ung.dashboard.unavailableApplicationsMap = result.map;
+                deferred.resolve();
+            });
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    },
+
     onScrollChange: function () {
         var i, widget;
         for (i = 0; i < this.widgetsList.length; i += 1) {
@@ -133,38 +154,10 @@ Ext.define('Ung.dashboard', {
             this.dashboardContainer.getEl().on('scroll', this.debounce(this.onScrollChange, 500));
             Ext.on('resize', this.debounce(this.onScrollChange, 500));
         }
-
-        /*
-        var timer;
-        Ext.on('resize', function () {
-            clearTimeout(timer);
-            timer = setTimeout(function () {
-                Highcharts.charts.forEach(function (chart) {
-                    if (chart) {
-                        chart.reflow();
-                    }
-                });
-            }, 100);
-        });
-        */
     },
     resetReports: function () {
         this.reportEntries = null;
         this.reportsMap = null;
-    },
-    loadReportEntries: function (handler) {
-        if (!this.reportEntries) {
-            Ung.Main.getReportsManager().getReportEntries(Ext.bind(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    return;
-                }
-                this.reportEntries = result.list;
-                this.reportsMap = Ung.Util.createRecordsMap(this.reportEntries, "uniqueId");
-                handler.call(this);
-            }, this));
-        } else {
-            handler.call(this);
-        }
     },
     updateStats: function () {
         var i, widget;
@@ -662,7 +655,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             }
         }
 
-        if (this.data.internalInterfaces) {
+        if (this.data && this.data.internalInterfaces) {
             rpc.deviceTable.getDevices(Ext.bind(function (res, ex) {
                 if (Ung.Util.handleException(ex)) {
                     return;
