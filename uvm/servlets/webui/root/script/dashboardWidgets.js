@@ -242,10 +242,6 @@ Ext.define('Ung.dashboard.Widget', {
     refreshIntervalSec: 0,
     height: 320,
     initComponent: function () {
-        if (this.hasStats && Ung.Main.stats) {
-            this.updateStats(Ung.Main.stats);
-        }
-
         if (this.entry) {
             this.addCls('init');
         }
@@ -282,6 +278,10 @@ Ext.define('Ung.dashboard.Widget', {
             Ung.dashboard.Queue.add(this);
         }
         this.callParent(arguments);
+        // update stats only after widget is rendered to avoid errors
+        if (this.hasStats && Ung.Main.stats) {
+            this.updateStats(Ung.Main.stats);
+        }
     },
 
     afterLoad: function () {
@@ -447,7 +447,7 @@ Ext.define('Ung.dashboard.Resources', {
         });
         this.removeCls('init');
         // assuming total swap = 0 // e.g. ARM based
-        if (!stats.SwapTotal) {
+        if (this.getEl() && !stats.SwapTotal) {
             this.getEl().query('.swap-usage')[0].remove();
         }
     }
