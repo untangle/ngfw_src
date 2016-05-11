@@ -63,7 +63,9 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
             {name:"SSL_INSPECTOR_SNI_HOSTNAME",displayName: i18n._("SSL: SNI Host Name"), type: "text", visible: true},
             {name:"SSL_INSPECTOR_SUBJECT_DN",displayName: i18n._("SSL: Certificate Subject"), type: "text", visible: true},
-            {name:"SSL_INSPECTOR_ISSUER_DN",displayName: i18n._("SSL: Certificate Issuer"), type: "text", visible: true}
+            {name:"SSL_INSPECTOR_ISSUER_DN",displayName: i18n._("SSL: Certificate Issuer"), type: "text", visible: true},
+            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
+            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
         ];
     },
     buildPanelConfiguration: function() {
