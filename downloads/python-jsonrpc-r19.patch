@@ -175,10 +175,10 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
          self.__serviceURL = serviceURL
          self.__serviceName = serviceName
 +        self.__handler = handler
-+        self.__nonce = nonce
++        self.nonce = nonce
 +        if self.__handler == None:
 +            self.__handler = RequestHandler()
-+        if self.__nonce == None:
++        if self.nonce == None:
 +            self.getNonce()
  
      def __getattr__(self, name):
@@ -195,7 +195,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +        if resp.has_key( 'error' ) and resp['error'] != None:
 +            print "A little error: ", resp['error']
 +            raise JSONRPCException(resp['error'])
-+        self.__nonce = resp['result']
++        self.nonce = resp['result']
  
      def __call__(self, *args):
 -         postdata = dumps({"method": self.__serviceName, 'params': args, 'id':'jsonrpc'})
@@ -207,7 +207,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 -             return resp['result']
 -         
 +        ServiceProxy.__request_id += 1
-+        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': self.__nonce, 'id': ServiceProxy.__request_id })
++        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': self.nonce, 'id': ServiceProxy.__request_id })
 +        respdata = self.__handler.make_request( self.__serviceURL, postdata )
 +        resp = loads(respdata)
 +        if resp.has_key( 'error' ) and resp['error'] != None:
@@ -215,7 +215,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +            raise JSONRPCException(resp['error'])
 +        result = resp['result']
 +        if ( type( result ) is types.DictType ) and result.has_key( 'JSONRPCType' ) and ( result['JSONRPCType'] == "CallableReference" ) and result.has_key( 'objectID' ):
-+            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler, self.__nonce)
++            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler, self.nonce)
 +
 +        if resp.has_key( 'fixups' ) and type( resp['fixups'] ) is types.ListType:
 +            self.__handle_fixups__( result, resp['fixups'] )
