@@ -953,7 +953,14 @@ Ext.define('Ung.panel.Reports', {
             icon = 'format_list_bulleted';
             break;
         case 'PIE_GRAPH':
-            icon = entry.pieStyle.indexOf('COLUMN') < 0 ? 'pie_chart_outlined' : 'insert_chart';
+            icon = 'pie_chart';
+            if (entry.pieStyle === 'COLUMN' || entry.pieStyle === 'COLUMN_3D') {
+                icon = 'insert_chart';
+            } else {
+                if (entry.pieStyle === 'DONUT' || entry.pieStyle === 'DONUT_3D') {
+                    icon = 'donut_large';
+                }
+            }
             break;
         case 'TIME_GRAPH':
         case 'TIME_GRAPH_DYNAMIC':
@@ -995,10 +1002,10 @@ Ext.define('Ung.panel.Reports', {
 
             if (entry.type === 'PIE_GRAPH') {
                 var pieStyleButtons = [
-                    { pieStyle: 'PIE', icon: 'pie_chart_outlined', text: i18n._("Pie") },
-                    { pieStyle: 'PIE_3D', icon: 'pie_chart_outlined', text: i18n._("3D Pie") },
-                    { pieStyle: 'DONUT', icon: 'pie_chart_outlined', text: i18n._("Donut") },
-                    { pieStyle: 'DONUT_3D', icon: 'pie_chart_outlined', text: i18n._("3D Donut") },
+                    { pieStyle: 'PIE', icon: 'pie_chart', text: i18n._("Pie") },
+                    { pieStyle: 'PIE_3D', icon: 'pie_chart', text: i18n._("3D Pie") },
+                    { pieStyle: 'DONUT', icon: 'donut_large', text: i18n._("Donut") },
+                    { pieStyle: 'DONUT_3D', icon: 'donut_large', text: i18n._("3D Donut") },
                     { pieStyle: 'COLUMN', icon: 'insert_chart', text: i18n._("Column") },
                     { pieStyle: 'COLUMN_3D', icon: 'insert_chart', text: i18n._("3D Column") }
                 ];
