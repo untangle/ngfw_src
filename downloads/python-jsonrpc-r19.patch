@@ -139,7 +139,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.modified
 diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonrpc/proxy.py
 --- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
 +++ python-jsonrpc-r19.modified//jsonrpc/proxy.py	2014-05-08 12:31:28.000000000 -0700
-@@ -19,31 +19,96 @@
+@@ -19,31 +19,97 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
  
@@ -175,6 +175,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
          self.__serviceURL = serviceURL
          self.__serviceName = serviceName
 +        self.__handler = handler
++        self.__nonce = nonce
 +        if self.__handler == None:
 +            self.__handler = RequestHandler()
 +        if self.__nonce == None:
