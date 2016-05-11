@@ -531,8 +531,18 @@ Ext.define('Ung.charts', {
      * @returns {Object}             - the HighCharts chart object
      */
     categoriesChart: function (entry, data, container, forDashboard) {
-        var seriesName = entry.seriesRenderer || entry.pieGroupColumn,
-            colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
+        var colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors,
+            tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table)),
+            seriesName,
+            column,
+            i;
+
+        for (i = 0; i < tableConfig.columns.length; i += 1) {
+            column = tableConfig.columns[i];
+            if (column.dataIndex === entry.pieGroupColumn) {
+                seriesName = column.header;
+            }
+        }
 
         return new Highcharts.Chart({
             chart: {
@@ -702,6 +712,8 @@ Ext.define('Ung.charts', {
             _mainSeries = [{
                 name: entry.units
             }];
+
+
 
         for (i = 0; i < data.length; i += 1) {
             if (i < entry.pieNumSlices) {
