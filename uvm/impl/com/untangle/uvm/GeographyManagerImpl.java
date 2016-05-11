@@ -117,11 +117,21 @@ public class GeographyManagerImpl implements GeographyManager
 
         CityResponse response = getCityObject(netAddress);
         if (response == null) return (null);
+
         Location location = response.getLocation();
-        if (location == null) return (null);
+        Country country = response.getCountry();
+
         Coordinates coordinates = new Coordinates();
-        coordinates.latitude = location.getLatitude();
-        coordinates.longitude = location.getLongitude();
+
+        if (country != null) {
+            coordinates.country = country.getIsoCode();
+        }
+
+        if (location != null) {
+            coordinates.latitude = location.getLatitude();
+            coordinates.longitude = location.getLongitude();
+        }
+
         return (coordinates);
     }
 

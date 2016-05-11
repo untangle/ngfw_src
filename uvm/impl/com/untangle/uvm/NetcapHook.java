@@ -23,6 +23,7 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.SessionTuple;
@@ -241,7 +242,7 @@ public abstract class NetcapHook implements Runnable
 
             pipelineConnectors = pipelineFoundry.weld( sessionGlobalState.id(), clientSide, policyId, entitled );
             sessionGlobalState.setPipelineConnectorImpls(pipelineConnectors);
-            
+
             /* Create the sessionEvent early so they can be available at request time. */
             sessionEvent =  new SessionEvent( );
             sessionEvent.setSessionId( sessionGlobalState.id() );
@@ -262,6 +263,28 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSClientPort( serverSide.getClientPort() );
             sessionEvent.setSServerAddr( serverSide.getServerAddr() );
             sessionEvent.setSServerPort( serverSide.getServerPort() );
+
+            // lookup the country, latitude, and longitude for WAN clients
+            InterfaceSettings clientIntfSettings = UvmContextFactory.context().networkManager().findInterfaceId( clientIntf );
+            if ( clientIntfSettings != null && clientIntfSettings.getIsWan() ) {
+                GeographyManager.Coordinates clientGeoip = UvmContextFactory.context().geographyManager().getCoordinates(clientSide.getClientAddr().getHostAddress());
+                if (clientGeoip != null) {
+                    sessionEvent.setClientCountry(clientGeoip.country);
+                    sessionEvent.setClientLatitude(clientGeoip.latitude);
+                    sessionEvent.setClientLongitude(clientGeoip.longitude);
+                }
+            }
+
+            // lookup the country, latitude, and longitude for WAN servers
+            InterfaceSettings serverIntfSettings = UvmContextFactory.context().networkManager().findInterfaceId( serverIntf );
+            if ( serverIntfSettings != null && serverIntfSettings.getIsWan() ) {
+                GeographyManager.Coordinates serverGeoip = UvmContextFactory.context().geographyManager().getCoordinates(serverSide.getServerAddr().getHostAddress());
+                if (serverGeoip != null) {
+                    sessionEvent.setServerCountry(serverGeoip.country);
+                    sessionEvent.setServerLatitude(serverGeoip.latitude);
+                    sessionEvent.setServerLongitude(serverGeoip.longitude);
+                }
+            }
 
             sessionGlobalState.setSessionEvent( sessionEvent );
 

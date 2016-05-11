@@ -8,6 +8,7 @@ public interface GeographyManager
 {
     class Coordinates
     {
+        public String country;
         public double latitude;
         public double longitude;
     }

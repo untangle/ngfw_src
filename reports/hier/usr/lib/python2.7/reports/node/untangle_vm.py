@@ -67,6 +67,12 @@ CREATE TABLE reports.sessions (
         s_client_port int4,
         client_intf int2,
         server_intf int2,
+        client_country text,
+        client_latitude real,
+        client_longitude real,
+        server_country text,
+        server_latitude real,
+        server_longitude real,
         c2p_bytes int8 default 0,
         p2c_bytes int8 default 0,
         s2p_bytes int8 default 0,
@@ -109,6 +115,12 @@ CREATE TABLE reports.sessions (
                                  "application_control_flagged"])
 
         sql_helper.add_column('sessions','policy_rule_id','int2') # 12.1
+        sql_helper.add_column('sessions','client_country','text') # 12.1
+        sql_helper.add_column('sessions','client_latitude','real') # 12.1
+        sql_helper.add_column('sessions','client_longitude','real') # 12.1
+        sql_helper.add_column('sessions','server_country','text') # 12.1
+        sql_helper.add_column('sessions','server_latitude','real') # 12.1
+        sql_helper.add_column('sessions','server_longitude','real') # 12.1
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):

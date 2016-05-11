@@ -24,6 +24,12 @@ public class SessionEvent extends LogEvent
     private Short icmpType = null;
     private Integer clientIntf;
     private Integer serverIntf;
+    private String clientCountry;
+    private Double clientLatitude;
+    private Double clientLongitude;
+    private String serverCountry;
+    private Double serverLatitude;
+    private Double serverLongitude;
     private InetAddress cClientAddr;
     private InetAddress sClientAddr;
     private InetAddress cServerAddr;
@@ -84,6 +90,30 @@ public class SessionEvent extends LogEvent
      */
     public Integer getServerIntf() { return serverIntf; }
     public void setServerIntf(Integer serverIntf) { this.serverIntf = serverIntf; }
+
+    /**
+     * Country, latitude, and longitude for WAN clients 
+     */
+    public String getClientCountry() { return clientCountry; }
+    public void setClientCountry(String clientCountry) { this.clientCountry = clientCountry; }
+    
+    public Double getClientLatitude() { return clientLatitude; }
+    public void setClientLatitude(Double clientLatitude) { this.clientLatitude = clientLatitude; }
+    
+    public Double getClientLongitude() { return clientLongitude; }
+    public void setClientLongitude(Double clientLongitude) { this.clientLongitude = clientLongitude; }
+    
+    /**
+     * Country, latitude, and longitude for WAN servers 
+     */
+    public String getServerCountry() { return serverCountry; }
+    public void setServerCountry(String serverCountry) { this.serverCountry = serverCountry; }
+    
+    public Double getServerLatitude() { return serverLatitude; }
+    public void setServerLatitude(Double serverLatitude) { this.serverLatitude = serverLatitude; }
+    
+    public Double getServerLongitude() { return serverLongitude; }
+    public void setServerLongitude(Double serverLongitude) { this.serverLongitude = serverLongitude; }
 
     /**
      * Client address, at the client side.
@@ -176,9 +206,9 @@ public class SessionEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
@@ -205,7 +235,12 @@ public class SessionEvent extends LogEvent
         pstmt.setInt(++i, getSServerPort());
         pstmt.setInt(++i, getClientIntf());
         pstmt.setInt(++i, getServerIntf());
-
+        pstmt.setString(++i, getClientCountry());
+        pstmt.setDouble(++i, (getClientLatitude() == null ? 0 : getClientLatitude()) );
+        pstmt.setDouble(++i, (getClientLongitude() == null ? 0 : getClientLongitude()) );
+        pstmt.setString(++i, getServerCountry());
+        pstmt.setDouble(++i, (getServerLatitude() == null ? 0 : getServerLatitude()) );
+        pstmt.setDouble(++i, (getServerLongitude() == null ? 0 : getServerLongitude()) );
         pstmt.addBatch();
         return;
     }
