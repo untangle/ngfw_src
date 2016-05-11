@@ -594,7 +594,7 @@ Ext.define('Ung.FieldConditionWindow', {
 // matcher pop-up editor for countries
 Ext.define('Ung.CountryEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
-    height: 450,
+    height: 480,
     width: 550,
     initComponent: function() {
         this.gridPanel = Ext.create('Ext.grid.Panel', {
