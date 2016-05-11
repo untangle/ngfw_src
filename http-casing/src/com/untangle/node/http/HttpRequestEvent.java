@@ -181,10 +181,70 @@ public class HttpRequestEvent extends LogEvent
             return host;
         } catch ( Exception e ) {}
         
+        // https://wiki.mozilla.org/TLD_List
         switch ( lastPart ) {
+        case "ao":
+        case "ar":
+        case "arpa":
         case "au":
-        case "za":
+        case "bd":
+        case "bn":
+        case "br":
+        case "co":
+        case "cr":
+        case "cy":
+        case "do":
+        case "eg":
+        case "et":
+        case "fj":
+        case "fk":
+        case "gh":
+        case "gn":
+        case "gu":
+        case "id":
+        case "il":
+        case "jm":
+        case "ke":
+        case "kh":
+        case "kw":
+        case "kz":
+        case "lb":
+        case "lc":
+        case "lr":
+        case "ls":
+        case "ml":
+        case "mm":
+        case "mv":
+        case "mw":
+        case "mx":
+        case "my":
+        case "ng":
+        case "ni":
+        case "np":
+        case "nz":
+        case "om":
+        case "pa":
+        case "pe":
+        case "pg":
+        case "pw":
+        case "py":
+        case "qa":
+        case "sa":
+        case "sb":
+        case "sv":
+        case "sy":
+        case "th":
+        case "tn":
+        case "tz":
         case "uk":
+        case "uy":
+        case "va":
+        case "ve":
+        case "ye":
+        case "yu":
+        case "za":
+        case "zm":
+        case "zw":
         if ( parts.length > 2 )
             return parts[len-3] + "." + parts[len-2] + "." + parts[len-1];
         else
