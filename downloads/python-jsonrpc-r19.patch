@@ -185,7 +185,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
          if self.__serviceName != None:
              name = "%s.%s" % (self.__serviceName, name)
 -        return ServiceProxy(self.__serviceURL, name)
-+        return ServiceProxy(self.__serviceURL, name, self.__handler)
++        return ServiceProxy(self.__serviceURL, name, self.__handler, self.nonce)
 +
 +    def getNonce(self):
 +        ServiceProxy.__request_id += 1
