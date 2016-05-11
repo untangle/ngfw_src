@@ -63,7 +63,9 @@ Ext.define('Webui.untangle-node-application-control.settings', {
             {name:"SITEFILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: true},
             {name:"SITEFILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
             {name:"SITEFILTER_FLAGGED",displayName: i18n._("Web Filter: Site is Flagged"), type: "boolean", visible: true},
-            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true}
+            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
+            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
         ];
     },
     statFormat: function(input) {
