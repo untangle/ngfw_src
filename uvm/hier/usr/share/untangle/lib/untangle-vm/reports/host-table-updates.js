@@ -16,7 +16,7 @@
         "#b2b2b2"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Host Table Updates",
     "type": "TIME_GRAPH"
 }

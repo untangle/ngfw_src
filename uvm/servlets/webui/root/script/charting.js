@@ -549,7 +549,7 @@ Ext.define('Ung.charts', {
                 type: entry.pieStyle.indexOf('COLUMN') >= 0 ? 'column' : 'pie',
                 renderTo: !forDashboard ? container.dom : container.getEl().query('.chart')[0],
                 margin: (entry.chartType === 'pie' && !forDashboard) ? [80, 20, 50, 20] : undefined,
-                spacing: [10, 10, 10, 10],
+                spacing: [10, 10, 20, 10],
                 backgroundColor: 'transparent',
                 style: {
                     fontFamily: '"PT Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif', // default font
@@ -642,7 +642,7 @@ Ext.define('Ung.charts', {
                             fontSize: !forDashboard ? '12px' : '11px'
                         },
                         formatter: function () {
-                            if (this.point.percentage < 9) {
+                            if (this.point.percentage < 5) {
                                 return null;
                             }
                             if (this.point.name.length > 25) {

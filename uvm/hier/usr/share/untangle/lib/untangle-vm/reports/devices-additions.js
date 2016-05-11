@@ -17,7 +17,7 @@
         "#3399ff"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Device Table Additions",
     "type": "TIME_GRAPH"
 }

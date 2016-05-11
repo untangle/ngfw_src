@@ -744,19 +744,6 @@ Ext.define('Ung.dashboard.ReportEntry', {
         } else if (this.entry.type === 'TEXT') {
             this.callParent(arguments);
         } else {
-            switch (this.entry.timeStyle) {
-            case 'LINE':
-                this.chartType = 'spline';
-                break;
-            case 'AREA':
-                this.chartType = 'areaspline';
-                break;
-            case 'BAR_3D_OVERLAPPED':
-                this.chartType = 'column';
-                break;
-            default:
-                this.chartType = 'areaspline';
-            }
             this.tpl = new Ext.XTemplate(this.tpl);
             this.callParent(arguments);
         }

@@ -16,7 +16,7 @@
         "#b2b2b2"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Settings Changes",
     "type": "TIME_GRAPH"
 }

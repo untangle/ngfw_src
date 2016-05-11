@@ -18,7 +18,7 @@
         "#3399ff"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Host Table Additions",
     "type": "TIME_GRAPH"
 }
