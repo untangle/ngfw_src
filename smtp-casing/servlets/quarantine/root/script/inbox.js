@@ -204,6 +204,7 @@ Ext.define("Ung.Inbox", {
             var mails = [], mail, i;
             if (result) {
                 for (i = 0; i < result.list.length; i++) {
+                    result.list[i].time = result.list[i].internDate; // preserve time in a different prop
                     mail = result.list[i];
                     Ext.apply(mail, result.list[i].mailSummary);
                     mails.push(mail);
@@ -409,6 +410,10 @@ Ext.define("Ung.Inbox", {
                 width : 140,
                 filter : {
                     type : 'string'
+                },
+                sorter: function (rec1, rec2) {
+                    var t1 = rec1.getData().time, t2 = rec2.getData().time;
+                    return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
                 }
             }, {
                 header : i18n._("Size (KB)"),
