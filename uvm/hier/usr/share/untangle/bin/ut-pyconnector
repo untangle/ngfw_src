@@ -19,7 +19,7 @@ import ssl
 from uvm import Manager
 from uvm import Uvm
 
-UNTANGLE_CMD_PORTS   = [443,993,80,4443,587,995,8080,53,25]
+UNTANGLE_CMD_PORTS   = [993,80,443,4443,587,995,8080,53,25]
 UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", '74.123.28.85']
 RETRY_TIME_LONG = 10
 RETRY_TIME_SHORT = 5
@@ -135,15 +135,17 @@ def run_cmd(cmd_str):
      global uvm
      if uvm == None:
           try:
+               debug("Reinitializing UVM Connection...", 2)
                uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
           except Exception,e:
+               debug("Exception: %s" % traceback.print_exc(e))
                uvm = None
      try:
           result = eval(cmd_str.strip())
           return str(result)
      except Exception,e:
           uvm = None
-          debug("Exception: %s" % e)
+          debug("Exception: %s" % traceback.print_exc(e))
           return "Error (%s)" % type(e)
 
 def read_from_cmd():
