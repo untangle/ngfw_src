@@ -19,6 +19,12 @@ Ext.define('Ung.Wizard', {
         layout: 'card',
         itemId: 'content',
         height: 500,
+        header: {
+            xtype: 'header',
+            padding: '10',
+            margin: '0',
+            itemId: 'progress'
+        },
         items: []
     }, {
         xtype: 'toolbar',
@@ -59,6 +65,7 @@ Ext.define('Ung.WizardController', {
             this.onNext();
         }, this);
 
+        this.callParent();
         this.view.setStyle({
             maxWidth: this.view.maxWidth + 'px',
             minWidth: this.view.minWidth + 'px',
@@ -69,13 +76,25 @@ Ext.define('Ung.WizardController', {
         this.nextBtn = this.view.down('#nextBtn');
         this.cancelBtn = this.view.down('#cancelBtn');
         this.content = this.view.down('#content');
+
         var items = [], i;
-        //console.log(this.view.cards);
         for (i = 0; i < this.view.cards.length; i += 1) {
             items.push(this.view.cards[i].panel);
         }
         this.content.add(items);
+    },
 
+    afterRender: function () {
+        this.progress = this.view.down('#progress');
+        var i;
+        // remove welcome and finish pages from progress
+        for (i = 0; i < this.view.cards.length - 2; i += 1) {
+            this.progress.add({
+                xtype: 'component',
+                cls: 'progress-item',
+                html: '<i class="material-icons" style="color: #999;">check_box_outline_blank</i>'
+            });
+        }
         this.loadPage(0);
     },
 
@@ -93,7 +112,6 @@ Ext.define('Ung.WizardController', {
 
     goToPage: function (index) {
         //this.content.setActiveItem(this.currentIndex);
-
         var handler = null, pageNo = this.view.currentPage;
         if (pageNo <= index) {
             if (Ext.isFunction(this.view.cards[pageNo].onValidate)) {
@@ -120,6 +138,11 @@ Ext.define('Ung.WizardController', {
         }
         this.view.currentPage = index;
         var card = this.view.cards[this.view.currentPage];
+
+        this.content.setTitle('<h2 class="wizard-title">' + card.title + '</h2>');
+
+        this.setProgress();
+
         if (Ext.isFunction(card.onLoad)) {
             card.onLoad(Ext.bind(this.syncWizard, this));
         } else {
@@ -152,6 +175,23 @@ Ext.define('Ung.WizardController', {
             this.nextBtn.setText(this.view.cards[pageNo + 1].title + ' &raquo;');
             if (this.view.hasCancel) {
                 this.cancelBtn.show();
+            }
+        }
+    },
+
+    setProgress: function () {
+        var progressItems = this.progress.query('component[cls="progress-item"]'), i;
+        for (i = 0; i < progressItems.length; i += 1) {
+            if (this.view.currentPage !== 0 && this.view.currentPage !== this.view.cards.length) {
+                if (i < this.view.currentPage - 1) {
+                    progressItems[i].setHtml('<i class="material-icons" style="color: green;">check_box</i>');
+                }
+                if (i === this.view.currentPage - 1) {
+                    progressItems[i].setHtml('<i class="material-icons" style="color: green;">check_box_outline_blank</i>');
+                }
+                if (i > this.view.currentPage - 1) {
+                    progressItems[i].setHtml('<i class="material-icons" style="color: #999;">check_box_outline_blank</i>');
+                }
             }
         }
     }

@@ -59,10 +59,6 @@ Ext.define('Ung.setupWizard.Welcome', {
                 continueStep = rpc.wizardSettings.steps[completedStepIndex + 1];
             }
         }
-        var titleContainer = {
-            xtype: 'component',
-            html: '<h2 class="wizard-title">' + i18n._("Welcome") + '</h2>'
-        };
         var initialConfig = {
             xtype: 'component',
             margin: '20 0 0 20',
@@ -70,7 +66,7 @@ Ext.define('Ung.setupWizard.Welcome', {
                 '<p>' + Ext.String.format(i18n._('This wizard will guide you through the initial setup and configuration of the {0} Server.'), rpc.oemName) + '</p>'
         };
         if (!this.showResume) {
-            items = [titleContainer, initialConfig];
+            items = [initialConfig];
         } else {
             items = [titleContainer, {
                 xtype: 'container',
@@ -163,10 +159,6 @@ Ext.define('Ung.setupWizard.ServerSettings', {
                 margin: '20 0 0 20'
             },
             items: [{
-                xtype: 'component',
-                margin: '0 0 0 0',
-                html: '<h2 class="wizard-title">' + i18n._('Settings') + '</h2>'
-            }, {
                 xtype: 'container',
                 defaults: {
                     msgTarget: 'side',
@@ -476,11 +468,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
             layout: { type: 'vbox', align: 'stretch' },
             items: [{
                 xtype: 'component',
-                flex: 0,
-                html: '<h2 class="wizard-title">' + i18n._('Network Cards') + '<h2>'
-            }, {
-                xtype: 'component',
-                margin: '0 20',
+                margin: '20 0 0 20',
                 html: '<h3>' + i18n._('Identify Network Cards') + '</h3>'
             }, {
                 xtype: 'component',
@@ -705,10 +693,6 @@ Ext.define('Ung.setupWizard.Internet', {
         this.staticPanel = Ext.create('Ext.panel.Panel', {
             saveData: Ext.bind(this.saveStatic, this),
             items: [{
-                xtype: 'component',
-                margin: '10 0 0 50',
-                html: '<b>' + i18n._('Static Settings') + '</b>'
-            }, {
                 xtype: 'fieldset',
                 border: false,
                 defaultType: 'textfield',
@@ -848,10 +832,7 @@ Ext.define('Ung.setupWizard.Internet', {
             labelWidth: Ung.setupWizard.labelWidth,
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">' + i18n._('Internet Connection') + '<h2>'
-            }, {
-                xtype: 'component',
-                margin: '0 20',
+                margin: '20 0 0 20',
                 html: '<h3>' + i18n._('Configure the Internet Connection') + '<h3>'
             }, {
                 xtype: 'combo',
@@ -1186,9 +1167,6 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">' + i18n._('Internal Network') + '</h2>'
-            }, {
-                xtype: 'component',
                 margin: '20 20 0 20',
                 html: '<h3>' + i18n._('Configure the Internal Network Interface') + '</h3>'
             }, {
@@ -1519,9 +1497,6 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">' + i18n._('Automatic Upgrades') + '</h2>'
-            }, {
-                xtype: 'component',
                 margin: '20 20 0 20',
                 html: '<h3>' + i18n._('Configure Automatic Upgrade Settings') + '</h3>'
             }, {
@@ -1631,9 +1606,6 @@ Ext.define('Ung.setupWizard.Complete', {
         Ext.apply(this, config);
         var panel = Ext.create('Ext.container.Container', {
             items: [{
-                xtype: 'component',
-                html: '<h2 class="wizard-title">' + i18n._('Congratulations!') + '</h2>'
-            }, {
                 xtype: 'component',
                 margin: '20',
                 html: Ext.String.format(i18n._('<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.'), rpc.oemName)
