@@ -72,7 +72,10 @@ public class RuleCondition implements JSONString, Serializable
 
             CLIENT_MAC_VENDOR, /* Intel */
             SERVER_MAC_VENDOR, /* Intel */
-            
+
+            CLIENT_COUNTRY, /* US (ISO 3166 country code) */
+            SERVER_COUNTRY, /* JP (ISO 3166 country code)*/
+
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
             HTTP_REFERER, /* "playboy.com" "any" */
@@ -309,6 +312,8 @@ public class RuleCondition implements JSONString, Serializable
         case DST_MAC:
         case CLIENT_MAC_VENDOR:
         case SERVER_MAC_VENDOR:
+        case CLIENT_COUNTRY:
+        case SERVER_COUNTRY:
         case CLIENT_HOSTNAME:
         case SERVER_HOSTNAME:
         case HTTP_HOST:
@@ -487,6 +492,18 @@ public class RuleCondition implements JSONString, Serializable
             attachment = entry.getMacVendor();
             return globMatcher.isMatch( attachment );
             
+        case CLIENT_COUNTRY:
+            attachment = sess.sessionEvent().getClientCountry();
+            if (attachment == null)
+                return false;
+            return globMatcher.isMatch( attachment );
+
+        case SERVER_COUNTRY:
+            attachment = sess.sessionEvent().getServerCountry();
+            if (attachment == null)
+                return false;
+            return globMatcher.isMatch( attachment );
+
         case HTTP_URL:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
             if ( urlMatcher == null ) {
@@ -776,7 +793,7 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             attachment = entry.getMacVendor();
             return globMatcher.isMatch( attachment );
-            
+
         case CLIENT_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
@@ -893,5 +910,4 @@ public class RuleCondition implements JSONString, Serializable
 
         return false;
     }
-    
 }

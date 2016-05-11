@@ -54,7 +54,9 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             {name:"HTTP_HOST",displayName: i18n._("HTTP: Hostname"), type: "text", visible: true},
             {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
             {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false}
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false},
+            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
+            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
         ];
     },
     buildStatus: function() {

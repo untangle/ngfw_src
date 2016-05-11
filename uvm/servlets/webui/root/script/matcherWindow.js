@@ -385,7 +385,7 @@ Ext.define('Ung.UserEditorWindow', {
     }
 });
 
-// matcher pop-up editor for time groups
+// matcher pop-up editor for directory connector groups
 Ext.define('Ung.GroupEditorWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 450,
@@ -446,7 +446,7 @@ Ext.define('Ung.GroupEditorWindow', {
                 "change": {
                     fn: Ext.bind(function(elem, checked) {
                         this.gridPanel.setDisabled(!checked);
-                        this.gropuCustomValue.setDisabled(checked);
+                        this.groupCustomValue.setDisabled(checked);
                     }, this)
                 }
             }
@@ -459,20 +459,20 @@ Ext.define('Ung.GroupEditorWindow', {
                 "change": {
                     fn: Ext.bind(function(elem, checked) {
                         this.gridPanel.setDisabled(checked);
-                        this.gropuCustomValue.setDisabled(!checked);
+                        this.groupCustomValue.setDisabled(!checked);
                     }, this)
                 }
             }
         }, {
             xtype:'textfield',
-            name: 'gropuCustomValue',
+            name: 'groupCustomValue',
             width: 250,
             allowBlank:false
         }];
         this.callParent(arguments);
         
         this.groupMethodCustom = this.down("radio[groupMethodCustom]");
-        this.gropuCustomValue = this.down("textfield[name=gropuCustomValue]");
+        this.groupCustomValue = this.down("textfield[name=groupCustomValue]");
     },
     populate: function(button) {
         var data = [];
@@ -497,11 +497,11 @@ Ext.define('Ung.GroupEditorWindow', {
     setValue: function(value) {
         this.gridPanel.getStore().load();
         this.groupMethodCustom.setValue(true);
-        this.gropuCustomValue.setValue(value);
+        this.groupCustomValue.setValue(value);
     },
     getValue: function() {
         if (this.groupMethodCustom.getValue()) {
-            return this.gropuCustomValue.getValue();
+            return this.groupCustomValue.getValue();
         } else{
             var str = "";
             var first = true;
@@ -590,3 +590,372 @@ Ext.define('Ung.FieldConditionWindow', {
         return jsonobj;
     }
 });
+
+// matcher pop-up editor for countries
+Ext.define('Ung.CountryEditorWindow', {
+    extend:'Ung.MatcherEditorWindow',
+    height: 450,
+    width: 550,
+    initComponent: function() {
+        this.gridPanel = Ext.create('Ext.grid.Panel', {
+            title: i18n._('Countries'),
+            height: 300,
+            width: 400,
+            enableColumnHide: false,
+            enableColumnMove: false,
+            store: Ext.create('Ext.data.Store', {
+                data: [],
+                sortOnLoad: true,
+                sorters: { property: 'CountryName', direction : 'ASC' },
+                fields: [{
+                    name: "checked"
+                },{
+                    name: "CountryCode"
+                },{
+                    name: "CountryName"
+                }]
+            }),
+            columns: [ {
+                header: i18n._("Selected"),
+                width: 80,
+                menuDisabled: true,
+                sortable: false,
+                xtype:'checkcolumn',
+                dataIndex: "checked"
+            }, {
+                header: i18n._("ISO Code"),
+                width: 80,
+                menuDisabled: true,
+                sortable: true,
+                dataIndex: "CountryCode"
+            },{
+                header: i18n._("Country Name"),
+                width: 200,
+                menuDisabled: true,
+                sortable: true,
+                flex: true,
+                dataIndex: "CountryName"
+            }]
+        });
+
+        this.inputLines = [{
+            xtype: 'radio',
+            name: 'countryMethod',
+            boxLabel: i18n._('Specify Countries'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        this.gridPanel.setDisabled(!checked);
+                        this.countryCustomValue.setDisabled(checked);
+                    }, this)
+                }
+            }
+        }, this.gridPanel, {
+            xtype: 'radio',
+            name: 'countryMethod',
+            countryMethodCustom: true,
+            boxLabel: i18n._('Specify a Custom Value'),
+            listeners: {
+                "change": {
+                    fn: Ext.bind(function(elem, checked) {
+                        this.gridPanel.setDisabled(checked);
+                        this.countryCustomValue.setDisabled(!checked);
+                    }, this)
+                }
+            }
+        }, {
+            xtype:'textfield',
+            name: 'countryCustomValue',
+            width: 250,
+            allowBlank:false
+        }];
+        this.callParent(arguments);
+        
+        this.countryMethodCustom = this.down("radio[countryMethodCustom]");
+        this.countryCustomValue = this.down("textfield[name=countryCustomValue]");
+    },
+    populate: function(button) {
+        var data = [];
+        data.push({ CountryCode:"*", CountryName:"Any Country" });
+        data.push({ CountryCode:"AF", CountryName:"Afghanistan" });
+        data.push({ CountryCode:"AX", CountryName:"Aland Islands" });
+        data.push({ CountryCode:"AL", CountryName:"Albania" });
+        data.push({ CountryCode:"DZ", CountryName:"Algeria" });
+        data.push({ CountryCode:"AS", CountryName:"American Samoa" });
+        data.push({ CountryCode:"AD", CountryName:"Andorra" });
+        data.push({ CountryCode:"AO", CountryName:"Angola" });
+        data.push({ CountryCode:"AI", CountryName:"Anguilla" });
+        data.push({ CountryCode:"AQ", CountryName:"Antarctica" });
+        data.push({ CountryCode:"AG", CountryName:"Antigua and Barbuda" });
+        data.push({ CountryCode:"AR", CountryName:"Argentina" });
+        data.push({ CountryCode:"AM", CountryName:"Armenia" });
+        data.push({ CountryCode:"AW", CountryName:"Aruba" });
+        data.push({ CountryCode:"AU", CountryName:"Australia" });
+        data.push({ CountryCode:"AT", CountryName:"Austria" });
+        data.push({ CountryCode:"AZ", CountryName:"Azerbaijan" });
+        data.push({ CountryCode:"BS", CountryName:"Bahamas" });
+        data.push({ CountryCode:"BH", CountryName:"Bahrain" });
+        data.push({ CountryCode:"BD", CountryName:"Bangladesh" });
+        data.push({ CountryCode:"BB", CountryName:"Barbados" });
+        data.push({ CountryCode:"BY", CountryName:"Belarus" });
+        data.push({ CountryCode:"BE", CountryName:"Belgium" });
+        data.push({ CountryCode:"BZ", CountryName:"Belize" });
+        data.push({ CountryCode:"BJ", CountryName:"Benin" });
+        data.push({ CountryCode:"BM", CountryName:"Bermuda" });
+        data.push({ CountryCode:"BT", CountryName:"Bhutan" });
+        data.push({ CountryCode:"BO", CountryName:"Bolivia, Plurinational State of" });
+        data.push({ CountryCode:"BQ", CountryName:"Bonaire, Sint Eustatius and Saba" });
+        data.push({ CountryCode:"BA", CountryName:"Bosnia and Herzegovina" });
+        data.push({ CountryCode:"BW", CountryName:"Botswana" });
+        data.push({ CountryCode:"BV", CountryName:"Bouvet Island" });
+        data.push({ CountryCode:"BR", CountryName:"Brazil" });
+        data.push({ CountryCode:"IO", CountryName:"British Indian Ocean Territory" });
+        data.push({ CountryCode:"BN", CountryName:"Brunei Darussalam" });
+        data.push({ CountryCode:"BG", CountryName:"Bulgaria" });
+        data.push({ CountryCode:"BF", CountryName:"Burkina Faso" });
+        data.push({ CountryCode:"BI", CountryName:"Burundi" });
+        data.push({ CountryCode:"KH", CountryName:"Cambodia" });
+        data.push({ CountryCode:"CM", CountryName:"Cameroon" });
+        data.push({ CountryCode:"CA", CountryName:"Canada" });
+        data.push({ CountryCode:"CV", CountryName:"Cape Verde" });
+        data.push({ CountryCode:"KY", CountryName:"Cayman Islands" });
+        data.push({ CountryCode:"CF", CountryName:"Central African Republic" });
+        data.push({ CountryCode:"TD", CountryName:"Chad" });
+        data.push({ CountryCode:"CL", CountryName:"Chile" });
+        data.push({ CountryCode:"CN", CountryName:"China" });
+        data.push({ CountryCode:"CX", CountryName:"Christmas Island" });
+        data.push({ CountryCode:"CC", CountryName:"Cocos (Keeling) Islands" });
+        data.push({ CountryCode:"CO", CountryName:"Colombia" });
+        data.push({ CountryCode:"KM", CountryName:"Comoros" });
+        data.push({ CountryCode:"CG", CountryName:"Congo" });
+        data.push({ CountryCode:"CD", CountryName:"Congo, the Democratic Republic of the" });
+        data.push({ CountryCode:"CK", CountryName:"Cook Islands" });
+        data.push({ CountryCode:"CR", CountryName:"Costa Rica" });
+        data.push({ CountryCode:"CI", CountryName:"Cote d'Ivoire" });
+        data.push({ CountryCode:"HR", CountryName:"Croatia" });
+        data.push({ CountryCode:"CU", CountryName:"Cuba" });
+        data.push({ CountryCode:"CW", CountryName:"Curacao" });
+        data.push({ CountryCode:"CY", CountryName:"Cyprus" });
+        data.push({ CountryCode:"CZ", CountryName:"Czech Republic" });
+        data.push({ CountryCode:"DK", CountryName:"Denmark" });
+        data.push({ CountryCode:"DJ", CountryName:"Djibouti" });
+        data.push({ CountryCode:"DM", CountryName:"Dominica" });
+        data.push({ CountryCode:"DO", CountryName:"Dominican Republic" });
+        data.push({ CountryCode:"EC", CountryName:"Ecuador" });
+        data.push({ CountryCode:"EG", CountryName:"Egypt" });
+        data.push({ CountryCode:"SV", CountryName:"El Salvador" });
+        data.push({ CountryCode:"GQ", CountryName:"Equatorial Guinea" });
+        data.push({ CountryCode:"ER", CountryName:"Eritrea" });
+        data.push({ CountryCode:"EE", CountryName:"Estonia" });
+        data.push({ CountryCode:"ET", CountryName:"Ethiopia" });
+        data.push({ CountryCode:"FK", CountryName:"Falkland Islands (Malvinas)" });
+        data.push({ CountryCode:"FO", CountryName:"Faroe Islands" });
+        data.push({ CountryCode:"FJ", CountryName:"Fiji" });
+        data.push({ CountryCode:"FI", CountryName:"Finland" });
+        data.push({ CountryCode:"FR", CountryName:"France" });
+        data.push({ CountryCode:"GF", CountryName:"French Guiana" });
+        data.push({ CountryCode:"PF", CountryName:"French Polynesia" });
+        data.push({ CountryCode:"TF", CountryName:"French Southern Territories" });
+        data.push({ CountryCode:"GA", CountryName:"Gabon" });
+        data.push({ CountryCode:"GM", CountryName:"Gambia" });
+        data.push({ CountryCode:"GE", CountryName:"Georgia" });
+        data.push({ CountryCode:"DE", CountryName:"Germany" });
+        data.push({ CountryCode:"GH", CountryName:"Ghana" });
+        data.push({ CountryCode:"GI", CountryName:"Gibraltar" });
+        data.push({ CountryCode:"GR", CountryName:"Greece" });
+        data.push({ CountryCode:"GL", CountryName:"Greenland" });
+        data.push({ CountryCode:"GD", CountryName:"Grenada" });
+        data.push({ CountryCode:"GP", CountryName:"Guadeloupe" });
+        data.push({ CountryCode:"GU", CountryName:"Guam" });
+        data.push({ CountryCode:"GT", CountryName:"Guatemala" });
+        data.push({ CountryCode:"GG", CountryName:"Guernsey" });
+        data.push({ CountryCode:"GN", CountryName:"Guinea" });
+        data.push({ CountryCode:"GW", CountryName:"Guinea-Bissau" });
+        data.push({ CountryCode:"GY", CountryName:"Guyana" });
+        data.push({ CountryCode:"HT", CountryName:"Haiti" });
+        data.push({ CountryCode:"HM", CountryName:"Heard Island and McDonald Islands" });
+        data.push({ CountryCode:"VA", CountryName:"Holy See (Vatican City State)" });
+        data.push({ CountryCode:"HN", CountryName:"Honduras" });
+        data.push({ CountryCode:"HK", CountryName:"Hong Kong" });
+        data.push({ CountryCode:"HU", CountryName:"Hungary" });
+        data.push({ CountryCode:"IS", CountryName:"Iceland" });
+        data.push({ CountryCode:"IN", CountryName:"India" });
+        data.push({ CountryCode:"ID", CountryName:"Indonesia" });
+        data.push({ CountryCode:"IR", CountryName:"Iran, Islamic Republic of" });
+        data.push({ CountryCode:"IQ", CountryName:"Iraq" });
+        data.push({ CountryCode:"IE", CountryName:"Ireland" });
+        data.push({ CountryCode:"IM", CountryName:"Isle of Man" });
+        data.push({ CountryCode:"IL", CountryName:"Israel" });
+        data.push({ CountryCode:"IT", CountryName:"Italy" });
+        data.push({ CountryCode:"JM", CountryName:"Jamaica" });
+        data.push({ CountryCode:"JP", CountryName:"Japan" });
+        data.push({ CountryCode:"JE", CountryName:"Jersey" });
+        data.push({ CountryCode:"JO", CountryName:"Jordan" });
+        data.push({ CountryCode:"KZ", CountryName:"Kazakhstan" });
+        data.push({ CountryCode:"KE", CountryName:"Kenya" });
+        data.push({ CountryCode:"KI", CountryName:"Kiribati" });
+        data.push({ CountryCode:"KP", CountryName:"Korea, Democratic People's Republic of" });
+        data.push({ CountryCode:"KR", CountryName:"Korea, Republic of" });
+        data.push({ CountryCode:"KW", CountryName:"Kuwait" });
+        data.push({ CountryCode:"KG", CountryName:"Kyrgyzstan" });
+        data.push({ CountryCode:"LA", CountryName:"Lao People's Democratic Republic" });
+        data.push({ CountryCode:"LV", CountryName:"Latvia" });
+        data.push({ CountryCode:"LB", CountryName:"Lebanon" });
+        data.push({ CountryCode:"LS", CountryName:"Lesotho" });
+        data.push({ CountryCode:"LR", CountryName:"Liberia" });
+        data.push({ CountryCode:"LY", CountryName:"Libya" });
+        data.push({ CountryCode:"LI", CountryName:"Liechtenstein" });
+        data.push({ CountryCode:"LT", CountryName:"Lithuania" });
+        data.push({ CountryCode:"LU", CountryName:"Luxembourg" });
+        data.push({ CountryCode:"MO", CountryName:"Macao" });
+        data.push({ CountryCode:"MK", CountryName:"Macedonia, the Former Yugoslav Republic of" });
+        data.push({ CountryCode:"MG", CountryName:"Madagascar" });
+        data.push({ CountryCode:"MW", CountryName:"Malawi" });
+        data.push({ CountryCode:"MY", CountryName:"Malaysia" });
+        data.push({ CountryCode:"MV", CountryName:"Maldives" });
+        data.push({ CountryCode:"ML", CountryName:"Mali" });
+        data.push({ CountryCode:"MT", CountryName:"Malta" });
+        data.push({ CountryCode:"MH", CountryName:"Marshall Islands" });
+        data.push({ CountryCode:"MQ", CountryName:"Martinique" });
+        data.push({ CountryCode:"MR", CountryName:"Mauritania" });
+        data.push({ CountryCode:"MU", CountryName:"Mauritius" });
+        data.push({ CountryCode:"YT", CountryName:"Mayotte" });
+        data.push({ CountryCode:"MX", CountryName:"Mexico" });
+        data.push({ CountryCode:"FM", CountryName:"Micronesia, Federated States of" });
+        data.push({ CountryCode:"MD", CountryName:"Moldova, Republic of" });
+        data.push({ CountryCode:"MC", CountryName:"Monaco" });
+        data.push({ CountryCode:"MN", CountryName:"Mongolia" });
+        data.push({ CountryCode:"ME", CountryName:"Montenegro" });
+        data.push({ CountryCode:"MS", CountryName:"Montserrat" });
+        data.push({ CountryCode:"MA", CountryName:"Morocco" });
+        data.push({ CountryCode:"MZ", CountryName:"Mozambique" });
+        data.push({ CountryCode:"MM", CountryName:"Myanmar" });
+        data.push({ CountryCode:"NA", CountryName:"Namibia" });
+        data.push({ CountryCode:"NR", CountryName:"Nauru" });
+        data.push({ CountryCode:"NP", CountryName:"Nepal" });
+        data.push({ CountryCode:"NL", CountryName:"Netherlands" });
+        data.push({ CountryCode:"NC", CountryName:"New Caledonia" });
+        data.push({ CountryCode:"NZ", CountryName:"New Zealand" });
+        data.push({ CountryCode:"NI", CountryName:"Nicaragua" });
+        data.push({ CountryCode:"NE", CountryName:"Niger" });
+        data.push({ CountryCode:"NG", CountryName:"Nigeria" });
+        data.push({ CountryCode:"NU", CountryName:"Niue" });
+        data.push({ CountryCode:"NF", CountryName:"Norfolk Island" });
+        data.push({ CountryCode:"MP", CountryName:"Northern Mariana Islands" });
+        data.push({ CountryCode:"NO", CountryName:"Norway" });
+        data.push({ CountryCode:"OM", CountryName:"Oman" });
+        data.push({ CountryCode:"PK", CountryName:"Pakistan" });
+        data.push({ CountryCode:"PW", CountryName:"Palau" });
+        data.push({ CountryCode:"PS", CountryName:"Palestine, State of" });
+        data.push({ CountryCode:"PA", CountryName:"Panama" });
+        data.push({ CountryCode:"PG", CountryName:"Papua New Guinea" });
+        data.push({ CountryCode:"PY", CountryName:"Paraguay" });
+        data.push({ CountryCode:"PE", CountryName:"Peru" });
+        data.push({ CountryCode:"PH", CountryName:"Philippines" });
+        data.push({ CountryCode:"PN", CountryName:"Pitcairn" });
+        data.push({ CountryCode:"PL", CountryName:"Poland" });
+        data.push({ CountryCode:"PT", CountryName:"Portugal" });
+        data.push({ CountryCode:"PR", CountryName:"Puerto Rico" });
+        data.push({ CountryCode:"QA", CountryName:"Qatar" });
+        data.push({ CountryCode:"RE", CountryName:"Reunion" });
+        data.push({ CountryCode:"RO", CountryName:"Romania" });
+        data.push({ CountryCode:"RU", CountryName:"Russian Federation" });
+        data.push({ CountryCode:"RW", CountryName:"Rwanda" });
+        data.push({ CountryCode:"BL", CountryName:"Saint Barthelemy" });
+        data.push({ CountryCode:"SH", CountryName:"Saint Helena, Ascension and Tristan da Cunha" });
+        data.push({ CountryCode:"KN", CountryName:"Saint Kitts and Nevis" });
+        data.push({ CountryCode:"LC", CountryName:"Saint Lucia" });
+        data.push({ CountryCode:"MF", CountryName:"Saint Martin (French part)" });
+        data.push({ CountryCode:"PM", CountryName:"Saint Pierre and Miquelon" });
+        data.push({ CountryCode:"VC", CountryName:"Saint Vincent and the Grenadines" });
+        data.push({ CountryCode:"WS", CountryName:"Samoa" });
+        data.push({ CountryCode:"SM", CountryName:"San Marino" });
+        data.push({ CountryCode:"ST", CountryName:"Sao Tome and Principe" });
+        data.push({ CountryCode:"SA", CountryName:"Saudi Arabia" });
+        data.push({ CountryCode:"SN", CountryName:"Senegal" });
+        data.push({ CountryCode:"RS", CountryName:"Serbia" });
+        data.push({ CountryCode:"SC", CountryName:"Seychelles" });
+        data.push({ CountryCode:"SL", CountryName:"Sierra Leone" });
+        data.push({ CountryCode:"SG", CountryName:"Singapore" });
+        data.push({ CountryCode:"SX", CountryName:"Sint Maarten (Dutch part)" });
+        data.push({ CountryCode:"SK", CountryName:"Slovakia" });
+        data.push({ CountryCode:"SI", CountryName:"Slovenia" });
+        data.push({ CountryCode:"SB", CountryName:"Solomon Islands" });
+        data.push({ CountryCode:"SO", CountryName:"Somalia" });
+        data.push({ CountryCode:"ZA", CountryName:"South Africa" });
+        data.push({ CountryCode:"GS", CountryName:"South Georgia and the South Sandwich Islands" });
+        data.push({ CountryCode:"SS", CountryName:"South Sudan" });
+        data.push({ CountryCode:"ES", CountryName:"Spain" });
+        data.push({ CountryCode:"LK", CountryName:"Sri Lanka" });
+        data.push({ CountryCode:"SD", CountryName:"Sudan" });
+        data.push({ CountryCode:"SR", CountryName:"Suriname" });
+        data.push({ CountryCode:"SJ", CountryName:"Svalbard and Jan Mayen" });
+        data.push({ CountryCode:"SZ", CountryName:"Swaziland" });
+        data.push({ CountryCode:"SE", CountryName:"Sweden" });
+        data.push({ CountryCode:"CH", CountryName:"Switzerland" });
+        data.push({ CountryCode:"SY", CountryName:"Syrian Arab Republic" });
+        data.push({ CountryCode:"TW", CountryName:"Taiwan, Province of China" });
+        data.push({ CountryCode:"TJ", CountryName:"Tajikistan" });
+        data.push({ CountryCode:"TZ", CountryName:"Tanzania, United Republic of" });
+        data.push({ CountryCode:"TH", CountryName:"Thailand" });
+        data.push({ CountryCode:"TL", CountryName:"Timor-Leste" });
+        data.push({ CountryCode:"TG", CountryName:"Togo" });
+        data.push({ CountryCode:"TK", CountryName:"Tokelau" });
+        data.push({ CountryCode:"TO", CountryName:"Tonga" });
+        data.push({ CountryCode:"TT", CountryName:"Trinidad and Tobago" });
+        data.push({ CountryCode:"TN", CountryName:"Tunisia" });
+        data.push({ CountryCode:"TR", CountryName:"Turkey" });
+        data.push({ CountryCode:"TM", CountryName:"Turkmenistan" });
+        data.push({ CountryCode:"TC", CountryName:"Turks and Caicos Islands" });
+        data.push({ CountryCode:"TV", CountryName:"Tuvalu" });
+        data.push({ CountryCode:"UG", CountryName:"Uganda" });
+        data.push({ CountryCode:"UA", CountryName:"Ukraine" });
+        data.push({ CountryCode:"AE", CountryName:"United Arab Emirates" });
+        data.push({ CountryCode:"GB", CountryName:"United Kingdom" });
+        data.push({ CountryCode:"US", CountryName:"United States" });
+        data.push({ CountryCode:"UM", CountryName:"United States Minor Outlying Islands" });
+        data.push({ CountryCode:"UY", CountryName:"Uruguay" });
+        data.push({ CountryCode:"UZ", CountryName:"Uzbekistan" });
+        data.push({ CountryCode:"VU", CountryName:"Vanuatu" });
+        data.push({ CountryCode:"VE", CountryName:"Venezuela, Bolivarian Republic of" });
+        data.push({ CountryCode:"VN", CountryName:"Viet Nam" });
+        data.push({ CountryCode:"VG", CountryName:"Virgin Islands, British" });
+        data.push({ CountryCode:"VI", CountryName:"Virgin Islands, U.S." });
+        data.push({ CountryCode:"WF", CountryName:"Wallis and Futuna" });
+        data.push({ CountryCode:"EH", CountryName:"Western Sahara" });
+        data.push({ CountryCode:"YE", CountryName:"Yemen" });
+        data.push({ CountryCode:"ZM", CountryName:"Zambia" });
+        data.push({ CountryCode:"ZW", CountryName:"Zimbabwe" });
+
+        this.gridPanel.getStore().getProxy().data = data;
+        this.gridPanel.getStore().load();
+        this.callParent(arguments);
+    },
+    setValue: function(value) {
+        this.gridPanel.getStore().load();
+        this.countryMethodCustom.setValue(true);
+        this.countryCustomValue.setValue(value);
+    },
+    getValue: function() {
+        if (this.countryMethodCustom.getValue()) {
+            return this.countryCustomValue.getValue();
+        } else{
+            var str = "";
+            var first = true;
+            for ( var i = 0 ; i < this.gridPanel.store.data.items.length ; i++ ) {
+                var row = this.gridPanel.store.data.items[i].data;
+                if (row.checked) {
+                    if (row.CountryName == "*")
+                        return "*"; /* if any is checked, the rest is irrelevent */
+                    if (!first)
+                        str = str + ",";
+                    else
+                        first = false;
+                    str = str + row.CountryCode;
+                }
+            }
+            return str;
+        }
+    }
+});
+
