@@ -139,7 +139,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.modified
 diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonrpc/proxy.py
 --- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
 +++ python-jsonrpc-r19.modified//jsonrpc/proxy.py	2014-05-08 12:31:28.000000000 -0700
-@@ -19,31 +19,95 @@
+@@ -19,31 +19,96 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
  
@@ -171,13 +171,14 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 -    def __init__(self, serviceURL, serviceName=None):
 +    __request_id = 1
 +
-+    def __init__(self, serviceURL, serviceName=None, handler=None):
++    def __init__(self, serviceURL, serviceName=None, handler=None, nonce=None):
          self.__serviceURL = serviceURL
          self.__serviceName = serviceName
 +        self.__handler = handler
-+        if ( self.__handler == None ):
++        if self.__handler == None:
 +            self.__handler = RequestHandler()
-+        self.getNonce()
++        if self.__nonce == None:
++            self.getNonce()
  
      def __getattr__(self, name):
          if self.__serviceName != None:
@@ -193,7 +194,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +        if resp.has_key( 'error' ) and resp['error'] != None:
 +            print "A little error: ", resp['error']
 +            raise JSONRPCException(resp['error'])
-+        self.__jsonRpcNonce = resp['result']
++        self.__nonce = resp['result']
  
      def __call__(self, *args):
 -         postdata = dumps({"method": self.__serviceName, 'params': args, 'id':'jsonrpc'})
@@ -205,7 +206,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 -             return resp['result']
 -         
 +        ServiceProxy.__request_id += 1
-+        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': self.__jsonRpcNonce, 'id': ServiceProxy.__request_id })
++        postdata = dumps({"method": self.__serviceName, 'params': args, 'nonce': self.__nonce, 'id': ServiceProxy.__request_id })
 +        respdata = self.__handler.make_request( self.__serviceURL, postdata )
 +        resp = loads(respdata)
 +        if resp.has_key( 'error' ) and resp['error'] != None:
@@ -213,7 +214,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +            raise JSONRPCException(resp['error'])
 +        result = resp['result']
 +        if ( type( result ) is types.DictType ) and result.has_key( 'JSONRPCType' ) and ( result['JSONRPCType'] == "CallableReference" ) and result.has_key( 'objectID' ):
-+            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler)
++            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler, self.__nonce)
 +
 +        if resp.has_key( 'fixups' ) and type( resp['fixups'] ) is types.ListType:
 +            self.__handle_fixups__( result, resp['fixups'] )
