@@ -1528,7 +1528,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 0 20',
-                    html: Ext.String.format(i18n._('Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access. '), rpc.oemName) + '<br/>' +
+                    html: Ext.String.format(i18n._('Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access.'), rpc.oemName) + '<br/>' +
                     i18n._('This is the recommended for most sites.')
                 }]
             }]
