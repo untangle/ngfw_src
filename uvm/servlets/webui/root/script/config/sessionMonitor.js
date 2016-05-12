@@ -53,6 +53,12 @@ Ext.define('Webui.config.sessionMonitor', {
                         "postNatClientPort": (ii+1000),
                         "preNatClient": "10.0.0."+((t+2)%10),
                         "preNatServer": "184.27.239."+((t+3)%10),
+                        "clientCountry" : null,
+                        "clientLatitude" : 0,
+                        "clientLongitude" : 0,
+                        "serverCountry" : "AB",
+                        "serverLatitude" : 0,
+                        "serverLongitude" : 0,
                         "attachments": {
                             "map": {
                                 "web_filter-best-category-name": "Social Networking",
@@ -287,6 +293,52 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'string'
             }
         },{
+            header: i18n._("Client Country"),
+            dataIndex: "clientCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Latitude"),
+            dataIndex: "clientLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Longitude"),
+            dataIndex: "clientLongitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            header: i18n._("Server Country"),
+            dataIndex: "serverCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Latitude"),
+            dataIndex: "serverLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Longitude"),
+            dataIndex: "serverLongitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
             hidden: true,
             header: i18n._("Protocol") + " " + "(Application Control Lite)",
             dataIndex: "application-control-lite-protocol",
@@ -505,54 +557,6 @@ Ext.define('Webui.config.sessionMonitor', {
             width: 400,
             filter: {
                 type: 'string'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Client Country"),
-            dataIndex: "clientCountry",
-            width: 80,
-            filter: {
-                type: 'string'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Client Latitude"),
-            dataIndex: "clientLatitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Client Longitude"),
-            dataIndex: "clientLongitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Country"),
-            dataIndex: "serverCountry",
-            width: 80,
-            filter: {
-                type: 'string'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Latitude"),
-            dataIndex: "serverLatitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Longitude"),
-            dataIndex: "serverLongitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
             }
         });
 
