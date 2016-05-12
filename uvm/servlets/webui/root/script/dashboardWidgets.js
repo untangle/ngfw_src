@@ -243,17 +243,18 @@ Ext.define('Ung.dashboard.Widget', {
             this.tools = [];
             if (this.widgetType === 'ReportEntry') {
                 this.tools.push({
-                    type: 'plus',
-                    //tooltip: i18n._('Open in Reports'),
+                    type: 'widget-tool',
+                    cls: 'widget-tool open',
+                    renderTpl: '<i class="material-icons">call_made</i>',
                     callback: function (panel) {
-                        //Ung.Main.target = "reports." + entry.category + '.report.' + panel.entry.uniqueId;
                         Ung.Main.openReports(panel.entry);
                     }
                 });
             }
             this.tools.push({
-                type: 'refresh',
-                //tooltip: i18n._('Refresh'),
+                type: 'widget-tool',
+                cls: 'widget-tool refresh',
+                renderTpl: '<i class="material-icons">refresh</i>',
                 margin: '0 5 0 5',
                 callback: function (panel) {
                     if (panel.timeoutId) {

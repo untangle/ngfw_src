@@ -1325,8 +1325,7 @@ a.forgot-password:hover {
 
 
 .widget .x-tool {
-    top: 6px !important;
-    margin-left: 3px;
+    top: 3px !important;
 }
 
 .widget .x-tool-refresh {
@@ -1807,15 +1806,34 @@ a.forgot-password:hover {
 }
 
 .widget.loading {
-    box-shadow: 0 0 5px rgba(103,189,74,0.3);
-    border-color: rgba(103,189,74,0.5);
+    box-shadow: 0 0 10px rgba(103,189,74,0.7);
+    /*box-shadow: 0 1px 3px rgba(103,189,74,0.8);*/
 }
 
-.widget.loading .x-tool-refresh {
+.widget.loading .widget-tool.refresh i {
     -webkit-animation-name: rotate;
     -webkit-animation-duration: 1.5s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
+}
+
+.widget-tool {
+    padding: 1px;
+    border-radius: 50%;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.widget-tool:hover {
+    background: #67BC4A;
+}
+
+.widget-tool i {
+    color: #999;
+    font-size: 20px;
+    transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.widget-tool:hover i {
+    color: #FFF;
 }
 
 /* end custom widget loading */
