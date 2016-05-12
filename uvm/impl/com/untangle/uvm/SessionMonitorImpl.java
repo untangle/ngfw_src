@@ -164,6 +164,14 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setClientIntf(new Integer(clientSide.getClientIntf()));
                     session.setServerIntf(new Integer(serverSide.getServerIntf()));
 
+                    session.setClientCountry(netcapSession.getSessionEvent().getClientCountry());
+                    session.setClientLatitude(netcapSession.getSessionEvent().getClientLatitude());                    
+                    session.setClientLongitude(netcapSession.getSessionEvent().getClientLongitude());
+
+                    session.setServerCountry(netcapSession.getSessionEvent().getServerCountry());
+                    session.setServerLatitude(netcapSession.getSessionEvent().getServerLatitude());                    
+                    session.setServerLongitude(netcapSession.getSessionEvent().getServerLongitude());                    
+
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
                      * We need to overwrite that with the correct info
@@ -600,5 +608,4 @@ public class SessionMonitorImpl implements SessionMonitor
 
         return list;
     }
-                            
 }

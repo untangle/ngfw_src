@@ -31,6 +31,14 @@ public class SessionMonitorEntry implements Serializable, JSONString
     private Integer qosPriority;
     private Boolean bypassed = null;
     private Integer mark;
+    
+    private String clientCountry;
+    private Double clientLatitude;
+    private Double clientLongitude;
+    
+    private String serverCountry;
+    private Double serverLatitude;
+    private Double serverLongitude;
 
     public String getProtocol() {return protocol;}
     public void   setProtocol( String protocol ) {this.protocol = protocol;}
@@ -66,7 +74,21 @@ public class SessionMonitorEntry implements Serializable, JSONString
 
     public Integer getMark() {return mark;}
     public void    setMark( Integer mark ) {this.mark = mark;}
-    
+
+    public String  getClientCountry() { return clientCountry; }
+    public void    setClientCountry(String clientCountry) { this.clientCountry = clientCountry; }
+    public Double  getClientLatitude() { return clientLatitude; }
+    public void    setClientLatitude(Double clientLatitude) { this.clientLatitude = clientLatitude; }
+    public Double  getClientLongitude() { return clientLongitude; }
+    public void    setClientLongitude(Double clientLongitude) { this.clientLongitude = clientLongitude; }
+
+    public String  getServerCountry() { return serverCountry; }
+    public void    setServerCountry(String serverCountry) { this.serverCountry = serverCountry; }
+    public Double  getServerLatitude() { return serverLatitude; }
+    public void    setServerLatitude(Double serverLatitude) { this.serverLatitude = serverLatitude; }
+    public Double  getServerLongitude() { return serverLongitude; }
+    public void    setServerLongitude(Double serverLongitude) { this.serverLongitude = serverLongitude; }
+
     /**
      * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */
@@ -152,5 +174,4 @@ public class SessionMonitorEntry implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
 }

@@ -37,7 +37,7 @@ Ext.define('Webui.config.sessionMonitor', {
                     sessions = sessions.concat(Ext.decode(Ext.encode(result.list)));
                 }
             }
-            if(false) { 
+            if(false) {
                 var testSessionsSize=5000;//400 + Math.floor((Math.random()*150));
                 for(var t=0;t<testSessionsSize;t++) {
                     var ii=t+Math.floor((Math.random()*5));
@@ -506,8 +506,56 @@ Ext.define('Webui.config.sessionMonitor', {
             filter: {
                 type: 'string'
             }
+        },{
+            hidden: true,
+            header: i18n._("Client Country"),
+            dataIndex: "clientCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Latitude"),
+            dataIndex: "clientLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Longitude"),
+            dataIndex: "clientLongitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Country"),
+            dataIndex: "serverCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Latitude"),
+            dataIndex: "serverLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Longitude"),
+            dataIndex: "serverLongitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
         });
-        
+
         return columns;
     },
     // Current Sessions Grid
@@ -693,6 +741,24 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "pipeline",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "clientCountry",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "clientLatitude",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "clientLongitude",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "serverCountry",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "serverLatitude",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "serverLongitude",
                 convert: Ung.Util.preventEmptyValueConverter
             }]
         });
