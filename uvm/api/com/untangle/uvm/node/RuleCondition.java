@@ -16,6 +16,7 @@ import org.json.JSONString;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.IPMatcher;
@@ -900,7 +901,19 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             attachment = entry.getHttpUserAgent();
             return globMatcher.isMatch( attachment );
-            
+
+        case CLIENT_COUNTRY:
+            attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
+            if (attachment == null)
+                return false;
+            return globMatcher.isMatch( attachment );
+
+        case SERVER_COUNTRY:
+            attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
+            if (attachment == null)
+                return false;
+            return globMatcher.isMatch( attachment );
+
         default:
             // this is commented out because some rules are run against sessions and attributes
             // so they will call this method with unsupported matcher types.
