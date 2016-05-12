@@ -121,19 +121,9 @@ if __name__ == "__main__":
       printUsage()
       sys.exit(1)
 
-  uvmContext = Uvm().getUvmContext( hostname=parser.hostname, username=parser.username, password=parser.password, timeout=parser.timeout )
-  uvm = uvmContext
-
-  if ( parser.policy_name != None ):
-      Manager.policy = uvmContext.policyManager().getPolicy(parser.policy_name)
-
-  Manager.verbosity = parser.verbosity
-
-  calledMethod = False
-
-  # check that we can connect to the untangle-vm
+  uvmContext = None
   try:
-      version = uvmContext.version()
+      uvmContext = Uvm().getUvmContext( hostname=parser.hostname, username=parser.username, password=parser.password, timeout=parser.timeout )
   except JSONRPCException, e:
       errorstr = repr(e.error)
       if (not parser.quiet):
@@ -143,6 +133,15 @@ if __name__ == "__main__":
           if (errorstr.find("unavailable") != -1):
               print "Is the untangle-vm running?"
       sys.exit(1)
+        
+  uvm = uvmContext
+
+  if ( parser.policy_name != None ):
+      Manager.policy = uvmContext.policyManager().getPolicy(parser.policy_name)
+
+  Manager.verbosity = parser.verbosity
+
+  calledMethod = False
 
   # If -c is specified exec the command and exit
   if parser.command != None:
