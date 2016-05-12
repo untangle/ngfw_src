@@ -606,7 +606,7 @@ Ext.define('Ung.CountryEditorWindow', {
             store: Ext.create('Ext.data.Store', {
                 data: [],
                 sortOnLoad: true,
-                sorters: { property: 'CountryName', direction : 'ASC' },
+                sorters: { property: 'CountryCode', direction : 'ASC' },
                 fields: [{
                     name: "checked"
                 },{
