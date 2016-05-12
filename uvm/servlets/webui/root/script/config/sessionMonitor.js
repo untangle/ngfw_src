@@ -213,24 +213,8 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'string'
             }
         },{
-            hidden: true,
-            header: i18n._("Server (Pre-NAT)"),
-            dataIndex: "preNatServer",
-            width: Ung.TableConfig.ipFieldWidth,
-            filter: {
-                type: 'string'
-            }
-        },{
             header: i18n._("Client Port (Pre-NAT)"),
             dataIndex: "preNatClientPort",
-            width: Ung.TableConfig.portFieldWidth,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Port (Pre-NAT)"),
-            dataIndex: "preNatServerPort",
             width: Ung.TableConfig.portFieldWidth,
             filter: {
                 type: 'numeric'
@@ -244,13 +228,6 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'string'
             }
         },{
-            header: i18n._("Server (Post-NAT)"),
-            dataIndex: "postNatServer",
-            width: Ung.TableConfig.ipFieldWidth,
-            filter: {
-                type: 'string'
-            }
-        },{
             hidden: true,
             header: i18n._("Client Port (Post-NAT)"),
             dataIndex: "postNatClientPort",
@@ -259,9 +236,79 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'numeric'
             }
         },{
+            hidden: true,
+            header: i18n._("Client Country"),
+            dataIndex: "clientCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Latitude"),
+            dataIndex: "clientLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Client Longitude"),
+            dataIndex: "clientLongitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server (Pre-NAT)"),
+            dataIndex: "preNatServer",
+            width: Ung.TableConfig.ipFieldWidth,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Port (Pre-NAT)"),
+            dataIndex: "preNatServerPort",
+            width: Ung.TableConfig.portFieldWidth,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            header: i18n._("Server (Post-NAT)"),
+            dataIndex: "postNatServer",
+            width: Ung.TableConfig.ipFieldWidth,
+            filter: {
+                type: 'string'
+            }
+        },{
             header: i18n._("Server Port (Post-NAT)"),
             dataIndex: "postNatServerPort",
             width: Ung.TableConfig.portFieldWidth,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            header: i18n._("Server Country"),
+            dataIndex: "serverCountry",
+            width: 80,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Latitude"),
+            dataIndex: "serverLatitude",
+            width: 100,
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Server Longitude"),
+            dataIndex: "serverLongitude",
+            width: 100,
             filter: {
                 type: 'numeric'
             }
@@ -291,52 +338,6 @@ Ext.define('Webui.config.sessionMonitor', {
             width: 100,
             filter: {
                 type: 'string'
-            }
-        },{
-            header: i18n._("Client Country"),
-            dataIndex: "clientCountry",
-            width: 80,
-            filter: {
-                type: 'string'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Client Latitude"),
-            dataIndex: "clientLatitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Client Longitude"),
-            dataIndex: "clientLongitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            header: i18n._("Server Country"),
-            dataIndex: "serverCountry",
-            width: 80,
-            filter: {
-                type: 'string'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Latitude"),
-            dataIndex: "serverLatitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
-            }
-        },{
-            hidden: true,
-            header: i18n._("Server Longitude"),
-            dataIndex: "serverLongitude",
-            width: 100,
-            filter: {
-                type: 'numeric'
             }
         },{
             hidden: true,
