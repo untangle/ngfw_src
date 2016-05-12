@@ -135,10 +135,10 @@ def run_cmd(cmd_str):
      global uvm
      if uvm == None:
           try:
-               debug("Reinitializing UVM Connection...", 2)
+               debug("Reinitializing UVM Connection...")
                uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
           except Exception,e:
-               debug("Exception: %s" % traceback.print_exc(e))
+               debug("Exception: %s" % repr(e))
                uvm = None
      try:
           result = eval(cmd_str.strip())
