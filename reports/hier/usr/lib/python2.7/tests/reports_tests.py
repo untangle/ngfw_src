@@ -435,7 +435,6 @@ class ReportsTests(unittest2.TestCase):
         assert(found)
 
     def test_090_email_alert(self):
-        raise unittest2.SkipTest("Skip broken test")        
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         fname = sys._getframe().f_code.co_name
