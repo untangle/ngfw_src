@@ -1,4 +1,6 @@
-//Reports servlet main
+/*global
+ Ext, Ung, Webui, rpc:true, i18n:true, setTimeout, clearTimeout, console, window, document, JSONRpcClient, Highcharts
+ */
 var rpc = {}; // the main json rpc object
 var testMode = false;
 
@@ -7,280 +9,198 @@ Ext.define("Ung.Main", {
     singleton: true,
     debugMode: false,
     buildStamp: null,
-    // the Ext.Viewport object for the application
     viewport: null,
-    init: function(config) {
+    init: function (config) {
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ext.apply(this, config);
         if (Ext.isGecko) {
-            document.onkeypress = function(e) {
-                if (e.keyCode==27) {
-                    return false;
-                }
-                return true;
+            document.onkeypress = function (e) {
+                return e.keyCode !== 27;
             };
         }
-        JSONRpcClient.toplevel_ex_handler = Ung.Util.handleException;
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         JSONRpcClient.max_req_active = 25;
 
-        this.initSemaphore = 4;
-        if(Ext.supports.LocalStorage) {
+        if (Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
         rpc = {};
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
-        
-        rpc.jsonrpc.ReportsContext.skinManager(Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.skinManager = result;
-            rpc.skinManager.getSettings(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.skinSettings = result;
-                Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/common.css");
-                Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
-            },this));
-        }, this));
-        
-        rpc.jsonrpc.ReportsContext.reportsManager(Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.reportsManager = result;
-            rpc.reportsManager.isReportsEnabled(Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.reportsEnabled = result;
-                if(rpc.reportsEnabled) {
-                    rpc.reportsManager.getCurrentApplications(Ext.bind(function( result, exception ) {
-                        if(Ung.Util.handleException(exception)) return;
-                        rpc.currentApplications = result.list;
-                        rpc.reportsManager.getPoliciesInfo(Ext.bind(function( result, exception ) {
-                            if(Ung.Util.handleException(exception)) return;
-                            rpc.policyNamesMap = {};
-                            rpc.policyNamesMap[0] = i18n._("None");
-                            var policy;
-                            for(var i=0; i<result.list.length; i++) {
-                                policy=result.list[i];
-                                rpc.policyNamesMap[policy.policyId] = policy.name;
-                            }
-                            this.startApplication();
-                        },this));
-                    },this));
-                } else {
-                    this.startApplication();
-                }
-            },this));
-            rpc.reportsManager.getTimeZoneOffset(Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.timeZoneOffset = result;
-                this.startApplication();
-            }, this));
-        }, this));
 
-        rpc.jsonrpc.ReportsContext.languageManager(Ext.bind(function( result, exception ) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.languageManager = result;
-            // get translations for main module
-            rpc.languageManager.getTranslations(Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.translations = result;
-                this.startApplication();
-            }, this), "untangle");
-            
-            rpc.languageManager.getLanguageSettings(Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.languageSettings = result;
-                if(rpc.languageSettings.language) {
-                    Ung.Util.loadScript('/ext6/classic/locale/locale-' + rpc.languageSettings.language + '.js');
-                    this.startApplication();
-                }
-            },this));
+        Ext.Deferred.pipeline([
+            this.loadSkin,
+            this.loadReportsManager,
+            this.loadTimezoneOffset,
+            this.loadTranslations
+        ]).then(Ext.bind(function () {
+            this.startApplication();
         }, this));
     },
-    getPolicyName: function(policyId) {
-        if (Ext.isEmpty(policyId)){
-            return i18n._( "Service App" );
+
+    loadSkin: function () {
+        var deferred = new Ext.Deferred();
+        rpc.jsonrpc.ReportsContext.skinManager(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                deferred.reject(exception);
+            }
+            rpc.skinManager = result;
+            rpc.skinManager.getSettings(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    deferred.reject(exception);
+                }
+                rpc.skinSettings = result;
+                Ung.Util.loadCss("/skins/" + rpc.skinSettings.skinName + "/css/common.css");
+                Ung.Util.loadCss("/skins/" + rpc.skinSettings.skinName + "/css/admin.css");
+                deferred.resolve();
+            }, this));
+        }, this));
+        return deferred.promise;
+    },
+
+    loadReportsManager: function () {
+        var deferred = new Ext.Deferred();
+        rpc.jsonrpc.ReportsContext.reportsManager(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                deferred.reject(exception);
+            }
+            rpc.reportsManager = result;
+            rpc.reportsManager.isReportsEnabled(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    deferred.reject(exception);
+                }
+                rpc.reportsEnabled = result;
+                deferred.resolve();
+            }, this));
+        }, this));
+        return deferred.promise;
+    },
+
+    loadTimezoneOffset: function () {
+        var deferred = new Ext.Deferred();
+        rpc.reportsManager.getTimeZoneOffset(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                deferred.reject(exception);
+            }
+            rpc.timeZoneOffset = result;
+            deferred.resolve();
+        }, this));
+        return deferred.promise;
+    },
+
+    loadTranslations: function () {
+        var deferred = new Ext.Deferred();
+        rpc.jsonrpc.ReportsContext.languageManager(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                deferred.reject(exception);
+            }
+            rpc.languageManager = result;
+            // get translations for main module
+
+            rpc.languageManager.getTranslations(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    deferred.reject(exception);
+                }
+                i18n = Ext.create('Ung.I18N', {
+                    map: result.map,
+                    timeoffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset
+                });
+
+                deferred.resolve();
+            }, this), 'untangle');
+        }, this));
+        return deferred.promise;
+    },
+
+    // needed as it is used by reports.js
+    getReportsManager: function () {
+        return rpc.reportsManager;
+    },
+
+    getPolicyName: function (policyId) {
+        if (Ext.isEmpty(policyId)) {
+            return i18n._("Service Apps");
         }
         if (rpc.policyNamesMap[policyId] !== undefined) {
             return rpc.policyNamesMap[policyId];
-        } else {
-            return i18n._( "Unknown Rack" );
         }
+        return i18n._("Unknown Rack");
     },
-    buildReportsNotEnabled: function() {
-        var items = [{
-            xtype: "component",
-            margin: 30,
-            style: 'font-family: sans-serif; font-weight:bold; font-size: 20px;',
-            html: i18n._("Reports is not installed into your rack or it is not turned on.")
-        }];
-        return items;
-    },
-    buildReportsViewer: function() {
-        var treeNodes = [ {
-            text : i18n._('Summary'),
-            category : 'Summary',
-            leaf : true,
-            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/icons/icon_summary.png'
-        }, {
-            text : i18n._('Hosts'),
-            category : 'Hosts',
-            leaf : true,
-            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_hosts_16x16.png'
-        }, {
-            text : i18n._('Devices'),
-            category : 'Devices',
-            leaf : true,
-            icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_devices_16x16.png'
-        }, {
-            text : i18n._("Configuration"),
-            leaf : false,
-            expanded : true,
-            children : [ {
-                text : i18n._('Network'),
-                category : 'Network',
-                leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_network_16x16.png'
-            }, {
-                text : i18n._('Administration'),
-                category : 'Administration',
-                leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_admin_16x16.png'
-            }, {
-                text : i18n._('System'),
-                category : 'System',
-                leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_system_16x16.png'
-            }, {
-                text : i18n._("Shield"),
-                category : "Shield",
-                leaf : true,
-                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/untangle-node-shield_17x17.png'
-            } ]
-        }];
-        if (rpc.currentApplications) {
-            var i, app, apps = [];
-            for (i = 0; i < rpc.currentApplications.length; i++) {
-                app = rpc.currentApplications[i];
-                if(app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support' ) {
-                    apps.push({
-                        text : app.displayName,
-                        category : app.displayName,
-                        leaf : true,
-                        icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+app.name+'_17x17.png'
-                    });
-                }
-            }
-            if(apps.length > 0) {
-                treeNodes.push({
-                    text : i18n._("Applications"),
-                    leaf : false,
-                    expanded : true,
-                    children : apps
-                });
-            }
-        }
 
-        var items = [{
-            xtype : 'treepanel',
-            region : 'west',
-            margin : '1 1 0 1',
-            autoScroll : true,
-            rootVisible : false,
-            title : i18n._('Reports'),
-            enableDrag : false,
-            width : 200,
-            minWidth : 65,
-            maxWidth : 350,
-            split : true,
-            collapsible: true,
-            collapsed: false,
-            store: Ext.create('Ext.data.TreeStore', {
-                root : {
-                    expanded : true,
-                    children : treeNodes
-                }
-            }),
-            selModel : {
-                selType : 'rowmodel',
-                listeners : {
-                    select : Ext.bind(function(rowModel, record, rowIndex, eOpts) {
-                        this.panelReports.setConfig("icon", record.get("icon"));
-                        this.panelReports.setTitle(record.get("category"));
-                        this.panelReports.setCategory(record.get("category"));
-                    }, this)
-                }
-            }
-        }, this.panelReports = Ext.create('Ung.panel.Reports', {
-            region : "center",
-            webuiMode: false
-        })];
-        return items;
-    },
-    startApplication: function() {
-        this.initSemaphore--;
-        if (this.initSemaphore != 0) {
-            return;
-        }
-
-        i18n = Ext.create('Ung.I18N',{
-            map: rpc.translations,
-            timeoffset: (new Date().getTimezoneOffset()*60000) + rpc.timeZoneOffset
-        });
-
-        this.viewport = Ext.create('Ext.container.Viewport',{
-            layout:'border',
-            items: [
-            {
-                xtype:'panel',
+    startApplication: function () {
+        this.viewport = Ext.create('Ext.container.Viewport', {
+            layout: 'border',
+            items: [{
+                xtype: 'container',
                 region: 'north',
-                layout:'border',
-                padding: '5 5 5 5',
-                height: 70,
-                border: false,
-                style: 'background-color: #F0F0F0;',
-                bodyStyle: 'background-color: #F0F0F0;',
+                cls: 'main-menu',
+                layout: { type: 'hbox', align: 'middle' },
                 items: [{
                     xtype: 'component',
+                    margin: '3 0 3 10',
                     cls: 'logo',
-                    region: 'west',
-                    style: "background-image: url(/images/BrandingLogo.png?"+(new Date()).getTime()+");",
-                    height: 54,
-                    width: 120
-                }, {
-                    xtype: 'label',
                     height: 60,
-                    style: 'font-family: sans-serif;font-weight:bold;font-size:37px;padding-left:15px; line-height: 56px;',
-                    text: i18n._('Reports'),
-                    region: 'center'
+                    width: 100,
+                    style: "background-image: url(/images/BrandingLogo.png?" + (new Date()).getTime() + ");"
                 }, {
-                    xtype:'container',
-                    region: 'east',
+                    xtype: 'component',
                     height: 60,
-                    width: 350,
-                    margin: '0 10 0 0',
-                    layout: {type: 'vbox', align: 'right'},
+                    html: i18n._('Reports'),
+                    background: 'transparent',
+                    style: {
+                        color: '#FFF',
+                        fontSize: '16px',
+                        fontFamily: '"PT Sans", sans-serif',
+                        paddingTop: '34px'
+                    }
+                }, {
+                    xtype: 'container',
+                    flex: 1
+                }, {
+                    xtype: 'container',
+                    cls: 'user-menu',
+                    defaults: {
+                        scale: 'large'
+                    },
                     items: [{
-                        xtype: 'component',
-                        html: '<a class="link" href="/auth/logout?url=/reports&realm=Reports">'+i18n._('Logout')+"</a>",
-                        margin: '0 0 10 0'
+                        xtype: 'button',
+                        html: '<i class="material-icons">exit_to_app</i> <span>' + i18n._('Logout') + '</span>',
+                        cls: 'main-menu-btn',
+                        href: '/auth/logout?url=/reports&realm=Reports'
                     }]
                 }]
             }, {
-                xtype:'panel',
                 border: false,
-                region:"center",
-                layout:"border"
+                region: 'center',
+                xtype: 'panel',
+                layout: 'fit',
+                items: [{
+                    xtype: 'container',
+                    layout: "fit",
+                    itemId: 'reports'
+                }]
             }]
         });
-        
-        var contentItems = rpc.reportsEnabled? this.buildReportsViewer(): this.buildReportsNotEnabled();
-        this.viewport.down("panel[region=center]").add(contentItems);
-        
-        Ext.MessageBox.hide();
-        if(rpc.reportsEnabled) {
-            this.viewport.down("treepanel").getSelectionModel().select(0);
+
+        if (rpc.reportsEnabled) {
+            this.viewport.down("#reports").add(Ext.create("Ung.panel.Reports"));
+        } else {
+            this.viewport.down("#reports").add({
+                xtype: 'container',
+                html: '<i class="material-icons" style="font-size: 48px; color: orange;">warning</i><br/>' + i18n._('Reports is not installed into your rack or it is not turned on.'),
+                margin: '100 0 0 0',
+                style: {
+                    fontFamily: '"PT Sans", sans-serif',
+                    textAlign: 'center',
+                    fontSize: '18px'
+                }
+            });
         }
+        Ext.MessageBox.hide();
     }
 });
 
+
+// Code below needs review as remained from the older version
 
 //Ext overrides used in reports serlvet
 Ext.override(Ext.grid.column.Column, {
@@ -289,16 +209,16 @@ Ext.override(Ext.grid.column.Column, {
 
 Ext.apply(Ext.data.SortTypes, {
     // Timestamp sorting
-    asTimestamp: function(value) {
+    asTimestamp: function (value) {
         return value.time;
     },
     // Ip address sorting. may contain netmask.
-    asIp: function(value){
-        if(Ext.isEmpty(value)) {
+    asIp: function (value) {
+        if (Ext.isEmpty(value)) {
             return null;
         }
-        var i, len, parts = (""+value).replace(/\//g,".").split('.');
-        for(i = 0, len = parts.length; i < len; i++){
+        var i, len, parts = ('' + value).replace(/\//g, '.').split('.');
+        for (i = 0, len = parts.length; i < len; i += 1) {
             parts[i] = Ext.String.leftPad(parts[i], 3, '0');
         }
         return parts.join('.');

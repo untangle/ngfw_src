@@ -335,6 +335,7 @@ Ext.define('Ung.panel.Reports', {
                 //iconCls: 'icon-add-row',
                 margin: '0 3',
                 scale: 'medium',
+                hidden: !Ung.Main.webuiMode,
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
@@ -404,6 +405,7 @@ Ext.define('Ung.panel.Reports', {
                 iconCls: 'icon-add-row',
                 margin: '0 3',
                 scale: 'medium',
+                hidden: !Ung.Main.webuiMode,
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
@@ -622,20 +624,28 @@ Ext.define('Ung.panel.Reports', {
                 this.loadReportEntry(this.entry);
             }
             this.down('#entriesMenuBtn').setText('<i class="material-icons">' + record.getData().icon  + '</i> <span style="vertical-align: middle;">' + record.getData().text + '</span>');
-            this.setDashboardButton();
+            if (Ung.Main.webuiMode) {
+                this.setDashboardButton();
+            }
         }, this));
 
+        if (Ung.Main.webuiMode) {
+            this.getDashboardWidgets().then(function (result) {
+                me.dashboardSettings = result;
+                me.dashboardWidgets = result.widgets.list;
 
-        this.getDashboardWidgets().then(function (result) {
-            me.dashboardSettings = result;
-            me.dashboardWidgets = result.widgets.list;
-
+                me.loadAllReports().then(function (reports) {
+                    me.allReports = reports;
+                    me.buildCategoryList();
+                    Ung.Main.viewport.down('#panelCenter').setLoading(false);
+                });
+            });
+        } else {
             me.loadAllReports().then(function (reports) {
                 me.allReports = reports;
                 me.buildCategoryList();
-                Ung.Main.viewport.down('#panelCenter').setLoading(false);
             });
-        });
+        }
     },
 
     getDashboardWidgets: function () {
@@ -714,7 +724,7 @@ Ext.define('Ung.panel.Reports', {
         var allReports = {}, i, entry;
 
         rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception) || !this.getEl()) {
+            if (Ung.Util.handleException(exception)) {
                 deferred.resolve(exception);
             }
             //console.log(result.list);
@@ -789,9 +799,7 @@ Ext.define('Ung.panel.Reports', {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            if (!this.getEl()) {
-                return;
-            }
+
             var currentApplications = result.list;
             if (currentApplications) {
                 var app;
@@ -880,7 +888,7 @@ Ext.define('Ung.panel.Reports', {
                 entry: entries[i],
                 entryId: entries[i].uniqueId,
                 icon: _icon,
-                inDashboard: this.inDashboard(entries[i])
+                inDashboard: Ung.Main.webuiMode ? this.inDashboard(entries[i]) : null
             });
             listEntries.push(entry);
 
@@ -977,13 +985,16 @@ Ext.define('Ung.panel.Reports', {
     },
 
     inDashboard: function (entry) {
-        var addedToDashboard = false, i;
-        for (i = 0; i < this.dashboardWidgets.length; i += 1) {
-            if (!addedToDashboard && this.dashboardWidgets[i].entryId === entry.uniqueId) {
-                addedToDashboard = true;
+        if (Ung.Main.webuiMode) {
+            var addedToDashboard = false, i;
+            for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+                if (!addedToDashboard && this.dashboardWidgets[i].entryId === entry.uniqueId) {
+                    addedToDashboard = true;
+                }
             }
+            return addedToDashboard;
         }
-        return addedToDashboard;
+        return null;
     },
 
     loadReportEntry: function (entry) {

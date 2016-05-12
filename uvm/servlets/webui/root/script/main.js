@@ -830,7 +830,6 @@ Ext.define("Ung.Main", {
             Ung.Main.panelCenter.setLoading('Loading ...');
             this.viewsMenu.items.each(function (button) { button.setPressed(false); });
             Ext.getCmp('reportsMenuItem').setPressed(true);
-            Ung.panel.Reports.entry = 'aaa';
         }
     },
     upgrade: function () {
