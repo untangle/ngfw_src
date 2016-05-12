@@ -1503,41 +1503,33 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                 xtype: 'container',
                 margin: '30 0 0 20',
                 items: [{
-                    xtype: 'radio',
-                    name: 'autoUpgradesRadio',
-                    inputValue: 'yes',
-                    boxLabel: i18n._('Install Upgrades Automatically'),
+                    xtype: 'checkbox',
+                    name: 'autoUpgradesCheckbox',
+                    checked: true,
+                    boxLabel: i18n._('Automatically Install Upgrades'),
                     cls: 'large-option',
-                    hideLabel: 'true',
-                    checked: true
+                    hideLabel: 'true'
                 }, {
                     xtype: 'component',
                     margin: '0 0 0 20',
-                    html: Ext.String.format(i18n._('Automatically install new versions of {0} software. '), rpc.oemName) + '<br/>' +
+                    html: i18n._('Automatically install new versions of the software when available.') + '<br/>' +
                     i18n._('This is the recommended for most sites.')
                 }]
             }, {
                 xtype: 'container',
                 margin: '30 0 0 20',
                 items: [{
-                    xtype: 'radio',
-                    name: 'autoUpgradesRadio',
-                    inputValue: 'no',
-                    boxLabel: i18n._('Do Not Install Upgrades Automatically.'),
+                    xtype: 'checkbox',
+                    name: 'cloudEnabledCheckbox',
+                    checked: true,
+                    boxLabel: Ext.String.format(i18n._('Connect to {0} Cloud'), rpc.oemName),
                     cls: 'large-option',
                     hideLabel: 'true'
                 }, {
                     xtype: 'component',
                     margin: '0 0 0 20',
-                    html: Ext.String.format(i18n._('Do not automatically install new versions of {0} software.'), rpc.oemName) + '<br/>' +
-                    i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
-                    i18n._('Software Upgrades can be applied manually at any time when available.')
-                }, {
-                    xtype: 'component',
-                    margin: '30 0 0 0',
-                    html: '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
-                    i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
-                    i18n._('If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.') + '<br/>'
+                    html: Ext.String.format(i18n._('Remain securely connected to the {0} cloud for cloud management, hot fixes, and support access. '), rpc.oemName) + '<br/>' +
+                    i18n._('This is the recommended for most sites.')
                 }]
             }]
         });
@@ -1553,10 +1545,14 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                         return;
                     }
                     this.initialAutoUpgrade = result.autoUpgrade;
+                    this.initialCloudEnabled = result.cloudEnabled;
                     if (!result.autoUpgrade) {
-                        var autoUpgradesRadio = this.panel.query('radio[name="autoUpgradesRadio"]');
-                        autoUpgradesRadio[0].setValue(false);
-                        autoUpgradesRadio[1].setValue(true);
+                        var autoUpgradesCheckbox = this.panel.down('checkbox[name="autoUpgradesCheckbox"]');
+                        autoUpgradesCheckbox.setValue(false);
+                    }
+                    if (!result.cloudEnabled) {
+                        var cloudEnabledCheckbox = this.panel.down('checkbox[name="cloudEnabledCheckbox"]');
+                        cloudEnabledCheckbox.setValue(false);
                     }
                     Ext.MessageBox.hide();
                 }, this));
@@ -1565,22 +1561,18 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
         };
     },
     saveAutoUpgrades: function (handler) {
-        var value = this.panel.down('radio[name="autoUpgradesRadio"]').getGroupValue();
-        if (value == null) {
-            Ext.MessageBox.alert(i18n._('Select a value'), i18n._('Please choose Yes or No.'));
-            return;
-        }
+        var autoUpgradeValue = this.panel.down('checkbox[name="autoUpgradesCheckbox"]').getValue();
+        var cloudEnabledValue = this.panel.down('checkbox[name="cloudEnabledValue"]').getValue();
         var afterFn = Ext.bind(function (handler) {
             Ung.Setup.saveCurrentStep(this.stepName);
             handler();
         }, this, [handler]);
 
-        var autoUpgrade = (value == 'yes');
-        var changed = (this.initialAutoUpgrade != autoUpgrade);
+        var changed = (this.initialAutoUpgrade != autoUpgradeValue) || (this.initialCloudEnabled != cloudEnabledValue);
         if (changed) {
-            Ext.MessageBox.wait(i18n._('Saving Automatic Upgrades Settings'), i18n._('Please Wait'));
+            Ext.MessageBox.wait(i18n._('Saving Settings'), i18n._('Please Wait'));
             var delegate = Ext.bind(function (result, exception, foo, handler) {
-                if (Ung.Util.handleException(exception, i18n._('Unable to save Automatic Upgrade Settings'))) {
+                if (Ung.Util.handleException(exception, i18n._('Unable to save Settings'))) {
                     return;
                 }
                 Ext.MessageBox.hide();
@@ -1591,7 +1583,10 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
                     return;
                 }
                 var systemSettings = result;
-                systemSettings.autoUpgrade = autoUpgrade;
+                systemSettings.autoUpgrade = autoUpgradeValue;
+                systemSettings.cloudEnabled = cloudEnabledValue;
+                if ( cloudEnabledValue )
+                    systemSettings.supportEnabled = cloudEnabledValue;
                 rpc.systemManager.setSettings(delegate, systemSettings);
             }, this));
         } else {
@@ -1710,7 +1705,7 @@ Ext.define('Ung.Setup', {
             cards: cards
             //renderTo: 'container'
         });
-        //this.wizard.loadPage(0);
+        //this.wizard.loadPage(5);
     },
     authenticate: function (password, handler) {
         Ext.MessageBox.wait(i18n._('Authenticating'), i18n._('Please Wait'));
