@@ -21,14 +21,17 @@ while getopts "r:f:d:h" opt; do
 done
 
 if [ -z "$FILE" ] ; then
+    echo "Must specify a file"
     doHelp; 
     exit 1;
 fi
 if [ -z "$DIR" ] ; then
+    echo "Must specify a directory"
     doHelp; 
     exit 1;
 fi
 if [ -z "$REGEX" ] ; then
+    echo "Must specify a pattern"
     doHelp; 
     exit 1;
 fi
@@ -48,12 +51,13 @@ psql -U postgres -d uvm -t -c "SELECT tablename FROM pg_catalog.pg_tables WHERE 
             continue
         fi
         echo "Creating csv: ${tablename}.csv ..." 
-        psql -U postgres -d uvm -A -F"," -c "select * from reports.${tablename}" > $TMPDIR/$DIR/${tablename}.csv
+        # psql -U postgres -d uvm -A -F"," -c "select * from reports.${tablename}" > $TMPDIR/$DIR/${tablename}.csv
+        psql -U postgres -d uvm -A -F"," -c "\copy reports.${tablename} to '${TMPDIR}/${DIR}/${tablename}.csv' csv header" 
     done
                                                                                                                                                 
 cd $TMPDIR
 echo "Creating zip: $FILE"
 zip -r $FILE $DIR
 
-rm -rf $TMPDIR/$DIR
-rmdir $TMPDIR
+echo "rm -rf ${TMPDIR}"
+rm -rf ${TMPDIR}
