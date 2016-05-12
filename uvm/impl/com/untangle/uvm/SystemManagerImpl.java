@@ -108,7 +108,7 @@ public class SystemManagerImpl implements SystemManager
             if ( this.settings.getVersion() < 3 ) {
                 this.settings.setCloudEnabled( this.settings.getSupportEnabled() );
                 this.settings.setVersion( 3 );
-                this.setSettings( this.setSettings );
+                this.setSettings( this.settings );
             }
 
             logger.debug("Loading Settings: " + this.settings.toJSONString());
