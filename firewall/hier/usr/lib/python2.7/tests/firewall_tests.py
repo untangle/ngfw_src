@@ -378,6 +378,20 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify GeoiP blocking does block stuff that is blocked
+    def test_070_geoipTrumpCountry(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "SERVER_COUNTRY", "CN,US,AU" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
+    # verify GeoIP blocking doesn't block stuff that isn't blocked
+    def test_071_geoipOtherCountry(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "SERVER_COUNTRY", "CN,GB,AU" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
     # verify server penalty box wan not blocked
     def test_100_serverPenaltyBox(self):
         nukeRules()
@@ -770,10 +784,4 @@ class FirewallTests(unittest2.TestCase):
         node = None
         
 test_registry.registerNode("firewall", FirewallTests)
-
-
-
-
-
-
 
