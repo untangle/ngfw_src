@@ -214,24 +214,42 @@ Ext.define('Webui.config.system', {
                 title: i18n._("Support"),
                 items: [{
                     xtype: 'checkbox',
-                    name: "Allow secure access to your server for support purposes",
-                    boxLabel: Ext.String.format(i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
+                    name: 'cloudEnabledCheckbox',
+                    boxLabel: Ext.String.format(i18n._("Connect to {0} cloud"), this.oemName),
+                    hideLabel: true,
+                    checked: this.getSystemSettings().cloudEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.getSystemSettings().cloudEnabled = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'checkbox',
+                    name: 'supportEnabledCheckbox',
+                    boxLabel: Ext.String.format(i18n._("Allow secure remote access to {0} support team"), this.oemName),
                     hideLabel: true,
                     checked: this.getSystemSettings().supportEnabled,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.getSystemSettings().supportEnabled = newValue;
+                                if ( newValue ) {
+                                    var cloudEnabledCheckbox = this.panelSupport.down('checkbox[name=cloudEnabledCheckbox]');
+                                    cloudEnabledCheckbox.setValue(true);
+                                } 
                             }, this)
                         }
                     }
-                },{
-                    xtype: "component",
-                    html: i18n._("Download system logs.")
-                },{
+                }]
+            },{
+                xtype: "fieldset",
+                title: i18n._("Logs"),
+                items: [{
                     xtype: "button",
                     name: 'logButton',
-                    text: i18n._("Download"),
+                    text: i18n._("Download System Logs"),
                     handler: Ext.bind(function() {
                         var downloadForm = document.getElementById('downloadForm');
                         downloadForm["type"].value="SystemSupportLogs";
@@ -305,7 +323,6 @@ Ext.define('Webui.config.system', {
                     margin: '5 0 0 0',
                     text: i18n._("Setup Wizard"),
                     name: "Setup Wizard",
-                    iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(i18n._("Setup Wizard Warning"),
                             Ext.String.format(i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
@@ -327,7 +344,6 @@ Ext.define('Webui.config.system', {
                     margin: '5 0 0 0',
                     text: i18n._("Reset to Factory Defaults"),
                     name: "Factory Defaults",
-                    iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(i18n._("Reset to Factory Defaults Warning"),
                            i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
@@ -1175,6 +1191,7 @@ Ext.define('Webui.config.system', {
             }]
         });
         this.panelShieldReports = Ext.create('Ung.panel.Reports', {
+            title: i18n._('Reports'),
             category: "Shield"
         });
         this.panelShield = Ext.create('Ext.panel.Panel',{
@@ -1212,6 +1229,7 @@ Ext.define('Webui.config.system', {
     },
     buildSystemReports: function() {
         this.panelSystemReports = Ext.create('Ung.panel.Reports', {
+            title: i18n._('Reports'),
             category: "System"
         });
     },

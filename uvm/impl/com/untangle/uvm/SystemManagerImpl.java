@@ -151,9 +151,9 @@ public class SystemManagerImpl implements SystemManager
          * If pyconnector state does not match the settings, re-sync them
          */
         File pyconnectorStartFile = new File( "/etc/rc5.d/S01untangle-pyconnector" );
-        if ( pyconnectorStartFile.exists() && !settings.getSupportEnabled() )
+        if ( pyconnectorStartFile.exists() && !settings.getCloudEnabled() )
             syncPyconnectorStart();
-        if ( !pyconnectorStartFile.exists() && settings.getSupportEnabled() )
+        if ( !pyconnectorStartFile.exists() && settings.getCloudEnabled() )
             syncPyconnectorStart();
         
         
@@ -872,7 +872,7 @@ public class SystemManagerImpl implements SystemManager
          * If support access in enabled, start pyconnector and enable on startup.
          * If not, stop it and disable on startup
          */
-        if ( settings.getSupportEnabled() ) {
+        if ( settings.getCloudEnabled() ) {
             UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector defaults 95 5" );
             UvmContextFactory.context().execManager().exec( "service untangle-pyconnector restart" );
         } else {

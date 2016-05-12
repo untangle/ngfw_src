@@ -24,7 +24,8 @@ public class SystemSettings implements Serializable, JSONString
     public static final String PUBLIC_URL_HOSTNAME = "hostname";
     public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
     
-    private boolean supportEnabled;
+    private boolean supportEnabled = true;
+    private boolean cloudEnabled = supportEnabled;
     private boolean httpAdministrationAllowed = true;
 
     private String publicUrlMethod;
@@ -54,6 +55,12 @@ public class SystemSettings implements Serializable, JSONString
     public boolean getHttpAdministrationAllowed() { return this.httpAdministrationAllowed; }
     public void setHttpAdministrationAllowed( boolean newValue ) { this.httpAdministrationAllowed = newValue; }
     
+    /**
+     * Untangle cloud access flag
+     */
+    public boolean getCloudEnabled() { return this.cloudEnabled; }
+    public void setCloudEnabled( boolean newValue ) { this.cloudEnabled = newValue; }
+
     /**
      * Untangle support access flag
      */
