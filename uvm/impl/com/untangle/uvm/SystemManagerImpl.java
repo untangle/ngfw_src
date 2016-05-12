@@ -103,6 +103,14 @@ public class SystemManagerImpl implements SystemManager
         }
         else {
             this.settings = readSettings;
+
+            /* 12.1 conversion */
+            if ( this.settings.getVersion() < 3 ) {
+                this.settings.setCloudEnabled( this.settings.getSupportEnabled() );
+                this.settings.setVersion( 3 );
+                this.setSettings( this.setSettings );
+            }
+
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
@@ -516,7 +524,7 @@ public class SystemManagerImpl implements SystemManager
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
-        newSettings.setVersion(2);
+        newSettings.setVersion(3);
 
         newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
         newSettings.setPublicUrlAddress( "hostname.example.com" );

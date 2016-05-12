@@ -17,7 +17,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 @SuppressWarnings("serial")
 public class SystemSettings implements Serializable, JSONString
 {
-    private int version = 1;
+    private int version = 3;
     private int httpsPort;
 
     public static final String PUBLIC_URL_EXTERNAL_IP = "external";
@@ -25,7 +25,7 @@ public class SystemSettings implements Serializable, JSONString
     public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
     
     private boolean supportEnabled = true;
-    private boolean cloudEnabled = supportEnabled;
+    private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
 
     private String publicUrlMethod;
