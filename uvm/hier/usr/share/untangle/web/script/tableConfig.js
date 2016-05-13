@@ -1,6 +1,6 @@
 Ext.define('Ung.TableConfig', {
     singleton: true,
-    
+
     //Field width constants
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
@@ -31,16 +31,16 @@ Ext.define('Ung.TableConfig', {
         var missingTables = [];
         for(i=0; i<systemTables.length;i++) {
             systemTablesMap[systemTables[i]] = true;
-            
+
             if(!this.tableConfig[systemTables[i]]) {
 
-                // ignore "totals" tables (from old reports and will be deprecated soon) 
+                // ignore "totals" tables (from old reports and will be deprecated soon)
                 if ( systemTables[i].indexOf("totals") != -1 )
                     continue;
-                // ignore "mail_msgs" table (will be deprecated soon) 
+                // ignore "mail_msgs" table (will be deprecated soon)
                 if ( systemTables[i].indexOf("mail_msgs") != -1 )
                     continue;
-                
+
                 missingTables.push(systemTables[i]);
             }
         }
@@ -79,7 +79,7 @@ Ext.define('Ung.TableConfig', {
                 if(missingColumns.length>0) {
                     console.log("Warning: Table '"+table+"' Missing columns: "+missingColumns.join(", "));
                 }
-                
+
                 var extraColumns = [];
                 for(column in tableConfigColumnsMap) {
                     if(!systemColumnsMap[column]) {
@@ -89,10 +89,10 @@ Ext.define('Ung.TableConfig', {
                 if(extraColumns.length>0) {
                     console.log("Warning: Table '"+table+"' Extra columns: "+extraColumns.join(", "));
                 }
-                
+
             }
         }
-        
+
     },
     getColumnsForTable: function(table, store) {
         if(table!=null) {
@@ -108,11 +108,11 @@ Ext.define('Ung.TableConfig', {
                     });
                 }
             }
-            
+
             store.loadData(columns);
         }
     },
-    
+
     getColumnHumanReadableName: function(columnName) {
         if(!this.columnsHumanReadableNames) {
             this.columnsHumanReadableNames = {};
@@ -123,7 +123,7 @@ Ext.define('Ung.TableConfig', {
             for(table in this.tableConfig) {
                 columns = this.tableConfig[table].columns;
                 for(i=0; i<columns.length; i++) {
-                    dataIndex = columns[i].dataIndex; 
+                    dataIndex = columns[i].dataIndex;
                     if(dataIndex && !this.columnsHumanReadableNames[dataIndex]) {
                         this.columnsHumanReadableNames[dataIndex] = columns[i].header;
                     }
@@ -231,7 +231,15 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'client_country'
                 }, {
+                    name: 'client_latitude'
+                }, {
+                    name: 'client_longitude'
+                }, {
                     name: 'server_country'
+                }, {
+                    name: 'server_latitude'
+                }, {
+                    name: 'server_longitude'
                 }, {
                     name: "c2p_bytes"
                 }, {
@@ -372,11 +380,31 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'client_country',
                     renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
+                    header: i18n._("Client Latitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_latitude'
+                }, {
+                    header: i18n._("Client Longitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_longitude'
+                }, {
                     header: i18n._("Server Country") ,
                     width: 80,
                     sortable: true,
                     dataIndex: 'server_country',
                     renderer: function(value) { return Ung.Main.getCountryName(value); }
+                }, {
+                    header: i18n._("Server Latitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_latitude'
+                }, {
+                    header: i18n._("Server Longitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_longitude'
                 }, {
                     header: i18n._("Username"),
                     width: Ung.TableConfig.usernameFieldWidth,
@@ -1469,12 +1497,12 @@ Ext.define('Ung.TableConfig', {
                     width: 150,
                     sortable: true,
                     dataIndex: 'subject'
-                }, { 
+                }, {
                     header: i18n._('Name') + ' (Virus Blocker Lite)',
                     width: 140,
                     sortable: true,
                     dataIndex: 'virus_blocker_lite_name'
-                }, { 
+                }, {
                     header: i18n._('Clean') + ' (Virus Blocker Lite)',
                     width: 140,
                     sortable: true,
@@ -3098,7 +3126,7 @@ Ext.define('Ung.TableConfig', {
                     sortable: true,
                     dataIndex: 'action',
                     renderer: function(value) {
-                        if ( value == 1 ) 
+                        if ( value == 1 )
                             return "1 (" + i18n._("Given") + ")";
                         if ( value == 2 )
                             return "2 (" + i18n._("Exceeded") + ")";
@@ -3216,7 +3244,7 @@ Ext.define('Ung.TableConfig', {
                                                 previousLine = diffLines[i].substr(1,510);
                                                 currentAction = diffLines[i].substr(511,1);
                                                 currentLine = diffLines[i].substr(512);
-                                                
+
                                                 if( previousAction != "<" && previousAction != ">") {
                                                     previousLine = previousAction + previousLine;
                                                     previousAction = -1;
