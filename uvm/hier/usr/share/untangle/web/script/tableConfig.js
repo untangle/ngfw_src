@@ -229,6 +229,10 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'server_intf'
                 }, {
+                    name: 'client_country'
+                }, {
+                    name: 'server_country'
+                }, {
                     name: "c2p_bytes"
                 }, {
                     name: "p2c_bytes"
@@ -361,6 +365,18 @@ Ext.define('Ung.TableConfig', {
                     width: Ung.TableConfig.portFieldWidth,
                     sortable: true,
                     dataIndex: 'server_intf'
+                }, {
+                    header: i18n._("Client Country") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_country',
+                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                }, {
+                    header: i18n._("Server Country") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_country',
+                    renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: i18n._("Username"),
                     width: Ung.TableConfig.usernameFieldWidth,
