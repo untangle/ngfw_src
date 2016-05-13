@@ -240,6 +240,9 @@ Ext.define('Webui.config.sessionMonitor', {
             header: i18n._("Client Country"),
             dataIndex: "clientCountry",
             width: 80,
+            renderer: function(value) {
+                return Ung.Main.getCountryName(value);
+            },
             filter: {
                 type: 'string'
             }
@@ -293,6 +296,9 @@ Ext.define('Webui.config.sessionMonitor', {
             header: i18n._("Server Country"),
             dataIndex: "serverCountry",
             width: 80,
+            renderer: function(value) {
+                return Ung.Main.getCountryName(value);
+            },
             filter: {
                 type: 'string'
             }
