@@ -14,14 +14,14 @@ Ext.define('Ung.dashboard', {
             this.getApps
         ]).then(Ext.bind(function () {
             this.setWidgets();
-        }, this));
+        }, this), function (exception) {
+            Ung.Util.handleException(exception);
+        });
     },
     getSettings: function () {
         var deferred = new Ext.Deferred();
         rpc.dashboardManager.getSettings(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.reject(exception);
-            }
+            if (exception) { deferred.reject(exception); }
             Ung.dashboard.allWidgets = result.widgets.list.filter(function (widget) { return widget.enabled; });
             deferred.resolve();
         });
@@ -31,9 +31,7 @@ Ext.define('Ung.dashboard', {
         var deferred = new Ext.Deferred();
         if (rpc.reportsEnabled && !Ung.dashboard.reportEntries) {
             Ung.Main.getReportsManager().getReportEntries(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    deferred.reject(exception);
-                }
+                if (exception) { deferred.reject(exception); }
                 Ung.dashboard.reportEntries = result.list;
                 Ung.dashboard.reportsMap = Ung.Util.createRecordsMap(result.list, 'uniqueId');
                 deferred.resolve();
@@ -47,9 +45,7 @@ Ext.define('Ung.dashboard', {
         var deferred = new Ext.Deferred();
         if (rpc.reportsEnabled) {
             Ung.Main.getReportsManager().getUnavailableApplicationsMap(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    deferred.reject(exception);
-                }
+                if (exception) { deferred.reject(exception); }
                 Ung.dashboard.unavailableApplicationsMap = result.map;
                 deferred.resolve();
             });

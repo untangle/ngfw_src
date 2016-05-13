@@ -638,12 +638,18 @@ Ext.define('Ung.panel.Reports', {
                     me.allReports = reports;
                     me.buildCategoryList();
                     Ung.Main.viewport.down('#panelCenter').setLoading(false);
+                }, function (exception) {
+                    Ung.Util.handleException(exception);
                 });
+            }, function (exception) {
+                Ung.Util.handleException(exception);
             });
         } else {
             me.loadAllReports().then(function (reports) {
                 me.allReports = reports;
                 me.buildCategoryList();
+            }, function (exception) {
+                Ung.Util.handleException(exception);
             });
         }
     },
@@ -651,9 +657,7 @@ Ext.define('Ung.panel.Reports', {
     getDashboardWidgets: function () {
         var deferred = new Ext.Deferred();
         rpc.dashboardManager.getSettings(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception) || !this.getEl()) {
-                deferred.resolve(exception);
-            }
+            if (exception) { deferred.reject(exception); }
             deferred.resolve(result);
         }, this));
         return deferred.promise;
@@ -724,10 +728,8 @@ Ext.define('Ung.panel.Reports', {
         var allReports = {}, i, entry;
 
         rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.resolve(exception);
-            }
-            //console.log(result.list);
+            if (exception) { deferred.reject(exception); }
+
             for (i = 0; i < result.list.length; i += 1) {
                 entry = result.list[i];
                 entry.selModel = Ext.create('Ung.grid.ReportItemModel', {
@@ -749,9 +751,7 @@ Ext.define('Ung.panel.Reports', {
     loadCategoryReports: function (category) {
         var deferred = new Ext.Deferred();
         rpc.reportsManager.getReportEntries(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception) || !this.getEl()) {
-                deferred.resolve(exception);
-            }
+            if (exception) { deferred.reject(exception); }
             deferred.resolve(result.list);
         }, this), category);
         return deferred.promise;
@@ -767,6 +767,8 @@ Ext.define('Ung.panel.Reports', {
             me.allReports[category] = reports;
             me.categoryList.getSelectionModel().deselectAll();
             me.categoryList.getSelectionModel().select(me.selectedCategory);
+        }, function (exception) {
+            Ung.Util.handleException(exception);
         });
     },
 

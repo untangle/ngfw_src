@@ -34,15 +34,16 @@ Ext.define("Ung.Main", {
             this.loadTranslations
         ]).then(Ext.bind(function () {
             this.startApplication();
-        }, this));
+        }, this), function (exception) {
+            Ung.Util.handleException(exception);
+        });
     },
 
     loadSkin: function () {
         var deferred = new Ext.Deferred();
         rpc.jsonrpc.ReportsContext.skinManager(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.reject(exception);
-            }
+            if (exception) { deferred.reject(exception); }
+
             rpc.skinManager = result;
             rpc.skinManager.getSettings(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
@@ -60,9 +61,8 @@ Ext.define("Ung.Main", {
     loadReportsManager: function () {
         var deferred = new Ext.Deferred();
         rpc.jsonrpc.ReportsContext.reportsManager(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.reject(exception);
-            }
+            if (exception) { deferred.reject(exception); }
+
             rpc.reportsManager = result;
             rpc.reportsManager.isReportsEnabled(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
@@ -78,9 +78,8 @@ Ext.define("Ung.Main", {
     loadTimezoneOffset: function () {
         var deferred = new Ext.Deferred();
         rpc.reportsManager.getTimeZoneOffset(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.reject(exception);
-            }
+            if (exception) { deferred.reject(exception); }
+
             rpc.timeZoneOffset = result;
             deferred.resolve();
         }, this));
@@ -90,16 +89,14 @@ Ext.define("Ung.Main", {
     loadTranslations: function () {
         var deferred = new Ext.Deferred();
         rpc.jsonrpc.ReportsContext.languageManager(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                deferred.reject(exception);
-            }
+            if (exception) { deferred.reject(exception); }
+
             rpc.languageManager = result;
             // get translations for main module
 
             rpc.languageManager.getTranslations(Ext.bind(function (result, exception) {
-                if (Ung.Util.handleException(exception)) {
-                    deferred.reject(exception);
-                }
+                if (exception) { deferred.reject(exception); }
+
                 i18n = Ext.create('Ung.I18N', {
                     map: result.map,
                     timeoffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset
