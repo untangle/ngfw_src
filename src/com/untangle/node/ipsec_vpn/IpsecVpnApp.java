@@ -21,6 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.vnet.NodeBase;
@@ -142,6 +143,22 @@ public class IpsecVpnApp extends NodeBase
         int idx;
 
         logger.debug("setSettings()");
+
+        IPMaskedAddress lNet = new IPMaskedAddress(newSettings.getVirtualAddressPool());
+        IPMaskedAddress xNet = new IPMaskedAddress(newSettings.getVirtualXauthPool());
+        IPMaskedAddress gNet = new IPMaskedAddress(newSettings.getVirtualNetworkPool());
+
+        if (lNet.isIntersecting(xNet)) {
+            throw new RuntimeException("Detected conflict between L2TP (" + lNet + ") and Xauth (" + xNet + ") address pools.");
+        }
+
+        if (lNet.isIntersecting(gNet)) {
+            throw new RuntimeException("Detected conflict between L2TP (" + lNet + ") and GRE (" + gNet + ") address pools.");
+        }
+
+        if (xNet.isIntersecting(gNet)) {
+            throw new RuntimeException("Detected conflict between Xauth (" + xNet + ") and GRE (" + gNet + ") address pools.");
+        }
 
         idx = 0;
 
@@ -359,8 +376,7 @@ public class IpsecVpnApp extends NodeBase
         ttot = list.size();
 
         for (int x = 0; x < ttot; x++) {
-            if (list.get(x).getActive() == true)
-                etot++;
+            if (list.get(x).getActive() == true) etot++;
             else
                 dtot++;
         }
@@ -390,7 +406,7 @@ public class IpsecVpnApp extends NodeBase
         VirtualUserEvent event = new VirtualUserEvent(clientAddress, clientProtocol, clientUsername, netInterface, netProcess);
         logEvent(event);
         logger.debug("virtualUserConnect(logEvent) " + event.toString());
-        
+
         entry.pushEventHolder(event);
 
         updateBlingers();
@@ -425,7 +441,7 @@ public class IpsecVpnApp extends NodeBase
 
         event.updateEvent(elapsed, new Long(netRXcount), new Long(netTXcount));
         logEvent(event);
-        logger.debug("virtualUserGoodbye(logEvent) " + event.toString());        
+        logger.debug("virtualUserGoodbye(logEvent) " + event.toString());
 
         virtualUserTable.removeVirtualUser(clientAddress);
 
