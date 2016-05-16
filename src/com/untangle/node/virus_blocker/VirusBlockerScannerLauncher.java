@@ -176,7 +176,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // if we have a feedback object start it up now
         if (feedback != null)
-            feedback.run();
+            feedback.start();
 
         // if the cloud says it is infected we set the result and return now
         if ( (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100) ) {
