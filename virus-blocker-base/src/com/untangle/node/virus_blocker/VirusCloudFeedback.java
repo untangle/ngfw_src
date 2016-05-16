@@ -26,13 +26,15 @@ public class VirusCloudFeedback extends Thread
     VirusBlockerState virusState = null;
     long fileLength = 0;
     NodeSession session = null;
-    String bitdefenderResult = null;
+    String vendorName = null;
+    String vendorResult = null;
     VirusCloudResult cloudResult = null;
 
-    public VirusCloudFeedback(VirusBlockerState virusState, String bitdefenderResult, long fileLength, NodeSession session, VirusCloudResult cloudResult)
+    public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String vendorResult, long fileLength, NodeSession session, VirusCloudResult cloudResult)
     {
         this.virusState = virusState;
-        this.bitdefenderResult = bitdefenderResult;
+        this.vendorName = vendorName;
+        this.vendorResult = vendorResult;
         this.fileLength = fileLength;
         this.session = session;
         this.cloudResult = cloudResult;
@@ -46,8 +48,9 @@ public class VirusCloudFeedback extends Thread
         try {
             json.put("hash", virusState.fileHash);
             json.put("length", fileLength);
-            json.put("bitdefenderResult", bitdefenderResult);
-            json.put("cloudResult", cloudResult);
+            json.put("vendorName", vendorName);
+            json.put("vendorResult", vendorResult);
+            if (cloudResult != null) json.put("cloudResult", cloudResult);
             if (session != null) {
                 if (session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME) != null) json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME));
                 if (session.globalAttachment(NodeSession.KEY_HTTP_URI) != null) json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment(NodeSession.KEY_HTTP_URI));
@@ -70,7 +73,7 @@ public class VirusCloudFeedback extends Thread
         logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
         try {
-            String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + bitdefenderResult + "&detProvider=BD&metaProvider=NGFW");
+            String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + vendorResult + "&detProvider=" + vendorName + "&metaProvider=NGFW");
             URL myurl = new URL(target);
             HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
             mycon.setRequestMethod("POST");
