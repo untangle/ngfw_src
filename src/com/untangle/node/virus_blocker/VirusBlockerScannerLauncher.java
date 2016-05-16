@@ -166,12 +166,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // if BD returned positive result we send the feedback
         if ( (retcode == 222) || (retcode == 223) ) {
-            feedback = new VirusCloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, "BD", bdResult, scanFileLength, nodeSession, cloudResult);
         }
         
         // if no BD feedback and cloud returned positive result we also send feedback
         if ( (feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100 ) ) {
-            feedback = new VirusCloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, "BD", bdResult, scanFileLength, nodeSession, cloudResult);
         }
 
         // if we have a feedback object start it up now
