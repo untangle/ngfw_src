@@ -17,276 +17,16 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.virus_blocker.VirusScannerLauncher;
-import com.untangle.node.virus_blocker.VirusScannerResult;
 import com.untangle.uvm.vnet.NodeSession;
 
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
-    private static final String CLOUD_SCANNER_URL = "https://classify.totaldefense.com/v1/md5s";
-    private static final String CLOUD_FEEDBACK_URL = "https://telemetry.totaldefense.com/ngfw/v1/infection";
-    private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
-    private static final String EICAR_TEST_MD5 = "44d88612fea8a8f36de82e1278abb02f";
     private static final long CLOUD_SCAN_MAX_MILLISECONDS = 2000;
 
     private static final String BDAM_SCANNER_HOST = "127.0.0.1";
     private static final long SCANNER_MAXSIZE = 10485760;
     private static final long SCANNER_MINSIZE = 1;
     private static final int BDAM_SCANNER_PORT = 1344;
-
-    // -----------------------------------------------------------
-    // ---------- cloud scanning and telemetry feedback ----------
-    // -----------------------------------------------------------
-
-    @SuppressWarnings("serial")
-    protected class CloudResult implements Serializable, JSONString
-    {
-        String itemCategory = null;
-        String itemClass = null;
-        String itemHash = null;
-        int itemConfidence = 0;
-
-        public String getItemCategory()
-        {
-            return itemCategory;
-        }
-
-        public void setItemCategory(String newValue)
-        {
-            this.itemCategory = newValue;
-        }
-
-        public String getItemClass()
-        {
-            return itemClass;
-        }
-
-        public void setItemClass(String newValue)
-        {
-            this.itemClass = newValue;
-        }
-
-        public int getItemConfidence()
-        {
-            return itemConfidence;
-        }
-
-        public void setItemConfidence(int newValue)
-        {
-            this.itemConfidence = newValue;
-        }
-
-        public String getItemHash()
-        {
-            return itemHash;
-        }
-
-        public void setItemHash(String newValue)
-        {
-            this.itemHash = newValue;
-        }
-
-        public String toJSONString()
-        {
-            JSONObject jO = new JSONObject(this);
-            return jO.toString();
-        }
-    }
-
-    protected class CloudScanner extends Thread
-    {
-        CloudResult cloudResult = null;
-        VirusBlockerState virusState = null;
-
-        public CloudScanner(VirusBlockerState virusState)
-        {
-            this.virusState = virusState;
-        }
-
-        protected synchronized CloudResult getCloudResult()
-        {
-            return cloudResult;
-        }
-
-        protected synchronized void setCloudResult(CloudResult argResult)
-        {
-            this.cloudResult = argResult;
-        }
-
-        public void run()
-        {
-            StringBuilder builder = new StringBuilder(256);
-            CloudResult cloudResult = new CloudResult();
-
-            // ----- uncomment this string to force cloud detection for testing -----
-            // String body = "[\n\"" + EICAR_TEST_MD5 + "\"\n]\n";
-            String body = "[\n\"" + virusState.fileHash + "\"\n]\n";
-
-            logger.debug("CloudScanner thread has started for: " + body);
-
-            try {
-                URL myurl = new URL(CLOUD_SCANNER_URL);
-                HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
-                mycon.setRequestMethod("POST");
-
-                mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
-                mycon.setRequestProperty("Content-Type", "application/json");
-                mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
-                mycon.setRequestProperty("UID", UvmContextFactory.context().getServerUID());
-                mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
-                mycon.setDoOutput(true);
-                mycon.setDoInput(true);
-
-                DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
-                output.writeBytes(body);
-                output.close();
-
-                DataInputStream input = new DataInputStream(mycon.getInputStream());
-
-                // build a string from the cloud response ignoring the brackets 
-                for (int c = input.read(); c != -1; c = input.read()) {
-                    if ((char) c == '[')
-                        continue;
-                    if ((char) c == ']')
-                        continue;
-                    builder.append((char) c);
-                }
-
-                input.close();
-                mycon.disconnect();
-
-// THIS IS FOR ECLIPSE - @formatter:off
-
-                /*
-                 * This is an example of the message we get back from the cloud server.
-                 *   
-                 * [{"Category":"The EICAR Test String!16","Class":"m","Confidence":100,"Item":"44d88612fea8a8f36de82e1278abb02f"}]
-                 * 
-                 * Also worth noting... for a negative result the cloud server returns just the empty brackets:
-                 * []
-                 * 
-                 */
-
-// THIS IS FOR ECLIPSE - @formatter:on
-
-                String cloudString = builder.toString();
-                logger.debug("CloudScanner CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA:" + cloudString);
-
-                // if no json object in response create empty object to prevent exception 
-                if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0))
-                    cloudString = "{}";
-
-                JSONObject cloudObject = new JSONObject(cloudString);
-                if (cloudObject.has("Confidence"))
-                    cloudResult.setItemConfidence(cloudObject.getInt("Confidence"));
-                if (cloudObject.has("Category"))
-                    cloudResult.setItemCategory(cloudObject.getString("Category"));
-                if (cloudObject.has("Class"))
-                    cloudResult.setItemClass(cloudObject.getString("Class"));
-                if (cloudObject.has("Item"))
-                    cloudResult.setItemHash(cloudObject.getString("Item"));
-            }
-
-            catch (Exception exn) {
-                logger.debug("CloudScanner thread exception: " + exn.toString());
-            }
-
-            setCloudResult(cloudResult);
-
-            synchronized (this) {
-                this.notify();
-            }
-        }
-    }
-
-    protected class CloudFeedback extends Thread
-    {
-        VirusBlockerState virusState = null;
-        long fileLength = 0;
-        NodeSession session = null;
-        String bitdefenderResult = null;
-        CloudResult cloudResult = null;
-
-        public CloudFeedback(VirusBlockerState virusState, String bitdefenderResult, long fileLength, NodeSession session, CloudResult cloudResult)
-        {
-            this.virusState = virusState;
-            this.bitdefenderResult = bitdefenderResult;
-            this.fileLength = fileLength;
-            this.session = session;
-            this.cloudResult = cloudResult;
-        }
-
-        public void run()
-        {
-            StringBuilder feedback = new StringBuilder(256);
-            JSONObject json = new JSONObject();
-
-            try {
-                json.put("hash", virusState.fileHash);
-                json.put("length", fileLength);
-                json.put("bitdefenderResult", bitdefenderResult);
-                json.put("cloudResult", cloudResult);
-                if (session != null) {
-                    if (session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME) != null)
-                        json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME));
-                    if (session.globalAttachment(NodeSession.KEY_HTTP_URI) != null)
-                        json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment(NodeSession.KEY_HTTP_URI));
-                    if (session.globalAttachment(NodeSession.KEY_HTTP_URL) != null)
-                        json.put(NodeSession.KEY_HTTP_URL, session.globalAttachment(NodeSession.KEY_HTTP_URL));
-                    if (session.globalAttachment(NodeSession.KEY_HTTP_REFERER) != null)
-                        json.put(NodeSession.KEY_HTTP_REFERER, session.globalAttachment(NodeSession.KEY_HTTP_REFERER));
-                    if (session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME) != null)
-                        json.put(NodeSession.KEY_FTP_FILE_NAME, session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME));
-                    if (session.getOrigClientAddr() != null)
-                        json.put("clientAddr", session.getOrigClientAddr().getHostAddress());
-                    if (session.getNewServerAddr() != null)
-                        json.put("serverAddr", session.getNewServerAddr().getHostAddress());
-                    json.put("clientPort", session.getOrigClientPort());
-                    json.put("serverPort", session.getNewServerPort());
-                    if (session.getAttachments() != null)
-                        json.put("attachments", session.getAttachments());
-                }
-
-            } catch (Exception exn) {
-                logger.warn("Exception building CloudFeedback JSON object.", exn);
-            }
-
-            feedback.append(json.toString());
-
-            logger.debug("CloudFeedback thread has started for: " + feedback.toString());
-
-            try {
-                String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + bitdefenderResult + "&detProvider=BD&metaProvider=NGFW");
-                URL myurl = new URL(target);
-                HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
-                mycon.setRequestMethod("POST");
-
-                mycon.setRequestProperty("Content-length", String.valueOf(feedback.length()));
-                mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
-                mycon.setRequestProperty("UID", UvmContextFactory.context().getServerUID());
-                mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
-                mycon.setDoOutput(true);
-                mycon.setDoInput(true);
-
-                DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
-                output.writeBytes(feedback.toString());
-                output.close();
-
-                mycon.disconnect();
-
-                logger.debug("CloudFeedback CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage());
-            }
-
-            catch (Exception exn) {
-                logger.debug("CloudFeedback thread exception: " + exn.toString());
-            }
-        }
-    }
-
-    // ------------------------------------------------------------
-    // ---------- the scanner launcher stuff starts here ----------
-    // ------------------------------------------------------------
 
     /**
      * Create a Launcher for the give file
@@ -304,8 +44,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     {
         File scanFile = new File(scanfilePath);
         long scanFileLength = scanFile.length();
-        CloudScanner cloudScanner = null;
-        CloudResult cloudResult = null;
+        VirusCloudScanner cloudScanner = null;
+        VirusCloudResult cloudResult = null;
         String virusName = null;
 
         VirusBlockerState virusState = (VirusBlockerState) nodeSession.attachment();
@@ -334,7 +74,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // if we have a good MD5 hash then spin up the cloud checker
         if (virusState.fileHash != null) {
-            cloudScanner = new CloudScanner(virusState);
+            cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
@@ -422,16 +162,16 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             cloudResult = cloudScanner.getCloudResult();
         }
 
-        CloudFeedback feedback = null;
+        VirusCloudFeedback feedback = null;
 
         // if BD returned positive result we send the feedback
         if ( (retcode == 222) || (retcode == 223) ) {
-            feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
         }
         
         // if no BD feedback and cloud returned positive result we also send feedback
         if ( (feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100 ) ) {
-            feedback = new CloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, bdResult, scanFileLength, nodeSession, cloudResult);
         }
 
         // if we have a feedback object start it up now
