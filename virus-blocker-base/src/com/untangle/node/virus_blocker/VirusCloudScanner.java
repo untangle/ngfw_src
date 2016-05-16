@@ -16,7 +16,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 
-class VirusCloudScanner extends Thread
+public class VirusCloudScanner extends Thread
 {
     private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
 

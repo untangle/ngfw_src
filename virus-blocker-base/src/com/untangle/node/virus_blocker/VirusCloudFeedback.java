@@ -16,7 +16,7 @@ import org.json.JSONString;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeSession;
 
-class VirusCloudFeedback extends Thread
+public class VirusCloudFeedback extends Thread
 {
     private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
 

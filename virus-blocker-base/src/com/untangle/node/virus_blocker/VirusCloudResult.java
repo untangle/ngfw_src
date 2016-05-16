@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 @SuppressWarnings("serial")
-class VirusCloudResult implements Serializable, JSONString
+public class VirusCloudResult implements Serializable, JSONString
 {
     String itemCategory = null;
     String itemClass = null;
