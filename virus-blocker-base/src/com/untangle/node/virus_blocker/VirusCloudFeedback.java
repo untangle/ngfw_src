@@ -95,7 +95,7 @@ public class VirusCloudFeedback extends Thread
         }
 
         catch (Exception exn) {
-            logger.debug("CloudFeedback thread exception: " + exn.toString());
+            logger.warn("CloudFeedback thread exception: " + exn.toString());
         }
     }
 }

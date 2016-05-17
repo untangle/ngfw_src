@@ -110,7 +110,7 @@ public class VirusCloudScanner extends Thread
         }
 
         catch (Exception exn) {
-            logger.debug("CloudScanner thread exception: " + exn.toString());
+            logger.warn("CloudScanner thread exception: " + exn.toString());
         }
 
         setCloudResult(cloudResult);
