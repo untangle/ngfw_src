@@ -458,7 +458,26 @@ public class NodeManagerImpl implements NodeManager
             nodeSettings.add(node.getNodeSettings());
         }
 
-        return new AppsView(installableNodes, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
+        return new AppsView(policyId, installableNodes, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
+    }
+
+    public AppsView[] getAppsViews()
+    {
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+
+        if ( policyManager == null ) {
+            AppsView[] views = new AppsView[] { getAppsView(1) };
+            return views;
+        }
+
+        int policyIds[] = policyManager.getPolicyIds();
+        AppsView[] views = new AppsView[policyIds.length];
+
+        for ( int i = 0 ; i < policyIds.length ; i++ ) {
+            views[i] = getAppsView(policyIds[i]);
+        }
+
+        return views;
     }
     
     protected void init()

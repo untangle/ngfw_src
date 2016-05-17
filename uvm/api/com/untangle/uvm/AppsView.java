@@ -24,6 +24,7 @@ import com.untangle.uvm.node.NodeMetric;
 @SuppressWarnings("serial")
 public class AppsView implements Serializable
 {
+    private int policyId;
     private List<NodeProperties> installable;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
@@ -31,8 +32,9 @@ public class AppsView implements Serializable
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public AppsView(List<NodeProperties> installable, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
+    public AppsView(int policyId, List<NodeProperties> installable, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
+        this.policyId = policyId;
         this.installable = installable;
         this.instances = instances;
         this.nodeProperties = nodeProperties;
@@ -41,34 +43,13 @@ public class AppsView implements Serializable
         this.runStates = runStates;
     }
 
-    public List<NodeProperties> getInstallable()
-    {
-        return installable;
-    }
-
-    public List<NodeSettings> getInstances()
-    {
-        return instances;
-    }
-
-    public List<NodeProperties> getNodeProperties()
-    {
-        return nodeProperties;
-    }
-    
-    public Map<Long, List<NodeMetric>> getNodeMetrics()
-    {
-        return nodeMetrics;
-    }
-
-    public Map<String, License> getLicenseMap()
-    {
-        return licenseMap;
-    }
-
-    public Map<Long, NodeSettings.NodeState> getRunStates() {
-        return runStates;
-    }
+    public int getPolicyId() { return policyId; }
+    public List<NodeProperties> getInstallable() { return installable; }
+    public List<NodeSettings> getInstances() { return instances; }
+    public List<NodeProperties> getNodeProperties() { return nodeProperties; }
+    public Map<Long, List<NodeMetric>> getNodeMetrics() { return nodeMetrics; }
+    public Map<String, License> getLicenseMap() { return licenseMap; }
+    public Map<Long, NodeSettings.NodeState> getRunStates() { return runStates; }
 
     @Override
     public String toString()

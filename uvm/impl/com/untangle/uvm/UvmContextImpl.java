@@ -663,6 +663,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("brandingManager", this.brandingManager());
             json.put("execManager", this.execManager());
             json.put("settingsManager", this.settingsManager());
+            json.put("appsViews", this.nodeManager().getAppsViews());
 
             json.put("languageSettings", this.languageManager().getLanguageSettings());
             json.put("version", this.version());
@@ -696,6 +697,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return json;
     }
 
+    /**
+     * provide metadata for reports quick add condition logic
+     * XXX This should probably live in reports manager
+     */
     public org.json.JSONObject getConditionQuickAddHints()
     {
         LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();

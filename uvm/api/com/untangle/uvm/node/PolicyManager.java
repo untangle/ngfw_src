@@ -37,6 +37,11 @@ public interface PolicyManager
      */
     ArrayList<JSONObject> getPoliciesInfo();
 
+    /**
+     * Return a list of all available policy IDs
+     */
+    int[] getPolicyIds();
+    
     public class PolicyManagerResult
     {
         public PolicyManagerResult( Integer policyId, Integer policyRuleId )

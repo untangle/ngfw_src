@@ -156,11 +156,19 @@ public interface NodeManager
     List<NodeProperties> getAllNodeProperties();
 
     /**
-     * Get the view of the rack when the specified rack is the current rack
+     * Get the view of the apps/rack when the specified policy/rack is displayed
      *
      * @param p policy.
      * @return visible nodes for this policy.
      */
     AppsView getAppsView( Integer policyId );
 
+    /**
+     * Get the appsview for all policies
+     *
+     * @return visible nodes for every policy.
+     */
+    AppsView[] getAppsViews();
+
+    
 }
