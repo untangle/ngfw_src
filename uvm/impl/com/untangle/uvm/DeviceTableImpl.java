@@ -11,7 +11,14 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URLEncoder;
+import java.net.URL;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
@@ -24,25 +31,25 @@ import com.untangle.uvm.util.Pulse;
  */
 public class DeviceTableImpl implements DeviceTable
 {
+    private static final String CLOUD_LOOKUP_URL = "https://labs.totaldefense.com/Utility/v1/mac";
+    private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
+
     private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
     private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
 
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
-    
+
     private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
     private static final Logger logger = Logger.getLogger(DeviceTableImpl.class);
 
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
-    private HashMap<String,String> macVendorTable = new HashMap<String,String>();
 
     private final Pulse saverPulse = new Pulse("device-table-saver", true, new DeviceTableSaver());
-    
+
     private volatile long lastSaveTime = 0;
-    
+
     protected DeviceTableImpl()
     {
-        //initializeMacVendorTable();
-        
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
 
@@ -53,7 +60,7 @@ public class DeviceTableImpl implements DeviceTable
     {
         return deviceTable.size();
     }
-    
+
     public Map<String, DeviceTableEntry> getDeviceTable()
     {
         return deviceTable;
@@ -69,7 +76,7 @@ public class DeviceTableImpl implements DeviceTable
     {
         ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = this.deviceTable;
         this.deviceTable = new ConcurrentHashMap<String, DeviceTableEntry>();
-        
+
         /**
          * For each entry, copy the value on top of the exitsing objects so references are maintained
          * If there aren't in the table, create new entries
@@ -93,12 +100,12 @@ public class DeviceTableImpl implements DeviceTable
 
         saveDevices();
     }
-    
+
     public DeviceTableEntry getDevice( String macAddress )
     {
         if ( macAddress == null )
             return null;
-        
+
         return deviceTable.get( macAddress );
     }
 
@@ -116,7 +123,7 @@ public class DeviceTableImpl implements DeviceTable
             newEntry.updateLastSeenTime();
 
             addDevice( newEntry );
-            
+
             DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null );
             UvmContextFactory.context().logEvent(event);
 
@@ -127,24 +134,67 @@ public class DeviceTableImpl implements DeviceTable
         catch (Exception e) {
             logger.warn("Failed to add new device: " + macAddress, e);
         }
-        
+
         return null;
     }
-    
+
     public String lookupMacVendor( String macAddress )
     {
         if ( macAddress == null )
             return null;
 
-        String macPrefix = macAddress.substring( 0, 8 );
-        return macVendorTable.get( macPrefix );
+        try {
+            String body = "[\n\"" + macAddress + "\"\n]\n";
+            logger.info("Cloud MAC lookup = " + body);
+
+            URL myurl = new URL(CLOUD_LOOKUP_URL);
+            HttpsURLConnection mycon = (HttpsURLConnection)myurl.openConnection();
+            mycon.setRequestMethod("POST");
+
+            mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
+            mycon.setRequestProperty("Content-Type","application/json");
+            mycon.setRequestProperty("User-Agent", "Untangle NGFW Device Table");
+            mycon.setRequestProperty("AuthRequest", CLOUD_LOOKUP_KEY);
+            mycon.setDoOutput(true);
+            mycon.setDoInput(true);
+
+            DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
+            output.writeBytes(body);
+            output.close();
+
+            DataInputStream input = new DataInputStream( mycon.getInputStream() );
+            StringBuilder builder = new StringBuilder(256);
+
+            for(int c = input.read(); c != -1; c = input.read())
+            {
+                if ((char) c == '[') continue;
+                if ((char) c == ']') continue;
+                builder.append((char) c);
+            }
+
+            input.close();
+            mycon.disconnect();
+
+            String cloudString = builder.toString();
+            if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0)) cloudString = "{}";
+            logger.info("Cloud MAC reply = CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA: + " + cloudString);
+
+            JSONObject cloudObject = new JSONObject(cloudString);
+            if (cloudObject.has("Organization")) return(cloudObject.getString("Organization"));
+        }
+
+        catch (Exception  exn) {
+            logger.warn("Exception looking up MAC address vendor:", exn);
+        }
+
+        return(null);
     }
 
     @SuppressWarnings("unchecked")
     public void saveDevices()
     {
         lastSaveTime = System.currentTimeMillis();
-        
+
         try {
             Collection<DeviceTableEntry> entries = deviceTable.values();
             logger.info("Saving devices to file... (" + entries.size() + " entries)");
@@ -164,7 +214,7 @@ public class DeviceTableImpl implements DeviceTable
                     list.removeLast();
                 }
             }
-            
+
             UvmContextFactory.context().settingsManager().save( DEVICES_SAVE_FILENAME, list, false, true );
             logger.info("Saving devices to file... done");
         } catch (Exception e) {
@@ -214,50 +264,6 @@ public class DeviceTableImpl implements DeviceTable
         }
     }
 
-    private void initializeMacVendorTable()
-    {
-        this.macVendorTable = new HashMap<String,String>();
-
-        Runnable task = new Runnable()
-        {
-            public void run()
-            {
-                String filename = System.getProperty("uvm.lib.dir") + "/untangle-vm/oui-formatted.txt";
-
-                long t0 = System.currentTimeMillis();
-
-                java.io.BufferedReader br = null;
-                try {
-                    br = new java.io.BufferedReader(new java.io.FileReader(filename));
-                    for (String line = br.readLine(); line != null ; line = br.readLine()) {
-                        String[] parts = line.split("\\s+",2);
-                        if ( parts.length < 2 )
-                            continue;
-
-                        String macPrefix = parts[0];
-                        String vendor = parts[1];
-                        //logger.debug( macPrefix + " ---> " + vendor );
-
-                        macVendorTable.put( macPrefix, vendor );
-                    }
-                } catch (Exception e) {
-                    logger.warn("Failed to load MAC OUI data.", e);
-                } finally {
-                    if ( br != null ) {
-                        try {br.close();} catch(Exception e) {}
-                    }
-                }
-
-                long t1 = System.currentTimeMillis();
-                logger.info("Loaded MAC OUI table: " + (t1 - t0) + " millis");
-            }
-        };
-        Thread t = new Thread(task, "MAC-oui-loader");
-        t.setDaemon(true);
-        t.start();
-        return;
-    }
-
     private void addDevice( DeviceTableEntry newEntry )
     {
         if ( newEntry == null ) {
@@ -266,14 +272,14 @@ public class DeviceTableImpl implements DeviceTable
         }
 
         newEntry.enableLogging(); // no on by default, make sure its on when going in the table
-        
+
         String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor( newEntry.getMacAddress() );
         if ( macVendor != null && !("".equals(macVendor)) )
             newEntry.setMacVendor( macVendor );
 
         deviceTable.put( newEntry.getMacAddress(), newEntry );
     }
-    
+
     private class DeviceTableSaver implements Runnable
     {
         public void run()
@@ -281,5 +287,4 @@ public class DeviceTableImpl implements DeviceTable
             saveDevices();
         }
     }
-    
 }
