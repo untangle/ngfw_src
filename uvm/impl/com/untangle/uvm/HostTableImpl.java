@@ -533,29 +533,8 @@ public class HostTableImpl implements HostTable
         UvmContextFactory.context().logEvent(event);
         
         entry.setAddress( address );
-        
-        String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
-        if ( macAddress != null && !("".equals(macAddress)) ) {
-            entry.setMacAddress( macAddress );
 
-            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
-
-            /**
-             * If this device has never been seen before, add it
-             */
-            if ( deviceEntry == null )
-                deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
-
-            /**
-             * Restore known information from the device entry where able
-             */
-            if ( deviceEntry.getHostname() != null )
-                entry.setHostname( deviceEntry.getHostname() );
-            if ( deviceEntry.getDeviceUsername() != null )
-                entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
-            if ( deviceEntry.getHttpUserAgent() != null )
-                entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
-        }
+        checkForDevice( entry, address );
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
         int currentSize = getCurrentActiveSize();
@@ -569,6 +548,38 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
+    /**
+     * This funciton checks for a matching entry in the device table.
+     * If it does not exist, it adds it
+     */
+    private void checkForDevice( HostTableEntry entry, InetAddress address )
+    {
+        String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
+        if ( macAddress == null )
+            return;
+        if ( "".equals(macAddress) )
+            return;
+        
+        entry.setMacAddress( macAddress );
+        DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
+
+        /**
+         * If this device has never been seen before, add it
+         */
+        if ( deviceEntry == null )
+            deviceEntry = UvmContextFactory.context().deviceTable().addDevice( macAddress );
+
+        /**
+         * Restore known information from the device entry where able
+         */
+        if ( deviceEntry.getHostname() != null )
+            entry.setHostname( deviceEntry.getHostname() );
+        if ( deviceEntry.getDeviceUsername() != null )
+            entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
+        if ( deviceEntry.getHttpUserAgent() != null )
+            entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
+    }
+    
     @SuppressWarnings("unchecked")
     public void saveHosts()
     {
@@ -635,6 +646,8 @@ public class HostTableImpl implements HostTable
                             continue;
                         }
 
+                        checkForDevice( entry, entry.getAddress() );
+                        
                         hostTable.put( entry.getAddress(), entry );
                     } catch ( Exception e ) {
                         logger.warn( "Error loading host entry: " + entry.toJSONString(), e);
@@ -787,8 +800,12 @@ public class HostTableImpl implements HostTable
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
                     for (HostTableEntry entry : entries) {
+
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
+
+                        checkForDevice( entry, address );
+
                         if ( address == null ) {
                             if ( logger.isDebugEnabled() )
                                 logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
