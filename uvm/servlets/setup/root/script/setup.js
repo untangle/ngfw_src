@@ -1562,7 +1562,7 @@ Ext.define('Ung.setupWizard.AutoUpgrades', {
     },
     saveAutoUpgrades: function (handler) {
         var autoUpgradeValue = this.panel.down('checkbox[name="autoUpgradesCheckbox"]').getValue();
-        var cloudEnabledValue = this.panel.down('checkbox[name="cloudEnabledValue"]').getValue();
+        var cloudEnabledValue = this.panel.down('checkbox[name="cloudEnabledCheckbox"]').getValue();
         var afterFn = Ext.bind(function (handler) {
             Ung.Setup.saveCurrentStep(this.stepName);
             handler();
@@ -1624,6 +1624,7 @@ Ext.define('Ung.setupWizard.Complete', {
         }, this));
     }
 });
+
 Ext.define('Ung.Setup', {
     singleton: true,
     init: function () {
