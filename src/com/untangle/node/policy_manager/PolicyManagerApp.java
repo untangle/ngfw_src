@@ -144,6 +144,20 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         return -1;
     }
 
+    public int[] getPolicyIds()
+    {
+        int size = settings.getPolicies().size();
+        int policyIds[] = new int[size];
+
+        int i = 0;
+        for ( PolicySettings policy : settings.getPolicies() ) {
+            policyIds[i] = policy.getPolicyId();
+            i++;
+        }
+
+        return policyIds;
+    }
+
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
