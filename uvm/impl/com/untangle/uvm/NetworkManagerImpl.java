@@ -1955,13 +1955,15 @@ public class NetworkManagerImpl implements NetworkManager
                 return fullRestartCommands;
 
             /**
-             * If nothing is new, we still do a full networking restart
-             * This is because conversions and the ability to resync by toggling settings
-             * This is for safety, when in doubt, do a full sync.
+             * If nothing is new, we could do several things
+             * Currently we do nothing because in theory nothing has changed
+             * Alternatively, we could just do a full restart anyway
              */
             if ( changedFiles.size() == 0 ) {
-                logger.info("No config files changed. Syncing settings anyway...");
-                return fullRestartCommands;
+                logger.info("No config files changed. Skipping restart...");
+                return new String[] {"/bin/true", "/bin/true"};
+                //logger.info("No config files changed. Syncing settings anyway...");
+                //return fullRestartCommands;
             }
 
             for ( String filename : changedFiles )
