@@ -133,23 +133,41 @@ public class DashboardManagerImpl implements DashboardManager
 
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
-        widgetSettings.setTimeframe(3600*24);
-        widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
-        widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("network-biCUnFjuBr"); // Network - Session Per Minute
         widgets.add( widgetSettings);
 
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
-        widgetSettings.setEntryId("web-filter-h0jelsttGp"); // Web Filter - Web Usage [area]
+        widgetSettings.setEntryId("web-filter-h0jelsttGp"); // Web Filter - Web Usage
         widgets.add( widgetSettings);
 
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("web-filter-RxrICRqf6Bg"); // Web Filter - Top Categories
+        widgets.add( widgetSettings);
+        
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("bandwidth-control-CRntw4hkHn"); // Bandwidth Control - Top Hostnames (by total bytes)
         widgets.add( widgetSettings);
 
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("application-control-lBxH9QZ8A8"); // Application Control - Top Application (by size)
+        widgets.add( widgetSettings);
+
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600*24);
+        widgetSettings.setDisplayColumns(new String[]{"time_stamp","description","summary_text"});
+        widgetSettings.setEntryId("reports-8XL9cbqQa9"); // Reports - Alert Events
+        widgets.add( widgetSettings);
+        
         DashboardSettings newSettings = new DashboardSettings();
         newSettings.setWidgets(widgets);
         return newSettings;
