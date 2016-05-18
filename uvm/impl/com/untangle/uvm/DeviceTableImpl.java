@@ -151,6 +151,8 @@ public class DeviceTableImpl implements DeviceTable
             HttpsURLConnection mycon = (HttpsURLConnection)myurl.openConnection();
             mycon.setRequestMethod("POST");
 
+            mycon.setConnectTimeout(5000); // 5 seconds
+            mycon.setReadTimeout(5000); // 5 seconds
             mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
             mycon.setRequestProperty("Content-Type","application/json");
             mycon.setRequestProperty("User-Agent", "Untangle NGFW Device Table");
