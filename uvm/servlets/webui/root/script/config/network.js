@@ -781,6 +781,8 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'symbolicDev'
             }, {
+                name: 'hidden'
+            }, {
                 name: 'imqDev'
             }, {
                 name: 'isWan'
@@ -1347,6 +1349,10 @@ Ext.define('Webui.config.network', {
                 this.availableDevicesStore.loadData( Ext.decode(Ext.encode(this.currentInterfaces)));
                 this.winMapDevices.show();
             }, this)
+        });
+
+        this.gridInterfaces.getStore().filterBy(function (record) {
+            return !record.get('hidden');
         });
 
         this.panelInterfaces = Ext.create('Ext.panel.Panel',{
