@@ -43,6 +43,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
+    private static final String UVM_STATUS_FILE = "/var/run/uvm.status";
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
@@ -773,6 +774,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void init()
     {
+        writeStatusFile( "booting" );
+
         this.serializer = new JSONSerializer();
         serializer.setFixupDuplicates(false);
         serializer.setMarshallNullAttributes(false);
@@ -864,6 +867,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
+        writeStatusFile( "starting" );
+
         mailSender.postInit();
 
         logger.debug("restarting nodes");
@@ -885,6 +890,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // start capturing traffic last
         networkManager.insertRules();
+
+        writeStatusFile( "running" );
     }
 
     @Override
@@ -924,6 +931,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.warn("could not stop tomcat", exn);
         }
 
+        writeStatusFile( "stopped" );
         logger.info("UvmContext destroyed");
     }
 
@@ -940,6 +948,31 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     protected boolean loadUvmResource(String name)
     {
         return main.loadUvmResource(name);
+    }
+
+    /**
+     * Writes the status file.
+     * The status file should be in one of a few states:
+     *
+     * non-existent (uvm not running)
+     * "launching" - UVM is being launched (by uvm script)
+     * "booting" - UVM booting (phase 1 of startup)
+     * "starting" - nodes starting (phase 2 of startup)
+     * "running" 
+     * "stopped" 
+     */
+    private void writeStatusFile( String status )
+    {
+        try {
+            File statusFile = new File(UVM_STATUS_FILE);
+            if (!statusFile.exists())
+                statusFile.createNewFile();
+            java.io.PrintWriter writer = new java.io.PrintWriter(statusFile, "UTF-8");
+            writer.println(status);
+            writer.close();
+        } catch (Exception e) {
+            logger.warn("Failed to write status file.",e);
+        }
     }
 
     /**

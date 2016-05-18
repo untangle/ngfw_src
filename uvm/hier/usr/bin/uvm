@@ -384,6 +384,9 @@ while True:
     debug("       UVM Launching");
     debug("==============================");
 
+    with open('/var/run/uvm.status', 'w+') as status_file:
+        status_file.write('launching\n')
+
     flushConntrack();
 
     if exit_flag == 1:
@@ -443,6 +446,10 @@ while True:
             ppid, result = os.waitpid(uvm_pid, 0);
             exit_sig = result & 0xff
             exit_code = (result & 0xff00) >> 8
+
+            with open('/var/run/uvm.status', 'w+') as status_file:
+                status_file.write('stopped\n')
+
             break;
         except OSError,e :
             # If its EINTR (interrupted), dont print error

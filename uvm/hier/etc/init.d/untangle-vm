@@ -16,11 +16,10 @@ DESC="${OEM_NAME} VM"
 UVM_LOGDIR=${UVM_LOGDIR:-/var/log/uvm}
 UVM_RUNDIR=${UVM_RUNDIR:-/tmp}
 UVM_NICENESS=${UVM_NICENESS:-0}
-UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
-UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
 UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID_FILE="/var/run/uvm.pid"
+UVM_STATUS_FILE="/var/run/uvm.status"
 UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
 UVM_TIMEOUT=300
 
@@ -56,8 +55,10 @@ uvmWrapperPid() {
 uvmStatus() { 
     if [ -z "`uvmWrapperPid`" ] && [ -z "`uvmJavaPid`" ] ; then
         echo "stopped"
+    elif [ -f ${UVM_STATUS_FILE} ] ; then
+        cat ${UVM_STATUS_FILE}
     else
-        echo "running"
+        echo "unknown"
     fi
 }
 
@@ -85,9 +86,6 @@ case "$1" in
             fi
         fi
 
-        # clear console.log
-        echo >| $UVM_CONSOLE_LOG;
-
         updateStatus "[" "Starting"
 
         start-stop-daemon --start \
@@ -101,9 +99,6 @@ case "$1" in
         if [ $? != "0" ] ; then
             updateStatusExit "x]\n" "Stopped"
         fi
-
-        echo -n "." ; sleep 1 # wait for initial start
-
         pid=$(cat ${UVM_PID_FILE})
 
         # Wait for completion
@@ -114,38 +109,20 @@ case "$1" in
             if [ $? -ne 0 ]; then
                 updateStatusExit "x]\n" "Stopped"
             fi
-
-            EXPC="$(egrep -i '(fatal error|exception)' $UVM_CONSOLE_LOG 2> /dev/null)"
-            FINI="$(grep -i 'startup complete' $UVM_CONSOLE_LOG 2>/dev/null)"
-
-            if [ -n "$EXPC" ] ; then
-                if echo $EXPC | grep -qi "address already in use" ; then
-                    echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
-                else
-                    echo -e "x]\nException in $UVM_CONSOLE_LOG"
-                    if [ -n "@PREFIX@" ] ; then
-                        $0 stop
-			            log_end_msg 0
-                        exit
-                    fi
-		            log_end_msg 0
-                    exit
-                fi
-            fi
-
-            if [ -n "$FINI" ] ; then
+        
+            if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "starting" ]; then
                 break
             fi
 
             sleep 1
         done
 
-        # Wait for completion, ignore exceptions because they are node exceptions
         echo -n "|"
+
         for i in `seq 1 $UVM_TIMEOUT` ; do
             echo -n "."
 
-            if grep -qi 'postInit complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
+            if [ "`uvmStatus`" == "running" ] ; then
                 updateStatusExit "]\n" "Running"
             fi
 
@@ -176,24 +153,21 @@ case "$1" in
         start-stop-daemon -s INT --stop -q --pidfile ${UVM_PID_FILE}
         code=$?
 
+        # Remove PID file
+        rm -f ${UVM_PID_FILE}  &> /dev/null
+
         # exit if start-stop-daemon failed and the process was not found anyway (it must already be dead)
         if [ $code != "0" ] && [ "`uvmStatus`" == "stopped" ] ; then
             updateStatusExit "x]\n" "Stopped"
         fi
 
-        rm -f ${UVM_PID_FILE}  &> /dev/null
-
         # Wait for completion
         for i in `seq 1 20` ; do
             echo -n "."
-            sleep 1
-            # If the log contains "shutdown complete" and the PID is gone - it was a clean shutdown
-            if tail -n 1000 $UVM_CONSOLE_LOG | grep -qi 'shutdown complete' 2>/dev/null && [ "`uvmStatus`" == "stopped" ] ; then
+            if [ "`uvmStatus`" == "stopped" ] ; then
                 updateStatusExit "]\n" "Stopped"
-            # If the log does not contain "shutdown complete" but the PID is gone - it was not clean
-            elif [ "`uvmStatus`" == "stopped" ] ; then
-                break
             fi
+            sleep 1
         done
 
         # Attempt more aggressive kill now
@@ -208,10 +182,6 @@ case "$1" in
         # Wait for completion
         for i in `seq 1 5` ; do
             echo -n "."
-            if tail -n 1000 $UVM_CONSOLE_LOG | grep -qi 'shutdown complete' 2>/dev/null ; then
-                sleep 1 
-                updateStatusExit "]\n" "Stopped"
-            fi
             if [ "`uvmStatus`" == "stopped" ] ; then
                 updateStatusExit "]\n" "Stopped"
             fi
