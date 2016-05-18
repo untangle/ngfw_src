@@ -347,8 +347,6 @@ Ext.define("Ung.Inbox", {
                         return d + ' ' + t;
                     }
                 }, {
-                    name : 'size'
-                }, {
                     name : 'attachmentCount'
                 }, {
                     name : 'truncatedSender'
@@ -417,7 +415,7 @@ Ext.define("Ung.Inbox", {
                 }
             }, {
                 header : i18n._("Size (KB)"),
-                dataIndex : 'size',
+                dataIndex : 'quarantineSize',
                 renderer : function(value) {
                     return Math.round(((value + 0.0) / 1024) * 10) / 10;
                 },
