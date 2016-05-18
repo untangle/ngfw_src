@@ -18,6 +18,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Device Table Additions",
+    "title": "Devices Additions",
     "type": "TIME_GRAPH"
 }

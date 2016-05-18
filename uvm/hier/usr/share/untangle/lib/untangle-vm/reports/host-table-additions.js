@@ -19,6 +19,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Host Table Additions",
+    "title": "Hosts Additions",
     "type": "TIME_GRAPH"
 }

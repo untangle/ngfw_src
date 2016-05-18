@@ -9,5 +9,5 @@
     "displayOrder": 1010,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "device_table_updates",
-    "title": "Device Table Events"
+    "title": "Devices Events"
 }

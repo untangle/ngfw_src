@@ -17,6 +17,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Host Table Updates",
+    "title": "Hosts Updates",
     "type": "TIME_GRAPH"
 }

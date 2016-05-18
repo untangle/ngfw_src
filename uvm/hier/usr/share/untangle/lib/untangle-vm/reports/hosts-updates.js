@@ -9,5 +9,5 @@
     "displayOrder": 1010,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "host_table_updates",
-    "title": "Host Table Events"
+    "title": "Hosts Events"
 }

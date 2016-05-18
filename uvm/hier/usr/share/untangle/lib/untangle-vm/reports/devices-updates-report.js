@@ -17,6 +17,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Device Table Updates",
+    "title": "Devices Updates",
     "type": "TIME_GRAPH"
 }

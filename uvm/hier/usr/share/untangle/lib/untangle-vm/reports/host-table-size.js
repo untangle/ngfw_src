@@ -17,6 +17,6 @@
     ],
     "timeDataInterval": "MINUTE",
     "timeStyle": "AREA",
-    "title": "Active Hosts",
+    "title": "Hosts Active",
     "type": "TIME_GRAPH"
 }
