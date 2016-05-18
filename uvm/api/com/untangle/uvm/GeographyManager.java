@@ -12,7 +12,7 @@ public interface GeographyManager
         public double latitude;
         public double longitude;
     }
-    
+
     boolean checkForDatabaseUpdate();
 
     String getCountryName(String netAddress);
@@ -28,6 +28,8 @@ public interface GeographyManager
     String getPostalCode(String netAddress);
 
     Coordinates getCoordinates(String netAddress);
-    
+
     String detectPublicNetworkAddress();
+
+    Coordinates getPublicNetworkAddressCoordinates();
 }

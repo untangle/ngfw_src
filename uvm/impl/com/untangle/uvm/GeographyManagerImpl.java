@@ -170,6 +170,33 @@ public class GeographyManagerImpl implements GeographyManager
         }
     }
 
+    public Coordinates getPublicNetworkAddressCoordinates()
+    {
+        if (!initFlag) return (null);
+
+        String netAddress = detectPublicNetworkAddress();
+        if (netAddress == null) return (null);
+
+        CityResponse response = getCityObject(netAddress);
+        if (response == null) return (null);
+
+        Location location = response.getLocation();
+        Country country = response.getCountry();
+
+        Coordinates coordinates = new Coordinates();
+
+        if (country != null) {
+            coordinates.country = country.getIsoCode();
+        }
+
+        if (location != null) {
+            coordinates.latitude = location.getLatitude();
+            coordinates.longitude = location.getLongitude();
+        }
+
+        return (coordinates);
+    }
+
     private CityResponse getCityObject(String netAddress)
     {
         try {
