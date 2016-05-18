@@ -176,25 +176,7 @@ public class GeographyManagerImpl implements GeographyManager
 
         String netAddress = detectPublicNetworkAddress();
         if (netAddress == null) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-
-        Location location = response.getLocation();
-        Country country = response.getCountry();
-
-        Coordinates coordinates = new Coordinates();
-
-        if (country != null) {
-            coordinates.country = country.getIsoCode();
-        }
-
-        if (location != null) {
-            coordinates.latitude = location.getLatitude();
-            coordinates.longitude = location.getLongitude();
-        }
-
-        return (coordinates);
+        return (getCoordinates(netAddress));
     }
 
     private CityResponse getCityObject(String netAddress)
