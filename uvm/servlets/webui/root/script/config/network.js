@@ -1044,24 +1044,11 @@ Ext.define('Webui.config.network', {
                 scope : this
             },'-',{
                 xtype: "button",
+                hidden: !this.settings.vlansEnabled,
                 text : i18n._( "Add Tagged VLAN Interface" ),
                 iconCls : "icon-add-row",
                 handler: function() {
                     this.gridInterfaces.addHandler();
-                },
-                scope : this
-            }, '-', {
-                xtype: "button",
-                text : i18n._( "Test Connectivity" ),
-                handler : this.testConnectivity,
-                iconCls : "icon-test-connectivity",
-                scope : this
-            },{
-                xtype: "button",
-                text : i18n._( "Ping Test" ),
-                iconCls : "icon-test-ping",
-                handler : function() {
-                    this.openPingTest("");
                 },
                 scope : this
             }],

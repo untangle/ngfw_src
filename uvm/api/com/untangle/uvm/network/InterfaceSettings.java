@@ -33,7 +33,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private String  imqDev; /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
 
     private boolean isWan = false; /* is a WAN interface? */
-
+    private Boolean hidden = null; /* Is this interface hidden? null means false */
+    
     private boolean isVlanInterface = false; /* is it an 802.1q alias interface */
     private Integer vlanTag = null; /* vlan 802.1q tag */
     private Integer vlanParent = null; /* The parent interface of this vlan alias */
@@ -135,6 +136,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean newValue ) { this.isWan = newValue; }
 
+    public Boolean getHidden( ) { return this.hidden; }
+    public void setHidden( Boolean newValue ) { this.hidden = newValue; }
+    
     public boolean getIsVlanInterface( ) { return this.isVlanInterface; }
     public void setIsVlanInterface( boolean newValue ) { this.isVlanInterface = newValue; }
     

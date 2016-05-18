@@ -56,6 +56,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean logLocalInboundSessions = false;
     private boolean logBlockedSessions = false;
     private boolean logSessionUpdates = true;
+    private boolean vlansEnabled = true;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -171,6 +172,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public String getDnsmasqOptions() { return this.dnsmasqOptions; }
     public void setDnsmasqOptions( String newValue ) { this.dnsmasqOptions = newValue; }
+
+    public boolean getVlansEnabled() { return this.vlansEnabled; }
+    public void setVlansEnabled( boolean newValue ) { this.vlansEnabled = newValue; }
     
     public String toJSONString()
     {
