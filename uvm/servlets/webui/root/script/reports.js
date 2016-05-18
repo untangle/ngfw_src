@@ -777,8 +777,8 @@ Ext.define('Ung.panel.Reports', {
             _skinPath = '/skins/' + rpc.skinSettings.skinName + '/images/admin/',
             staticItems = [
                 { text : i18n._('All Categories'), category : 'All'},
-                { text : i18n._('Host Viewer'), category : 'Hosts', icon : _skinPath + 'config/icon_config_hosts.png' },
-                { text : i18n._('Device List'), category : 'Devices', icon : _skinPath + 'config/icon_config_devices.png'},
+                { text : i18n._('Hosts'), category : 'Hosts', icon : _skinPath + 'config/icon_config_hosts.png' },
+                { text : i18n._('Devices'), category : 'Devices', icon : _skinPath + 'config/icon_config_devices.png'},
                 { text : i18n._('Network'), category : 'Network', icon : _skinPath + 'config/icon_config_network.png' },
                 { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_admin.png' },
                 { text : i18n._('System'), category : 'System', icon : _skinPath + 'config/icon_config_system.png' },
