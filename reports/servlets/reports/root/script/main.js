@@ -113,16 +113,6 @@ Ext.define("Ung.Main", {
         return rpc.reportsManager;
     },
 
-    getPolicyName: function (policyId) {
-        if (Ext.isEmpty(policyId)) {
-            return i18n._("Service Apps");
-        }
-        if (rpc.policyNamesMap[policyId] !== undefined) {
-            return rpc.policyNamesMap[policyId];
-        }
-        return i18n._("Unknown Rack");
-    },
-
     startApplication: function () {
         this.viewport = Ext.create('Ext.container.Viewport', {
             layout: 'border',

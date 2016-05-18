@@ -352,13 +352,12 @@ Ext.define('Ung.panel.Reports', {
                 handler: Ext.bind(this.customizeReport, this)
             }, {
                 xtype: 'button',
-                text: '<i class="material-icons" style="color: #FF8686;">delete</i> <span style="vertical-align: middle;">' + i18n._("Delete") + '</span>',
+                text: '<i class="material-icons" style="color: red;">delete</i> <span style="vertical-align: middle;">' + i18n._("Delete") + '</span>',
                 cls: 'action-button material-button',
                 name: "remove",
                 itemId: "removeEntryBtn",
                 scale: 'medium',
-                //tooltip: i18n._('View events for this report'),
-                //iconCls: 'icon-edit',
+                hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 handler: Ext.bind(function () {
                     var record = this.entryList.getSelectionModel().getSelection()[0];
                     if (record.getData().inDashboard) {
@@ -401,8 +400,8 @@ Ext.define('Ung.panel.Reports', {
             tools: [{
                 xtype: 'button',
                 text: i18n._('Add to Dashboard'),
+                cls: 'action-button material-button',
                 itemId: 'dashboardEventBtn',
-                iconCls: 'icon-add-row',
                 margin: '0 3',
                 scale: 'medium',
                 hidden: !Ung.Main.webuiMode,
@@ -596,6 +595,7 @@ Ext.define('Ung.panel.Reports', {
             dataIndex: 'text'
         }, {
             width: 24,
+            hidden: !Ung.Main.webuiMode,
             renderer: Ext.bind(function (value, metaData, record) {
                 if (!record.getData().entry.readOnly) {
                     return '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>';
@@ -603,6 +603,7 @@ Ext.define('Ung.panel.Reports', {
             }, this)
         }, {
             width: 24,
+            hidden: !Ung.Main.webuiMode,
             dataIndex: 'inDashboard',
             renderer: Ext.bind(function (value, metaData, record) {
                 if (record.getData().inDashboard) {
@@ -614,7 +615,7 @@ Ext.define('Ung.panel.Reports', {
             this.entryView.setActiveItem(1);
             this.entry = record.getData().entry;
 
-            this.down('#removeEntryBtn').setHidden(this.entry.readOnly);
+            this.down('#removeEntryBtn').setHidden(this.entry.readOnly || !Ung.Main.webuiMode || this.hideCustomization);
 
             if (this.entry.type === 'EVENT_LIST') {
                 this.limitSelector.show();
@@ -761,7 +762,6 @@ Ext.define('Ung.panel.Reports', {
         var category = this.selectedCategory.getData().category, me = this;
         this.loadCategoryReports(category).then(function (reports) {
             if (!me.allReports.hasOwnProperty(category)) {
-                console.log('here');
                 return;
             }
             me.allReports[category] = reports;
@@ -840,8 +840,6 @@ Ext.define('Ung.panel.Reports', {
             }
 
             if (this.initEntry) {
-                //var cat = this.categoryList.getStore().findRecord('category', this.initEntry.category);
-                //console.log(cat);
                 this.categoryList.getSelectionModel().select(this.categoryList.getStore().findRecord('category', this.initEntry.category));
             }
 
@@ -1108,7 +1106,6 @@ Ext.define('Ung.panel.Reports', {
             var i;
             this.reportContainer.setLoading(false);
             if (Ung.Util.handleException(exception)) {
-                console.log(exception);
                 return;
             }
             this.chartData = result.list;
@@ -1703,9 +1700,12 @@ Ext.define('Ung.panel.Reports', {
             if (!this.columnRenderers) {
                 this.columnRenderers = {
                     "policy_id": function (value) {
-                        var name = Ung.Main.getPolicyName(value);
-                        if (name != null) {
-                            return name + " (" + value + ")";
+                        if (Ung.Main.webuiMode) {
+                            var name = Ung.Main.getPolicyName(value);
+                            if (name != null) {
+                                return name + " (" + value + ")";
+                            }
+                            return value;
                         }
                         return value;
                     },
