@@ -34,6 +34,7 @@ Ext.define('Ung.Wizard', {
             itemId: 'prevBtn',
             hidden: true,
             scale: 'medium',
+            padding: '3 10 3 0',
             listeners: {
                 click: 'onPrev'
             }
@@ -50,6 +51,7 @@ Ext.define('Ung.Wizard', {
             xtype: 'button',
             itemId: 'nextBtn',
             scale: 'medium',
+            padding: '3 0 3 10',
             listeners: {
                 click: 'onNext'
             }
@@ -158,7 +160,7 @@ Ext.define('Ung.WizardController', {
             this.prevBtn.hide();
         } else {
             this.prevBtn.show();
-            this.prevBtn.setText('&laquo; ' + this.view.cards[pageNo - 1].title);
+            this.prevBtn.setText('<i class="material-icons" style="vertical-align: middle;">navigate_before</i><span style="vertical-align: middle;"><strong>' + i18n._('Previous') + '</strong>: ' + this.view.cards[pageNo - 1].title + '</span>');
         }
 
         if (pageNo == (this.view.cards.length - 1)) {
@@ -169,10 +171,10 @@ Ext.define('Ung.WizardController', {
                 }
                 this.view.finished = true;
             } else {
-                this.nextBtn.setText(i18n._('Finish'));
+                this.nextBtn.setText('<span style="vertical-align: middle;">' + i18n._('Finish') + '</span> <i class="material-icons" style="vertical-align: middle;">check</i>');
             }
         } else {
-            this.nextBtn.setText(this.view.cards[pageNo + 1].title + ' &raquo;');
+            this.nextBtn.setText('<span style="vertical-align: middle;"><strong>' + i18n._('Next') + '</strong>: ' + this.view.cards[pageNo + 1].title + '</span><i class="material-icons" style="vertical-align: middle;">navigate_next</i>');
             if (this.view.hasCancel) {
                 this.cancelBtn.show();
             }
