@@ -21,6 +21,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
-    "title": "Web Usage [area]",
+    "title": "Web Usage",
     "type": "TIME_GRAPH"
 }
