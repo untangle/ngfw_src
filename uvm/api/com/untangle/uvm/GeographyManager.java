@@ -28,4 +28,6 @@ public interface GeographyManager
     String getPostalCode(String netAddress);
 
     Coordinates getCoordinates(String netAddress);
+    
+    String detectPublicNetworkAddress();
 }

@@ -17,9 +17,15 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
 import org.apache.log4j.Logger;
-import java.util.Date;
+
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.net.URL;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.util.Date;
 
 public class GeographyManagerImpl implements GeographyManager
 {
@@ -28,6 +34,8 @@ public class GeographyManagerImpl implements GeographyManager
     private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
     private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
     private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
+
+    private static final String CLOUD_IP_DETECTION_URL = "http://www.untangle.com/ddclient/ip.php";
 
     // we check for the update file once per hour which is more than enough
     private final static long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
@@ -133,6 +141,33 @@ public class GeographyManagerImpl implements GeographyManager
         }
 
         return (coordinates);
+    }
+
+    public String detectPublicNetworkAddress()
+    {
+        try {
+            URL myurl = new URL(CLOUD_IP_DETECTION_URL + "?activation=" + UvmContextFactory.context().getServerUID());
+            HttpURLConnection mycon = (HttpURLConnection) myurl.openConnection();
+            mycon.setRequestMethod("GET");
+            mycon.setRequestProperty("User-Agent", "Untangle NGFW GeographyManager");
+            mycon.setDoOutput(false);
+            mycon.setDoInput(true);
+            mycon.connect();
+
+            DataInputStream input = new DataInputStream(mycon.getInputStream());
+            StringBuilder builder = new StringBuilder(256);
+
+            for (int c = input.read(); c != -1; c = input.read()) {
+                builder.append((char) c);
+            }
+
+            input.close();
+            mycon.disconnect();
+
+            return (builder.toString());
+        } catch (Exception exn) {
+            return (null);
+        }
     }
 
     private CityResponse getCityObject(String netAddress)
