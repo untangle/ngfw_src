@@ -83,6 +83,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
         if (!spamConfig.getScan()) {
+            logger.debug("handleTCPNewSessionRequest() release");
             sessionRequest.release();
             return;
         }
@@ -93,6 +94,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             sessionRequest.rejectReturnRst();
         }
 
+        logger.debug("handleTCPNewSessionRequest()");
         super.handleTCPNewSessionRequest(sessionRequest);
     }
 
@@ -167,7 +169,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     @Override
     public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
-        logger.debug("[handleMessageCanBlock]");
+        logger.debug("blockPassOrModify()");
 
         boolean isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
 
