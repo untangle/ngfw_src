@@ -509,6 +509,7 @@ public class ReportEntry implements Serializable, JSONString
     {
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
+            logger.info("Getting distinct values: " + statement);
             java.sql.ResultSet resultSet = statement.executeQuery();
 
             LinkedList<String> values = new LinkedList<String>();
