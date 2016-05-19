@@ -816,7 +816,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
         Ung.Main.getReportsManager().getDataForReportEntry(Ext.bind(function (result, exception) {
             handler.call(this);
 
-            if (Ung.Util.handleException(exception)) {
+            if (Ung.Util.handleExceptionToast(exception)) {
                 return;
             }
             if (this === null || !this.rendered) {
@@ -858,7 +858,7 @@ Ext.define('Ung.dashboard.ReportEntry', {
         Ung.Main.getReportsManager().getEventsForTimeframeResultSet(Ext.bind(function (result, exception) {
             handler.call(this);
 
-            if (Ung.Util.handleException(exception)) {
+            if (Ung.Util.handleExceptionToast(exception)) {
                 return;
             }
             if (this === null || !this.rendered) {

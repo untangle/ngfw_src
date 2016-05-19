@@ -1987,3 +1987,27 @@ a.forgot-password:hover {
     background-position: 0 -9px;
     margin-bottom: 10px;
 }
+
+.toast-exception {
+    padding: 0;
+    border-width: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.toast-exception .content {
+    font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
+    color: #FFF;
+    background: #1B1E26;
+    border-width: 0;
+}
+
+.toast-exception .content h3 {
+    color: #FFB300;
+    margin: 0;
+    font-weight: normal;
+}
+
+.toast-exception .x-autocontainer-innerCt {
+    vertical-align: middle;
+}
+

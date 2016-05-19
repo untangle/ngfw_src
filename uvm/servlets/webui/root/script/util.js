@@ -1,5 +1,6 @@
 Ext.define('Ung.Util', {
     singleton: true,
+    toasts: [],
     isDirty: function (item, depth) {
         if(depth==null) {
             depth=0;
@@ -244,6 +245,34 @@ Ext.define('Ung.Util', {
         }
         return false;
     },
+
+    handleExceptionToast: function(exception, handler, type, continueExecution) {
+        var toast;
+        if (exception) {
+            console.error("handleException:", exception);
+            if (!exception.message) {
+                exception.message = i18n._('An error has occurred');
+            }
+            toast = Ext.toast({
+                html: '<h3><i class="material-icons" style="font-size: 16px;">warning</i><span style="vertical-align: middle;">' + i18n._('Warning') + '</span></h3><span>' + i18n._('Exception') + ': ' + exception.message + '</span>',
+                border: false,
+                bodyBorder: false,
+                cls: 'toast-exception',
+                autoCloseDelay: 5000,
+                align: 'br',
+                bodyCls: 'content',
+                width: 300
+            });
+            if (this.toasts.length >= 3) {
+                this.toasts[0].close();
+                this.toasts.shift();
+            }
+            this.toasts.push(toast);
+            return !continueExecution;
+        }
+        return false;
+    },
+
     addBuildStampToUrl: function(url) {
         var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
         if (url.indexOf("?") >= 0) {
