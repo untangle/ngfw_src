@@ -5689,7 +5689,7 @@ Ext.define('Webui.config.network', {
     beforeSave: function(isApply, handler) {
         Ext.MessageBox.wait(i18n._("Applying Network Settings..."), i18n._("Please wait"));
         this.needRackReload = true;
-        
+        this.gridInterfaces.getStore().clearFilter(true);
         this.settings.interfaces.list = this.gridInterfaces.getList();
         var i,
             qosBandwidthList = this.gridQosWanBandwidth.getList(),
