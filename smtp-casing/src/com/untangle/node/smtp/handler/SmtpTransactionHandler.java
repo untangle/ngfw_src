@@ -686,7 +686,8 @@ public class SmtpTransactionHandler
 
     void addToTxLog( String str )
     {
-        //logger.debug("addToTxLog( " + System.identityHashCode(txLog) + " ): " + str );
+        if (logger.isDebugEnabled())
+            logger.debug("addToTxLog( " + System.identityHashCode(txLog) + " ): " + str );
         txLog.add( str );
     }
     
