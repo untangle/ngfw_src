@@ -383,13 +383,16 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         {
             PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             Integer newPolicyId = null;
+            Integer newPolicyRuleId = null;
             if (policyManager != null) {
                 PolicyManagerResult result = policyManager.findPolicyId( protocol,
                                                                          clientIntf, serverIntf,
                                                                          clientAddr, serverAddr,
                                                                          clientPort, serverPort );
-                if ( result != null )
+                if ( result != null ) {
                     newPolicyId = result.policyId;
+                    newPolicyRuleId = result.policyRuleId;
+                }
             }
 
             if (logger.isDebugEnabled())
@@ -409,7 +412,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
                 logger.info("Resetting session for policy switch: " +
                             clientAddr.toString() + ":" + clientPort + " -> " +
                             serverAddr.toString() + ":" + serverPort +
-                            " Old policy: " + oldPolicyId + " New policy: " + newPolicyId);
+                            " Old policy: " + oldPolicyId + " New policy: " + newPolicyId + " New rule ID: " + newPolicyRuleId);
                 return true;
             }
         }
