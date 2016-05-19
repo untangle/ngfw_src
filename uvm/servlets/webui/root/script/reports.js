@@ -998,7 +998,7 @@ Ext.define('Ung.panel.Reports', {
     },
 
     loadReportEntry: function (entry) {
-        if (this.entry.type === 'TEXT') {
+        if (entry.type === 'TEXT') {
             this.reportChart.down('#textentry').update('');
             this.reportChart.setActiveItem('textentry');
         } else {
@@ -1048,7 +1048,7 @@ Ext.define('Ung.panel.Reports', {
                 });
             }
 
-            if (entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+            if (entry.type === 'TIME_GRAPH' || entry.type === 'TIME_GRAPH_DYNAMIC') {
                 var timeStyleButtons = [
                     {timeStyle: 'LINE', icon: 'show_chart', text: i18n._('Line')},
                     {timeStyle: 'AREA', icon: 'show_chart', text: i18n._('Area')},
@@ -1386,7 +1386,8 @@ Ext.define('Ung.panel.Reports', {
             }
 
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                Ung.charts.setTimeSeries(this.entry, this.chartData, this.chart, this.entry.timeStyle.indexOf('OVERLAPPED') >= 0);
+                this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false);
+                this.loadReportData(this.chartData);
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
             }

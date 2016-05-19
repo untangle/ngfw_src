@@ -451,7 +451,7 @@ Ext.define('Ung.charts', {
                     }
                 }
             },
-            series: this.setTimeSeries(entry, data, null, columnOverlapped)
+            series: this.setTimeSeries(entry, data, colors)
         });
     },
 
@@ -459,11 +459,13 @@ Ext.define('Ung.charts', {
      * Creates or updates the Time Series chart data
      * @param {Object} entry - the Report entry object
      * @param {Object} data  - the data used for the series
-     * @param {Object} chart - the chart for which data is updated; is null when creating the chart
+     * @param {Boolean} columnOverlapped - tells if the
+     * 
      * @returns {Array}      - the series array
      */
-    setTimeSeries: function (entry, data, chart, columnOverlapped) {
-        var i, j, _data, _seriesOptions = [], _seriesRenderer, _column;
+    setTimeSeries: function (entry, data, colors) {
+        var i, j, _data, _seriesOptions = [], _seriesRenderer, _column, _color,
+            columnOverlapped = entry.timeStyle === 'BAR_OVERLAPPED';
 
         if (entry.type === 'TIME_GRAPH_DYNAMIC') {
             entry.timeDataColumns = [];
@@ -491,11 +493,19 @@ Ext.define('Ung.charts', {
                 _seriesRenderer =  Ung.panel.Reports.getColumnRenderer(entry.seriesRenderer);
             }
             _column = entry.timeDataColumns[i].split(" ").splice(-1)[0];
+
+            if (columnOverlapped && colors) {
+                _color = new Highcharts.Color(colors[i]).setOpacity(0.75).get('rgba');
+            } else {
+                _color = colors[i];
+            }
+
             _seriesOptions[i] = {
                 id: _column,
                 name: _seriesRenderer ? _seriesRenderer(_column) + ' [' + _column + ']' : _column,
-                grouping: columnOverlapped ? false : true,
-                pointPadding: columnOverlapped ? 0.2 * i : 0.1
+                grouping: !columnOverlapped,
+                pointPadding: columnOverlapped ? (entry.timeDataColumns.length <= 3 ? 0.15 : 0.075) * i : 0.1,
+                color: _color
             };
 
             _data = [];
@@ -505,20 +515,10 @@ Ext.define('Ung.charts', {
                     data[j][_seriesOptions[i].id] || (this.generateRandomData ? (Math.random() * 120) : 0)
                 ]);
             }
-            if (!chart) {
-                _seriesOptions[i].data = _data;
-                //_seriesOptions[i].data = []; // test for no data
-            } else {
-                chart.series[i].setData(_data, false, false);
-            }
+
+            _seriesOptions[i].data = _data;
         }
-
-        if (!chart) {
-            return _seriesOptions;
-        }
-
-        chart.redraw();
-
+        return _seriesOptions;
     },
 
     /**
@@ -773,7 +773,7 @@ Ext.define('Ung.charts', {
         for (i = 0; i < chart.series.length; i += 1) {
             _newOptions = {
                 grouping: !columnOverlapped,
-                pointPadding: columnOverlapped ? 0.15 * i : 0.1,
+                pointPadding: columnOverlapped ? (chart.series.length <= 3 ? 0.15 : 0.075) * i : 0.1,
                 type: chartType
             };
 
