@@ -219,7 +219,7 @@ Ext.define('Ung.charts', {
      * @returns {Object}             - the HighStock chart object
      */
     timeSeriesChart: function (entry, data, container, forDashboard) {
-        var chartType, columnOverlapped = false,
+        var chartType,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
         switch (entry.timeStyle) {
@@ -231,12 +231,9 @@ Ext.define('Ung.charts', {
             break;
         case 'BAR':
         case 'BAR_3D':
-            chartType = 'column';
-            break;
         case 'BAR_OVERLAPPED':
         case 'BAR_3D_OVERLAPPED':
             chartType = 'column';
-            columnOverlapped = true;
             break;
         default:
             chartType = 'areaspline';
@@ -283,8 +280,21 @@ Ext.define('Ung.charts', {
             credits: {
                 enabled: false
             },
+            navigation: {
+                buttonOptions: {
+                    enabled: false
+                }
+            },
             exporting: {
-                enabled: false
+                chartOptions: {
+                    title: {
+                        text: entry.category + ' - ' + entry.title,
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                type: 'image/jpeg'
             },
             xAxis: {
                 type: 'datetime',
@@ -459,8 +469,7 @@ Ext.define('Ung.charts', {
      * Creates or updates the Time Series chart data
      * @param {Object} entry - the Report entry object
      * @param {Object} data  - the data used for the series
-     * @param {Boolean} columnOverlapped - tells if the
-     * 
+     * @param {Array} colors - the colors used for the series
      * @returns {Array}      - the series array
      */
     setTimeSeries: function (entry, data, colors) {
@@ -577,8 +586,21 @@ Ext.define('Ung.charts', {
             credits: {
                 enabled: false
             },
+            navigation: {
+                buttonOptions: {
+                    enabled: false
+                }
+            },
             exporting: {
-                enabled: false
+                chartOptions: {
+                    title: {
+                        text: entry.category + ' - ' + entry.title,
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                type: 'image/jpeg'
             },
             xAxis: {
                 type: 'category',

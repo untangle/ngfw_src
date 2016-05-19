@@ -352,6 +352,16 @@ Ext.define('Ung.panel.Reports', {
                 handler: Ext.bind(this.customizeReport, this)
             }, {
                 xtype: 'button',
+                text: '<i class="material-icons">file_download</i> <span style="vertical-align: middle;">' + i18n._("Download") + '</span>',
+                cls: 'action-button material-button',
+                margin: '0 3',
+                scale: 'medium',
+                hidden: !Ung.Main.webuiMode || this.hideCustomization,
+                name: "download",
+                itemId: 'downloadBtn',
+                handler: Ext.bind(this.downloadReport, this)
+            }, {
+                xtype: 'button',
                 text: '<i class="material-icons" style="color: red;">delete</i> <span style="vertical-align: middle;">' + i18n._("Delete") + '</span>',
                 cls: 'action-button material-button',
                 name: "remove",
@@ -998,6 +1008,7 @@ Ext.define('Ung.panel.Reports', {
     },
 
     loadReportEntry: function (entry) {
+        this.down('#downloadBtn').setHidden(entry.type === 'TEXT' || entry.type === 'EVENT_LIST');
         if (entry.type === 'TEXT') {
             this.reportChart.down('#textentry').update('');
             this.reportChart.setActiveItem('textentry');
@@ -1646,6 +1657,13 @@ Ext.define('Ung.panel.Reports', {
         var record = Ext.create('Ext.data.Model', this.entry);
         this.winReportEditor.populate(record);
         this.winReportEditor.show();
+    },
+
+    downloadReport: function () {
+        if (!this.chart) {
+            return;
+        }
+        this.chart.exportChart();
     },
 
     removeReport: function (record) {

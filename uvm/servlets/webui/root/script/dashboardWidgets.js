@@ -238,6 +238,19 @@ Ext.define('Ung.dashboard.Widget', {
         if (this.hasRefresh) {
             this.tools = [];
             if (this.widgetType === 'ReportEntry') {
+                if (this.entry.type !== 'EVENT_LIST') {
+                    this.tools.push({
+                        type: 'widget-tool',
+                        cls: 'widget-tool open',
+                        renderTpl: '<i class="material-icons">file_download</i>',
+                        callback: function (panel) {
+                            if (!panel.chart) {
+                                return;
+                            }
+                            panel.chart.exportChart();
+                        }
+                    });
+                }
                 this.tools.push({
                     type: 'widget-tool',
                     cls: 'widget-tool open',
@@ -831,18 +844,10 @@ Ext.define('Ung.dashboard.ReportEntry', {
                     }
                 }
 
-                if (!this.chart || this.chart.series.length === 0) {
-                    if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this, true);
-                    } else {
-                        this.chart = Ung.charts.categoriesChart(this.entry, this.chartData, this, true);
-                    }
+                if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                    this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this, true);
                 } else {
-                    if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                        Ung.charts.setTimeSeries(this.entry, this.chartData, this.chart, this.entry.timeStyle.indexOf('OVERLAPPED') >= 0);
-                    } else {
-                        Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
-                    }
+                    this.chart = Ung.charts.categoriesChart(this.entry, this.chartData, this, true);
                 }
             }
         }, this), this.entry, this.timeframe, -1);
