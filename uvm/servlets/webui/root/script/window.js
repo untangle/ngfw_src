@@ -510,16 +510,16 @@ Ext.define("Ung.StatusWin", {
             this.bbar=['-',{
                 name: 'Help',
                 id: this.getId() + "_helpBtn",
-                iconCls: 'icon-help',
-                text: i18n._("Help"),
+                cls: 'material-button',
+                text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
                 handler: Ext.bind(function() {
                     this.helpAction();
                 }, this)
             },"->",{
                 name: 'Close',
                 id: this.getId() + "_closeBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._("Close"),
+                cls: 'material-button',
+                text: '<i class="material-icons">cancel</i> <span>' + i18n._('Close') + '</span>',
                 handler: Ext.bind(function() {
                     this.cancelAction();
                 }, this)
@@ -544,8 +544,8 @@ Ext.define('Ung.EditWindow', {
                 this.bbar.push('-', {
                     name: 'Help',
                     id: this.getId() + "_helpBtn",
-                    iconCls: 'icon-help',
-                    text: i18n._("Help"),
+                    cls: 'material-button',
+                    text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
                     handler: Ext.bind(function() {
                         this.helpAction();
                     }, this)
@@ -554,16 +554,16 @@ Ext.define('Ung.EditWindow', {
             this.bbar.push( '->', {
                 name: "Cancel",
                 id: this.getId() + "_cancelBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._('Cancel'),
+                cls: 'material-button',
+                text: '<i class="material-icons" style="color: red;">cancel</i> <span>' + i18n._('Cancel') + '</span>',
                 handler: Ext.bind(function() {
                     this.cancelAction();
                 }, this)
             },'-',{
                 name: "Done",
                 id: this.getId() + "_doneBtn",
-                iconCls: 'apply-icon',
-                text: i18n._('Done'),
+                cls: 'material-button',
+                text: '<i class="material-icons">check_circle</i> <span>' + i18n._('Done') + '</span>',
                 handler: Ext.bind(function() {
                     Ext.defer(this.updateAction,1, this);
                 }, this)
