@@ -337,7 +337,7 @@ Ext.define('Ung.grid.Panel', {
         }
         if (this.hasImportExport) {
             this.tbar.push('->', {
-                text: '<i class="material-icons" style="color: green;">vertical_align_bottom</i> <span>' + i18n._('Import') + '</span>',
+                text: '<i class="material-icons">file_download</i> <span>' + i18n._('Import') + '</span>',
                 cls: 'material-button',
                 tooltip: i18n._('Import From File'),
                 scale: this.scale,
@@ -345,7 +345,7 @@ Ext.define('Ung.grid.Panel', {
                 name: 'Import',
                 handler: Ext.bind(this.importHandler, this)
             }, {
-                text: '<i class="material-icons" style="color: red;">vertical_align_top</i> <span>' + i18n._('Export') + '</span>',
+                text: '<i class="material-icons">file_upload</i> <span>' + i18n._('Export') + '</span>',
                 cls: 'material-button',
                 tooltip: i18n._('Export To File'),
                 scale: this.scale,

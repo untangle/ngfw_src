@@ -74,6 +74,10 @@
     vertical-align: middle;
     font-size: 20px;
 }
+.material-button span {
+    vertical-align: middle;
+}
+
 
 .logo {
     background-size: 80%;

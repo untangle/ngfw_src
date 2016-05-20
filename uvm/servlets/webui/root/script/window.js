@@ -314,32 +314,32 @@ Ext.define("Ung.NodeWin", {
             this.bbar=["-",{
                 name: "Remove",
                 id: this.getId() + "_removeBtn",
-                iconCls: 'node-remove-icon',
-                text: i18n._('Remove'),
+                cls: 'material-button',
+                text: '<i class="material-icons" style="color: red;">remove_circle</i> <span>' + i18n._('Remove') + '</span>',
                 handler: Ext.bind(function() {
                     this.removeAction();
                 }, this)
             },"-",{
                 name: 'Help',
                 id: this.getId() + "_helpBtn",
-                iconCls: 'icon-help',
-                    text: i18n._('Help'),
+                cls: 'material-button',
+                text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
                 handler: Ext.bind(function() {
                     this.helpAction();
                 }, this)
             },'->',{
                 name: "Save",
                 id: this.getId() + "_saveBtn",
-                iconCls: 'save-icon',
-                text: i18n._('OK'),
+                cls: 'material-button',
+                text: '<i class="material-icons">check_circle</i> <span>' + i18n._('OK') + '</span>',
                 handler: Ext.bind(function() {
                     Ext.Function.defer(this.saveAction,1, this,[false]);
                 }, this)
             },"-",{
                 name: "Cancel",
                 id: this.getId() + "_cancelBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._('Cancel'),
+                cls: 'material-button',
+                text: '<i class="material-icons" style="color: red;">cancel</i> <span>' + i18n._('Cancel') + '</span>',
                 handler: Ext.bind(function() {
                     this.cancelAction();
                 }, this)
@@ -348,8 +348,8 @@ Ext.define("Ung.NodeWin", {
                 this.bbar.push({
                     name: "Apply",
                     id: this.getId() + "_applyBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Apply'),
+                    cls: 'material-button',
+                    text: '<i class="material-icons" style="color: green;">save</i> <span>' + i18n._('Apply') + '</span>',
                     handler: Ext.bind(function() {
                         Ext.Function.defer(this.applyAction,1, this);
                     }, this)
@@ -455,24 +455,24 @@ Ext.define("Ung.ConfigWin", {
             this.bbar=['-',{
                 name: 'Help',
                 id: this.getId() + "_helpBtn",
-                iconCls: 'icon-help',
-                text: i18n._("Help"),
+                cls: 'material-button',
+                text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
                 handler: Ext.bind(function() {
                     this.helpAction();
                 }, this)
             },'->',{
                 name: 'Save',
                 id: this.getId() + "_saveBtn",
-                iconCls: 'save-icon',
-                text: i18n._("OK"),
+                cls: 'material-button',
+                text: '<i class="material-icons">check_circle</i> <span>' + i18n._('OK') + '</span>',
                 handler: Ext.bind(function() {
                     Ext.Function.defer(this.saveAction,1, this,[false]);
                 }, this)
             },"-",{
                 name: 'Cancel',
                 id: this.getId() + "_cancelBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._("Cancel"),
+                cls: 'material-button',
+                text: '<i class="material-icons" style="color: red;">cancel</i> <span>' + i18n._('Cancel') + '</span>',
                 handler: Ext.bind(function() {
                     this.cancelAction();
                 }, this)
@@ -481,8 +481,8 @@ Ext.define("Ung.ConfigWin", {
                 this.bbar.push({
                     name: "Apply",
                     id: this.getId() + "_applyBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._("Apply"),
+                    cls: 'material-button',
+                    text: '<i class="material-icons" style="color: green;">save</i> <span>' + i18n._('Apply') + '</span>',
                     handler: Ext.bind(function() {
                         Ext.Function.defer(this.applyAction,1, this,[true]);
                     }, this)
