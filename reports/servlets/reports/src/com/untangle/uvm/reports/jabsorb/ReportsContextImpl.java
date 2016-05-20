@@ -79,7 +79,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     {
         public LanguageSettings getLanguageSettings() { return context.languageManager().getLanguageSettings(); }
         public void setLanguageSettings(LanguageSettings langSettings) { throw new RuntimeException("Unable to change the language settings."); }
-        public boolean uploadLanguagePack(FileItem item) throws UvmException { throw new RuntimeException("Unable to upload a language pack."); }
+        public void synchronizeLanguage() { throw new RuntimeException("Unable to synchronize language"); }
         public List<LocaleInfo> getLanguagesList() { return context.languageManager().getLanguagesList(); }
         public Map<String, String> getTranslations(String module) { return context.languageManager().getTranslations(module); }
     }

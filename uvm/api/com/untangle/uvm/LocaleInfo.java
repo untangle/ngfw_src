@@ -15,6 +15,7 @@ public class LocaleInfo implements Serializable {
     private String languageName;
     private String countryCode;
     private String countryName;
+    private String statistics = "";
 
     public LocaleInfo() { }
     
@@ -33,6 +34,15 @@ public class LocaleInfo implements Serializable {
         this.languageName = languageName;
     }
 
+    public LocaleInfo(String languageCode, String languageName,
+            String countryCode, String countryName, String statistics) {
+        super();
+        this.countryCode = countryCode;
+        this.countryName = countryName;
+        this.languageCode = languageCode;
+        this.languageName = languageName;
+        this.statistics = statistics;
+    }
 
     public String getLanguageCode() {
         return languageCode;
@@ -80,6 +90,10 @@ public class LocaleInfo implements Serializable {
             code = code + "_" + countryCode;
         }
         return code;
+    }
+
+    public String getStatistics(){
+        return statistics;
     }
 
 }

@@ -11,7 +11,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +35,18 @@ import java.util.zip.ZipInputStream;
 import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xnap.commons.i18n.I18n;
+import com.untangle.uvm.util.I18nUtil;
 import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.LanguageSettings;
@@ -41,35 +59,30 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.SettingsManager;
 
 /**
  * Implementation of LanguageManagerImpl.
  */
+@SuppressWarnings("serial")
 public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
-    private static final String LANGUAGES_COMMUNITY_DIR;
-    private static final String LANGUAGES_OFFICIAL_DIR;
-    private static final String LOCALE_DIR;
+    private static final String REMOTE_LANGUAGES_URL = "http://pootle.untangle.com/";
+    private static final String LOCALE_DIR = "/usr/share/locale";
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String DEFAULT_DEV_LANGUAGE = "xx";
-    private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
-    private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";
-    private static final String BLACKLIST_CFG = "blacklist.cfg";
     private static final String COUNTRIES_CFG = "country.cfg";
     private static final String LC_MESSAGES = "LC_MESSAGES";
     private static final int BUFFER = 2048;
-
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private LanguageSettings languageSettings;
     private Map<String, String> allLanguages;
-    private ArrayList<String> blacklist;
     private Map<String, String> allCountries;
 
     private Map<String, Map<String, String>> translations;
@@ -80,32 +93,63 @@ public class LanguageManagerImpl implements LanguageManager
 
     static {
         LANGUAGES_DIR = System.getProperty("uvm.lang.dir"); // place for languages resources files
-        LANGUAGES_COMMUNITY_DIR = LANGUAGES_DIR + File.separator + "community"; // place for community languages resources files
-        LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; // place for official languages resources files
-        LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
+
+    private static class languageSource
+    {
+        private String id;
+        private String title;
+        private String url;
+        private String directory;
+        private String prefix;
+
+        public languageSource(String id, String title, String url)
+        {
+            this.id = id;
+            this.title = title;
+            this.url = url;
+            this.directory = LANGUAGES_DIR + File.separator + id;
+            this.prefix = "i18n." + id;
+        }
+        public String getId(){ return this.id; }
+        public String getTitle(){ return this.title; }
+        public String getUrl(){ return this.url; }
+        public String getDirectory(){ return this.directory;  }
+        public String getPrefix(){ return this.prefix; }
+    }
+
+    private static final ArrayList<languageSource> LanguageSources = new ArrayList<languageSource>() {{
+        add(new languageSource("official", I18nUtil.marktr("Official"), "untangleserverofficial"));
+        add(new languageSource("community", I18nUtil.marktr("Community"), "untangleserver"));
+    }};
 
     public LanguageManagerImpl()
     {
         readLanguageSettings();
         allLanguages = loadAllLanguages();
-        blacklist = loadBlacklist();
         allCountries = loadAllCountries();
         translations = new HashMap<String, Map<String, String>>();
         translationsLastAccessed = new HashMap<String, Long>();
-        UvmContextFactory.context().servletFileManager().registerUploadHandler( new LanguageUploadHandler() );
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
 
     // public methods ---------------------------------------------------------
 
+    /*
+     * Get language settings.
+     */
     public LanguageSettings getLanguageSettings()
     {
         return languageSettings;
     }
 
+    /*
+     * Commit language settings and if language has changed, download from remote.
+     */
     public void setLanguageSettings(LanguageSettings newSettings)
     {
+        String oldSource = languageSettings.getSource();
+        String oldLanguage = languageSettings.getLanguage();
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language.js";
 
@@ -116,6 +160,14 @@ public class LanguageManagerImpl implements LanguageManager
             return;
         }
 
+        String source = newSettings.getSource();
+        String language = newSettings.getLanguage();
+        if(!oldSource.equals(source) || 
+           !oldLanguage.equals(language)){
+            downloadLanguage(source, language);
+            newSettings.setLastSynchronized(System.currentTimeMillis());
+        }
+
         this.languageSettings = newSettings;
         synchronized( this ) {
             translations = new HashMap<String, Map<String, String>>();
@@ -123,86 +175,116 @@ public class LanguageManagerImpl implements LanguageManager
         }
     }
 
-    public boolean uploadLanguagePack(FileItem item) throws UvmException
+    public void synchronizeLanguage()
     {
-        boolean success = true;
-        String msg = "";
-        try {
-            BufferedOutputStream dest = null;
-            ZipEntry entry = null;
-
-            // validate language pack
-            if (!item.getName().endsWith(".zip")) {
-                success = false;
-                msg = "Invalid Language Pack";
-            }
-
-            // Open the ZIP file
-            InputStream uploadedStream = item.getInputStream();
-            ZipInputStream zis = new ZipInputStream(uploadedStream);
-            while ((entry = zis.getNextEntry()) != null) {
-                if (!isValid(entry)){
-                    success = false;
-                    msg = "Invalid Entry";
-                    break;
-                }
-                if (entry.isDirectory()) {
-                    File dir = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
-                    if (!dir.exists()) {
-                        dir.mkdir();
-                    }
-                } else {
-                    File file = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
-                    File parentDir = file.getParentFile();
-                    if (parentDir!=null && !parentDir.exists()) {
-                        parentDir.mkdir();
-                    }
-
-                    // write the files to the disk
-                    int count;
-                    byte data[] = new byte[BUFFER];
-                    FileOutputStream fos = new FileOutputStream(file);
-                    dest = new BufferedOutputStream(fos, BUFFER);
-                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                        dest.write(data, 0, count);
-                    }
-                    dest.flush();
-                    dest.close();
-
-                    // compile to .mo file and install it in the
-                    // appropriate place (LOCALE_DIR)
-                    boolean ret = compileMoFile(entry);
-                    if (!ret) {
-                        success = false;
-                        msg = "Couldn't compile MO file for entry '" + entry + "'";
-                        file.delete();
-                        break;
-                    }
-
-                    // compile the java properties version & install
-                    // it in the classpath (LANGUAGES_DIR)
-                    ret = compileResourceBundle(entry);
-                    if (!ret) {
-                        success = false;
-                        msg = "Couldn't compile resource bundle for entry '" + entry + "'";
-                        file.delete();
-                        break;
-                    }
-                }
-            }
-            zis.close();
-            uploadedStream.close();
-
-        } catch (IOException e) {
-            logger.error("upload failed", e);
-            throw new UvmException("Upload Language Pack Failed");
+        downloadLanguage(languageSettings.getSource(), languageSettings.getLanguage());
+        
+        synchronized( this ) {
+            translations = new HashMap<String, Map<String, String>>();
+            translationsLastAccessed = new HashMap<String, Long>();
         }
 
-        if (!success) {
-            throw new UvmException(msg);
-        }
-        return success;
+        LanguageSettings settings = getLanguageSettings();
+        settings.setLastSynchronized(System.currentTimeMillis());
+        setLanguageSettings(settings);
     }
+
+    /*
+     * Get locale language list
+     */
+    public List<LocaleInfo> getLanguagesList()
+    {
+        List<LocaleInfo> locales = new ArrayList<LocaleInfo>();
+
+        /* Contact translation server */
+        for(languageSource source : LanguageSources){
+            Set<String> available = new HashSet<String>();
+            Collections.addAll(available, (new File(source.getDirectory())).list());
+            if(getRemoteLanguagesList(available, locales, source) == false){
+                locales.add(new LocaleInfo(null, "<em><b>" + source.title + " (" + I18nUtil.marktr("local")+ ")" + "</b></em>", null, null));
+            }
+
+            for (String code : available) {
+                /* Add local-only stragglers like test.*/
+                /* Or if server had problems, everything local. */
+                String tokens[] = code.split("_");
+                String langCode = tokens[0];
+                String langName = allLanguages.get(langCode);
+                String countryCode = tokens.length == 2 ? tokens[1] : null;
+                String countryName = countryCode == null ? null : allCountries.get(countryCode);
+                locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName));
+            }
+        }
+
+        return locales;
+    }
+
+    /*
+     * Get translations
+     */
+    public Map<String, String> getTranslations(String module)
+    {
+        Map<String, String> map;
+
+        if (null == module) {
+            return new HashMap<String, String>();
+        }
+
+        String i18nModule = module.replaceAll("-", "_");
+        Locale locale = getLocale();
+        // get source here to use...
+
+        String translationKey = i18nModule + "_" + locale.getLanguage();
+        
+        synchronized( this ) {
+            map = translations.get(translationKey);
+
+            if(map == null){
+                translations.put(translationKey, new HashMap<String, String>());
+                map = translations.get(translationKey);
+            }
+
+            if(map.size() == 0){
+                try {
+                    I18n i18n = null;
+                    ResourceBundle.clearCache();
+
+                    languageSource source = null;
+
+                    // !! Use actual source...
+                    try {
+                        // Start with community...
+                        source = getLanguageSource("community");
+                        i18n = I18nFactory.getI18n(source.getPrefix() + "."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
+                    } catch (MissingResourceException e) {
+                        // ...fall back to official translations
+                        source = getLanguageSource("official");
+                        i18n = I18nFactory.getI18n(source.getPrefix()+"."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
+                    }
+
+                    if (i18n != null) {
+                        for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
+                            String key = enumeration.nextElement();
+                            map.put(key, i18n.tr(key));
+                        }
+                    }
+                } catch (MissingResourceException e) {
+                    logger.warn("missing resource");
+                    // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+                    // is done in client side
+                }
+            }
+
+            translationsLastAccessed.put(translationKey, System.currentTimeMillis());
+            return map;
+        }
+    }
+
+    /*
+     * Private methods -----------------------------------------------------------
+     */
 
     /*
      * Check if a language pack entry conform to the correct naming: <lang_code>/<module_name>.po
@@ -226,7 +308,7 @@ public class LanguageManagerImpl implements LanguageManager
         return true;
     }
 
-    private boolean compileResourceBundle(ZipEntry entry)
+    private boolean compileResourceBundle(languageSource source, ZipEntry entry)
     {
         boolean success = true;
         try {
@@ -236,9 +318,9 @@ public class LanguageManagerImpl implements LanguageManager
 
             String cmd[] = { "msgfmt", "--java2",
                     "-d", LANGUAGES_DIR,
-                    "-r", BASENAME_COMMUNITY_PREFIX + "." + moduleName,
+                    "-r", source.getPrefix() + "." + moduleName,
                     "-l", lang,
-                    LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName()};
+                    source.getDirectory() + File.separator + entry.getName()};
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
             if (p.exitValue() != 0) {
@@ -253,7 +335,7 @@ public class LanguageManagerImpl implements LanguageManager
         return success;
     }
 
-    private boolean compileMoFile(ZipEntry entry)
+    private boolean compileMoFile(languageSource source, ZipEntry entry)
     {
         boolean success = true;
         try {
@@ -272,7 +354,7 @@ public class LanguageManagerImpl implements LanguageManager
 
             String cmd[] = { "msgfmt",
                     "-o", moduleLocaleDirName + File.separator + moduleName  + ".mo",
-                    LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName()};
+                    source.getDirectory() + File.separator + entry.getName()};
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
             if (p.exitValue() != 0) {
@@ -301,90 +383,6 @@ public class LanguageManagerImpl implements LanguageManager
         logger.error(errorBuffer);
     }
 
-    public List<LocaleInfo> getLanguagesList()
-    {
-        List<LocaleInfo> locales = new ArrayList<LocaleInfo>();
-
-        Set<String> availableLanguages = new HashSet<String>();
-        // add default language
-        availableLanguages.add(DEFAULT_LANGUAGE);
-
-        // Add languages for which we have translations:
-        //  * available official languages
-        Collections.addAll(availableLanguages, (new File(LANGUAGES_OFFICIAL_DIR)).list());
-        //  * available community languages
-        Collections.addAll(availableLanguages, (new File(LANGUAGES_COMMUNITY_DIR)).list());
-
-        for (String code : availableLanguages) {
-            String tokens[] = code.split("_");
-            String langCode = tokens[0];
-            String langName = allLanguages.get(langCode);
-            String countryCode = tokens.length == 2 ? tokens[1] : null;
-            String countryName = countryCode == null ? null : allCountries.get(countryCode);
-            if (! blacklist.contains(code)) {
-                locales.add(new LocaleInfo(langCode, langName, countryCode, countryName));
-            }
-        }
-
-        return locales;
-    }
-
-    public Map<String, String> getTranslations(String module)
-    {
-        Map<String, String> map;
-
-        if (null == module) {
-            logger.warn("getTranslations called with no module, returning empty map");
-            return new HashMap<String, String>();
-        }
-
-        String i18nModule = module.replaceAll("-", "_");
-        Locale locale = getLocale();
-
-        String translationKey = i18nModule + "_" + locale.getLanguage();
-        
-        synchronized( this ) {
-            map = translations.get(translationKey);
-
-            if(map == null){
-                translations.put(translationKey, new HashMap<String, String>());
-                map = translations.get(translationKey);
-            }
-
-            if(map.size() == 0){
-                try {
-                    I18n i18n = null;
-                    ResourceBundle.clearCache(getClass().getClassLoader());
-                    try {
-                        // Start with community...
-                        i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
-                    } catch (MissingResourceException e) {
-                        // ...fall back to official translations
-                        i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
-                    }
-
-                    if (i18n != null) {
-                        for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
-                            String key = enumeration.nextElement();
-                            map.put(key, i18n.tr(key));
-                        }
-                    }
-                } catch (MissingResourceException e) {
-                    // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
-                    // is done in client side
-                }
-            }
-
-            translationsLastAccessed.put(translationKey, System.currentTimeMillis());
-            return map;
-        }
-    }
-
-
-    // private methods --------------------------------------------------------
-
     private Locale getLocale()
     {
         Locale locale = new Locale(DEFAULT_LANGUAGE);
@@ -397,28 +395,6 @@ public class LanguageManagerImpl implements LanguageManager
             }
         }
         return locale;
-    }
-
-    private ArrayList<String> loadBlacklist()
-    {
-        ArrayList<String> bl = new ArrayList<String>();
-
-        // Reading from config file
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + BLACKLIST_CFG));
-            String s = new String();
-            while((s = in.readLine())!= null) {
-                s = s.trim();
-                if (s.length() > 0){
-                    bl.add(s);
-                }
-            }
-            in.close();
-        } catch (IOException e) {
-            logger.warn("Failed getting blacklisted languages!", e);
-        }
-
-        return bl;
     }
 
     private Map<String, String> loadAllLanguages()
@@ -500,24 +476,6 @@ public class LanguageManagerImpl implements LanguageManager
         return allCountries.containsKey(code);
     }
 
-    private class LanguageUploadHandler implements UploadHandler
-    {
-        @Override
-        public String getName()
-        {
-            return "language";
-        }
-
-        @Override
-        public String handleFile(FileItem fileItem, String argument) throws Exception
-        {
-            if ( uploadLanguagePack(fileItem)) {
-                return "Uploaded language pack successfully";
-            }
-            return "Language Pack Uploaded With Errors";
-        }
-    }
-
     private void readLanguageSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -593,4 +551,218 @@ public class LanguageManagerImpl implements LanguageManager
             }
         }
     }
+
+    private languageSource getLanguageSource(String sourceId)
+    {
+        for(languageSource ls : LanguageSources){
+            if(ls.getId().equals(sourceId)){
+                return ls;
+            }
+        }
+        return null;        
+    }
+
+    private boolean getRemoteLanguagesList(Set<String> available, List<LocaleInfo> locales, languageSource source ){
+        boolean result = true;
+
+        InputStream is = null;
+
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+            .setSocketTimeout(2000)
+            .setConnectTimeout(2000)
+            .setConnectionRequestTimeout(2000)
+            .build();        
+        CloseableHttpClient httpClient = HttpClients.custom()
+            .setDefaultRequestConfig(defaultRequestConfig)
+            .build();
+        CloseableHttpResponse response = null;
+
+        JSONObject remoteObject = null;
+        JSONObject remoteTable = null;
+        JSONObject remoteStats = null;
+
+        locales.add(new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null));
+        if(source.getId().equals("official")){
+            locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
+        }
+
+        String urlString = REMOTE_LANGUAGES_URL + "json/" + source.getUrl();
+        try {
+            URL url = new URL(urlString);
+
+            HttpGet get = new HttpGet(url.toString());
+
+            get.addHeader("Accept-Encoding", "gzip");
+            response = httpClient.execute(get);
+            HttpEntity entity = response.getEntity();
+            if ( entity == null ) {
+                throw new IllegalArgumentException("Invalid Response: " + entity);
+            }
+            is = entity.getContent();
+
+            BufferedReader reader = null;
+            try {
+                StringBuilder jsonString = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonString.append(line+"\n");
+                }
+
+                try{
+                    remoteObject = new JSONObject(jsonString.toString());
+                    try{
+                        remoteTable = remoteObject.getJSONObject("table");
+                        JSONArray tableItems = remoteTable.getJSONArray("items");
+                        for(int i = 0; i < tableItems.length(); i++ ){
+                            JSONObject item = tableItems.getJSONObject(i);
+                            String langCode = item.getString("code");
+                            String langCodeLang = langCode.substring(0, langCode.indexOf("-"));
+                            if(available.contains(langCodeLang)){
+                                available.remove(langCodeLang);
+                            }
+                            if(langCodeLang.equals("templates")){
+                                continue;
+                            }
+                            String langName = item.getString("title");
+                            JSONObject langStats = remoteObject.getJSONObject("stats").getJSONObject("children").getJSONObject(langCode);
+                            if(langStats.isNull("lastaction")){
+                                locales.add(new LocaleInfo(source.getId() + "-" + langCodeLang, langName, null, null));
+                            }else{
+                                JSONObject lastaction = langStats.getJSONObject("lastaction");
+                                int lastModifiedTime = lastaction.getInt("mtime");
+                                StringBuilder statistics = new StringBuilder();
+                                if(lastModifiedTime > 0){
+                                    Date d = new Date((long) lastModifiedTime * 1000);
+                                    statistics.append(I18nUtil.marktr("Last modified") + ": " + dateFormatter.format(d.getTime()));
+                                    statistics.append("<br>");
+                                }
+                                int wordsTotal = langStats.getInt("total");
+                                int wordsTranslated = langStats.getInt("translated");
+                                int percentComplete = wordsTotal > 0 ? Math.round(100 * wordsTranslated / wordsTotal) : 0;
+                                statistics.append(I18nUtil.marktr("Percent completed") + ": " + percentComplete + "%");
+                                locales.add(new LocaleInfo(source.getId() + "-" + langCodeLang, langName, null, null, statistics.toString()));
+                            }
+                        }
+                    }catch(JSONException e){
+                        logger.warn("JSON Exception " + e);
+                    }
+                }catch( JSONException e){
+                    logger.warn("Unable to convert json to remoteObject " + e);
+                    result = false;
+                }
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (Exception e) {}
+            }
+
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid URL: '" + urlString + "'", e);
+        }
+        catch (java.io.IOException e) {
+            throw new IllegalArgumentException("Invalid content in URL: '" + urlString + "'", e);
+        } finally {
+            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
+            try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
+        }
+
+        return result;
+
+    }
+
+    private void downloadLanguage(String sourceId, String language){
+        InputStream is = null;
+        CloseableHttpClient httpClient = HttpClients.custom().build();
+        CloseableHttpResponse response = null;
+        boolean success = true;
+        String msg = "";
+        BufferedOutputStream dest = null;
+
+        languageSource source = getLanguageSource(sourceId);
+
+        String urlString = REMOTE_LANGUAGES_URL + "export/?path=/" + language + "/" + source.getUrl() + "/&zip=true&rename=true";
+        try {
+            URL url = new URL(urlString);
+
+            HttpGet get = new HttpGet(url.toString());
+            get.addHeader("Accept-Encoding", "gzip");
+            response = httpClient.execute(get);
+            HttpEntity entity = response.getEntity();
+            if ( entity == null ) {
+                throw new IllegalArgumentException("Invalid Response: " + entity);
+            }
+            is = entity.getContent();
+
+            ZipEntry entry = null;
+            ZipInputStream zis = new ZipInputStream(is);
+            while ((entry = zis.getNextEntry()) != null) {
+                if (!isValid(entry)){
+                    success = false;
+                    msg = "Invalid Entry";
+                    break;
+                }
+                if (entry.isDirectory()) {
+                    File dir = new File(source.getDirectory() + File.separator + entry.getName());
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
+                } else {
+                    File file = new File(source.getDirectory() + File.separator + entry.getName());
+                    File parentDir = file.getParentFile();
+                    if (parentDir!=null && !parentDir.exists()) {
+                        logger.warn("need to make parent dir");
+                        parentDir.mkdir();
+                    }
+
+                    // write the files to the disk
+                    int count;
+                    byte data[] = new byte[BUFFER];
+                    FileOutputStream fos = new FileOutputStream(file);
+                    dest = new BufferedOutputStream(fos, BUFFER);
+                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                        dest.write(data, 0, count);
+                    }
+                    dest.flush();
+                    dest.close();
+
+                    // compile to .mo file and install it in the
+                    // appropriate place (LOCALE_DIR)
+                    boolean ret = compileMoFile(source, entry);
+                    if (!ret) {
+                        success = false;
+                        msg = "Couldn't compile MO file for entry '" + entry + "'";
+                        file.delete();
+                        break;
+                    }
+
+                    // compile the java properties version & install
+                    // it in the classpath (LANGUAGES_DIR)
+                    ret = compileResourceBundle(source, entry);
+                    if (!ret) {
+                        success = false;
+                        msg = "Couldn't compile resource bundle for entry '" + entry + "'";
+                        file.delete();
+                        break;
+                    }
+                }
+            }
+            zis.close();
+            is.close();
+        }catch (java.net.MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid URL: '" + urlString + "'", e);
+        }
+        catch (java.io.IOException e) {
+            throw new IllegalArgumentException("Invalid content in URL: '" + urlString + "'", e);
+        } finally {
+            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
+            try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
+        }
+
+    }
+
 }

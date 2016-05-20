@@ -12,6 +12,8 @@ import java.io.Serializable;
 public class LanguageSettings implements Serializable
 {
     private String language = "en";
+    private String source = "official";
+    private long lastSynchronized = 0;
 
     public LanguageSettings() { }
 
@@ -23,6 +25,26 @@ public class LanguageSettings implements Serializable
     public void setLanguage(String language)
     {
         this.language = language;
+    }
+
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
+    public long getLastSynchronized()
+    {
+        return lastSynchronized;
+    }
+
+    public void setLastSynchronized(long lastSynchronized)
+    {
+        this.lastSynchronized = lastSynchronized;
     }
 
     public void copy(LanguageSettings settings)

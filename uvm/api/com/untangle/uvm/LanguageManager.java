@@ -27,15 +27,12 @@ public interface LanguageManager
      * @param langSettings the settings.
      */
     void setLanguageSettings(LanguageSettings langSettings);
-    
+        
     /**
-     * Upload New Language Pack
-     * 
-     * @return true if the uploaded language pack was processed with no errors; otherwise returns false 
+    * Download language from remote server
      */
-    boolean uploadLanguagePack(FileItem item) throws UvmException;
-    
-    
+    void synchronizeLanguage();
+
     /**
      * Get list of available languages
      */

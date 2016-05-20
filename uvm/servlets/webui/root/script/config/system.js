@@ -20,11 +20,6 @@ Ext.define('Webui.config.system', {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        if (this.oemName == "Untangle") {
-            this.downloadLanguageHTML='<a href="http://pootle.untangle.com" target="_blank">' + i18n._("Download New Language Packs") + '</a>';
-        } else {
-            this.downloadLanguageHTML='';
-        }
         this.buildRegional();
         this.buildSupport();
         this.buildBackup();
@@ -679,7 +674,7 @@ Ext.define('Webui.config.system', {
     },
     buildRegional: function() {
         // keep initial language settings
-        this.initialLanguage = this.getLanguageSettings().language;
+        this.initialLanguage = this.getLanguageSettings().source + "-" + this.getLanguageSettings().language;
         var languagesList;
         try {
             languagesList = rpc.languageManager.getLanguagesList();
@@ -687,7 +682,7 @@ Ext.define('Webui.config.system', {
             Ung.Util.rpcExHandler(e);
         }
         var languagesStore =Ext.create("Ext.data.Store", {
-            fields: ["code", "name"],
+            fields: ["code", "name", "statistics"],
             data: languagesList.list
         });
 
@@ -948,10 +943,37 @@ Ext.define('Webui.config.system', {
                     editable: false,
                     queryMode: 'local',
                     hideLabel: true,
+                    width: 350,
+                    listConfig:{
+                        getInnerTpl: function(){
+                            return '<div data-qtip="{statistics}">{name}</div>';
+                        }
+                    },
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(elem, record) {
-                                this.getLanguageSettings().language = record.get("code");
+                                if(record.get("code") == null){
+                                    /* Ignore source entries and instead get the next record. */
+                                    var nextRecord = null;
+                                    var sourceName = record.get("name"); 
+                                    var getNext = false;
+                                    record.store.each(function(record){
+                                        if(getNext == true){
+                                            nextRecord = record;
+                                            return false;
+                                        }else if(record.get("name") == sourceName){
+                                            getNext = true;
+                                        }
+                                    },this);
+                                    if(nextRecord == null){
+                                        return;
+                                    }
+                                    record = nextRecord;
+                                    elem.setValue(record.get("code"));
+                                }
+                                var source_language = record.get("code").split("-",2);
+                                this.getLanguageSettings().source = source_language[0];
+                                this.getLanguageSettings().language = source_language[1];
                             }, this)
                         },
                         "afterrender": {
@@ -961,7 +983,7 @@ Ext.define('Webui.config.system', {
                                         if (success) {
                                             var languageComboCmp = Ext.getCmp("system_language_combo");
                                             if (languageComboCmp) {
-                                                languageComboCmp.setValue(this.getLanguageSettings().language);
+                                                languageComboCmp.setValue(this.getLanguageSettings().source + "-" + this.getLanguageSettings().language);
                                                 languageComboCmp.clearDirty();
                                             }
                                         }
@@ -970,38 +992,27 @@ Ext.define('Webui.config.system', {
                             }, this)
                         }
                     }
+                },{
+                    xtype: "button",
+                    margin: '10 0 0 0',
+                    text: i18n._("Synchronize Language"),
+                    name: "Synchronize Languages",
+                    iconCls: "reboot-icon",
+                    handler: Ext.bind(function() {
+                        Ext.MessageBox.wait(i18n._("Downloading language..."), i18n._("Synchronize"));
+                        rpc.languageManager.synchronizeLanguage(Ext.bind(function(result, exception) {
+                            Ung.Util.goToStartPage();
+                        }, this));
+                    }, this)
+                },{
+                    xtype: 'displayfield',
+                    fieldLabel: i18n._("Last synchronized"),
+                    name: 'lastSynchornized',
+                    labelWidth: 200,
+                    value: ( this.getLanguageSettings().lastSynchronized && this.getLanguageSettings().lastSynchronized != 0 ) ? i18n.timestampFormat(this.getLanguageSettings().lastSynchronized) : i18n._("Never")
                 }]
-            }, {
-                title: i18n._("Upload New Language Pack"),
-                items: {
-                    xtype: "form",
-                    name: "upload_language_form",
-                    url: "upload",
-                    border: false,
-                    items: [{
-                        xtype: 'filefield',
-                        fieldLabel:i18n._("File"),
-                        width: 500,
-                        labelWidth: 50,
-                        name: 'file',
-                        allowBlank: false,
-                        validateOnBlur: false
-                    }, {
-                        xtype: "hidden",
-                        name: "type",
-                        value: "language"
-                    }, {
-                        xtype: "button",
-                        text: i18n._("Upload"),
-                        name: "Upload",
-                        handler: Ext.bind(function() {
-                            this.panelRegional.onUpload();
-                        }, this)
-                    }]
-                }
-            }, {
-                html: this.downloadLanguageHTML
             }],
+            // !!! keep for button reference
             onUpload: Ext.bind(function() {
                 var languageForm = this.panelRegional.down("form[name=upload_language_form]");
                 languageForm.getForm().submit({
@@ -1298,7 +1309,7 @@ Ext.define('Webui.config.system', {
 
         this.saveSemaphore--;
         if (this.saveSemaphore === 0) {
-            var needRefresh = this.initialLanguage != this.getLanguageSettings().language;
+            var needRefresh = this.initialLanguage != this.getLanguageSettings().source + "-" + this.getLanguageSettings().language;
 
             if( this.initialTimeSource != this.getSystemSettings().timeSource ){
                 rpc.systemManager.setTimeSource(Ext.bind(function(result, exception) {
@@ -1321,7 +1332,7 @@ Ext.define('Webui.config.system', {
             }
 
             if(isApply) {
-                this.initialLanguage = this.getLanguageSettings().language;
+                this.initialLanguage = this.getLanguageSettings().source + "-" + this.getLanguageSettings().language;
                 if (this.isShieldLoaded()) {
                     this.getShieldSettings(true);
                 }
