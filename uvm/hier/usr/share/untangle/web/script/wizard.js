@@ -171,7 +171,11 @@ Ext.define('Ung.WizardController', {
                 }
                 this.view.finished = true;
             } else {
-                this.nextBtn.setText('<span style="vertical-align: middle;">' + i18n._('Finish') + '</span> <i class="material-icons" style="vertical-align: middle;">check</i>');
+                if (!this.view.languageSetup) {
+                    this.nextBtn.setText('<span style="vertical-align: middle;">' + i18n._('Finish') + '</span> <i class="material-icons" style="vertical-align: middle;">check</i>');
+                } else {
+                    this.nextBtn.setText('<span style="vertical-align: middle;"><strong>' + i18n._('Continue') + '</strong> <i class="material-icons" style="vertical-align: middle;">navigate_next</i>');
+                }
             }
         } else {
             this.nextBtn.setText('<span style="vertical-align: middle;"><strong>' + i18n._('Next') + '</strong>: ' + this.view.cards[pageNo + 1].title + '</span><i class="material-icons" style="vertical-align: middle;">navigate_next</i>');

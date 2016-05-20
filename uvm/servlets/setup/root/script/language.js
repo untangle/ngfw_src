@@ -1,8 +1,10 @@
-// the main json rpc object
+/*global
+ Ext, Ung, Webui, JSONRpcClient, rpc:true, i18n:true, window
+ */
 var rpc = {};
 
 Ext.define('Ung.setupWizard.Language', {
-    constructor: function( config ) {
+    constructor: function (config) {
         Ext.applyIf(this, config);
         var languageStore = Ext.create('Ext.data.JsonStore', {
             fields: ['code', 'languageName'],
@@ -10,12 +12,9 @@ Ext.define('Ung.setupWizard.Language', {
         });
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
-                xtype: 'component',
-                html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
-            }, {
                 xtype: 'combo',
                 fieldLabel: i18n._('Please select your language'),
-                name: "language",
+                name: 'language',
                 editable: false,
                 valueField: 'code',
                 displayField: 'languageName',
@@ -30,18 +29,20 @@ Ext.define('Ung.setupWizard.Language', {
         });
 
         this.card = {
-            title: i18n._( "Language" ),
+            title: i18n._('Language'),
             panel: this.panel,
-            onValidate: Ext.bind(function() {
+            onValidate: Ext.bind(function () {
                 return Ung.Util.validate(this.panel);
             }, this),
-            onNext: Ext.bind(function( handler ) {
+            onNext: Ext.bind(function (handler) {
                 var language = this.panel.down('combo[name="language"]').getValue();
-                rpc.setup.setLanguage( Ext.bind(function( result, exception) {
-                    if(Ung.Util.handleException(exception, "Unable to save the language")) return;
+                rpc.setup.setLanguage(Ext.bind(function (result, exception) {
+                    if (Ung.Util.handleException(exception, "Unable to save the language")) {
+                        return;
+                    }
                     // Send the user to the setup wizard.
-                    window.location.href = "index.do";
-                }, this), language );
+                    window.location.href = 'index.do';
+                }, this), language);
             }, this)
         };
     }
@@ -49,33 +50,33 @@ Ext.define('Ung.setupWizard.Language', {
 
 Ext.define("Ung.Language", {
     singleton: true,
-    init: function(config) {
+    init: function (config) {
         Ext.applyIf(this, config);
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         rpc = {};
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
-        rpc.setup.getTranslations(Ext.bind(function( result, exception ) {
-            if(Ung.Util.handleException(exception)) return;
+        rpc.setup.getTranslations(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
             Ext.applyIf(rpc, result);
             this.initComplete();
         }, this));
     },
-    initComplete: function() {
-        i18n = new Ung.I18N( { "map": rpc.translations });
+    initComplete: function () {
+        i18n = new Ung.I18N({ 'map': rpc.translations });
         var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language});
 
-        Ext.get("container").setStyle("width", "800px");
-        this.wizard = Ext.create('Ung.Wizard',{
+        this.wizard = Ext.create('Ung.Wizard', {
             height: 500,
-            width: 800,
+            maxWidth: 800,
+            minWidth: 320,
             showLogo: true,
+            languageSetup: true,
             cardDefaults: {
                 padding: 5
             },
-            cards: [ language.card ],
-            renderTo: "container"
+            cards: [ language.card ]
         });
-        this.wizard.loadPage(0);
-        this.wizard.nextButton.setText( Ext.String.format(i18n._( 'Next {0}' ),'&raquo;') );
     }
 });
