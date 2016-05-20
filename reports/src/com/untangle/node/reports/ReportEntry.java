@@ -412,6 +412,7 @@ public class ReportEntry implements Serializable, JSONString
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
             " FROM " + "reports." + getTable() +
             " WHERE " + dateCondition +
+            " AND " + getTimeDataDynamicColumn() + " IS NOT NULL" +
             " GROUP BY " + getTimeDataDynamicColumn() + 
             " ORDER BY 2 DESC " + 
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
@@ -513,10 +514,8 @@ public class ReportEntry implements Serializable, JSONString
             java.sql.ResultSet resultSet = statement.executeQuery();
 
             LinkedList<String> values = new LinkedList<String>();
-            int i = 0;
             while (resultSet.next()) {
                 values.add( resultSet.getString(1) );
-                i++;
             }
 
             String[] array = new String[values.size()];
