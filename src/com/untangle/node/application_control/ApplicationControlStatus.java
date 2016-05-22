@@ -32,7 +32,8 @@ public class ApplicationControlStatus
 
     public boolean tarpit;
     public int modcount;
-
+    public int chunkCount;
+    
     public ApplicationControlStatus(String sessionInfo, IPNewSessionRequest ipr)
     {
         this.sessionInfo = sessionInfo;
@@ -68,6 +69,7 @@ public class ApplicationControlStatus
 
         this.tarpit = false;
         this.modcount = 1;
+        this.chunkCount = 0;
     }
 
 // THIS IS FOR ECLIPSE - @formatter:off

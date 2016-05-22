@@ -29,9 +29,7 @@ import org.apache.log4j.Level;
 
 public class ApplicationControlEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
-    private ApplicationControlApp node;
-    private int networkPort = 0;
+    private static final int MAX_CHUNK_COUNT = 50;
 
     public static final int NAVL_STATE_TERMINATED = 0; /*
                                                         * Indicates the
@@ -57,6 +55,10 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
                                                         * classified
                                                         */
     public static final int SELECT_TIMEOUT = 100;
+
+    private final Logger logger = Logger.getLogger(getClass());
+    private ApplicationControlApp node;
+    private int networkPort = 0;
 
     public enum TrafficAction
     {
@@ -290,6 +292,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         message = message + Integer.toString(data.limit());
         message = message + "\r\n";
 
+        // add 1 to the chunk count
+        // if we've scanned more chunks than allowed, just give up on categorization
+        status.chunkCount++;
+        if ( status.chunkCount >= MAX_CHUNK_COUNT ) {
+            logger.debug("Max chunk count reached. Giving up and releasing session. " + status.toString());
+            return (TrafficAction.RELEASE);
+        }
+                 
         // pass the session data to the daemon and get the status in return
         // null response means the daemon is still scanning so we must allow
         String traffic = daemonCommand(message, data.duplicate());
