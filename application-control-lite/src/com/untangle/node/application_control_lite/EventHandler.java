@@ -209,6 +209,10 @@ public class EventHandler extends AbstractEventHandler
                               sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
             }
 
+            ApplicationControlLiteEvent evt = new ApplicationControlLiteEvent(sess.sessionEvent(), sessInfo.protocol, elem.isBlocked());
+            node.logEvent(evt);
+            sess.attach(null);
+
             if (elem.isBlocked()) {
                 node.incrementBlockCount();
 
@@ -220,15 +224,12 @@ public class EventHandler extends AbstractEventHandler
                     ((NodeUDPSession)sess).expireClient(); /* XXX correct? */
                     ((NodeUDPSession)sess).expireServer(); /* XXX correct? */
                 }
-
             }
-
-            ApplicationControlLiteEvent evt = new ApplicationControlLiteEvent(sess.sessionEvent(), sessInfo.protocol, elem.isBlocked());
-            node.logEvent(evt);
-
-            // We release session immediately upon first match.
-            sess.attach(null);
-            sess.release();
+            else {
+                // We release session immediately upon first match.
+                sess.attach(null);
+                sess.release();
+            }
         } else if (bufferSize >= this._byteLimit || (sessInfo.clientChunkCount+sessInfo.serverChunkCount) >= this._chunkLimit) {
             // Since we don't log this it isn't interesting
             // sessInfo.protocol = this._unknownString;
