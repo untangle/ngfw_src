@@ -43,6 +43,7 @@ int       vector_destroy ( vector_t* vec );
 int       vector_raze ( vector_t* vec );
 void      vector_print ( vector_t* vec );
 void      vector_compress ( vector_t* vec, sink_t* sink, source_t* source );
+int       vector_length ( vector_t* vec );
 
 int       vector ( vector_t* vec );
 int       vector_send_msg ( vector_t* vec, vector_msg_t msg, void* arg );

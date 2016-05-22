@@ -25,7 +25,7 @@ public class SessionTable
 
     private static final SessionTable INSTANCE = new SessionTable();
 
-    private final Map<Vector,SessionGlobalState> activeSessions = new HashMap<Vector,SessionGlobalState>();
+    private final Map<Long,SessionGlobalState> activeSessions = new HashMap<Long,SessionGlobalState>();
     private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortsUsed = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
 
     public static final short PROTO_TCP = 6;
@@ -34,13 +34,13 @@ public class SessionTable
     private SessionTable() {}
 
     /**
-     * Add a vector to the hash set.
-     * @param  vector - The vector to add.
+     * Add a sessionId to the hash set.
+     * @param  sessionId - The sessionId to add.
      * @return - True if the item did not already exist
      */
-    protected synchronized boolean put( Vector vector, SessionGlobalState session )
+    protected synchronized boolean put( long sessionId, SessionGlobalState session )
     {
-        boolean inserted = ( activeSessions.put( vector, session ) == null );
+        boolean inserted = ( activeSessions.put( sessionId, session ) == null );
 
         if ( inserted && session.getProtocol() == PROTO_TCP ) {
             int port = session.netcapSession().serverSide().client().port();
@@ -58,18 +58,18 @@ public class SessionTable
     }
 
     /**
-     * Remove a vector from the hash set.
-     * @param  vector - The vector to remove.
+     * Remove a session ID from the hash set.
+     * @param  sessionId - The sessionId to remove.
      * @return - True if the item was removed, false if it wasn't in the set.
      */
-    protected synchronized boolean remove( Vector vector )
+    protected synchronized boolean remove( long sessionId )
     {
-        SessionGlobalState session = activeSessions.get( vector );
+        SessionGlobalState session = activeSessions.get( sessionId );
         if ( session == null ) {
             return false;
         }
 
-        boolean removed = ( activeSessions.remove( vector ) != null );
+        boolean removed = ( activeSessions.remove( sessionId ) != null );
         
         if ( removed && session.getProtocol() == PROTO_TCP ) {
             int port = session.netcapSession().serverSide().client().port();
@@ -84,7 +84,7 @@ public class SessionTable
     }
 
     /**
-     * Get the number of vectors remaining
+     * Get the number of sessions remaining
      */
     protected synchronized int count()
     {
@@ -121,8 +121,9 @@ public class SessionTable
     {
         if ( activeSessions.isEmpty()) return false;
 
-        for ( Iterator<Vector> iter = activeSessions.keySet().iterator(); iter.hasNext() ; ) {
-            Vector vector = iter.next();
+        for ( Iterator<SessionGlobalState> iter = activeSessions.values().iterator(); iter.hasNext() ; ) {
+            SessionGlobalState sess = iter.next();
+            Vector vector = sess.netcapHook().getVector();
             vector.shutdown();
             /* Don't actually remove the item, it is removed when the session exits */
         }
@@ -163,11 +164,11 @@ public class SessionTable
         }
         int i;
         for ( i = 0; i < array.length ; i++ ) {
-            Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)array[i];
+            Map.Entry<Long,SessionGlobalState> e = (Map.Entry<Long,SessionGlobalState>)array[i];
             boolean isMatch;
 
             SessionGlobalState session = e.getValue();
-            Vector vector  = e.getKey();
+            Long sessionId  = e.getKey();
             NetcapHook netcapHook = session.netcapHook();
 
             /**
@@ -204,7 +205,12 @@ public class SessionTable
                              sessionEvent.getCClientPort() + " -> " +
                              sessionEvent.getSServerAddr().getHostAddress() + ":" +
                              sessionEvent.getSServerPort());
-                shutdownList.add(vector);
+
+                Vector vector = null;
+                if ( session.netcapHook() != null )
+                    vector = session.netcapHook().getVector();
+                if ( vector != null )
+                    shutdownList.add(vector);
             }
         }
 

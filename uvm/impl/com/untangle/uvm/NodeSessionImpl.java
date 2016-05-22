@@ -24,6 +24,8 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
+import com.untangle.jnetcap.NetcapUDPSession;
+import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.ObjectCrumb;
@@ -402,29 +404,6 @@ public abstract class NodeSessionImpl implements NodeSession
         }
     }
 
-    /**
-     * XXX All this does is remove the session from the netcap agent table, this is being
-     * done from the tapi, so it is no longer necessary
-     */
-    public void shutdownEvent( OutgoingSocketQueue osq )
-    {
-        logger.debug( "Outgoing socket queue shutdown event: " + osq );
-
-        if ( osq == clientOutgoingSocketQueue ) {
-            isClientShutdown = true;
-        } else if ( osq == serverOutgoingSocketQueue ) {
-            isServerShutdown = true;
-        } else {
-            logger.error( "Unknown shutdown socket queue: " + osq );
-            return;
-        }
-
-        /* Remove the session from the netcap agent table */
-        if ( isClientShutdown && isServerShutdown ) {
-            pipelineConnector.removeSession( this );
-        }
-    }
-
     public boolean getServerShutdown() { return this.isServerShutdown; }
     public void setServerShutdown( boolean newValue ) { this.isServerShutdown = newValue; }
 
@@ -480,12 +459,15 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( vector == null || vector.isRazed() )
             return;
         
+        int length = vector.length();
+
         if ( clientIncomingSocketQueue != null &&
              serverOutgoingSocketQueue != null && 
              !clientIncomingSocketQueue.isRazed() &&
              !serverOutgoingSocketQueue.isRazed() ) {
 
             vector.compress( clientIncomingSocketQueue, serverOutgoingSocketQueue );
+            length--;
         }
 
         if ( serverIncomingSocketQueue != null &&
@@ -494,7 +476,16 @@ public abstract class NodeSessionImpl implements NodeSession
              !clientOutgoingSocketQueue.isRazed() ) {
 
             vector.compress( serverIncomingSocketQueue, clientOutgoingSocketQueue );
+            length--;
         }
+
+        // logger.warn("NEW LENGTH: " + length);
+        // if ( length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession ) {
+        //     logger.warn("Setting bypass mark: " + this);
+        //     this.netcapSession().orClientMark( 0x01000000 );
+
+        //     vector.
+        // }
     }
 
     public boolean released()

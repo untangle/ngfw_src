@@ -16,7 +16,13 @@ import com.untangle.uvm.node.SessionStatsEvent;
 
 public class NetcapConntrackHook implements NetcapCallback
 {
+    private static final int BYPASS_MARK = 0x01000000;
+
+    private static final int CONNTRACK_TYPE_NEW = 1;
+    private static final int CONNTRACK_TYPE_END = 4;
+    
     private static NetcapConntrackHook INSTANCE;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private HashMap<Long,Long> conntrackIdToSessionIdMap = new HashMap<Long, Long>();
@@ -50,113 +56,126 @@ public class NetcapConntrackHook implements NetcapCallback
                        int s2c_packets, int s2c_bytes,
                        long timestamp_start, long timestamp_stop )
     {
-        int srcIntf = (int)mark & 0xff;
-        int dstIntf = (int)(mark & 0xff00)>>8;
+        try {
+            int srcIntf = (int)mark & 0xff;
+            int dstIntf = (int)(mark & 0xff00)>>8;
 
-        // srcIntf == 0 means its from the local server
-        // must check srcIntf first, because outbound traffic is 0->0
-        if ( srcIntf == 0 ) {
-            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalOutboundSessions() ) {
+            // if its TCP and not bypassed, the event will be logged elsewhere
+            if( l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK )
                 return;
-            }
-        }
-        // dstIntf == 0 means its to the local server
-        else if ( dstIntf == 0 ) {
-            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalInboundSessions() ) {
+            // if its UDP and not bypassed, the event will be logged elsewhere
+            if( l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK )
                 return;
-            }
-        }
-        // otherwise its a regular session bypassed session going through the server
-        else {
-            if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() ) {
-                return;
-            }
-        }
         
-        InetAddress cClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_client_addr );
-        InetAddress cServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_server_addr );
-        InetAddress sClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_client_addr );
-        InetAddress sServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_server_addr );
-
-        // if ( type == 1 ) {
-        //     Date startDate = new Date(timestamp_start*1000l);
-        //     logger.warn("New Session: " +
-        //                 " [protocol " + l4_proto + "] " +
-        //                 "[" + srcIntf + "->" + dstIntf + "] " +
-        //                 cClientAddr.getHostAddress() + ":" + c_client_port +
-        //                 " -> " +
-        //                 sServerAddr.getHostAddress() + ":" + s_server_port +
-        //                 " [" + startDate + "]"); 
-        // }
-        // if ( type == 4 ) {
-        //     Date endDate = new Date(timestamp_stop*1000l);
-        //     logger.warn("End Session: " + "[protocol " + l4_proto + "] " +
-        //                 "[" + srcIntf + "->" + dstIntf + "] " +
-        //                 cClientAddr.getHostAddress() + ":" + c_client_port +
-        //                 " -> " +
-        //                 sServerAddr.getHostAddress() + ":" + s_server_port +
-        //                 " [" + endDate + "]" +
-        //                 " c2s_bytes: " + c2s_bytes +
-        //                 " s2c_bytes: " + s2c_bytes +
-        //                 " c2s_packets: " + c2s_packets +
-        //                 " s2c_packets: " + s2c_packets); 
-        // }
-
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( cClientAddr );
-        String username = null;
-        String hostname = null;
-        if ( entry != null ) {
-            username = entry.getUsername();
-            hostname = entry.getHostname();
-        }
-
-        if ((hostname == null || hostname.length() == 0))
-            hostname = cClientAddr.getHostAddress();
-        
-        if ( type == 1 ) { /* New Session */
-            SessionEvent sessionEvent =  new SessionEvent( );
-            if ( logger.isDebugEnabled() ) {
-                logger.debug( "New bypassed Session: " + session_id + " " + l4_proto + "| " + 
-                              cClientAddr.getHostAddress() + ":" + c_client_port + " -> " +
-                              sServerAddr.getHostAddress() + ":" + s_server_port );
+            // srcIntf == 0 means its from the local server
+            // must check srcIntf first, because outbound traffic is 0->0
+            if ( srcIntf == 0 ) {
+                if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalOutboundSessions() ) {
+                    return;
+                }
             }
-            sessionEvent.setSessionId( session_id );
-            sessionEvent.setBypassed( true );
-            sessionEvent.setProtocol( (short)l4_proto ); 
-            if ( l4_proto == 1 ) sessionEvent.setIcmpType( (short)icmp_type );
-            sessionEvent.setClientIntf( srcIntf ); 
-            sessionEvent.setServerIntf( dstIntf ); 
-            sessionEvent.setUsername( username ); 
-            sessionEvent.setHostname( hostname ); 
-            sessionEvent.setPolicyId( 0 ); 
-            sessionEvent.setCClientAddr( cClientAddr ); 
-            sessionEvent.setCClientPort( c_client_port ); 
-            sessionEvent.setCServerAddr( cServerAddr ); 
-            sessionEvent.setCServerPort( c_server_port ); 
-            sessionEvent.setSClientAddr( sClientAddr );
-            sessionEvent.setSClientPort( s_client_port );
-            sessionEvent.setSServerAddr( sServerAddr );
-            sessionEvent.setSServerPort( s_server_port );
-            UvmContextFactory.context().logEvent( sessionEvent );
+            // dstIntf == 0 means its to the local server
+            else if ( dstIntf == 0 ) {
+                if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalInboundSessions() ) {
+                    return;
+                }
+            }
+            // otherwise its a regular session bypassed session going through the server
+            else {
+                if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions() ) {
+                    return;
+                }
+            }
+        
+            InetAddress cClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_client_addr );
+            InetAddress cServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( c_server_addr );
+            InetAddress sClientAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_client_addr );
+            InetAddress sServerAddr = com.untangle.jnetcap.Inet4AddressConverter.toAddress( s_server_addr );
 
-            // remember the session Id so we know it when the session ends
-            conntrackIdToSessionIdMap.put( conntrack_id, session_id );
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( cClientAddr );
+            String username = null;
+            String hostname = null;
+            if ( entry != null ) {
+                username = entry.getUsername();
+                hostname = entry.getHostname();
+            }
+
+            if ((hostname == null || hostname.length() == 0))
+                hostname = cClientAddr.getHostAddress();
+        
+            if ( type == CONNTRACK_TYPE_NEW ) { /* New Session */
+                SessionEvent sessionEvent =  new SessionEvent( );
+                if ( logger.isDebugEnabled() ) {
+                    Date startDate = new Date(timestamp_start*1000l);
+                    logger.debug("New Session: [" + session_id + "]" +
+                                 " [protocol " + l4_proto + "] " +
+                                 "[" + srcIntf + "->" + dstIntf + "] " +
+                                 cClientAddr.getHostAddress() + ":" + c_client_port +
+                                 " -> " +
+                                 sServerAddr.getHostAddress() + ":" + s_server_port +
+                                 " [" + startDate + "]"); 
+                }
+                sessionEvent.setSessionId( session_id );
+                sessionEvent.setBypassed( true );
+                sessionEvent.setProtocol( (short)l4_proto ); 
+                if ( l4_proto == 1 ) sessionEvent.setIcmpType( (short)icmp_type );
+                sessionEvent.setClientIntf( srcIntf ); 
+                sessionEvent.setServerIntf( dstIntf ); 
+                sessionEvent.setUsername( username ); 
+                sessionEvent.setHostname( hostname ); 
+                sessionEvent.setPolicyId( 0 ); 
+                sessionEvent.setCClientAddr( cClientAddr ); 
+                sessionEvent.setCClientPort( c_client_port ); 
+                sessionEvent.setCServerAddr( cServerAddr ); 
+                sessionEvent.setCServerPort( c_server_port ); 
+                sessionEvent.setSClientAddr( sClientAddr );
+                sessionEvent.setSClientPort( s_client_port );
+                sessionEvent.setSServerAddr( sServerAddr );
+                sessionEvent.setSServerPort( s_server_port );
+                UvmContextFactory.context().logEvent( sessionEvent );
+
+                // remember the session Id so we know it when the session ends
+                conntrackIdToSessionIdMap.put( conntrack_id, session_id );
+            }
+
+            if ( type == CONNTRACK_TYPE_END ) { /* End Session */
+                // fetch the session Id
+                Long sess_id = conntrackIdToSessionIdMap.remove( conntrack_id );
+
+                if ( logger.isDebugEnabled() ) {
+                    Date endDate = new Date(timestamp_stop*1000l);
+                    logger.debug("End Session: [" + sess_id + "] " +
+                                 "[protocol " + l4_proto + "] " +
+                                 "[" + srcIntf + "->" + dstIntf + "] " +
+                                 cClientAddr.getHostAddress() + ":" + c_client_port +
+                                 " -> " +
+                                 sServerAddr.getHostAddress() + ":" + s_server_port +
+                                 " [" + endDate + "]" +
+                                 " c2s_bytes: " + c2s_bytes +
+                                 " s2c_bytes: " + s2c_bytes +
+                                 " c2s_packets: " + c2s_packets +
+                                 " s2c_packets: " + s2c_packets); 
+                }
+
+                // dont know session id (session probably started before hook was installed)
+                // nothing to log
+                if ( sess_id == null )
+                    return;
+                
+                SessionStatsEvent statEvent = new SessionStatsEvent( sess_id );
+                statEvent.setC2pBytes( c2s_bytes ); 
+                statEvent.setP2cBytes( s2c_bytes );
+                //statEvent.setC2pChunks( c2s_packets );
+                //statEvent.setP2cChunks( s2c_packets );
+                statEvent.setS2pBytes( s2c_bytes );
+                statEvent.setP2sBytes( c2s_bytes );
+                //statEvent.setS2pChunks( s2c_packets );
+                //statEvent.setP2sChunks( c2s_packets );
+                UvmContextFactory.context().logEvent( statEvent );
+            }
         }
-
-        if ( type == 4 ) { /* End Session */
-            // fetch the session Id
-            session_id = conntrackIdToSessionIdMap.remove( conntrack_id );
-
-            SessionStatsEvent statEvent = new SessionStatsEvent( session_id );
-            statEvent.setC2pBytes( c2s_bytes ); 
-            statEvent.setP2cBytes( s2c_bytes );
-            //statEvent.setC2pChunks( c2s_packets );
-            //statEvent.setP2cChunks( s2c_packets );
-            statEvent.setS2pBytes( s2c_bytes );
-            statEvent.setP2sBytes( c2s_bytes );
-            //statEvent.setS2pChunks( s2c_packets );
-            //statEvent.setP2sChunks( c2s_packets );
-            UvmContextFactory.context().logEvent( statEvent );
+        catch (Exception e) {
+            logger.warn("Exception in Conntrack Hook.",e);
         }
     }
 

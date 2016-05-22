@@ -36,6 +36,7 @@ public class Vector
     private static native int   vector_raze ( long vecptr );
     private static native void  vector_print ( long vecptr );
     private static native void  vector_compress ( long vecptr, long sink, long source );
+    private static native int   vector_length ( long vecptr );
     private static native int   vector_send_msg ( long vecptr, int msg, long arg );
     private static native void  vector_set_timeout ( long vecptr, int timeout_sec );
     private static native int   vector ( long vecptr );
@@ -83,6 +84,11 @@ public class Vector
     public synchronized void compress( Sink sink, Source source )
     {
         vector_compress( vec_ptr, sink.snk_ptr(), source.src_ptr() );
+    }
+
+    public synchronized int length()
+    {
+        return vector_length( vec_ptr );
     }
     
     /**

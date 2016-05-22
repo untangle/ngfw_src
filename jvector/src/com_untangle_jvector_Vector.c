@@ -96,6 +96,17 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1compress
 
 /*
  * Class:     Vector
+ * Method:    vector_length
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1length
+    (JNIEnv* env, jobject _this, jlong vec_ptr )
+{
+    return vector_length( (vector_t*)(uintptr_t)vec_ptr );
+}
+
+/*
+ * Class:     Vector
  * Method:    vector_send_msg
  * Signature: (III)I
  */

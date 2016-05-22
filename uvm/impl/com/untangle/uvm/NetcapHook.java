@@ -367,7 +367,7 @@ public abstract class NetcapHook implements Runnable
                     buildPipeline();
 
                     /* Insert the vector */
-                    activeSessions.put( vector, sessionGlobalState );
+                    activeSessions.put( sessionId, sessionGlobalState );
 
                     /* Set the timeout for the vectoring machine */
                     vector.timeout( timeout() );
@@ -464,7 +464,7 @@ public abstract class NetcapHook implements Runnable
             /* You must remove the vector before razing, or else the
              * vector may receive a message(eg shutdown) from another
              * thread */
-            activeSessions.remove( vector );
+            activeSessions.remove( sessionGlobalState.id() );
         } catch ( Exception e ) {
             logger.error( "Exception destroying pipeline", e );
         }

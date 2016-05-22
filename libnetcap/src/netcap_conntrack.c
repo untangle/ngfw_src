@@ -121,15 +121,15 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         _netcap_conntrack_ct_entry_copy(&netcap_ct, ct);
 
         // if its TCP and not bypassed, the event will be logged elsewhere
-        if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) {
-            //debug( 10, "CONNTRACK: type=6 mark=0x%08x\n", mark );
-            return NFCT_CB_CONTINUE;
-        }
+        /* if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) { */
+        /*     debug( 10, "CONNTRACK: type=6 mark=0x%08x\n", mark ); */
+        /*     return NFCT_CB_CONTINUE; */
+        /* } */
         // if its UDP and not bypassed, the event will be logged elsewhere
-        if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) {
-            //debug( 10, "CONNTRACK: type=17 mark=0x%08x\n", mark );
-            return NFCT_CB_CONTINUE;
-        }
+        /* if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) { */
+        /*     debug( 10, "CONNTRACK: type=17 mark=0x%08x\n", mark ); */
+        /*     return NFCT_CB_CONTINUE; */
+        /* } */
         /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
         if ( netcap_ct.ip4_src_addr == 0x0100007f && netcap_ct.ip4_dst_addr == 0x0100007f ) {
             //debug( 10, "CONNTRACK: local mark=0x%08x\n", mark );

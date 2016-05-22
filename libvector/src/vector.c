@@ -204,8 +204,13 @@ int       vector ( vector_t* vec )
      */
     while (1) {
         tick++;
-        /* tick should never be zero */
-        if ( tick == 0 ) tick++;
+
+        /**
+         * tick should never be zero
+         * If zero from overflow, skip zero and one
+         */
+        if ( tick == 0 )
+            tick = 2;
 
         /**
          * Exit if no relay's remain
@@ -333,6 +338,11 @@ int       vector ( vector_t* vec )
             }
         } // for each event
 
+        debug(10,"VECTOR(0x%016"PRIxPTR"): ----end tick---- %08d\n", (uintptr_t) vec, tick );
+        
+        /**
+         * Check for any compression requests
+         */
         _vector_check_for_compression( vec, events, num_events );
         
     } // while true
@@ -428,6 +438,20 @@ void      vector_compress ( vector_t* vec, sink_t* sink, source_t* source )
     return;
 }
 
+int       vector_length ( vector_t* vec )
+{
+    if ( vec == NULL ) {
+        errlogargs();
+        return 0;
+    }
+    if ( vec->chain == NULL ) {
+        errlogargs();
+        return 0;
+    }
+
+    return list_length( vec->chain );
+}
+
 static void _vector_check_for_compression( vector_t* vec, struct mvpoll_event* events, int num_events )
 {
     if ( list_length( &vec->compress_relays ) < 2 )
@@ -501,6 +525,9 @@ static void _vector_check_for_compression( vector_t* vec, struct mvpoll_event* e
         if ( _vector_compress_relays( vec, relay1, relay2 ) < 0 ) {
             perrlog("_vector_compress_relays");
         }
+
+        _chain_debug_print_prefix( 8, vec->chain, "VECTOR: Description: " );
+        
     }
 }
 

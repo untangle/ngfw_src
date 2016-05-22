@@ -77,7 +77,7 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.clientTraffic.mark(newmark);
 
-        setSessionMark(pointer.value(), newmark & 0xffffff00);
+        setSessionMark(pointer.value(), newmark);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.serverTraffic.mark(newmark);
 
-        setSessionMark(pointer.value(), newmark & 0xffffff00);
+        setSessionMark(pointer.value(), newmark);
     }
     
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
