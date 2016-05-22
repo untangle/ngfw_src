@@ -183,6 +183,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
          */
         sessInfo.chunkCount++;
         if (sessInfo.chunkCount > MAX_CHUNK_COUNT) {
+            sess.release();
             return;
         }
         
