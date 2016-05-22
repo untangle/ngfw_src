@@ -29,7 +29,7 @@ import org.apache.log4j.Level;
 
 public class ApplicationControlEventHandler extends AbstractEventHandler
 {
-    private static final int MAX_CHUNK_COUNT = 50;
+    private static final int MAX_CHUNK_COUNT = 15;
 
     public static final int NAVL_STATE_TERMINATED = 0; /*
                                                         * Indicates the
@@ -294,10 +294,11 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // add 1 to the chunk count
         // if we've scanned more chunks than allowed, just give up on categorization
+        // go ahead and evaluate the logic rules with what we have
         status.chunkCount++;
         if ( status.chunkCount >= MAX_CHUNK_COUNT ) {
             logger.debug("Max chunk count reached. Giving up and releasing session. " + status.toString());
-            return (TrafficAction.RELEASE);
+            return processLogicRules(isClient, status, sess, data);
         }
                  
         // pass the session data to the daemon and get the status in return
@@ -391,7 +392,11 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // At this point we have a packet that is not blocked or flagged and
         // classification is complete so we look for a logic rule match
+        return processLogicRules(isClient, status, sess, data);
+    }
 
+    private TrafficAction processLogicRules(boolean isClient, ApplicationControlStatus status, NodeSession sess, ByteBuffer data)
+    {
         ApplicationControlLogicRule logicRule = findLogicRule(sess);
         TrafficAction action = null;
         boolean flag = false;
