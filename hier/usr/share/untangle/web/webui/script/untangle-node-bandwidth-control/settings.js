@@ -121,7 +121,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         });
         var setupWizard = Ext.create('Ung.Wizard',{
             modalFinish: true,
-            hasCancel: true,
+            hasCancel: false, // cancel not working, still the window can be closed and acts like a cancel
             cardDefaults: {
                 labelWidth: 200,
                 cls: 'ung-panel'
@@ -134,6 +134,9 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
         this.wizardWindow = Ext.create('Ung.Window',{
             title: i18n._("Bandwidth Control Setup Wizard"),
             items: setupWizard,
+            maxWidth: 800,
+            sizeToRack: false,
+            border: false,
             closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
@@ -168,9 +171,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                 }, this)
             }
         });
-
         this.wizardWindow.show();
-        setupWizard.loadPage(0);
+        //setupWizard.loadPage(0);
     },
 
     buildStatusMessage: function() {
@@ -714,7 +716,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Welcome',{
         Ext.apply(this, config);
         var items = [{
             xtype: 'component',
-            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Bandwidth Control Setup Wizard!")+'</h2>'
+            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Bandwidth Control Setup Wizard!")+'</h2>',
+            margin: '10'
         },{
             xtype: 'component',
             html: i18n._('This wizard will help guide you through your initial setup and configuration of Bandwidth Control.'),
@@ -739,6 +742,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Welcome',{
         }
         this.title = i18n._("Welcome");
         this.panel = Ext.create('Ext.container.Container',{
+            scrollable: true,
             items: items
         });
     }
@@ -855,19 +859,22 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+i18n._("Configure WANs download and upload bandwidths")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Configure WANs download and upload bandwidths")+'</h2>',
+                margin: '10',
             },{
                 xtype: 'component',
                 name: 'bandwidthLabel',
-                html: ' '
+                html: ' ',
+                margin: '10'
             }, this.gridQosWanBandwidth,{
                 xtype: 'component',
                 html: i18n._('It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.') + "<br/>",
-                margin: '10 0 10 0'
+                margin: '10'
             },{
                 xtype: 'component',
                 html: i18n._('WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!'),
-                cls: 'warning'
+                cls: 'warning',
+                margin: '10'
             }]
         });
         this.gridQosWanBandwidth.updateTotalBandwidth();
@@ -928,13 +935,15 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Defaults', {
         this.title = i18n._("Configuration");
 
         this.panel = Ext.create('Ext.container.Container',{
+            scrollable: true,
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+i18n._("Choose a starting configuration")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Choose a starting configuration")+'</h2>',
+                margin: '10'
             }, {
                 xtype: 'component',
                 html: i18n._('Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.'),
-                margin: '0 0 10 0'
+                margin: '0 10 10 10'
             },{
               xtype:'container',
               margin: '10 0 10 20',
@@ -1221,13 +1230,15 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
         this.title = i18n._("Quotas");
         this.enableQuotas = false;
         this.panel = Ext.create('Ext.container.Container',{
+            scrollable: true,
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+i18n._("Configure Quotas")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Configure Quotas")+'</h2>',
+                margin: '10'
             },{
                 xtype: 'component',
                 html: i18n._('Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.') + "<br/>",
-                margin: '0 0 10 0'
+                margin: '0 10 10 10'
             },{
                 xtype: 'radio',
                 boxLabel: i18n._('Disable Quotas (default)'),
@@ -1239,7 +1250,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                         this.enableQuotas = false;
                         this.setVisi(false);
                     }
-                }, this)
+                }, this),
+                margin: '0 10 10 10'
             }, {
                 xtype: 'radio',
                 boxLabel: i18n._('Enable Quotas'),
@@ -1252,7 +1264,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                         this.enableQuotas = true;
                         this.setVisi(true);
                     }
-                }, this)
+                }, this),
+                margin: '0 10 10 10'
             }, {
                 name:'quotaSettings',
                 xtype:'fieldset',
@@ -1370,10 +1383,12 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Congratulations',{
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>',
+                margin: '10'
             }, {
                 xtype: 'component',
-                html: i18n._('Bandwidth Control is now configured and enabled.')
+                html: i18n._('Bandwidth Control is now configured and enabled.'),
+                margin: '0 10 10 10'
             }]
         });
         
