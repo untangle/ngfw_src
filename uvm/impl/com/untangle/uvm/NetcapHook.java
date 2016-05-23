@@ -374,20 +374,19 @@ public abstract class NetcapHook implements Runnable
                     /* Set the timeout for the vectoring machine */
                     vector.timeout( timeout() );
 
-                    if ( logger.isDebugEnabled())
+                    if ( logger.isDebugEnabled()) {
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );
-
-                    //vector.print();
-
+                    }
                     /**
                      * If this is UDP and there are only 2 relays, then no apps were interested in
                      * this data. If so, go ahead and initiate the release to bypass
+                     * We still continue and call vector() to pass the existing data.
                      */
                     if ( vector.length() == 2 && sessionGlobalState.getProtocol() == 17 ) {
                         releaseToBypass();
                     }
                     
-                    /* Start vectoring */
+                    //vector.print();
                     vector.vector();
 
                     /* Call the raze method for each session */

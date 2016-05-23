@@ -82,6 +82,11 @@ public class SessionTable
         boolean removed = ( sessionTableById.remove( sessionId ) != null );
         
         if ( removed ) {
+            SessionTupleKey tupleKey = new SessionTupleKey( session );
+            if ( sessionTableByTuple.remove( tupleKey ) == null ) {
+                logger.warn("Missing value in tuple map: " + tupleKey );
+            }
+
             if ( session.getProtocol() == PROTO_TCP ) {
                 int port = session.netcapSession().serverSide().client().port();
                 InetAddress addr = session.netcapSession().serverSide().client().host();
@@ -89,11 +94,6 @@ public class SessionTable
                 if ( tcpPortAvailabilityMap.remove( key ) == null ) {
                     logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
                 }
-            }
-
-            SessionTupleKey tupleKey = new SessionTupleKey( session );
-            if ( sessionTableByTuple.remove( tupleKey ) == null ) {
-                logger.warn("Missing value in tuple map: " + tupleKey );
             }
         }
 
@@ -114,16 +114,18 @@ public class SessionTable
 
         boolean removed = ( sessionTableByTuple.remove( tupleKey ) != null );
         
-        if ( removed && session.getProtocol() == PROTO_TCP ) {
-            int port = session.netcapSession().serverSide().client().port();
-            InetAddress addr = session.netcapSession().serverSide().client().host();
-            NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
-            if ( tcpPortAvailabilityMap.remove( key ) == null ) {
-                logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
+        if ( removed  ) {
+            if ( sessionTableById.remove( session.id() ) == null ) {
+                logger.warn("Missing value in session ID map: " + session.id() );
             }
 
-            if ( sessionTableByTuple.remove( session.id() ) == null ) {
-                logger.warn("Missing value in session ID map: " + session.id() );
+            if ( session.getProtocol() == PROTO_TCP ) {
+                int port = session.netcapSession().serverSide().client().port();
+                InetAddress addr = session.netcapSession().serverSide().client().host();
+                NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
+                if ( tcpPortAvailabilityMap.remove( key ) == null ) {
+                    logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
+                }
             }
         }
 
