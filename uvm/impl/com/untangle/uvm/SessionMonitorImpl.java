@@ -404,7 +404,6 @@ public class SessionMonitorImpl implements SessionMonitor
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
      */
-    @SuppressWarnings("unchecked") //JSON
     private List<SessionMonitorEntry> _getConntrackSessionMonitorEntrys()
     {
         return parseProcNetIpConntrack();

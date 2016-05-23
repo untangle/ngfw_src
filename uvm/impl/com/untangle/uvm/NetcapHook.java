@@ -50,7 +50,7 @@ public abstract class NetcapHook implements Runnable
     private static final int IP_HEADER_SIZE = 20;
     private static final int UDP_HEADER_SIZE = 8;
 
-    private static final SessionTable activeSessions = SessionTable.getInstance();
+    private static final SessionTable sessionTable = SessionTable.getInstance();
 
     /**
      * List of all of the nodes( PipelineConnectorImpls )
@@ -369,7 +369,7 @@ public abstract class NetcapHook implements Runnable
                     buildPipeline();
 
                     /* Insert the vector */
-                    activeSessions.put( sessionId, sessionGlobalState );
+                    sessionTable.put( sessionId, sessionGlobalState );
 
                     /* Set the timeout for the vectoring machine */
                     vector.timeout( timeout() );
@@ -436,7 +436,7 @@ public abstract class NetcapHook implements Runnable
              * metadata, and it will be cleaned up later by the conntrack hook.
              */
             if ( cleanupSessionOnExit )
-                activeSessions.remove( sessionGlobalState.id() );
+                sessionTable.remove( sessionGlobalState.id() );
         } catch ( Exception e ) {
             logger.error( "Exception destroying pipeline", e );
         }

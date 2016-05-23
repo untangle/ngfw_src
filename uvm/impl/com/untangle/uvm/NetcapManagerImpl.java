@@ -139,15 +139,15 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.unregisterUDPHook();
         Netcap.unregisterConntrackHook();
 
-        SessionTable activeSessions = SessionTable.getInstance();
+        SessionTable sessionTable = SessionTable.getInstance();
 
         /* Close all of the vectoring machines */
         for ( int c = 0; c <  SHUTDOWN_ATTEMPTS ; c++ ) {
             if ( logger.isInfoEnabled()) {
-                logger.info( "" + activeSessions.count() + " active sessions remaining" );
+                logger.info( "" + sessionTable.count() + " active sessions remaining" );
             }
 
-            if ( !activeSessions.shutdownActive()) break;
+            if ( !sessionTable.shutdownActive()) break;
 
             /* Sleep a little while vectrons shutdown. */
             try {

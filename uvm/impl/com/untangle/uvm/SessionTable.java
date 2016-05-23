@@ -25,39 +25,44 @@ public class SessionTable
 
     private static final SessionTable INSTANCE = new SessionTable();
 
-    private final Map<Long,SessionGlobalState> activeSessions = new HashMap<Long,SessionGlobalState>();
-    private final Map<SessionTupleKey,SessionGlobalState> activeSessionsByTuple = new HashMap<SessionTupleKey,SessionGlobalState>();
-    private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortsUsed = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
+    private final Map<Long,SessionGlobalState> sessionTableById = new HashMap<Long,SessionGlobalState>();
+    private final Map<SessionTupleKey,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleKey,SessionGlobalState>();
+    private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortAvailabilityMap = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
 
     public static final short PROTO_TCP = 6;
     
     /* Singleton */
     private SessionTable() {}
 
+    public static SessionTable getInstance()
+    {
+        return INSTANCE;
+    }
+
     /**
-     * Add a sessionId to the hash set.
+     * Add a sessionId to the table(s)
      * @param  sessionId - The sessionId to add.
      * @return - True if the item did not already exist
      */
     protected synchronized boolean put( long sessionId, SessionGlobalState session )
     {
-        boolean inserted = ( activeSessions.put( sessionId, session ) == null );
+        boolean inserted = ( sessionTableById.put( sessionId, session ) == null );
 
         if ( inserted ) {
             if ( session.getProtocol() == PROTO_TCP ) {
                 int port = session.netcapSession().serverSide().client().port();
                 InetAddress addr = session.netcapSession().serverSide().client().host();
                 NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
-                if ( tcpPortsUsed.get( key ) != null ) {
+                if ( tcpPortAvailabilityMap.get( key ) != null ) {
                     logger.warn("Collision value in port availability map: " + addr.getHostAddress() + ":" + port);
                     // just continue, not much can be done about it here.
                 } else {
-                    tcpPortsUsed.put( key, session );
+                    tcpPortAvailabilityMap.put( key, session );
                 }
             }
 
             SessionTupleKey tupleKey = new SessionTupleKey( session );
-            activeSessionsByTuple.put( tupleKey, session );
+            sessionTableByTuple.put( tupleKey, session );
         }
         
         return inserted;
@@ -69,25 +74,25 @@ public class SessionTable
      */
     protected synchronized SessionGlobalState remove( long sessionId )
     {
-        SessionGlobalState session = activeSessions.get( sessionId );
+        SessionGlobalState session = sessionTableById.get( sessionId );
         if ( session == null ) {
             return null;
         }
 
-        boolean removed = ( activeSessions.remove( sessionId ) != null );
+        boolean removed = ( sessionTableById.remove( sessionId ) != null );
         
         if ( removed ) {
             if ( session.getProtocol() == PROTO_TCP ) {
                 int port = session.netcapSession().serverSide().client().port();
                 InetAddress addr = session.netcapSession().serverSide().client().host();
                 NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
-                if ( tcpPortsUsed.remove( key ) == null ) {
+                if ( tcpPortAvailabilityMap.remove( key ) == null ) {
                     logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
                 }
             }
 
             SessionTupleKey tupleKey = new SessionTupleKey( session );
-            if ( activeSessionsByTuple.remove( tupleKey ) == null ) {
+            if ( sessionTableByTuple.remove( tupleKey ) == null ) {
                 logger.warn("Missing value in tuple map: " + tupleKey );
             }
         }
@@ -102,22 +107,22 @@ public class SessionTable
     protected synchronized SessionGlobalState remove( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
         SessionTupleKey tupleKey = new SessionTupleKey( protocol, clientAddr, serverAddr, clientPort, serverPort );
-        SessionGlobalState session = activeSessionsByTuple.get( tupleKey );
+        SessionGlobalState session = sessionTableByTuple.get( tupleKey );
         if ( session == null ) {
             return null;
         }
 
-        boolean removed = ( activeSessionsByTuple.remove( tupleKey ) != null );
+        boolean removed = ( sessionTableByTuple.remove( tupleKey ) != null );
         
         if ( removed && session.getProtocol() == PROTO_TCP ) {
             int port = session.netcapSession().serverSide().client().port();
             InetAddress addr = session.netcapSession().serverSide().client().host();
             NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
-            if ( tcpPortsUsed.remove( key ) == null ) {
+            if ( tcpPortAvailabilityMap.remove( key ) == null ) {
                 logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
             }
 
-            if ( activeSessionsByTuple.remove( session.id() ) == null ) {
+            if ( sessionTableByTuple.remove( session.id() ) == null ) {
                 logger.warn("Missing value in session ID map: " + session.id() );
             }
         }
@@ -130,14 +135,17 @@ public class SessionTable
      */
     protected synchronized int count()
     {
-        return activeSessions.size();
+        return sessionTableById.size();
     }
 
+    /**
+     * Returns the count for a given protocol
+     */
     protected synchronized int count( short protocol )
     {
         int count = 0;
         
-        for ( SessionGlobalState state : activeSessions.values() ) {
+        for ( SessionGlobalState state : sessionTableById.values() ) {
             if (state.getProtocol() == protocol)
                 count++;
         }
@@ -145,25 +153,29 @@ public class SessionTable
         return count;
     }
 
+    /**
+     * Returns true if the address port is free according to the tcpPortAvailabilityMap
+     * false otherwise
+     */
     protected synchronized boolean isTcpPortUsed( InetAddress addr, int port )
     {
         NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
-        if ( tcpPortsUsed.get( key ) != null )
+        if ( tcpPortAvailabilityMap.get( key ) != null )
             return true;
         else
             return false;
     }
     
     /**
-     * This kills all active vectors, since this is synchronized, it pauses the creation
-     * of new vectoring machines, but it doesn't prevent the creating of new vectoring
-     * machines
-     * @return - Returns false if there are no active sessions. */
+     * This kills all active vectors
+     * Returns true if vectors were killed
+     * false if no active vectors were found
+     */
     public synchronized boolean shutdownActive()
     {
         boolean foundActive = false;
 
-        for ( Iterator<SessionGlobalState> iter = activeSessions.values().iterator(); iter.hasNext() ; ) {
+        for ( Iterator<SessionGlobalState> iter = sessionTableById.values().iterator(); iter.hasNext() ; ) {
             SessionGlobalState sess = iter.next();
             Vector vector = sess.netcapHook().getVector();
             if ( vector != null ) {
@@ -176,16 +188,29 @@ public class SessionTable
         return foundActive;
     }
 
+    /**
+     * Returns a new list of all sessions
+     */
     public synchronized List<SessionGlobalState> getSessions()
     {
-        return new LinkedList<SessionGlobalState>(this.activeSessions.values());
+        return new LinkedList<SessionGlobalState>(this.sessionTableById.values());
     }
     
+    /**
+     * Shutdown all sessions with active vectors
+     * that match the passed matcher
+     */
     protected void shutdownMatches( SessionMatcher matcher )
     {
         shutdownMatches( matcher, null );
     }
 
+    /**
+     * Shutdown all sessions with active vectors
+     * in use by the passed connector
+     * that match the passed matcher
+     * If connector is null, all sessions are evaulated
+     */
     @SuppressWarnings("unchecked")
     protected void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
@@ -197,7 +222,7 @@ public class SessionTable
         int shutdownCount = 0;
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
 
-        if ( activeSessions.isEmpty()) 
+        if ( sessionTableById.isEmpty()) 
             return;
 
         /**
@@ -205,7 +230,7 @@ public class SessionTable
          */
         Object[] array;
         synchronized (this) {
-            array = activeSessions.entrySet().toArray();
+            array = sessionTableById.entrySet().toArray();
         }
         int i;
         for ( i = 0; i < array.length ; i++ ) {
@@ -273,11 +298,6 @@ public class SessionTable
             logger.info( "shutdownMatches(" + matcher.getClass().getSimpleName() + ") shutdown " + shutdownCount + " sessions.");
     }
     
-    public static SessionTable getInstance()
-    {
-        return INSTANCE;
-    }
-
     private class NatPortAvailabilityKey
     {
         public InetAddress addr;
@@ -370,12 +390,19 @@ public class SessionTable
         {
             if ( ! (o instanceof SessionTupleKey) )
                 return false;
-            SessionTupleKey s = (SessionTupleKey)o;
-            return s.protocol == protocol
-                && s.clientPort == clientPort
-                && s.serverPort == serverPort
-                && s.clientAddr.equals(clientAddr)
-                && s.serverAddr.equals(serverAddr);
+            SessionTupleKey t = (SessionTupleKey)o;
+            if ( t.protocol != this.protocol ||
+                 t.clientPort != this.clientPort ||
+                 t.serverPort != this.serverPort ) {
+                return false;
+            }
+            if ( ! ( t.clientAddr == null ? this.clientAddr == null : t.clientAddr.equals(this.clientAddr) ) ) {
+                return false;
+            }
+            if ( ! ( t.serverAddr == null ? this.serverAddr == null : t.serverAddr.equals(this.serverAddr) ) ) {
+                return false;
+            }
+            return true;
         }
 
         @Override
