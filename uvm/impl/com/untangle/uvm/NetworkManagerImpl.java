@@ -2016,7 +2016,7 @@ public class NetworkManagerImpl implements NetworkManager
 	String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
 
 	String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
-	String channelDisabledPattern = "passive scanning|no IBSS|disabled";
+	String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
 	String wiphyPattern = ".*wiphy (\\d)";
 	Pattern channelRegex = Pattern.compile(channelPattern);
 	Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
