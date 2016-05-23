@@ -265,7 +265,7 @@ public class NetcapTCPHook implements NetcapCallback
             netcapTCPSession.raze();
         }
 
-        public void checkEndpoints()
+        protected void checkEndpoints()
         {
             /* If both sides are shutdown, give a timeout to complete vectoring */
             if ( clientSideListener.isShutdown() && serverSideListener.isShutdown()) {
@@ -280,6 +280,12 @@ public class NetcapTCPHook implements NetcapCallback
             }
         }
 
+        @Override
+        protected void releaseToBypass()
+        {
+            logger.warn("releaseToBypass() not supported for TCP.", new Exception());
+        }
+        
         private class TCPSideListener extends SideListener
         {
             protected TCPSideListener()

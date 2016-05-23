@@ -257,7 +257,7 @@ public class NetcapUDPHook implements NetcapCallback
             }
         }
 
-        public void checkEndpoints()
+        protected void checkEndpoints()
         {
             /* If both sides are shutdown, give a timeout to complete vectoring */
             if ( clientSideListener.isShutdown() && serverSideListener.isShutdown()) {
@@ -267,6 +267,25 @@ public class NetcapUDPHook implements NetcapCallback
                     logger.debug( "server side: " + serverSideListener.stats());
                 }
             }
+        }
+
+        @Override
+        protected void releaseToBypass()
+        {
+            logger.warn("Releasing to bypass: " + netcapSession());
+
+            netcapSession().orClientMark( 0x01000000 );
+
+            // we can't actually kill the session here because there may be data
+            // remaining in the buffers that needs to be sent
+            // if ( vector != null )
+            //     vector.shutdown();
+
+            // set a really low timeout so it will exit after sending any remaining data            
+            if ( vector != null )
+                vector.timeout(1000); 
+
+            this.setCleanupSessionOnExit( false );
         }
 
         private class UDPSideListener extends SideListener

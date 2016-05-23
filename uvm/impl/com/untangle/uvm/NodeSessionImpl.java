@@ -479,18 +479,12 @@ public abstract class NodeSessionImpl implements NodeSession
             length--;
         }
 
+        /**
+         * If we have reduced the chain to just two relays, there are no more apps looking at this session
+         * just bypass the rest of the session
+         */
         if ( length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession ) {
-            logger.warn("Setting bypass mark: " + this);
-            this.netcapSession().orClientMark( 0x01000000 );
-
-            // we can't actually kill the session here because there may be data
-            // remaining in the buffers that needs to be sent
-            //vector.shutdown();
-
-            // set a really low timeout so it will exit after sending any remaining data            
-            vector.timeout(1000); 
-
-            sessionGlobalState.netcapHook().setCleanupSessionOnExit( false );
+            sessionGlobalState.netcapHook().releaseToBypass();
         }
     }
 

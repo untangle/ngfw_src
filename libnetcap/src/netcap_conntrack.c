@@ -79,7 +79,8 @@ int  netcap_conntrack_init()
         ret = nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
         debug( 5, "CONNTRACK: set socket buffer size to %d.\n", ret );
 
-        nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
+        //nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
+        nfct_callback_register(cth, NFCT_T_NEW | NFCT_T_DESTROY, _netcap_conntrack_callback, NULL);
 
         return 0;
 }
@@ -153,7 +154,7 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
             session_id = netcap_session_next_id();
             break;
         default:
-            debug( 10, "CONNTRACK: type=unknow mark=0x%08x\n", mark );
+            errlog( ERR_WARNING, "CONNTRACK: unknown type: %i\n", type );
             break;
         }
 

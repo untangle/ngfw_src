@@ -379,6 +379,14 @@ public abstract class NetcapHook implements Runnable
 
                     //vector.print();
 
+                    /**
+                     * If this is UDP and there are only 2 relays, then no apps were interested in
+                     * this data. If so, go ahead and initiate the release to bypass
+                     */
+                    if ( vector.length() == 2 && sessionGlobalState.getProtocol() == 17 ) {
+                        releaseToBypass();
+                    }
+                    
                     /* Start vectoring */
                     vector.vector();
 
@@ -867,6 +875,12 @@ public abstract class NetcapHook implements Runnable
     protected abstract Source makeServerSource();
 
     protected abstract void initializeNodeSessions( SessionEvent sessionEvent );
-
     protected abstract void raze();
+
+    /**
+     * Release this session back to the kernel.
+     * Only supported in UDP
+     */
+    protected abstract void releaseToBypass();
+
 }
