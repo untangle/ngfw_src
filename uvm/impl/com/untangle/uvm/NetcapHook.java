@@ -74,6 +74,8 @@ public abstract class NetcapHook implements Runnable
     protected SessionTuple clientSide = null;
     protected SessionTuple serverSide = null;
 
+    protected boolean cleanupSessionOnExit = true;
+
     protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
     
     /**
@@ -391,9 +393,9 @@ public abstract class NetcapHook implements Runnable
                 logger.debug( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
         } catch ( Exception e ) {
-            /* Some exceptions have null messages, who knew */
             String message = e.getMessage();
-            if ( message == null ) message = "";
+            if ( message == null )
+                message = ""; // some exceptions have null message
 
             if ( message.startsWith( "Invalid netcap interface" )) {
                 try {
@@ -410,63 +412,32 @@ public abstract class NetcapHook implements Runnable
         }
 
         sessionGlobalState.setEndTime( System.currentTimeMillis() );
-        
+        logSessionStatsEvent( sessionEvent );
+
+        try {
+            /* Remove the session from the active sessions table */
+
+            /**
+             * If cleanupSessionOnExit is true (almost always is)
+             * We remove the session from the global session table
+             *
+             * If it is false we leave the session in the session table
+             * This is only done when we release a UDP session back to the kernel
+             * In this case, the session is still running, but the vectoring is done
+             * As such, we leave the session in the session table to store the
+             * metadata, and it will be cleaned up later by the conntrack hook.
+             */
+            if ( cleanupSessionOnExit )
+                activeSessions.remove( sessionGlobalState.id() );
+        } catch ( Exception e ) {
+            logger.error( "Exception destroying pipeline", e );
+        }
+
         try {
             /* Must raze sessions all sessions in the session list */
             razeSessions();
         } catch ( Exception e ) {
             logger.error( "Exception razing sessions", e );
-        }
-
-        try {
-            if (clientSide != null) {
-                SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
-                long c2pBytes = sessionGlobalState.clientSideListener().rxBytes;
-                long p2cBytes = sessionGlobalState.clientSideListener().txBytes;
-                long c2pChunks = sessionGlobalState.clientSideListener().rxChunks;
-                long p2cChunks = sessionGlobalState.clientSideListener().txChunks;
-
-                long s2pBytes = sessionGlobalState.serverSideListener().rxBytes;
-                long p2sBytes = sessionGlobalState.serverSideListener().txBytes;
-                long s2pChunks = sessionGlobalState.serverSideListener().rxChunks;
-                long p2sChunks = sessionGlobalState.serverSideListener().txChunks;
-
-                /**
-                 * Adjust for packet headers
-                 */
-                if ( sessionGlobalState.getProtocol() == 6 ) {
-                    c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * TCP_HEADER_SIZE_ESTIMATE);
-                    p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * TCP_HEADER_SIZE_ESTIMATE);
-                    s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * TCP_HEADER_SIZE_ESTIMATE);
-                    p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * TCP_HEADER_SIZE_ESTIMATE);
-                }
-                if ( sessionGlobalState.getProtocol() == 17 ) {
-                    c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * UDP_HEADER_SIZE);
-                    p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * UDP_HEADER_SIZE);
-                    s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * UDP_HEADER_SIZE);
-                    p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * UDP_HEADER_SIZE);
-                }
-                    
-                statEvent.setC2pBytes(c2pBytes);
-                statEvent.setP2cBytes(p2cBytes);
-                //statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
-                //statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
-                statEvent.setS2pBytes(s2pBytes);
-                statEvent.setP2sBytes(p2sBytes);
-                //statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
-                //statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
-                statEvent.setEndTime(sessionGlobalState.getEndTime());
-                
-                UvmContextFactory.context().logEvent( statEvent );
-            }
-
-            /* Remove the vector from the active sessions table */
-            /* You must remove the vector before razing, or else the
-             * vector may receive a message(eg shutdown) from another
-             * thread */
-            activeSessions.remove( sessionGlobalState.id() );
-        } catch ( Exception e ) {
-            logger.error( "Exception destroying pipeline", e );
         }
 
         try {
@@ -498,6 +469,11 @@ public abstract class NetcapHook implements Runnable
     public Integer getPolicyId()
     {
         return this.policyId;
+    }
+
+    public void setCleanupSessionOnExit( boolean newValue )
+    {
+        this.cleanupSessionOnExit = newValue;
     }
     
     /**
@@ -795,6 +771,52 @@ public abstract class NetcapHook implements Runnable
         return !isEndpointed;
     }
 
+    private void logSessionStatsEvent( SessionEvent sessionEvent )
+    {
+        try {
+            SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
+            long c2pBytes = sessionGlobalState.clientSideListener().rxBytes;
+            long p2cBytes = sessionGlobalState.clientSideListener().txBytes;
+            long c2pChunks = sessionGlobalState.clientSideListener().rxChunks;
+            long p2cChunks = sessionGlobalState.clientSideListener().txChunks;
+
+            long s2pBytes = sessionGlobalState.serverSideListener().rxBytes;
+            long p2sBytes = sessionGlobalState.serverSideListener().txBytes;
+            long s2pChunks = sessionGlobalState.serverSideListener().rxChunks;
+            long p2sChunks = sessionGlobalState.serverSideListener().txChunks;
+
+            /**
+             * Adjust for packet headers
+             */
+            if ( sessionGlobalState.getProtocol() == 6 ) {
+                c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * TCP_HEADER_SIZE_ESTIMATE);
+                p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * TCP_HEADER_SIZE_ESTIMATE);
+                s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * TCP_HEADER_SIZE_ESTIMATE);
+                p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * TCP_HEADER_SIZE_ESTIMATE);
+            }
+            if ( sessionGlobalState.getProtocol() == 17 ) {
+                c2pBytes = c2pBytes + (c2pChunks * IP_HEADER_SIZE) + (c2pChunks * UDP_HEADER_SIZE);
+                p2cBytes = p2cBytes + (p2cChunks * IP_HEADER_SIZE) + (p2cChunks * UDP_HEADER_SIZE);
+                s2pBytes = s2pBytes + (s2pChunks * IP_HEADER_SIZE) + (s2pChunks * UDP_HEADER_SIZE);
+                p2sBytes = p2sBytes + (p2sChunks * IP_HEADER_SIZE) + (p2sChunks * UDP_HEADER_SIZE);
+            }
+                    
+            statEvent.setC2pBytes(c2pBytes);
+            statEvent.setP2cBytes(p2cBytes);
+            //statEvent.setC2pChunks(sessionGlobalState.clientSideListener().rxChunks);
+            //statEvent.setP2cChunks(sessionGlobalState.clientSideListener().txChunks);
+            statEvent.setS2pBytes(s2pBytes);
+            statEvent.setP2sBytes(p2sBytes);
+            //statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
+            //statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
+            statEvent.setEndTime(sessionGlobalState.getEndTime());
+                
+            UvmContextFactory.context().logEvent( statEvent );
+        } catch ( Exception e ) {
+            logger.error( "Exception logging session stats.", e );
+        }
+    }
+    
     protected boolean alive()
     {
         if ( state == IPNewSessionRequestImpl.REQUESTED || state == IPNewSessionRequestImpl.ENDPOINTED ) {

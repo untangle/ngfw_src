@@ -479,13 +479,19 @@ public abstract class NodeSessionImpl implements NodeSession
             length--;
         }
 
-        // logger.warn("NEW LENGTH: " + length);
-        // if ( length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession ) {
-        //     logger.warn("Setting bypass mark: " + this);
-        //     this.netcapSession().orClientMark( 0x01000000 );
+        if ( length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession ) {
+            logger.warn("Setting bypass mark: " + this);
+            this.netcapSession().orClientMark( 0x01000000 );
 
-        //     vector.
-        // }
+            // we can't actually kill the session here because there may be data
+            // remaining in the buffers that needs to be sent
+            //vector.shutdown();
+
+            // set a really low timeout so it will exit after sending any remaining data            
+            vector.timeout(1000); 
+
+            sessionGlobalState.netcapHook().setCleanupSessionOnExit( false );
+        }
     }
 
     public boolean released()
