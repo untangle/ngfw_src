@@ -2,13 +2,12 @@
  Ext, Ung, Webui, rpc:true, i18n:true
  */
 Ext.define('Ung.Wizard', {
-    extend: 'Ext.container.Viewport',
+    extend: 'Ext.panel.Panel',
     controller: 'wizard',
-    layout: 'auto',
     name: 'wizard',
     maxWidth: 'auto',
     minWidth: 'auto',
-    border: 0,
+    border: false,
     currentPage: null,
     hasCancel: false,
     modalFinish: false, //can not go back or cancel on finish step
@@ -42,7 +41,7 @@ Ext.define('Ung.Wizard', {
             xtype: 'button',
             itemId: 'cancelBtn',
             scale: 'medium',
-            text: i18n._('Cancel'),
+            text: '<i class="material-icons" style="color: red;">cancel</i> <span>' + i18n._('Cancel') + '</span>',
             hidden: true,
             listeners: {
                 click: 'onCancel'
@@ -135,6 +134,10 @@ Ext.define('Ung.WizardController', {
     },
 
     loadPage: function (index) {
+        if (!this.view) {
+            return;
+        }
+
         if (index < 0 || index >= this.view.cards.length) {
             return;
         }
@@ -165,7 +168,7 @@ Ext.define('Ung.WizardController', {
 
         if (pageNo == (this.view.cards.length - 1)) {
             if (this.view.modalFinish) {
-                this.nextBtn.setText(i18n._('Close'));
+                this.nextBtn.setText('<i class="material-icons">check</i> <span style="vertical-align: middle;">' + i18n._('Close') + '</span>');
                 if (this.view.hasCancel) {
                     this.cancelBtn.hide();
                 }

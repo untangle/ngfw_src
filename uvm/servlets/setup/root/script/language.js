@@ -67,16 +67,19 @@ Ext.define("Ung.Language", {
         i18n = new Ung.I18N({ 'map': rpc.translations });
         var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language});
 
-        this.wizard = Ext.create('Ung.Wizard', {
-            height: 500,
-            maxWidth: 800,
-            minWidth: 320,
-            showLogo: true,
-            languageSetup: true,
-            cardDefaults: {
-                padding: 5
-            },
-            cards: [ language.card ]
+        Ext.create('Ext.container.Viewport', {
+            layout: 'auto',
+            border: false,
+            items: Ext.create('Ung.Wizard', {
+                maxWidth: 800,
+                minWidth: 320,
+                showLogo: true,
+                languageSetup: true,
+                cardDefaults: {
+                    padding: 5
+                },
+                cards: [ language.card ]
+            })
         });
     }
 });

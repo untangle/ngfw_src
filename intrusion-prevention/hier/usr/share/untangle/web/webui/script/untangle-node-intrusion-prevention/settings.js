@@ -1214,7 +1214,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         });
         var setupWizard = Ext.create('Ung.Wizard',{
             modalFinish: true,
-            hasCancel: true,
+            hasCancel: false, // cancel not working, still the window can be closed and acts like a cancel
             cardDefaults: {
                 labelWidth: 200,
                 cls: 'ung-panel'
@@ -1227,6 +1227,9 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
         this.wizardWindow = Ext.create('Ung.Window',{
             title: i18n._("Intrusion Prevention Setup Wizard"),
             items: setupWizard,
+            maxWidth: 800,
+            sizeToRack: false,
+            border: false,
             closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
@@ -1262,9 +1265,7 @@ Ext.define('Webui.untangle-node-intrusion-prevention.settings', {
                 }, this)
             }
         });
-
         this.wizardWindow.show();
-        setupWizard.loadPage(0);
     },
     beforeSave: function(isApply, handler) {
         this.getRpcNode().getUpdatedSettingsFlag(Ext.bind(function (result, exception) {
@@ -1392,7 +1393,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Welcome',{
 
         var items = [{
             xtype: 'component',
-            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>'
+            html: '<h2 class="wizard-title">'+i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>',
+            margin: '10'
         },{
             xtype: 'component',
             html: i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
@@ -1531,13 +1533,15 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
 
         this.title = i18n._( "Classtypes" );
         this.panel = Ext.create('Ext.container.Container',{
+            scrollable: true,
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+i18n._("Classtypes")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Classtypes")+'</h2>',
+                margin: '10'
             },{
                 xtype: 'container',
                 html: i18n._("Classtypes are a generalized  grouping for rules, such as attempts to gain user access."),
-                margin: '0 0 10 0'
+                margin: '0 10 10 10'
             },{
                 name: 'classtypes',
                 xtype: 'radio',
@@ -1547,12 +1551,14 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)
+                }, this),
+                margin: '0 10'
             },{
                 name: 'classtypes_recommended_settings',
                 xtype: 'fieldset',
                 hidden: true,
-                html: "<i>" + i18n._("Recommended classtype Settings") + "</i>"
+                html: "<i>" + i18n._("Recommended classtype Settings") + "</i>",
+                margin: '0 10'
             },{
                 name: 'classtypes',
                 xtype: 'radio',
@@ -1562,14 +1568,16 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Classtypes',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)
+                }, this),
+                margin: '0 10'
             },{
                 name: 'classtypes_custom_settings',
                 xtype:'fieldset',
                 hidden: true,
                 items: [
                     this.classtypesCheckboxGroup
-                ]
+                ],
+                margin: '0 10'
             }]
         });
 
@@ -1673,13 +1681,15 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
 
         this.title = i18n._( "Categories" );
         this.panel = Ext.create('Ext.container.Container',{
+            scrollable: true,
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+i18n._("Categories")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Categories")+'</h2>',
+                margin: '10'
             },{
                 xtype: 'container',
                 html: i18n._("Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."),
-                margin: '0 0 10 0'
+                margin: '0 10 10 10'
             },{
                 name: 'categories',
                 xtype: 'radio',
@@ -1689,11 +1699,13 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)
+                }, this),
+                margin: '0 10'
             },{
                 name: 'categories_recommended_settings',
                 xtype:'fieldset',
-                hidden:true
+                hidden:true,
+                margin: '0 10'
             },{
                 name: 'categories',
                 xtype: 'radio',
@@ -1703,14 +1715,16 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Categories',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)
+                }, this),
+                margin: '0 10'
             },{
                 name: 'categories_custom_settings',
                 xtype:'fieldset',
                 hidden:true,
                 items: [
                     categoriesCheckboxGroup
-                ]
+                ],
+                margin: '0 10'
             }]
         });
 
@@ -1788,7 +1802,8 @@ Ext.define('Webui.untangle-node-intrusion-prevention.Wizard.Congratulations',{
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Congratulations!")+'</h2>',
+                margin: '10'
             }, {
                 xtype: 'container',
                 html: i18n._('Intrusion Prevention is now configured and enabled.'),

@@ -1694,19 +1694,21 @@ Ext.define('Ung.Setup', {
             cards.push(clazz.card);
         }
 
-        this.wizard = Ext.create('Ung.Wizard', {
-            height: 500,
-            maxWidth: 800,
-            minWidth: 320,
-            showLogo: true,
-            cardDefaults: {
-                labelWidth: Ung.setupWizard.labelWidth,
-                padding: 5
-            },
-            cards: cards
-            //renderTo: 'container'
+        Ext.create('Ext.container.Viewport', {
+            layout: 'auto',
+            border: false,
+            items: Ext.create('Ung.Wizard', {
+                maxWidth: 800,
+                minWidth: 320,
+                showLogo: true,
+                cardDefaults: {
+                    labelWidth: Ung.setupWizard.labelWidth,
+                    padding: 5
+                },
+                cards: cards
+            })
         });
-        //this.wizard.loadPage(5);
+
     },
     authenticate: function (password, handler) {
         Ext.MessageBox.wait(i18n._('Authenticating'), i18n._('Please Wait'));
