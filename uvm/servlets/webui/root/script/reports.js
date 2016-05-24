@@ -837,7 +837,11 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
 
-            this.categoryList.getStore().loadData(_categorySideItems);
+            if (this.categoryList.getStore()) {
+                this.categoryList.getStore().loadData(_categorySideItems);
+            } else {
+                return;
+            }
 
 
             this.buildCategorySelector(_categorySideItems);
