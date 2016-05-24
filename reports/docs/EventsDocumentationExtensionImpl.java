@@ -265,7 +265,10 @@ public class ExtensionImpl implements Runnable
         specificDescriptions.put("kind","The type for this address (F=From, T=To, C=CC, G=Envelope From, B=Envelope To, X=Unknown)");
         specificDescriptions.put("personal","personal"); // FIXME
         classSpecificAttributeDescriptions.put("SmtpMessageAddressEvent",specificDescriptions);
-        
+
+        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
+        classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
     }
 
     
