@@ -12,94 +12,104 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class CertificateInformation implements JSONString, Serializable
 {
-    private Date rootcaDateValid;
-    private Date rootcaDateExpires;
-    private String rootcaSubject;
+    private String fileName;
+    private Date dateValid;
+    private Date dateExpires;
+    private String certSubject;
+    private String certIssuer;
+    private String certNames;
+    private boolean httpsServer;
+    private boolean smtpsServer;
+    private boolean ipsecServer;
 
-    private Date serverDateValid;
-    private Date serverDateExpires;
-    private String serverSubject;
-    private String serverIssuer;
-    private String serverNames;
-
-    public void setRootcaDateValid(Date argValue)
+    public void setFileName(String argValue)
     {
-        rootcaDateValid = argValue;
+        fileName = argValue;
     }
 
-    public void setRootcaDateExpires(Date argValue)
+    public void setDateValid(Date argValue)
     {
-        rootcaDateExpires = argValue;
+        dateValid = argValue;
     }
 
-    public void setRootcaSubject(String argValue)
+    public void setDateExpires(Date argValue)
     {
-        rootcaSubject = argValue;
+        dateExpires = argValue;
     }
 
-    public void setServerDateValid(Date argValue)
+    public void setCertSubject(String argValue)
     {
-        serverDateValid = argValue;
+        certSubject = argValue;
     }
 
-    public void setServerDateExpires(Date argValue)
+    public void setCertIssuer(String argValue)
     {
-        serverDateExpires = argValue;
+        certIssuer = argValue;
     }
 
-    public void setServerSubject(String argValue)
+    public void setCertNames(String argValue)
     {
-        serverSubject = argValue;
+        certNames = argValue;
     }
 
-    public void setServerIssuer(String argValue)
+    public void setHttpsServer(boolean argValue)
     {
-        serverIssuer = argValue;
+        httpsServer = argValue;
     }
 
-    public void setServerNames(String argValue)
+    public void setSmtpsServer(boolean argValue)
     {
-        serverNames = argValue;
+        smtpsServer = argValue;
     }
 
-    public Date getRootcaDateValid()
+    public void setIpsecServer(boolean argValue)
     {
-        return rootcaDateValid;
+        ipsecServer = argValue;
     }
 
-    public Date getRootcaDateExpires()
+    public String getFileName()
     {
-        return rootcaDateExpires;
+        return fileName;
     }
 
-    public String getRootcaSubject()
+    public Date getDateValid()
     {
-        return rootcaSubject;
+        return dateValid;
     }
 
-    public Date getServerDateValid()
+    public Date getDateExpires()
     {
-        return serverDateValid;
+        return dateExpires;
     }
 
-    public Date getServerDateExpires()
+    public String getCertSubject()
     {
-        return serverDateExpires;
+        return certSubject;
     }
 
-    public String getServerSubject()
+    public String getCertIssuer()
     {
-        return serverSubject;
+        return certIssuer;
     }
 
-    public String getServerIssuer()
+    public String getCertNames()
     {
-        return serverIssuer;
+        return certNames;
     }
 
-    public String getServerNames()
+    public boolean getHttpsServer()
     {
-        return serverNames;
+        return httpsServer;
+    }
+
+    public boolean getSmtpsServer()
+    {
+        return smtpsServer;
+    }
+
+    public boolean getIpsecServer()
+    {
+        return ipsecServer;
     }
 
     public String toJSONString()

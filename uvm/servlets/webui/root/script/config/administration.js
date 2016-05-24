@@ -6,6 +6,7 @@ Ext.define('Webui.config.administration', {
     panelAdmin: null,
     panelPublicAddress: null,
     panelCertificates: null,
+    gridCertList: null,
     certGeneratorWindow: null,
     panelSnmp: null,
     panelSkins: null,
@@ -114,7 +115,6 @@ Ext.define('Webui.config.administration', {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return this.rpc.adminSettings;
     },
@@ -129,17 +129,27 @@ Ext.define('Webui.config.administration', {
         }
         return this.rpc.systemSettings;
     },
-    // get Current Server CertInfo
-    getCertificateInformation: function(forceReload) {
-        if (forceReload || this.rpc.currentServerCertInfo === undefined) {
+    // get root certificate details
+    getRootCertificateInformation: function(forceReload) {
+        if (forceReload || this.rpc.rootCertInfo === undefined) {
             try {
-                this.rpc.currentServerCertInfo = Ung.Main.getCertificateManager().getCertificateInformation();
+                this.rpc.rootCertInfo = Ung.Main.getCertificateManager().getRootCertificateInformation();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
-        return this.rpc.currentServerCertInfo;
+        return this.rpc.rootCertInfo;
+    },
+    // get list of server certificates
+    getServerCertificateList: function(forceReload) {
+        if (forceReload || this.rpc.serverCertList === undefined) {
+            try {
+                this.rpc.serverCertList = Ung.Main.getCertificateManager().getServerCertificateList();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.serverCertList;
     },
     // get hostname
     getHostname: function(forceReload) {
@@ -157,7 +167,6 @@ Ext.define('Webui.config.administration', {
         else
             return this.rpc.hostname;
     },
-
     buildAdmin: function() {
         var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
             header: i18n._("change password"),
@@ -490,6 +499,8 @@ Ext.define('Webui.config.administration', {
     },
 
     buildCertificates: function() {
+        this.buildCertGrid();
+
         this.panelCertificates = Ext.create('Ext.panel.Panel', {
             name: 'panelCertificates',
             helpSource: 'administration_certificates',
@@ -502,26 +513,25 @@ Ext.define('Webui.config.administration', {
             items: [{
                 title: i18n._('Certificate Authority'),
                 defaults: { labelWidth: 150 },
-                html: '<HR>',
                 items: [{
                     xtype: 'component',
                     margin: '5 0 5 0',
-                    html:  i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
+                    html:  i18n._("The Certificate Authority is used to create and sign SSL certificates used by several applications and services such as SSL Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
                 },{
                     xtype: 'displayfield',
                     fieldLabel: i18n._('Valid starting'),
                     id: 'rootca_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid)
+                    value: this.getRootCertificateInformation() == null ? "" : i18n.timestampFormat(this.getRootCertificateInformation().dateValid)
                 },{
                     xtype: 'displayfield',
                     fieldLabel: i18n._('Valid until'),
                     id: 'rootca_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires)
+                    value: this.getRootCertificateInformation() == null ? "" : i18n.timestampFormat(this.getRootCertificateInformation().dateExpires)
                 },{
                     xtype: 'displayfield',
                     fieldLabel: i18n._('Subject DN'),
                     id: 'rootca_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject
+                    value: this.getRootCertificateInformation() == null ? "" : this.getRootCertificateInformation().certSubject
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -582,56 +592,30 @@ Ext.define('Webui.config.administration', {
                     }]
                 }]
             },{
-                title: i18n._('Server Certificate'),
+                title: i18n._('Server Certificates'),
                 defaults: { labelWidth: 150 },
-                html: '<HR>',
                 items: [{
                     xtype: 'component',
-                    margin: '5 0 5 0',
-                    html:  i18n._("The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.")
+                    margin: '5 0 10 0',
+                    html: i18n._("The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.")
+                }, this.gridCertList, {
+                    xtype: 'button',
+                    margin: '5 5 0 5',
+                    minWidth: 200,
+                    text: i18n._('Generate Server Certificate'),
+                    iconCls: 'action-icon',
+                    handler: Ext.bind(function() {
+                        this.certGeneratorPopup("SERVER", this.getHostname(true), i18n._('Generate Server Certificate'));
+                    }, this)
                 },{
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._('Valid starting'),
-                    id: 'server_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid)
-                },{
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._('Valid until'),
-                    id: 'server_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires)
-                },{
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._('Issuer DN'),
-                    id: 'server_status_issuerDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer
-                },{
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._('Subject DN'),
-                    id: 'server_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject
-                },{
-                    xtype: 'displayfield',
-                    fieldLabel: i18n._('Alternative Names'),
-                    id: 'server_status_SAN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames
-                },{
-                    xtype: 'fieldset',
-                    layout: 'column',
-                    items: [{
-                        xtype: 'button',
-                        margin: '0 5 0 5',
-                        minWidth: 200,
-                        text: i18n._('Generate Server Certificate'),
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function() {
-                            this.certGeneratorPopup("SERVER", this.getHostname(true), i18n._('Generate Server Certificate'));
-                        }, this)
-                    },{
-                        xtype: 'component',
-                        margin: '0 5 0 5',
-                        columnWidth: 1,
-                        html: i18n._('Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.')
-                    }]
+                    xtype: 'button',
+                    margin: '5 5 0 5',
+                    minWidth: 200,
+                    text: i18n._('Upload Server Certificate'),
+                    iconCls: 'action-icon',
+                    handler: Ext.bind(function() {
+                        this.handleServerCertificateUpload();
+                    }, this)
                 }]
             },{
                 title: i18n._('Third Party Server Certificate'),
@@ -677,7 +661,7 @@ Ext.define('Webui.config.administration', {
                         minWidth: 200,
                         text: i18n._('Import Signed Server Certificate'),
                         iconCls: 'action-icon',
-                        handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
+                        handler: Ext.bind(function() { this.handleSignedCertificateUpload(); }, this)
                     },{
                         xtype: 'component',
                         margin: '0 5 0 5',
@@ -687,6 +671,112 @@ Ext.define('Webui.config.administration', {
                 }]
             }]
         });
+    },
+
+    buildCertGrid: function() {
+        this.gridCertList = Ext.create('Ung.grid.Panel',{
+            title: i18n._("Server Certificates &nbsp;&nbsp; (click any cell to see details)"),
+            settingsCmp: this,
+            autoGenerateId: true,
+            height: 200,
+            hasDelete: false,
+            hasEdit: false,
+            hasAdd: false,
+            dataExpression: "getServerCertificateList().list",
+            recordJavaClass: "com.untangle.uvm.CertificateInformation",
+            fields: [{
+                name: 'fileName',
+            }, {
+                name: 'certSubject',
+            }, {
+                name: 'certIssuer',
+            }, {
+                name: 'dateValid',
+            }, {
+                name: 'dateExpires',
+            }, {
+                name: 'httpsServer',
+            }, {
+                name: 'smtpsServer',
+            }, {
+                name: 'ipsecServer',
+            }],
+            columns: [{
+                header: i18n._("File"),
+                flex: 0,
+                width: 120,
+                sortable: true,
+                dataIndex: 'fileName'
+            }, {
+                header: i18n._("Subject"),
+                flex: 1,
+                width: 220,
+                sortable: true,
+                dataIndex: 'certSubject'
+            }, {
+                header: i18n._("Issued By"),
+                flex: 1,
+                width: 220,
+                sortable: true,
+                dataIndex: 'certIssuer'
+            }, {
+                header: i18n._("Date Valid"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'dateValid',
+                renderer: function(value) { return(i18n.timestampFormat(value)); }
+            }, {
+                header: i18n._("Date Expires"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'dateExpires',
+                renderer: function(value) { return(i18n.timestampFormat(value)); }
+            }, {
+                header: i18n._("HTTPS"),
+                xtype: 'checkcolumn',
+                width: 60,
+                dataIndex: 'httpsServer'
+            }, {
+                header: i18n._("SMTPS"),
+                xtype: 'checkcolumn',
+                width: 60,
+                dataIndex: 'smtpsServer'
+            }, {
+                header: i18n._("IPSEC"),
+                xtype: 'checkcolumn',
+                width: 60,
+                dataIndex: 'ipsecServer'
+            }, {
+                header: i18n._("Delete"),
+                xtype: 'actioncolumn',
+                width: 60,
+                items: [{
+                    id: 'certRemove',
+                    iconCls: 'icon-delete-row',
+                    tooltip: i18n._("Click to delete"),
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        if (record.get("fileName") === "apache.pem") {
+                            Ext.MessageBox.alert("System Certificate","This is the default system certificate and cannot be removed.");
+                            return;
+                        }
+                        if (record.get("httpsServer") || record.get("smtpsServer") || record.get("ipsecServer")) {
+                            Ext.MessageBox.alert("Certificate In Use","You can not delete a certificate that is assigned to one or more services.");
+                            return;
+                        }
+                        Ung.Main.getCertificateManager().removeServerCertificate(record.get("fileName"));
+                        this.getServerCertificateList(true);
+                        this.gridCertList.reload();
+                    }, this)
+                }]
+            }]
+        });
+
+        this.gridCertList.addListener('cellclick', function(grid, element, columnIndex, dataRecord) {
+            if (columnIndex == 1) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Issued To',dataRecord.data.certSubject);
+            if (columnIndex == 2) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Issued By',dataRecord.data.certIssuer);
+            if (columnIndex == 3) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Date Valid',i18n.timestampFormat(dataRecord.data.dateValid));
+            if (columnIndex == 4) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Date Expires',i18n.timestampFormat(dataRecord.data.dateExpires));
+        }, this.gridCertList);
     },
 
     certGeneratorPopup: function(certMode, hostName, titleText) {
@@ -751,7 +841,7 @@ Ext.define('Webui.config.administration', {
                     name: "State",
                     helptip: i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
                     allowBlank: false
-                    
+
                 },{
                     xtype: 'textfield',
                     fieldLabel: i18n._('City/Locality') + " (L)",
@@ -897,24 +987,8 @@ Ext.define('Webui.config.administration', {
 
                 if (result)
                 {
-                // stop the metric manager so we don't get a session timeout error
-                Ung.MetricManager.stop();
-
-                // create a restart window
-                var restartWindow = Ext.create('Ext.window.MessageBox', { minProgressWidth: 360 });
-
-                // the cert manager will reload apache to activate the new cert
-                // so we show a please wait message and then click to continue
-                restartWindow.wait(i18n._("Generating server certificate and restarting web server..."), i18n._("Please Wait"), {
-                    interval: 1000,
-                    increment: 15,
-                    duration: 15000,
-                    scope: this,
-                    fn: function() {
-                        restartWindow.hide();
-                        Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate generation successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
-                        }
-                    });
+                    this.getServerCertificateList(true);
+                    this.gridCertList.reload();
                 }
 
                 else
@@ -925,7 +999,86 @@ Ext.define('Webui.config.administration', {
         }
     },
 
-    handleCertificateUpload: function() {
+    handleServerCertificateUpload: function() {
+        master = this;
+        popup = new Ext.Window({
+            title: i18n._("Upload Server Certificate"),
+            layout: 'fit',
+            width: 600,
+            height: 120,
+            border: true,
+            xtype: 'form',
+            items: [{
+                xtype: "form",
+                id: "upload_server_cert_form",
+                url: "upload",
+                border: false,
+                items: [{
+                    xtype: 'filefield',
+                    fieldLabel: i18n._("File"),
+                    name: "filename",
+                    id: "filename",
+                    margin: "10 10 10 10",
+                    width: 560,
+                    labelWidth: 50,
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: "hidden",
+                    name: "type",
+                    value: "server_cert"
+                    }]
+                }],
+                buttons: [{
+                    xtype: "button",
+                    text: i18n._("Upload Certificate"),
+                    name: "Upload Certificate",
+                    width: 200,
+                    handler: Ext.bind(function() {
+                        this.handleServerFileUpload();
+                    }, this)
+                }, {
+                    xtype: "button",
+                    text: i18n._("Cancel"),
+                    name: "Cancel",
+                    width: 100,
+                    handler: Ext.bind(function() {
+                        popup.close();
+                    }, this)
+                }]
+        });
+
+        popup.show();
+    },
+
+    handleServerFileUpload: function()
+    {
+        var prova = Ext.getCmp("upload_server_cert_form");
+        var fileText = prova.items.get(0);
+        var form = prova.getForm();
+        var parent = this;
+
+        if (fileText.getValue().length === 0)
+        {
+            Ext.MessageBox.alert(i18n._("Invalid or missing File"), i18n._("Please select a certificate to upload."));
+            return false;
+        }
+
+        form.submit({
+            success: function(form, action) {
+                popup.close();
+                parent.getServerCertificateList(true);
+                parent.gridCertList.reload();
+                },
+            failure: function(form, action) {
+                popup.close();
+                Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
+                }
+            });
+        return true;
+    },
+
+    handleSignedCertificateUpload: function() {
         master = this;
         popup = new Ext.Window({
             title: i18n._("Import Signed Server Certificate"),
@@ -952,7 +1105,7 @@ Ext.define('Webui.config.administration', {
                 }, {
                     xtype: "hidden",
                     name: "type",
-                    value: "server_cert"
+                    value: "signed_cert"
                     }]
                 }],
                 buttons: [{
@@ -961,7 +1114,7 @@ Ext.define('Webui.config.administration', {
                     name: "Upload Certificate",
                     width: 200,
                     handler: Ext.bind(function() {
-                        this.handleFileUpload();
+                        this.handleSignedFileUpload();
                     }, this)
                 }, {
                     xtype: "button",
@@ -977,7 +1130,7 @@ Ext.define('Webui.config.administration', {
         popup.show();
     },
 
-    handleFileUpload: function()
+    handleSignedFileUpload: function()
     {
         var prova = Ext.getCmp("upload_signed_cert_form");
         var fileText = prova.items.get(0);
@@ -1022,7 +1175,7 @@ Ext.define('Webui.config.administration', {
     },
 
     updateCertificateDisplay: function() {
-        var certInfo = this.getCertificateInformation(true);
+        var certInfo = this.getRootCertificateInformation(true);
         if (certInfo != null) {
             Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
             Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
@@ -1062,7 +1215,7 @@ Ext.define('Webui.config.administration', {
             name: 'panelSnmp',
             helpSource: 'administration_snmp',
             title: i18n._('SNMP'),
-            cls: 'ung-panel', 
+            cls: 'ung-panel',
             autoScroll: true,
             defaults: {
                 xtype: 'fieldset'
@@ -1245,8 +1398,8 @@ Ext.define('Webui.config.administration', {
                     value: this.getSystemSettings().snmpSettings.v3Username,
                     allowBlank: false,
                     blankText: i18n._("Username must be specified."),
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
-                },{    
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
+                },{
                     xtype: 'combo',
                     fieldLabel: i18n._('Authentication Protocol'),
                     name: "snmpv3AuthenticationProtocol",
@@ -1269,7 +1422,7 @@ Ext.define('Webui.config.administration', {
                     allowBlank: false,
                     blankText: i18n._("Authentication Passphrase must be specified."),
                     validator: passwordValidator,
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1280,8 +1433,8 @@ Ext.define('Webui.config.administration', {
                     allowBlank: false,
                     blankText: i18n._("Confirm Authentication Passphrase must be specified."),
                     validator: passwordValidator,
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
-                },{    
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
+                },{
                     xtype: 'combo',
                     fieldLabel: i18n._('Privacy Protocol'),
                     name: "snmpv3PrivacyProtocol",
@@ -1304,7 +1457,7 @@ Ext.define('Webui.config.administration', {
                     allowBlank: false,
                     blankText: i18n._("Privacy Passphrase must be specified."),
                     validator: passwordValidator,
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1315,7 +1468,7 @@ Ext.define('Webui.config.administration', {
                     allowBlank: false,
                     blankText: i18n._("Confirm Privacy Passphrase must be specified."),
                     validator: passwordValidator,
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'checkbox',
                     hideEmptyLabel: false,
@@ -1324,7 +1477,7 @@ Ext.define('Webui.config.administration', {
                     id: 'administration_snmp_v3required',
                     checked: this.getSystemSettings().snmpSettings.v3Required,
                     validator: passwordValidator,
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 }]
             }]
         });
@@ -1451,7 +1604,7 @@ Ext.define('Webui.config.administration', {
 
     // validation function
     validate: function() {
-        return  this.validateAdminAccounts() && this.validatePublicAddress() && this.validateSnmp();
+        return  this.validateAdminAccounts() && this.validatePublicAddress() && this.validateSnmp() && this.validateCertificates();
     },
 
     //validate Admin Accounts
@@ -1603,7 +1756,7 @@ Ext.define('Webui.config.administration', {
             }
 
             this.getSystemSettings().snmpSettings.v3Enabled = isV3Enabled;
-            if( isV3Enabled ){    
+            if( isV3Enabled ){
                 this.getSystemSettings().snmpSettings.v3Required = Ext.getCmp('administration_snmp_v3required').getValue();
                 this.getSystemSettings().snmpSettings.v3Username = Ext.getCmp('administration_snmp_v3username').getValue();
                 this.getSystemSettings().snmpSettings.v3AuthenticationProtocol = Ext.getCmp('administration_snmp_v3authenticationProtocol').getValue();
@@ -1612,6 +1765,16 @@ Ext.define('Webui.config.administration', {
                 this.getSystemSettings().snmpSettings.v3PrivacyPassphrase = Ext.getCmp('administration_snmp_v3privacyPassphrase').getValue();
             }
 
+        }
+        return true;
+    },
+    validateCertificates: function() {
+        var rows = this.gridCertList.getStore().getRange();
+        for(var i = 0;i < rows.length;i++) {
+            var record = this.gridCertList.getStore().getAt(i);
+            if (record.data.httpsServer === true) this.getSystemSettings().webCertificate = record.data.fileName;
+            if (record.data.smtpsServer === true) this.getSystemSettings().mailCertificate = record.data.fileName;
+            if (record.data.ipsecServer === true) this.getSystemSettings().ipsecCertificate = record.data.fileName;
         }
         return true;
     },
@@ -1646,7 +1809,8 @@ Ext.define('Webui.config.administration', {
                 }
                 if(isApply) {
                     this.getAdminSettings(true);
-                    this.getCertificateInformation(true);
+                    this.getRootCertificateInformation(true);
+                    this.getServerCertificateList(true);
                     this.getHostname(true);
                     this.clearDirty();
                     Ext.MessageBox.hide();

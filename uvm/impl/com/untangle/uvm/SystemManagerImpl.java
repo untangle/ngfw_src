@@ -177,6 +177,9 @@ public class SystemManagerImpl implements SystemManager
 
     public void setSettings(final SystemSettings newSettings)
     {
+        String oldApacheCert = settings.getWebCertificate();
+        String newApacheCert = newSettings.getWebCertificate();
+
         /**
          * Save the settings
          */
@@ -196,6 +199,11 @@ public class SystemManagerImpl implements SystemManager
 
         /* sync settings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
+
+        /* if the web server cert changed we need to restart apache */
+        if (newApacheCert.equals(oldApacheCert) == false) {
+            UvmContextFactory.context().certificateManager().activateApacheCertificate();
+        }
 
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date, write it

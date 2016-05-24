@@ -40,6 +40,16 @@ public class SystemSettings implements Serializable, JSONString
     private SnmpSettings snmpSettings;
 
     private String timeSource = "ntp";
+    
+    /**
+     * These are used to indicate which certificate is assigned to each of
+     * the services that are provided by this server. We assign apache.pem
+     * to each by default, since that is the name of the cert that is
+     * created and signed by our internal CA during the installation.
+     */
+    private String webCertificate = "apache.pem";
+    private String mailCertificate = "apache.pem";
+    private String ipsecCertificate = "apache.pem";
 
     public SystemSettings() { }
 
@@ -127,5 +137,15 @@ public class SystemSettings implements Serializable, JSONString
     */
     public String getTimeSource(){ return timeSource; }
     public void setTimeSource( String newValue) { this.timeSource = newValue; }
-    
+
+    /**
+     * These are used to get and set the certificates used by the
+     * different SSL secured services provided by this server
+     */
+    public String getWebCertificate() { return webCertificate; }
+    public String getMailCertificate() { return mailCertificate; }
+    public String getIpsecCertificate() { return ipsecCertificate; }
+    public void setWebCertificate(String newValue) { this.webCertificate = newValue; }
+    public void setMailCertificate(String newValue) { this.mailCertificate = newValue; }
+    public void setIpsecCertificate(String newValue) { this.ipsecCertificate = newValue; }
 }

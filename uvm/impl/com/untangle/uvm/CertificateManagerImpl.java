@@ -6,7 +6,10 @@ package com.untangle.uvm;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.KeyStore;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -14,6 +17,7 @@ import java.util.List;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.io.File;
 
@@ -31,8 +35,10 @@ import com.untangle.uvm.servlet.DownloadHandler;
 
 public class CertificateManagerImpl implements CertificateManager
 {
+    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/RootCAInstaller.exe";
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
+    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates";
 
     private static final String ROOT_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.crt";
     private static final String ROOT_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.key";
@@ -42,9 +48,9 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
     private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/RootCAInstaller.exe";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
+    File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
     File rootCertFile = new File(ROOT_CERT_FILE);
     File rootKeyFile = new File(ROOT_KEY_FILE);
     File localRequestFile = new File(LOCAL_REQUEST_FILE);
@@ -53,7 +59,6 @@ public class CertificateManagerImpl implements CertificateManager
     File localKeyFile = new File(LOCAL_KEY_FILE);
     File localPemFile = new File(LOCAL_PEM_FILE);
     File apachePemFile = new File(APACHE_PEM_FILE);
-    File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
 
     private static final String MARKER_CERT_HEAD = "-----BEGIN CERTIFICATE-----";
     private static final String MARKER_CERT_TAIL = "-----END CERTIFICATE-----";
@@ -61,6 +66,8 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String MARKER_RKEY_TAIL = "-----END RSA PRIVATE KEY-----";
     private static final String MARKER_GKEY_HEAD = "-----BEGIN PRIVATE KEY-----";
     private static final String MARKER_GKEY_TAIL = "-----END PRIVATE KEY-----";
+
+    private static final String CERT_PASSWORD = "password";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
@@ -80,6 +87,7 @@ public class CertificateManagerImpl implements CertificateManager
     protected CertificateManagerImpl()
     {
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new SignedCertificateUploadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateInstallerDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
@@ -122,25 +130,15 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
         }
 
-        // always make sure the local PFX file exists and is up to date
-        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
-
-        // if the apache.pem in the settings directory is newer than
-        // the one used by apache we copy the new file and restart
-        if (localPemFile.lastModified() > apachePemFile.lastModified()) {
-            logger.info("Copying newer apache cert from " + LOCAL_PEM_FILE + " to " + APACHE_PEM_FILE);
-            UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
-            UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
-
-            // in the development enviroment save these to a global location
-            // so they will survive a rake clean
-            if (UvmContextFactory.context().isDevel()) {
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
-            }
+        // Get the fingerprint for the configured web cert and the active
+        // apache cert.  If they don't match we copy the configured cert to
+        // the apache directory and restart the server to activate the cert. 
+        String apacheFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + APACHE_PEM_FILE);
+        String configFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + CERT_STORE_PATH + "/" + UvmContextFactory.context().systemManager().getSettings().getWebCertificate());
+        if (apacheFingerprint.equals(configFingerprint) == false) {
+            logger.info("Replacing existing apache certificate [" + apacheFingerprint + "] with configured certificate [" + configFingerprint + "]");
+            activateApacheCertificate();
         }
-
     }
 
     // called by the UI to upload a signed server certificate
@@ -155,10 +153,27 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
-            String certString = new String(fileItem.get());
             FileOutputStream certStream;
+            String baseName;
+            String basePath;
+            File checkFile;
+            int dotLocation = 0;
             int certLen = 0;
             int keyLen = 0;
+
+            String certString = fileItem.getString();
+            String certName = fileItem.getName();
+            dotLocation = certName.indexOf('.');
+
+            if (dotLocation < 0) baseName = certName;
+            else baseName = certName.substring(0, dotLocation);
+            basePath = CERT_STORE_PATH + "/" + baseName;
+
+            // make sure the file doesn't already exist
+            checkFile = new File(basePath + ".pem");
+            if (checkFile.exists()) return new ExecManagerResult(1, "A file with that name already exists on this server.");
+            checkFile = new File(basePath + ".pfx");
+            if (checkFile.exists()) return new ExecManagerResult(1, "A file with that name already exists on this server.");
 
             int certTop = certString.indexOf(MARKER_CERT_HEAD);
             int certEnd = certString.indexOf(MARKER_CERT_TAIL);
@@ -166,7 +181,7 @@ public class CertificateManagerImpl implements CertificateManager
             // if both cert markers found then calculate the length
             if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
 
-            if (certLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate");
+            if (certLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate.");
 
             int keyTop = certString.indexOf(MARKER_RKEY_HEAD);
             int keyEnd = certString.indexOf(MARKER_RKEY_TAIL);
@@ -186,52 +201,101 @@ public class CertificateManagerImpl implements CertificateManager
                 }
             }
 
-            // if the uploaded file only contains a cert then we combine
-            // with the existing private key and create a new pem file
-            if (keyLen == 0) {
-                // start by writing the uploaded cert to a temporary file
-                certStream = new FileOutputStream(localTempFile);
-                certStream.write(certString.getBytes(), certTop, certLen);
-                certStream.close();
+            // if the uploaded file does not include a private key we can't use it for anything
+            if (keyLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid private key.");
 
-                // Make sure the cert they uploaded matches our private key 
-                String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + LOCAL_TEMP_FILE);
-                logger.info(LOCAL_TEMP_FILE + certMod);
-                String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
-                logger.info(LOCAL_KEY_FILE + keyMod);
-                UvmContextFactory.context().execManager().exec("rm -f " + LOCAL_TEMP_FILE);
+            // we have a cert and a key and maybe other stuff so we use the
+            // the uploaded file exactly as provided
+            logger.info("Processing uploaded server certificate: " + basePath);
+            certStream = new FileOutputStream(basePath + ".pem");
+            certStream.write(fileItem.get());
+            certStream.close();
 
-                // if they cert and key modulus don't match then it's garbage 
-                if (certMod.compareTo(keyMod) != 0) {
-                    return new ExecManagerResult(1, "The public key in the uploaded file does not match the server private key");
-                }
+            // now create a PFX file from the PEM for for apps that use
+            // SSLEngine like web filter, captive portal, etc.
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -out " + basePath + ".pfx -in " + basePath + ".pem");
 
-                // the cert and key match so save the cert to the local file
-                certStream = new FileOutputStream(localCertFile);
-                certStream.write(certString.getBytes(), certTop, certLen);
-                certStream.close();
+            return new ExecManagerResult(0, "Certificate successfully uploaded.");
+        }
+    }
 
-                // next create the local PEM file from the local KEY and CRT files
-                UvmContextFactory.context().execManager().exec("cat " + LOCAL_KEY_FILE + " " + LOCAL_CERT_FILE + " > " + LOCAL_PEM_FILE);
+    // called by the UI to upload a certificate signed by a 3rd parth
+    private class SignedCertificateUploadHandler implements UploadHandler
+    {
+        // TODO - this needs to be re-worked and tested
+        @Override
+        public String getName()
+        {
+            return "signed_cert";
+        }
+
+        @Override
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            String certString = new String(fileItem.get());
+            FileOutputStream certStream;
+            int certLen = 0;
+            int keyLen = 0;
+
+            int certTop = certString.indexOf(MARKER_CERT_HEAD);
+            int certEnd = certString.indexOf(MARKER_CERT_TAIL);
+
+            // if both cert markers found then calculate the length
+            if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
+
+            if (certLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid certificate.");
+
+            int keyTop = certString.indexOf(MARKER_RKEY_HEAD);
+            int keyEnd = certString.indexOf(MARKER_RKEY_TAIL);
+
+            // if both key markers found then calculate the length
+            if ((keyTop >= 0) && (keyEnd >= 0)) {
+                keyLen = (keyEnd - keyTop + MARKER_RKEY_TAIL.length());
             }
 
-            // we have a cert and a key and maybe other stuff so we just
-            // use the uploaded file exactly as provided
+            // didn't find the RSA style so check for generic format
             else {
-                certStream = new FileOutputStream(localPemFile);
-                certStream.write(fileItem.get());
-                certStream.close();
+                keyTop = certString.indexOf(MARKER_GKEY_HEAD);
+                keyEnd = certString.indexOf(MARKER_GKEY_TAIL);
+
+                if ((keyTop >= 0) && (keyEnd >= 0)) {
+                    keyLen = (keyEnd - keyTop + MARKER_GKEY_TAIL.length());
+                }
             }
+
+            // the uploaded file should not include a private key
+            if (keyLen != 0) return new ExecManagerResult(1, "The uploaded file includes an invalid private key.");
+
+            // start by writing the uploaded cert to a temporary file
+            certStream = new FileOutputStream(localTempFile);
+            certStream.write(certString.getBytes(), certTop, certLen);
+            certStream.close();
+
+            // Make sure the cert they uploaded matches our private key 
+            String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + LOCAL_TEMP_FILE);
+            logger.info(LOCAL_TEMP_FILE + certMod);
+            String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
+            logger.info(LOCAL_KEY_FILE + keyMod);
+            UvmContextFactory.context().execManager().exec("rm -f " + LOCAL_TEMP_FILE);
+
+            // if they cert and key modulus don't match then it's garbage 
+            if (certMod.compareTo(keyMod) != 0) {
+                return new ExecManagerResult(1, "The public key in the uploaded file does not match the server private key.");
+            }
+
+            // the cert and key match so save the cert to the local file
+            certStream = new FileOutputStream(localCertFile);
+            certStream.write(certString.getBytes(), certTop, certLen);
+            certStream.close();
+
+            // next create the local PEM file from the local KEY and CRT files
+            UvmContextFactory.context().execManager().exec("cat " + LOCAL_KEY_FILE + " " + LOCAL_CERT_FILE + " > " + LOCAL_PEM_FILE);
 
             // now convert the local PEM file to the local PFX file for apps
             // that use SSLEngine like web filter and captive portal
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
 
-            // now copy the local PEM file to the apache directory and restart
-            UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
-            UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
-
-            return new ExecManagerResult(0, "Certificate successfully uploaded");
+            return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }
     }
 
@@ -338,8 +402,44 @@ public class CertificateManagerImpl implements CertificateManager
         }
     }
 
-    // called by the UI to get info about the root and server certificates
-    public CertificateInformation getCertificateInformation()
+    // called by the UI to get the list of server certificates
+    public LinkedList<CertificateInformation> getServerCertificateList()
+    {
+        LinkedList<CertificateInformation> certList = new LinkedList<CertificateInformation>();
+        File filePath = new File(CERT_STORE_PATH);
+
+        File[] fileList = filePath.listFiles(new FilenameFilter()
+        {
+            public boolean accept(File dir, String name)
+            {
+                return name.endsWith(".pem");
+            }
+        });
+
+        for (File file : fileList) {
+            CertificateInformation certInfo = getServerCertificateInformation(CERT_STORE_PATH + "/" + file.getName());
+            if (certInfo != null) {
+                certInfo.setFileName(file.getName());
+
+                if (UvmContextFactory.context().systemManager().getSettings().getWebCertificate().equals(file.getName())) {
+                    certInfo.setHttpsServer(true);
+                }
+                if (UvmContextFactory.context().systemManager().getSettings().getMailCertificate().equals(file.getName())) {
+                    certInfo.setSmtpsServer(true);
+                }
+                if (UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().equals(file.getName())) {
+                    certInfo.setIpsecServer(true);
+                }
+
+                certList.add(certInfo);
+            }
+        }
+
+        return (certList);
+    }
+
+    // called by getCertificateList to retrieve details about a certificate
+    public CertificateInformation getServerCertificateInformation(String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         FileInputStream certStream;
@@ -350,21 +450,10 @@ public class CertificateManagerImpl implements CertificateManager
             // use to create X509Certificates from which we can grab info
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
 
-            // Grab the info from our root CA certificate. We can use the file
-            // as is since it only contains the DER cert encoded in Base64
-            certStream = new FileInputStream(ROOT_CERT_FILE);
-            certObject = (X509Certificate) factory.generateCertificate(certStream);
-            certStream.close();
-
-            certInfo.setRootcaDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
-            certInfo.setRootcaDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
-            certInfo.setRootcaSubject(certObject.getSubjectDN().toString());
-
-            // Now grab the info from the Apache certificate. This is a little
-            // more complicated because we have to skip over the private key
-            // and look for the certificate portion of the file
-            certStream = new FileInputStream(apachePemFile);
-            byte[] certData = new byte[(int) apachePemFile.length()];
+            // find the certificate inside the file
+            File certFile = new File(fileName);
+            certStream = new FileInputStream(certFile);
+            byte[] certData = new byte[(int) certFile.length()];
             certStream.read(certData);
             certStream.close();
 
@@ -384,14 +473,17 @@ public class CertificateManagerImpl implements CertificateManager
             ByteArrayInputStream byteStream = new ByteArrayInputStream(certString.getBytes());
             certObject = (X509Certificate) factory.generateCertificate(byteStream);
 
-            certInfo.setServerDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
-            certInfo.setServerDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
-            certInfo.setServerSubject(certObject.getSubjectDN().toString());
-            certInfo.setServerIssuer(certObject.getIssuerDN().toString());
+            certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
+            certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
+            certInfo.setCertSubject(certObject.getSubjectDN().toString());
+            certInfo.setCertIssuer(certObject.getIssuerDN().toString());
 
-            // The SAN list is stored as a collection of List's where the
-            // first entry is an Integer indicating the type of name and the
-            // second entry is the String holding the actual name
+            /*
+             * The subject alt names list is stored as a collection of Lists
+             * where the first entry is an Integer indicating the type of name
+             * and the second entry is the String holding the actual name
+             */
+
             Collection<List<?>> altNames = certObject.getSubjectAlternativeNames();
             StringBuilder nameList = new StringBuilder(1024);
 
@@ -410,12 +502,43 @@ public class CertificateManagerImpl implements CertificateManager
                     if (nameList.length() != 0) nameList.append(",");
                     nameList.append(validAlternateList.get(value) + ":" + entry.get(1).toString());
                 }
-                certInfo.setServerNames(nameList.toString());
+                certInfo.setCertNames(nameList.toString());
             }
         }
 
         catch (Exception exn) {
             logger.error("Exception in getCertificateInformation()", exn);
+            return (null);
+        }
+
+        return certInfo;
+    }
+
+    // called by the UI to get info about the root certificate
+    public CertificateInformation getRootCertificateInformation()
+    {
+        CertificateInformation certInfo = new CertificateInformation();
+        FileInputStream certStream;
+        X509Certificate certObject;
+
+        try {
+            // get an instance of the X509 certificate factory that we can
+            // use to create X509Certificates from which we can grab info
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+
+            // Grab the info from our root CA certificate. We can use the file
+            // as is since it only contains the DER cert encoded in Base64
+            certStream = new FileInputStream(ROOT_CERT_FILE);
+            certObject = (X509Certificate) factory.generateCertificate(certStream);
+            certStream.close();
+
+            certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
+            certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
+            certInfo.setCertSubject(certObject.getSubjectDN().toString());
+        }
+
+        catch (Exception exn) {
+            logger.error("Exception in getRootCertificateInformation()", exn);
         }
 
         return certInfo;
@@ -446,30 +569,60 @@ public class CertificateManagerImpl implements CertificateManager
     public boolean generateServerCertificate(String certSubject, String altNames)
     {
         logger.info("Creating new locally signed apache certificate: " + certSubject);
-
-        String argList[] = new String[3];
-        argList[0] = "APACHE"; // puts cert file and key in settings directory
+        String argList[] = new String[4];
+        String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+        argList[0] = "SERVER"; // puts cert file and key in settings directory
         argList[1] = certSubject;
         argList[2] = altNames;
+        argList[3] = baseName;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+        return (true);
+    }
 
-        // now convert the local PEM file to the local PFX file for apps
-        // that use SSLEngine like web filter and captive portal
-        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:password -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
+    // called by the UI to delete a server certificate
+    public void removeServerCertificate(String fileName)
+    {
+        String fileBase;
+        int dotLocation;
+        File killFile;
 
-        // now copy the pem file to the apache directory and restart
-        UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
+        // don't let them delete the original system certificate
+        if (fileName.equals("apache.pem")) return;
+
+        // extract the file name without the extension
+        dotLocation = fileName.indexOf('.');
+        if (dotLocation < 0) return;
+        fileBase = fileName.substring(0, dotLocation);
+
+        // remove all the files we created when the certificate was generated or uploaded
+        killFile = new File(CERT_STORE_PATH + "/" + fileBase + ".pem");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + "/" + fileBase + ".crt");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + "/" + fileBase + ".key");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + "/" + fileBase + ".csr");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + "/" + fileBase + ".pfx");
+        killFile.delete();
+    }
+
+    public void activateApacheCertificate()
+    {
+        String configFile = (CERT_STORE_PATH + "/" + UvmContextFactory.context().systemManager().getSettings().getWebCertificate());
+
+        // copy the configured pem file to the apache directory and restart
+        UvmContextFactory.context().execManager().exec("cp " + configFile + " " + APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
 
         // in the development enviroment save these to a global location
         // so they will survive a rake clean
         if (UvmContextFactory.context().isDevel()) {
-            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
-            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
-            UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
+            // TODO - fix this and all the other dev backup stuff
+            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
+            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
         }
-        
-        return (true);
     }
 }
