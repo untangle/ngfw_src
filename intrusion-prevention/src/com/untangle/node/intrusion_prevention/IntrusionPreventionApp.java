@@ -133,7 +133,7 @@ public class IntrusionPreventionApp extends NodeBase
 
     protected void postStop()
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
         iptablesRules();
     }
 
@@ -145,7 +145,7 @@ public class IntrusionPreventionApp extends NodeBase
         if(wizardCompleted() == false){
             throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
         }
-        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         UvmContextFactory.context().networkManager().registerListener( this.listener );
         this.ipsEventMonitor.start();
         this.ipsEventMonitor.enable();
