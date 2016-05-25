@@ -207,8 +207,9 @@ Ext.define('Webui.config.administration', {
                 "emailAddress": "",
                 "emailAlerts": true,
                 "emailSummaries": true,
-                "password": null,
-                "passwordHashBase64": null
+                "passwordHashBase64": null,
+                "passwordHashShadow": null,
+                "password": null
             },
             sortField: 'username',
             plugins: [changePasswordColumn],
@@ -219,13 +220,15 @@ Ext.define('Webui.config.administration', {
             }, {
                 name: 'emailAddress'
             },{
-                name: "emailAlerts"
+                name: 'emailAlerts'
             },{
-                name: "emailSummaries"
-            }, {
-                name: 'password'
+                name: 'emailSummaries'
             }, {
                 name: 'passwordHashBase64'
+            }, {
+                name: 'passwordHashShadow'
+            }, {
+                name: 'password'
             }],
             columns: [{
                 header: i18n._("Username"),

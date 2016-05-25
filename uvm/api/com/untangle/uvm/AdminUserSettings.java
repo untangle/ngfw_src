@@ -90,7 +90,12 @@ public class AdminUserSettings implements Serializable, JSONString
             return;
         if ( "".equals( passwordHashBase64 ) )
             return;
-        this.passwordHash = Base64.decodeBase64(passwordHashBase64.getBytes());
+
+        // only set it if it hasn't been sen by setPassword
+        // if its been set already by setPassword, use that value
+        if ( this.passwordHash == null ) {
+            this.passwordHash = Base64.decodeBase64(passwordHashBase64.getBytes());
+        }
     }
 
     protected String trans_getPassword( )
