@@ -232,7 +232,11 @@ public class LanguageManagerImpl implements LanguageManager
 
         String i18nModule = module.replaceAll("-", "_");
         Locale locale = getLocale();
-        // get source here to use...
+        String sourceId = "official";
+        if (languageSettings != null && languageSettings.getSource() != null) {
+            sourceId = languageSettings.getSource();
+        }
+        languageSource source = getLanguageSource(sourceId);
 
         String translationKey = i18nModule + "_" + locale.getLanguage();
         
@@ -247,21 +251,13 @@ public class LanguageManagerImpl implements LanguageManager
             if(map.size() == 0){
                 try {
                     I18n i18n = null;
-                    ResourceBundle.clearCache();
+                    ResourceBundle.clearCache(getClass().getClassLoader());
 
-                    languageSource source = null;
-
-                    // !! Use actual source...
-                    try {
-                        // Start with community...
-                        source = getLanguageSource("community");
-                        i18n = I18nFactory.getI18n(source.getPrefix() + "."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
-                    } catch (MissingResourceException e) {
-                        // ...fall back to official translations
-                        source = getLanguageSource("official");
-                        i18n = I18nFactory.getI18n(source.getPrefix()+"."+i18nModule, i18nModule,
-                                           getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
+                    try{
+                        i18n = I18nFactory.getI18n(source.getPrefix() + "." + i18nModule, i18nModule,
+                                            getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
+                    }catch(MissingResourceException e){
+                        // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
                     }
 
                     if (i18n != null) {
@@ -271,7 +267,6 @@ public class LanguageManagerImpl implements LanguageManager
                         }
                     }
                 } catch (MissingResourceException e) {
-                    logger.warn("missing resource");
                     // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
                     // is done in client side
                 }
