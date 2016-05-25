@@ -35,8 +35,6 @@ import org.apache.log4j.Logger;
 
 class SslInspectorManager
 {
-    private static final String apacheCertFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String apacheCertPass = "password";
     private static String keyStorePath = "/var/cache/untangle-ssl";
     private static String keyStorePass = "password";
 
@@ -165,11 +163,12 @@ class SslInspectorManager
 
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
+        String apacheCertFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
+        String apacheCertPass = "password";
         KeyStore keyStore = null;
 
-        // for SMTP we can just use our own certificate rather than creating a fake
+        // for SMTP we use the certificate assigned for scanning STARTTLS traffic
         if (session.getServerPort() == 25) {
-            // our cert generator script creates certificates in PKCS12 format
             keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(new FileInputStream(apacheCertFile), apacheCertPass.toCharArray());
         }
