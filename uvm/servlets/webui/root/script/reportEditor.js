@@ -108,8 +108,7 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["dataIndex", "header"],
             data: []
         });
-        var chartTypes = [["TEXT", i18n._("Text")], ["PIE_GRAPH", i18n._("Pie Graph")], ["TIME_GRAPH", i18n._("Time Graph")], ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
-        var styleTypes = [["PIE", i18n._("Pie")], ["PIE_3D", i18n._("Pie 3D")], ["DONUT", i18n._("Donut")], ["DONUT_3D", i18n._("Donut 3D")], ["COLUMN", i18n._("Column")], ["COLUMN_3D", i18n._("Column 3D")]];
+        var chartTypes = [["TEXT", i18n._("Text")], ["PIE_GRAPH", i18n._("Pie Graph")], ["TIME_GRAPH", i18n._("Time Graph")], ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")], ["EVENT_LIST", i18n._("Event List")]];
 
         var gridSqlConditionsEditor = Ext.create('Ung.grid.Panel', {
             name: 'Sql Conditions',
@@ -216,6 +215,25 @@ Ext.define("Ung.window.ReportEditor", {
             disabled: true,
             store: categoryStore
         }, {
+            xtype: 'combo',
+            name: 'Type',
+            margin: '10 0 10 0',
+            dataIndex: "type",
+            allowBlank: false,
+            editable: false,
+            fieldLabel: i18n._('Type'),
+            queryMode: 'local',
+            width: 350,
+            store: chartTypes,
+            disabled: true,
+            listeners: {
+                "select": {
+                    fn: Ext.bind(function (combo, records, eOpts) {
+                        this.syncComponents();
+                    }, this)
+                }
+            }
+        }, {
             xtype: 'textfield',
             name: "Title",
             dataIndex: "title",
@@ -274,28 +292,51 @@ Ext.define("Ung.window.ReportEditor", {
             listeners: {
                 "change": {
                     fn: Ext.bind(function (elem, newValue) {
+                        this.down('[dataIndex=defaultColumns]').setValue([]);
                         Ung.TableConfig.getColumnsForTable(newValue, this.columnsStore);
-                    }, this),
-                    buffer: 600
+                    }, this)
                 }
             }
         }, {
-            xtype: 'combo',
-            name: 'Type',
-            margin: '10 0 10 0',
-            dataIndex: "type",
-            allowBlank: false,
-            editable: false,
-            fieldLabel: i18n._('Type'),
+            xtype: 'fieldcontainer',
+            name: "Columns",
+            dataIndex: "defaultColumns",
+            defaultType: 'checkboxfield',
             queryMode: 'local',
-            width: 350,
-            store: chartTypes,
-            listeners: {
-                "select": {
-                    fn: Ext.bind(function (combo, records, eOpts) {
-                        this.syncComponents();
-                    }, this)
+            fieldLabel: i18n._('Columns'),
+            items: [],
+            layout: {
+                type: 'column'
+            },
+            setValue: Ext.bind(function (defaultColumns) {
+                if (defaultColumns) {
+                    var table = this.down('[dataIndex=table]').getValue(), tableConfig = Ext.clone(Ung.TableConfig.getConfig(table)), i, col;
+                    if (table === this.entry.table) {
+                        defaultColumns = this.entry.defaultColumns;
+                    }
+                    this.down('[dataIndex=defaultColumns]').removeAll();
+                    for (i = 0; i < tableConfig.columns.length; i += 1) {
+                        col = tableConfig.columns[i];
+                        this.down('[dataIndex=defaultColumns]').add({
+                            //boxLabel: col.header + ' <span style="color: #999;">[' + col.dataIndex + ']</span>',
+                            boxLabel: col.header,
+                            name: col.dataIndex,
+                            inputValue: col.dataIndex,
+                            checked: defaultColumns.indexOf(col.dataIndex) >= 0,
+                            padding: '0 5',
+                            width: 300
+                        });
+                    }
                 }
+            }, this),
+            getValue: function () {
+                var cols = [], cks = this.query('checkbox'), i;
+                for (i = 0; i < cks.length; i += 1) {
+                    if (cks[i].getValue()) {
+                        cols.push(cks[i].getName());
+                    }
+                }
+                return cols;
             }
         }, {
             xtype: "container",
@@ -384,7 +425,6 @@ Ext.define("Ung.window.ReportEditor", {
                 ["COLUMN", i18n._("Column")],
                 ["COLUMN_3D", i18n._("Column 3D")]
             ]
-            //store: styleTypes,
         }, {
             xtype: 'combo',
             name: 'timeStyle',
@@ -547,6 +587,7 @@ Ext.define("Ung.window.ReportEditor", {
                 dataIndex: "orderDesc",
                 editable: false,
                 fieldLabel: i18n._('Order Direction'),
+                labelWidth: 150,
                 queryMode: 'local',
                 width: 300,
                 style: { marginLeft: '10px'},
@@ -564,6 +605,7 @@ Ext.define("Ung.window.ReportEditor", {
     },
     populate: function (record, addMode) {
         this.down('#updateReportBtn').setHidden(record.getData().readOnly);
+        this.entry = record.getData();
         Ung.TableConfig.getColumnsForTable(record.get("table"), this.columnsStore);
         if (!record.get("uniqueId")) {
             record.set("uniqueId", this.getUniqueId());
@@ -593,7 +635,11 @@ Ext.define("Ung.window.ReportEditor", {
                 timeDataDynamicLimit: this.down('[dataIndex=timeDataDynamicLimit]'),
                 timeDataDynamicAggregationFunction: this.down('[dataIndex=timeDataDynamicAggregationFunction]'),
                 seriesRenderer: this.down('[dataIndex=seriesRenderer]'),
-                colors: this.down('[dataIndex=colors]')
+                colors: this.down('[dataIndex=colors]'),
+                units: this.down('[dataIndex=units]'),
+                orderByColumn: this.down('[dataIndex=orderByColumn]'),
+                orderDirection: this.down('[dataIndex=orderDesc]'),
+                defaultColumns: this.down('[dataIndex=defaultColumns]')
             };
         }
         var type = this.cmps.typeCmp.getValue();
@@ -640,7 +686,20 @@ Ext.define("Ung.window.ReportEditor", {
         this.cmps.seriesRenderer.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
         this.cmps.seriesRenderer.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");
 
-        this.cmps.colors.setVisible(type != "TEXT");
-        this.cmps.colors.setDisabled(type == "TEXT");
+        this.cmps.colors.setVisible(type != "TEXT" && type != "EVENT_LIST");
+        this.cmps.colors.setDisabled(type == "TEXT" && type == "EVENT_LIST");
+
+        this.cmps.units.setVisible(type != "TEXT" && type != "EVENT_LIST");
+        this.cmps.units.setDisabled(type == "TEXT" && type == "EVENT_LIST");
+
+        this.cmps.orderByColumn.setVisible(type != "TEXT" && type != "EVENT_LIST");
+        this.cmps.orderByColumn.setDisabled(type == "TEXT" && type == "EVENT_LIST");
+
+        this.cmps.orderDirection.setVisible(type != "TEXT" && type != "EVENT_LIST");
+        this.cmps.orderDirection.setDisabled(type == "TEXT" && type == "EVENT_LIST");
+
+        this.cmps.defaultColumns.setVisible(type === "EVENT_LIST");
+        this.cmps.defaultColumns.setDisabled(type !== "EVENT_LIST");
+
     }
 });

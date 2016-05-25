@@ -388,8 +388,8 @@ Ext.define('Ung.panel.Reports', {
             xtype: 'grid',
             itemId: 'eventContainer',
             cls: 'report-container',
-            stateful: true,
-            stateId: "eventGrid",
+            //stateful: true,
+            //stateId: "eventGrid",
             border: false,
             viewConfig: {
                 enableTextSelection: true
@@ -418,6 +418,15 @@ Ext.define('Ung.panel.Reports', {
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
+            }, {
+                xtype: 'button',
+                text: '<i class="material-icons">edit</i> <span style="vertical-align: middle;">' + i18n._("Customize") + '</span>',
+                cls: 'action-button material-button',
+                margin: '0 3',
+                scale: 'medium',
+                hidden: !Ung.Main.webuiMode || this.hideCustomization,
+                name: "edit",
+                handler: Ext.bind(this.customizeReport, this)
             }],
             plugins: ['gridfilters'],
             features: [this.filterFeature],
@@ -1286,7 +1295,7 @@ Ext.define('Ung.panel.Reports', {
             border: false,
             padding: '5px'
         });
-        this.eventContainer.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
+        //this.eventContainer.stateId = 'eventGrid-' + (entry.category ? (entry.category.toLowerCase().replace(' ', '_') + '-') : '') + entry.table;
 
         tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table));
 
@@ -1299,9 +1308,8 @@ Ext.define('Ung.panel.Reports', {
         } else {
             var columnsNames = {};
             for (i = 0; i < tableConfig.columns.length; i += 1) {
-                col = tableConfig.columns[i].dataIndex;
-                columnsNames[col] = true;
                 col = tableConfig.columns[i];
+                columnsNames[col.dataIndex] = true;
                 if ((entry.defaultColumns.length > 0) && (entry.defaultColumns.indexOf(col.dataIndex) < 0)) {
                     col.hidden = true;
                 }
@@ -1640,7 +1648,7 @@ Ext.define('Ung.panel.Reports', {
         if (!this.winReportEditor) {
             var me = this;
             this.winReportEditor = Ext.create('Ung.window.ReportEditor', {
-                sizeToComponent: this.reportContainer,
+                sizeToComponent: this.reportPanel,
                 title: i18n._("Advanced report customization"),
                 parentCmp: this,
                 entry: this.entry,
