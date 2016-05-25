@@ -677,8 +677,18 @@ Ext.define('Webui.config.administration', {
     },
 
     buildCertGrid: function() {
+            var viewCertificateColumn = Ext.create("Ung.grid.EditColumn",{
+            header: i18n._("View"),
+            width: 60,
+            iconClass: 'icon-edit-row',
+            handler: function(view, rowIndex, colIndex, item, e, record) {
+                var detail = Ung.Main.getCertificateManager().getServerCertificateDetails(record.get("fileName"));
+                Ext.MessageBox.alert(record.get("fileName"),"<TT>" + detail + "</TT>");
+            }
+        });
+
         this.gridCertList = Ext.create('Ung.grid.Panel',{
-            title: i18n._("Server Certificates &nbsp;&nbsp; (click any cell to see details)"),
+            title: i18n._("Server Certificates"),
             settingsCmp: this,
             autoGenerateId: true,
             height: 200,
@@ -687,6 +697,7 @@ Ext.define('Webui.config.administration', {
             hasAdd: false,
             dataExpression: "getServerCertificateList().list",
             recordJavaClass: "com.untangle.uvm.CertificateInformation",
+            plugins: [viewCertificateColumn],
             fields: [{
                 name: 'fileName',
             }, {
@@ -749,7 +760,7 @@ Ext.define('Webui.config.administration', {
                 xtype: 'checkcolumn',
                 width: 60,
                 dataIndex: 'ipsecServer'
-            }, {
+            }, viewCertificateColumn, {
                 header: i18n._("Delete"),
                 xtype: 'actioncolumn',
                 width: 60,
@@ -773,13 +784,6 @@ Ext.define('Webui.config.administration', {
                 }]
             }]
         });
-
-        this.gridCertList.addListener('cellclick', function(grid, element, columnIndex, dataRecord) {
-            if (columnIndex == 1) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Issued To',dataRecord.data.certSubject);
-            if (columnIndex == 2) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Issued By',dataRecord.data.certIssuer);
-            if (columnIndex == 3) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Date Valid',i18n.timestampFormat(dataRecord.data.dateValid));
-            if (columnIndex == 4) Ext.MessageBox.alert(dataRecord.data.fileName + ' - Date Expires',i18n.timestampFormat(dataRecord.data.dateExpires));
-        }, this.gridCertList);
     },
 
     certGeneratorPopup: function(certMode, hostName, titleText) {

@@ -19,11 +19,11 @@ public interface CertificateManager
 
     LinkedList<CertificateInformation> getServerCertificateList();
 
+    public String getServerCertificateDetails(String fileName);
+
     boolean generateCertificateAuthority(String certSubject, String dummy);
 
     boolean generateServerCertificate(String certSubject, String altNames);
     
     public void removeServerCertificate(String fileName);
-
-    public void activateApacheCertificate();
 }

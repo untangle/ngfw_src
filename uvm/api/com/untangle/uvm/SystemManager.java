@@ -58,4 +58,6 @@ public interface SystemManager
     boolean upgradesAvailable( boolean forceUpdate );
 
     void upgrade();
+
+    void activateApacheCertificate();    
 }

@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.TimeZone;
 import java.util.zip.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,6 +67,9 @@ public class SystemManagerImpl implements SystemManager
     
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
+
+    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
+    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
     private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
@@ -177,8 +181,9 @@ public class SystemManagerImpl implements SystemManager
 
     public void setSettings(final SystemSettings newSettings)
     {
-        String oldApacheCert = settings.getWebCertificate();
         String newApacheCert = newSettings.getWebCertificate();
+        String oldApacheCert = null;
+        if (settings != null) oldApacheCert = settings.getWebCertificate();
 
         /**
          * Save the settings
@@ -201,8 +206,8 @@ public class SystemManagerImpl implements SystemManager
         syncSnmpSettings(this.settings.getSnmpSettings());
 
         /* if the web server cert changed we need to restart apache */
-        if (newApacheCert.equals(oldApacheCert) == false) {
-            UvmContextFactory.context().certificateManager().activateApacheCertificate();
+        if ( (oldApacheCert == null) || (newApacheCert.equals(oldApacheCert) == false) ) {
+            activateApacheCertificate();
         }
 
         /**
@@ -962,5 +967,11 @@ public class SystemManagerImpl implements SystemManager
             return "~UTC+" + (hours < 10 ? "0" + hours:hours) + ":" + (minutes < 10 ? "0" + minutes:minutes);
         }
     }
-    
+
+    public void activateApacheCertificate()
+    {
+        // copy the configured pem file to the apache directory and restart
+        UvmContextFactory.context().execManager().exec("cp " + CERT_STORE_PATH + getSettings().getWebCertificate() + " " + APACHE_PEM_FILE);
+        UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+    }
 }
