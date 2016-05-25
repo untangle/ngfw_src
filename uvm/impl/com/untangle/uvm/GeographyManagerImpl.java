@@ -136,8 +136,8 @@ public class GeographyManagerImpl implements GeographyManager
         }
 
         if (location != null) {
-            coordinates.latitude = location.getLatitude();
-            coordinates.longitude = location.getLongitude();
+            if (location.getLatitude() != null) coordinates.latitude = location.getLatitude().doubleValue();
+            if (location.getLongitude() != null) coordinates.longitude = location.getLongitude.doubleValue();
         }
 
         return (coordinates);
