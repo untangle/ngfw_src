@@ -40,25 +40,18 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
     private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates";
 
+    private static final String EXTERNAL_REQUEST_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/request.csr";
+    private static final String EXTERNAL_RESPONSE_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/response.crt";
+
     private static final String ROOT_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.crt";
     private static final String ROOT_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.key";
+    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
+
     private static final String LOCAL_REQUEST_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.csr";
-    private static final String LOCAL_TEMP_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.tmp";
     private static final String LOCAL_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.crt";
     private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
     private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
-
-    File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
-    File rootCertFile = new File(ROOT_CERT_FILE);
-    File rootKeyFile = new File(ROOT_KEY_FILE);
-    File localRequestFile = new File(LOCAL_REQUEST_FILE);
-    File localTempFile = new File(LOCAL_TEMP_FILE);
-    File localCertFile = new File(LOCAL_CERT_FILE);
-    File localKeyFile = new File(LOCAL_KEY_FILE);
-    File localPemFile = new File(LOCAL_PEM_FILE);
-    File apachePemFile = new File(APACHE_PEM_FILE);
 
     private static final String MARKER_CERT_HEAD = "-----BEGIN CERTIFICATE-----";
     private static final String MARKER_CERT_TAIL = "-----END CERTIFICATE-----";
@@ -92,38 +85,22 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateInstallerDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
 
-        // in the development environment check to load files from the backup
-        // area so we avoid recreating CA/cert/pem after every rake clean
-        if (UvmContextFactory.context().isDevel()) {
-            logger.info("Restoring dev enviroment CA certificate and key files");
-            UvmContextFactory.context().execManager().exec("mkdir -p " + System.getProperty("uvm.settings.dir") + "/untangle-certificates/");
-            if (!rootKeyFile.exists()) {
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CERT_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.key " + LOCAL_KEY_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CERT_FILE);
-            }
-        }
-
+        File rootCertFile = new File(ROOT_CERT_FILE);
+        File rootKeyFile = new File(ROOT_KEY_FILE);
         // if either of the root CA files are missing create the thing now
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
             UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
-
-            // in the development enviroment save these to a global location
-            // so they will survive a rake clean
-            if (UvmContextFactory.context().isDevel()) {
-                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
-                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
-            }
         }
-        // Always perform a check for the root installer.  It will determine if it needs to be rebuilt.
+
+        // always perform a check for the root installer.  It will determine if it needs to be rebuilt.
         UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + " check");
 
         // we should have a root CA at this point so we check the local apache
         // cert files and create them now if either is missing
+        File localCertFile = new File(LOCAL_CERT_FILE);
+        File localKeyFile = new File(LOCAL_KEY_FILE);
         if ((localCertFile.exists() == false) || (localKeyFile.exists() == false)) {
             String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
             logger.info("Creating default locally signed apache certificate for " + hostName);
@@ -202,7 +179,7 @@ public class CertificateManagerImpl implements CertificateManager
             }
 
             // if the uploaded file does not include a private key we can't use it for anything
-            if (keyLen == 0) return new ExecManagerResult(1, "The uploaded file does not contain a valid private key.");
+            if (keyLen == 0) return new ExecManagerResult(1, "The uploaded certificate does not contain a valid private key.");
 
             // we have a cert and a key and maybe other stuff so we use the
             // the uploaded file exactly as provided
@@ -213,7 +190,7 @@ public class CertificateManagerImpl implements CertificateManager
 
             // now create a PFX file from the PEM for for apps that use
             // SSLEngine like web filter, captive portal, etc.
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -out " + basePath + ".pfx -in " + basePath + ".pem");
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + basePath + ".pfx -in " + basePath + ".pem");
 
             return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }
@@ -222,7 +199,6 @@ public class CertificateManagerImpl implements CertificateManager
     // called by the UI to upload a certificate signed by a 3rd parth
     private class SignedCertificateUploadHandler implements UploadHandler
     {
-        // TODO - this needs to be re-worked and tested
         @Override
         public String getName()
         {
@@ -264,36 +240,40 @@ public class CertificateManagerImpl implements CertificateManager
             }
 
             // the uploaded file should not include a private key
-            if (keyLen != 0) return new ExecManagerResult(1, "The uploaded file includes an invalid private key.");
+            if (keyLen != 0) return new ExecManagerResult(1, "The uploaded certificate includes an invalid private key.");
 
             // start by writing the uploaded cert to a temporary file
-            certStream = new FileOutputStream(localTempFile);
+            certStream = new FileOutputStream(EXTERNAL_RESPONSE_FILE);
             certStream.write(certString.getBytes(), certTop, certLen);
             certStream.close();
 
             // Make sure the cert they uploaded matches our private key 
-            String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + LOCAL_TEMP_FILE);
-            logger.info(LOCAL_TEMP_FILE + certMod);
+            String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + EXTERNAL_RESPONSE_FILE);
+            logger.info("CRT MODULUS " + EXTERNAL_RESPONSE_FILE + " = " + certMod);
             String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
-            logger.info(LOCAL_KEY_FILE + keyMod);
-            UvmContextFactory.context().execManager().exec("rm -f " + LOCAL_TEMP_FILE);
+            logger.info("KEY MODULUS " + LOCAL_KEY_FILE + " = " + keyMod);
 
             // if they cert and key modulus don't match then it's garbage 
             if (certMod.compareTo(keyMod) != 0) {
-                return new ExecManagerResult(1, "The public key in the uploaded file does not match the server private key.");
+                return new ExecManagerResult(1, "The public key in the uploaded certificate does not match the server private key used to generate the certificate request.");
             }
 
-            // the cert and key match so save the cert to the local file
-            certStream = new FileOutputStream(localCertFile);
+            String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+
+            // the cert and key match so save the certificate to a file
+            certStream = new FileOutputStream(CERT_STORE_PATH + "/" + baseName + ".crt");
             certStream.write(certString.getBytes(), certTop, certLen);
             certStream.close();
 
-            // next create the local PEM file from the local KEY and CRT files
-            UvmContextFactory.context().execManager().exec("cat " + LOCAL_KEY_FILE + " " + LOCAL_CERT_FILE + " > " + LOCAL_PEM_FILE);
+            // make a copy of the server key file in the certificate key file
+            UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + CERT_STORE_PATH + "/" + baseName + ".key");
 
-            // now convert the local PEM file to the local PFX file for apps
+            // next create the certificate PEM file from the certificate KEY and CRT files
+            UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + "/" + baseName + ".crt " + CERT_STORE_PATH + "/" + baseName + ".key > " + CERT_STORE_PATH + "/" + baseName + ".pem");
+
+            // now convert the certificate PEM file to PFX format for apps
             // that use SSLEngine like web filter and captive portal
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -out " + LOCAL_PFX_FILE + " -in " + LOCAL_PEM_FILE);
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + CERT_STORE_PATH + "/" + baseName + ".pfx -in " + CERT_STORE_PATH + "/" + baseName + ".pem");
 
             return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }
@@ -312,8 +292,9 @@ public class CertificateManagerImpl implements CertificateManager
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
             try {
-                FileInputStream certStream = new FileInputStream(rootCertFile);
-                byte[] certData = new byte[(int) rootCertFile.length()];
+                File certFile = new File(ROOT_CERT_FILE);
+                FileInputStream certStream = new FileInputStream(certFile);
+                byte[] certData = new byte[(int) certFile.length()];
                 certStream.read(certData);
                 certStream.close();
 
@@ -343,6 +324,8 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
+            File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
+
             try {
                 FileInputStream certInstallerStream = new FileInputStream(rootCertInstallerFile);
                 byte[] certInstallerData = new byte[(int) rootCertInstallerFile.length()];
@@ -383,8 +366,9 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
             try {
-                FileInputStream certStream = new FileInputStream(localRequestFile);
-                byte[] certData = new byte[(int) localRequestFile.length()];
+                File certFile = new File(EXTERNAL_REQUEST_FILE);
+                FileInputStream certStream = new FileInputStream(certFile);
+                byte[] certData = new byte[(int) certFile.length()];
                 certStream.read(certData);
                 certStream.close();
 
@@ -554,14 +538,6 @@ public class CertificateManagerImpl implements CertificateManager
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
         UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + argString);
-
-        // in the development enviroment save these to a global location
-        // so they will survive a rake clean
-        if (UvmContextFactory.context().isDevel()) {
-            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
-            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
-        }
-
         return (true);
     }
 
@@ -615,14 +591,5 @@ public class CertificateManagerImpl implements CertificateManager
         // copy the configured pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + configFile + " " + APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
-
-        // in the development enviroment save these to a global location
-        // so they will survive a rake clean
-        if (UvmContextFactory.context().isDevel()) {
-            // TODO - fix this and all the other dev backup stuff
-            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
-            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
-            // UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
-        }
     }
 }

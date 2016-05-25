@@ -1075,6 +1075,7 @@ Ext.define('Webui.config.administration', {
                 Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
                 }
             });
+
         return true;
     },
 
@@ -1135,6 +1136,7 @@ Ext.define('Webui.config.administration', {
         var prova = Ext.getCmp("upload_signed_cert_form");
         var fileText = prova.items.get(0);
         var form = prova.getForm();
+        var parent = this;
 
         if (fileText.getValue().length === 0)
         {
@@ -1145,26 +1147,9 @@ Ext.define('Webui.config.administration', {
         form.submit({
             success: function(form, action) {
                 popup.close();
-
-                Ung.MetricManager.stop();
-
-                // create a restart window
-                var restartWindow = Ext.create('Ext.window.MessageBox', { minProgressWidth: 360 });
-
-                // the cert manager will reload apache to activate the new cert
-                // so we show a please wait message and then click to continue
-                restartWindow.wait(i18n._("Uploading server certificate and restarting web server..."), i18n._("Please Wait"), {
-                    interval: 1000,
-                    increment: 15,
-                    duration: 15000,
-                    scope: this,
-                    fn: function() {
-                        restartWindow.hide();
-                        Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate upload successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
-                        }
-                    });
+                parent.getServerCertificateList(true);
+                parent.gridCertList.reload();
                 },
-
             failure: function(form, action) {
                 popup.close();
                 Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
