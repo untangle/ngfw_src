@@ -619,58 +619,15 @@ Ext.define('Webui.config.administration', {
                     handler: Ext.bind(function() {
                         this.handleServerCertificateUpload();
                     }, this)
-                }]
-            },{
-                title: i18n._('Third Party Server Certificate'),
-                defaults: { labelWidth: 150 },
-                items: [{
-                    xtype: 'component',
-                    margin: '5 0 5 0',
-                    html:  i18n._("To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.")
                 },{
-                    xtype: 'fieldset',
-                    layout: 'column',
-                    items: [{
-                        xtype: 'component',
-                        width: 20,
-                        cls: 'step_counter',
-                        html: '1'
-                    },{
-                        xtype: 'button',
-                        margin: '0 5 0 5',
-                        minWidth: 200,
-                        text: i18n._('Create Signature Signing Request'),
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function() {
-                            this.certGeneratorPopup("CSR", this.getHostname(true), i18n._("Create Signature Signing Request"));
-                        }, this)
-                    },{
-                        xtype: 'component',
-                        margin: '0 5 0 5',
-                        columnWidth: 1,
-                        html: i18n._('Click here to generate and download a new Certificate Signing Request (CSR) to your computer.')
-                    }]
-                },{
-                    xtype: 'fieldset',
-                    layout: 'column',
-                    items: [{
-                        xtype: 'component',
-                        width: 20,
-                        cls: 'step_counter',
-                        html: '2'
-                    },{
-                        xtype: 'button',
-                        margin: '0 5 0 5',
-                        minWidth: 200,
-                        text: i18n._('Import Signed Server Certificate'),
-                        iconCls: 'action-icon',
-                        handler: Ext.bind(function() { this.handleSignedCertificateUpload(); }, this)
-                    },{
-                        xtype: 'component',
-                        margin: '0 5 0 5',
-                        columnWidth: 1,
-                        html: i18n._('Click here to upload a signed server certificate that you received from the CSR you created in step one.')
-                    }]
+                    xtype: 'button',
+                    margin: '5 5 0 5',
+                    minWidth: 200,
+                    text: i18n._('Create Certificate Signing Request'),
+                    iconCls: 'action-icon',
+                    handler: Ext.bind(function() {
+                        this.certGeneratorPopup("CSR", this.getHostname(true), i18n._("Create Certificate Signing Request"));
+                    }, this)
                 }]
             }]
         });
@@ -691,7 +648,7 @@ Ext.define('Webui.config.administration', {
             title: i18n._("Server Certificates"),
             settingsCmp: this,
             autoGenerateId: true,
-            height: 200,
+            height: 250,
             hasDelete: false,
             hasEdit: false,
             hasAdd: false,
@@ -777,9 +734,14 @@ Ext.define('Webui.config.administration', {
                             Ext.MessageBox.alert("Certificate In Use","You can not delete a certificate that is assigned to one or more services.");
                             return;
                         }
-                        Ung.Main.getCertificateManager().removeServerCertificate(record.get("fileName"));
-                        this.getServerCertificateList(true);
-                        this.gridCertList.reload();
+                        Ext.MessageBox.confirm("Are you sure you want to delete this certificate?", "<B>SUBJECT:</B> " + record.get("certSubject") + "<BR><BR><B>ISSUER:</B> " + record.get("certIssuer"), function(button) {
+                            if (button === 'yes')
+                            {
+                            Ung.Main.getCertificateManager().removeServerCertificate(record.get("fileName"));
+                            this.getServerCertificateList(true);
+                            this.gridCertList.reload();
+                            }
+                        }, this);
                     }, this)
                 }]
             }]
@@ -1061,86 +1023,6 @@ Ext.define('Webui.config.administration', {
     handleServerFileUpload: function()
     {
         var prova = Ext.getCmp("upload_server_cert_form");
-        var fileText = prova.items.get(0);
-        var form = prova.getForm();
-        var parent = this;
-
-        if (fileText.getValue().length === 0)
-        {
-            Ext.MessageBox.alert(i18n._("Invalid or missing File"), i18n._("Please select a certificate to upload."));
-            return false;
-        }
-
-        form.submit({
-            success: function(form, action) {
-                popup.close();
-                parent.getServerCertificateList(true);
-                parent.gridCertList.reload();
-                },
-            failure: function(form, action) {
-                popup.close();
-                Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
-                }
-            });
-
-        return true;
-    },
-
-    handleSignedCertificateUpload: function() {
-        master = this;
-        popup = new Ext.Window({
-            title: i18n._("Import Signed Server Certificate"),
-            layout: 'fit',
-            width: 600,
-            height: 120,
-            border: true,
-            xtype: 'form',
-            items: [{
-                xtype: "form",
-                id: "upload_signed_cert_form",
-                url: "upload",
-                border: false,
-                items: [{
-                    xtype: 'filefield',
-                    fieldLabel: i18n._("File"),
-                    name: "filename",
-                    id: "filename",
-                    margin: "10 10 10 10",
-                    width: 560,
-                    labelWidth: 50,
-                    allowBlank: false,
-                    validateOnBlur: false
-                }, {
-                    xtype: "hidden",
-                    name: "type",
-                    value: "signed_cert"
-                    }]
-                }],
-                buttons: [{
-                    xtype: "button",
-                    text: i18n._("Upload Certificate"),
-                    name: "Upload Certificate",
-                    width: 200,
-                    handler: Ext.bind(function() {
-                        this.handleSignedFileUpload();
-                    }, this)
-                }, {
-                    xtype: "button",
-                    text: i18n._("Cancel"),
-                    name: "Cancel",
-                    width: 100,
-                    handler: Ext.bind(function() {
-                        popup.close();
-                    }, this)
-                }]
-        });
-
-        popup.show();
-    },
-
-    handleSignedFileUpload: function()
-    {
-        var prova = Ext.getCmp("upload_signed_cert_form");
         var fileText = prova.items.get(0);
         var form = prova.getForm();
         var parent = this;

@@ -24,6 +24,6 @@ public interface CertificateManager
     boolean generateCertificateAuthority(String certSubject, String dummy);
 
     boolean generateServerCertificate(String certSubject, String altNames);
-    
+
     public void removeServerCertificate(String fileName);
 }
