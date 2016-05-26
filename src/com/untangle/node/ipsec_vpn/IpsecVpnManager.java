@@ -30,8 +30,7 @@ public class IpsecVpnManager
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
-    private static final String APACHE_CRT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.crt";
-    private static final String APACHE_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
+    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
@@ -87,6 +86,8 @@ public class IpsecVpnManager
     {
         logger.debug("writeConfigFiles()");
 
+        String ipsecKeyFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.key");
+        String ipsecCrtFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
         String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
 
@@ -130,8 +131,8 @@ public class IpsecVpnManager
 
         ipsec_conf.write(RET);
 
-        // put the server key in the secrets file for IKEv2
-        ipsec_secrets.write(": RSA " + APACHE_KEY_FILE + RET);
+        // put the ipsec certificate key in the secrets file for IKEv2
+        ipsec_secrets.write(": RSA " + ipsecKeyFile + RET);
 
         for (x = 0; x < tunnelList.size(); x++) {
             // for each active tunne we create a corresponding
@@ -298,7 +299,7 @@ public class IpsecVpnManager
                 }
 
                 ipsec_conf.write(TAB + "leftauth=pubkey" + RET);
-                ipsec_conf.write(TAB + "leftcert=" + APACHE_CRT_FILE + RET);
+                ipsec_conf.write(TAB + "leftcert=" + ipsecCrtFile + RET);
                 ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                 ipsec_conf.write(TAB + "leftsendcert=always" + RET);
                 ipsec_conf.write(TAB + "leftupdown=" + IKEV2_UPDOWN_SCRIPT + RET);
