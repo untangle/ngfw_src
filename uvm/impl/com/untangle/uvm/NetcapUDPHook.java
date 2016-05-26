@@ -272,7 +272,7 @@ public class NetcapUDPHook implements NetcapCallback
         @Override
         protected void releaseToBypass()
         {
-            logger.warn("Releasing to bypass: " + netcapSession());
+            logger.info("Releasing to bypass: " + netcapSession());
 
             netcapSession().orClientMark( 0x01000000 );
 
