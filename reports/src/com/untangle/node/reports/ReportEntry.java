@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
@@ -384,84 +385,142 @@ public class ReportEntry implements Serializable, JSONString
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
             
-        if ( allConditions.size() > 0 ) {
-            throw new RuntimeException("This graph type does not currently support extra conditions");
-        }
-
-        String generate_series;
+        String generateSeriesQuery;
         Date endDateSeries = endDate;
         if ( endDate.getTime() > System.currentTimeMillis() ) {
-            // when endDate = null, we assume now+1minute.
-            // if the endDate is effectively "now" or later, then chop off the last minute from the generate_series 
-            // we do this because otherwise it adds an extra minute onto the range. usually you want that, but in this case it ends up adding a datapoint to the series
-            // which when joined with the actual data just results in a null point at the end which looks poor in the graph
+            /**
+             * when endDate = null, we assume now+1minute.
+             * if the endDate is effectively "now" or later, then chop off the last minute from the generateSeriesQuery 
+             * we do this because otherwise it adds an extra minute onto the range. usually you want that, but in this case it ends up adding a datapoint to the series
+             * which when joined with the actual data just results in a null point at the end which looks poor in the graph
+             */
             endDateSeries = new Date( endDate.getTime() - (60*1000) );
         }
+
+        /**
+         * generateSeriesQuery
+         * generateSeriesQuery is just a list of times to be used to left join
+         * to ensure that all times have rows, even if there is no data for them
+         */
         if ( dataInterval.equals("tenminute") )
-            generate_series = " SELECT generate_series( " +
+            generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
                 " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
-            generate_series = " SELECT generate_series( " +
+            generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
                 " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
-
+        /**
+         * distinctQuery
+         * This querys the distinct values that will be used to detemine the columns in the final result
+         * This will be run now, because we need the distinct values to write the crosstab query (select * from crosstab() AS distinct values...)
+         */
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
             " FROM " + "reports." + getTable() +
             " WHERE " + dateCondition +
+            conditionsToString( allConditions ) + 
             " AND " + getTimeDataDynamicColumn() + " IS NOT NULL" +
             " GROUP BY " + getTimeDataDynamicColumn() + 
             " ORDER BY 2 DESC " + 
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
-        distinctQuery = "SELECT value FROM (" + distinctQuery + ") as data";
+        /**
+         * createDistinctTempTableQuery
+         * This creates a temp table with the results of the crosstab query.
+         * We create a temp table because the crosstab query takes literal strings, so PreparedStatement arguments
+         * do not work. As such we create a temp table with a regular query and then reference the temp table
+         * inside the crosstab function
+         */
+        String createDistinctTempTableQuery = "CREATE TEMP TABLE tempDistinctTable AS " + distinctQuery;
         
-        String[] distinctValues = getDistinctValues( conn, distinctQuery );
+        /**
+         * Fetch the distinct values (with conditions and all)
+         */
+        String[] distinctValues = getDistinctValues( conn, getTable(), distinctQuery, allConditions );
         if ( distinctValues == null ) {
             throw new RuntimeException("Unable to find unique values: " + distinctQuery);
         }
-        // if there are no distinct values, nothing to show
+        /**
+         * If there are no distinct values, nothing to show
+         * Just return
+         */
         if ( distinctValues.length == 0 ) {
             return sqlToStatement( conn, "select null", null);
         }
         
-        String timeQuery;
+        /**
+         * createDataTempTableQuery
+         * This creates a temp table with the actual data to be transposed with crosstab
+         * We use a temp table, because we can't specify conditions inside literal strings inside the crosstab function
+         * So we create the temp table and then select the temp table inside the crosstab function
+         */
+        String createDataTempTableQuery;
         if ( dataInterval.equals("tenminute") )
-            timeQuery = "SELECT " +
+            createDataTempTableQuery = "SELECT " +
                 " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
         else
-            timeQuery = "SELECT " +
+            createDataTempTableQuery = "SELECT " +
                 " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
-
-        timeQuery += ", " + getTimeDataDynamicColumn() + ", " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")";
-
-        timeQuery += " FROM " +
+        createDataTempTableQuery += ", " + getTimeDataDynamicColumn() + ", " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")";
+        createDataTempTableQuery += " FROM " +
             " reports." + getTable() +
             " WHERE " + dateCondition;
+        createDataTempTableQuery += conditionsToString( allConditions );
+        createDataTempTableQuery += " GROUP BY time_trunc, " + getTimeDataDynamicColumn() + " ";
+        createDataTempTableQuery = "CREATE TEMP TABLE tempTimeTable AS " + createDataTempTableQuery;
+        
+        /**
+         * crosstabQuery
+         * Now create the actualy crosstab query
+         * basically we "select * from crossTab( temp data table, temp distinct table) as distinct values"
+         */
+        String crosstabQuery = "SELECT * FROM crosstab( " +
+            "$$ SELECT * FROM tempTimeTable $$" + " , " +
+            "$$ SELECT value FROM tempDistinctTable $$" + ") " + " as " +
+            "( \"time_trunc\" timestamp ";
+        for ( String s : distinctValues ) {
+            crosstabQuery = crosstabQuery + ", \"" + s + "\" numeric ";
+        }
+        crosstabQuery = crosstabQuery + ")";
 
-        timeQuery += conditionsToString( allConditions );
-                
-        timeQuery += " GROUP BY time_trunc, " + getTimeDataDynamicColumn() + " ";
-
-        String final_time_query = "SELECT * FROM " +
-            " ( " + generate_series + " ) as t1 " +
+        /**
+         * finalCrosstabQuery
+         * This is the final crosstab query which just left joins the crosstabQuery
+         * with the times from generateSeries to ensure that all times have a row
+         * even if they are missing from the crosstabQuery results.
+         */
+        String finalCrosstabQuery = "SELECT * FROM " +
+            " ( " + generateSeriesQuery + " ) as t1 " +
             "LEFT JOIN " +
-            " ( " + timeQuery + " ) as t2 " +
+            " ( " + crosstabQuery + " ) as t2 " +
             " USING (time_trunc) " +
             " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
 
-        String final_crosstab_query = "SELECT * FROM crosstab( " +
-            "$$" + final_time_query + "$$" + " , " +
-            "$$" + distinctQuery + "$$" + ") " + " as " +
-            "( \"time_trunc\" timestamp ";
-        for ( String s : distinctValues ) {
-            final_crosstab_query = final_crosstab_query + ", \"" + s + "\" numeric ";
-        }
-        final_crosstab_query = final_crosstab_query + ")";
 
-        return sqlToStatement( conn, final_crosstab_query, allConditions );
+        /**
+         * finalQuery
+         * The final query is just the statement to create the two temp tables
+         * plus finalCrosstabQuery to actually return the results
+         */
+        String finalQuery = createDistinctTempTableQuery + " ; " +
+            createDataTempTableQuery + " ; " +
+            finalCrosstabQuery;
+            
+        if ( logger.isDebugEnabled() ) {
+            logger.debug("createDistinctTempTableQuery QUERY: " + createDistinctTempTableQuery);
+            logger.debug("distinctQuery                QUERY: " + distinctQuery);
+            logger.debug("createDataTempTableQuery     QUERY: " + createDataTempTableQuery);
+            logger.debug("crosstabQuery                QUERY: " + crosstabQuery);
+            logger.debug("finalCrosstabQuery           QUERY: " + finalCrosstabQuery);
+            logger.debug("finalQuery                   QUERY: " + finalQuery);
+        }
+        
+        LinkedList<SqlCondition> doubleConditions = new LinkedList<SqlCondition>(allConditions);
+        doubleConditions.addAll(allConditions);
+        
+        return sqlToStatement( conn, finalQuery, doubleConditions );
     }
     
     /**
@@ -506,10 +565,12 @@ public class ReportEntry implements Serializable, JSONString
         return str;
     }
 
-    private String[] getDistinctValues( Connection conn, String querySql )
+    private String[] getDistinctValues( Connection conn, String table, String querySql, List<SqlCondition> conditions )
     {
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
+            SqlCondition.setPreparedStatementValues( statement, conditions, table );
+
             logger.info("Getting distinct values: " + statement);
             java.sql.ResultSet resultSet = statement.executeQuery();
 
@@ -527,5 +588,5 @@ public class ReportEntry implements Serializable, JSONString
             return null;
         }
     }
-
+    
 }

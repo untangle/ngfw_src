@@ -75,7 +75,22 @@ public class EventReaderImpl
                     throw new RuntimeException("Unable to acquire query lock");
                 }
             
-                ResultSet resultSet = statement.executeQuery();
+                ResultSet resultSet;
+                boolean execResult = statement.execute();
+
+                resultSet = statement.getResultSet();
+                // if the statement is a list of statements, then we may have to check additional results
+                // for the actual results, because the first statements may return no results
+                while ( resultSet == null ) {
+                    // if no more results
+                    boolean nextResult = statement.getMoreResults();
+                    int updateCount = statement.getUpdateCount();
+                    // according to javadocs this is the test to see that there are no more results
+                    if ( !nextResult && updateCount < 0 )
+                        break;
+                    resultSet = statement.getResultSet();
+                }
+                
                 return new ResultSetReader( resultSet, dbConnection, statement );
             } catch (InterruptedException e) {
                 logger.warn("Interrupted",e);
@@ -188,7 +203,7 @@ public class EventReaderImpl
         return getEventsResultSet( queryStr, table, conditions, limit );
     }
 
-    public ArrayList<JSONObject> getEvents( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate)
+    public ArrayList<JSONObject> getEvents( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         ResultSetReader resultSetReader = getEventsResultSet( query, table, conditions, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
