@@ -615,7 +615,7 @@ Ext.define('Webui.config.email', {
                 name: 'sender'
             }],
             columns: [{
-                header: i18n._("email address"),
+                header: i18n._("Email Address"),
                 flex: 1,
                 width: 400,
                 dataIndex: 'sender'
@@ -804,17 +804,17 @@ Ext.define('Webui.config.email', {
                 }],
                 columns: [
                 {
-                    header: i18n._("account address"),
+                    header: i18n._("Account Address"),
                     width: 200,
                     dataIndex: 'address',
                     flex: 1
                 }, {
-                    header: i18n._("message count"),
+                    header: i18n._("Message Count"),
                     width: 185,
                     align: 'right',
                     dataIndex: 'totalMails'
                 }, {
-                    header: i18n._("data size (kB)"),
+                    header: i18n._("Data Size (kB)"),
                     width: 185,
                     align: 'right',
                     dataIndex: 'totalSz',
@@ -861,7 +861,7 @@ Ext.define('Webui.config.email', {
                     name: 'address'
                 }],
                 columns: [{
-                    header: i18n._("quarantinable address"),
+                    header: i18n._("Quarantinable Address"),
                     flex: 1,
                     width: 400,
                     dataIndex: 'address',
@@ -904,7 +904,7 @@ Ext.define('Webui.config.email', {
                 }],
                 columns: [
                 {
-                    header: i18n._("distribution list address"),
+                    header: i18n._("Distribution List Address"),
                     width: 250,
                     dataIndex: 'address1',
                     editor: {
@@ -915,7 +915,7 @@ Ext.define('Webui.config.email', {
                     }
                 },
                 {
-                    header: i18n._("send to address"),
+                    header: i18n._("Send to Address"),
                     width: 250,
                     dataIndex: 'address2',
                     flex:1,
