@@ -27,14 +27,16 @@ public class VirusCloudFeedback extends Thread
     long fileLength = 0;
     NodeSession session = null;
     String vendorName = null;
-    String vendorResult = null;
+    String threatName = null;
+    String threatType = null;
     VirusCloudResult cloudResult = null;
 
-    public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String vendorResult, long fileLength, NodeSession session, VirusCloudResult cloudResult)
+    public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String threatName, String threatType, long fileLength, NodeSession session, VirusCloudResult cloudResult)
     {
         this.virusState = virusState;
         this.vendorName = vendorName;
-        this.vendorResult = vendorResult;
+        this.threatName = threatName;
+        this.threatType = threatType;
         this.fileLength = fileLength;
         this.session = session;
         this.cloudResult = cloudResult;
@@ -49,7 +51,8 @@ public class VirusCloudFeedback extends Thread
             json.put("hash", virusState.fileHash);
             json.put("length", fileLength);
             json.put("vendorName", vendorName);
-            json.put("vendorResult", vendorResult);
+            json.put("threatName", threatName);
+            json.put("threatType", threatType);
             if (cloudResult != null) json.put("cloudResult", cloudResult);
             if (session != null) {
                 if (session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME) != null) json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME));
@@ -73,7 +76,7 @@ public class VirusCloudFeedback extends Thread
         logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
         try {
-            String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + vendorResult + "&detProvider=" + vendorName + "&metaProvider=NGFW");
+            String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + threatName + "&type=" + threatType + "&detProvider=" + vendorName + "&metaProvider=NGFW");
             URL myurl = new URL(target);
             HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
             mycon.setRequestMethod("POST");

@@ -56,7 +56,7 @@ public class ClamScanner implements VirusScanner
 
         // if we found an infection then pass along the feedback
         if (!result.isClean()) {
-            VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), scanfile.length(), session, null);
+            VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, null);
             feedback.start();
         }
 
