@@ -134,26 +134,11 @@ public class CertificateManagerImpl implements CertificateManager
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
             FileOutputStream certStream;
-            String baseName;
-            String basePath;
-            File checkFile;
-            int dotLocation = 0;
             int certLen = 0;
             int keyLen = 0;
 
             String certString = fileItem.getString();
-            String certName = fileItem.getName();
-            dotLocation = certName.indexOf('.');
-
-            if (dotLocation < 0) baseName = certName;
-            else baseName = certName.substring(0, dotLocation);
-            basePath = CERT_STORE_PATH + baseName;
-
-            // make sure the file doesn't already exist
-            checkFile = new File(basePath + ".pem");
-            if (checkFile.exists()) return new ExecManagerResult(1, "A file with that name already exists on this server.");
-            checkFile = new File(basePath + ".pfx");
-            if (checkFile.exists()) return new ExecManagerResult(1, "A file with that name already exists on this server.");
+            String baseName = Long.toString(System.currentTimeMillis() / 1000l);
 
             int certTop = certString.indexOf(MARKER_CERT_HEAD);
             int certEnd = certString.indexOf(MARKER_CERT_TAIL);
@@ -186,14 +171,14 @@ public class CertificateManagerImpl implements CertificateManager
 
             // we have a cert and a key and maybe other stuff so we use the
             // the uploaded file exactly as provided
-            logger.info("Processing uploaded server certificate: " + basePath);
-            certStream = new FileOutputStream(basePath + ".pem");
+            logger.info("Processing uploaded server certificate: " + baseName);
+            certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".pem");
             certStream.write(fileItem.get());
             certStream.close();
 
             // now create a PFX file from the PEM for for apps that use
             // SSLEngine like web filter, captive portal, etc.
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + basePath + ".pfx -in " + basePath + ".pem");
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
 
             return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }
