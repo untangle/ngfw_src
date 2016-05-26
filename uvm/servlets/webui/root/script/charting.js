@@ -6,6 +6,12 @@
  * Highcharts implementation
  */
 
+Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
 Ext.define('Ung.charts', {
     singleton: true,
     //generateRandomData: true,
