@@ -469,6 +469,12 @@ public class ReportEntry implements Serializable, JSONString
             " WHERE " + dateCondition;
         createDataTempTableQuery += conditionsToString( allConditions );
         createDataTempTableQuery += " GROUP BY time_trunc, " + getTimeDataDynamicColumn() + " ";
+        createDataTempTableQuery = "SELECT * FROM " +
+            " ( " + generateSeriesQuery + " ) as t1 " +
+            "LEFT JOIN " +
+            " ( " + createDataTempTableQuery + " ) as t2 " +
+            " USING (time_trunc) " +
+            " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
         createDataTempTableQuery = "CREATE TEMP TABLE tempTimeTable AS " + createDataTempTableQuery;
         
         /**
@@ -486,34 +492,19 @@ public class ReportEntry implements Serializable, JSONString
         crosstabQuery = crosstabQuery + ")";
 
         /**
-         * finalCrosstabQuery
-         * This is the final crosstab query which just left joins the crosstabQuery
-         * with the times from generateSeries to ensure that all times have a row
-         * even if they are missing from the crosstabQuery results.
-         */
-        String finalCrosstabQuery = "SELECT * FROM " +
-            " ( " + generateSeriesQuery + " ) as t1 " +
-            "LEFT JOIN " +
-            " ( " + crosstabQuery + " ) as t2 " +
-            " USING (time_trunc) " +
-            " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
-
-
-        /**
          * finalQuery
          * The final query is just the statement to create the two temp tables
-         * plus finalCrosstabQuery to actually return the results
+         * plus crosstabQuery to actually return the results
          */
         String finalQuery = createDistinctTempTableQuery + " ; " +
             createDataTempTableQuery + " ; " +
-            finalCrosstabQuery;
+            crosstabQuery;
             
         if ( logger.isDebugEnabled() ) {
             logger.debug("createDistinctTempTableQuery QUERY: " + createDistinctTempTableQuery);
             logger.debug("distinctQuery                QUERY: " + distinctQuery);
             logger.debug("createDataTempTableQuery     QUERY: " + createDataTempTableQuery);
             logger.debug("crosstabQuery                QUERY: " + crosstabQuery);
-            logger.debug("finalCrosstabQuery           QUERY: " + finalCrosstabQuery);
             logger.debug("finalQuery                   QUERY: " + finalQuery);
         }
         
