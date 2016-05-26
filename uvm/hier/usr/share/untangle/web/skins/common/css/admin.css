@@ -2015,3 +2015,10 @@ a.forgot-password:hover {
     vertical-align: middle;
 }
 
+
+.dashboard-manager-header h3 {
+    font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
+    margin: 5px 0 5px 0;
+    font-weight: normal;
+    font-size: 20px;
+}

@@ -268,7 +268,7 @@ Ext.define('Ung.grid.Panel', {
         }
         if (this.hasAdd) {
             this.tbar.push({
-                text: '<i class="material-icons" style="color: green;">add_circle</i> <span>' + i18n._('Add') + '</span>',
+                text: '<i class="material-icons">add</i> <span>' + i18n._('Add') + '</span>',
                 cls: 'material-button',
                 scale: this.scale,
                 tooltip: i18n._('Add New Row'),

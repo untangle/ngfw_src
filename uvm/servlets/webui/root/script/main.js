@@ -352,7 +352,15 @@ Ext.define("Ung.Main", {
                             boxShadow: '0 3px 5px rgba(0, 0, 0, 0.3)',
                             zIndex: 100
                         },
-                        items: []
+                        items: [],
+                        listeners: {
+                            hide: function () {
+                                Ung.Main.panelCenter.down('[name=closeManagerBtn]').show();
+                            },
+                            show: function () {
+                                Ung.Main.panelCenter.down('[name=closeManagerBtn]').hide();
+                            }
+                        }
                     }, {
                         layout: 'border',
                         region: 'center',
@@ -368,6 +376,7 @@ Ext.define("Ung.Main", {
                                 margin: '0 0 0 10',
                                 scale: 'medium',
                                 cls: 'action-button material-button',
+                                name: 'closeManagerBtn',
                                 plugins: 'responsive',
                                 responsiveConfig: {
                                     'width <= 520': {
@@ -378,20 +387,40 @@ Ext.define("Ung.Main", {
                                     }
                                 },
                                 handler: function (btn) {
-                                    if (this.dashboardManager.isHidden()) {
-                                        this.dashboardManager.show();
-                                    } else {
-                                        this.dashboardManager.hide();
-                                    }
+                                    this.dashboardManager.show();
                                     if (this.dashboardManager.items.length === 0) {
                                         this.dashboardManager.add({
                                             xtype: 'container',
-                                            html: '<h3 style="margin: 0 0 15px 0; font-weight: normal; font-size: 20px;">' + i18n._('Manage Widgets') + '</h3>',
-                                            style: {
-                                                color: '#CCC'
+                                            cls: 'dashboard-manager-header',
+                                            layout: {
+                                                type: 'hbox',
+                                                align: 'middle'
                                             },
-                                            padding: '10 10 10 10',
-                                            border: false
+                                            items: [{
+                                                xtype: 'component',
+                                                html: '<h3>' + i18n._('Manage Widgets') + '</h3>',
+                                                style: {
+                                                    color: '#CCC'
+                                                },
+                                                padding: '5 10 5 10',
+                                                border: false
+                                            }, {
+                                                xtype: 'component',
+                                                html: '',
+                                                flex: 1
+                                            }, {
+                                                xtype: 'button',
+                                                border: false,
+                                                margin: '0 5 0 0',
+                                                style: {
+                                                    background: 'none'
+                                                },
+                                                html: '<i class="material-icons" style="color: #CCC;">close</i>',
+                                                handler: function () {
+                                                    this.dashboardManager.hide();
+                                                },
+                                                scope: this
+                                            }]
                                         });
                                         this.dashboardManager.add(Ext.create('Webui.config.dashboardManager', {}));
                                         this.dashboardManager.add({
@@ -409,7 +438,7 @@ Ext.define("Ung.Main", {
                                             style: {
                                                 color: '#CCC'
                                             },
-                                            padding: '10 10 10 10',
+                                            padding: '0 10 0 10',
                                             border: false
                                         });
                                     }
