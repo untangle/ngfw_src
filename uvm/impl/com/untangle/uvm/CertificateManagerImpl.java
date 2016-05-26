@@ -15,10 +15,13 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.OutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
@@ -187,6 +190,7 @@ public class CertificateManagerImpl implements CertificateManager
                 // the cert and key match so save the certificate to a file
                 certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
                 certStream.write(certString.getBytes(), certTop, certLen);
+                certStream.write('\n');
                 certStream.close();
 
                 // make a copy of the server key file in the certificate key file
@@ -196,19 +200,93 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
             }
 
-            // we found a cert and a key and maybe other stuff so we just
-            // use the uploaded file exactly as provided
+            // we found a cert and a key and maybe other stuff so save the
+            // uploaded file as the pem and generate the crt and key files
             else {
                 certStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".pem");
-                certStream.write(certString.getBytes(), certTop, certLen);
+                certStream.write(fileItem.get());
                 certStream.close();
+
+                // finally we create .crt and .key files from the contents of the .pem file
+                File certFile = new File(CERT_STORE_PATH + baseName + ".pem");
+                BufferedReader certReader = new BufferedReader(new FileReader(certFile));
+                FileWriter crtStream = new FileWriter(CERT_STORE_PATH + baseName + ".crt");
+                FileWriter keyStream = new FileWriter(CERT_STORE_PATH + baseName + ".key");
+                StringBuilder rawdata = new StringBuilder();
+                String grabstr;
+                boolean crtflag = false;
+                boolean keyflag = false;
+
+                /*
+                 * We read each line of the file looking look for crt and key
+                 * head and tail markers to control some simple state logic that
+                 * lets us stream the certificates into the crt file and the
+                 * private key into it's own key file.
+                 */
+                for (;;) {
+                    grabstr = certReader.readLine();
+                    if (grabstr == null) break;
+
+                    // if we're not working on a crt or key we look for the
+                    // beginning of either set the appropriate flag if found
+                    if ((crtflag == false) && (keyflag == false)) {
+                        if (grabstr.indexOf(MARKER_CERT_HEAD) >= 0) crtflag = true;
+                        if (grabstr.indexOf(MARKER_RKEY_HEAD) >= 0) keyflag = true;
+                        if (grabstr.indexOf(MARKER_GKEY_HEAD) >= 0) keyflag = true;
+                        continue;
+                    }
+
+                    // if we find the end of a crt but we're not working on a
+                    // crt clear the flag and buffer since it must be garbage
+                    if (grabstr.indexOf(MARKER_CERT_TAIL) >= 0) {
+                        if (crtflag == false) {
+                            rawdata.setLength(0);
+                            keyflag = false;
+                            continue;
+                        }
+
+                        // found the end of a crt and we were working on a crt so
+                        // write the crt to the file and reset buffer and flag
+                        crtStream.write(MARKER_CERT_HEAD + "\n");
+                        crtStream.write(rawdata.toString());
+                        crtStream.write(MARKER_CERT_TAIL + "\n");
+                        rawdata.setLength(0);
+                        crtflag = false;
+                        continue;
+                    }
+
+                    // if we find the end of a key but we're not working on a 
+                    // key clear the flag and buffer since it must be garbage
+                    if ((grabstr.indexOf(MARKER_RKEY_TAIL) >= 0) || (grabstr.indexOf(MARKER_GKEY_TAIL) >= 0)) {
+                        if (keyflag == false) {
+                            rawdata.setLength(0);
+                            crtflag = false;
+                            continue;
+                        }
+
+                        // found the end of a key and we were working on a key so
+                        // write the key to the file and reset buffer and flag
+                        keyStream.write(MARKER_RKEY_HEAD + "\n");
+                        keyStream.write(rawdata.toString());
+                        keyStream.write(MARKER_RKEY_TAIL + "\n");
+                        rawdata.setLength(0);
+                        keyflag = false;
+                        continue;
+                    }
+
+                    // we're working on a crt or key so add the line to the buffer
+                    rawdata.append(grabstr);
+                    rawdata.append("\n");
+                }
+
+                certReader.close();
+                crtStream.close();
+                keyStream.close();
             }
 
-            // now convert the certificate PEM file to PFX format for apps
-            // that use SSLEngine like web filter and captive portal
+            // last thing we do is convert the certificate PEM file to PFX format
+            // for apps that use SSLEngine like web filter and captive portal
             UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
-
-            // TODO - we also need to split the thing into .crt and .key files in case they try to use it with IPsec
 
             return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }
