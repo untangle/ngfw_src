@@ -1,0 +1,20 @@
+{
+    "uniqueId": "application-control-OAI5zmhxOM",
+    "category": "Application Control",
+    "description": "The amount of sessions per top application.",
+    "displayOrder": 210,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "sesions",
+    "readOnly": true,
+    "table": "sessions",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "session_id",
+    "timeDataDynamicColumn": "application_control_application",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "count",
+    "timeStyle": "LINE",
+    "title": "Top Applications Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}
