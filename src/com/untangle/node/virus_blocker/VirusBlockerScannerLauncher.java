@@ -137,7 +137,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         // split the string on the spaces so we can find all the fields
         String[] tokens = message.split(" ");
         int retcode = 0;
-        String bdResult = null;
+        String threatName = null;
+        String threatType = null;
 
         try {
             retcode = Integer.valueOf(tokens[0]);
@@ -146,7 +147,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         try {
-            bdResult = tokens[2];
+            threatType = tokens[1];
+            threatName = tokens[2];
         } catch (Exception e) {
             // ignore exception, there aren't always 3 tokens
         }
@@ -166,12 +168,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // if BD returned positive result we send the feedback
         if ( (retcode == 222) || (retcode == 223) ) {
-            feedback = new VirusCloudFeedback(virusState, "BD", bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
         }
         
         // if no BD feedback and cloud returned positive result we also send feedback
         if ( (feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100 ) ) {
-            feedback = new VirusCloudFeedback(virusState, "BD", bdResult, scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
         }
 
         // if we have a feedback object start it up now
@@ -191,10 +193,10 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             setResult(VirusScannerResult.CLEAN);
             break;
         case 222: // known infection
-            setResult(new VirusScannerResult(false, bdResult));
+            setResult(new VirusScannerResult(false, threatName));
             break;
         case 223: // likely infection
-            setResult(new VirusScannerResult(false, bdResult));
+            setResult(new VirusScannerResult(false, threatName));
             break;
         case 225: // password protected file
             setResult(VirusScannerResult.CLEAN);
