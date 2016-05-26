@@ -484,16 +484,12 @@ Ext.define('Ung.charts', {
 
         if (entry.type === 'TIME_GRAPH_DYNAMIC') {
             entry.timeDataColumns = [];
-            var _iterator = 1;
-            while (entry.timeDataColumns.length === 0) {
-                for (_column in data[data.length - _iterator]) {
-                    if (data[data.length - _iterator].hasOwnProperty(_column)) {
-                        if (_column !== 'time_trunc' && _column !== 'time') {
-                            entry.timeDataColumns.push(_column);
-                        }
+            for (i = 0; i < data.length; i += 1) {
+                for (_column in data[i]) {
+                    if (data[i].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && entry.timeDataColumns.indexOf(_column) < 0) {
+                        entry.timeDataColumns.push(_column);
                     }
                 }
-                _iterator += 1;
             }
         }
 
@@ -527,7 +523,7 @@ Ext.define('Ung.charts', {
             for (j = 0; j < data.length; j += 1) {
                 _data.push([
                     data[j].time,
-                    data[j][_seriesOptions[i].id] || (this.generateRandomData ? (Math.random() * 120) : 0)
+                    data[j][_seriesOptions[i].id] || 0
                 ]);
             }
 
