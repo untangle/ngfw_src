@@ -1390,33 +1390,33 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         }
     },
     buildInfoPanel: function(config) {
-        var infoArea = Ext.create('Ext.form.TextArea',{
-            name: "state",
-            hideLabel: true,
-            readOnly: true,
-            anchor: "100% -30",
-            fieldCls : "ua-test-output"
-        });
-
-        var panelInfo = Ext.create('Ext.panel.Panel', {
+        return Ext.create('Ext.panel.Panel', {
             helpSource: config.helpSource,
-            layout: 'anchor',
+            layout: 'fit',
             title: config.title,
-            items: [infoArea, {
+            items: [{
+                xtype: 'component',
+                padding: 0,
+                border: false,
+                data: {},
+                tpl: '<textarea style="width: 100%; height: 100%; border: 0; resize: none;" readonly>{log}</textarea>'
+            }],
+            bbar: [{
                 xtype: 'button',
-                text: config.text,
-                handler: function(button,e) {
-                    button.up("panel").loadInfo();
+                text: '<i class="material-icons" style="font-size: 20px;">refresh</i>' + '<span>' + config.text + '</span>',
+                handler: function(button) {
+                    button.up('panel').loadInfo();
                 }
             }],
             isDirty: function() {
                 return false;
             },
             loadInfo: function() {
-                infoArea.setValue(i18n._("Loading information... Please wait..."));
+                var logger = this.down('component');
+                logger.update({ log: i18n._("Loading information... Please wait...") });
                 config.dataFn(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    infoArea.setValue(result);
+                    logger.update({ log: result });
                 });
             },
             listeners: {
@@ -1425,13 +1425,12 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 }
             }
         });
-        return panelInfo;
     },
     buildPageStateInfo: function() {
         this.pageStateInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_state',
             title: i18n._("IPsec State"),
-            text: " " + i18n._("Refresh Log Information") + " ",
+            text: i18n._("Refresh Log Information"),
             dataFn: this.getRpcNode().getStateInfo
         });
     },
@@ -1439,7 +1438,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pagePolicyInfo = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_policy',
             title: i18n._("IPsec Policy"),
-            text: " " + i18n._("Refresh Policy Information") + " ",
+            text: i18n._("Refresh Policy Information"),
             dataFn: this.getRpcNode().getPolicyInfo
         });
     },
@@ -1447,7 +1446,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageLogFile = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_ipsec_log',
             title: i18n._("IPsec Log"),
-            text: " " + i18n._("Refresh State Information") + " ",
+            text: i18n._("Refresh State Information"),
             dataFn: this.getRpcNode().getLogFile
         });
     },
@@ -1455,7 +1454,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         this.pageVirtualLog = this.buildInfoPanel({
             helpSource: 'ipsec_vpn_l2tp_log',
             title: i18n._("L2TP Log"),
-            text: " " + i18n._("Refresh Log Information") + " ",
+            text: i18n._("Refresh Log Information"),
             dataFn: this.getRpcNode().getVirtualLogFile
         });
     },
