@@ -462,7 +462,7 @@ Ext.define('Webui.config.email', {
                 name: 'emailAddress'
             }],
             columns: [{
-                header: i18n._("email address"),
+                header: i18n._("Email Address"),
                 flex: 1,
                 width: 450,
                 dataIndex: 'emailAddress'
@@ -528,12 +528,12 @@ Ext.define('Webui.config.email', {
                 name: 'count'
             }],
             columns: [{
-                header: i18n._("account address"),
+                header: i18n._("Account Address"),
                 width: 350,
                 dataIndex: 'emailAddress',
                 flex: 1
             }, {
-                header: i18n._("safe list size"),
+                header: i18n._("Safe List Size"),
                 width: 150,
                 align: 'right',
                 dataIndex: 'count'
