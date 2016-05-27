@@ -73,6 +73,13 @@ Ext.define("Ung.Main", {
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset
         });
+
+        Highcharts.setOptions({
+            global: {
+                timezoneOffset: -(rpc.timeZoneOffset / 60000)
+            }
+        });
+
         Ung.Util.loadCss("/skins/" + rpc.skinSettings.skinName + "/css/common.css");
         Ung.Util.loadCss("/skins/" + rpc.skinSettings.skinName + "/css/admin.css");
         Ung.Util.loadCss("/skins/" + rpc.skinSettings.skinName + "/css/apps.css");
