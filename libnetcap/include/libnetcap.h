@@ -4,6 +4,8 @@
 
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <libnetfilter_conntrack/libnetfilter_conntrack.h> 
+#include <libnetfilter_queue/libnetfilter_queue.h>
 
 #ifndef IF_NAMESIZE
 #define IF_NAMESIZE       16
@@ -440,6 +442,9 @@ int  netcap_set_verdict_mark ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id,
 
 /* Conntrack manipulation functions */
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);
+
+/* Dump all of conntrack */
+int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit );
 
 /**
  * Lookups up the MAC address for the provided IP in the ARP table

@@ -32,7 +32,6 @@
 #include "netcap_globals.h"
 #include "netcap_interface.h"
 #include "netcap_sesstable.h"
-#include "netcap_nfconntrack.h"
 
 /* How long to wait for TCP connection to complete */
 #define TCP_SRV_COMPLETE_TIMEOUT_MSEC       ( 30 * 1000 )

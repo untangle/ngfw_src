@@ -9,7 +9,6 @@
 #include <libnetcap.h>
 #include "netcap_globals.h"
 #include "netcap_queue.h"
-#include "netcap_nfconntrack.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
 

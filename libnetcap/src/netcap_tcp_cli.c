@@ -95,7 +95,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     tuple.dst_port = (u_int16_t)nat_info.dst_protocol_id;
 
     /* This will automatically ignore the error of the entry not existing. */
-    if( netcap_nfconntrack_del_entry_tuple( &tuple, NFCONNTRACK_DIRECTION_ORIG, 1 ) < 0 ) {
+    if( netcap_nfconntrack_del_entry_tuple( &tuple, 1 ) < 0 ) {
         return errlog( ERR_WARNING,"netcap_nfconntrack_del_entry_tuple\n");
     }
 
