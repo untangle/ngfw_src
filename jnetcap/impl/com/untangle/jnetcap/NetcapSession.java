@@ -12,28 +12,24 @@ public abstract class NetcapSession
 
     private final static int FLAG_ID         = 1;
     private final static int FLAG_PROTOCOL   = 2;
-
-    protected final static int FLAG_IF_CLIENT_MASK = 0x2000;
-    protected final static int FLAG_IF_SRC_MASK    = 0x1000;
-
-    /* For the following options one of FLAG_ClientMask or FLAG_ServerMask AND FLAG_SrcMask or FLAG_DstMask,
-     * must also be set */
-    private final static int FLAG_HOST          = 16;
-    private final static int FLAG_PORT          = 17;
-    private final static int FLAG_INTERFACE     = 18;
-
-    /* This is the mask for the the client/server parts */
-    @SuppressWarnings("unused")
-    /* It is suppressed warning here because its used in JNI */
-    private final static int FLAG_MASK        = 0xFFF;
+    private final static int FLAG_CLIENTSIDE_CLIENT_HOST = 16;
+    private final static int FLAG_CLIENTSIDE_SERVER_HOST = 17;
+    private final static int FLAG_SERVERSIDE_CLIENT_HOST = 18;
+    private final static int FLAG_SERVERSIDE_SERVER_HOST = 19;
+    private final static int FLAG_CLIENTSIDE_CLIENT_PORT = 20;
+    private final static int FLAG_CLIENTSIDE_SERVER_PORT = 21;
+    private final static int FLAG_SERVERSIDE_CLIENT_PORT = 22;
+    private final static int FLAG_SERVERSIDE_SERVER_PORT = 23;
+    private final static int FLAG_CLIENT_INTERFACE     = 24;
+    private final static int FLAG_SERVER_INTERFACE     = 25;
 
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;
     
     /* This is for children that override the SessionEndpoints class */
-    protected NetcapSession( long id, short protocol )
+    protected NetcapSession( long id )
     {
-        pointer = new CPointer( getSession( id, protocol ));
+        pointer = new CPointer( getSession( id ));
 
         clientSide = makeEndpoints( true );
         serverSide = makeEndpoints( false );
@@ -42,9 +38,7 @@ public abstract class NetcapSession
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP */
     public short getProtocol()
     {
-        short protocol = (short)getIntValue( FLAG_PROTOCOL, pointer.value());
-        
-        return protocol;
+        return (short)getIntValue( FLAG_PROTOCOL, pointer.value());
     }
 
     public long id() 
@@ -179,7 +173,7 @@ public abstract class NetcapSession
     public Endpoints clientSide() { return clientSide; }
     public Endpoints serverSide() { return serverSide; }
 
-    private static native long getSession( long id, short protocol );
+    private static native long getSession( long id );
     private static native void raze( long session );
 
     private static native int  getClientMark( long session );
@@ -200,12 +194,12 @@ public abstract class NetcapSession
 
     protected class SessionEndpoints implements Endpoints
     {
-        protected final boolean ifClientSide;
+        protected final boolean isClientSide;
         protected final Endpoint client;
         protected final Endpoint server;
 
-        SessionEndpoints( boolean ifClientSide ) {
-            this.ifClientSide = ifClientSide;
+        SessionEndpoints( boolean isClientSide ) {
+            this.isClientSide = isClientSide;
             client = new SessionEndpoint( true );
             server = new SessionEndpoint( false );
         }
@@ -215,41 +209,52 @@ public abstract class NetcapSession
 
         public int interfaceId()
         {
-            return getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());
-        }
-
-        protected int buildMask( int type )
-        {
-            return (( ifClientSide ) ? FLAG_IF_CLIENT_MASK : 0) | type;
+            if ( isClientSide )
+                return getIntValue( FLAG_CLIENT_INTERFACE, pointer.value());
+            else
+                return getIntValue( FLAG_SERVER_INTERFACE, pointer.value());
         }
 
         protected class SessionEndpoint implements Endpoint
         {
-            private final boolean ifClient;
+            private final boolean isClient;
 
-            SessionEndpoint( boolean ifClient )
+            SessionEndpoint( boolean isClient )
             {
-                this.ifClient = ifClient;
+                this.isClient = isClient;
             }
 
             public InetAddress host()
             {
-                long addr = getLongValue( buildMask( FLAG_HOST ), pointer.value());
-
+                long addr;
+                if ( isClientSide ) {
+                    if ( isClient )
+                        addr = getLongValue( FLAG_CLIENTSIDE_CLIENT_HOST, pointer.value());
+                    else
+                        addr = getLongValue( FLAG_CLIENTSIDE_SERVER_HOST, pointer.value());
+                } else {
+                    if ( isClient )
+                        addr = getLongValue( FLAG_SERVERSIDE_CLIENT_HOST, pointer.value());
+                    else
+                        addr = getLongValue( FLAG_SERVERSIDE_SERVER_HOST, pointer.value());
+                }
+                    
                 return Inet4AddressConverter.toAddress( addr );
             }
 
             public int port()
             {
-                return getIntValue( buildMask( FLAG_PORT ), pointer.value());
-            }
-
-            protected int buildMask( int type )
-            {
-                int mask = ( ifClientSide ) ? FLAG_IF_CLIENT_MASK : 0;
-                mask |= ( ifClient ) ? FLAG_IF_SRC_MASK : 0;
-                mask |= type;
-                return mask;
+                if ( isClientSide ) {
+                    if ( isClient )
+                        return getIntValue( FLAG_CLIENTSIDE_CLIENT_PORT, pointer.value());
+                    else
+                        return getIntValue( FLAG_CLIENTSIDE_SERVER_PORT, pointer.value());
+                } else {
+                    if ( isClient )
+                        return getIntValue( FLAG_SERVERSIDE_CLIENT_PORT, pointer.value());
+                    else
+                        return getIntValue( FLAG_SERVERSIDE_SERVER_PORT, pointer.value());
+                }
             }
         }
     }

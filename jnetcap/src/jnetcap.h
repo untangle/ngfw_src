@@ -44,5 +44,9 @@ int jnetcap_initialized( void );
 #define JN_UDPAttributes(VAL)  JN_BUILD_NAME( UDPAttributes, VAL )
 #define JF_UDPAttributes(FUNC) JF_BUILD_NAME( UDPAttributes, FUNC )
 
+#define JH_Conntrack       "com_untangle_jnetcap_Conntrack.h"
+#define JN_Conntrack(VAL)  JN_BUILD_NAME( Conntrack, VAL )
+#define JF_Conntrack(FUNC) JF_BUILD_NAME( Conntrack, FUNC )
+
 #endif  // __JNETCAP_H_
 

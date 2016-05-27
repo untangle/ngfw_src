@@ -1,19 +1,5 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include <stdio.h>
@@ -22,6 +8,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <unistd.h>
+#include <inttypes.h>
 
 #include <libnetcap.h>
 #include <libmvutil.h>
@@ -40,18 +28,13 @@
 #include JH_TCPSession
 #include JH_UDPSession
 
-
-/**
- * XXXX All of the get functions should throw errors
- */
-
 /*
  * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getSession
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL JF_Session( getSession )
-    ( JNIEnv *env, jclass _class, jlong session_id, jshort protocol )
+    ( JNIEnv *env, jclass _class, jlong session_id )
 {
     netcap_session_t* session;
 
@@ -66,18 +49,6 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
         return 0;
     }
     
-    
-    /* If necessary, verify that the protocol matches */
-    int session_protocol = session->protocol;
-
-    /* XXX This is kind of a mess access wise, because only certain classes should 
-     * be able to create sessions with unverified protocols */
-    if ( protocol != 0 && session_protocol != protocol ) {
-        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Mismatched protocol: expected %d actual %d\n",
-                       protocol, session->protocol );
-        return 0;
-    }
-    
     return UINT_TO_JLONG( session );
 }
 
@@ -87,22 +58,26 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
  * Signature: (IJ)J
  */
 JNIEXPORT jlong JNICALL JF_Session( getLongValue )
-  (JNIEnv *env, jclass _this, jint req_id, jlong session_ptr )
+  (JNIEnv *env, jclass _this, jint flag, jlong session_ptr )
 {
     netcap_session_t* session;
-    netcap_endpoint_t* endpoint;
     JLONG_TO_SESSION( session, session_ptr );
 
-    endpoint = _get_endpoint( session, req_id );
-    if ( endpoint == NULL ) return (jlong)errlog( ERR_CRITICAL, "_get_endpoint" );
+    netcap_endpoints_t* clientSide = &session->cli;
+    netcap_endpoints_t* serverSide = &session->srv;
+    if ( clientSide == NULL || serverSide == NULL ) {
+        return (jlong)errlog( ERR_CRITICAL, "Unexpected NULL: 0x%016"PRIxPTR" 0x%016"PRIxPTR"\n", (uintptr_t)clientSide, (uintptr_t)serverSide);
+    }
 
-    int flag = req_id & JN_Session( FLAG_MASK );
     switch( flag ) {
-    case JN_Session( FLAG_HOST ): return UINT_TO_JLONG( endpoint->host.s_addr );
+    case JN_Session( FLAG_CLIENTSIDE_CLIENT_HOST ): return UINT_TO_JLONG( clientSide->cli.host.s_addr );
+    case JN_Session( FLAG_CLIENTSIDE_SERVER_HOST ): return UINT_TO_JLONG( clientSide->srv.host.s_addr );
+    case JN_Session( FLAG_SERVERSIDE_CLIENT_HOST ): return UINT_TO_JLONG( serverSide->cli.host.s_addr );
+    case JN_Session( FLAG_SERVERSIDE_SERVER_HOST ): return UINT_TO_JLONG( serverSide->srv.host.s_addr );
     case JN_Session( FLAG_ID ): return session->session_id;
     }
 
-    return (jlong)errlog(ERR_CRITICAL,"Invalid arguments: flag %i\n", flag);    
+    return errlog(ERR_CRITICAL, "Unknown flag: %i\n", flag); 
 }
 
 /*
@@ -111,21 +86,21 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
  * Signature: (IJ)I
  */
 JNIEXPORT jint JNICALL JF_Session( getIntValue )
-  (JNIEnv *env, jclass _this, jint req_id, jlong session_ptr )
+  (JNIEnv *env, jclass _this, jint flag, jlong session_ptr )
 {
     netcap_session_t* session;
-    netcap_endpoint_t* endpoint;
-    netcap_endpoints_t* endpoints;
     JLONG_TO_SESSION( session, session_ptr );
 
-    switch( req_id & JN_Session( FLAG_MASK )) { 
+    switch( flag ) { 
 
     case JN_Session( FLAG_PROTOCOL ): return session->protocol;
 
-    case JN_TCPSession( FLAG_FD ):
+    case JN_TCPSession( FLAG_CLIENT_FD ):
         if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );
-        
-        if ( req_id & JN_Session( FLAG_IF_CLIENT_MASK )) return session->client_sock;
+        return session->client_sock;
+
+    case JN_TCPSession( FLAG_SERVER_FD ):
+        if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );
         return session->server_sock;
 
     case JN_UDPSession( FLAG_TTL ): 
@@ -141,17 +116,23 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
         return session->ttl;
 
     }
+
+    netcap_endpoints_t* clientSide = &session->cli;
+    netcap_endpoints_t* serverSide = &session->srv;
+    if ( clientSide == NULL || serverSide == NULL ) {
+        return (jlong)errlog( ERR_CRITICAL, "Unexpected NULL: 0x%016"PRIxPTR" 0x%016"PRIxPTR"\n", (uintptr_t)clientSide, (uintptr_t)serverSide);
+    }
     
-    endpoint  = _get_endpoint( session, req_id );
-    endpoints = _get_endpoints( session, req_id );
-    if ( NULL == endpoint || NULL == endpoints ) return errlog( ERR_CRITICAL, "_get_endpoint(s)" );
-    
-    switch( req_id & JN_Session( FLAG_MASK )) {
-    case JN_Session( FLAG_PORT ): return endpoint->port;
-    case JN_Session( FLAG_INTERFACE ): return endpoints->intf;
+    switch( flag ) {
+    case JN_Session( FLAG_CLIENTSIDE_CLIENT_PORT ): return clientSide->cli.port;
+    case JN_Session( FLAG_CLIENTSIDE_SERVER_PORT ): return clientSide->srv.port;
+    case JN_Session( FLAG_SERVERSIDE_CLIENT_PORT ): return serverSide->cli.port;
+    case JN_Session( FLAG_SERVERSIDE_SERVER_PORT ): return serverSide->srv.port;
+    case JN_Session( FLAG_CLIENT_INTERFACE ): return clientSide->intf;
+    case JN_Session( FLAG_SERVER_INTERFACE ): return serverSide->intf;
     }
 
-    return errlogargs();
+    return errlog(ERR_CRITICAL, "Unknown flag: %i\n", flag); 
 }
 
 /*

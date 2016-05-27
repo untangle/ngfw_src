@@ -8,9 +8,8 @@ import java.net.InetAddress;
 @SuppressWarnings("unused") //JNI
 public class NetcapUDPSession extends NetcapSession 
 {
-    /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
-    private final static int FLAG_TTL            = 64;
-    private final static int FLAG_TOS            = 65;
+    private final static int FLAG_TTL            = 200;
+    private final static int FLAG_TOS            = 201;
     
     private final UDPPacketMailbox clientMailbox;
     private final UDPPacketMailbox serverMailbox;
@@ -20,7 +19,7 @@ public class NetcapUDPSession extends NetcapSession
     
     public NetcapUDPSession( long id ) 
     {
-        super( id, Netcap.IPPROTO_UDP );           
+        super( id );           
         
         clientMailbox = new UDPSessionMailbox( true );
         serverMailbox = new UDPSessionMailbox( false );
@@ -94,11 +93,11 @@ public class NetcapUDPSession extends NetcapSession
         setSessionMark(pointer.value(), newmark);
     }
     
-    private static native long   read( long sessionPointer, boolean ifClient, int timeout );
+    private static native long   read( long sessionPointer, boolean isClientSide, int timeout );
     private static native byte[] data( long packetPointer );
     private static native int    getData( long packetPointer, byte[] buffer );
 
-    private static native long   mailboxPointer( long sessionPointer, boolean ifClient );
+    private static native long   mailboxPointer( long sessionPointer, boolean isClientSide );
     
     /* This is for sending the data associated with a netcap_pkt_t structure */
     private static native int  send( long packetPointer );
@@ -111,15 +110,15 @@ public class NetcapUDPSession extends NetcapSession
     
     class UDPSessionMailbox implements UDPPacketMailbox
     {
-        private final boolean ifClient;
+        private final boolean isClientSide;
 
-        UDPSessionMailbox( boolean ifClient ) {
-            this.ifClient = ifClient;
+        UDPSessionMailbox( boolean isClientSide ) {
+            this.isClientSide = isClientSide;
         }
 
         public UDPPacket read( int timeout )
         {
-            CPointer packetPointer = new CPointer( NetcapUDPSession.read( pointer.value(), ifClient, timeout ));
+            CPointer packetPointer = new CPointer( NetcapUDPSession.read( pointer.value(), isClientSide, timeout ));
             
             UDPAttributes ipTraffic = new UDPAttributes( packetPointer );
             
@@ -141,7 +140,7 @@ public class NetcapUDPSession extends NetcapSession
 
         public long pointer()
         {
-            return NetcapUDPSession.mailboxPointer( pointer.value(), ifClient );
+            return NetcapUDPSession.mailboxPointer( pointer.value(), isClientSide );
         }
 
         abstract class PacketMailboxPacket implements UDPPacket

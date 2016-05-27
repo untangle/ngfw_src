@@ -12,11 +12,12 @@ public class NetcapTCPSession extends NetcapSession
 {
     private static final Logger logger = Logger.getLogger( NetcapTCPSession.class );
 
-    private static final int FLAG_FD                    = 32;
+    private static final int FLAG_SERVER_FD                    = 100;
+    private static final int FLAG_CLIENT_FD                    = 101;
 
     public NetcapTCPSession( long id )
     {
-        super( id, Netcap.IPPROTO_TCP );
+        super( id );
     }
     
     public TCPEndpoints clientSide() { return (TCPEndpoints)clientSide; }
@@ -127,29 +128,35 @@ public class NetcapTCPSession extends NetcapSession
 
     protected class TCPSessionEndpoints extends SessionEndpoints implements TCPEndpoints
     {
-        public TCPSessionEndpoints( boolean ifClientSide )
+        public TCPSessionEndpoints( boolean isClientSide )
         {
-            super( ifClientSide );
+            super( isClientSide );
         }
                 
-        public int fd() { return getIntValue( buildMask( FLAG_FD ), pointer.value()); }
+        public int fd()
+        {
+            if ( isClientSide )
+                return getIntValue( FLAG_CLIENT_FD, pointer.value());
+            else
+                return getIntValue( FLAG_SERVER_FD, pointer.value());
+        }
         
         /**
          * Set the blocking mode for one of the file descriptors.  This will throw an if it fails.
          */
         public void blocking( boolean mode )
         {
-            NetcapTCPSession.blocking( pointer.value(), ifClientSide, mode );
+            NetcapTCPSession.blocking( pointer.value(), isClientSide, mode );
         }
 
         public int read( byte[] data )
         {
-            return NetcapTCPSession.read( pointer.value(), ifClientSide, data );
+            return NetcapTCPSession.read( pointer.value(), isClientSide, data );
         }
         
         public int write( byte[] data )
         {
-            return NetcapTCPSession.write( pointer.value(), ifClientSide, data );
+            return NetcapTCPSession.write( pointer.value(), isClientSide, data );
         }
 
         public int write( String data )
@@ -162,12 +169,7 @@ public class NetcapTCPSession extends NetcapSession
          * throw an error if it is unable to close the file desscriptor */
         public void close()
         {
-            NetcapTCPSession.close( pointer.value(), ifClientSide );
-        }
-        
-        public int buildMask( int type )
-        {
-            return ( ifClientSide ? FLAG_IF_CLIENT_MASK : 0 ) | type;
+            NetcapTCPSession.close( pointer.value(), isClientSide );
         }
     }
 
