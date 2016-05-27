@@ -411,8 +411,8 @@ while True:
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
         if use_valgrind:
-            # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --gen-suppressions=all --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
-            valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
+            valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --gen-suppressions=all --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
+            # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
             if use_leakdetect:
                 valgrind_cmd = valgrind_cmd + "--leak-check=full "
             args = (valgrind_cmd + 

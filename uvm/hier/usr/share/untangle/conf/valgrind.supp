@@ -1,3 +1,8 @@
+
+
+
+
+
 {
    java_jvm_call_helper
    Memcheck:Cond
@@ -9,14 +14,6 @@
 {
    java_jvm_call_helper
    Memcheck:Addr4
-   ...
-   fun:*JavaCalls11call_helper*
-   ...
-}
-
-{
-   java_jvm_call_helper
-   Memcheck:Param
    ...
    fun:*JavaCalls11call_helper*
    ...
@@ -43,14 +40,6 @@
    Memcheck:Cond
    ...
    fun:_ZN10JavaThread17thread_main_innerEv
-   ...
-}
-
-{
-   java_jvm_epoll_nio
-   Memcheck:Param
-   ...
-   fun:Java_sun_nio_ch_EPollArrayWrapper_epollCtl
    ...
 }
 
@@ -87,22 +76,6 @@
 }
 
 {
-   libnetfilter_queue_nfnl
-   Memcheck:Param
-   ...
-   fun:nfnl_talk
-   ...
-}
-
-{
-   libnetfilter_queue_nfnl_2
-   Memcheck:Param
-   ...
-   obj:/usr/lib/libnetfilter_queue.so.1.1.0
-   ...
-}
-
-{
    thread_attach
    Memcheck:Cond
    ...
@@ -111,11 +84,35 @@
 }
 
 {
-   epoll_wrapper
+   java_g1
+   Memcheck:Cond
+   fun:_ZN17G1CollectorPolicy16predict_will_fitEmdmd
+   ...
+}
+
+{
+   java_epoll
    Memcheck:Param
    epoll_ctl(event)
    fun:epoll_ctl
    fun:Java_sun_nio_ch_EPollArrayWrapper_epollCtl
    ...
-   obj:*
 }
+
+{
+   java_tryspin
+   Memcheck:Cond
+   fun:_ZN7Monitor7TrySpinEP6Thread
+   ...
+}
+
+{
+   nfnl_send
+   Memcheck:Param
+   socketcall.sendto(msg)
+   obj:/lib/x86_64-linux-gnu/libpthread-2.19.so
+   fun:nfnl_send
+   fun:nfnl_query
+   ...
+}
+
