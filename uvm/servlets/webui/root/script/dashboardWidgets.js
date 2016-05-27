@@ -626,8 +626,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '<div class="iface" id="interface_{id}">' +
         '<p class="name">{name}</p>' +
         '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">{tx} kb/s</span>' +
-        '<span class="down">{rx} kb/s</span>' +
+        '<span class="up">{tx} kB/s</span>' +
+        '<span class="down">{rx} kB/s</span>' +
         '</div>' +
         '</div>' +
         '</tpl>' +
@@ -641,8 +641,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '<div class="iface" id="interface_{id}">' +
         '<span class="connection int"></span><br/>' +
         '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">{tx} kb/s</span>' +
-        '<span class="down">{rx} kb/s</span>' +
+        '<span class="up">{tx} kB/s</span>' +
+        '<span class="down">{rx} kB/s</span>' +
         '</div>' +
         '<p class="name">{name}</p>' +
         '<p class="devs"></p>' +
@@ -660,8 +660,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
                 if (interfaceEl && stats['interface_' + this.data.externalInterfaces[i].id + '_txBps']) {
-                    interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
-                    interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
+                    interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_txBps'] / 1024) + ' kB/s';
+                    interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + this.data.externalInterfaces[i].id + '_rxBps'] / 1024) + ' kB/s';
                 }
             }
         }
@@ -683,8 +683,8 @@ Ext.define('Ung.dashboard.NetworkLayout', {
                 for (i = 0; i < me.data.internalInterfaces.length; i += 1) {
                     interfaceEl = document.querySelector('#interface_' + me.data.internalInterfaces[i].id);
                     if (interfaceEl) {
-                        interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kb/s';
-                        interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kb/s';
+                        interfaceEl.querySelector('.up').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_rxBps'] / 1024) + ' kB/s';
+                        interfaceEl.querySelector('.down').innerHTML = Math.round(stats['interface_' + me.data.internalInterfaces[i].id + '_txBps'] / 1024) + ' kB/s';
                         interfaceEl.querySelector('.devs').innerHTML = interfaceDevicesMap[me.data.internalInterfaces[i].id] || 0;
                     }
                 }
