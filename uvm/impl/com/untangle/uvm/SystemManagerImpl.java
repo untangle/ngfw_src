@@ -268,6 +268,11 @@ public class SystemManagerImpl implements SystemManager
         return (new Date(System.currentTimeMillis())).toString();
     }
 
+    public long getMilliseconds()
+    {
+        return System.currentTimeMillis();
+    }
+
     @Override
     public void setDate(long timestamp)
     {

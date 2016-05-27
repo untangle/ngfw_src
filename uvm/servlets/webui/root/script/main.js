@@ -76,7 +76,7 @@ Ext.define("Ung.Main", {
 
         Highcharts.setOptions({
             global: {
-                timezoneOffset: -(rpc.timeZoneOffset / 60000)
+                timezoneOffset: -1 * (new Date().getTimezoneOffset() + 2 * (rpc.timeZoneOffset / 60000))
             }
         });
 
@@ -505,10 +505,24 @@ Ext.define("Ung.Main", {
                     }],
                     listeners: {
                         'activate': function (container) {
-                            if (Ung.dashboard.reportEntriesModified) {
+                            if (Ung.dashboard.reportEntriesModified || Ung.dashboard.timeZoneChanged) {
+                                if (Ung.dashboard.timeZoneChanged) {
+                                    try {
+                                        rpc.timeZoneOffset = rpc.systemManager.getTimeZoneOffset();
+                                    } catch (e) {
+                                        Ung.Util.rpcExHandler(e);
+                                    }
+                                    Highcharts.setOptions({
+                                        global: {
+                                            timezoneOffset: -1 * (new Date().getTimezoneOffset() + 2 * (rpc.timeZoneOffset / 60000))
+                                        }
+                                    });
+                                }
+
                                 Ung.dashboard.resetReports();
                                 Ung.dashboard.loadDashboard();
                                 Ung.dashboard.reportEntriesModified = false;
+                                Ung.dashboard.timeZoneChanged = false;
                             }
                             Ung.dashboard.Queue.resume();
                         },

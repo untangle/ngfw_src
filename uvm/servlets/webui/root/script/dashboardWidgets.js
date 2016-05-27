@@ -5,6 +5,7 @@ Ext.define('Ung.dashboard', {
     singleton: true,
     widgetsList: [],
     reportEntriesModified: false,
+    timeZoneChanged: false,
     loadDashboard: function () {
         Ung.dashboard.Queue.reset();
 
@@ -539,7 +540,7 @@ Ext.define('Ung.dashboard.CPULoad', {
         }
 
         if (this.lineChart !== null && this.gaugeChart !== null) {
-            this.lineChart.series[0].addPoint([(new Date()).getTime(), stats.oneMinuteLoadAvg], true, true);
+            this.lineChart.series[0].addPoint([this.lineChart.series[0].data[this.lineChart.series[0].data.length - 1].x + 3000, stats.oneMinuteLoadAvg], true, true);
             this.gaugeChart.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
         }
 

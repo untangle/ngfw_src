@@ -926,6 +926,7 @@ Ext.define('Webui.config.system', {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.rpc.timeZone = newValue;
+                                Ung.dashboard.timeZoneChanged = true;
                             }, this)
                         }
                     }

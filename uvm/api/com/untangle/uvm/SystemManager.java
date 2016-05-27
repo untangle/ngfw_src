@@ -32,6 +32,11 @@ public interface SystemManager
      */
     String getDate();
 
+    /**
+     * Returns the current time in milliseconds that the UVM is set to
+     */
+    long getMilliseconds();
+
     void setDate(long timestamp);
 
     /**

@@ -1,5 +1,5 @@
 /*global
- Ext, Ung, i18n, console, Highcharts, window
+ Ext, Ung, i18n, console, Highcharts, window, rpc
  */
 
 /**
@@ -21,7 +21,7 @@ Ext.define('Ung.charts', {
             chart: {
                 type: 'areaspline',
                 renderTo: container,
-                marginTop: 25,
+                marginTop: 35,
                 marginRight: 10,
                 marginLeft: 10,
                 marginBottom: 20,
@@ -33,10 +33,14 @@ Ext.define('Ung.charts', {
             title: null,
             xAxis: {
                 type: 'datetime',
+                lineColor: "#C0D0E0",
+                lineWidth: 1,
+                tickLength: 5,
+                tickPixelInterval: 70,
                 labels: {
                     style: {
                         color: '#999',
-                        fontSize: '10px'
+                        fontSize: '9px'
                     }
                 },
                 crosshair: {
@@ -101,15 +105,31 @@ Ext.define('Ung.charts', {
                 enabled: false
             },
             tooltip: {
-                enabled: false
+                positioner: function () {
+                    return { x: 5, y: 0 };
+                },
+                formatter: function () {
+                    return Highcharts.dateFormat('%H:%M:%S', new Date(this.x)) + ' - ' + this.y + ' load';
+                },
+                backgroundColor: 'transparent',
+                borderWidth: 0,
+                shadow: false,
+                style: {
+                    padding: '3px',
+                    color: '#999',
+                    fontSize: '9px'
+                }
             },
             series: [{
                 lineWidth: 2,
                 data: (function () {
                     // generate an array of random data
-                    var data = [],
-                        time = (new Date()).getTime(),
-                        i;
+                    var data = [], time = Date.now(), i;
+                    try {
+                        time = rpc.systemManager.getMilliseconds() - (new Date().getTimezoneOffset() * 60000) - rpc.timeZoneOffset;
+                    } catch (e) {
+                        console.log('Unable to get current millis.');
+                    }
 
                     for (i = -19; i <= 0; i += 1) {
                         data.push({
