@@ -6,7 +6,7 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
-    "units": "sesions",
+    "units": "sessions",
     "readOnly": true,
     "table": "sessions",
     "timeDataInterval": "AUTO",
