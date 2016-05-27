@@ -31,7 +31,7 @@ public class ResultSetReader implements Runnable
     private ResultSet resultSet;
     private Connection connection;
     private Statement statement;
-    private Thread thread;
+    private final Thread thread;
     
     public ResultSetReader( ResultSet resultSet, Connection connection, Statement statement )
     {
@@ -39,7 +39,7 @@ public class ResultSetReader implements Runnable
         this.connection = connection;
         this.statement = statement;
 
-        Thread thread = UvmContextFactory.context().newThread( this, "ResultSetReader" );
+        this.thread = UvmContextFactory.context().newThread( this, "ResultSetReader" );
         thread.start();
     }
 
