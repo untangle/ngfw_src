@@ -76,7 +76,12 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.clientTraffic.mark(newmark);
 
-        setSessionMark(pointer.value(), newmark);
+        //the mark set on packets sent to the client are reversed
+        //so if the connmark is 0x00000102 then its from interface 2->1
+        //in this case the client mark is 0x00000201 because packets sent to the client
+        //are 1->2. So we don't want to write the mark to the connmark because it would
+        //be incorrect. As such, we set the connmark when we set the server mark
+        //setSessionMark(pointer.value(), newmark);
     }
 
     @Override
@@ -90,6 +95,7 @@ public class NetcapUDPSession extends NetcapSession
     {
         this.serverTraffic.mark(newmark);
 
+        // set the connmark also
         setSessionMark(pointer.value(), newmark);
     }
     
