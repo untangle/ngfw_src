@@ -89,16 +89,6 @@ public interface NodeSession extends SessionTuple
      */
     Object globalAttachment(String key);
 
-    // /**
-    //  * Similar to globalAttachment(String) but with a Long key.
-    //  */
-    // Object globalAttachment(Long key);
-    
-    // /**
-    //  * Similar to globalAttach(String,Object) but with a Long key.
-    //  */
-    // Object globalAttach(Long key, Object ob);
-
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
      * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
@@ -108,7 +98,8 @@ public interface NodeSession extends SessionTuple
      * @return an <code>int</code> giving the unique ID of the session.
      */
     long id();
-
+    long getSessionId();
+    
     /**
      * User identified for the session.  May be null, which means
      * that no user could be idenitifed for the session.

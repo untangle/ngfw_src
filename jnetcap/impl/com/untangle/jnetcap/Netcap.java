@@ -73,6 +73,19 @@ public final class Netcap
         setNetcapDebugLevel( level );
     }
 
+    private static final int longArrayLength = 1024*64;
+    private final long[] longArray = new long[longArrayLength];
+    
+    public synchronized List<Conntrack> getConntrackDump()
+    {
+        LinkedList<Conntrack> entries = new LinkedList<Conntrack>();
+        int num = conntrackDump( longArray, longArrayLength );
+        for ( int i = 0 ; i < num ; i++ ) {
+            entries.add( new Conntrack( new CPointer(longArray[i]) ) );
+        }
+        return entries;
+    }
+    
     /**
      * Cleanup the netcap library
      */
@@ -123,9 +136,14 @@ public final class Netcap
      * Lookup MAC address for IP in ARP table
      */
     public static native String arpLookup( String ipAddress );
+
+    /**
+     * Get a dump of the conntrack
+     */
+    public static native int conntrackDump( long[] arr, int arrLength );
     
     /**
-     * Change the debugging level. <p/>
+     * Change the debugging level.
      * 
      * @param type The type debugging to change, this must be either JNETCAP_DEBUG or NETCAP_DEBUG
      * @param level Amount of debugging requested.  Higher is more debugging information.

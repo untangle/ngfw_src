@@ -29,6 +29,7 @@ public interface SessionTuple
 
     /**
      * Returns an netcap interface for the server.</p>
+     * Zero means no interface
      *
      * @return a <code>int</code> giving the server interface of the session.
      */
@@ -59,9 +60,4 @@ public interface SessionTuple
      * @return the server port.
      */
     int getServerPort();
-
-    /**
-     * Return the session ID
-     */
-    long getSessionId();
 }

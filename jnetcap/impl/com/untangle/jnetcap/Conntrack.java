@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 public class Conntrack
 {
-    protected CPointer pointer;
+    protected final CPointer pointer;
 
     /**
      * These constants must match the values in
@@ -83,17 +83,125 @@ public class Conntrack
     private final static int FLAG_CONNLABELS_MASK = 67;			/* variable length */
     private final static int FLAG_MAX = 68;
     
-    protected static native long   getLongValue  ( int id, long session );
-    protected static native int    getIntValue   ( int id, long session );
-    protected static native String toString( long session, boolean ifClient );
+    protected static native long   getLongValue  ( int id, long conntrack_ptr );
+    protected static native int    getIntValue   ( int id, long conntrack_ptr );
+    protected static native short  getShortValue ( int id, long conntrack_ptr );
+    protected static native byte   getByteValue  ( int id, long conntrack_ptr );
+    protected static native int    getShortValueAsIntReversedByteOrder   ( int id, long conntrack_ptr );
+    protected static native String toString( long session );
     
     protected Conntrack( CPointer pointer )
     {
+        if ( pointer == null )
+            throw new RuntimeException("Can not create NULL Conntrack entry");
         this.pointer = pointer;
     }
     
-    public short getProtocol()
+    public int getId()
     {
-        return (short)getIntValue( FLAG_ORIG_L4PROTO, pointer.value());
+        return getIntValue( FLAG_ID, pointer.value() );
     }
+
+    public int getMark()
+    {
+        return getIntValue( FLAG_MARK, pointer.value() );
+    }
+    
+    public int getProtocol()
+    {
+        return getByteValue( FLAG_ORIG_L4PROTO, pointer.value() );
+    }
+    
+    public InetAddress getOriginalSourceAddress()
+    {
+        long addr = getLongValue( FLAG_ORIG_IPV4_SRC, pointer.value() );
+        return Inet4AddressConverter.toAddress( addr );
+    }
+
+    public InetAddress getOriginalDestinationAddress()
+    {
+        long addr = getLongValue( FLAG_ORIG_IPV4_DST, pointer.value() );
+        return Inet4AddressConverter.toAddress( addr );
+    }
+
+    public InetAddress getReplySourceAddress()
+    {
+        long addr = getLongValue( FLAG_REPL_IPV4_SRC, pointer.value() );
+        return Inet4AddressConverter.toAddress( addr );
+    }
+
+    public InetAddress getReplyDestinationAddress()
+    {
+        long addr = getLongValue( FLAG_REPL_IPV4_DST, pointer.value() );
+        return Inet4AddressConverter.toAddress( addr );
+    }
+
+    public int getOriginalSourcePort()
+    {
+        return getShortValueAsIntReversedByteOrder( FLAG_ORIG_PORT_SRC, pointer.value() );
+    }
+
+    public int getOriginalDestinationPort()
+    {
+        return getShortValueAsIntReversedByteOrder( FLAG_ORIG_PORT_DST, pointer.value() );
+    }
+
+    public int getReplySourcePort()
+    {
+        return getShortValueAsIntReversedByteOrder( FLAG_REPL_PORT_SRC, pointer.value() );
+    }
+
+    public int getReplyDestinationPort()
+    {
+        return getShortValueAsIntReversedByteOrder( FLAG_REPL_PORT_DST, pointer.value() );
+    }
+
+    public long getOriginalCounterPackets()
+    {
+        return getLongValue( FLAG_ORIG_COUNTER_PACKETS, pointer.value() );
+    }
+
+    public long getReplyCounterPackets()
+    {
+        return getLongValue( FLAG_REPL_COUNTER_PACKETS, pointer.value() );
+    }
+    
+    public long getOriginalCounterBytes()
+    {
+        return getLongValue( FLAG_ORIG_COUNTER_BYTES, pointer.value() );
+    }
+
+    public long getReplyCounterBytes()
+    {
+        return getLongValue( FLAG_REPL_COUNTER_BYTES, pointer.value() );
+    }
+
+    public String toString()
+    {
+        return toString( pointer.value() );
+    }
+
+    /******************************************************/
+    /****************  computed values ********************/
+    /******************************************************/
+
+    public boolean getBypassed() { return ((getMark() & 0x01000000) != 0); }
+    public int getPriority() { return ((getMark() & 0x000F0000) >> 16); }
+
+    public int getClientIntf() { return ((getMark() & 0x000000FF) >> 0 ); }
+    public int getServerIntf() { return ((getMark() & 0x0000FF00) >> 8 ); }
+
+    public InetAddress getPreNatClient() {return getOriginalSourceAddress();}
+    public InetAddress getPreNatServer() {return getOriginalDestinationAddress();}
+
+    public Integer  getPreNatClientPort() {return getOriginalSourcePort();}
+    public Integer  getPreNatServerPort() {return getOriginalDestinationPort();}
+
+    public InetAddress getPostNatClient() {return getReplyDestinationAddress();}
+    public InetAddress getPostNatServer() {return getReplySourceAddress();}
+
+    public Integer  getPostNatClientPort() {return getReplyDestinationPort();}
+    public Integer  getPostNatServerPort() {return getReplySourcePort();}
+    
+    
 }

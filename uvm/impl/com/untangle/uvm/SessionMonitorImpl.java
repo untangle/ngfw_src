@@ -101,13 +101,13 @@ public class SessionMonitorImpl implements SessionMonitor
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
         List<SessionGlobalState> netcapSessions = SessionTable.getInstance().getSessions();
-        List<SessionTuple> nodeSessions = null;;
+        List<NodeSession> nodeSessions = null;;
 
         Node node = null;
         if (nodeId > 0)
             node = UvmContextFactory.context().nodeManager().node(nodeId);
         if (node != null)
-            nodeSessions = node.liveSessions();
+            nodeSessions = node.liveNodeSessions();
 
         HashMap<Tuple,SessionGlobalState> map = new HashMap<Tuple,SessionGlobalState>();
         for (SessionGlobalState netcapSession : netcapSessions) {
@@ -245,8 +245,8 @@ public class SessionMonitorImpl implements SessionMonitor
                 SessionMonitorEntry entry = i.next();
                 Long sessionId = entry.getSessionId();
                 boolean found = false;
-                for (SessionTuple tuple : nodeSessions) {
-                    if ( sessionId != null && sessionId == tuple.getSessionId() ) {
+                for (NodeSession ns : nodeSessions) {
+                    if ( sessionId != null && sessionId == ns.getSessionId() ) {
                         found = true;
                         break;
                     }

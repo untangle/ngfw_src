@@ -14,21 +14,19 @@ public class SessionTupleImpl implements SessionTuple
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
 
-    private long sessionId;
-    private short protocol;
+    private short protocol = 0;
     private InetAddress clientAddr;
-    private int clientIntf;
-    private int clientPort;
+    private int clientIntf = 0;
+    private int clientPort = 0;
     private InetAddress serverAddr;
-    private int serverIntf;
-    private int serverPort;
+    private int serverIntf = 0;
+    private int serverPort = 0;
     
-    public SessionTupleImpl( long sessionId, short protocol,
+    public SessionTupleImpl( short protocol,
                              int clientIntf, int serverIntf,
                              InetAddress clientAddr, InetAddress serverAddr,
                              int clientPort, int serverPort )
     {
-        this.sessionId = sessionId;
         this.protocol = protocol;
         this.clientAddr = clientAddr;
         this.clientIntf = clientIntf;
@@ -40,7 +38,6 @@ public class SessionTupleImpl implements SessionTuple
 
     public SessionTupleImpl( SessionTuple tuple )
     {
-        this.sessionId = tuple.getSessionId();
         this.protocol = tuple.getProtocol();
         this.clientAddr = tuple.getClientAddr();
         this.clientIntf = tuple.getClientIntf();
@@ -49,9 +46,6 @@ public class SessionTupleImpl implements SessionTuple
         this.serverIntf = tuple.getServerIntf();
         this.serverPort = tuple.getServerPort();
     }
-    
-    public long getSessionId() { return this.sessionId; }
-    public void setSessionId( long sessionId ) { this.sessionId = sessionId; }
 
     public short getProtocol() { return this.protocol; }
     public void setProtocol( short protocol ) { this.protocol = protocol; }
@@ -73,4 +67,53 @@ public class SessionTupleImpl implements SessionTuple
 
     public int getServerPort() { return this.serverPort; }
     public void setServerPort( int serverPort ) { this.serverPort = serverPort; }
+
+    @Override
+    public int hashCode()
+    {
+        if ( clientAddr == null || serverAddr == null )
+            return protocol + clientPort + serverPort + clientIntf + serverIntf;
+        else
+            return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort + clientIntf + serverIntf;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if ( ! (o instanceof SessionTupleImpl) )
+            return false;
+        SessionTupleImpl t = (SessionTupleImpl)o;
+        if ( t.protocol != this.protocol ||
+             t.clientPort != this.clientPort ||
+             t.serverPort != this.serverPort ||
+             t.clientIntf != this.clientIntf ||
+             t.serverIntf != this.serverIntf) {
+            return false;
+        }
+        if ( ! ( t.clientAddr == null ? this.clientAddr == null : t.clientAddr.equals(this.clientAddr) ) ) {
+            return false;
+        }
+        if ( ! ( t.serverAddr == null ? this.serverAddr == null : t.serverAddr.equals(this.serverAddr) ) ) {
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public String toString()
+    {
+        String str = "[Tuple ";
+        if ( protocol != 0)
+            str += "PROTO:" + protocol+" ";
+        if ( clientIntf != 0 && serverIntf != 0 )
+            str += "|" + clientIntf + "->" + serverIntf + "| ";
+        
+        str += (clientAddr == null ? "null" : clientAddr.getHostAddress()) + ":" + clientPort;
+        str += " -> ";
+        str += (serverAddr == null ? "null" : serverAddr.getHostAddress()) + ":" + serverPort;
+        str += "]";
+        
+        return str;
+    }
 }

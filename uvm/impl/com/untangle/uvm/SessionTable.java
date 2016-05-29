@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 /**
@@ -26,7 +27,7 @@ public class SessionTable
     private static final SessionTable INSTANCE = new SessionTable();
 
     private final Map<Long,SessionGlobalState> sessionTableById = new HashMap<Long,SessionGlobalState>();
-    private final Map<SessionTupleKey,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleKey,SessionGlobalState>();
+    private final Map<SessionTupleImpl,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleImpl,SessionGlobalState>();
     private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortAvailabilityMap = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
 
     public static final short PROTO_TCP = 6;
@@ -61,7 +62,13 @@ public class SessionTable
                 }
             }
 
-            SessionTupleKey tupleKey = new SessionTupleKey( session );
+            SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
+                                                              session.netcapSession().clientSide().interfaceId(),
+                                                              session.netcapSession().serverSide().interfaceId(),
+                                                              session.netcapSession().clientSide().client().host(),
+                                                              session.netcapSession().serverSide().server().host(),
+                                                              session.netcapSession().clientSide().client().port(),
+                                                              session.netcapSession().serverSide().server().port());
             sessionTableByTuple.put( tupleKey, session );
         }
         
@@ -82,7 +89,13 @@ public class SessionTable
         boolean removed = ( sessionTableById.remove( sessionId ) != null );
         
         if ( removed ) {
-            SessionTupleKey tupleKey = new SessionTupleKey( session );
+            SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
+                                                              session.netcapSession().clientSide().interfaceId(),
+                                                              session.netcapSession().serverSide().interfaceId(),
+                                                              session.netcapSession().clientSide().client().host(),
+                                                              session.netcapSession().serverSide().server().host(),
+                                                              session.netcapSession().clientSide().client().port(),
+                                                              session.netcapSession().serverSide().server().port());
             if ( sessionTableByTuple.remove( tupleKey ) == null ) {
                 logger.warn("Missing value in tuple map: " + tupleKey );
             }
@@ -104,9 +117,9 @@ public class SessionTable
      * Remove a session from the table(s)
      * @return - returns the session if it was removed, null if not found
      */
-    protected synchronized SessionGlobalState remove( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
+    protected synchronized SessionGlobalState remove( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
-        SessionTupleKey tupleKey = new SessionTupleKey( protocol, clientAddr, serverAddr, clientPort, serverPort );
+        SessionTupleImpl tupleKey = new SessionTupleImpl( protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort );
         SessionGlobalState session = sessionTableByTuple.get( tupleKey );
         if ( session == null ) {
             return null;
@@ -334,87 +347,6 @@ public class SessionTable
         public int hashCode()
         {
             return addr.hashCode() + port;
-        }
-    }
-
-    private class SessionTupleKey
-    {
-        public static final short PROTO_TCP = 6;
-        public static final short PROTO_UDP = 17;
-
-        private short protocol;
-        private InetAddress clientAddr;
-        private int clientPort;
-        private InetAddress serverAddr;
-        private int serverPort;
-    
-        public SessionTupleKey( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
-        {
-            this.protocol = protocol;
-            this.clientAddr = clientAddr;
-            this.clientPort = clientPort;
-            this.serverAddr = serverAddr;
-            this.serverPort = serverPort;
-        }
-
-        public SessionTupleKey( SessionGlobalState session )
-        {
-            this.protocol = session.getProtocol();
-            this.clientAddr = session.netcapSession().clientSide().client().host();
-            this.clientPort = session.netcapSession().clientSide().client().port();
-            this.serverAddr = session.netcapSession().serverSide().server().host();
-            this.serverPort = session.netcapSession().serverSide().server().port();
-        }
-    
-        public short getProtocol() { return this.protocol; }
-        public void setProtocol( short protocol ) { this.protocol = protocol; }
-
-        public InetAddress getClientAddr() { return this.clientAddr; }
-        public void setClientAddr( InetAddress clientAddr ) { this.clientAddr = clientAddr; }
-
-        public int getClientPort() { return this.clientPort; }
-        public void setClientPort( int clientPort ) { this.clientPort = clientPort; }
-
-        public InetAddress getServerAddr() { return this.serverAddr; }
-        public void setServerAddr( InetAddress serverAddr ) { this.serverAddr = serverAddr; }
-
-        public int getServerPort() { return this.serverPort; }
-        public void setServerPort( int serverPort ) { this.serverPort = serverPort; }
-
-        @Override
-        public int hashCode()
-        {
-            return protocol + clientAddr.hashCode() + serverPort + serverAddr.hashCode() + clientPort;
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if ( ! (o instanceof SessionTupleKey) )
-                return false;
-            SessionTupleKey t = (SessionTupleKey)o;
-            if ( t.protocol != this.protocol ||
-                 t.clientPort != this.clientPort ||
-                 t.serverPort != this.serverPort ) {
-                return false;
-            }
-            if ( ! ( t.clientAddr == null ? this.clientAddr == null : t.clientAddr.equals(this.clientAddr) ) ) {
-                return false;
-            }
-            if ( ! ( t.serverAddr == null ? this.serverAddr == null : t.serverAddr.equals(this.serverAddr) ) ) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "[Tuple " + protocol + " " +
-                (clientAddr == null ? "null" : clientAddr.getHostAddress()) + ":" +
-                clientPort + " -> " +
-                (serverAddr == null ? "null" : serverAddr.getHostAddress()) + ":" +
-                serverPort + "]";
         }
     }
 }

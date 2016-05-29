@@ -474,6 +474,20 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
     return (*env)->NewStringUTF(env, mac);
 }
 
+/*
+ * Class:     com_untangle_jnetcap_Netcap
+ * Method:    arpLookup
+ * Signature: ([JI)I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
+(JNIEnv *env, jclass _class, jlongArray arr, jint arr_length )
+{
+    jlong* arr_body = (*env)->GetLongArrayElements(env, arr, 0);
+    int ret = netcap_nfconntrack_dump( (struct nf_conntrack**)arr_body, arr_length );
+    (*env)->ReleaseLongArrayElements(env, arr, arr_body, 0);
+    return ret;
+}
+
 static void*             _tcp_run_thread( void* arg )
 {
     netcap_session_t* netcap_sess = arg;

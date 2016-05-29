@@ -94,6 +94,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private AlertManagerImpl alertManager;
     private SessionMonitorImpl sessionMonitor;
     private SessionUpdaterImpl sessionUpdater;
+    private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
@@ -266,6 +267,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.sessionMonitor;
     }
 
+    public ConntrackMonitorImpl conntrackMonitor()
+    {
+        return this.conntrackMonitor;
+    }
+    
     public ExecManager execManager()
     {
         return this.execManager;
@@ -820,6 +826,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.networkManager = new NetworkManagerImpl();
 
+        this.conntrackMonitor = new ConntrackMonitorImpl();
+
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
         this.mailSender = MailSenderImpl.mailSender();
@@ -899,13 +907,23 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         // the will be removed again by the wrapper
         // this is just so traffic will pass while the untangle-vm shutsdown
-        networkManager.removeRules();
-        hostTableImpl.saveHosts();
-        deviceTableImpl.saveDevices();
+        try {
+            networkManager.removeRules();
+        } catch (Exception exn) {
+            logger.error("Failed to remove rules", exn);
+        }
+            
+        try {
+            hostTableImpl.saveHosts();
+            deviceTableImpl.saveDevices();
+        } catch (Exception exn) {
+            logger.error("Failed to save hosts/devices", exn);
+        }
 
         state = UvmState.DESTROYED;
 
         try {
+            conntrackMonitor.stop();
             metricManager.stop();
         } catch (Exception exn) {
             logger.error("could not stop MetricManager", exn);

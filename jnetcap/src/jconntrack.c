@@ -60,7 +60,21 @@ JNIEXPORT jint JNICALL JF_Conntrack( getIntValue )
  * Method:    getShortValue
  * Signature: (IJ)S
  */
-JNIEXPORT jint JNICALL JF_Conntrack( getShortValue )
+JNIEXPORT jshort JNICALL JF_Conntrack( getShortValue )
+  (JNIEnv *env, jclass _this, jint flag, jlong conntrack_ptr )
+{
+    struct nf_conntrack* conntrack;
+    JLONG_TO_CONNTRACK( conntrack, conntrack_ptr );
+
+    return nfct_get_attr_u16(conntrack, flag);
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Conntrack
+ * Method:    getByteValue
+ * Signature: (IJ)B
+ */
+JNIEXPORT jbyte JNICALL JF_Conntrack( getByteValue )
   (JNIEnv *env, jclass _this, jint flag, jlong conntrack_ptr )
 {
     struct nf_conntrack* conntrack;
@@ -71,11 +85,25 @@ JNIEXPORT jint JNICALL JF_Conntrack( getShortValue )
 
 /*
  * Class:     com_untangle_jnetcap_Conntrack
+ * Method:    getShortValueAsIntReversedByteOrder
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL JF_Conntrack( getShortValueAsIntReversedByteOrder )
+  (JNIEnv *env, jclass _this, jint flag, jlong conntrack_ptr )
+{
+    struct nf_conntrack* conntrack;
+    JLONG_TO_CONNTRACK( conntrack, conntrack_ptr );
+
+    return (jint)ntohs(nfct_get_attr_u16(conntrack, flag));
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Conntrack
  * Method:    toString
  * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL JF_Conntrack( toString )
-  (JNIEnv *env, jclass _this, jlong conntrack_ptr, jboolean ifClient )
+  (JNIEnv *env, jclass _this, jlong conntrack_ptr )
 {
     struct nf_conntrack* conntrack;
     JLONG_TO_CONNTRACK_NULL( conntrack, conntrack_ptr );

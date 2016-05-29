@@ -125,16 +125,14 @@ public abstract class NetcapHook implements Runnable
             /**
              * Create the initial tuples based on current information
              */
-            clientSide = new SessionTupleImpl( sessionGlobalState.id(),
-                                               sessionGlobalState.getProtocol(),
+            clientSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.clientSide().client().host(),
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
-            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
-                                               sessionGlobalState.getProtocol(),
+            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.serverSide().client().host(),
@@ -326,8 +324,7 @@ public abstract class NetcapHook implements Runnable
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
-            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
-                                               sessionGlobalState.getProtocol(),
+            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                sessionEvent.getSClientAddr(),
