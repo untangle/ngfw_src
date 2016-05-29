@@ -50,7 +50,7 @@ public abstract class NetcapHook implements Runnable
     private static final int IP_HEADER_SIZE = 20;
     private static final int UDP_HEADER_SIZE = 8;
 
-    private static final SessionTable sessionTable = SessionTable.getInstance();
+    private static final SessionTableImpl sessionTable = SessionTableImpl.getInstance();
 
     /**
      * List of all of the nodes( PipelineConnectorImpls )

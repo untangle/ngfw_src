@@ -160,14 +160,14 @@ public class NetcapConntrackHook implements NetcapCallback
                  * if this is a session we bypassed mid-session.
                  */
                 if ( sess_id == null && protocol == 17 ) {
-                    SessionGlobalState session = SessionTable.getInstance().remove( (short)protocol, clientIntf, serverIntf, cClientAddr, sServerAddr, cClientPort, sServerPort );
+                    SessionGlobalState session = SessionTableImpl.getInstance().remove( (short)protocol, clientIntf, serverIntf, cClientAddr, sServerAddr, cClientPort, sServerPort );
                     if ( session != null ) {
                         sess_id = session.id();
                         // we set this to true, because we always want to log the end of this session
                         // even if "log bypassed" is not enabled.
                         // this session was not originally bypassed
                         logEvent = true;
-                    }
+                    } 
                 }
                 
                 long c2s_bytes = ct.getOriginalCounterBytes();

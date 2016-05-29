@@ -139,7 +139,7 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.unregisterUDPHook();
         Netcap.unregisterConntrackHook();
 
-        SessionTable sessionTable = SessionTable.getInstance();
+        SessionTableImpl sessionTable = SessionTableImpl.getInstance();
 
         /* Close all of the vectoring machines */
         for ( int c = 0; c <  SHUTDOWN_ATTEMPTS ; c++ ) {
@@ -173,30 +173,30 @@ public class NetcapManagerImpl implements NetcapManager
     /** Get the number of sessions from the SessionTable */
     public int getSessionCount()
     {
-        return SessionTable.getInstance().count();
+        return SessionTableImpl.getInstance().count();
     }
 
     public int getSessionCount(short protocol)
     {
-        return SessionTable.getInstance().count(protocol);
+        return SessionTableImpl.getInstance().count(protocol);
     }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher )
     {
-        SessionTable.getInstance().shutdownMatches( matcher );
+        SessionTableImpl.getInstance().shutdownMatches( matcher );
     }
 
     /** Shutdown all of the sessions that have been touch by the PipelineConnector that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
-        SessionTable.getInstance().shutdownMatches( matcher, connector );
+        SessionTableImpl.getInstance().shutdownMatches( matcher, connector );
     }
 
     /** See if a addr:port binding is already in use by an existing session */
     public boolean isTcpPortUsed( InetAddress addr, int port )
     {
-        return SessionTable.getInstance().isTcpPortUsed( addr, port );
+        return SessionTableImpl.getInstance().isTcpPortUsed( addr, port );
     }
 
     public void setNetcapDebugLevel( int level )

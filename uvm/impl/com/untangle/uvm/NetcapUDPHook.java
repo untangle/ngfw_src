@@ -267,6 +267,7 @@ public class NetcapUDPHook implements NetcapCallback
             logger.info("Releasing to bypass: " + netcapSession());
 
             netcapSession().orClientMark( 0x01000000 );
+            netcapSession().orServerMark( 0x01000000 );
 
             // we can't actually kill the session here because there may be data
             // remaining in the buffers that needs to be sent

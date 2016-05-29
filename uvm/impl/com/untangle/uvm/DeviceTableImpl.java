@@ -145,7 +145,7 @@ public class DeviceTableImpl implements DeviceTable
 
         try {
             String body = "[\n\"" + macAddress + "\"\n]\n";
-            logger.info("Cloud MAC lookup = " + body);
+            logger.info("Cloud MAC lookup = " + macAddress);
 
             URL myurl = new URL(CLOUD_LOOKUP_URL);
             HttpsURLConnection mycon = (HttpsURLConnection)myurl.openConnection();

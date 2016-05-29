@@ -20,11 +20,11 @@ import com.untangle.uvm.vnet.PipelineConnector;
 /**
  * This table stores a global list of all currently active sessions being vectored
  */
-public class SessionTable
+public class SessionTableImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final SessionTable INSTANCE = new SessionTable();
+    private static final SessionTableImpl INSTANCE = new SessionTableImpl();
 
     private final Map<Long,SessionGlobalState> sessionTableById = new HashMap<Long,SessionGlobalState>();
     private final Map<SessionTupleImpl,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleImpl,SessionGlobalState>();
@@ -33,11 +33,16 @@ public class SessionTable
     public static final short PROTO_TCP = 6;
     
     /* Singleton */
-    private SessionTable() {}
+    private SessionTableImpl() {}
 
-    public static SessionTable getInstance()
+    public static SessionTableImpl getInstance()
     {
         return INSTANCE;
+    }
+
+    public SessionGlobalState lookupTuple( SessionTupleImpl tuple )
+    {
+        return sessionTableByTuple.get( tuple );
     }
 
     /**

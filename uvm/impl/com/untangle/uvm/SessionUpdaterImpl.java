@@ -63,7 +63,7 @@ public class SessionUpdaterImpl
     
     public void updateSessionStats()
     {
-        List<SessionGlobalState> netcapSessions = SessionTable.getInstance().getSessions();
+        List<SessionGlobalState> netcapSessions = SessionTableImpl.getInstance().getSessions();
 
         long cutoff = System.currentTimeMillis() - SESSION_MIN_LIFE;
         
